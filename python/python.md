@@ -39,3 +39,6 @@ Cosine similarity with NumPy
 ### __init__
 
 ### pip
+
+### SimPy discrete event simulation
+https://simpy.readthedocs.io/en/latest/
