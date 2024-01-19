@@ -34,6 +34,39 @@ Cosine similarity with NumPy
         return cosine_distance
 ```
 
+### Generate date ranges 
+```
+import datetime
+
+def generate_dates_in_range(start_date, end_date, range="DAY"):
+  start = datetime.datetime.strptime(start_date, "%Y-%m-%d")
+  all_dates=[start_date]
+  str_next=start_date
+
+  if range == "DAY":
+        interval=1
+  elif range =="WEEK":
+        interval=7
+  else:
+        print("Unknown range ", range)
+        return None
+
+  while str_next < end_date:
+    next = start + datetime.timedelta(days=interval)
+    str_next=str(next)[0:10]
+    all_dates.append(str_next)
+    start=next
+
+  return all_dates
+
+# Test
+
+start='2024-01-30'
+end='2024-02-05'
+print(start, end)
+all_dates = generate_dates_in_range(start, end)
+print(all_dates)
+```
 ### import
 
 ### __init__
