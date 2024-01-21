@@ -106,7 +106,19 @@ print(me.__dict__)
 print(me_with_slots.__dict__)
 # AttributeError: 'AuthorWithSlots' object has no attribute '__dict__'
 ```
+### mmap
+```
+import mmap
 
+with open('test.txt', "r+b") as f:
+    # memory-map the file, size 0 means whole file
+    with mmap.mmap(f.fileno(), 0) as mm:
+        # read content via standard file methods
+        print(mm.read())
+        # read content via slice notation
+        snippet = mm[0:10]
+        print(snippet.decode('utf-8'))
+```
 ### SimPy - discrete event simulation
 https://simpy.readthedocs.io/en/latest/
 
