@@ -72,6 +72,7 @@ print(all_dates)
 ### __init__
 
 ### pip
+https://www.techbeamers.com/python-pip-usage/
 
 ### Slots 
 If you create a lot of objects __slots__ can save memory
