@@ -137,6 +137,10 @@ print(me.__dict__)
 print(me_with_slots.__dict__)
 # AttributeError: 'AuthorWithSlots' object has no attribute '__dict__'
 ```
+
+### String interning
+ https://medium.com/techtofreedom/string-interning-in-python-a-hidden-gem-that-makes-your-code-faster-9be71c7a5f3e
+ 
 ### mmap
 ```
 import mmap
