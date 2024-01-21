@@ -69,7 +69,11 @@ print(all_dates)
 ```
 ### import
 
-### "__init__ __new__ __call__ _enter__ __exit__"
+### Magic methods (starts and ends with  __ )
+
+https://docs.python.org/3/reference/datamodel.html#special-method-names
+
+```__init__ __new__ __call__ __enter__ __exit__  __get_item__ __str__ __repr__```
 
 https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize-classes-conveniently-a1f50fa4b53e
 
