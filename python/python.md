@@ -78,12 +78,10 @@ If you create a lot of objects __slots__ can save memory
 ```
 import sys
 
-
 class Author:
     def __init__(self, name, age):
         self.name = name
         self.age = age
-
 
 class AuthorWithSlots:
     __slots__ = ['name', 'age']
@@ -91,7 +89,6 @@ class AuthorWithSlots:
     def __init__(self, name, age):
         self.name = name
         self.age = age
-
 
 # Creating instances
 me = Author('Yang', 30)
