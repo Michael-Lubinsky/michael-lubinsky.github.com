@@ -73,5 +73,42 @@ print(all_dates)
 
 ### pip
 
-### SimPy discrete event simulation
+### Slots 
+If you create a lot of objects __slots__ can save memory
+```
+import sys
+
+
+class Author:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+
+class AuthorWithSlots:
+    __slots__ = ['name', 'age']
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+
+# Creating instances
+me = Author('Yang', 30)
+me_with_slots = AuthorWithSlots('Yang', 30)
+
+# Comparing memory usage
+memory_without_slots = sys.getsizeof(me) + sys.getsizeof(me.__dict__)
+memory_with_slots = sys.getsizeof(me_with_slots)  # __slots__ classes don't have __dict__
+
+print(memory_without_slots, memory_with_slots)
+# 152 48
+print(me.__dict__)
+# {'name': 'Yang', 'age': 30}
+print(me_with_slots.__dict__)
+# AttributeError: 'AuthorWithSlots' object has no attribute '__dict__'
+```
+
+### SimPy - discrete event simulation
 https://simpy.readthedocs.io/en/latest/
+
