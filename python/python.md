@@ -69,7 +69,9 @@ print(all_dates)
 ```
 ### import
 
-### __init__
+### "__init__ __new__ __call__ _enter__ __exit__"
+
+https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize-classes-conveniently-a1f50fa4b53e
 
 ### pip
 https://www.techbeamers.com/python-pip-usage/
