@@ -74,6 +74,21 @@ print(all_dates)
 ### pip
 https://www.techbeamers.com/python-pip-usage/
 
+### Tuple vs List
+
+Given that tuples are immutable (they cannot be changed after creation), it allows Python to make optimizations in terms of memory allocation.
+```
+import sys
+
+my_tuple = (1, 2, 3, 4, 5)
+my_list = [1, 2, 3, 4, 5]
+
+print(sys.getsizeof(my_tuple))
+# 80
+print(sys.getsizeof(my_list)) 
+# 120
+```
+
 ### Slots 
 If you create a lot of objects __slots__ can save memory
 ```
