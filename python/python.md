@@ -39,15 +39,11 @@ Output >>>
 {'host': 'localhost', 'port': 5432, 'database_name': 'your_database_name', 'user': 'your_username', 'password': 'your_password'}
  
 
-Connecting to the Database
- 
-
 Lets connect to a Postgres database.
 
 pip install psycopg2
  
-
-You can use both the connection and the cursor objects in with statements as shown:
+You can use both the connection and the cursor objects in with statements:
 
 import psycopg2
 
@@ -130,6 +126,11 @@ print(start, end)
 all_dates = generate_dates_in_range(start, end)
 print(all_dates)
 ```
+
+### Time Series Aggregation with pandas
+
+https://kapilg.hashnode.dev/time-series-aggregation-in-pandas
+
 ### import
 
 ### Magic methods (starts and ends with  __ )
