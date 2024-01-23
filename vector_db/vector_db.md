@@ -1,4 +1,6 @@
-### Vector databases
+### Vector embedding and databases
+
+https://ig.ft.com/generative-ai/
 
 https://news.ycombinator.com/item?id=38971221
 
