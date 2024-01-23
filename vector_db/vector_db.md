@@ -1,5 +1,7 @@
 ### Vector embedding and databases
 
+https://www.forbes.com/sites/adrianbridgwater/2023/05/19/the-rise-of-vector-databases
+
 https://ig.ft.com/generative-ai/
 
 https://www.facebook.com/groups/197964893963666/permalink/1793728821053924/?mibextid=uJjRxr
