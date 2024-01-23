@@ -1,5 +1,68 @@
 ## Python notes
 
+### Working with database
+```
+Parsing TOML Files in Python
+ 
+
+Consider a sample TOML file, say db_config.toml, containing the required info to connect to the database:
+
+# db_config.toml
+
+[database]
+host = "localhost"
+port = 5432
+database_name = "your_database_name"
+user = "your_username"
+password = "your_password"
+ 
+
+ 
+
+You need Python 3.11 or a later version to use tomllib.
+https://docs.python.org/3/library/tomllib.html
+
+  So you can open the db_config.toml file and parse its contents like so:
+
+import tomllib
+
+with open('db_config.toml','rb') as file:
+	credentials = tomllib.load(file)['database']
+ 
+
+Notice that we tap into the ‘database’ section of the db_config.toml file. The load() function returns a Python dictionary. You can verify this by printing out the contents of credentials:
+
+print(credentials)
+ 
+
+Output >>>
+{'host': 'localhost', 'port': 5432, 'database_name': 'your_database_name', 'user': 'your_username', 'password': 'your_password'}
+ 
+
+Connecting to the Database
+ 
+
+Lets connect to a Postgres database.
+
+pip install psycopg2
+ 
+
+You can use both the connection and the cursor objects in with statements as shown:
+
+import psycopg2
+
+# Connect to the database
+with psycopg2.connect(**credentials) as conn:
+	# Inside this context, the connection is open and managed
+
+	with conn.cursor() as cur:
+    	# Inside this context, the cursor is open and managed
+
+    	cur.execute('SELECT * FROM my_table')
+    	result = cur.fetchall()
+            print(result)
+```
+
 ### Cosine similarity
 First attempt
 ```
