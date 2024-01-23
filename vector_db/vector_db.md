@@ -2,6 +2,8 @@
 
 https://ig.ft.com/generative-ai/
 
+https://tembo.io/blog/pgvector-and-embedding-solutions-with-postgres
+
 https://news.ycombinator.com/item?id=38971221
 
 https://vickiboykis.com/what_are_embeddings/
