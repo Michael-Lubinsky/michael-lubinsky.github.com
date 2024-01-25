@@ -1,12 +1,15 @@
 
-Outliers setection
+Outliers detection
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
 Mamba
 https://habr.com/ru/articles/786278/
 
+### Multimodal LLM
+https://arxiv.org/abs/2306.13549
+
 Multimodal deep learning
-https://arxiv.org/abs/2301.04856?fbclid=IwAR0t-aADd0Z3XPbP6sq_L9iH-w0mnOfRXc7S80fndieDb1CnctsjAvNsmiE
+https://arxiv.org/abs/2301.04856 
 
 What is AIC and BIC? How these helps in ML Model Selection? 
 The AIC can be used to select between the additive and multiplicative Holt-Winters models. Bayesian information criterion (BIC) (Stone, 1979) is another criteria for model selection that measures the trade-off between model fit and complexity of the model. A lower AIC or BIC value indicates a better fit.
