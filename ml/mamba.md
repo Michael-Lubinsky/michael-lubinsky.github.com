@@ -1,8 +1,10 @@
 
-Outliers detection
+https://github.com/Coder-World04/Data-and-ML-Projects-
+
+### Outliers detection
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
-Mamba
+### Mamba
 https://habr.com/ru/articles/786278/
 
 ### Multimodal LLM
