@@ -1,11 +1,52 @@
 ## Python notes
 
+### Pandas series
+```
+import pandas as pd
+t_list = [25, 28, 26, 30, 29, 27, 31]
+t_series = pd.Series(t_list, name='Temperature')
+print(t_series.mean())  # Calculate mean
+```
+A series mainly consists of the following three properties: index, datatype and shape
+
+1) Index: Each element in a Series has a unique label or index that we can use to access the specific data points.
+```
+data = [10.2, 20.1, 30.3, 40.5]
+series = pd.Series(data, index=["a", "b", "c", "d"])
+print(series["b"])  # Access element by label
+print(series[1])    # Access element by position
+
+```
+2) Data Type: All elements in a Series share the same data type.
+   It is important for consistency and enabling smooth operations.
+
+```
+print(series.dtype)
+print(series.shape)
+print(series.loc["c"])  # Access by label
+print(series.iloc[2])   # Access by position
+```
+Missing values
+```
+series.iloc[1] = np.nan # npy here is an object of numpy
+print(series.dropna())  # Drop rows with missing values
+```
+
+#### Series Resampling
+```
+dates = pd.date_range(start="2024-01-01", periods=4)
+temp_series = pd.Series([10, 12, 15, 18], index=dates)
+# Calculate monthly avg temperature
+print(temp_series.resample("M").mean())
+```
 ### Pandas dataframe
 Following code uses the .index attribute of the DataFrame to access the row labels and select the first 10 rows.
 ```
 import pandas as pd
 df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
 print(df.to_string(index=False))
+
+df["A"].mean()
 
 first_10_rows = df.loc[df.index[:10]]
 print(first_10_rows)
