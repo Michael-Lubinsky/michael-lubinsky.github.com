@@ -1,5 +1,22 @@
 ## Python notes
 
+### Pandas dataframe
+Following code uses the .index attribute of the DataFrame to access the row labels and select the first 10 rows.
+```
+import pandas as pd
+df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
+print(df.to_string(index=False))
+
+first_10_rows = df.loc[df.index[:10]]
+print(first_10_rows)
+
+first_10_rows = df.iloc[:10]
+print(first_10_rows)
+
+first_10_rows = df.query(‘index < 10’)
+print(first_10_rows)
+```
+
 ### Working with database
 ```
 Parsing TOML Files in Python
