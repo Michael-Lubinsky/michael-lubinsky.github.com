@@ -58,6 +58,8 @@ first_10_rows = df.query(‘index < 10’)
 print(first_10_rows)
 ```
 
+https://github.com/DataForScience/
+
 ### Working with database
 ```
 Parsing TOML Files in Python
