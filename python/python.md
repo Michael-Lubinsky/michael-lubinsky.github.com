@@ -1,5 +1,48 @@
 ## Python notes
 
+### JSON manipulation
+```
+import json
+
+def export_json(filename, obj):
+    with open(filename, 'w') as writer:
+        writer.write(json.dumps(obj, indent=2))
+Importer Function
+import json
+
+def import_json(filename):
+    obj = {}
+    with open(filename, 'r') as reader:
+        obj = reader.read()
+    return json.loads(obj)
+Export and Import Dictionary (JSON object)
+sample_dict = {
+    "maps": [
+        {'a': 1},
+        {'b': 2},
+        {'c': 3},
+        {'d': 4},
+    ]
+}
+
+export_json('maps.json', sample_dict)
+obj = import_json('maps.json')
+print(type(obj))
+print(obj)
+Export and Import List (List of JSON Objects)
+sample_list = [
+    {'a': 1},
+    {'b': 2},
+    {'c': 3},
+    {'d': 4},
+]
+
+export_json('maps.json', sample_list)
+obj = import_json('maps.json')
+print(obj)
+print(type(obj))
+```
+
 ### Pandas series
 ```
 import pandas as pd
@@ -59,6 +102,10 @@ print(first_10_rows)
 ```
 
 https://github.com/DataForScience/
+
+
+
+
 
 ### Working with database
 ```
