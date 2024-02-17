@@ -101,11 +101,9 @@ first_10_rows = df.query(‘index < 10’)
 print(first_10_rows)
 ```
 
+https://realpython.com/python-for-data-analysis/
+
 https://github.com/DataForScience/
-
-
-
-
 
 ### Working with database
 ```
