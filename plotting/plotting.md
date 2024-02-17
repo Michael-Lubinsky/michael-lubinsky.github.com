@@ -86,3 +86,5 @@ plt.tight_layout()
 plt.savefig('image2.png', dpi=600, bbox_inches='tight')
 plt.show()
 ```
+### PyGWalker
+https://medium.datadriveninvestor.com/python-pygwalker-simplifying-data-exploration-and-visualization-for-everyone-ed84cc7b7db4
