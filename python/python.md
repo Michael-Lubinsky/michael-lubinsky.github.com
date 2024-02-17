@@ -355,6 +355,10 @@ with open('test.txt', "r+b") as f:
         snippet = mm[0:10]
         print(snippet.decode('utf-8'))
 ```
+
+### Decorators
+https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
+
 ### SimPy - discrete event simulation
 https://simpy.readthedocs.io/en/latest/
 
