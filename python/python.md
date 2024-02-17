@@ -101,6 +101,32 @@ first_10_rows = df.query(‘index < 10’)
 print(first_10_rows)
 ```
 
+### Pandss queries
+```
+import pandas as pd
+df = pd.DataFrame({"col1" : range(1,5), 
+                   "col2" : ['A A','B B','A A','B B'],
+                   "col3" : ['A A','A A','B B','B B']
+                   })
+newdf = df.query("col2 == 'A A'")  # hardcoded filter
+
+myval1 = 'A A'
+newdf = df.query("col2 == @myval1") # variable in filter
+
+## pass column name to query:
+myvar1 = 'col2'
+newdf2 = df.query("{0} == 'A A'".format(myvar1))
+
+
+## pass multiple column names to query:
+myvar1 = 'col2'
+myvar2 = 'col3'
+newdf2 = df.query("{0} == 'A A' & {1} == 'B B'".format(myvar1, myvar2)) 
+
+
+```
+### Pandas links
+
 https://realpython.com/python-for-data-analysis/
 
 https://github.com/DataForScience/
