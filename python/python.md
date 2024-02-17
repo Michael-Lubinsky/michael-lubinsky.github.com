@@ -101,7 +101,7 @@ first_10_rows = df.query(‘index < 10’)
 print(first_10_rows)
 ```
 
-### Pandss queries
+### Pandas queries
 ```
 import pandas as pd
 df = pd.DataFrame({"col1" : range(1,5), 
