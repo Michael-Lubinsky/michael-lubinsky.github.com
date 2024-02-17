@@ -356,7 +356,10 @@ with open('test.txt', "r+b") as f:
         print(snippet.decode('utf-8'))
 ```
 
-### Decorators
+### Decorators and other code snippets
+
+https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
+
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### SimPy - discrete event simulation
