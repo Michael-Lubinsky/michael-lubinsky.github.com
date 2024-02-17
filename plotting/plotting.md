@@ -6,6 +6,8 @@ https://www.highcharts.com/
 
 https://pypi.org/project/highcharts-excentis/
 
+https://pypi.org/project/highcharts-core/
+
 ### Scatter plot
 https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d
 ```
