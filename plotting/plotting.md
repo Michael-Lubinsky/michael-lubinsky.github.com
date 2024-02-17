@@ -4,6 +4,8 @@ https://pypi.org/project/canvasxpress/
 
 https://www.highcharts.com/
 
+https://pypi.org/project/highcharts-excentis/
+
 ### Scatter plot
 https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d
 ```
