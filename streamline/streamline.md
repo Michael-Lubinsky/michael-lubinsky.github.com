@@ -1,3 +1,6 @@
+
+streamlit run myapp.py
+
 https://medium.com/codefile/streamlit-navigating-multi-page-apps-with-v1-30-0-87146f997f51
 
 ```
