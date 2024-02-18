@@ -362,6 +362,8 @@ https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-sni
 
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
+https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
+
 ### SimPy - discrete event simulation
 https://simpy.readthedocs.io/en/latest/
 
