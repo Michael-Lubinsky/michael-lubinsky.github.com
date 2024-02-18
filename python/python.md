@@ -360,6 +360,8 @@ with open('test.txt', "r+b") as f:
 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
 
+https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-for-developers-a5da6f176667
+
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
