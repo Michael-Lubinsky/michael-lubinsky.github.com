@@ -1,6 +1,14 @@
 
 streamlit run myapp.py
 
+
+https://drlee.io/a-comprehensive-guide-to-streamlit-cloud-building-interactive-and-beautiful-data-apps-af747bbac3e0
+
+
+### Multi-page support:
+
+https://arshren.medium.com/building-interactive-predictive-machine-learning-workflow-with-streamlit-330188c7ead0
+
 https://medium.com/codefile/streamlit-navigating-multi-page-apps-with-v1-30-0-87146f997f51
 
 ```
