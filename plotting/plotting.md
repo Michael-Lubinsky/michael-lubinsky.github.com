@@ -8,6 +8,16 @@ https://pypi.org/project/highcharts-excentis/
 
 https://pypi.org/project/highcharts-core/
 
+### Apache Echarts
+
+https://github.com/ecomfe/awesome-echarts
+
+https://echarts-python.readthedocs.io/en/latest/
+
+https://panel.holoviz.org/reference/panes/ECharts.html
+
+https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html 
+
 ### Scatter plot
 https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d
 ```
