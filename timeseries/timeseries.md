@@ -3,4 +3,7 @@ https://towardsdatascience.com/comprehensive-time-series-exploratory-analysis-78
 
 https://towardsdatascience.com/handling-gaps-in-time-series-dc47ae883990
 
+### Merlion 
+https://github.com/salesforce/Merlion#comparison-with-related-libraries
+
 https://habr.com/ru/companies/sportmaster_lab/articles/792318/
