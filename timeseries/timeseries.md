@@ -3,6 +3,8 @@ https://towardsdatascience.com/comprehensive-time-series-exploratory-analysis-78
 
 https://towardsdatascience.com/handling-gaps-in-time-series-dc47ae883990
 
+https://news.ycombinator.com/item?id=39350866
+
 ### Merlion 
 https://github.com/salesforce/Merlion#comparison-with-related-libraries
 
