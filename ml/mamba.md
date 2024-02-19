@@ -1,10 +1,11 @@
-# EDA
+### EDA
 
 https://realpython.com/python-for-data-analysis/
 
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
-
+### ML
+https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
 
 https://github.com/Coder-World04/Data-and-ML-Projects-
 
