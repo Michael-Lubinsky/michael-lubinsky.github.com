@@ -11,6 +11,8 @@ https://github.com/Coder-World04/Data-and-ML-Projects-
 
 https://habr.com/ru/articles/795251/
 
+https://habr.com/ru/articles/795785/
+
 ### Outliers detection
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
