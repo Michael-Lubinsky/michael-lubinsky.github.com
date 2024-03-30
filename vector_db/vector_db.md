@@ -29,6 +29,8 @@ Some popular Vector Databases: Qdrant, Pinecone, Weviate, Milvus, Faiss, Vespa.
 
 https://www.forbes.com/sites/adrianbridgwater/2023/05/19/the-rise-of-vector-databases
 
+https://thenewstack.io/how-nvidia-gpu-acceleration-supercharged-milvus-vector-database/
+
 https://ig.ft.com/generative-ai/
 
 https://www.facebook.com/groups/197964893963666/permalink/1793728821053924/?mibextid=uJjRxr
