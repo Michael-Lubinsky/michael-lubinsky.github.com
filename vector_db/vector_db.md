@@ -1,5 +1,7 @@
 https://twitter.com/daansan_ml/status/178053816461833458 
 
+https://habr.com/ru/companies/beeline_cloud/articles/804105/
+
 https://blog.meilisearch.com/what-are-vector-embeddings/
 
 https://habr.com/ru/companies/beeline_cloud/articles/806815/
