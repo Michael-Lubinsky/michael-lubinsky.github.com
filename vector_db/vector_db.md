@@ -10,6 +10,8 @@ https://blog.meilisearch.com/what-are-vector-embeddings/
 
 https://habr.com/ru/companies/beeline_cloud/articles/806815/
 
+https://habr.com/ru/companies/mws/articles/826642/
+
 What is a 𝗩𝗲𝗰𝘁𝗼𝗿 𝗗𝗮𝘁𝗮𝗯𝗮𝘀𝗲?
 
 With the rise of Foundational Models, Vector Databases skyrocketed in popularity. The truth is that a Vector Database is also useful outside of a Large Language Model context.
