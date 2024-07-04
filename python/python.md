@@ -1,4 +1,4 @@
-## Python notes
+## Python and Pandas notes
 
 ### JSON manipulation
 ```
@@ -7,15 +7,13 @@ import json
 def export_json(filename, obj):
     with open(filename, 'w') as writer:
         writer.write(json.dumps(obj, indent=2))
-Importer Function
-import json
 
 def import_json(filename):
     obj = {}
     with open(filename, 'r') as reader:
         obj = reader.read()
     return json.loads(obj)
-Export and Import Dictionary (JSON object)
+
 sample_dict = {
     "maps": [
         {'a': 1},
@@ -27,9 +25,12 @@ sample_dict = {
 
 export_json('maps.json', sample_dict)
 obj = import_json('maps.json')
+
 print(type(obj))
 print(obj)
-Export and Import List (List of JSON Objects)
+
+# Export and Import List (List of JSON Objects)
+
 sample_list = [
     {'a': 1},
     {'b': 2},
