@@ -159,11 +159,12 @@ with open('db_config.toml','rb') as file:
 	credentials = tomllib.load(file)['database']
         print(credentials)
 
-Output of print(credentials):
-{'host': 'localhost', 'port': 5432, '
-  database_name': 'your_database_name',
-  'user': 'your_username',
-  'password': 'your_password'}
+# Output of print(credentials):
+{  'host': 'localhost', 'port': 5432,
+   'database_name': 'your_database_name',
+   'user': 'your_username',
+   'password': 'your_password'
+}
 ```
 #### Run SQL
 ``` 
