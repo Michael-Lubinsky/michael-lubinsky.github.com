@@ -3,6 +3,8 @@
 #### Explain plan
 https://selectfrom.dev/apache-spark-query-plans-lets-explain-1dbb31989315
 
+https://blog.gbrueckl.at/2024/04/visualizing-spark-execution-plans/
+
 ```
 explain(extended = false  - Displays the physical plan.
 explain(extended = true   -  Displays the physical as well as all the logical
