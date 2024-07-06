@@ -45,6 +45,10 @@ https://www.databricks.com/blog/2016/05/23/apache-spark-as-a-compiler-joining-a-
 
 https://towardsdatascience.com/mastering-query-plans-in-spark-3-0-f4c334663aa4
 
+https://medium.com/@deepa.account/spark-logical-and-physical-plan-generation-d0e7d7851d89
+
+https://www.youtube.com/watch?v=UZt_tqx4sII
+
 #### Explain plan
 
 Official documentation:
