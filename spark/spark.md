@@ -1,5 +1,7 @@
 ### Spark performance
 
+https://www.youtube.com/watch?v=O4MlLUYkjN8
+
 #### Explain plan
 
 Official documentation:
@@ -125,3 +127,14 @@ HashAggregate(keys=[v#1], functions=[count(1)], output=[v#1, count(1)#78L])
 https://developer.ibm.com/blogs/how-to-understanddebug-your-spark-application-using-explain/
 
 https://medium.com/@ashwin_kumar_/spark-internal-execution-plan-0d4ad067288a
+
+```
+Spark 3.0 introduced the new feature of Adaptive Query Execution that enables changes in the Physical plan at runtime of the query on the cluster.
+Based on the real-time query execution statistics, a much better plan can be incorporated at runtime.
+
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+
+The feature is disabled by default and can be enabled using the above configuration.
+The final effect of the feature can be only seen on Spark UI.
+But in the plans generated, it does show that the feature is enabled with final Plan as False AdaptiveSparkPlan isFinalPlan=false
+```
