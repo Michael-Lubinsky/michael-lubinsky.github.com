@@ -189,5 +189,7 @@ spark.sql("SELECT date FROM {table} where meantemp = {maxmeantemp}",table=df, ma
 ### Links
 https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
 
+Partitioning: https://medium.com/@ashwin_kumar_/spark-partitioning-partition-understanding-2c1705c3b0a0
+
 Databricks Photon Spark engine
 https://blog.det.life/why-did-databricks-build-the-photon-engine-90546429a31c
