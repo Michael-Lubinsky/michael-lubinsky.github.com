@@ -173,3 +173,4 @@ The feature is disabled by default and can be enabled using the above configurat
 The final effect of the feature can be only seen on Spark UI.
 But in the plans generated, it does show that the feature is enabled with final Plan as False AdaptiveSparkPlan isFinalPlan=false
 ```
+https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
