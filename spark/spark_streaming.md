@@ -1,4 +1,4 @@
-
+https://spark.apache.org/docs/latest/streaming-programming-guide.html
 
 https://subhamkharwal.medium.com/pyspark-spark-streaming-error-and-exception-handling-cd4ac4882788
 
