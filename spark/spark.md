@@ -2,6 +2,41 @@
 
 https://www.youtube.com/watch?v=O4MlLUYkjN8
 
+
+####  Broadcast small DataFrames
+
+ Example of a broadcast join
+``` 
+from pyspark.sql.functions import broadcast
+
+small_df = spark.read.csv(“small_data.csv”)
+large_df = spark.read.csv(“large_data.csv”)
+
+joined_df = large_df.join(broadcast(small_df), “key”)
+```
+#### ReduceByKey over GroupByKey: 
+Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
+
+
+#### Config
+
+spark.executor.memory  
+spark.executor.cores    
+
+
+### Caching
+
+Caching can improve performance when the same data is accessed multiple times.
+
+```
+• Choose the right storage level: Use appropriate storage levels (e.g., MEMORY_ONLY, MEMORY_AND_DISK) based on your application’s needs.
+
+# Example of caching a DataFrame
+df = spark.read.csv(“data.csv”)
+df.cache()
+```
+
+
 #### Explain plan
 
 Official documentation:
