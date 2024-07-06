@@ -175,6 +175,18 @@ The feature is disabled by default and can be enabled using the above configurat
 The final effect of the feature can be only seen on Spark UI.
 But in the plans generated, it does show that the feature is enabled with final Plan as False AdaptiveSparkPlan isFinalPlan=false
 ```
+
+### Spark SQL with Parameterized Statements
+https://github.com/deepavasanthkumar/spark_tips/blob/main/Spark_SQL_Paremeterized_Demo.ipynb
+```
+With Spark 3.4 onwards, we can directly query from a pyspark dataframe.
+Till then, we have been creating a temporary view to provide SQL.
+
+spark.sql("SELECT max(meantemp) FROM {table}",table=df).show()
+spark.sql("SELECT date FROM {table} where meantemp = {maxmeantemp}",table=df, maxmeantemp=38.714285714285715).show()
+```
+
+### Links
 https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
 
 Databricks Photon Spark engine
