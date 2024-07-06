@@ -1,10 +1,26 @@
 ### Spark performance
 
 #### Explain plan
+
+```
+  import contextlib
+  import io
+
+  with contextlib.redirect_stdout(io.StringIO()) as stdout:
+      df.explain(mode="cost")
+
+  logical_plan = stdout.getvalue().split("\n")
+```
+
+https://semyonsinchenko.github.io/ssinchenko/post/estimation-spark-df-size/
+
+
 https://selectfrom.dev/apache-spark-query-plans-lets-explain-1dbb31989315
 
 https://blog.gbrueckl.at/2024/04/visualizing-spark-execution-plans/
 
+Official documentation:
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.explain.html#pyspark.sql.DataFrame.explain
 ```
 explain(extended = false  - Displays the physical plan.
 explain(extended = true   -  Displays the physical as well as all the logical
