@@ -1,5 +1,18 @@
 ### Spark performance
+
+#### Explain plan
+https://selectfrom.dev/apache-spark-query-plans-lets-explain-1dbb31989315
+
 ```
+explain(extended = false  - Displays the physical plan.
+explain(extended = true   -  Displays the physical as well as all the logical
+explain(mode = "simple") — Displays the physical plan.
+explain(mode = "extended") — Displays the physical and logical plans.
+explain(mode = "codegen") — Displays the Java code generated for executing the query.
+explain(mode = "cost") — Displays the optimized logical plan and related statistics.
+explain(mode = "formatted") — Displays the simple physical plan and formatted input/output for the operators involved in details.
+
+
 Spark provides an EXPLAIN() API to look at the Spark execution plan.
 You can use this API with different modes like “simple,” “extended,” “codegen,” “cost,” or “formatted” 
 to view the optimized logical plan and related statistics.
