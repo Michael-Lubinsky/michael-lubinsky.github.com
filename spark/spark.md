@@ -24,6 +24,10 @@ spark.executor.memory
 spark.executor.cores    
 spark.sql.files.maxPartitionBytes: This parameter controls the size of each partition.
 
+spark.conf.set(“spark.sql.adaptive.enabled”, “true”)  Enable AQE
+spark.conf.set(“spark.sql.adaptive.enabled”, “true”)      Skew Join Optimization
+spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join Optimization
+
 ### Caching
 
 Caching can improve performance when the same data is accessed multiple times.
