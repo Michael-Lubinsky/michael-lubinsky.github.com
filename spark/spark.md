@@ -191,8 +191,10 @@ spark.sql("SELECT date FROM {table} where meantemp = {maxmeantemp}",table=df, ma
 ```
 
 
-### Partitioning:
+### Partitioning and Bucketing
 https://medium.com/@ashwin_kumar_/spark-partitioning-partition-understanding-2c1705c3b0a0
+
+https://medium.com/@ashwin_kumar_/spark-partitioning-vs-bucketing-partitionby-vs-bucketby-09c98c5b40eb
 ```
 // Increase the number of partitions
 val repartitionedDF = largeDF.repartition(100, col(“key”))
