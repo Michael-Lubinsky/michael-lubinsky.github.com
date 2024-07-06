@@ -40,6 +40,10 @@ df = spark.read.csv(“data.csv”)
 df.cache()
 ```
 
+### Query plan
+https://www.databricks.com/blog/2016/05/23/apache-spark-as-a-compiler-joining-a-billion-rows-per-second-on-a-laptop.html
+
+https://towardsdatascience.com/mastering-query-plans-in-spark-3-0-f4c334663aa4
 
 #### Explain plan
 
@@ -60,6 +64,33 @@ explain(mode = "cost") — Displays the optimized logical plan and related stati
 explain(mode = "formatted") — Displays the simple physical plan and formatted input/output for the operators involved in details.
 
 
+Example:
+---------
+explain codegen
+select
+    id,
+    (id > 1 and id > 2) and (id < 1000 or (id + id) = 12) as test  
+from
+    range(0, 10000, 1, 32)
+
+
+|== Physical Plan ==
+* Project (2)
++- * Range (1)
+
+
+(1) Range [codegen id : 1]
+Output [1]: [id#36167L]
+Arguments: Range (0, 10000, step=1, splits=Some(32))
+
+(2) Project [codegen id : 1]
+Output [2]: [id#36167L, (((id#36167L > 1) AND (id#36167L > 2)) AND ((id#36167L < 1000) OR ((id#36167L + id#36167L) = 12))) AS test#36161]
+Input [1]: [id#36167L]
+
+
+
+Example:
+----------
   import contextlib
   import io
 
