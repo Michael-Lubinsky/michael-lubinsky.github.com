@@ -2,7 +2,23 @@
 
 #### Explain plan
 
+Official documentation:
+https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.explain.html#pyspark.sql.DataFrame.explain
+
 ```
+Spark provides an EXPLAIN() API to look at the Spark execution plan.
+You can use this API with different modes like “simple,” “extended,” “codegen,” “cost,” or “formatted” 
+to view the optimized logical plan and related statistics.
+
+explain(extended = false  - Displays the physical plan.
+explain(extended = true   -  Displays the physical as well as all the logical
+explain(mode = "simple") — Displays the physical plan.
+explain(mode = "extended") — Displays the physical and logical plans.
+explain(mode = "codegen") — Displays the Java code generated for executing the query.
+explain(mode = "cost") — Displays the optimized logical plan and related statistics.
+explain(mode = "formatted") — Displays the simple physical plan and formatted input/output for the operators involved in details.
+
+
   import contextlib
   import io
 
@@ -14,27 +30,11 @@
 
 https://semyonsinchenko.github.io/ssinchenko/post/estimation-spark-df-size/
 
-
 https://selectfrom.dev/apache-spark-query-plans-lets-explain-1dbb31989315
 
 https://blog.gbrueckl.at/2024/04/visualizing-spark-execution-plans/
 
-Official documentation:
-https://spark.apache.org/docs/latest/api/python/reference/pyspark.sql/api/pyspark.sql.DataFrame.explain.html#pyspark.sql.DataFrame.explain
 ```
-explain(extended = false  - Displays the physical plan.
-explain(extended = true   -  Displays the physical as well as all the logical
-explain(mode = "simple") — Displays the physical plan.
-explain(mode = "extended") — Displays the physical and logical plans.
-explain(mode = "codegen") — Displays the Java code generated for executing the query.
-explain(mode = "cost") — Displays the optimized logical plan and related statistics.
-explain(mode = "formatted") — Displays the simple physical plan and formatted input/output for the operators involved in details.
-
-
-Spark provides an EXPLAIN() API to look at the Spark execution plan.
-You can use this API with different modes like “simple,” “extended,” “codegen,” “cost,” or “formatted” 
-to view the optimized logical plan and related statistics.
-
 scala> sql("select v,count(*) from test_agg group by v").explain
 == Physical Plan ==
 *(2) HashAggregate(keys=[v#1], functions=[count(1)])
