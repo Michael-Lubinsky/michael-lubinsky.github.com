@@ -51,6 +51,8 @@ https://medium.com/@deepa.account/spark-logical-and-physical-plan-generation-d0e
 
 https://www.youtube.com/watch?v=UZt_tqx4sII
 
+https://www.youtube.com/watch?v=_Ne27JcLnEc&t=2306s
+
 #### Explain plan
 
 Official documentation:
