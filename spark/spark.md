@@ -231,6 +231,8 @@ spark.sql("SELECT date FROM {table} where meantemp = {maxmeantemp}",table=df, ma
 ### Partitioning and Bucketing
 https://medium.com/@ashwin_kumar_/spark-partitioning-partition-understanding-2c1705c3b0a0
 
+https://blog.devgenius.io/optimizing-pyspark-data-partitioning-vs-bucketing-45ab380e851a
+
 https://medium.com/@ashwin_kumar_/spark-partitioning-vs-bucketing-partitionby-vs-bucketby-09c98c5b40eb
 ```
 // Increase the number of partitions
