@@ -1,5 +1,21 @@
 ## Python and Pandas notes
 
+
+### Importlib
+
+The importlib library allows you to load modules and packages dynamically.  
+
+```
+import importlib
+def load_module(module_name):
+    module = importlib.import_module(module_name)
+    return module
+ 
+# ... Somewhere else in your code
+my_module = load_module('my_module')
+
+```
+
 ### JSON manipulation
 ```
 import json
