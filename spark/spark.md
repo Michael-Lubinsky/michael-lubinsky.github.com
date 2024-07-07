@@ -236,6 +236,16 @@ https://medium.com/@ashwin_kumar_/spark-partitioning-partition-understanding-2c1
 https://blog.devgenius.io/optimizing-pyspark-data-partitioning-vs-bucketing-45ab380e851a
 
 https://medium.com/@ashwin_kumar_/spark-partitioning-vs-bucketing-partitionby-vs-bucketby-09c98c5b40eb
+
+spark.sql.shuffle.partitions. By default, this parameter is set to 200 partitions.
+```
+Repartitioning by specifying only the Partition Column : 
+In this case, data distribution across partitions will occur using the Hash partitioning method. 
+Data will be distributed across partitions based on the hash values of the 'value' column. 
+The number of partitions created will be determined by the configuration parameter: 
+spark.sql.shuffle.partitions. By default, this parameter is set to 200 partitions.
+```
+
 ```
 // Increase the number of partitions
 val repartitionedDF = largeDF.repartition(100, col(“key”))
