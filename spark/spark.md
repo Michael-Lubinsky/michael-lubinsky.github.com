@@ -293,6 +293,16 @@ val repartitionedDF = largeDF.repartition(100, col(“key”))
 // Decrease the number of partitions
 val coalescedDF = largeDF.coalesce(10)
 ```
+### Spark Joins
+```
+Broadcast Hash Join
+Shuffle Hash Join
+Sort Merge Join
+Cartesian Join
+Broadcast Nested Loop Join
+```
+
+https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
 
 ### Links
 https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
