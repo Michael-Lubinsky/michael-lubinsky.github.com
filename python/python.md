@@ -13,8 +13,9 @@ def load_module(module_name):
  
 # ... Somewhere else in your code
 my_module = load_module('my_module')
-
 ```
+Based on this we can build pthon program which supports plugins:
+https://habr.com/ru/articles/827176/
 
 ### JSON manipulation
 ```
