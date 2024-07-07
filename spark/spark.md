@@ -238,12 +238,52 @@ https://blog.devgenius.io/optimizing-pyspark-data-partitioning-vs-bucketing-45ab
 https://medium.com/@ashwin_kumar_/spark-partitioning-vs-bucketing-partitionby-vs-bucketby-09c98c5b40eb
 
 spark.sql.shuffle.partitions. By default, this parameter is set to 200 partitions.
+
+
+following code to know the data distribution across partitions within a DataFrame or RDD.
 ```
-Repartitioning by specifying only the Partition Column : 
+rdd_partitions = departments.rdd.glom().collect()
+for partition_id in range(len(rdd_partitions)):
+  print ("partition_id :",partition_id,
+         "departments_present :",set(row.departmentName
+               for row in rdd_partitions[partition_id]),"partition_dist_cnt :",len(rdd_partitions[partition_id]))
+```
+
+#### Repartitioning by specifying only the Partition Column : 
+```
 In this case, data distribution across partitions will occur using the Hash partitioning method. 
 Data will be distributed across partitions based on the hash values of the 'value' column. 
-The number of partitions created will be determined by the configuration parameter: 
+The number of partitions created will be determined by the configuration parameter:
+
 spark.sql.shuffle.partitions. By default, this parameter is set to 200 partitions.
+
+If AQE is enabled, Spark may not create 200 partitions
+(AQE Internally uses Coalesce function to merge the smaller partitions), as this can lead to the generation of many empty partitions,
+which is not an optimal scenario.
+To follow this the code and its underlying principles,
+you can disable AQE during the learning process and enable it again once its done.
+
+# To Turn off AQE
+spark.conf.set("spark.sql.adaptive.enabled", "False")
+
+# To Turn on AQE
+spark.conf.set("spark.sql.adaptive.enabled", "True")
+```
+#### Repartitioning using both Number of Partitions and Partition Column :
+```
+In this scenario, we will utilize both the number of partitions and the partition column to perform data repartitioning.
+Once again, the method employed for distribution is hash partitioning,
+but the number of partitions will align with the specified input parameter.
+ Example:
+departments = departments.repartition(4, "departmentName")
+```
+#### Repartitioning using range and Partition Column :
+```
+In this case, instead of specifying the number of partitions,
+we will define a range of values based on the partition column.
+This approach leverages Range partitioning to distribute the data across partitions.
+ Example:
+departments = departments.repartitionByRange(5,"departmentName")
 ```
 
 ```
