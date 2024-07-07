@@ -15,6 +15,7 @@ def load_module(module_name):
 my_module = load_module('my_module')
 ```
 Based on this we can build pthon program which supports plugins:
+https://github.com/janvarev/jaapy
 https://habr.com/ru/articles/827176/
 
 ### JSON manipulation
