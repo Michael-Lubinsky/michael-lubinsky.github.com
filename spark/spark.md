@@ -32,6 +32,8 @@ spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join 
 
 ### Caching
 
+https://blog.devgenius.io/spark-cache-persist-checkpoint-write-to-hdfs-0ea63ab4cb07
+
 Caching can improve performance when the same data is accessed multiple times.
 
 ```
