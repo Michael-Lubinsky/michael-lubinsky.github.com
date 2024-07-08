@@ -12,3 +12,11 @@ https://pgtune.leopard.in.ua/
 
 ### Partition Pruning
 SET enable_partition_pruning = on; 
+
+#### Explain
+```
+EXPLAIN ANALYZE SELECT *
+FROM tenk1 t1, tenk2 t2
+WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
+ORDER BY t1.fivethous;
+```
