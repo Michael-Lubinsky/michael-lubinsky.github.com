@@ -4,6 +4,9 @@ https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-
 
 https://www.youtube.com/watch?v=O4MlLUYkjN8
 
+https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-1-d485c99ec66f
+
+https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-2-da866d6f8243
 
 ####  Broadcast small DataFrames
 
