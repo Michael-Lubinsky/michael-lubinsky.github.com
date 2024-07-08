@@ -23,7 +23,7 @@ joined_df = large_df.join(broadcast(small_df), “key”)
 Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
 
 
-#### Config
+#### Spark Config
 
 spark.executor.memory  
 spark.executor.cores    
@@ -47,8 +47,10 @@ df = spark.read.csv(“data.csv”)
 df.cache()
 ```
 
-### Query plan
+### Query execution plan
 https://www.databricks.com/blog/2016/05/23/apache-spark-as-a-compiler-joining-a-billion-rows-per-second-on-a-laptop.html
+
+https://premvishnoi.medium.com/exploring-apache-sparks-catalyst-optimizer-and-tungsten-execution-engine-57c51927cf1a
 
 https://towardsdatascience.com/mastering-query-plans-in-spark-3-0-f4c334663aa4
 
