@@ -10,6 +10,12 @@ https://tembo.io/blog/optimizing-memory-usage
 
 https://pgtune.leopard.in.ua/
 
+###  UUID7 as primary key
+
+https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/
+
+https://uuid7.com/
+
 ### Partition Pruning
 SET enable_partition_pruning = on; 
 
