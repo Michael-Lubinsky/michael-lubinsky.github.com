@@ -17,7 +17,7 @@ https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/
 https://uuid7.com/
 
 ### Features
-
+```
 ✅ Caching: Use UNLOGGED tables and TEXT as a JSON data type in Postgres instead of Redis.
 ✅ Message Queue: Replace Kafka with Postgres using SKIP LOCKED for simple message queue needs.
 ✅ Job Queue: Use Postgres with tools like River in Go for job queuing.
@@ -31,7 +31,7 @@ Data Warehouse: Implement TimescaleDB on top of Postgres for data warehousing ne
 ✅ Auditing: Use pgaudit for auditing purposes.
 ✅ GraphQL Adapter: Integrate Postgres with a GraphQL adapter if GraphQL is needed.
 
-
+```
 
 ### Partition Pruning
 SET enable_partition_pruning = on; 
