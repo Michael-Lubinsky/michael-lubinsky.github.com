@@ -56,9 +56,11 @@ https://towardsdatascience.com/mastering-query-plans-in-spark-3-0-f4c334663aa4
 
 https://medium.com/@deepa.account/spark-logical-and-physical-plan-generation-d0e7d7851d89
 
-https://www.youtube.com/watch?v=UZt_tqx4sII
+https://www.youtube.com/watch?v=UZt_tqx4sII - How to Read Spark Query Plans | Rock the JVM
 
-https://www.youtube.com/watch?v=_Ne27JcLnEc&t=2306s
+https://www.youtube.com/watch?v=_Ne27JcLnEc - From Query Plan to Performance: Supercharging your Apache Spark Queries using the Spark UI SQL Tab
+
+https://www.youtube.com/watch?v=rNpzrkB5KQQ  - Understanding the Spark UI
 
 #### Explain plan
 
