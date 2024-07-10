@@ -62,6 +62,8 @@ https://www.youtube.com/watch?v=_Ne27JcLnEc - From Query Plan to Performance: Su
 
 https://www.youtube.com/watch?v=rNpzrkB5KQQ  - Understanding the Spark UI
 
+https://www.youtube.com/watch?v=lHJc0rEqjoU Spark UI
+
 #### Explain plan
 
 Official documentation:
