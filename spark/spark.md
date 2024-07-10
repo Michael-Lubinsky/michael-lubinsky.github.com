@@ -39,6 +39,8 @@ https://blog.devgenius.io/spark-cache-persist-checkpoint-write-to-hdfs-0ea63ab4c
 
 https://www.youtube.com/watch?v=p6_0qdd6X08
 
+https://www.youtube.com/watch?v=KRAS7R2GWgc
+
 Caching can improve performance when the same data is accessed multiple times.
 
 ```
