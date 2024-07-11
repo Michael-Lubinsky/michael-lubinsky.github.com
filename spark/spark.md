@@ -52,6 +52,9 @@ df.cache()
 ```
 
 ### Query execution plan
+
+https://www.youtube.com/watch?v=dCvxE2WSOsE
+
 https://www.databricks.com/blog/2016/05/23/apache-spark-as-a-compiler-joining-a-billion-rows-per-second-on-a-laptop.html
 
 https://premvishnoi.medium.com/exploring-apache-sparks-catalyst-optimizer-and-tungsten-execution-engine-57c51927cf1a
