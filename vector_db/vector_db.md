@@ -1,5 +1,7 @@
 https://arxiv.org/pdf/2401.09350.pdf
 
+https://www.marqo.ai/courses/fine-tuning-embedding-models
+
 https://twitter.com/daansan_ml/status/178053816461833458 
 
 https://habr.com/ru/companies/beeline_cloud/articles/804105/
