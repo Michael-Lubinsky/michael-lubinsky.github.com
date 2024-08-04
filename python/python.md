@@ -1,5 +1,8 @@
 ## Python and Pandas notes
 
+### Itertools
+
+https://mathspp.com/blog/module-itertools-overview
 
 ### Importlib
 
