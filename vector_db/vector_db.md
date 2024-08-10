@@ -1,5 +1,7 @@
 https://arxiv.org/pdf/2401.09350.pdf
 
+https://blog.shalvah.me/posts/an-exploration-of-vector-search
+
 https://www.marqo.ai/courses/fine-tuning-embedding-models
 
 https://twitter.com/daansan_ml/status/178053816461833458 
