@@ -1,5 +1,23 @@
 ## Python and Pandas notes
 
+
+### any and all
+```
+x = [1, 2, 3, 4, 10, 12, 7, 8]
+
+check if exists at least one number > 10
+
+if any((a := i) > 10 for i in x):
+    print(f'Yes, found number > 10. It is {a}!')
+
+И, соответственно, все ли числа меньше 10
+check if all  numbers < 10
+
+if all((a := i) < 10 for i in x):
+    print(f'All numbers < 10')
+else:
+    print(f'Not all numbers < 10. For example, {a}')
+```
 ### Itertools
 
 https://mathspp.com/blog/module-itertools-overview
