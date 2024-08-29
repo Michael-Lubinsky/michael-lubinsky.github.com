@@ -83,6 +83,12 @@ print(obj)
 print(type(obj))
 ```
 
+### Ibis
+
+https://ibis-project.org/why
+
+https://ibis-project.org/posts/1tbc/
+
 ### Pandas series
 ```
 import pandas as pd
