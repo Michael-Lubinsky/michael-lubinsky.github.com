@@ -406,6 +406,12 @@ https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-
 
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
+### Pipilines
+
+https://hamilton.dagworks.io/en/latest/
+
+https://pipefunc.readthedocs.io/en/latest/
+
 https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
 
 ### SimPy - discrete event simulation
