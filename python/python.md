@@ -1,6 +1,16 @@
 ## Python and Pandas notes
 
+### dataclass
+```
+from dataclasses import dataclass
+@dataclass(kw_only=True)
+class Example
+  a: int
+  b: int
 
+ex1=Example(a=1, b=2)  
+ex2=Example(1,2) # error
+```
 ### any and all
 ```
 x = [1, 2, 3, 4, 10, 12, 7, 8]
