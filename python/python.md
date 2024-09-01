@@ -1,4 +1,5 @@
 ## Python and Pandas notes
+https://www.youtube.com/@PyConUS
 
 ### dataclass
 ```
