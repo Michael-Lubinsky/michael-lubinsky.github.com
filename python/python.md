@@ -3,6 +3,8 @@ https://www.youtube.com/@PyConUS
 
 https://data-hacks.com/python-programming-language
 
+https://riverml.xyz/latest/ Online machine learning in Python
+
 ### dataclass
 ```
 from dataclasses import dataclass
