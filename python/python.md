@@ -1,6 +1,8 @@
 ## Python and Pandas notes
 https://www.youtube.com/@PyConUS
 
+https://data-hacks.com/python-programming-language
+
 ### dataclass
 ```
 from dataclasses import dataclass
