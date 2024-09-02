@@ -100,6 +100,8 @@ https://ibis-project.org/why
 
 https://ibis-project.org/posts/1tbc/
 
+https://www.youtube.com/watch?v=1ND6COslBKU
+
 ### Pandas series
 ```
 import pandas as pd
