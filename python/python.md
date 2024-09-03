@@ -102,6 +102,8 @@ print(type(obj))
 
 https://sqlframe.readthedocs.io/en/stable/
 
+https://github.com/eakmanrq/sqlframe/blob/main/blogs/sqlframe_universal_dataframe_api.md
+
 https://ibis-project.org/why
 
 https://ibis-project.org/posts/1tbc/
