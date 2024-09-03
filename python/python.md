@@ -98,7 +98,9 @@ print(obj)
 print(type(obj))
 ```
 
-### Ibis
+### Ibis amd SQLFrame
+
+https://sqlframe.readthedocs.io/en/stable/
 
 https://ibis-project.org/why
 
