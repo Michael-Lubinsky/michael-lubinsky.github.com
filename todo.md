@@ -14,4 +14,8 @@ https://github.com/pyro-ppl/numpyro
 
 https://github.com/topics/help-wanted
 
+https://www.codetriage.com/
+
+https://www.codetriage.com/university/picking_a_repo
+
 https://news.ycombinator.com/item?id=42157556
