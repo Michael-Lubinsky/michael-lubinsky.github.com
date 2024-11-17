@@ -196,6 +196,8 @@ newdf2 = df.query("{0} == 'A A' & {1} == 'B B'".format(myvar1, myvar2))
 
 https://realpython.com/python-for-data-analysis/
 
+https://medium.com/@deyprakash753/14-pandas-tricks-you-must-know-aee396dde875
+
 https://towardsdatascience.com/7-advanced-tricks-in-pandas-for-data-science-41a71632b5d9
 
 https://github.com/DataForScience/
