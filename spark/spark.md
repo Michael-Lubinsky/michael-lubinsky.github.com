@@ -54,6 +54,8 @@ https://towardsdatascience.com/feature-engineering-for-time-series-using-pyspark
 
 ### Spark performance
 
+https://towardsdev.com/spark-beyond-basics-hidden-actions-in-your-spark-code-b2b7c5dff74e
+
 https://medium.com/@kaviprakash.2007/spark-performance-optimization-in-databricks-a-complete-guide-ab57280a8260
 
 https://medium.com/@dev.sharma/pyspark-performance-optimization-techniques-3b9946c9cb4e
