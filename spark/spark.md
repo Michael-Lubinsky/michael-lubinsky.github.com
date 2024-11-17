@@ -36,6 +36,10 @@ partitioning is often a more efficient approach.
 
 https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-31439651f6df
 
+https://towardsdatascience.com/feature-engineering-for-time-series-using-pyspark-on-databricks-02b97d62a287
+
+https://medium.com/@kaviprakash.2007/spark-performance-optimization-in-databricks-a-complete-guide-ab57280a8260
+
 ### Spark performance
 
 https://www.youtube.com/watch?v=O4MlLUYkjN8
