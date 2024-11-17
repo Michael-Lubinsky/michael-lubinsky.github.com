@@ -196,6 +196,8 @@ newdf2 = df.query("{0} == 'A A' & {1} == 'B B'".format(myvar1, myvar2))
 
 https://realpython.com/python-for-data-analysis/
 
+https://towardsdatascience.com/7-advanced-tricks-in-pandas-for-data-science-41a71632b5d9
+
 https://github.com/DataForScience/
 
 ### Working with database
@@ -314,8 +316,6 @@ print(all_dates)
 ### Time Series Aggregation with pandas
 
 https://kapilg.hashnode.dev/time-series-aggregation-in-pandas
-
-### import
 
 ### Magic methods (starts and ends with  __ )
 
