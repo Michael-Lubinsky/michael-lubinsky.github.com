@@ -41,6 +41,9 @@ partitioning is often a more efficient approach.
 
 https://blog.det.life/pyspark-interview-question-by-walmart-hard-level-57c1110565d1
 
+https://medium.com/@dhanashrisaner.30/advanced-aggregations-and-grouping-in-pyspark-89ee7c9dcd6d
+
+
 https://blog.det.life/i-spent-4-hours-learning-apache-spark-resource-allocation-08b570d88335
 
 https://blog.det.life/i-spent-6-hours-learning-how-apache-spark-plans-the-execution-for-us-a98756a26602
