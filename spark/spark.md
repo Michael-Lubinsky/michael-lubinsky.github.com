@@ -51,6 +51,8 @@ https://medium.com/@dev.sharma/pyspark-performance-optimization-techniques-3b994
 
 https://medium.com/@vtrkayalrajan/spark-optimization-for-a-large-datasets-8a045986660e
 
+https://medium.com/@vinciabhinav7/apache-spark-common-mistakes-14407bebe259
+
 https://www.youtube.com/watch?v=O4MlLUYkjN8
 
 https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-1-d485c99ec66f
