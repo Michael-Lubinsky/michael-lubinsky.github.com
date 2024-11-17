@@ -47,6 +47,8 @@ https://medium.com/@kaviprakash.2007/spark-performance-optimization-in-databrick
 
 ### Spark performance
 
+https://medium.com/@vtrkayalrajan/spark-optimization-for-a-large-datasets-8a045986660e
+
 https://www.youtube.com/watch?v=O4MlLUYkjN8
 
 https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-1-d485c99ec66f
