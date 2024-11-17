@@ -1,3 +1,5 @@
+https://towardsdatascience.com/mastering-data-streaming-in-python-a88d4b3abf8b
+
 https://spark.apache.org/docs/latest/streaming-programming-guide.html
 
 https://medium.com/@ashutoshkumar2048/unraveling-apache-spark-structured-streaming-ui-9915ef29562e
