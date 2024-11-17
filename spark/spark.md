@@ -35,7 +35,9 @@ However, for datasets with a limited number of distinct values,
 partitioning is often a more efficient approach.
 ```
 
+https://blog.det.life/pyspark-interview-question-by-walmart-hard-level-57c1110565d1
 
+https://blog.det.life/i-spent-4-hours-learning-apache-spark-resource-allocation-08b570d88335
 
 https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-31439651f6df
 
