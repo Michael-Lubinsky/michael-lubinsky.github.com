@@ -39,6 +39,8 @@ https://blog.det.life/pyspark-interview-question-by-walmart-hard-level-57c111056
 
 https://blog.det.life/i-spent-4-hours-learning-apache-spark-resource-allocation-08b570d88335
 
+https://blog.det.life/i-spent-6-hours-learning-how-apache-spark-plans-the-execution-for-us-a98756a26602
+
 https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-31439651f6df
 
 https://towardsdatascience.com/feature-engineering-for-time-series-using-pyspark-on-databricks-02b97d62a287
