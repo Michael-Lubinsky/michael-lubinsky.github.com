@@ -1,3 +1,39 @@
+
+ Avoid using count() Action
+```
+df = sqlContext.read().json(...);
+if not len(df.take(1)):   # <-- use this  instead of: if not df.count():
+```
+
+### Bucketing:
+
+without bucketing:
+```
+# Without Bucketing 
+df1 = spark.table('table1')
+df2 = spark.table('table2')
+
+# Print the Physical plan of this join and join strategy by Spark
+df1.join(df2, 'joining_key').explain()
+
+Above code will shuffle i.e exchange the data as it is not bucketed.
+SortMergeJoin is the default Spark join,
+but now let’s avoid the data exchanges that happened by using bucketing
+
+df.write\
+    .bucketBy(32, 'joining_key') \
+    .sortBy('date_created') \
+    .saveAsTable('bucketed', format='parquet')
+
+bucketBy() distributes data into a predetermined number of partitions,
+providing a scalable solution when the cardinality of unique values is high.
+
+However, for datasets with a limited number of distinct values,
+partitioning is often a more efficient approach.
+```
+
+
+
 https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-31439651f6df
 
 ### Spark performance
