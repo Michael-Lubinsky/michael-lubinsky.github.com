@@ -43,9 +43,11 @@ https://blog.devgenius.io/behind-the-scenes-what-happens-after-you-spark-submit-
 
 https://towardsdatascience.com/feature-engineering-for-time-series-using-pyspark-on-databricks-02b97d62a287
 
+### Spark performance
+
 https://medium.com/@kaviprakash.2007/spark-performance-optimization-in-databricks-a-complete-guide-ab57280a8260
 
-### Spark performance
+https://medium.com/@dev.sharma/pyspark-performance-optimization-techniques-3b9946c9cb4e
 
 https://medium.com/@vtrkayalrajan/spark-optimization-for-a-large-datasets-8a045986660e
 
