@@ -27,3 +27,6 @@ https://www.codetriage.com/
 https://www.codetriage.com/university/picking_a_repo
 
 https://news.ycombinator.com/item?id=42157556
+
+### ML
+https://eli.thegreenplace.net/2024/ml-in-go-with-a-python-sidecar/
