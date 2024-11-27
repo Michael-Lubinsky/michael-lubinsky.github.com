@@ -1,5 +1,7 @@
 https://arxiv.org/pdf/2401.09350.pdf
 
+https://getdeploying.com/guides/vector-databases
+
 https://blog.shalvah.me/posts/an-exploration-of-vector-search
 
 https://www.marqo.ai/courses/fine-tuning-embedding-models
