@@ -1,3 +1,7 @@
+How to use jekyll for static site:
+https://chat-to.dev/post?id=296
+
+
 ### Stat rethinking
 https://xcelab.net/rm/statistical-rethinking/  
 https://www.goodreads.com/book/show/26619686-statistical-rethinking  
