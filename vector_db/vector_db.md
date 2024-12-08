@@ -1,5 +1,7 @@
 https://arxiv.org/pdf/2401.09350.pdf
 
+https://habr.com/ru/companies/ruvds/articles/863704/
+
 https://getdeploying.com/guides/vector-databases
 
 https://blog.shalvah.me/posts/an-exploration-of-vector-search
