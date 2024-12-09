@@ -2,6 +2,8 @@
 
 https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html
 
+https://proxysql.com/
+
 https://news.ycombinator.com/item?id=42293937
 
 
