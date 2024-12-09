@@ -1,3 +1,8 @@
+### Postgres HA
+
+https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html
+
+
 ### Information schema
 ```
 SELECT table_schema, table_name, column_name, data_type, is_nullable 
@@ -15,6 +20,8 @@ https://pgtune.leopard.in.ua/
 https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/
 
 https://uuid7.com/
+
+
 
 ### Features
 ```
