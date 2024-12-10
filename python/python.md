@@ -192,7 +192,9 @@ newdf2 = df.query("{0} == 'A A' & {1} == 'B B'".format(myvar1, myvar2))
 
 
 ```
-### Pandas links
+### Pandas and NumPy links
+
+https://www.kdnuggets.com/visualizing-data-directly-numpy-arrays
 
 https://realpython.com/python-for-data-analysis/
 
