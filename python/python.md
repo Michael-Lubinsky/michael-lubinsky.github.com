@@ -4,6 +4,11 @@ https://www.youtube.com/@PyConUS
 https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
+
+Python dependency management
+
+https://martynassubonis.substack.com/p/python-project-management-primer
+
 ### pip
 To check dependencies:  
   python -m pip check  
