@@ -1,9 +1,17 @@
-## Python and Pandas notes
+## Python notes
 https://www.youtube.com/@PyConUS
 
 https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
+
+### pipx
+
+https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
+
+### uv better then pyenv and poetry
+
+https://www.peterbe.com/plog/run-standalone-python-2025
 
 ### dataclass
 ```
