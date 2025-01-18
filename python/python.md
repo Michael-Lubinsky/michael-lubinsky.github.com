@@ -7,6 +7,8 @@ https://riverml.xyz/latest/ Online machine learning in Python
 
 Python dependency management
 
+https://nielscautaerts.xyz/python-dependency-management-is-a-dumpster-fire.html
+
 https://martynassubonis.substack.com/p/python-project-management-primer
 
 https://martynassubonis.substack.com/p/python-project-management-primer-a55
