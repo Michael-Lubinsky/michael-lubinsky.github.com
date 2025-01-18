@@ -6,7 +6,7 @@ https://data-hacks.com/python-programming-language
 https://riverml.xyz/latest/ Online machine learning in Python
 ### pip
 To check dependencies:  
-  python -m pip check
+  python -m pip check  
 To get a JSON output of your current virtual environment:  
   python -m pip inspect 
 To update stuff automatically:  
