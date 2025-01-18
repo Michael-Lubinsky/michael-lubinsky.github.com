@@ -5,6 +5,12 @@ https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
 
+### pip, pyenv
+
+https://news.ycombinator.com/item?id=42419822
+
+brew info --json python3 | jq -r '.[].versioned_formulae[]'
+
 ### pipx
 
 https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
