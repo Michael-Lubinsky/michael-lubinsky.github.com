@@ -4,8 +4,14 @@ https://www.youtube.com/@PyConUS
 https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
-
-### pip, pyenv
+### pip
+python -m pip list --not-required
+```
+python -m pip: This runs the pip module as a script using the specified Python interpreter.
+list: This subcommand lists all installed Python packages in the current environment.
+--not-required: This flag filters the output to display only those packages that are not dependencies of other installed packages.
+```
+###  pyenv
 
 https://news.ycombinator.com/item?id=42419822
 
