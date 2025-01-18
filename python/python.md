@@ -5,7 +5,20 @@ https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
 ### pip
-python -m pip list --not-required
+To check dependencies:  
+  python -m pip check
+To get a JSON output of your current virtual environment:  
+  python -m pip inspect 
+To update stuff automatically:  
+  python -m pip install --upgrade   
+Or, skip worrying about dependencies:  
+  python -m pip install --no-deps
+  
+Do a dry run installation with full report on what would be installed:  
+pip install --ignore-installed --dry-run --quiet --report
+
+Display only those packages that are not dependencies of other installed packages.  
+python -m pip list --not-required  
 ```
 python -m pip: This runs the pip module as a script using the specified Python interpreter.
 list: This subcommand lists all installed Python packages in the current environment.
