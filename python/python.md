@@ -13,6 +13,8 @@ https://martynassubonis.substack.com/p/python-project-management-primer
 
 https://martynassubonis.substack.com/p/python-project-management-primer-a55
 
+https://news.ycombinator.com/item?id=42676432
+
 ### pip
 To check dependencies:  
   python -m pip check  
@@ -43,11 +45,13 @@ brew info --json python3 | jq -r '.[].versioned_formulae[]'
 
 https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
 
-### uv better then pyenv and poetry
+### uv  
 
 https://martynassubonis.substack.com/p/python-project-management-primer-a55
 
 https://www.peterbe.com/plog/run-standalone-python-2025
+
+https://news.ycombinator.com/item?id=42676432
 
 ### dataclass
 ```
