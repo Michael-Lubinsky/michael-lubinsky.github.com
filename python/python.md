@@ -15,7 +15,9 @@ https://martynassubonis.substack.com/p/python-project-management-primer-a55
 
 https://news.ycombinator.com/item?id=42676432
 
-### pip
+### pip 
+https://pip.pypa.io/en/stable/
+
 To check dependencies:  
   python -m pip check  
 To get a JSON output of your current virtual environment:  
@@ -52,6 +54,8 @@ https://martynassubonis.substack.com/p/python-project-management-primer-a55
 https://www.peterbe.com/plog/run-standalone-python-2025
 
 https://news.ycombinator.com/item?id=42676432
+
+https://simonwillison.net/2024/Dec/19/one-shot-python-tools/
 
 ### dataclass
 ```
