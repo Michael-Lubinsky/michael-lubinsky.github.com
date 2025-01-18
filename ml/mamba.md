@@ -4,6 +4,8 @@ https://realpython.com/python-for-data-analysis/
 
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
+https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
+
 ### ML
 https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
 
