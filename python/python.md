@@ -49,6 +49,8 @@ https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
 
 ### uv  
 
+https://docs.astral.sh/uv/
+
 https://martynassubonis.substack.com/p/python-project-management-primer-a55
 
 https://www.peterbe.com/plog/run-standalone-python-2025
