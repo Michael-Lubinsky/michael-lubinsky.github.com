@@ -8,7 +8,7 @@ https://riverml.xyz/latest/ Online machine learning in Python
 To check dependencies:  
   python -m pip check  
 To get a JSON output of your current virtual environment:  
-  python -m pip inspect 
+  python -m pip inspect  
 To update stuff automatically:  
   python -m pip install --upgrade   
 Or, skip worrying about dependencies:  
