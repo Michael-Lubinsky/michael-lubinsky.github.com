@@ -1,4 +1,7 @@
 ## Python notes
+
+https://realpython.com/python-subprocess
+
 https://www.youtube.com/@PyConUS
 
 https://data-hacks.com/python-programming-language
