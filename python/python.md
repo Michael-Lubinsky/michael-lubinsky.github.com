@@ -8,7 +8,7 @@ https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
 
-Python dependency management
+### Python dependency management
 
 https://nielscautaerts.xyz/python-dependency-management-is-a-dumpster-fire.html
 
@@ -23,6 +23,9 @@ https://news.ycombinator.com/item?id=42676432
 https://www.techbeamers.com/python-pip-usage/
 
 https://pip.pypa.io/en/stable/
+
+export PIP_REQUIRE_VIRTUALENV=true`  
+will force you to not install packages in the system site-packages.
 
 To check dependencies:  
   python -m pip check  
