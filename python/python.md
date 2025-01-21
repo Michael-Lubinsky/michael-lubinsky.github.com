@@ -19,6 +19,9 @@ https://martynassubonis.substack.com/p/python-project-management-primer-a55
 https://news.ycombinator.com/item?id=42676432
 
 ### pip 
+
+https://www.techbeamers.com/python-pip-usage/
+
 https://pip.pypa.io/en/stable/
 
 To check dependencies:  
@@ -388,8 +391,6 @@ https://docs.python.org/3/reference/datamodel.html#special-method-names
 
 https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize-classes-conveniently-a1f50fa4b53e
 
-### pip
-https://www.techbeamers.com/python-pip-usage/
 
 ## How to save memory:
 ### Tuple vs List
