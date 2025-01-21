@@ -49,16 +49,16 @@ list: This subcommand lists all installed Python packages in the current environ
 ### venv
 
 On Windows, use  
-   py -3.X -m venv .venv
+   py -3.X -m venv MY_ENV  
 to create a virtual environment, and   
-   .venv\Scripts\activate  
+   MY_ENV\Scripts\activate  
 to use it.
 
-On Mac and Linux, use  
-    python3.X -m venv .venv  
-to create a virtual environment, and   
-  source .venv/bin/activate” 
-to use it.
+On Mac and Linux, to create a virtual environment:
+    python3.X -m venv MY_ENV 
+ and to activate it:  
+  source MY_ENV/bin/activate” 
+
 
 Once you have activated a virtual environment, you can install a thing by doing
 
