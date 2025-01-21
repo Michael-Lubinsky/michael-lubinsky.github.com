@@ -65,6 +65,28 @@ Once you have activated a virtual environment, you can install a thing by doing
 python -m pip install thing
 
 
+###
+```
+You don't need to activate a virtual environment to use it! This is just a convenience feature. If you use the commands situated in the Scripts (on windows) or bin (on Unix) folders in the virtual environment directly, they are specially crafted to only see the virtual environment even without activation. In fact, activating just make those commands the default ones by manipulating a bunch of environment variables.
+
+If you get SSL errors (common if you are in a hotel or a company network) use the "--trusted-host pypi.org --trusted-host files.pythonhosted.org" options with pip to work around the problem. E.G: "
+
+python -m pip install pendulum --trusted-host pypi.org --trusted-host files.pythonhosted.org
+
+If you are behind a corporate proxy that requires authentication (common if you are in a company network), you can use the "--proxy" option with pip to give the proxy address and your credentials. E.G.:  
+python -m pip install pendulum --proxy http://your_username:yourpassword@proxy_address
+
+It also works with the https_proxy environment variables, but most people don't know how to use them in my experience. I will likely write a tutorial on that.
+
+If you want to download a package without installing it, you can use  
+python -m pip download NAME
+
+It will download the package and all its dependencies in the current directory (the files, called, wheels, have a .whl extension). You can then install them offline by doing
+python -m pip install
+on the wheels.
+```
+
+
 ###  pyenv
 
 https://news.ycombinator.com/item?id=42419822
