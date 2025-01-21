@@ -5,11 +5,17 @@ https://realpython.com/python-for-data-analysis/
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 ### Automatic differentiation
+
+https://huggingface.co/blog/andmholm/what-is-automatic-differentiation
+
 https://habr.com/ru/articles/874592/
 
 https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
 ### ML
+
+https://riverml.xyz/latest/ Online machine learning in Python
+
 https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
 
 https://github.com/Coder-World04/Data-and-ML-Projects-
