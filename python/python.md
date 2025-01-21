@@ -89,7 +89,10 @@ in the virtual environment directly, they are specially crafted to only see the 
 In fact, activating just make those commands the default ones by manipulating a bunch of environment variables.
 
 
-The statement "You don't need to activate a virtual environment to use it" means that even if you don't explicitly activate a virtual environment (e.g., with source venv/bin/activate or .\venv\Scripts\activate), you can still use the environment by referencing its Python executable directly.
+The statement "You don't need to activate a virtual environment to use it" means
+that even if you don't explicitly activate a virtual environment
+(e.g., with source venv/bin/activate or .\venv\Scripts\activate),
+ you can still use the environment by referencing its Python executable directly.
 
 How Virtual Environments Work
 When you create a virtual environment in Python (using python -m venv venv or similar tools like virtualenv), a directory is created with:
@@ -100,7 +103,8 @@ Activation
 Activating a virtual environment is essentially a convenience feature:
 
 It modifies your shell environment so that:
-The virtual environment's Python interpreter is used by default (e.g., running python refers to venv/bin/python instead of the system Python).
+The virtual environment's Python interpreter is used by default
+(e.g., running python refers to venv/bin/python instead of the system Python).
 Commands like pip install packages into the virtual environment.
 It often changes the shell prompt to indicate that the virtual environment is active.
 Using a Virtual Environment Without Activation
@@ -112,9 +116,11 @@ Running Python directly:
  
 path/to/venv/bin/python script.py      # On macOS/Linux
 path\to\venv\Scripts\python script.py  # On Windows
+
 This ensures that the script runs using the virtual environment's Python and its installed packages.
 
-Installing dependencies without activation: Instead of activating, you can point pip directly to the virtual environment:
+Installing dependencies without activation:
+Instead of activating, you can point pip directly to the virtual environment:
 
  
 path/to/venv/bin/pip install requests      # macOS/Linux
@@ -122,7 +128,8 @@ path\to\venv\Scripts\pip install requests  # Windows
 
 When Might You Avoid Activation?
 
-In automated scripts or CI/CD pipelines where you can directly specify the virtual environment's Python executable.
+In automated scripts or CI/CD pipelines where you can directly specify
+the virtual environment's Python executable.
 When you want to run isolated commands without modifying your shell environment.
 Benefits of Activation
 It’s simpler and more intuitive for interactive use.
