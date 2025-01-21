@@ -46,6 +46,25 @@ python -m pip: This runs the pip module as a script using the specified Python i
 list: This subcommand lists all installed Python packages in the current environment.
 --not-required: This flag filters the output to display only those packages that are not dependencies of other installed packages.
 ```
+### venv
+
+On Windows, use  
+   py -3.X -m venv .venv
+to create a virtual environment, and   
+   .venv\Scripts\activate  
+to use it.
+
+On Mac and Linux, use  
+    python3.X -m venv .venv  
+to create a virtual environment, and   
+  source .venv/bin/activate” 
+to use it.
+
+Once you have activated a virtual environment, you can install a thing by doing
+
+python -m pip install thing
+
+
 ###  pyenv
 
 https://news.ycombinator.com/item?id=42419822
