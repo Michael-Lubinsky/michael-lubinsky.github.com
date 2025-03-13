@@ -54,3 +54,6 @@ FROM tenk1 t1, tenk2 t2
 WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
 ORDER BY t1.fivethous;
 ```
+### JSONB
+
+https://habr.com/ru/companies/sigma/articles/890668/
