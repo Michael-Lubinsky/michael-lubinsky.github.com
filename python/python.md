@@ -8,6 +8,8 @@ https://data-hacks.com/python-programming-language
 
 https://riverml.xyz/latest/ Online machine learning in Python
 
+https://habr.com/ru/companies/otus/articles/888974/ Type Annotations 
+
 ### Python dependency management
 
 https://nielscautaerts.xyz/python-dependency-management-is-a-dumpster-fire.html
