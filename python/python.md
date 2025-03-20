@@ -45,8 +45,8 @@ def load_module(module_name):
 my_module = load_module('my_module')
 ```
 Based on this we can build Python program which supports plugins:  
-https://github.com/janvarev/jaapy  
-https://habr.com/ru/articles/827176/  
+<https://github.com/janvarev/jaapy>  
+<https://habr.com/ru/articles/827176/>  
 
 ### JSON manipulation
 ```python
@@ -95,10 +95,10 @@ print(type(obj))
 ### Working with database
 
 #### Parsing TOML Files in Python
+ 
+You need Python 3.11 or a later version to use tomllib.  
+<https://docs.python.org/3/library/tomllib.html>
 ```
-You need Python 3.11 or a later version to use tomllib.
-https://docs.python.org/3/library/tomllib.html
-
 Consider a sample TOML file, say db_config.toml,
 containing the required info to connect to the database:
 
@@ -207,11 +207,11 @@ print(all_dates)
 
 ### Magic methods (starts and ends with  __ )
 
-https://docs.python.org/3/reference/datamodel.html#special-method-names
+<https://docs.python.org/3/reference/datamodel.html#special-method-names>
 
 ```__init__ __new__ __call__ __enter__ __exit__  __get_item__ __str__ __repr__```
 
-https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize-classes-conveniently-a1f50fa4b53e
+<https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize-classes-conveniently-a1f50fa4b53e>
 
 
 ## How to save memory:
@@ -281,7 +281,7 @@ print(me_with_slots.__dict__)
 ```
 
 ### String interning
- https://medium.com/techtofreedom/string-interning-in-python-a-hidden-gem-that-makes-your-code-faster-9be71c7a5f3e
+ <https://medium.com/techtofreedom/string-interning-in-python-a-hidden-gem-that-makes-your-code-faster-9be71c7a5f3e>
  
 ### mmap
 ```python
@@ -327,6 +327,6 @@ https://pipefunc.readthedocs.io/en/latest/
 https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
 
 ### SimPy - discrete event simulation
-https://simpy.readthedocs.io/en/latest/
+<https://simpy.readthedocs.io/en/latest/>
 
-http://google.com
+
