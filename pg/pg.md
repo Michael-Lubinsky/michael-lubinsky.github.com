@@ -1,3 +1,15 @@
+### Pivot rows to columns
+
+```sql
+SELECT 
+    A,
+    MAX(CASE WHEN B = 'b1' THEN B END) AS b1,
+    MAX(CASE WHEN B = 'b2' THEN B END) AS b2,
+    MAX(CASE WHEN B = 'b3' THEN B END) AS b3
+FROM your_table
+GROUP BY A;
+```
+
 ### Postgres HA
 
 <https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html>
