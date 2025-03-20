@@ -13,6 +13,38 @@ ex2=Example(1,2) # error
 ```
 ### any and all
 ```python
+
+# Sample data: a list of numbers and a list of booleans
+numbers = [1, -5, 0, 10, -2]
+conditions = [True, True, False, True]
+
+# Using 'any'
+# any() returns True if at least one element in the iterable is True
+has_positive = any(x > 0 for x in numbers)
+print("Is there any positive number?", has_positive)  # Output: True (because 1 and 10 are positive)
+
+has_negative = any(x < 0 for x in numbers)
+print("Is there any negative number?", has_negative)  # Output: True (because -5 and -2 are negative)
+
+all_true = any(conditions)
+print("Is there any True in conditions?", all_true)  # Output: True (because there are True values)
+
+# Using 'all'
+# all() returns True if every element in the iterable is True
+all_positive = all(x > 0 for x in numbers)
+print("Are all numbers positive?", all_positive)  # Output: False (because some are negative or zero)
+
+all_non_zero = all(x != 0 for x in numbers)
+print("Are all numbers non-zero?", all_non_zero)  # Output: False (because 0 is present)
+
+all_conditions_true = all(conditions)
+print("Are all conditions True?", all_conditions_true)  # Output: False (because False is present)
+
+# Edge cases
+empty_list = []
+print("any() on empty list:", any(empty_list))  # Output: False (no elements to evaluate)
+print("all() on empty list:", all(empty_list))  # Output: True (vacuously true, no elements to fail)
+
 x = [1, 2, 3, 4, 10, 12, 7, 8]
 
 # check if exists at least one number > 10
