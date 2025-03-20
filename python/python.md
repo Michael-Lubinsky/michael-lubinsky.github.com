@@ -214,7 +214,7 @@ https://github.com/janvarev/jaapy
 https://habr.com/ru/articles/827176/
 
 ### JSON manipulation
-```
+```python
 import json
 
 def export_json(filename, obj):
@@ -278,7 +278,7 @@ user = "your_username"
 password = "your_password"
 ```
 Let read TOML file:
-```
+```python
 import tomllib
 
 with open('db_config.toml','rb') as file:
@@ -293,7 +293,7 @@ with open('db_config.toml','rb') as file:
 }
 ```
 #### Run SQL
-``` 
+```python
 import psycopg2
 
 with psycopg2.connect(**credentials) as conn:
@@ -305,7 +305,7 @@ with psycopg2.connect(**credentials) as conn:
 
 ### Cosine similarity
 First attempt
-```
+```python
 def cosine_distance(a, b):
     dot_product = sum(ai * bi for ai, bi in zip(a, b))
     magnitude_a = math.sqrt(sum(ai * ai for ai in a))
@@ -314,7 +314,7 @@ def cosine_distance(a, b):
     return 1 - cosine_similarity
 ```
 More performant:
-```
+```python
 def cosine_distance(a, b):
     dot_product = 0
     magnitude_a = 0
@@ -327,7 +327,7 @@ def cosine_distance(a, b):
     return 1 - cosine_similarity
 ```
 Cosine similarity with NumPy 
-```
+```python
     def cosine_distance(vector1, vector2):
         dot_product = np.dot(vector1, vector2)
         norm_vector1 = np.linalg.norm(vector1)
@@ -338,7 +338,7 @@ Cosine similarity with NumPy
 ```
 
 ### Generate date ranges 
-```
+```python
 import datetime
 
 def generate_dates_in_range(start_date, end_date, range="DAY"):
@@ -386,7 +386,7 @@ https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize
 ### Tuple vs List
 
 Given that tuples are immutable (they cannot be changed after creation), it allows Python to make optimizations in terms of memory allocation.
-```
+```python
 import sys
 
 my_tuple = (1, 2, 3, 4, 5)
@@ -399,7 +399,7 @@ print(sys.getsizeof(my_list))
 ```
 
 ### Array vs List
-```
+```python
 import sys
 import array
 
@@ -415,7 +415,7 @@ print(sys.getsizeof(my_array))
 
 ### Slots 
 If you create a lot of objects __slots__ can save memory
-```
+```python
 import sys
 
 class Author:
@@ -450,7 +450,7 @@ print(me_with_slots.__dict__)
  https://medium.com/techtofreedom/string-interning-in-python-a-hidden-gem-that-makes-your-code-faster-9be71c7a5f3e
  
 ### mmap
-```
+```python
 import mmap
 
 with open('test.txt', "r+b") as f:
@@ -471,7 +471,7 @@ https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-
 
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
-### Pipilines
+### Pipelines
 
 https://hamilton.dagworks.io/en/latest/
 
