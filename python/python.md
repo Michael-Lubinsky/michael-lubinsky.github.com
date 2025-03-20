@@ -25,12 +25,12 @@ ex2=Example(1,2) # error
 ```python
 x = [1, 2, 3, 4, 10, 12, 7, 8]
 
-#vcheck if exists at least one number > 10
+# check if exists at least one number > 10
 
 if any((a := i) > 10 for i in x):
     print(f'Yes, found number > 10. It is {a}!')
 
-#check if all  numbers < 10
+# check if all  numbers < 10
 
 if all((a := i) < 10 for i in x):
     print(f'All numbers < 10')
