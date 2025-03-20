@@ -1,28 +1,38 @@
 
-pip
+### Python dependency management
+
+https://nielscautaerts.xyz/python-dependency-management-is-a-dumpster-fire.html
+
+https://martynassubonis.substack.com/p/python-project-management-primer
+
+https://martynassubonis.substack.com/p/python-project-management-primer-a55
+
+https://news.ycombinator.com/item?id=42676432
+
+### pip 
 
 https://www.techbeamers.com/python-pip-usage/
 
 https://pip.pypa.io/en/stable/
 
-export PIP_REQUIRE_VIRTUALENV=true`
+export PIP_REQUIRE_VIRTUALENV=true`  
 will force you to not install packages in the system site-packages.
 
-To check dependencies:
-python -m pip check
-To get a JSON output of your current virtual environment:
-python -m pip inspect
-To update stuff automatically:
-python -m pip install --upgrade
-Or, skip worrying about dependencies:
-python -m pip install --no-deps
-
-Do a dry run installation with full report on what would be installed:
+To check dependencies:  
+  python -m pip check  
+To get a JSON output of your current virtual environment:  
+  python -m pip inspect  
+To update stuff automatically:  
+  python -m pip install --upgrade   
+Or, skip worrying about dependencies:  
+  python -m pip install --no-deps
+  
+Do a dry run installation with full report on what would be installed:  
 pip install --ignore-installed --dry-run --quiet --report
 
-Display only those packages that are not dependencies of other installed packages.
-python -m pip list --not-required
-
+Display only those packages that are not dependencies of other installed packages.  
+python -m pip list --not-required  
+```
 python -m pip: This runs the pip module as a script using the specified Python interpreter.
 list: This subcommand lists all installed Python packages in the current environment.
 --not-required: This flag filters the output to display only those packages that are not dependencies of other installed packages.
@@ -42,21 +52,28 @@ You can then install them offline by doing
 python -m pip install
 on the wheels.
 
-venv
+```
+### venv
 
-On Windows, use
-py -3.X -m venv MY_ENV
-to create a virtual environment, and
-MY_ENV\Scripts\activate
+On Windows, use  
+   py -3.X -m venv MY_ENV  
+to create a virtual environment, and   
+   MY_ENV\Scripts\activate  
 to use it.
 
-On Mac and Linux, to create a virtual environment: python3.X -m venv MY_ENV and to activate it:
-source MY_ENV/bin/activate”
+On Mac and Linux, to create a virtual environment:
+    python3.X -m venv MY_ENV 
+ and to activate it:  
+  source MY_ENV/bin/activate” 
+
 
 Once you have activated a virtual environment, you can install a thing by doing
 
 python -m pip install thing
 
+
+### 
+```
 You don't need to activate a virtual environment to use it! This is just a convenience feature.
 If you use the commands situated in the Scripts (on windows) or bin (on Unix) folders
 in the virtual environment directly, they are specially crafted to only see the virtual environment even without activation.
@@ -109,17 +126,20 @@ Benefits of Activation
 It’s simpler and more intuitive for interactive use.
 Ensures that the environment's python and pip are automatically used without needing to specify their full paths every time.
 Provides visual feedback via the modified shell prompt to remind you that you're working within the virtual environment.
-pyenv
+```
+
+
+###  pyenv
 
 https://news.ycombinator.com/item?id=42419822
 
 brew info --json python3 | jq -r '.[].versioned_formulae[]'
 
-pipx
+### pipx
 
 https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
 
-uv
+### uv  
 
 https://docs.astral.sh/uv/
 
@@ -132,3 +152,4 @@ https://www.peterbe.com/plog/run-standalone-python-2025
 https://news.ycombinator.com/item?id=42676432
 
 https://simonwillison.net/2024/Dec/19/one-shot-python-tools/
+
