@@ -165,7 +165,7 @@ https://news.ycombinator.com/item?id=42676432
 https://simonwillison.net/2024/Dec/19/one-shot-python-tools/
 
 ### dataclass
-```
+```python
 from dataclasses import dataclass
 @dataclass(kw_only=True)
 class Example
@@ -176,7 +176,7 @@ ex1=Example(a=1, b=2)
 ex2=Example(1,2) # error
 ```
 ### any and all
-```
+```python
 x = [1, 2, 3, 4, 10, 12, 7, 8]
 
 check if exists at least one number > 10
@@ -200,7 +200,7 @@ https://mathspp.com/blog/module-itertools-overview
 
 The importlib library allows you to load modules and packages dynamically.  
 
-```
+```python
 import importlib
 def load_module(module_name):
     module = importlib.import_module(module_name)
