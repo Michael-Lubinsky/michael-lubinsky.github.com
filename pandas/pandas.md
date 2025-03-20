@@ -1,3 +1,7 @@
+### Time Series Aggregation with pandas
+
+https://kapilg.hashnode.dev/time-series-aggregation-in-pandas
+
 
 ### Ibis amd SQLFrame
 
