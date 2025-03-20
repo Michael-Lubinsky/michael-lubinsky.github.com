@@ -1,12 +1,12 @@
 ### Postgres HA
 
-https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html
+<https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html>
 
-https://proxysql.com/
+<https://proxysql.com/>
 
-https://news.ycombinator.com/item?id=42293937
+<https://news.ycombinator.com/item?id=42293937>
 
-Check out http://google.com for more info.
+
 
 ### Information schema
 ```sql
@@ -49,7 +49,7 @@ Data Warehouse: Implement TimescaleDB on top of Postgres for data warehousing ne
 SET enable_partition_pruning = on; 
 
 #### Explain
-```
+```sql
 EXPLAIN ANALYZE SELECT *
 FROM tenk1 t1, tenk2 t2
 WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
