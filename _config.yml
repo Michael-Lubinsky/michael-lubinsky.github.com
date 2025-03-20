@@ -3,7 +3,6 @@
 # theme: jekyll-theme-cayman
 markdown: kramdown
 highlighter: rouge
-
 kramdown:
   input: GFM
   parse_block_html: true
