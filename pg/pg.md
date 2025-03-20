@@ -6,9 +6,10 @@ https://proxysql.com/
 
 https://news.ycombinator.com/item?id=42293937
 
+Check out http://google.com for more info.
 
 ### Information schema
-```
+```sql
 SELECT table_schema, table_name, column_name, data_type, is_nullable 
 FROM information_schema.columns  
 WHERE table_name = 'my_table_here'; 
