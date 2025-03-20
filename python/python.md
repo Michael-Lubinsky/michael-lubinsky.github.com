@@ -343,6 +343,8 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 <https://realpython.com/python-subprocess>
 
+<https://adamj.eu/tech/2024/12/30/python-spy-changes-sys-monitoring/>
+
 https://www.youtube.com/@PyConUS
 
 https://data-hacks.com/python-programming-language
