@@ -1,3 +1,4 @@
+<https://github.com/TDAmeritrade/stumpy>  Matrix profile
 
 https://towardsdatascience.com/comprehensive-time-series-exploratory-analysis-78bf40d16083
 
