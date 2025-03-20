@@ -9,6 +9,10 @@ SELECT
 FROM your_table
 GROUP BY A;
 ```
+If you want a different aggregation (e.g., COUNT of occurrences instead of the value itself), 
+you could replace MAX(B) with  
+COUNT(CASE WHEN B = 'b1' THEN 1 END)  
+to count how many times b1 appears for each A.
 
 ### Postgres HA
 
