@@ -364,6 +364,8 @@ https://pipefunc.readthedocs.io/en/latest/
 
 https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
 
+https://habr.com/ru/articles/562380/ Statistics
+
 ### SimPy - discrete event simulation
 <https://simpy.readthedocs.io/en/latest/>
 
