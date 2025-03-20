@@ -25,13 +25,12 @@ ex2=Example(1,2) # error
 ```python
 x = [1, 2, 3, 4, 10, 12, 7, 8]
 
-check if exists at least one number > 10
+#vcheck if exists at least one number > 10
 
 if any((a := i) > 10 for i in x):
     print(f'Yes, found number > 10. It is {a}!')
 
-И, соответственно, все ли числа меньше 10
-check if all  numbers < 10
+#check if all  numbers < 10
 
 if all((a := i) < 10 for i in x):
     print(f'All numbers < 10')
@@ -55,9 +54,9 @@ def load_module(module_name):
 # ... Somewhere else in your code
 my_module = load_module('my_module')
 ```
-Based on this we can build Python program which supports plugins:
-https://github.com/janvarev/jaapy
-https://habr.com/ru/articles/827176/
+Based on this we can build Python program which supports plugins:  
+https://github.com/janvarev/jaapy  
+https://habr.com/ru/articles/827176/  
 
 ### JSON manipulation
 ```python
@@ -102,7 +101,6 @@ obj = import_json('maps.json')
 print(obj)
 print(type(obj))
 ```
-
 
 ### Working with database
 
@@ -149,7 +147,7 @@ with psycopg2.connect(**credentials) as conn:
             print(result)
 ```
 
-### Cosine similarity
+### Cosine similarity implementations
 First attempt
 ```python
 def cosine_distance(a, b):
@@ -217,8 +215,6 @@ all_dates = generate_dates_in_range(start, end)
 print(all_dates)
 ```
 
-
-
 ### Magic methods (starts and ends with  __ )
 
 https://docs.python.org/3/reference/datamodel.html#special-method-names
@@ -231,7 +227,8 @@ https://medium.com/techtofreedom/9-advanced-magic-methods-in-python-to-customize
 ## How to save memory:
 ### Tuple vs List
 
-Given that tuples are immutable (they cannot be changed after creation), it allows Python to make optimizations in terms of memory allocation.
+Given that tuples are immutable (they cannot be changed after creation), 
+it allows Python to make optimizations in terms of memory allocation.
 ```python
 import sys
 
@@ -282,7 +279,8 @@ me_with_slots = AuthorWithSlots('Yang', 30)
 
 # Comparing memory usage
 memory_without_slots = sys.getsizeof(me) + sys.getsizeof(me.__dict__)
-memory_with_slots = sys.getsizeof(me_with_slots)  # __slots__ classes don't have __dict__
+memory_with_slots = sys.getsizeof(me_with_slots)
+ # __slots__ classes don't have __dict__
 
 print(memory_without_slots, memory_with_slots)
 # 152 48
