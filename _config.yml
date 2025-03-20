@@ -6,3 +6,5 @@ highlighter: rouge
 
 kramdown:
   input: GFM
+  parse_block_html: true
+  auto_links: true
