@@ -1,5 +1,9 @@
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
 
+Time Series Aggregation with pandas
+
+<https://kapilg.hashnode.dev/time-series-aggregation-in-pandas>
+
 https://towardsdatascience.com/comprehensive-time-series-exploratory-analysis-78bf40d16083
 
 https://towardsdatascience.com/handling-gaps-in-time-series-dc47ae883990
