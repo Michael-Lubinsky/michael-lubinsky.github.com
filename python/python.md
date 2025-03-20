@@ -1,15 +1,5 @@
 ## Python notes
 
-https://realpython.com/python-subprocess
-
-https://www.youtube.com/@PyConUS
-
-https://data-hacks.com/python-programming-language
-
-https://riverml.xyz/latest/ Online machine learning in Python
-
-https://habr.com/ru/companies/otus/articles/888974/ Type Annotations 
-
 ### dataclass
 ```python
 from dataclasses import dataclass
@@ -314,6 +304,19 @@ https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-sni
 https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-for-developers-a5da6f176667
 
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
+
+### Links
+
+<https://realpython.com/python-subprocess>
+
+https://www.youtube.com/@PyConUS
+
+https://data-hacks.com/python-programming-language
+
+https://riverml.xyz/latest/ Online machine learning in Python
+
+https://habr.com/ru/companies/otus/articles/888974/ Type Annotations 
+
 
 ### Pipelines
 
