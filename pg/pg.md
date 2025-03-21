@@ -29,6 +29,41 @@ CREATE TABLE pet(
 );
 ```
 
+### Constraints
+<https://www.postgresql.org/docs/current/ddl-constraints.html>
+```
+Check constraint is satisfied if the check expression evaluates to true or the null value.
+Since most expressions will evaluate to the null value if any operand is null,
+they will not prevent null values in the constrained columns.
+To ensure that a column does not contain null values,
+the not-null constraint can be used.
+
+Check constraint can also refer to several columns.
+Names can be assigned to table constraints in the same way as column constraints:
+```
+
+```sql
+CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric CHECK (price > 0),
+,
+    CHECK (price > discounted_price)
+);
+
+
+CREATE TABLE products (
+    product_no integer,
+    name text,
+    price numeric,
+    CHECK (price > 0),
+    discounted_price numeric,
+    CHECK (discounted_price > 0),
+    CONSTRAINT valid_discount CHECK (price > discounted_price)
+);
+```
+
+
 ### Config
 
 https://tembo.io/blog/optimizing-memory-usage
