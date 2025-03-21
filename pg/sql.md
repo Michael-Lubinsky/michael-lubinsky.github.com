@@ -101,3 +101,5 @@ Assigns the same rank to rows with identical values but does not leave gaps in t
 For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no gap).
 
 <https://medium.com/@mariusz_kujawski/advanced-sql-for-data-professionals-875ab725730c>
+
+<https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>
