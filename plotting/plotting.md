@@ -1,8 +1,11 @@
 
-### Scatter plot Seabon
+### Scatter plot (Seabon)
 
-https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d
+<https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d>
+
 ```python
+import matplotlib.pyplot as plt
+import seaborn as sns
 sns.scatterplot(data=diamonds_sample,
                 x='price',
                 y='carat')
@@ -20,10 +23,11 @@ sns.regplot(data=diamond_sample,
 plt.show()
 ```
 
-### Python advanced plots:
-https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577
+### Python advanced plots
 
-### Heatmap Seaborn
+<https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577>
+
+### Heatmap (Seaborn)
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -56,8 +60,7 @@ plt.show()
 
 ```
 
-
-### Scatterplot matrix Seaborn
+### Scatterplot matrix (Seaborn)
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -83,20 +86,20 @@ plt.savefig('image2.png', dpi=600, bbox_inches='tight')
 plt.show()
 ```
 ### PyGWalker
-https://medium.datadriveninvestor.com/python-pygwalker-simplifying-data-exploration-and-visualization-for-everyone-ed84cc7b7db4
+<https://medium.datadriveninvestor.com/python-pygwalker-simplifying-data-exploration-and-visualization-for-everyone-ed84cc7b7db4>
 
-https://towardsdatascience.com/the-most-advanced-libraries-for-data-visualization-and-analysis-on-the-web-e823535e0eb1
+<https://towardsdatascience.com/the-most-advanced-libraries-for-data-visualization-and-analysis-on-the-web-e823535e0eb1>
 
 ### minimalytics
 GO standalone minimalist analytics tool built on SQLite.  
 Designed for resource-constrained environments, 
 It provides a lightweight solution for tracking and visualizing event data with a minimal footprint.
 
-https://github.com/nafey/minimalytics
+<https://github.com/nafey/minimalytics>
 
-https://pypi.org/project/canvasxpress/
+<https://pypi.org/project/canvasxpress/>
 
-https://panel.holoviz.org/
+<https://panel.holoviz.org/>
 
 ### HighCharts
 
