@@ -54,8 +54,12 @@ SELECT
 FROM T
 GROUP BY A;
 ```
-
-
+### GREATES and LEAST
+```sql
+SELECT
+GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
+LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
+```
 
 ### Postgres HA
 
