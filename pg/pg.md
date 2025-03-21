@@ -1,75 +1,3 @@
-### Pivot rows to columns
-
-```sql
-SELECT 
-    A,
-    MAX(CASE WHEN B = 'b1' THEN B END) AS b1,
-    MAX(CASE WHEN B = 'b2' THEN B END) AS b2,
-    MAX(CASE WHEN B = 'b3' THEN B END) AS b3
-FROM T
-GROUP BY A;
-```
-If you want a different aggregation (e.g., COUNT of occurrences instead of the value itself),  
-you could replace MAX(B) with  
-```COUNT(CASE WHEN B = 'b1' THEN 1 END)```  
-to count how many times b1 appears for each A.
-
-What if we want to add one more calculated column to SQL above to be AVG(b1,b2, b3)?
-
-```sql
-SELECT 
-    A,
-    MAX(CASE WHEN B = 'b1' THEN c1 END) AS b1,
-    MAX(CASE WHEN B = 'b2' THEN c2 END) AS b2,
-    MAX(CASE WHEN B = 'b3' THEN c3 END) AS b3,
-    (
-        COALESCE(MAX(CASE WHEN B = 'b1' THEN c1 END), 0) +
-        COALESCE(MAX(CASE WHEN B = 'b2' THEN c2 END), 0) +
-        COALESCE(MAX(CASE WHEN B = 'b3' THEN c3 END), 0)
-    ) / 
-    NULLIF(
-        (
-            (CASE WHEN MAX(CASE WHEN B = 'b1' THEN c1 END) IS NOT NULL THEN 1 ELSE 0 END) +
-            (CASE WHEN MAX(CASE WHEN B = 'b2' THEN c2 END) IS NOT NULL THEN 1 ELSE 0 END) +
-            (CASE WHEN MAX(CASE WHEN B = 'b3' THEN c3 END) IS NOT NULL THEN 1 ELSE 0 END)
-        ),
-        0
-    ) AS _Avg
-FROM T
-GROUP BY A;
-```
-Another way to do it:
-```sql
-SELECT 
-    A,
-    MAX(CASE WHEN B = 'b1' THEN c1 END) AS b1,
-    MAX(CASE WHEN B = 'b2' THEN c2 END) AS b2,
-    MAX(CASE WHEN B = 'b3' THEN c3 END) AS b3,
-    (COALESCE(MAX(CASE WHEN B = 'b1' THEN c1 END), 0) + 
-     COALESCE(MAX(CASE WHEN B = 'b2' THEN c2 END), 0) + 
-     COALESCE(MAX(CASE WHEN B = 'b3' THEN c3 END), 0)) / 
-    (CASE WHEN MAX(CASE WHEN B = 'b1' THEN c1 END) IS NULL THEN 0 ELSE 1 END +
-     CASE WHEN MAX(CASE WHEN B = 'b2' THEN c2 END) IS NULL THEN 0 ELSE 1 END +
-     CASE WHEN MAX(CASE WHEN B = 'b3' THEN c3 END) IS NULL THEN 0 ELSE 1 END) AS _Avg
-FROM T
-GROUP BY A;
-```
-### GREATEST and LEAST
-```sql
-SELECT
-GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
-LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
-```
-
-### Postgres HA
-
-<https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html>
-
-<https://proxysql.com/>
-
-<https://news.ycombinator.com/item?id=42293937>
-
-
 
 ### Information schema
 ```sql
@@ -89,7 +17,13 @@ https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/
 
 https://uuid7.com/
 
+### Postgres HA
 
+<https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html>
+
+<https://proxysql.com/>
+
+<https://news.ycombinator.com/item?id=42293937>
 
 ### Features
 ```
