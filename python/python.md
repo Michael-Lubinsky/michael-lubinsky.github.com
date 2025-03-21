@@ -269,9 +269,9 @@ print(all_dates)
                 lst[non_zero_index] = lst[i]
             non_zero_index += 1
     
-    # After placing all non-zero elements, fill the rest of the list with zeroes
+    #  fill the rest of the list with zeroes
     for i in range(non_zero_index, len(lst)):
-        lst[i] =
+        lst[i] = 0
 ```
 ### Magic methods (starts and ends with  __ )
 
