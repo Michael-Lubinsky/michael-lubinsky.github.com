@@ -1,7 +1,7 @@
 ## Python notes
 
 ### Enum
-```
+```python
 from enum import Enum
 
 class UserRole(Enum):
