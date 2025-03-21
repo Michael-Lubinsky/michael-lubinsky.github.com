@@ -72,6 +72,7 @@ class Order:
     @property
     def total_price(self) -> float:
         return self.sub_total + self.tax
+
 # Example Usage
 banana = Product(name="banana", category="fruit", shipping_weight=0.5, unit_price=215, tax_percent=0.07)
 mango = Product(name="mango", category="fruit", shipping_weight=2.0, unit_price=319, tax_percent=0.11)
