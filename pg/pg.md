@@ -6,13 +6,38 @@ SELECT
     MAX(CASE WHEN B = 'b1' THEN B END) AS b1,
     MAX(CASE WHEN B = 'b2' THEN B END) AS b2,
     MAX(CASE WHEN B = 'b3' THEN B END) AS b3
-FROM your_table
+FROM T
 GROUP BY A;
 ```
 If you want a different aggregation (e.g., COUNT of occurrences instead of the value itself),  
 you could replace MAX(B) with  
-COUNT(CASE WHEN B = 'b1' THEN 1 END)  
+```COUNT(CASE WHEN B = 'b1' THEN 1 END)```  
 to count how many times b1 appears for each A.
+
+What if we want to add one more calculated column to SQL above to be AVG(b1,b2, b3)?
+
+```sql
+SELECT 
+    A,
+    MAX(CASE WHEN B = 'b1' THEN c1 END) AS b1,
+    MAX(CASE WHEN B = 'b2' THEN c2 END) AS b2,
+    MAX(CASE WHEN B = 'b3' THEN c3 END) AS b3,
+    (
+        COALESCE(MAX(CASE WHEN B = 'b1' THEN c1 END), 0) +
+        COALESCE(MAX(CASE WHEN B = 'b2' THEN c2 END), 0) +
+        COALESCE(MAX(CASE WHEN B = 'b3' THEN c3 END), 0)
+    ) / 
+    NULLIF(
+        (
+            (CASE WHEN MAX(CASE WHEN B = 'b1' THEN c1 END) IS NOT NULL THEN 1 ELSE 0 END) +
+            (CASE WHEN MAX(CASE WHEN B = 'b2' THEN c2 END) IS NOT NULL THEN 1 ELSE 0 END) +
+            (CASE WHEN MAX(CASE WHEN B = 'b3' THEN c3 END) IS NOT NULL THEN 1 ELSE 0 END)
+        ),
+        0
+    ) AS _Avg
+FROM T
+GROUP BY A;
+```
 
 ### Postgres HA
 
