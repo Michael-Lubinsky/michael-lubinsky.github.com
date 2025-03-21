@@ -12,6 +12,8 @@ https://news.ycombinator.com/item?id=39350866
 
 https://www.youtube.com/watch?v=XhptIhtfq2w
 
+https://medium.com/data-science-collective/18-libraries-for-time-series-feature-extraction-f12fd1bae738
+
 ### Merlion 
 https://github.com/salesforce/Merlion#comparison-with-related-libraries
 
