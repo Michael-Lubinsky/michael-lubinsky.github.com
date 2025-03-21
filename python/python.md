@@ -258,6 +258,21 @@ all_dates = generate_dates_in_range(start, end)
 print(all_dates)
 ```
 
+### Given a list of numeric elements,   shift all zeroes to end 
+```python
+    non_zero_index = 0
+
+    #  first fill the non zero elements from the list.
+    for i in range(len(lst)):
+        if lst[i] != 0:
+            if non_zero_index != i:
+                lst[non_zero_index] = lst[i]
+            non_zero_index += 1
+    
+    # After placing all non-zero elements, fill the rest of the list with zeroes
+    for i in range(non_zero_index, len(lst)):
+        lst[i] =
+```
 ### Magic methods (starts and ends with  __ )
 
 <https://docs.python.org/3/reference/datamodel.html#special-method-names>
