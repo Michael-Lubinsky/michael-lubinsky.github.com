@@ -1,5 +1,26 @@
 ## Python notes
 
+### Enum
+```
+from enum import Enum
+
+class UserRole(Enum):
+    #ADMIN = 1
+    #EDITOR = 2
+    #VIEWER = 3
+    ADMIN = auto()
+    EDITOR = auto()
+    VIEWER = auto()
+    def can_edit(self):
+        return self in {UserRole.ADMIN, UserRole.EDITOR}
+
+    def can_delete(self):
+        return self == UserRole.ADMIN
+
+role = UserRole.ADMIN
+print(role)  # UserRole.ADMIN
+print(role.value)  # 1
+```
 ### dataclass
 ```python
 from dataclasses import dataclass
