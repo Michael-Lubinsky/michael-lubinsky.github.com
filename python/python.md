@@ -42,6 +42,7 @@ from enum import StrEnum, auto
 class OrderStatus(StrEnum):
     OPEN = auto()
     CLOSED = auto()
+
 @dataclass
 class Product:
     name: str
@@ -54,6 +55,7 @@ class Product:
             raise ValueError("unit_price and shipping_weight must be positive.")
         if not (0 <= self.tax_percent <= 1):
             raise ValueError("tax_percent must be between 0 and 1.")
+
 @dataclass
 class Order:
     status: OrderStatus
