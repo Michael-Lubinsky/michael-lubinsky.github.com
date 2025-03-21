@@ -5,6 +5,30 @@ SELECT table_schema, table_name, column_name, data_type, is_nullable
 FROM information_schema.columns  
 WHERE table_name = 'my_table_here'; 
 ```
+
+### Foreign key constraint - always mark it with on update restrict on delete restrict.
+
+This makes it so that if you try and delete the referenced row you will get an error. 
+
+```sql
+CREATE TABLE person(
+    id uuid not null default gen_random_uuid() primary key,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    name text not null
+);
+
+CREATE TABLE pet(
+    id uuid not null default gen_random_uuid() primary key,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz not null default now(),
+    name text not null,
+    owner_id uuid not null references person(id)
+                on update restrict
+                on delete restrict
+);
+```
+
 ### Config
 
 https://tembo.io/blog/optimizing-memory-usage
