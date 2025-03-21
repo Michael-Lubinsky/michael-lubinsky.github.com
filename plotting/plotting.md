@@ -1,26 +1,8 @@
-https://towardsdatascience.com/the-most-advanced-libraries-for-data-visualization-and-analysis-on-the-web-e823535e0eb1
 
-https://pypi.org/project/canvasxpress/
+### Scatter plot Seabon
 
-https://www.highcharts.com/
-
-https://pypi.org/project/highcharts-excentis/
-
-https://pypi.org/project/highcharts-core/
-
-### Apache Echarts
-
-https://github.com/ecomfe/awesome-echarts
-
-https://echarts-python.readthedocs.io/en/latest/
-
-https://panel.holoviz.org/reference/panes/ECharts.html
-
-https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html 
-
-### Scatter plot
 https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d
-```
+```python
 sns.scatterplot(data=diamonds_sample,
                 x='price',
                 y='carat')
@@ -41,8 +23,8 @@ plt.show()
 ### Python advanced plots:
 https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577
 
-### Heatmap
-```
+### Heatmap Seaborn
+```python
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -75,8 +57,8 @@ plt.show()
 ```
 
 
-### scatterplot matrix
-```
+### Scatterplot matrix Seaborn
+```python
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -102,3 +84,35 @@ plt.show()
 ```
 ### PyGWalker
 https://medium.datadriveninvestor.com/python-pygwalker-simplifying-data-exploration-and-visualization-for-everyone-ed84cc7b7db4
+
+https://towardsdatascience.com/the-most-advanced-libraries-for-data-visualization-and-analysis-on-the-web-e823535e0eb1
+
+### minimalytics
+GO standalone minimalist analytics tool built on SQLite.  
+Designed for resource-constrained environments, 
+It provides a lightweight solution for tracking and visualizing event data with a minimal footprint.
+
+https://github.com/nafey/minimalytics
+
+https://pypi.org/project/canvasxpress/
+
+https://panel.holoviz.org/
+
+### HighCharts
+
+https://www.highcharts.com/
+
+https://pypi.org/project/highcharts-excentis/
+
+https://pypi.org/project/highcharts-core/
+
+### Apache Echarts
+
+https://github.com/ecomfe/awesome-echarts
+
+https://echarts-python.readthedocs.io/en/latest/
+
+https://panel.holoviz.org/reference/panes/ECharts.html
+
+https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html 
+
