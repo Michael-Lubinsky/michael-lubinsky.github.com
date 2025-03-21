@@ -61,6 +61,35 @@ GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
 LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
 ```
 
+### LAG and LEAD
+```sql
+SELECT 
+    game_name,
+    platform,
+    year_of_release,
+    global_sales,
+    LAG(global_sales, 1) OVER (ORDER BY year_of_release) AS previous_sales,
+    LEAD(global_sales, 1) OVER (ORDER BY year_of_release) AS next_sales
+FROM 
+    video_games;
+
+```
+
+### FIRST_VALUE, LAST_VALUE
+```
+SELECT 
+    game_name,
+    platform,
+    year_of_release,
+    global_sales,
+    FIRST_VALUE(year_of_release) OVER (PARTITION BY platform ORDER BY year_of_release)
+    AS first_sales,
+    LAST_VALUE(year_of_release) OVER
+    (PARTITION BY platform ORDER BY year_of_release RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+AS last_sales
+FROM 
+    video_games;
+```
 
 ### RANK ():
 Assigns the same rank to rows with identical values but leaves gaps in the ranking sequence.  
