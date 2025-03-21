@@ -32,6 +32,54 @@ class Example
 ex1=Example(a=1, b=2)  
 ex2=Example(1,2) # error
 ```
+### Dataclass and Enum example:
+```python
+from dataclasses import dataclass, field
+from datetime import date
+from enum import StrEnum, auto
+
+# Enum for Order Status
+class OrderStatus(StrEnum):
+    OPEN = auto()
+    CLOSED = auto()
+@dataclass
+class Product:
+    name: str
+    category: str
+    shipping_weight: float
+    unit_price: int
+    tax_percent: float
+    def __post_init__(self):
+        if self.unit_price < 0 or self.shipping_weight < 0:
+            raise ValueError("unit_price and shipping_weight must be positive.")
+        if not (0 <= self.tax_percent <= 1):
+            raise ValueError("tax_percent must be between 0 and 1.")
+@dataclass
+class Order:
+    status: OrderStatus
+    creation_date: date = date.today()
+    products: list[Product] = field(default_factory=list)
+    def add_product(self, product: Product):
+        self.products.append(product)
+    @property
+    def sub_total(self) -> int:
+        return sum(p.unit_price for p in self.products)
+    @property
+    def tax(self) -> float:
+        return sum(p.unit_price * p.tax_percent for p in self.products)
+    @property
+    def total_price(self) -> float:
+        return self.sub_total + self.tax
+# Example Usage
+banana = Product(name="banana", category="fruit", shipping_weight=0.5, unit_price=215, tax_percent=0.07)
+mango = Product(name="mango", category="fruit", shipping_weight=2.0, unit_price=319, tax_percent=0.11)
+order = Order(status=OrderStatus.OPEN)
+order.add_product(banana)
+order.add_product(mango)
+print(f"Total Price: ${order.total_price / 100:.2f}")
+```
+
+
 ### any and all
 ```python
 
