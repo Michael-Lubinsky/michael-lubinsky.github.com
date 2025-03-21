@@ -14,6 +14,8 @@ https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
 ### ML
 
+https://arxiv.org/abs/2206.13446 Pen and Paper Exercises in Machine Learning
+
 https://riverml.xyz/latest/ Online machine learning in Python
 
 https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
