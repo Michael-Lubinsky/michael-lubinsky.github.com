@@ -76,6 +76,24 @@ GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
 LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
 ```
 
+## Window functions
+
+### example:
+```sql
+SELECT
+    transaction_id,
+    change,
+    sum(change) OVER (ORDER BY transaction_id) as balance,
+    sum(change) OVER () as result_balance,
+    round(
+        100.0 * sum(change) OVER (ORDER BY transaction_id)  /  sum(change) OVER (),
+        2
+    ) AS percent_of_result,
+    count(*) OVER () as transactions_count
+FROM balance_change
+ORDER BY transaction_id;
+```
+
 ### LAG and LEAD
 ```sql
 SELECT 
