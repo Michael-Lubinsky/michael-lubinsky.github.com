@@ -13,7 +13,14 @@ WHERE table_name = 'my_table_here';
 SELECT * FROM (
     VALUES (1, 'one'), (2, 'two'), (3, 'three')
 ) as t (digit_number, string_number);
+
+WITH sv(sex, value) AS (
+     VALUES(0, 'мужской'), (1, 'женский'), (2, 'не знаю')
+)
+SELECT fullname, sv.value FROM "user" INNER JOIN sv USING(sex);
+
 ```
+
 
 ### UNNEST
 ```sql
@@ -90,18 +97,21 @@ CREATE TABLE products (
 );
 ```
 
+### SQL EXCEPT
+
+<https://www.postgresql.org/docs/current/sql-select.html#SQL-EXCEPT>
 
 ### Config
 
-https://tembo.io/blog/optimizing-memory-usage
+<https://tembo.io/blog/optimizing-memory-usage>
 
-https://pgtune.leopard.in.ua/
+<https://pgtune.leopard.in.ua/>
 
 ###  UUID7 as primary key
 
-https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/
+<https://maciejwalkowiak.com/blog/postgres-uuid-primary-key/>
 
-https://uuid7.com/
+<https://uuid7.com/>
 
 ### Postgres HA
 
@@ -140,4 +150,4 @@ ORDER BY t1.fivethous;
 ```
 ### JSONB
 
-https://habr.com/ru/companies/sigma/articles/890668/
+<https://habr.com/ru/companies/sigma/articles/890668/>
