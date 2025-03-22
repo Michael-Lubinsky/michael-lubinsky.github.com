@@ -145,6 +145,25 @@ the next rank assigned will be 6 (skipping rank 2,3,4 and 5).
 Assigns the same rank to rows with identical values but does not leave gaps in the ranking sequence.   
 For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no gap).
 
+
+### RANGE BETWEEN CURRENT FOLLOWING UNBOUNDED PRECEDING
+
+```sql
+
+with data as (
+    select 3 val from dual union all
+    select 6 val from dual union all
+    select 3 val from dual union all
+    select 5 val from dual union all
+    select 4 val from dual
+)
+select n, val, avg(val)
+over(order by n rows between current row and 1 following) avg
+from (select rownum n, val from data) t;
+
+```
+
+
 <https://medium.com/@mariusz_kujawski/advanced-sql-for-data-professionals-875ab725730c>
 
 <https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>
