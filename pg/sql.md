@@ -106,6 +106,18 @@ SELECT
 FROM 
     video_games;
 
+
+SELECT
+    id,
+    section,
+    header,
+    score,
+    row_number() OVER w        AS rating,
+    lag(score) OVER w - score  AS score_lag
+FROM news
+WINDOW w AS (ORDER BY score DESC)
+ORDER BY score desc;
+
 ```
 
 ### FIRST_VALUE, LAST_VALUE
