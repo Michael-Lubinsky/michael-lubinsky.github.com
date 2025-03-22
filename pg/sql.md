@@ -54,6 +54,19 @@ SELECT
 FROM T
 GROUP BY A;
 ```
+
+### GROUP_CONCAT
+There are 2 tables with 1: M relation. The join output shall have 2 columns: 
+1st column - from Parent table and  
+2nd column I a concatenation of all related records from the child table.  
+A total number of records in output shall be # of records in the parent table.  
+```sql
+SELECT P.parent_name, GROUP_CONCAT(C.child_name)
+FROM Parent P INNER JOIN Child C
+ON P.id = C.parent_id
+GROUP BY P.parent_name
+```
+
 ### GREATEST and LEAST
 ```sql
 SELECT
