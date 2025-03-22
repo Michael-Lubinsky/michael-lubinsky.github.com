@@ -15,6 +15,10 @@ SELECT * FROM (
 ) as t (digit_number, string_number);
 ```
 
+### UNNEST
+```sql
+select unnest(array[1,2,3]) as id
+```
 ### Generate series
 
 ```sql
