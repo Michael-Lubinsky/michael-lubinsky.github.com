@@ -55,6 +55,8 @@ FROM T
 GROUP BY A;
 ```
 
+<https://modern-sql.com/use-case/pivot>
+
 ### GROUP_CONCAT
 There are 2 tables with 1: M relation. The join output shall have 2 columns: 
 1st column - from Parent table and  
