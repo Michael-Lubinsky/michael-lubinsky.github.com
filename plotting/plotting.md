@@ -1,25 +1,30 @@
 
 ### Scatter plot (Seabon)
 
-<https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d>
+<https://python.plainenglish.io/boost-your-scatter-plots-with-this-function-ed3e51ca1e7d>  
+<https://medium.com/@deepak.engg.phd/pythons-seaborn-library-data-visualization-on-dataset-diamond-920c8d7b798b>
+
 
 ```python
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.scatterplot(data=diamonds_sample,
-                x='price',
-                y='carat')
+print (sns.get_dataset_names())
+diamond=sns.load_dataset('diamonds', cache=True, data_home=None)
+
+# Scatterplot
+sns.scatterplot(data=diamond, x='price', y='carat')
 plt.show()
 
-sns.regplot(data=diamond_sample,
-            x='price',
-            y='carat',
-            order=2)
+sns.scatterplot(x='carat', y='price', hue='cut', size='depth', data=diamond)
+plt.xlabel('Carat Weight')
+plt.ylabel('Price')
+plt.title('Scatter Plot: Carat Vs Price (Based on Cut)')
+
+# Regplot
+sns.regplot(data=diamond, x='price', y='carat', order=2)
 plt.show()
 
-sns.regplot(data=diamond_sample,
-            x='price',
-            y='carat')
+sns.regplot(data=diamond, x='price', y='carat')
 plt.show()
 ```
 
