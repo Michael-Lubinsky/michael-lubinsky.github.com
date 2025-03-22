@@ -7,6 +7,25 @@ FROM information_schema.columns
 WHERE table_name = 'my_table_here'; 
 ```
 
+
+### Values
+```sql
+SELECT * FROM (
+    VALUES (1, 'one'), (2, 'two'), (3, 'three')
+) as t (digit_number, string_number);
+```
+
+### Generate series
+
+```sql
+SELECT gs.added_at, coalesce(stats.money, 0.00) as money
+FROM
+    generate_series('2016-04-01'::date, '2016-04-07'::date , interval '1 day') as gs(added_at) 
+LEFT JOIN stats 
+ON stats.added_at = gs.added_at;
+```
+
+
 ### Foreign key constraint - always mark it with on update restrict on delete restrict.
 
 This makes it so that if you try and delete the referenced row you will get an error. 
