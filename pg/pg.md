@@ -22,6 +22,9 @@ select unnest(array[1,2,3]) as id
 ### Generate series
 
 ```sql
+select  generate_series (1,10), generate_series(1,2);
+
+
 SELECT gs.added_at, coalesce(stats.money, 0.00) as money
 FROM
     generate_series('2016-04-01'::date, '2016-04-07'::date , interval '1 day') as gs(added_at) 
