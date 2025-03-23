@@ -1,3 +1,120 @@
+### duplicates
+```
+df \
+.groupby(['column1', 'column2']) \
+.count() \
+.where('count > 1') \
+.sort('count', ascending=False) \
+.show()
+
+df.dropDuplicates(['id', 'name']).show()
+```
+### sum(column)
+```
+data = [("John Doe", "john@example.com", 50000.0),
+    ("Jane Smith", "jane@example.com", 60000.0),
+    ("Bob Johnson", "bob@example.com", 55000.0)]
+
+
+schema="Name string,email string,salary double"
+df=spark.createDataFrame(data,schema)
+display(df)
+
+
+from pyspark.sql.functions import col,sum
+df_final=df.agg(sum(col("salary")).alias("total_salary")).first()[0]
+```
+
+### collect_list, collect_set
+```
+data=[(1,'Watson',34),(1,'Watson',40),(1,'Watson',34),(2,'Alex',45),(2,'Alex',50)]
+schema="ID int,Name string,Marks int"
+df=spark.createDataFrame(data,schema)
+display(df)
+
+from pyspark.sql.functions import collect_list,collect_set,col
+
+df_final=df.groupBy(col("ID"),col("Name")).agg(collect_list(col('Marks')))
+display(df_final)
+```
+
+
+### rlike
+```pyspark
+from pyspark.sql.types import *
+schema = StructType([
+  StructField("ProductCode", StringType(), True),
+  StructField("Quantity", StringType(), True),
+  StructField("UnitPrice", StringType(), True),
+  StructField("CustomerID", StringType(), True),
+])
+ 
+
+data = [
+  ("Q001", 5, 20.0, "C001"),
+  ("Q002", 3, 15.5, "C002"),
+  ("Q003", 10, 5.99, "C003"),
+  ("Q004", 2, 50.0, "C001"),
+  ("Q005", "nein", 12.75, "C002"),
+]
+ 
+df = spark.createDataFrame(data, schema=schema)
+df.show()
+
+from pyspark.sql.functions import col
+df_final=df.filter(col("Quantity").rlike('^[a-zA-Z]*$'))
+df_final.show()
+```
+
+### explode, explode_outer
+```
+data=[('Paris','Polo, Tennis'),('Matt','Golf, Hockey'),('Sam',None)]
+schema="Person string,Games string"
+df=spark.createDataFrame(data,schema)
+display(df)
+
+from pyspark.sql.functions import col,explode,explode_outer
+df_final=df.withColumn("Games",split(col("Games"),','))
+display(df_final)
+df_final.select("Person",explode(col("Games")).alias("Games")).display()
+```
+
+
+### year, start_week_date, end_week_date, week_num
+```
+from pyspark.sql.types import *
+data=[(2025,1,'2025-01-01'),
+      (2025,1,'2025-01-02'),
+      (2025,1,'2025-01-03'),
+      (2025,1,'2025-01-04'),
+      (2025,1,'2025-01-05'),
+      (2025,1,'2025-01-06'),
+      (2025,1,'2025-01-07'),
+      (2025,2,'2025-01-08'),
+      (2025,2,'2025-01-09'),
+      (2025,2,'2025-01-10'),
+      (2025,2,'2025-01-11'),
+      (2025,2,'2025-01-12'),
+      (2025,2,'2025-01-13'),
+      (2025,2,'2025-01-14')]
+
+schema=StructType([
+  StructField('year',IntegerType(),True),
+  StructField('week_num',IntegerType(),True),
+  StructField('dates',StringType(),True)])
+
+df=spark.createDataFrame(data,schema)
+df.display()
+
+from pyspark.sql.functions import col,min,max,to_date
+df=df.withColumn("dates",to_date(col("dates")))
+df.groupBy(col("year"),col("week_num")).agg(min(col("dates")).alias("start_day_week"),
+   max(col("dates")).alias("end_day_week")).display()
+```
+https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6  
+https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
+https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
+
 ### Example
 
 Given: dataset containing Twitter tweets.  
@@ -95,8 +212,6 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, date_format, rank
 from pyspark.sql.window import Window
 
-
-#Initialize Spark Session
 spark = SparkSession.builder.appName("FAANG Stock Analysis").getOrCreate()
 
 # Sample dataset with 3-4 records per unique ticker
