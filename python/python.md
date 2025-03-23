@@ -1,5 +1,11 @@
 ## Python notes
 
+### zip with strict
+ Raises ValueError if lengths don’t match
+```python
+for fruit, count in zip(a, b, strict=True):  
+    print(f"{fruit}: {count}")
+```
 ### Enum
 ```python
 from enum import Enum
