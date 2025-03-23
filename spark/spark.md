@@ -150,6 +150,7 @@ https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-1-
 
 https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-2-da866d6f8243
 
+https://towardsdev.com/spark-beyond-basics-smb-join-in-apache-spark-no-shuffle-join-3c0559105b87
 
 ```
 🔹🔹Broadcast Join🔹🔹
