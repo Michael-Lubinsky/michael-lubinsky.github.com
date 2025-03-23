@@ -19,7 +19,7 @@ print(sorted(names, key=str.lower))
 ```python
 nums = [1, 2, 3]
 print(nums[::-1])
-print(reversed(nums)) 
+print(list(reversed(nums))) 
 ```
 
 ### Enum
