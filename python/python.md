@@ -6,6 +6,22 @@
 for fruit, count in zip(a, b, strict=True):  
     print(f"{fruit}: {count}")
 ```
+
+### Sorting
+Lowecase comes after uppercase in ASCII
+```python
+names = ['Alice', 'bob', 'Charlie']
+print(sorted(names))
+print(sorted(names, key=str.lower))
+```
+
+### reverse
+```python
+nums = [1, 2, 3]
+print(nums[::-1])
+print(reversed(nums)) 
+```
+
 ### Enum
 ```python
 from enum import Enum
