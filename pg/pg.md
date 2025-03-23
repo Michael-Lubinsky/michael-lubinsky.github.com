@@ -151,3 +151,8 @@ ORDER BY t1.fivethous;
 ### JSONB
 
 <https://habr.com/ru/companies/sigma/articles/890668/>
+
+
+### Logging every change in your database
+
+<https://medium.com/@ihcnemed/postgresql-record-every-change-in-your-database-a98a6586527c>
