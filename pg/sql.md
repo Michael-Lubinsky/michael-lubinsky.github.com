@@ -184,6 +184,14 @@ ORDER BY score desc;
 
 ```
 
+Compute the average number of days between orders for each customer.
+```sql
+SELECT customer_id, 
+  AVG(DATEDIFF(day, LAG(order_date) OVER
+  (PARTITION BY customer_id ORDER BY order_date), order_date))
+  AS avg_days_between_orders 
+FROM orders;
+```
 ### FIRST_VALUE, LAST_VALUE
 ```
 SELECT 
