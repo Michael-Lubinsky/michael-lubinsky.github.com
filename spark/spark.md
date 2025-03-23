@@ -1,7 +1,7 @@
 ### Salting: solution for sqew join
 
 Problem statement: 7 records out of 10 in the first table has the value 1 - it means all off them goes to same executor
-```
+```python
 df_1 = spark.read.load("abc").select("id","col_a","col_b" )  #15GB
 df_2 = spark.read.load("xyz").select("id","col_c") #6GB
 
@@ -52,37 +52,42 @@ https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensi
 https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
 
  Avoid using count() Action
-```
+```python
 df = sqlContext.read().json(...);
 if not len(df.take(1)):   # <-- use this  instead of: if not df.count():
 ```
 
 ### Bucketing:
 
-without bucketing:
-```
-# Without Bucketing 
+Without bucketing:
+
+```python
+
 df1 = spark.table('table1')
 df2 = spark.table('table2')
 
 # Print the Physical plan of this join and join strategy by Spark
 df1.join(df2, 'joining_key').explain()
-
-Above code will shuffle i.e exchange the data as it is not bucketed.
-SortMergeJoin is the default Spark join,
-but now let’s avoid the data exchanges that happened by using bucketing
-
+```
+Above code will shuffle i.e exchange the data as it is not bucketed. 
+SortMergeJoin is the default Spark join,  
+but now let’s avoid the data exchanges that happened by using bucketing:   
+```python
 df.write\
     .bucketBy(32, 'joining_key') \
     .sortBy('date_created') \
     .saveAsTable('bucketed', format='parquet')
-
-bucketBy() distributes data into a predetermined number of partitions,
-providing a scalable solution when the cardinality of unique values is high.
+```
+bucketBy() distributes data into a predetermined number of partitions,  
+providing a scalable solution when the cardinality of unique values is high.  
 
 However, for datasets with a limited number of distinct values,
 partitioning is often a more efficient approach.
-```
+ 
+
+
+
+https://medium.com/@rames1000
 
 https://blog.det.life/pyspark-interview-question-by-walmart-hard-level-57c1110565d1
 
