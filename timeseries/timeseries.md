@@ -1,3 +1,6 @@
+
+https://medium.com/the-forecaster/the-complete-introduction-to-time-series-classification-in-python-6af967b16dc9
+
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
 
 Time Series Aggregation with pandas
