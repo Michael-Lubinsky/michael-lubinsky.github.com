@@ -1,4 +1,49 @@
- Apache Spark 4.0:
+### Salting: solution for sqew join
+
+Problem statement: 7 records out of 10 in the first table has the value 1 - it means all off them goes to same executor
+```
+df_1 = spark.read.load("abc").select("id","col_a","col_b" )  #15GB
+df_2 = spark.read.load("xyz").select("id","col_c") #6GB
+
+df_join = df_1.join(df_2, "id","inner")
+df_join.write.parquet(path)
+```
+
+Salting:
+
+Step 1: We choose a salt number range (0 to X) — let’s call this salt_num
+
+Step 2: To big dataset, we add a column called id_salted which will be  
+CONCAT(id, ‘_’, random(0,salt_number-1))
+
+Step 3: Explode the smaller of the 2 datasets to contain all combination of records from salt number 0 to X.
+So, this table will have ( N * salt_num  )number of records post explosion.
+
+Step 4: Join on this new “id_salted”
+
+
+```python
+import pyspark.sql.functions as F
+salt_num = 4
+
+#Let's add salt to df_1 - Big Table
+df_1_salted_tmp = df_1.withColumn("salt", F.floor(F.rand()*salt_num).cast('int'))
+df_1_salted = df_1_salted_tmp.withColumn("id_salted", F.concat(F.col('id'),F.lit('_'),F.col('salt'))).drop('salt')
+
+##Let's add salt to df_2 - Small Table
+df_salt_range = spark.range(salt_num).toDF("salt")   ## Create a DF with 4 records from 0 to 3 since our salt_num=3
+df_2_salted_tmp = df_2.crossJoin(df_salt_range)   ## CROSS JOIN with small table
+df_2_salted = df_2_salted_tmp.withColumn("id_salted", F.concat(F.col('id'),F.lit('_'),F.col('salt'))).drop('salt')
+
+## Join on id_salted column
+
+df_join =df_1_salted.join(df_2_salted, "id_salted").drop("id_salted")
+df_join.write.parquet(path)
+
+```
+
+
+## Apache Spark 4.0:
  
 https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
 
