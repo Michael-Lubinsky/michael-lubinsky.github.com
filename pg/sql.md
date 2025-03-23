@@ -148,7 +148,38 @@ For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no
 
 ### RANGE BETWEEN CURRENT FOLLOWING UNBOUNDED PRECEDING
 
+
+ROWS UNBOUNDED PRECEDING means: the frame's lower bound is simply infinite. 
+This is useful when calculating sums (i.e. "running totals"), for instance:
 ```sql
+WITH data (t, a) AS (
+  VALUES(1, 1),
+        (2, 5),
+        (3, 3),
+        (4, 5),
+        (5, 4),
+        (6, 11)
+)
+SELECT t, a, sum(a) OVER (ORDER BY t ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+FROM data
+ORDER BY t
+```
+
+
+```sql
+-- calculate the average amount in a frame of three days: previous row (1 preceding) and the subsequent row (1 following).
+WITH data (t, a) AS (
+  VALUES(1, 1),
+        (2, 5),
+        (3, 3),
+        (4, 5),
+        (5, 4),
+        (6, 11)
+)
+SELECT t, a, avg(a) OVER (ORDER BY t ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)
+FROM data
+ORDER BY t
+;
 
 with data as (
     select 3 val from dual union all
