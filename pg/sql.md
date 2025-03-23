@@ -149,7 +149,8 @@ For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no
 
 ### RANGE BETWEEN CURRENT FOLLOWING UNBOUNDED PRECEDING
 
-
+x PRECEDING: x rows before the current row  
+y FOLLOWING: y rows after the current row  
 ROWS UNBOUNDED PRECEDING means: the frame's lower bound is simply infinite. 
 UNBOUNDED FOLLOWING means: all rows after the current row  
 
