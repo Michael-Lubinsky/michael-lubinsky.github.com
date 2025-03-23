@@ -44,6 +44,16 @@ print(role)  # UserRole.ADMIN
 print(role.value)  # 1
 ```
 
+### String
+
+.strip() removes all leading and trailing whitespace characters, including newlines and tabs,
+```python
+s='!?abc?!'
+s.strip('?!')    # 'abc'
+
+string.removeprefix(prefix)
+string.removesuffix(suffix)
+```
 ### Dictionary
 
 If you use [] to access a non-existent key, you’ll get a KeyError.   
