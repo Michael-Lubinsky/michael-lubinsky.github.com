@@ -67,6 +67,38 @@ GROUP BY customer_id
 HAVING MIN(order_date) >= DATEADD(month, -1, GETDATE());
 ```
 
+Identify employees assigned to more than one department.
+```
+SELECT employee_id 
+FROM employee_departments 
+GROUP BY employee_id 
+HAVING COUNT(DISTINCT department_id) > 1;
+```
+
+
+### IN, NOT IN
+Find Products with Zero Sales in the Last Quarter
+```sql
+SELECT product_id, product_name 
+FROM products 
+WHERE product_id NOT IN ( 
+    SELECT DISTINCT product_id 
+    FROM sales 
+    WHERE sale_date >= DATEADD(quarter, -1, GETDATE()) 
+);
+```
+
+Identify customers who have never ordered product XYZ
+```sql
+SELECT customer_id 
+FROM customers 
+WHERE customer_id NOT IN ( 
+    SELECT DISTINCT customer_id 
+    FROM orders 
+    WHERE product_id = 'XYZ' 
+);
+```
+
 ### GROUP_CONCAT
 There are 2 tables with 1 : M relation. The join output shall have 2 columns: 
 1st column - from Parent table and  
@@ -209,12 +241,23 @@ FROM
     video_games;
 ```
 
-### RANK ():
+### RANK()
 Assigns the same rank to rows with identical values but leaves gaps in the ranking sequence.  
 For example, if 5 rows are tied for rank 1,    
 the next rank assigned will be 6 (skipping rank 2,3,4 and 5).
 
-### DENSE_RANK (): 
+Identify the highest revenue month per year:
+```sql
+SELECT year, month, revenue 
+FROM ( 
+    SELECT year, month, revenue, 
+           RANK() OVER (PARTITION BY year ORDER BY revenue DESC) AS rank 
+    FROM monthly_revenue 
+) AS yearly_revenue 
+WHERE rank = 1;
+```
+
+### DENSE_RANK() 
 Assigns the same rank to rows with identical values but does not leave gaps in the ranking sequence.   
 For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no gap).
 
