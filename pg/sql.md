@@ -101,6 +101,17 @@ FROM users
 WHERE column_name REGEXP '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
 ```
 
+### INTERSECT EXCEPT
+```
+SELECT country FROM people
+INTERSECT
+SELECT country FROM customers;
+
+SELECT country FROM people
+EXCEPT
+SELECT country FROM customers;
+```
+
 ### SUBSTRING , SUBSTRING_INDEX, POSITION and REPLACE
 ```
 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(column_name, 'key=', -1), ';', 1) AS value
