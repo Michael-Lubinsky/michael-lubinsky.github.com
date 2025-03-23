@@ -1,5 +1,5 @@
 ### duplicates
-```
+```python
 df \
 .groupby(['column1', 'column2']) \
 .count() \
@@ -9,8 +9,9 @@ df \
 
 df.dropDuplicates(['id', 'name']).show()
 ```
+https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
 ### sum(column)
-```
+```python
 data = [("John Doe", "john@example.com", 50000.0),
     ("Jane Smith", "jane@example.com", 60000.0),
     ("Bob Johnson", "bob@example.com", 55000.0)]
@@ -26,7 +27,7 @@ df_final=df.agg(sum(col("salary")).alias("total_salary")).first()[0]
 ```
 
 ### collect_list, collect_set
-```
+```python
 data=[(1,'Watson',34),(1,'Watson',40),(1,'Watson',34),(2,'Alex',45),(2,'Alex',50)]
 schema="ID int,Name string,Marks int"
 df=spark.createDataFrame(data,schema)
@@ -40,7 +41,7 @@ display(df_final)
 
 
 ### rlike
-```pyspark
+```python
 from pyspark.sql.types import *
 schema = StructType([
   StructField("ProductCode", StringType(), True),
@@ -67,7 +68,7 @@ df_final.show()
 ```
 
 ### explode, explode_outer
-```
+```python
 data=[('Paris','Polo, Tennis'),('Matt','Golf, Hockey'),('Sam',None)]
 schema="Person string,Games string"
 df=spark.createDataFrame(data,schema)
@@ -81,7 +82,7 @@ df_final.select("Person",explode(col("Games")).alias("Games")).display()
 
 
 ### year, start_week_date, end_week_date, week_num
-```
+```python
 from pyspark.sql.types import *
 data=[(2025,1,'2025-01-01'),
       (2025,1,'2025-01-02'),
@@ -154,10 +155,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, TimestampType
 from datetime import datetime
 
-# Initialize Spark Session
 spark = SparkSession.builder.appName("TwitterAnalysis").getOrCreate()
 
-# Define schema
 schema = StructType([
     StructField("tweet_id", IntegerType(), True),
     StructField("user_id", IntegerType(), True),
@@ -165,7 +164,6 @@ schema = StructType([
     StructField("tweet_date", TimestampType(), True)
 ])
 
-# Create sample data
 data = [
     (214252, 111, "Am considering taking Tesla private at $420. Funding secured.", datetime(2021, 12, 30, 0, 0, 0)),
     (739252, 111, "Despite the constant negative press covfefe", datetime(2022, 1, 1, 0, 0, 0)),
@@ -179,7 +177,6 @@ data = [
     (543210, 555, "Machine Learning is the future!", datetime(2022, 9, 30, 0, 0, 0))
 ]
 
-# Create DataFrame
 tweets_df = spark.createDataFrame(data, schema=schema)
 
 tweets_2022 = (tweets_df
@@ -188,7 +185,7 @@ tweets_2022 = (tweets_df
     .agg(count("tweet_id").alias("tweet_count_per_user"))
 )
 
-# Step 2: Count users in each tweet bucket
+# Count users in each tweet bucket
 histogram_df = (tweets_2022
     .groupBy("tweet_count_per_user")
     .agg(count("user_id").alias("users_num"))
@@ -207,7 +204,7 @@ For each FAANG stock, we need to:
 - Find the lowest opening price and its corresponding month-year.  
 - Sort the results by ticker symbol.
 
-```
+```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, date_format, rank
 from pyspark.sql.window import Window
