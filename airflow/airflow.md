@@ -1,6 +1,8 @@
 
 ### Airflow
 
+https://medium.com/apache-airflow/apache-airflow-2-0-tutorial-41329bbf7211
+
 https://medium.com/indiciumtech/apache-airflow-best-practices-bc0dd0f65e3f
 
 https://medium.com/datavidhya/understand-apache-airflow-like-never-before-311c00ef0e5a 
