@@ -44,15 +44,6 @@ df_join.write.parquet(path)
 
 ```
 
-
-## Apache Spark 4.0
- 
-https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
-
-### Databricks
-
-https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
-
  Avoid using count() Action
 ```python
 df = sqlContext.read().json(...);
@@ -86,6 +77,41 @@ providing a scalable solution when the cardinality of unique values is high.
 However, for datasets with a limited number of distinct values,
 partitioning is often a more efficient approach.
  
+
+####  Broadcast small DataFrames
+
+ Example of a broadcast join
+```python 
+from pyspark.sql.functions import broadcast
+
+small_df = spark.read.csv(“small_data.csv”)
+large_df = spark.read.csv(“large_data.csv”)
+
+joined_df = large_df.join(broadcast(small_df), “key”)
+```
+#### ReduceByKey over GroupByKey: 
+Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
+
+
+#### Spark Config
+```
+spark.executor.memory  
+spark.executor.cores    
+spark.sql.files.maxPartitionBytes: This parameter controls the size of each partition.
+
+spark.conf.set(“spark.sql.adaptive.enabled”, “true”)  Enable AQE
+spark.conf.set(“spark.sql.adaptive.enabled”, “true”)      Skew Join Optimization
+spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join Optimization
+```
+
+
+## Apache Spark 4.0
+ 
+https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
+
+### Databricks
+
+https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
 
 ### Links
 
@@ -150,30 +176,7 @@ Small DataFrame? Go for Broadcast Join.
 Large, Pre-Sorted DataFrames? Sort-Merge Join is your friend.
 Unsorted, Massive Data? Use Shuffle Hash Join, but be mindful of its performance impact.
 ```
-####  Broadcast small DataFrames
 
- Example of a broadcast join
-``` 
-from pyspark.sql.functions import broadcast
-
-small_df = spark.read.csv(“small_data.csv”)
-large_df = spark.read.csv(“large_data.csv”)
-
-joined_df = large_df.join(broadcast(small_df), “key”)
-```
-#### ReduceByKey over GroupByKey: 
-Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
-
-
-#### Spark Config
-
-spark.executor.memory  
-spark.executor.cores    
-spark.sql.files.maxPartitionBytes: This parameter controls the size of each partition.
-
-spark.conf.set(“spark.sql.adaptive.enabled”, “true”)  Enable AQE
-spark.conf.set(“spark.sql.adaptive.enabled”, “true”)      Skew Join Optimization
-spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join Optimization
 
 ### Caching
 
