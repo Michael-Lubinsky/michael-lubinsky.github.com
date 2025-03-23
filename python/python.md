@@ -21,6 +21,18 @@ role = UserRole.ADMIN
 print(role)  # UserRole.ADMIN
 print(role.value)  # 1
 ```
+
+### Dictionary
+
+If you use [] to access a non-existent key, you’ll get a KeyError.   
+But if you use .get(), you’ll get None (or a default value you specify).
+
+Merging dictionaries:
+```python
+dict1 = {'a': 1, 'b': 2}
+dict2 = {'b': 3, 'c': 4}
+merged_dict = dict1 | dict2
+```
 ### dataclass
 ```python
 from dataclasses import dataclass
