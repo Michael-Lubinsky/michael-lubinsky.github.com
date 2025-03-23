@@ -69,6 +69,12 @@ ON P.id = C.parent_id
 GROUP BY P.parent_name
 ```
 
+### COALESCE - returns 1st not null value
+```sql
+SELECT COALESCE(column1, column2, 'default_value') AS result
+FROM table_name;
+```
+
 ### GREATEST and LEAST
 ```sql
 SELECT
@@ -76,6 +82,30 @@ GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
 LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
 ```
 
+### JSON
+```sql
+SELECT JSON_VALUE(customer_data, '$.name') AS name, 
+JSON_VALUE(customer_data, '$.age') AS age
+FROM support_logs;
+```
+
+### REGEX
+```sql
+SELECT column_name
+FROM table_name
+WHERE column_name REGEXP 'pattern';
+
+
+SELECT column_name
+FROM users
+WHERE column_name REGEXP '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
+```
+
+### SUBSTRING , SUBSTRING_INDEX, POSITION and REPLACE
+```
+SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(column_name, 'key=', -1), ';', 1) AS value
+FROM table_name;
+```
 ## Window functions
 
 ### example:
