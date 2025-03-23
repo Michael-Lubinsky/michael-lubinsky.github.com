@@ -39,7 +39,10 @@ dict1 = {'a': 1, 'b': 2}
 dict2 = {'b': 3, 'c': 4}
 merged_dict = dict1 | dict2
 ```
-### dataclass
+### Dataclass
+frozen=True   
+order=True  
+kw_value=True
 ```python
 from dataclasses import dataclass
 @dataclass(kw_only=True)
@@ -49,6 +52,24 @@ class Example
 
 ex1=Example(a=1, b=2)  
 ex2=Example(1,2) # error
+
+
+@dataclass
+class Rectangle:
+    width: float
+    height: float
+
+    @property
+    def area(self) -> float:
+        return self.width * self.height
+
+    @property
+    def perimeter(self) -> float:
+        return 2 * (self.width + self.height)
+
+rectangle = Rectangle(10, 20)
+print(rectangle.area)       # Outputs: 200
+print(rectangle.perimeter)  # Outputs: 60
 ```
 ### Dataclass and Enum example:
 ```python
