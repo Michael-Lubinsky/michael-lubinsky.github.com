@@ -520,8 +520,10 @@ https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
 
 https://habr.com/ru/articles/562380/ Statistics
 
-### SimPy - discrete event simulation
+### Discrete event simulation SimPy, Salabim
+<https://en.wikipedia.org/wiki/Discrete-event_simulation>
 <https://simpy.readthedocs.io/en/latest/>
 <https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
+<https://github.com/salabim/salabim>
 
 
