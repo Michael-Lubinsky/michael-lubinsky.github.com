@@ -82,6 +82,19 @@ GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
 LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
 ```
 
+### correlated subquery usually slow
+Second highest salary per department
+```sql
+SELECT department_id, MAX(salary) AS second_highest_salary 
+FROM employees 
+WHERE salary < ( 
+    SELECT MAX(salary) 
+    FROM employees e 
+    WHERE e.department_id = employees.department_id 
+) 
+GROUP BY department_id;
+```
+
 ### JSON
 ```sql
 SELECT JSON_VALUE(customer_data, '$.name') AS name, 
@@ -211,8 +224,19 @@ ORDER BY t
 ```
 
 
+
+#### rolling average sales for each day over the past 7 days.
 ```sql
--- calculate the average amount in a frame of three days:
+SELECT 
+    sale_date, 
+    sales_amount, 
+    AVG(sales_amount) OVER
+   (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_avg_7_days 
+FROM daily_sales;
+```
+#### calculate the average amount in a frame of three days
+
+```sql
 -- previous row (1 preceding) and the subsequent row (1 following).
 WITH data (t, a) AS (
   VALUES(1, 1),
