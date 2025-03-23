@@ -57,6 +57,16 @@ GROUP BY A;
 
 <https://modern-sql.com/use-case/pivot>
 
+### HAVING 
+
+Find customers who made their first order in the last month.
+```sql
+SELECT customer_id, MIN(order_date) AS first_order_date 
+FROM orders 
+GROUP BY customer_id 
+HAVING MIN(order_date) >= DATEADD(month, -1, GETDATE());
+```
+
 ### GROUP_CONCAT
 There are 2 tables with 1 : M relation. The join output shall have 2 columns: 
 1st column - from Parent table and  
