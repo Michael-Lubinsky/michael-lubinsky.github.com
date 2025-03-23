@@ -130,7 +130,8 @@ SELECT
     FIRST_VALUE(year_of_release) OVER (PARTITION BY platform ORDER BY year_of_release)
     AS first_sales,
     LAST_VALUE(year_of_release) OVER
-    (PARTITION BY platform ORDER BY year_of_release RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
+    (PARTITION BY platform
+    ORDER BY year_of_release RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
 AS last_sales
 FROM 
     video_games;
@@ -150,6 +151,8 @@ For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no
 
 
 ROWS UNBOUNDED PRECEDING means: the frame's lower bound is simply infinite. 
+UNBOUNDED FOLLOWING means: all rows after the current row  
+
 This is useful when calculating sums (i.e. "running totals"), for instance:
 ```sql
 WITH data (t, a) AS (
@@ -167,7 +170,8 @@ ORDER BY t
 
 
 ```sql
--- calculate the average amount in a frame of three days: previous row (1 preceding) and the subsequent row (1 following).
+-- calculate the average amount in a frame of three days:
+-- previous row (1 preceding) and the subsequent row (1 following).
 WITH data (t, a) AS (
   VALUES(1, 1),
         (2, 5),
