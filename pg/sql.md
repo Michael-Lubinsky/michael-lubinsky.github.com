@@ -328,3 +328,4 @@ from (select rownum n, val from data) t;
 
 <https://medium.com/@mariusz_kujawski/advanced-sql-for-data-professionals-875ab725730c>  
 <https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>
+<https://skphd.medium.com/sql-scenario-based-interview-questions-and-answers-08d6ca4bcabf>
