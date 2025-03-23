@@ -7,6 +7,9 @@ What is the probability that they don't collide>
 
 Answer: All three should move in the same direction - clockwise or anticlockwise. Probability is 1/4. 
 
+
+Question: how many 0s at the end of  n!
+
 ## Links
 
 <https://www.mathpages.com/home/iprobabi.htm>
