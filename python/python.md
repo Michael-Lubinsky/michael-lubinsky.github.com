@@ -56,6 +56,8 @@ dict2 = {'b': 3, 'c': 4}
 merged_dict = dict1 | dict2
 ```
 ### Dataclass
+Automatically generates methods like __init__() and __repr__().
+
 frozen=True   
 order=True  
 kw_value=True
@@ -67,7 +69,7 @@ class Example
   b: int
 
 ex1=Example(a=1, b=2)  
-ex2=Example(1,2) # error
+ex2=Example(1,2) # error, because it expects key=value
 
 
 @dataclass
