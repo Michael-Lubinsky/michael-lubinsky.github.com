@@ -1,7 +1,167 @@
-## Example
+### Example
+
+Given: dataset containing Twitter tweets.  
+Goal: create a histogram of tweets posted per user in 2022. 
+
+The output should show:  
+
+- The number of tweets per user (tweet count per user = bucket)  
+- The number of users in each bucket
+
+SQL solution:
+```sql
+WITH CTE AS (
+    SELECT USER_ID, COUNT(TWEET_ID) AS tweet_count_per_user
+    FROM tweets
+    WHERE EXTRACT(YEAR FROM TWEET_DATE) = 2022
+    GROUP BY USER_ID
+)
+
+SELECT tweet_count_per_user AS tweet_bucket, COUNT(USER_ID) AS users_num
+FROM CTE 
+GROUP BY tweet_count_per_user
+ORDER BY tweet_count_per_user;
+
++-------------------+-------------+
+|tweet_count_per_user | users_num |
++-------------------+-------------+
+|                 1 |           3 |
+|                 2 |           1 |
+|                 3 |           1 |
++-------------------+-------------+
+```
+
+PySpark solution:
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, TimestampType
+from datetime import datetime
+
+# Initialize Spark Session
+spark = SparkSession.builder.appName("TwitterAnalysis").getOrCreate()
+
+# Define schema
+schema = StructType([
+    StructField("tweet_id", IntegerType(), True),
+    StructField("user_id", IntegerType(), True),
+    StructField("msg", StringType(), True),
+    StructField("tweet_date", TimestampType(), True)
+])
+
+# Create sample data
+data = [
+    (214252, 111, "Am considering taking Tesla private at $420. Funding secured.", datetime(2021, 12, 30, 0, 0, 0)),
+    (739252, 111, "Despite the constant negative press covfefe", datetime(2022, 1, 1, 0, 0, 0)),
+    (846402, 111, "Following @NickSinghTech on Twitter changed my life!", datetime(2022, 2, 14, 0, 0, 0)),
+    (241425, 254, "If the salary is so competitive why won’t you tell me what it is?", datetime(2022, 3, 1, 0, 0, 0)),
+    (231574, 148, "I no longer have a manager. I can't be managed", datetime(2022, 3, 23, 0, 0, 0)),
+    (987654, 333, "Data Science is amazing!", datetime(2022, 5, 10, 0, 0, 0)),
+    (876543, 333, "SQL is an essential skill for Data Engineers.", datetime(2022, 6, 15, 0, 0, 0)),
+    (765432, 333, "Mastering PySpark for big data processing.", datetime(2022, 7, 20, 0, 0, 0)),
+    (654321, 444, "Love writing SQL queries!", datetime(2022, 8, 25, 0, 0, 0)),
+    (543210, 555, "Machine Learning is the future!", datetime(2022, 9, 30, 0, 0, 0))
+]
+
+# Create DataFrame
+tweets_df = spark.createDataFrame(data, schema=schema)
+
+tweets_2022 = (tweets_df
+    .filter(year(col("tweet_date")) == 2022)
+    .groupBy("user_id")
+    .agg(count("tweet_id").alias("tweet_count_per_user"))
+)
+
+# Step 2: Count users in each tweet bucket
+histogram_df = (tweets_2022
+    .groupBy("tweet_count_per_user")
+    .agg(count("user_id").alias("users_num"))
+    .orderBy("tweet_count_per_user")
+)
+
+# Show result
+histogram_df.show()
+```
+
+### Example
+
+For each FAANG stock, we need to:
+
+- Find the highest opening price and its corresponding month-year (Mon-YYYY).  
+- Find the lowest opening price and its corresponding month-year.  
+- Sort the results by ticker symbol.
+
+```
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, date_format, rank
+from pyspark.sql.window import Window
+
+
+#Initialize Spark Session
+spark = SparkSession.builder.appName("FAANG Stock Analysis").getOrCreate()
+
+# Sample dataset with 3-4 records per unique ticker
+data = [
+    ("2023-01-31", "AAPL", 142.28, 144.34, 142.70, 144.29),
+    ("2023-02-28", "AAPL", 146.83, 149.08, 147.05, 147.41),
+    ("2023-03-31", "AAPL", 161.91, 165.00, 162.44, 164.90),
+    ("2023-04-30", "AAPL", 167.88, 169.85, 168.49, 169.68),
+    ("2023-01-31", "AMZN", 98.32, 101.26, 98.90, 100.55),
+    ("2023-02-28", "AMZN", 102.50, 105.62, 103.12, 104.45),
+    ("2023-03-31", "AMZN", 109.12, 112.50, 110.32, 111.85),
+    ("2023-01-31", "NFLX", 320.45, 325.50, 321.90, 324.60),
+    ("2023-02-28", "NFLX", 328.20, 332.45, 329.10, 331.25),
+    ("2023-03-31", "NFLX", 335.90, 340.80, 337.40, 339.75),
+    ("2023-01-31", "GOOGL", 88.56, 91.22, 89.34, 90.75),
+    ("2023-02-28", "GOOGL", 92.78, 95.43, 93.45, 94.80),
+    ("2023-03-31", "GOOGL", 97.34, 100.12, 98.23, 99.75)
+]
+
+columns = ["date", "ticker", "open", "high", "low", "close"]
+stock_prices = spark.createDataFrame(data, columns)
+
+# Convert date column to timestamp
+stock_prices = stock_prices.withColumn("date", col("date").cast("timestamp"))
+
+# Extract month-year column
+stock_prices = stock_prices.withColumn("month_year", date_format(col("date"), "MMM-yyyy"))
+
+# Define window partitioned by ticker and ordered by open price
+window_high = Window.partitionBy("ticker").orderBy(col("open").desc())
+window_low = Window.partitionBy("ticker").orderBy(col("open"))
+
+# Rank highest and lowest open prices
+stock_ranked = stock_prices \
+    .withColumn("rank_high", rank().over(window_high)) \
+    .withColumn("rank_low", rank().over(window_low))
+
+# Get highest and lowest open price records
+highest_open_df = stock_ranked.filter(col("rank_high") == 1).select("ticker", "month_year", col("open").alias("highest_open"))
+lowest_open_df = stock_ranked.filter(col("rank_low") == 1).select("ticker", "month_year", col("open").alias("lowest_open"))
+
+# Rename columns for joining
+highest_open_df = highest_open_df.withColumnRenamed("month_year", "highest_mth")
+lowest_open_df = lowest_open_df.withColumnRenamed("month_year", "lowest_mth")
+
+# Join both DataFrames on ticker
+result_df = highest_open_df.join(lowest_open_df, "ticker").orderBy("ticker")
+
+result_df.show()
+
++------+-----------+------------+-----------+------------+
+|ticker|highest_mth|highest_open|lowest_mth|lowest_open  |
++------+-----------+------------+-----------+------------+
+| AAPL | Apr-2023  | 167.88     | Jan-2023  | 142.28     |
+| AMZN | Mar-2023  | 109.12     | Jan-2023  | 98.32      |
+| GOOGL| Mar-2023  | 97.34      | Jan-2023  | 88.56      |
+| NFLX | Mar-2023  | 335.90     | Jan-2023  | 320.45     |
++------+-----------+------------+-----------+------------+
+```  
+
+
+### Example
 ```
 Input: dataset containing user transactions,
-Goal: is to calculate the YoY growth rate for total product spend. 
+Goal: to calculate the YoY growth rate for total product spend. 
 The output should include:
 
 - Year (sorted in ascending order)
