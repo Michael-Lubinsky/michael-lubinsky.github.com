@@ -522,5 +522,6 @@ https://habr.com/ru/articles/562380/ Statistics
 
 ### SimPy - discrete event simulation
 <https://simpy.readthedocs.io/en/latest/>
+<https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
 
 
