@@ -1,6 +1,8 @@
 ### Salting: solution for sqew join
 
-Problem statement: 7 records out of 10 in the first table has the value 1 - it means all off them goes to same executor
+Problem statement:  
+7 records out of 10 in the first table has the value 1 - it means all of them goes to same executor   
+in following code:
 ```python
 df_1 = spark.read.load("abc").select("id","col_a","col_b" )  #15GB
 df_2 = spark.read.load("xyz").select("id","col_c") #6GB
@@ -11,15 +13,15 @@ df_join.write.parquet(path)
 
 Salting:
 
-Step 1: We choose a salt number range (0 to X) — let’s call this salt_num
+- Step 1: We choose a salt number range (0 to X) — let’s call this salt_num
 
-Step 2: To big dataset, we add a column called id_salted which will be  
+- Step 2: To big dataset, we add a column called id_salted which will be  
 CONCAT(id, ‘_’, random(0,salt_number-1))
 
-Step 3: Explode the smaller of the 2 datasets to contain all combination of records from salt number 0 to X.
-So, this table will have ( N * salt_num  )number of records post explosion.
+- Step 3: Explode the smaller of the 2 datasets to contain all combination of records from salt number 0 to X.   
+So, this table will have ( N * salt_num ) number of records post explosion.
 
-Step 4: Join on this new “id_salted”
+- Step 4: Join on this new “id_salted”
 
 
 ```python
@@ -43,7 +45,7 @@ df_join.write.parquet(path)
 ```
 
 
-## Apache Spark 4.0:
+## Apache Spark 4.0
  
 https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
 
