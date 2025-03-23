@@ -85,7 +85,9 @@ However, for datasets with a limited number of distinct values,
 partitioning is often a more efficient approach.
  
 
+### Links
 
+https://medium.com/@krthiak/a-pyspark-interview-questions-day-71-of-100-days-of-data-engineering-ai-and-azure-challenge-f11ef54cd6d0
 
 https://medium.com/@rames1000
 
