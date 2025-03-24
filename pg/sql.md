@@ -325,7 +325,7 @@ from (select rownum n, val from data) t;
 
 ```
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
-
+<https://medium.com/@shaloomathew/sql-window-functions-part-1-40aff4421077>  
 <https://medium.com/@mariusz_kujawski/advanced-sql-for-data-professionals-875ab725730c>  
-<https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>
+<https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>  
 <https://skphd.medium.com/sql-scenario-based-interview-questions-and-answers-08d6ca4bcabf>
