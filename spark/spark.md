@@ -1,4 +1,4 @@
-### Salting: solution for sqew join
+### Salting: solution for sqewed data in join
 
 Problem statement:  
 7 records out of 10 in the first table has the value 1 - it means all of them goes to same executor   
