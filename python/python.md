@@ -59,7 +59,11 @@ string.removesuffix(suffix)
 If you use [] to access a non-existent key, you’ll get a KeyError.   
 But if you use .get(), you’ll get None (or a default value you specify).
 
-Merging dictionaries:
+```python
+dictionary.get(key, default=None)
+```
+
+#### Merging dictionaries:
 ```python
 dict1 = {'a': 1, 'b': 2}
 dict2 = {'b': 3, 'c': 4}
