@@ -2,7 +2,7 @@
 PRAGMA synchronous=FULL
 
 
-#### Upload parquet file to sqlite
+#### Upload parquet file to SQLite
 
 ```python
 import pandas as pd 
@@ -13,10 +13,11 @@ db_conn = sqlite3.connect(database='/tmp/my.db')
 
 df_parquet = pd.read_parquet(parquet_path)
 table_name = 'my_data_table'
-num_rows_inserted = df_parquet.to_sql(table_name, db_conn, index=False)
+num_rows_inserted = df_parquet.to_sql(table_name, db_conn, if_exists="replace", index=False)
 
 query = f"SELECT * from {table_name}"
 cursor = db_conn.execute(query)
+db_conn.close()
 ```
 
 #### How to run a SQL query  against a CSV file using the sqlite3
