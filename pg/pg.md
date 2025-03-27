@@ -6,7 +6,27 @@ SELECT table_schema, table_name, column_name, data_type, is_nullable
 FROM information_schema.columns  
 WHERE table_name = 'my_table_here'; 
 ```
+### Reading records by column name (Python)
+```python
+import psycopg2
+from psycopg2.extras import DictCursor
+conn = psycopg2.connect(
+    dbname="your_database",
+    user="your_username",
+    password="your_password",
+    host="localhost",
+    port="5432"
+)
+cursor = conn.cursor(cursor_factory=DictCursor)
+cursor.execute("SELECT id, name, age FROM your_table")
+records = cursor.fetchall()
 
+# Access columns by name
+for record in records:
+    print(f"ID: {record['id']}, Name: {record['name']}, Age: {record['age']}")
+cursor.close()
+conn.close()
+```
 
 ### Values
 ```sql
