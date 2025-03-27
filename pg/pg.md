@@ -38,13 +38,18 @@ WITH sv(sex, value) AS (
      VALUES(0, 'мужской'), (1, 'женский'), (2, 'не знаю')
 )
 SELECT fullname, sv.value FROM "user" INNER JOIN sv USING(sex);
-
 ```
-
-
 ### UNNEST
 ```sql
 select unnest(array[1,2,3]) as id
+
+Output:
+ id 
+----
+  1
+  2
+  3
+(3 rows)
 ```
 ### Generate series
 
