@@ -97,9 +97,10 @@ For databases using Write-Ahead Logging (WAL), this command runs a checkpoint to
 PRAGMA wal_checkpoint;
 5.4. PRAGMA optimize
 Optimizes the database by updating query plans and rebuilding indices.
+ PRAGMA optimize;
 ```
-#### PRAGMA optimize;
-6. Write-Ahead Logging (WAL)
+
+#### 6. Write-Ahead Logging (WAL)
 ```
 6.1. PRAGMA journal_mode
 Controls the journaling mode for transactions.
