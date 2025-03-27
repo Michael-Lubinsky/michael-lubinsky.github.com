@@ -36,3 +36,4 @@ A full list of output modes can be seen like this:
      tabs      Tab-separated values
      tcl       TCL list elements
 ```
+<https://til.simonwillison.net/sqlite/one-line-csv-operations>
