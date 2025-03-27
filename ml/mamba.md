@@ -4,6 +4,10 @@ https://realpython.com/python-for-data-analysis/
 
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
+### Self-attention implementation
+
+https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
+
 ### Automatic differentiation
 
 https://huggingface.co/blog/andmholm/what-is-automatic-differentiation
