@@ -3,7 +3,8 @@
 ### PRAGMA 
 PRAGMA statements can be executed like SQL commands
 
-1. General PRAGMA Commands
+#### 1. General PRAGMA Commands
+   
 ```
 1.1. PRAGMA database_list
 Lists all attached databases and their file paths.
@@ -185,7 +186,7 @@ cursor = db_conn.execute(query)
 db_conn.close()
 ```
 
-#### How to run a SQL query  against a CSV file using the sqlite3
+#### Run SQL query against CSV file using SQLite
 
 ```sql
 sqlite3 :memory: -cmd '.import -csv taxi.csv taxi' \
