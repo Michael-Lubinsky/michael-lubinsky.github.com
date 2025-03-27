@@ -1,14 +1,12 @@
 
 ### Airflow
 
-#### Communtication between tasks (instead of XCOM)
+#### TaskFlow API with Direct Communication (instead of Xcoms)
 
 Apache Airflow (starting from version 2.4), a new feature called TaskFlow-decorated functions
 with direct task-to-task communication has been introduced.
 This mechanism allows tasks to pass data to each other directly without relying on XComs. 
 
-TaskFlow API with Direct Communication
---------------------------------------
 Using the TaskFlow API, you can define tasks as Python functions and pass outputs from one task as inputs to another. 
 Airflow handles the passing of data internally, bypassing the need to explicitly push and pull XComs.
 
