@@ -1,6 +1,170 @@
 ### SQLite
-PRAGMA synchronous=FULL
 
+### PRAGMA 
+PRAGMA statements can be executed like SQL commands
+
+1. General PRAGMA Commands
+```
+1.1. PRAGMA database_list
+Lists all attached databases and their file paths.
+
+PRAGMA database_list;
+1.2. PRAGMA schema_version
+Returns the schema version of the database.
+
+PRAGMA schema_version;
+1.3. PRAGMA user_version
+Used to store an application-defined version number for the database schema.
+
+-- Set the version
+PRAGMA user_version = 1;
+
+-- Retrieve the version
+PRAGMA user_version;
+```
+#### 2. Optimization and Performance
+```
+2.1. PRAGMA cache_size
+Sets or queries the number of database pages SQLite will keep in memory.
+
+-- Set cache size to 2000 pages
+PRAGMA cache_size = 2000;
+
+-- Query current cache size
+PRAGMA cache_size;
+2.2. PRAGMA synchronous
+Controls how often SQLite writes changes to disk, balancing performance and durability.
+
+Modes:
+
+OFF: Fast but risks data loss in case of a crash.
+
+NORMAL: Default mode; writes are flushed at key points.
+
+FULL: Ensures all changes are fully written to disk, safest but slower.
+
+-- Set synchronous mode to NORMAL
+PRAGMA synchronous = NORMAL;
+2.3. PRAGMA temp_store
+Specifies where temporary tables and indices are stored.
+
+Options: DEFAULT, FILE, MEMORY
+
+-- Store temporary tables in memory
+PRAGMA temp_store = MEMORY;
+```
+#### 3. Foreign Key Constraints
+```
+3.1. PRAGMA foreign_keys
+Enables or disables foreign key constraints.
+
+Default is OFF, so it must be explicitly enabled.
+
+-- Enable foreign key constraints
+PRAGMA foreign_keys = ON;
+
+-- Check if foreign keys are enabled
+PRAGMA foreign_keys;
+```
+#### 4. Security
+```
+4.1. PRAGMA case_sensitive_like
+Controls whether the LIKE operator is case-sensitive.
+
+Default is OFF (case-insensitive).
+
+-- Make LIKE case-sensitive
+PRAGMA case_sensitive_like = ON;
+4.2. PRAGMA cipher (for encrypted databases)
+If you use an encryption extension (like SQLCipher), this is used to configure encryption settings.
+
+-- Set database encryption key (if supported)
+PRAGMA key = 'my_secret_key';
+```
+#### 5. Database Integrity and Maintenance
+```
+5.1. PRAGMA integrity_check
+Runs a consistency check on the database to detect corruption.
+
+PRAGMA integrity_check;
+5.2. PRAGMA quick_check
+A faster, less thorough integrity check.
+
+PRAGMA quick_check;
+5.3. PRAGMA wal_checkpoint
+For databases using Write-Ahead Logging (WAL), this command runs a checkpoint to write WAL data back to the main database.
+
+PRAGMA wal_checkpoint;
+5.4. PRAGMA optimize
+Optimizes the database by updating query plans and rebuilding indices.
+```
+#### PRAGMA optimize;
+6. Write-Ahead Logging (WAL)
+```
+6.1. PRAGMA journal_mode
+Controls the journaling mode for transactions.
+
+Options: DELETE, TRUNCATE, PERSIST, MEMORY, WAL, OFF
+
+Write-Ahead Logging (WAL): Improves concurrency and performance.
+
+-- Set journal mode to WAL
+PRAGMA journal_mode = WAL;
+
+-- Check current journal mode
+PRAGMA journal_mode;
+6.2. PRAGMA wal_autocheckpoint
+Sets the number of pages before an automatic checkpoint occurs in WAL mode.
+
+-- Set checkpoint to occur every 1000 pages
+PRAGMA wal_autocheckpoint = 1000;
+```
+#### 7. Miscellaneous
+```
+7.1. PRAGMA encoding
+Specifies the text encoding for the database.
+
+Common values: UTF-8, UTF-16
+
+PRAGMA encoding = "UTF-8";
+7.2. PRAGMA page_size
+Returns or sets the size of a single page in bytes. Impacts database performance.
+
+-- Set page size to 4096 bytes
+PRAGMA page_size = 4096;
+
+-- Get current page size
+PRAGMA page_size;
+7.3. PRAGMA locking_mode
+Controls how the database locking mechanism operates.
+
+Modes: NORMAL, EXCLUSIVE
+
+PRAGMA locking_mode = EXCLUSIVE;
+```
+#### Using PRAGMA in Python
+You can execute PRAGMA commands in Python using sqlite3 like this:
+
+```python
+import sqlite3
+
+# Connect to the SQLite database
+conn = sqlite3.connect("example.db")
+cursor = conn.cursor()
+
+# Enable foreign key constraints
+cursor.execute("PRAGMA foreign_keys = ON;")
+
+# Set cache size
+cursor.execute("PRAGMA cache_size = 1000;")
+
+# Query PRAGMA settings
+cursor.execute("PRAGMA journal_mode;")
+print(cursor.fetchone())
+
+# Close the connection
+conn.close()
+```
 
 #### Upload parquet file to SQLite
 
