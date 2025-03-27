@@ -1,6 +1,20 @@
 ### SQLite
 <https://sqlitebrowser.org/>
 
+#### Reading records by the column name (Python)
+Dictionary-like Object: sqlite3.Row allows both index-based and name-based access to columns.
+```python
+import sqlite3
+conn = sqlite3.connect("your_database.db")
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
+cursor.execute("SELECT id, name, age FROM your_table")
+records = cursor.fetchall()
+for record in records:
+    print(f"ID: {record['id']}, Name: {record['name']}, Age: {record['age']}")
+conn.close()
+```
+
 PRAGMA statements can be executed like SQL commands
 
 #### 1. General PRAGMA Commands
