@@ -1,6 +1,5 @@
 ### SQLite
 
-### PRAGMA 
 PRAGMA statements can be executed like SQL commands
 
 #### 1. General PRAGMA Commands
@@ -8,12 +7,12 @@ PRAGMA statements can be executed like SQL commands
 ```
 1.1. PRAGMA database_list
 Lists all attached databases and their file paths.
-
 PRAGMA database_list;
+
 1.2. PRAGMA schema_version
 Returns the schema version of the database.
-
 PRAGMA schema_version;
+
 1.3. PRAGMA user_version
 Used to store an application-defined version number for the database schema.
 
@@ -30,9 +29,9 @@ Sets or queries the number of database pages SQLite will keep in memory.
 
 -- Set cache size to 2000 pages
 PRAGMA cache_size = 2000;
-
 -- Query current cache size
 PRAGMA cache_size;
+
 2.2. PRAGMA synchronous
 Controls how often SQLite writes changes to disk, balancing performance and durability.
 
@@ -43,12 +42,12 @@ OFF: Fast but risks data loss in case of a crash.
 NORMAL: Default mode; writes are flushed at key points.
 
 FULL: Ensures all changes are fully written to disk, safest but slower.
-
 -- Set synchronous mode to NORMAL
 PRAGMA synchronous = NORMAL;
-2.3. PRAGMA temp_store
-Specifies where temporary tables and indices are stored.
 
+2.3. PRAGMA temp_store
+
+Specifies where temporary tables and indices are stored.
 Options: DEFAULT, FILE, MEMORY
 
 -- Store temporary tables in memory
@@ -58,7 +57,6 @@ PRAGMA temp_store = MEMORY;
 ```
 3.1. PRAGMA foreign_keys
 Enables or disables foreign key constraints.
-
 Default is OFF, so it must be explicitly enabled.
 
 -- Enable foreign key constraints
@@ -73,11 +71,12 @@ PRAGMA foreign_keys;
 Controls whether the LIKE operator is case-sensitive.
 
 Default is OFF (case-insensitive).
-
 -- Make LIKE case-sensitive
 PRAGMA case_sensitive_like = ON;
+
 4.2. PRAGMA cipher (for encrypted databases)
-If you use an encryption extension (like SQLCipher), this is used to configure encryption settings.
+If you use an encryption extension (like SQLCipher),
+this is used to configure encryption settings.
 
 -- Set database encryption key (if supported)
 PRAGMA key = 'my_secret_key';
@@ -92,10 +91,13 @@ PRAGMA integrity_check;
 A faster, less thorough integrity check.
 
 PRAGMA quick_check;
+
 5.3. PRAGMA wal_checkpoint
-For databases using Write-Ahead Logging (WAL), this command runs a checkpoint to write WAL data back to the main database.
+For databases using Write-Ahead Logging (WAL),
+this command runs a checkpoint to write WAL data back to the main database.
 
 PRAGMA wal_checkpoint;
+
 5.4. PRAGMA optimize
 Optimizes the database by updating query plans and rebuilding indices.
  PRAGMA optimize;
@@ -105,16 +107,14 @@ Optimizes the database by updating query plans and rebuilding indices.
 ```
 6.1. PRAGMA journal_mode
 Controls the journaling mode for transactions.
-
 Options: DELETE, TRUNCATE, PERSIST, MEMORY, WAL, OFF
-
 Write-Ahead Logging (WAL): Improves concurrency and performance.
 
 -- Set journal mode to WAL
 PRAGMA journal_mode = WAL;
-
 -- Check current journal mode
 PRAGMA journal_mode;
+
 6.2. PRAGMA wal_autocheckpoint
 Sets the number of pages before an automatic checkpoint occurs in WAL mode.
 
@@ -125,10 +125,10 @@ PRAGMA wal_autocheckpoint = 1000;
 ```
 7.1. PRAGMA encoding
 Specifies the text encoding for the database.
-
 Common values: UTF-8, UTF-16
 
 PRAGMA encoding = "UTF-8";
+
 7.2. PRAGMA page_size
 Returns or sets the size of a single page in bytes. Impacts database performance.
 
@@ -137,6 +137,7 @@ PRAGMA page_size = 4096;
 
 -- Get current page size
 PRAGMA page_size;
+
 7.3. PRAGMA locking_mode
 Controls how the database locking mechanism operates.
 
