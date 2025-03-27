@@ -1,4 +1,5 @@
 ### SQLite
+<https://sqlitebrowser.org/>
 
 PRAGMA statements can be executed like SQL commands
 
