@@ -111,6 +111,8 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 <https://panel.holoviz.org/>
 
+<https://huijzer.xyz/posts/cetz-plot-speed/>
+
 ### HighCharts
 
 https://www.highcharts.com/
