@@ -7,7 +7,10 @@ https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-pyth
 
 https://medium.com/the-forecaster/the-complete-introduction-to-time-series-classification-in-python-6af967b16dc9
 
+### Matrix profile
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
+
+<https://aneksteind.github.io/posts/2025-03-26.html> Matrix profile
 
 Time Series Aggregation with pandas
 
