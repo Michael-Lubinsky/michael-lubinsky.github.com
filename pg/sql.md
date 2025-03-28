@@ -172,6 +172,13 @@ SELECT country FROM customers;
 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(column_name, 'key=', -1), ';', 1) AS value
 FROM table_name;
 ```
+### ESCAPE
+```
+SELECT *
+FROM employees
+WHERE name LIKE 'A\_%' ESCAPE '\';
+```
+
 ## Window functions
 
 ### example:
