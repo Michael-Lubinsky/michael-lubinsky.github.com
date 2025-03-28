@@ -1,6 +1,8 @@
-### Handle NULL in aggregation
+### Handle NULL in aggregation using COALESCE
 ```sql
-SELECT department_id, SUM(COALESCE(salary, 0)) AS total_salary
+SELECT department_id,
+AVG(COALESCE(salary, 0)) AS avg_salary,
+SUM(COALESCE(salary, 0)) AS total_salary
 FROM employees
 GROUP BY department_id;
 ```
