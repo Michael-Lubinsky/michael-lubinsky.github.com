@@ -99,6 +99,17 @@ WHERE customer_id NOT IN (
 );
 ```
 
+### Delete duplicates
+To delete duplicates (keeping the lowest ID):
+```sql
+DELETE FROM employees
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM employees
+    GROUP BY name, department_id, salary)
+```
+
+
 ### GROUP_CONCAT
 There are 2 tables with 1 : M relation. The join output shall have 2 columns: 
 1st column - from Parent table and  
@@ -179,7 +190,20 @@ FROM employees
 WHERE name LIKE 'A\_%' ESCAPE '\';
 ```
 
+### Find gaps in numeric column
+```sql
+SELECT (t1.id + 1) AS start_gap
+FROM employees t1
+LEFT JOIN employees t2 ON t1.id + 1 = t2.id
+WHERE t2.id IS NULL;
+```
 ## Window functions
+
+### Running total
+```sql
+SELECT name, salary,
+SUM(salary) OVER (PARTITION BY department_id ORDER BY salary) AS running_total
+```
 
 ### example:
 ```sql
