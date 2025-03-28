@@ -1,4 +1,40 @@
-Customer metrics analysis
+### сегментацию и кластеризацию клиентской базы
+https://habr.com/ru/articles/423597/
+https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
+
+### Customer Live Time Value
+https://habr.com/ru/articles/436236/  
+https://medium.com/bolt-labs/understanding-the-customer-lifetime-value-with-data-science-c14dcafa0364  
+https://habr.com/ru/companies/beeline_tech/articles/755232/  
+https://habr.com/ru/companies/beeline_tech/articles/792618/ 
+https://habr.com/ru/companies/beeline_tech/articles/771246/  
+https://habr.com/ru/companies/alfa/articles/789894/  
+https://habr.com/ru/companies/alfa/articles/808711/
+https://habr.com/ru/companies/beeline_tech/articles/802005/
+ 
+### RFM 
+https://habr.com/ru/companies/otus/articles/893964/  
+https://habr.com/ru/companies/otus/articles/666862/  
+https://habr.com/ru/articles/780330/  
+https://habr.com/ru/articles/658225/  
+https://habr.com/ru/articles/863374/  
+https://habr.com/ru/companies/mindbox/articles/423463/  
+https://habr.com/ru/companies/gazprombank/articles/805101/  
+https://habr.com/ru/companies/otus/articles/812225/  
+https://habr.com/ru/companies/devtodev/articles/295560/  
+https://habr.com/ru/articles/543950/  
+https://habr.com/ru/articles/497356/  
+https://habr.com/ru/companies/plarium/articles/431520/  
+
+- Recency — когда последний раз был активен пользователь
+- Frequency — как часто он делает покупки/действия
+- Monetary — сколько он потратил денег (или сделал заказов, если у тебя freemium)
+
+- Кто покупает часто
+- Кто покупает дорого
+- Кто давно не заходил, но когда‑то приносил тебе деньги
+
+### Customer metrics analysis
 https://habr.com/ru/companies/otus/articles/893964/
 
 https://habr.com/ru/companies/otus/articles/893988/
@@ -27,6 +63,10 @@ https://habr.com/ru/articles/342108/
 https://habr.com/ru/articles/542626/ with Python 
 
 https://habr.com/ru/articles/501492/ with Python 
+
+https://habr.com/ru/companies/click/articles/464511/ with SQL+ Grafana
+
+https://habr.com/ru/companies/dcmiran/articles/500360/ SQL
 
 https://habr.com/ru/companies/io/articles/262025/
 
