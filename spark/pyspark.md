@@ -112,6 +112,9 @@ df=df.withColumn("dates",to_date(col("dates")))
 df.groupBy(col("year"),col("week_num")).agg(min(col("dates")).alias("start_day_week"),
    max(col("dates")).alias("end_day_week")).display()
 ```
+
+<https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
+
 https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6  
 https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
 https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
