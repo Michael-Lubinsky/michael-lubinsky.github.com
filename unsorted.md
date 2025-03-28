@@ -13,6 +13,23 @@ Average Revenue Per Daily Active User (ARPDAU)
 AARRR: Acquisition → Activation → Retention → Revenue → Referral
 
 ### Cohort Retention Rate (Коэффициент удержания по когортам) 
+
+https://habr.com/ru/companies/productstar/articles/509410/
+
+https://habr.com/ru/articles/892980/
+
+https://habr.com/ru/articles/343544/
+
+https://habr.com/ru/articles/415727/
+
+https://habr.com/ru/articles/342108/
+
+https://habr.com/ru/articles/542626/ with Python 
+
+https://habr.com/ru/companies/io/articles/262025/
+
+https://onthe.io/learn+%D0%A7%D1%82%D0%BE+%D1%82%D0%B0%D0%BA%D0%BE%D0%B5+%D0%BA%D0%BE%D0%B3%D0%BE%D1%80%D1%82%D0%BD%D1%8B%D0%B9+%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7
+
 ```
 – базовая метрика, показывающая,
 какая доля пользователей остается активной спустя определённый период после привлечения. Рассчитывается по формуле:
@@ -64,3 +81,4 @@ Retention Rate = (Число пользователей, оставшихся а
 Это позволяет выявлять тренды (улучшается ли удержание новых когорт vs старых при внесении улучшений) и особенности поведения разных групп.
 Когортные таблицы и графики визуализируют % оставшихся активных по периодам (Month 0, 1, 2... или Day 1, 7, 30...).
 ```
+https://habr.com/ru/articles/342108/
