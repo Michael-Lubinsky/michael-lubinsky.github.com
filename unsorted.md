@@ -3,6 +3,7 @@ https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
 
 ### Customer Live Time Value
+https://habr.com/ru/companies/appodeal/articles/294864/  
 https://habr.com/ru/articles/436236/  
 https://medium.com/bolt-labs/understanding-the-customer-lifetime-value-with-data-science-c14dcafa0364  
 https://habr.com/ru/companies/beeline_tech/articles/755232/  
