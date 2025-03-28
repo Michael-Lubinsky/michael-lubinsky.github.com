@@ -111,6 +111,8 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 <https://panel.holoviz.org/>
 
+<https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
+
 <https://gnuplot.sourceforge.net/>
 
 <https://huijzer.xyz/posts/cetz-plot-speed/>
