@@ -1,3 +1,4 @@
+https://medium.com/@nimritakoul01/uv-package-manager-for-python-f92c5a760a1c
 
 Start your Python script like this:
 ```bash
