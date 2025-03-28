@@ -1,3 +1,10 @@
+### Handle NULL in aggregation
+```sql
+SELECT department_id, SUM(COALESCE(salary, 0)) AS total_salary
+FROM employees
+GROUP BY department_id;
+```
+
 ### Pivot rows to columns
 
 ```sql
@@ -99,7 +106,7 @@ WHERE customer_id NOT IN (
 );
 ```
 
-### Delete duplicates
+#### Delete duplicates
 To delete duplicates (keeping the lowest ID):
 ```sql
 DELETE FROM employees
@@ -108,8 +115,14 @@ WHERE id NOT IN (
     FROM employees
     GROUP BY name, department_id, salary)
 ```
-
-
+#### Remove duplicate rows but keep the most recent based on a timestamp
+```
+DELETE FROM employees
+WHERE id NOT IN (
+  SELECT MAX(id)
+  FROM employees
+  GROUP BY email
+```
 ### GROUP_CONCAT
 There are 2 tables with 1 : M relation. The join output shall have 2 columns: 
 1st column - from Parent table and  
