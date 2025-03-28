@@ -64,11 +64,44 @@ dictionary.get(key, default=None)
 ```
 
 #### Merging dictionaries:
+in case of duplicate keys the value from last dict will be used
 ```python
 dict1 = {'a': 1, 'b': 2}
 dict2 = {'b': 3, 'c': 4}
 merged_dict = dict1 | dict2
 ```
+
+### filter, map
+```python
+colors = ["red", "blue", "yellow", "gray", "green"]
+upper_colors = list(map(str.upper, colors))
+print(upper_colors)
+
+Output:
+["RED", "BLUE", "YELLOW", "GRAY", "GREEN"]
+
+
+numbers = list(range(-5, 5))
+greater_than_zero = list(filter(lambda b: b > 0, numbers))
+print(greater_than_zero)
+
+Output:
+[1, 2, 3, 4]
+```
+
+### reduce
+Reduce() is used to produce a single value by sequentially combining the elements in a list.  
+The reduce() function is located in the functools module. It is necessary to import first.
+```
+from functools import reduce
+words = ["hello", "world", "this", "is", "python"]
+sentence = reduce(lambda x, y: x + " " + y, words)
+print(sentence)
+
+Output:
+hello world this is python
+```
+
 ### Dataclass
 Automatically generates methods like __init__() and __repr__().
 
