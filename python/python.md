@@ -46,7 +46,7 @@ print(role.value)  # 1
 
 ### String
 
-.strip() removes all leading and trailing whitespace characters, including newlines and tabs,
+.strip() removes all leading and trailing whitespace characters, including newlines and tabs.
 ```python
 s='!?abc?!'
 s.strip('?!')    # 'abc'
@@ -71,7 +71,7 @@ dict2 = {'b': 3, 'c': 4}
 merged_dict = dict1 | dict2
 ```
 
-### filter, map
+### map
 ```python
 colors = ["red", "blue", "yellow", "gray", "green"]
 upper_colors = list(map(str.upper, colors))
@@ -79,8 +79,9 @@ print(upper_colors)
 
 Output:
 ["RED", "BLUE", "YELLOW", "GRAY", "GREEN"]
-
-
+```
+### filter 
+```python
 numbers = list(range(-5, 5))
 greater_than_zero = list(filter(lambda b: b > 0, numbers))
 print(greater_than_zero)
@@ -256,7 +257,50 @@ Based on this we can build Python program which supports plugins:
 <https://github.com/janvarev/jaapy>  
 <https://habr.com/ru/articles/827176/>  
 
+### Protocol
+Protocols provide a way to define structural typing in Python, 
+allowing you to create interfaces without the need for explicit inheritance.
+<https://realpython.com/python-protocol/>
+```python
+from typing import Protocol
+from abc import ABC, abstractmethod
 
+# Protocol Example
+class Printable(Protocol):
+    def __str__(self) -> str:
+        pass
+
+def print_object(obj: Printable) -> None:
+    print(str(obj))
+
+# ABC Example
+class Shape(ABC):
+
+    @abstractmethod
+    def area(self) -> float:
+        pass
+
+class Rectangle(Shape):
+    def __init__(self, width: float, height: float):
+        self.width = width
+        self.height = height
+
+    def area(self) -> float:
+        return self.width * self.height
+
+class Circle(Shape):
+    def __init__(self, radius: float):
+        self.radius = radius
+
+    def area(self) -> float:
+        return 3.14 * self.radius ** 2
+
+r = Rectangle(4, 5)
+c = Circle(3)
+
+print_object(r)     # Output: <__main__.Rectangle object at 0x000001>
+print_object(c)     # Output: <__main__.Circle object at 0x000002>
+```
 ### Dependency Injection
 
 Replace:
