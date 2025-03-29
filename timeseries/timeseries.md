@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/otus/articles/894754/  TSFresh
+
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
