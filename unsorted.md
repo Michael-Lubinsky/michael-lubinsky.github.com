@@ -1,3 +1,11 @@
+### Architecture
+
+https://www.cosmicpython.com/book/preface.html
+
+https://polylith.gitbook.io/polylith
+
+
+
 ### сегментацию и кластеризацию клиентской базы
 https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
