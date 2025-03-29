@@ -256,6 +256,24 @@ Based on this we can build Python program which supports plugins:
 <https://github.com/janvarev/jaapy>  
 <https://habr.com/ru/articles/827176/>  
 
+
+### Dependency Injection
+
+Replace:
+```python
+    class C:
+        def __init__(self):
+            self.foo = ConcreteFoo()
+```
+with:
+
+```python
+   class C:
+        def __init__(self, foo: SupportsFoo):
+            self.foo = foo
+```
+where SupportsFoo is a Protocol. 
+
 ### JSON manipulation
 ```python
 import json
