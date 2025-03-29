@@ -22,6 +22,7 @@ https://habr.com/ru/companies/alfa/articles/808711/
 https://habr.com/ru/companies/beeline_tech/articles/802005/
  
 ### RFM 
+https://habr.com/ru/companies/otus/articles/894850/  
 https://habr.com/ru/companies/otus/articles/893964/  
 https://habr.com/ru/companies/otus/articles/666862/  
 https://habr.com/ru/articles/780330/  
