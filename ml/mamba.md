@@ -18,6 +18,8 @@ https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
 ### ML
 
+https://habr.com/ru/articles/895332/ Bayes
+
 https://habr.com/ru/companies/wunderfund/articles/894100/
 
 https://arxiv.org/abs/2206.13446 Pen and Paper Exercises in Machine Learning
