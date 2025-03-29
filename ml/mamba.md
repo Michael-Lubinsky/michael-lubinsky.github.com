@@ -32,7 +32,12 @@ https://habr.com/ru/articles/795251/
 
 https://habr.com/ru/articles/795785/
 
-### Outliers detection
+### Outliers and Anomaly  detection
+
+алгоритмы HBOS и ECOD,  и их реализации в библиотеке PyOD: 
+
+https://habr.com/ru/companies/garda/articles/895148/
+
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
 ### Mamba
