@@ -13,7 +13,7 @@ echo "Any text here.." | tee log.txt
 ./run_process.sh 2>&1 | tee process.log | grep "ERROR"
 cat input.txt | tee step1.log | grep "filter_pattern" | tee step2.log | sort | tee final.log
 ```
-### Read with timeoot
+### Read with timeout
 ```bash
 #!/bin/bash
 echo "Enter something :"
