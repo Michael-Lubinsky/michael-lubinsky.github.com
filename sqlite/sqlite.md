@@ -1,6 +1,8 @@
 ### SQLite
 <https://sqlitebrowser.org/>
 
+<https://docs.python.org/3/library/sqlite3.html>
+
 #### Reading records by the column name (Python)
 Dictionary-like Object: sqlite3.Row allows both index-based and name-based access to columns.
 ```python
