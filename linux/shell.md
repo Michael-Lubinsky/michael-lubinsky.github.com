@@ -1,23 +1,18 @@
 ### Command line
-
+```bash
 script.sh 2> error.log
-
 script.sh 1> out.log 2> err.log
-
 script.sh &> combined_out_and_err.log
-
 echo "This message goes to stderr" 1>&2
-
 grep "pattern" <<< "Here is the long text with pattern inside"
-
+```
 
 ### tee
+```bash
 echo "Any text here.." | tee log.txt
-
 ./run_process.sh 2>&1 | tee process.log | grep "ERROR"
-
 cat input.txt | tee step1.log | grep "filter_pattern" | tee step2.log | sort | tee final.log
-
+```
 ### Read with timeoot
 ```bash
 #!/bin/bash
@@ -31,30 +26,27 @@ fi
 Retry with timeout
 ```bash
 #!/bin/bash
-# Файл: read_retry.sh
-# Несколько попыток ввода с таймаутом
-
 TIMEOUT=5
 TRIES=3
 attempt=1
 
 while [ $attempt -le $TRIES ]; do
-  echo "Попытка $attempt/$TRIES: введите пароль (5 секунд на ответ):"
+  echo "Attempt$attempt/$TRIES: enter password (5 sec):"
   if read -t $TIMEOUT password; then
     if [ "$password" == "secret" ]; then
-      echo "Доступ разрешен. Добро пожаловать!"
+      echo "Welcome"
       break
     else
-      echo "Неверный пароль. Попробуйте еще раз."
+      echo "Wrong entry, try again"
     fi
   else
-    echo "Таймаут! Вы слишком медлили."
+    echo "Timeout. You are slow."
   fi
   attempt=$((attempt + 1))
 done
 
 if [ $attempt -gt $TRIES ]; then
-  echo "Слишком много попыток. Доступ запрещен."
+  echo "Sorry, too many attempts."
 fi
 ```
 
