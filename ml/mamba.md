@@ -20,6 +20,8 @@ https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
 https://habr.com/ru/articles/895332/ Bayes
 
+https://habr.com/ru/companies/alfa/articles/895002/ uplift
+
 https://habr.com/ru/companies/wunderfund/articles/894100/
 
 https://arxiv.org/abs/2206.13446 Pen and Paper Exercises in Machine Learning
