@@ -1,5 +1,47 @@
 
 ### Airflow
+#### Action Operators: 
+Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call. 
+Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
+#### Transfer Operators:
+Facilitate moving data between systems, such as S3ToGCSOperator or MySqlToPostgresOperator.
+#### Sensor Operators: 
+Wait for an external condition to be met before proceeding. 
+Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
+
+### Hooks
+We use Hooks to define interfaces that manage connections to external systems. 
+They handle authentication, session management, and other connection-related tasks. 
+Hooks are often used within Operators to simplify integration with services like databases or APIs.
+
+#### Database Hooks:
+PostgresHook, MySqlHook, and MongoHook for interacting with different database systems.
+#### Cloud Service Hooks: 
+S3Hook, GCSHook, and AzureBlobStorageHook for connecting to cloud storage.
+#### API Hooks: HttpHook: 
+For making HTTP requests or interacting with REST APIs.
+
+### Excecutors
+ 
+Different executors offer varying levels of scalability, concurrency, and complexity 
+
+#### SequentialExecutor
+Ideal for testing and development, this executor runs tasks sequentially in a single process. 
+It’s simple but unsuitable for production due to its lack of parallelism.
+#### LocalExecutor 
+supports parallel execution on a single machine using multiple processes. 
+It is suitable for small — to medium-sized workflows that require concurrency but don’t need distributed execution.
+#### CeleryExecutor 
+A distributed task execution framework that uses a message broker (e.g., RabbitMQ or Redis) to distribute tasks across multiple worker nodes. 
+It is highly scalable and a common choice for production environments.
+#### KubernetesExecutor  
+Designed for cloud-native and containerized environments, this executor dynamically creates Kubernetes pods for each task.
+It provides excellent resource isolation, scalability, and fault tolerance, making it ideal for large-scale workflows.
+#### DebugExecutor 
+This executor is primarily used for debugging. 
+It runs tasks locally using the same process as the Airflow Scheduler, 
+simplifying troubleshooting during DAG development.
+
 
 #### Generate similar tasks using expand()
 ```python
@@ -19,7 +61,17 @@ with DAG('weather_check',
     check_weather.expand(city=cities)
 ```
 
-#### TaskFlow API with Direct Communication (instead of Xcoms)
+#### XCOM
+<https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html>
+```
+XCom allows tasks to push and pull small amounts of data during execution.
+One task can push a result using xcom_push (or achieve by simply returning in the execute method ) and another task can retrieve that result using xcom_pull.
+
+The way the data in XCom is stored, written, and retrieved can be controlled by the XCom backend. The default one will store the XCom data in the metadata database.
+ In addition, we can configure Xcom to be stored in Object Storage or desired custom backend.
+```
+ 
+#### TaskFlow API with Direct Communication (instead of Xcom)
 
 Apache Airflow (starting from version 2.4), a new feature called TaskFlow-decorated functions
 with direct task-to-task communication has been introduced.
