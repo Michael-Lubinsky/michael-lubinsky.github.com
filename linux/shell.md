@@ -17,6 +17,7 @@ echo "This message goes to stderr" 1>&2
 ```
 awk '{print $2}' file.txt 
 diff <(ls dir1) <(ls dir2)    # compares 2 folders
+diff <(sort file1.txt) <(sort file2.txt)
 command1 & command2 & wait   # starts command1 and command2 in parallel and waits for both to finish.
 command1 && command2 # Executes command2 only if command1 is successful.
 command1 || command2  # Executes command2 if command1 fails.
@@ -24,10 +25,11 @@ myvariable=$(awk '{print $2}' file.txt | sort | uniq)
 ```
 
 ### Find files: grep, rigrep, fzf, television
-
+```bash
 find . | grep -i searchpattern  
 find / 2>/dev/null | grep -i searchpattern  
-
+find /var/log -type f -name "*.log" -exec grep -H "ERROR" {} \;
+```
 fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
 
 #### Television is a cross-platform, fast and extensible fuzzy finder TUI.
@@ -53,6 +55,11 @@ rg --files-without-match '\b(var|let|const)\b'
 echo "Any text here.." | tee log.txt
 ./run_process.sh 2>&1 | tee process.log | grep "ERROR"
 cat input.txt | tee step1.log | grep "filter_pattern" | tee step2.log | sort | tee final.log
+```
+
+### monitor memory consumption
+```bash
+while true; do date; free -h; sleep 10; done >> system_usage.log
 ```
 ### Read with timeout
 ```bash
