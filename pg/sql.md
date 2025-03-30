@@ -97,6 +97,9 @@ HAVING COUNT(DISTINCT department_id) > 1;
 
 
 ### IN, NOT IN
+
+if IN list is generated as sub-select then make sure it does not contains NULL!
+
 Find Products with Zero Sales in the Last Quarter
 ```sql
 SELECT product_id, product_name 
