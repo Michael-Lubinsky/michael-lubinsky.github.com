@@ -1,4 +1,14 @@
 ## Python notes
+### *args **kwargs
+```python
+def greet(*args, **kwargs):  
+    for name in args:  
+        print(f"Hello, {name}!")  
+    for key, value in kwargs.items():  
+        print(f"{key} = {value}")
+
+greet("Alice", "Bob", language="Python", level="Intermediate")
+```
 
 ### zip with strict
  Raises ValueError if lengths don’t match
