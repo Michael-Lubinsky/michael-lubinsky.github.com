@@ -1,10 +1,11 @@
 ## Command line
 
 ### lsof - show open files 
+```
 lsof +D /path/to/directory #  which processes are using files in a specific directory
 lsof /var/log/syslog # which processes are using a particular file
 fuser /var/log/syslog
-
+```
 ### stdout stderr
 ```bash
 script.sh 2> error.log
