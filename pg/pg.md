@@ -63,8 +63,51 @@ FROM
 LEFT JOIN stats 
 ON stats.added_at = gs.added_at;
 ```
-
-
+### Lateral JOIN
+```sql
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100)
+);
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES customers(id),
+    order_date TIMESTAMP
+);
+```
+Task: fetch the latest order per customer.
+```sql
+WITH ranked_orders AS (
+    SELECT o.id, o.order_date, o.customer_id, 
+           ROW_NUMBER() OVER (PARTITION BY o.customer_id ORDER BY o.order_date DESC) AS row_num
+    FROM orders o
+)
+SELECT 
+    c.id AS customer_id,
+    c.name AS customer_name,
+    ro.id AS latest_order_id,
+    ro.order_date AS latest_order_date
+FROM customers c
+JOIN ranked_orders ro ON ro.customer_id = c.id
+WHERE ro.row_num = 1;
+```
+Now let do the same using LATERAL
+```
+SELECT 
+    c.id AS customer_id,
+    c.name AS customer_name,
+    o.id AS latest_order_id,
+    o.order_date AS latest_order_date
+FROM 
+    customers c
+JOIN LATERAL (
+    SELECT id, order_date
+    FROM orders o
+    WHERE o.customer_id = c.id
+    ORDER BY o.order_date DESC
+    LIMIT 1
+) o ON true;
+```
 ### Foreign key constraint - always mark it with on update restrict on delete restrict.
 
 This makes it so that if you try and delete the referenced row you will get an error. 
