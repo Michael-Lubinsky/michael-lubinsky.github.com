@@ -24,8 +24,9 @@ myvariable=$(awk '{print $2}' file.txt | sort | uniq)
 
 ### Find files: grep, rigrep, fzf, television
 
-find . | grep -i searchpattern
-find / 2>/dev/null | grep -i searchpattern
+find . | grep -i searchpattern  
+find / 2>/dev/null | grep -i searchpattern  
+
 fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
 
 Television is a cross-platform, fast and extensible fuzzy finder TUI.
