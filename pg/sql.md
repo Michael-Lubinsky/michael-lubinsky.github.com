@@ -269,6 +269,10 @@ SELECT name, salary,
 SUM(salary) OVER (PARTITION BY department_id ORDER BY salary) AS running_total
 ```
 
+###  What happens if you omit PARTITION BY in the OVER() clause?
+Answer:
+The function treats the entire dataset as a single partition, applying the calculation to all rows.
+
 ### example:
 ```sql
 SELECT
