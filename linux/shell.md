@@ -21,6 +21,16 @@ command1 && command2 # Executes command2 only if command1 is successful.
 command1 || command2  # Executes command2 if command1 fails.
 myvariable=$(awk '{print $2}' file.txt | sort | uniq) 
 ```
+
+### find files
+
+find . | grep -i searchpattern
+find / 2>/dev/null | grep -i searchpattern
+fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
+
+Television is a cross-platform, fast and extensible fuzzy finder TUI.
+<https://github.com/alexpasmantier/television>
+
 ### tee
 ```bash
 echo "Any text here.." | tee log.txt
