@@ -5,6 +5,14 @@
 ```python
 for fruit, count in zip(a, b, strict=True):  
     print(f"{fruit}: {count}")
+
+combined = list(zip(names, scores))
+```
+### min and max with key
+```
+fruits = ["apple", "banana", "cherry"]
+print(min(fruits, key=lambda x: len(x)))  # Output: apple
+print(max(fruits, key=lambda x: len(x)))  # Output: banana
 ```
 
 ### Sorting
@@ -22,7 +30,11 @@ nums = [1, 2, 3]
 print(nums[::-1])
 print(list(reversed(nums))) 
 ```
-
+### divmod - calculates a quotient and remainder in one shot
+```sql
+result = divmod(10, 3)
+print(result)  # Output: (3, 1)
+```
 ### Enum
 ```python
 from enum import Enum
