@@ -12,6 +12,8 @@ https://medium.com/data-science/the-ultimate-guide-to-finding-outliers-in-your-t
 
 https://towardsdatascience.com/the-ultimate-guide-to-finding-outliers-in-your-time-series-data-part-2-674c25837f29 
 
+https://towardsdatascience.com/hands-on-time-series-anomaly-detection-using-autoencoders-with-python-7cd893bbc122/
+
 https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-python-5a15089636db
 
 
