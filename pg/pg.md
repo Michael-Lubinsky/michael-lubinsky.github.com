@@ -91,8 +91,8 @@ FROM customers c
 JOIN ranked_orders ro ON ro.customer_id = c.id
 WHERE ro.row_num = 1;
 ```
-Now let do the same using LATERAL
-```
+Now let do the same using LATERAL JOIN
+```sql
 SELECT 
     c.id AS customer_id,
     c.name AS customer_name,
