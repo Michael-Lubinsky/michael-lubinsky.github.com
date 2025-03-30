@@ -8,7 +8,10 @@ from airflow.decorators import task
 from datetime import datetime
 
 cities = ['Warsaw', 'London', 'New York', 'Tokyo']
-with DAG('weather_check', start_date=datetime(2024, 1, 1), schedule_interval='@daily') as dag:
+with DAG('weather_check',
+         start_date=datetime(2024, 1, 1),
+         schedule_interval='@daily'
+) as dag:
     @task
     def check_weather(city):
         # In reality, you'd use a weather API here
@@ -47,6 +50,8 @@ def taskflow_direct_communication():
 dag_instance = taskflow_direct_communication()
 ```
 #### Links
+
+https://medium.com/@swathireddythokala16/youtube-trend-analysis-pipeline-etl-with-airflow-spark-s3-and-docker-85a7d76992eb
 
 https://medium.com/apache-airflow/apache-airflow-2-0-tutorial-41329bbf7211
 
