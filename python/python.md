@@ -13,6 +13,7 @@ Lowecase comes after uppercase in ASCII
 names = ['Alice', 'bob', 'Charlie']
 print(sorted(names))
 print(sorted(names, key=str.lower))
+sorted_numbers = sorted(names, reverse=True)
 ```
 
 ### reverse
