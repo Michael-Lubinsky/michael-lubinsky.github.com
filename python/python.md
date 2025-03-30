@@ -1,4 +1,7 @@
 ## Python notes
+check syntax  
+python -m py_compile my_script.py
+
 ### *args **kwargs
 ```python
 def greet(*args, **kwargs):  
