@@ -29,6 +29,8 @@ Time Series Aggregation with pandas
 
 https://towardsdatascience.com/comprehensive-time-series-exploratory-analysis-78bf40d16083
 
+https://medium.com/data-science/how-reliable-are-your-time-series-forecasts-really-18a1106d8ee1
+
 https://towardsdatascience.com/handling-gaps-in-time-series-dc47ae883990
 
 https://medium.com/data-science-collective/hands-on-irregular-time-series-for-predictive-modeling-part-ii-e5070e721bd6
