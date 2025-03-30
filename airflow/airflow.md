@@ -1,6 +1,21 @@
 
 ### Airflow
 
+#### Generate similar tasks using expand()
+```python
+from airflow import DAG
+from airflow.decorators import task
+from datetime import datetime
+
+cities = ['Warsaw', 'London', 'New York', 'Tokyo']
+with DAG('weather_check', start_date=datetime(2024, 1, 1), schedule_interval='@daily') as dag:
+    @task
+    def check_weather(city):
+        # In reality, you'd use a weather API here
+        print(f"Checking weather for {city}")
+    check_weather.expand(city=cities)
+```
+
 #### TaskFlow API with Direct Communication (instead of Xcoms)
 
 Apache Airflow (starting from version 2.4), a new feature called TaskFlow-decorated functions
