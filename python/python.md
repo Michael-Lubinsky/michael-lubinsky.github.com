@@ -96,7 +96,11 @@ But if you use .get(), you’ll get None (or a default value you specify).
 ```python
 dictionary.get(key, default=None)
 ```
-
+#### Sort dict by key and by val
+```python
+sorted_by_key = dict(sorted(data.items()))  
+sorted_by_value = dict(sorted(data.items(), key=lambda x: x[1]))
+```
 #### Merging dictionaries:
 in case of duplicate keys the value from last dict will be used
 ```python
@@ -104,7 +108,14 @@ dict1 = {'a': 1, 'b': 2}
 dict2 = {'b': 3, 'c': 4}
 merged_dict = dict1 | dict2
 ```
+#### defaultdict
 
+```python
+from collections import defaultdict
+
+groups = defaultdict(list)
+groups["fruits"].append("apple")
+```
 ### map
 ```python
 colors = ["red", "blue", "yellow", "gray", "green"]
