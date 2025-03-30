@@ -14,12 +14,21 @@ greet("Alice", "Bob", language="Python", level="Intermediate")
 ```
 
 ### zip with strict
- Raises ValueError if lengths don’t match
+ zip silently stops at the shortest list, 
+ but you can raise  ValueError if lengths don’t match using strict=True
 ```python
 for fruit, count in zip(a, b, strict=True):  
     print(f"{fruit}: {count}")
 
 combined = list(zip(names, scores))
+```
+unzip example:
+```python
+zipped = [('Alice', 85), ('Bob', 90), ('Charlie', 78)]
+names, scores = zip(*zipped)
+
+print(names)   # ('Alice', 'Bob', 'Charlie')
+print(scores)  # (85, 90, 78)
 ```
 ### min and max with key
 ```
