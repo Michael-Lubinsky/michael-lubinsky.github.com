@@ -290,6 +290,17 @@ ORDER BY transaction_id;
 ```
 
 ### LAG and LEAD
+LAG(): Retrieves data from a previous row  
+LEAD(): Retrieves data from a next row  
+
+Example: calculate sales difference between consecutive days
+```sql
+SELECT product_id, sale_date, sales,
+  sales - LAG(sales)
+  OVER (PARTITION BY product_id ORDER BY sale_date) AS sales_diff
+FROM daily_sales;
+```
+
 ```sql
 SELECT 
     game_name,
@@ -383,13 +394,10 @@ FROM data
 ORDER BY t
 ```
 
-
-
 #### rolling average sales for each day over the past 7 days.
 ```sql
 SELECT 
-    sale_date, 
-    sales_amount, 
+    sale_date, sales_amount, 
     AVG(sales_amount) OVER
    (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_avg_7_days 
 FROM daily_sales;
