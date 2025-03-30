@@ -30,7 +30,8 @@ find / 2>/dev/null | grep -i searchpattern
 
 fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
 
-Television is a cross-platform, fast and extensible fuzzy finder TUI.
+#### Television is a cross-platform, fast and extensible fuzzy finder TUI.
+<https://crates.io/crates/television>
 <https://github.com/alexpasmantier/television>
 #### rigrep
 ```
