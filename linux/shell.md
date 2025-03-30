@@ -1,12 +1,21 @@
-### Command line
+## Command line
+
+### stdout stderr
 ```bash
 script.sh 2> error.log
 script.sh 1> out.log 2> err.log
 script.sh &> combined_out_and_err.log
 echo "This message goes to stderr" 1>&2
-grep "pattern" <<< "Here is the long text with pattern inside"
 ```
-
+### 
+```
+awk '{print $2}' file.txt 
+diff <(ls dir1) <(ls dir2)    # compares 2 folders
+command1 & command2 & wait   # starts command1 and command2 in parallel and waits for both to finish.
+command1 && command2 # Executes command2 only if command1 is successful.
+command1 || command2  # Executes command2 if command1 fails.
+myvariable=$(awk '{print $2}' file.txt | sort | uniq) 
+```
 ### tee
 ```bash
 echo "Any text here.." | tee log.txt
