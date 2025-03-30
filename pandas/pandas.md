@@ -7,6 +7,15 @@ Use Case: Isolate numerical columns for statistical analysis or machine learning
 
 df.select_dtypes(include=['float64', 'int64'])
 
+### value_counts()
+
+df['income'].value_counts()
+
+### df.corr() 
+produces a DataFrame matrix where each column is compared to every other column, and the Pearson correlation between them.
+
+df[['age','capital-gain', 'capital-loss', 'hours-per-week']].corr()
+
 ### Conditional Filtering with query
 Use a string format for filtering rows, making conditions more readable.  
 Use Case: Simplify filtering based on multiple conditions (e.g., age > 25 and city == “New York”).
