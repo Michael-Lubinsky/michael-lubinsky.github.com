@@ -61,6 +61,18 @@ cat input.txt | tee step1.log | grep "filter_pattern" | tee step2.log | sort | t
 ```bash
 while true; do date; free -h; sleep 10; done >> system_usage.log
 ```
+#### monitor resource consumption with Python
+```python
+import psutil
+
+def system_stats():
+    print("CPU Usage:", psutil.cpu_percent(interval=1), "%")
+    print("Memory Usage:", psutil.virtual_memory().percent, "%")
+    print("Disk Usage:", psutil.disk_usage('/').percent, "%")
+
+if __name__ == "__main__":
+    system_stats()
+```
 ### Read with timeout
 ```bash
 #!/bin/bash
