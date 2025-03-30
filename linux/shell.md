@@ -33,7 +33,7 @@ Television is a cross-platform, fast and extensible fuzzy finder TUI.
 <https://github.com/alexpasmantier/television>
 #### rigrep
 ```
-rg '123456789012' -g '*.tf'
+rg '123456789012' -g '*.tf'  $ using glob to search files whose paths match the specified glob
 rg --type-list
 rg "localhost:4531" --type python
 rg "localhost:4531" --tpy
@@ -43,6 +43,8 @@ rg "hello" -B 1
 rg "hello" -C 1
 rg crypto -g '!modules/' -g '!pypi/'  # Exclude a directory
 rg --files | rg cluster  # find files
+rg -l 'pattern' -sort path   # return file names only
+rg --files-without-match '\b(var|let|const)\b'  
 ```
 ### tee
 ```bash
