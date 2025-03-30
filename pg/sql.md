@@ -64,6 +64,17 @@ FROM T
 GROUP BY A;
 ```
 
+Convert months from row to columns
+```sql
+SELECT 
+    product_id,
+    SUM(CASE WHEN MONTH(sale_date) = 1 THEN sales ELSE 0 END) as January,
+    SUM(CASE WHEN MONTH(sale_date) = 2 THEN sales ELSE 0 END) as February,
+    SUM(CASE WHEN MONTH(sale_date) = 3 THEN sales ELSE 0 END) as March
+FROM sales
+GROUP BY product_id;
+```
+
 <https://modern-sql.com/use-case/pivot>
 
 ### HAVING 
@@ -137,6 +148,13 @@ ON P.id = C.parent_id
 GROUP BY P.parent_name
 ```
 
+### STRING_AGG
+```
+SELECT category_id, STRING_AGG(product_name, ', ') as product_list
+FROM products
+GROUP BY category_id;
+```
+
 ### COALESCE - returns 1st not null value
 ```sql
 SELECT COALESCE(column1, column2, 'default_value') AS result
@@ -161,6 +179,22 @@ WHERE salary < (
     WHERE e.department_id = employees.department_id 
 ) 
 GROUP BY department_id;
+```
+
+### recursive SQL
+```
+WITH RECURSIVE EmployeeHierarchy AS (
+    SELECT employee_id, manager_id, 1 as level
+    FROM employees
+    WHERE manager_id IS NULL -- Starting point, top manager
+    
+    UNION ALL
+    
+    SELECT e.employee_id, e.manager_id, eh.level + 1
+    FROM employees e
+    JOIN EmployeeHierarchy eh ON e.manager_id = eh.employee_id
+)
+SELECT * FROM EmployeeHierarchy;
 ```
 
 ### JSON
