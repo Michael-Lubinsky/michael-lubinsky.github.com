@@ -6,7 +6,7 @@ This comand creates 4 files:
 - pyproject.toml: Configures project dependencies, build settings, and metadata.
 - README.md: A template for documenting your project’s purpose and usage.
 
-
+```
 uv venv
 .venv\Scripts\activate
 uv add fastapi  # add dependency
@@ -15,7 +15,7 @@ uv run pytest
 uv run python --version
 uv python install 3.9 3.10 3.11
 uv venv --python 3.12.3
-
+```
 https://medium.com/@nimritakoul01/uv-package-manager-for-python-f92c5a760a1c
 
 https://thisdavej.com/share-python-scripts-like-a-pro-uv-and-pep-723-for-easy-deployment/
