@@ -1,3 +1,7 @@
+### What is desriptive measure of association
+
+https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
+
 ### EDA
 
 https://realpython.com/python-for-data-analysis/
