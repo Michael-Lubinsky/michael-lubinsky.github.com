@@ -199,6 +199,18 @@ WITH RECURSIVE EmployeeHierarchy AS (
 )
 SELECT * FROM EmployeeHierarchy;
 ```
+Generate dates with recursive SQL
+```
+WITH RECURSIVE dates AS (
+    SELECT DATE '2025-01-01' AS dt
+    UNION ALL
+    SELECT dt + INTERVAL '1 day'
+    FROM dates
+    WHERE dt < DATE '2025-01-07'
+)
+SELECT dt
+FROM dates;
+```
 
 ### JSON
 ```sql
