@@ -10,6 +10,8 @@ https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
 https://medium.com/data-science/the-ultimate-guide-to-finding-outliers-in-your-time-series-data-part-1-1bf81e09ade4
 
+https://towardsdatascience.com/the-ultimate-guide-to-finding-outliers-in-your-time-series-data-part-2-674c25837f29 
+
 https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-python-5a15089636db
 
 
