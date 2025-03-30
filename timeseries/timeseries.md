@@ -1,13 +1,18 @@
 https://habr.com/ru/companies/otus/articles/894754/  TSFresh
 
-
-https://talkpython.fm/episodes/show/497/outlier-detection-with-python
+https://medium.com/the-forecaster/the-complete-introduction-to-time-series-classification-in-python-6af967b16dc9
 
 https://medium.com/data-science/5-must-know-techniques-for-mastering-time-series-analysis-a23ccf4d053a
 
+### Outlier detections
+
+https://talkpython.fm/episodes/show/497/outlier-detection-with-python
+
+https://medium.com/data-science/the-ultimate-guide-to-finding-outliers-in-your-time-series-data-part-1-1bf81e09ade4
+
 https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-python-5a15089636db
 
-https://medium.com/the-forecaster/the-complete-introduction-to-time-series-classification-in-python-6af967b16dc9
+
 
 ### Matrix profile
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
