@@ -79,6 +79,13 @@ print(upper_colors)
 
 Output:
 ["RED", "BLUE", "YELLOW", "GRAY", "GREEN"]
+
+numbers_str = ["1", "2", "3", "4"]
+numbers_int = list(map(int, numbers_str))
+
+celsius = [0, 20, 37, 100]
+fahrenheit = list(map(lambda x: (x * 9/5) + 32, celsius))
+
 ```
 ### filter 
 ```python
