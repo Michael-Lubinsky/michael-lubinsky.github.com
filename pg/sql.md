@@ -371,7 +371,37 @@ WHERE rank = 1;
 Assigns the same rank to rows with identical values but does not leave gaps in the ranking sequence.   
 For example, if 5 rows are tied for rank 1, the next rank assigned will be 2 (no gap).
 
+### NTILE
+To divide data into "n" equally distributed groups (buckets).
+```sql
+SELECT employee_id, salary,
+       NTILE(4) OVER (ORDER BY salary DESC) AS quartile
+FROM employees;
+```
 
+### PERCENT_RANK() and CUME_DIST()
+```sql
+SELECT employee_id, salary,
+       PERCENT_RANK() OVER (ORDER BY salary) AS percent_rank,
+       CUME_DIST() OVER (ORDER BY salary) AS cumulative_dist
+FROM employees;
+```
+
+### Multiple columns in PARTITION BY
+
+```sql
+SELECT employee_id, department_id, job_id, salary,
+       AVG(salary) OVER (PARTITION BY department_id, job_id) AS avg_salary
+FROM employees;
+```
+
+### ROWS and RANGE in window frames
+```sql
+SELECT sale_date, sales,
+       AVG(sales) OVER (ORDER BY sale_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_rows,
+       AVG(sales) OVER (ORDER BY sale_date RANGE BETWEEN INTERVAL '2 day' PRECEDING AND CURRENT ROW) AS avg_range
+FROM daily_sales;
+```
 ### RANGE BETWEEN CURRENT FOLLOWING UNBOUNDED PRECEDING
 
 x PRECEDING: x rows before the current row  
@@ -393,7 +423,7 @@ SELECT t, a, sum(a) OVER (ORDER BY t ROWS BETWEEN UNBOUNDED PRECEDING AND CURREN
 FROM data
 ORDER BY t
 ```
-
+ 
 #### rolling average sales for each day over the past 7 days.
 ```sql
 SELECT 
