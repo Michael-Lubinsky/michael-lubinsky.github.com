@@ -13,3 +13,6 @@ https://www.reddit.com/r/cpp/comments/1i73ky9/whats_your_favorite_feature_introd
 https://www.reddit.com/r/cpp/comments/1hwr6bo/learning_c_efficiently_in_2025/
 https://fwsgonzo.medium.com/using-c-as-a-scripting-language-part-14-a2cb380b1998
 https://github.com/taskflow/taskflow
+
+Flame Graph
+https://johnnysswlab.com/fiya-flamegraphs-in-your-app
