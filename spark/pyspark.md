@@ -337,3 +337,7 @@ df_final = df_final.withColumn(
 
 df_final.orderBy("product_id", "year").show()
 ```
+
+https://medium.com/@rames1000/50-pyspark-problems-solutions-part-2-1dbdbf892e1e
+https://medium.com/@rames1000/50-pyspark-problems-solutions-part-3-4b8472b068fb
+https://medium.com/@rames1000/pyspark-transformation-solutions-part-1-7a879d5dcec7
