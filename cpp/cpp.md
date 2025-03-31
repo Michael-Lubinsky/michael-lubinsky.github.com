@@ -1,4 +1,5 @@
 https://www.amazon.com/dp/0136905692 
+https://accu.org/
 https://www.learncpp.com/
 https://roadmap2.me/PA74IVSGMe C++ exersizes
 https://www.reddit.com/r/cpp/comments/1isd58i/selfdescribing_compact_binary_serialization_format/ 
