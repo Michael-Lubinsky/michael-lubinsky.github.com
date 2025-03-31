@@ -1,5 +1,8 @@
 https://habr.com/ru/companies/otus/articles/894754/  TSFresh
 
+Monte Carlo
+https://medium.com/dataman-in-ai/monte-carlo-simulation-for-time-series-probabilistic-forecasts-e04a7d29c9b3
+
 https://medium.com/the-forecaster/the-complete-introduction-to-time-series-classification-in-python-6af967b16dc9
 
 https://medium.com/data-science/5-must-know-techniques-for-mastering-time-series-analysis-a23ccf4d053a
