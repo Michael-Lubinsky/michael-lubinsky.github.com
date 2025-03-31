@@ -142,6 +142,8 @@ data_cleaning_instance = data_cleaning_dag()
 
 #### Links
 
+https://blog.det.life/stop-creating-multiple-airflow-dags-for-reloads-and-parallel-processing-3912974b5866
+
 https://blog.devgenius.io/managing-cluster-termination-in-apache-airflow-dags-00626dd945a3
 
 https://medium.com/@swathireddythokala16/youtube-trend-analysis-pipeline-etl-with-airflow-spark-s3-and-docker-85a7d76992eb
