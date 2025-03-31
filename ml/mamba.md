@@ -2,6 +2,13 @@
 
 https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
 
+### Stat distributions in python
+https://medium.com/data-bistrot/log-normal-distribution-with-python-7b8e384e939e
+https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752 
+https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
+https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811
+https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-python-6d07fd5fc552
+
 ### EDA
 
 https://realpython.com/python-for-data-analysis/
