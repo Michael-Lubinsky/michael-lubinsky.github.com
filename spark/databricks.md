@@ -2,6 +2,8 @@ https://customer-academy.databricks.com/learn/signin
 
 https://medium.com/@infinitylearnings1201
 
+https://awstip.com/100-days-of-data-engineering-on-databricks-day-49-understanding-acid-transactions-in-delta-lake-eed18c2dc166
+
 https://awstip.com/databricks-data-engineering-interview-question-3-can-you-explain-the-architecture-of-databricks-b9c1fef6f398
 
 https://surajskfgi.medium.com/beginners-guide-to-databricks-file-system-dbfs-what-it-is-and-how-to-use-it-7c55952aab4c 
