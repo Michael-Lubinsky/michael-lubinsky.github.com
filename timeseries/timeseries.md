@@ -18,7 +18,7 @@ https://towardsdatascience.com/hands-on-time-series-anomaly-detection-using-auto
 
 https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-python-5a15089636db
 
-
+https://medium.com/chat-gpt-now-writes-all-my-articles/anomaly-detection-on-time-series-with-mset-sprt-in-python-30a8ae039ce9
 
 ### Matrix profile
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
