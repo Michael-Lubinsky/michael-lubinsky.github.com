@@ -21,7 +21,7 @@ S3Hook, GCSHook, and AzureBlobStorageHook for connecting to cloud storage.
 #### API Hooks: HttpHook: 
 For making HTTP requests or interacting with REST APIs.
 
-### Excecutors
+### Executors
  
 Different executors offer varying levels of scalability, concurrency, and complexity 
 
@@ -136,6 +136,10 @@ def data_cleaning_dag():
 
 data_cleaning_instance = data_cleaning_dag()
 ```
+### Task Groups and Pools
+
+<https://medium.com/@mcgeehan/task-groups-and-pools-in-apache-airflow-872ee02da3bd>
+
 #### Links
 
 https://medium.com/@swathireddythokala16/youtube-trend-analysis-pipeline-etl-with-airflow-spark-s3-and-docker-85a7d76992eb
