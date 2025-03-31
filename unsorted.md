@@ -7,6 +7,7 @@ https://polylith.gitbook.io/polylith
 
 
 ### сегментацию и кластеризацию клиентской базы
+https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
 
