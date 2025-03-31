@@ -48,3 +48,5 @@ and it will automatically create its own isolated environment and run itself wit
 and even the correctly installed Python version.
 
 All of that from putting uv run in the shebang line!
+
+https://blog.dusktreader.dev/2025/03/29/self-contained-python-scripts-with-uv/
