@@ -1,3 +1,5 @@
+https://medium.com/@24chynoweth/databricks-system-tables-a-bunch-of-queries-ff9e0aa295e1
+
 https://databrickster.medium.com/sql-parameterization-in-databricks-sql-de32a38865b9
 
 https://medium.com/dbsql-sme-engineering
