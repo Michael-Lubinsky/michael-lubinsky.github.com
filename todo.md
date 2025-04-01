@@ -1,6 +1,33 @@
 How to use jekyll for static site:
 https://chat-to.dev/post?id=296
 
+### Jupyter on Jekyll
+ 
+You don't need to manually convert your Jupyter Notebook to an HTML file to publish it on your GitHub Pages (github.io). Instead, you can use the following methods:
+
+#### Option 1: Convert Notebook to HTML and Upload
+Convert the .ipynb file to HTML using:
+
+
+jupyter nbconvert --to html your_notebook.ipynb
+Upload the HTML file to your GitHub repository under the docs/ folder or the root directory.
+
+Enable GitHub Pages from your repository settings (set the source to main or docs).
+
+Access your notebook via https://yourusername.github.io/your_notebook.html.
+
+#### Option 2: Use nbviewer
+If you want to keep your .ipynb file and avoid converting it manually:
+
+Push the .ipynb file to your GitHub repository.
+
+Use nbviewer to generate a public link by entering your GitHub file URL.
+
+You can embed this nbviewer link on your GitHub Pages website.
+
+#### Option 3: Use Jekyll and Jupyter Plugin (Advanced)
+If you are using Jekyll for your GitHub Pages site, you can use the nbconvert plugin to render .ipynb files directly.
+
 
 ### Stat rethinking
 https://xcelab.net/rm/statistical-rethinking/  
