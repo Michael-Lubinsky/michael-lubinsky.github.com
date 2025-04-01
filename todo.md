@@ -1,5 +1,8 @@
-How to use jekyll for static site:
+### How to use jekyll for static site:
 https://chat-to.dev/post?id=296
+
+https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
+
 
 ### Jupyter on Jekyll
  
