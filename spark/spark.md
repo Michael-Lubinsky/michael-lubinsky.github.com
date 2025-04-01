@@ -2,6 +2,7 @@
 
 ### Joins
 https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
+https://www.sparkcodehub.com/spark-dataframe-multiple-join#google_vignette
 https://www.mdpi.com/2076-3417/13/10/6257
 
 - Broadcast Hash Join
