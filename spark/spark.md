@@ -18,6 +18,24 @@ from pyspark.sql.functions import broadcast
 joined_df = larger_df.join(broadcast(smaller_df), ["identifier"], "left")
 ```
 
+
+### Avoiding Wide Transformations
+
+Wide transformations (e.g., groupBy, distinct, orderBy) can increase the shuffle cost significantly. It’s best to avoid wide transformations before the join, or to apply filters and narrow transformations to reduce the dataset size beforehand.
+
+Filter the DataFrame before join to reduce data size
+```python
+filtered_large_df = large_df.filter(large_df.column > 100)
+
+joined_df = filtered_large_df.join(small_df, “join_key”, “left”)
+```
+Always filter and select the necessary columns before performing a join to minimize data movement.
+
+
+
+
+
+
 ### Salting: solution for sqewed data in join
 
 Problem statement:  
