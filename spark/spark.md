@@ -1,3 +1,13 @@
+### Join: Repartitioning on Join Key
+
+```python
+df_1 = df_1.repartition("customer_id")
+df_2 = df_2.repartition("viewer_id")
+joined_table = df_1.join(
+               df_2, df_1.customer_id == df_2.viewer_id, "inner"
+               )
+```
+
 ### Salting: solution for sqewed data in join
 
 Problem statement:  
