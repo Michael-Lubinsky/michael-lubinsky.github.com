@@ -5,7 +5,14 @@ https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125
 
 https://github.com/ageron/handson-ml3
 
+Book with code: Understanding Deep Learning 
+https://udlbook.github.io/udlbook/
+
 https://machine-learning-with-python.readthedocs.io/
+
+https://sebastianraschka.com/notebooks/ml-notebooks/
+
+https://www.kaggle.com/discussions/getting-started/390402
 
 ### What is desriptive measure of association
 
