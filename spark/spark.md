@@ -1,9 +1,12 @@
 ## Spark
 
 ### Joins
+https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
+https://www.mdpi.com/2076-3417/13/10/6257
+
 - Broadcast Hash Join
 - Shuffle Hash Join
-- Sort Merge Join
+- Sort Merge Join (default)
 - Cartesian Join
 - Broadcast Nested Loop Join
 
