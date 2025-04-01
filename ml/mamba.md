@@ -68,6 +68,8 @@ https://habr.com/ru/articles/795785/
 
 ### Outliers and Anomaly  detection
 
+https://talkpython.fm/episodes/show/497/outlier-detection-with-python
+
 алгоритмы HBOS и ECOD,  и их реализации в библиотеке PyOD: 
 
 https://habr.com/ru/companies/garda/articles/895148/
