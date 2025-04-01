@@ -1,5 +1,38 @@
 ## Spark
 
+### Reading files
+
+spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
+df = spark.read.parquet("data/").coalesce(10) 
+
+### Writing files
+
+sort before writing:
+-  by column which is used as a filter during reading and  
+-  by column used in join column 
+
+df.sort("date", "user_id").write.parquet("sorted_data/")  
+df.sortWithinPartitions("timestamp").write.partitionBy("date").parquet("data/")
+
+OPTIMIZE delta.`/path/table` ZORDER BY (date, user_id);
+
+
+#### block size tuning:
+
+ Parquet
+df.write.option("parquet.block.size", 256 * 1024 * 1024).parquet("output/")
+
+ ORC
+df.write.option("orc.stripe.size", 256 * 1024 * 1024).orc("output/")
+
+CSV/Avro
+df.repartition(100).write.csv("output/")
+
+####  for partitioned tables
+df.sortWithinPartitions("user_id").write.partitionBy("date").parquet("partitioned_data/")
+
+<https://habr.com/ru/articles/896492/>
+
 ### Joins
 https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
 https://www.sparkcodehub.com/spark-dataframe-multiple-join#google_vignette
