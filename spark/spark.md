@@ -36,8 +36,8 @@ joined_df = filtered_large_df.join(small_df, “join_key”, “left”)
 Always filter and select the necessary columns before performing a join to minimize data movement.
 
 
-
-
+### mapPartitions
+Unlike map or flatMap, which invoke a function for each element, mapPartitions incurs only one function invocation per partition, significantly reducing overhead—especially for large datasets.
 
 
 ### Salting: solution for sqewed data in join
