@@ -12,12 +12,16 @@ df2 = small_df.repartition(100, “join_key”)
 joined_df = df1.join(df2, “join_key”, “left”)
 ```
 
-### Broadcast
+### Broadcast small DataFrames
 ```python
 from pyspark.sql.functions import broadcast
 joined_df = larger_df.join(broadcast(smaller_df), ["identifier"], "left")
-```
 
+small_df = spark.read.csv(“small_data.csv”)
+large_df = spark.read.csv(“large_data.csv”)
+
+joined_df = large_df.join(broadcast(small_df), “key”)
+```
 
 ### Avoiding Wide Transformations
 
@@ -136,17 +140,7 @@ However, for datasets with a limited number of distinct values,
 partitioning is often a more efficient approach.
  
 
-####  Broadcast small DataFrames
 
- Example of a broadcast join
-```python 
-from pyspark.sql.functions import broadcast
-
-small_df = spark.read.csv(“small_data.csv”)
-large_df = spark.read.csv(“large_data.csv”)
-
-joined_df = large_df.join(broadcast(small_df), “key”)
-```
 #### ReduceByKey over GroupByKey: 
 Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
 
@@ -169,6 +163,8 @@ https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensi
 
 
 ### Links
+
+https://medium.com/codebrace/how-spark-runs-a-query-internally-a-step-by-step-guide-c87e0a1937b5
 
 https://medium.com/@krthiak/a-pyspark-interview-questions-day-71-of-100-days-of-data-engineering-ai-and-azure-challenge-f11ef54cd6d0
 
