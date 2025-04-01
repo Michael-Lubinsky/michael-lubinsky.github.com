@@ -8,6 +8,11 @@ joined_table = df_1.join(
                )
 ```
 
+### Broadcast
+```python
+joined_df = larger_df.join(broadcast(smaller_df), ["identifier"], "left")
+```
+
 ### Salting: solution for sqewed data in join
 
 Problem statement:  
