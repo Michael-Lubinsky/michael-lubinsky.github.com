@@ -1,8 +1,17 @@
+
+Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
+
+https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
+
+https://github.com/ageron/handson-ml3
+
+https://machine-learning-with-python.readthedocs.io/
+
 ### What is desriptive measure of association
 
 https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
 
-https://machine-learning-with-python.readthedocs.io/
+
 
 
 ### Stat distributions in python
