@@ -1,7 +1,8 @@
 ### Salting: solution for sqewed data in join
 
 Problem statement:  
-7 records out of 10 in the first table has the value 1 - it means all of them goes to same executor   
+The 7 records out of 10 in the first table has the value 1  
+It means all of them goes to same executor   
 in following code:
 ```python
 df_1 = spark.read.load("abc").select("id","col_a","col_b" )  #15GB
@@ -62,7 +63,7 @@ df2 = spark.table('table2')
 # Print the Physical plan of this join and join strategy by Spark
 df1.join(df2, 'joining_key').explain()
 ```
-Above code will shuffle i.e exchange the data as it is not bucketed. 
+Above code will shuffle i.e exchange the data as it is not bucketed.  
 SortMergeJoin is the default Spark join,  
 but now let’s avoid the data exchanges that happened by using bucketing:   
 ```python
@@ -109,9 +110,6 @@ spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join 
  
 https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
 
-### Databricks
-
-https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
 
 ### Links
 
