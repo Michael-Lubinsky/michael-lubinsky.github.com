@@ -1,3 +1,6 @@
+
+https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
+
 https://customer-academy.databricks.com/learn/signin
 
 https://medium.com/@infinitylearnings1201
