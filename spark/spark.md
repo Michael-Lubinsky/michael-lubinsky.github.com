@@ -6,10 +6,15 @@ df_2 = df_2.repartition("viewer_id")
 joined_table = df_1.join(
                df_2, df_1.customer_id == df_2.viewer_id, "inner"
                )
+
+df1 = large_df.repartition(100, “join_key”)
+df2 = small_df.repartition(100, “join_key”)
+joined_df = df1.join(df2, “join_key”, “left”)
 ```
 
 ### Broadcast
 ```python
+from pyspark.sql.functions import broadcast
 joined_df = larger_df.join(broadcast(smaller_df), ["identifier"], "left")
 ```
 
@@ -67,6 +72,25 @@ if not len(df.take(1)):   # <-- use this  instead of: if not df.count():
 ```
 
 ### Bucketing:
+
+Bucketing helps improve join performance by reducing shuffle. When you bucket a DataFrame, 
+Spark saves it in pre-shuffled form, allowing future joins on the same key to avoid a shuffle.
+
+Bucketing the DataFrames on join_key
+```python
+df1.write.bucketBy(100, “join_key”).saveAsTable(“bucketed_df1”)
+df2.write.bucketBy(100, “join_key”).saveAsTable(“bucketed_df2”)
+
+# Now the join will not require a shuffle
+
+bucketed_df1 = spark.table(“bucketed_df1”)
+bucketed_df2 = spark.table(“bucketed_df2”)
+joined_df = bucketed_df1.join(bucketed_df2, “join_key”, “left”)
+```
+When to use Bucketing:
+
+You frequently perform joins on the same key across the same datasets.
+Your datasets are huge, and you want to avoid the shuffling cost.
 
 Without bucketing:
 
