@@ -1,3 +1,13 @@
+## Spark
+
+### Joins
+- Broadcast Hash Join
+- Shuffle Hash Join
+- Sort Merge Join
+- Cartesian Join
+- Broadcast Nested Loop Join
+
+
 ### Join: Repartitioning on Join Key
 
 ```python
