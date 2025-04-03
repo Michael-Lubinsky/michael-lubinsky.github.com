@@ -42,13 +42,14 @@ rg --type-list
 rg "localhost:4531" --type python
 rg "localhost:4531" --tpy
 rg '123456789012' --type-not markdown
-rg "hello" -A 1
-rg "hello" -B 1
-rg "hello" -C 1
+rg "hello" -A 1  # one line after
+rg "hello" -B 1  # one line before
+rg "hello" -C 1  # one line before and 1 line after
 rg crypto -g '!modules/' -g '!pypi/'  # Exclude a directory
 rg --files | rg cluster  # find files
 rg -l 'pattern' -sort path   # return file names only
-rg --files-without-match '\b(var|let|const)\b'  
+rg --files-without-match '\b(var|let|const)\b'
+rg -F "hello.world" file.txt # searches for exactly hello.world instead of interpreting . as "any character"
 ```
 ### tee
 ```bash
