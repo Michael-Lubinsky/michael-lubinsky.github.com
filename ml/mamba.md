@@ -17,6 +17,9 @@ https://www.kaggle.com/discussions/getting-started/390402
 
 https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
 
+### T-test, Welch test
+https://habr.com/ru/companies/X5Tech/articles/896182/
+
 ### What is desriptive measure of association
 
 https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
