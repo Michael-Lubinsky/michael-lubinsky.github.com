@@ -14,11 +14,12 @@ https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://www.kaggle.com/discussions/getting-started/390402
 
+
+https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
+
 ### What is desriptive measure of association
 
 https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
-
-
 
 
 ### Stat distributions in python
