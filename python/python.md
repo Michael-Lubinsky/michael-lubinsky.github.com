@@ -656,6 +656,8 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
 
+<https://pythonhelper.com/python/python-dictionary-methods/>
+
 <https://realpython.com/instance-class-and-static-methods-demystified/>
 
 <https://realpython.com/python-subprocess>
