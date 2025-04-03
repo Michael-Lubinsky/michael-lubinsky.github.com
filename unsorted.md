@@ -1,5 +1,7 @@
 https://grep.app/ search on github
 
+<https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+javascript+learnmachinelearning+programming/>
+
 ### Architecture
 
 https://www.cosmicpython.com/book/preface.html
