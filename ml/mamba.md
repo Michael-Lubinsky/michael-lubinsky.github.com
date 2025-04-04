@@ -1,5 +1,5 @@
 
-Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
+### Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
 
 https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
 
@@ -13,6 +13,30 @@ https://machine-learning-with-python.readthedocs.io/
 https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://www.kaggle.com/discussions/getting-started/390402
+
+### ML
+
+Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
+
+https://news.ycombinator.com/item?id=43586073
+
+https://habr.com/ru/articles/895332/ Bayes
+
+https://habr.com/ru/companies/alfa/articles/895002/ uplift
+
+https://habr.com/ru/companies/wunderfund/articles/894100/
+
+https://arxiv.org/abs/2206.13446 Pen and Paper Exercises in Machine Learning
+
+https://riverml.xyz/latest/ Online machine learning in Python
+
+https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
+
+https://github.com/Coder-World04/Data-and-ML-Projects-
+
+https://habr.com/ru/articles/795251/
+
+https://habr.com/ru/articles/795785/
 
 
 https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
@@ -50,25 +74,7 @@ https://habr.com/ru/articles/874592/
 
 https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
-### ML
 
-https://habr.com/ru/articles/895332/ Bayes
-
-https://habr.com/ru/companies/alfa/articles/895002/ uplift
-
-https://habr.com/ru/companies/wunderfund/articles/894100/
-
-https://arxiv.org/abs/2206.13446 Pen and Paper Exercises in Machine Learning
-
-https://riverml.xyz/latest/ Online machine learning in Python
-
-https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
-
-https://github.com/Coder-World04/Data-and-ML-Projects-
-
-https://habr.com/ru/articles/795251/
-
-https://habr.com/ru/articles/795785/
 
 ### Outliers and Anomaly  detection
 
