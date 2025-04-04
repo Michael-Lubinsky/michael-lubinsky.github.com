@@ -337,6 +337,10 @@ df_final = df_final.withColumn(
 
 df_final.orderBy("product_id", "year").show()
 ```
+https://medium.com/towards-data-engineering/discover-how-spark-functions-like-collect-set-concat-ws-collect-list-explode-and-array-union-e506a63bd571
+
+https://medium.com/towards-data-engineering/cracking-pyspark-json-handling-from-json-to-json-and-interview-ready-insights-6f5bacbce4dd
+
 https://medium.com/@rames1000/50-pyspark-problems-solutions-part-1-c40c19c3416e
 
 https://medium.com/@rames1000/50-pyspark-problems-solutions-part-2-1dbdbf892e1e
