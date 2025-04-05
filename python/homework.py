@@ -1,3 +1,37 @@
+"""
+An algebraic data type is a type formed by combining other types using one of two main ways:
+Sum types (aka tagged unions, variants, choices)
+Product types (aka tuples, records, structs)
+
+Imagine modeling a Shape:
+It can be a Circle with a radius
+Or a Rectangle with width and height
+That’s a sum type — a Shape can be one of many options (circle OR rectangle).
+And within each option, like a Rectangle, you're grouping multiple values — width AND height — which makes that part a product type.
+
+Why are they useful?
+Safe by design: You can use pattern matching to exhaustively handle all cases.
+Clear and concise: Makes data models expressive.
+Foundation for Option/Result types: 
+   Optional, Maybe, Result, Either types are all built using algebraic data types.
+"""
+### Algebraic data type in Python
+
+from dataclasses import dataclass
+from typing import Union
+
+@dataclass
+class Circle:
+    radius: float
+
+@dataclass
+class Rectangle:
+    width: float
+    height: float
+
+Shape = Union[Circle, Rectangle]
+
+
 arr = [1, 2, 3, 4, 5]
 for i in reversed(arr):
     print(i)
