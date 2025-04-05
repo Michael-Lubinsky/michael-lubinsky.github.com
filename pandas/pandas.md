@@ -1,5 +1,28 @@
 ## Pandas
 
+### Merge, Join, Concat
+```python
+import pandas as pd
+
+# Sample DataFrames
+df1 = pd.DataFrame({'ID': [1, 2, 3], 'Name': ['Alice', 'Bob', 'Charlie']})
+df2 = pd.DataFrame({'ID': [2, 3, 4], 'Age': [25, 30, 35]})
+df3 = pd.DataFrame({'ID': [1, 2], 'City': ['New York', 'Los Angeles']})
+
+# Method 1: Merge (similar to SQL JOIN)
+merged_df = pd.merge(df1, df2, on='ID', how='inner')
+
+# Method 2: Join (combine based on index)
+joined_df = df1.set_index('ID').join(df2.set_index('ID'))
+
+# Method 3: Concatenate (adding rows)
+concatenated_df = pd.concat([df1, df3], ignore_index=True)
+print("Merged DataFrame:\n", merged_df)
+print("\nJoined DataFrame:\n", joined_df)
+print("\nConcatenated DataFrame:\n", concatenated_df)
+```
+
+
 ### Selecting Columns by Data Type
 Filter columns based on data types (e.g., int64, float64, object).
 
@@ -110,9 +133,35 @@ df.pivot(index='date', columns='product', values='sales')
 Randomly select a fraction or specific number of rows from a DataFrame.
 
 Use Case: Create test datasets or quickly explore a representative subset of large data.
-``
+```
 sampled_df = df.sample(frac=0.1, random_state=42)
 ```
+
+
+### Filtering Data Based on a Date Range in Pandas
+Retrieve data between 2nd February 2021 and 2nd February 2022, 
+ use the `.loc` accessor with boolean indexing. 
+
+```python
+import pandas as pd
+data = {
+    'Date': ['2021-01-15', '2021-02-05', '2021-05-20', '2021-12-25', '2022-02-01', '2022-03-10'],
+    'Value': [10, 20, 30, 40, 50, 60]
+}
+df = pd.DataFrame(data)
+
+# Convert 'Date' column to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+
+# Define the date range
+start_date = '2021-02-02'
+end_date = '2022-02-02'
+
+filtered_df = df.loc[(df['Date'] >= start_date) & (df['Date'] <= end_date)]
+print(filtered_df)
+
+```
+
 
 ### Time Series Aggregation with pandas
 
