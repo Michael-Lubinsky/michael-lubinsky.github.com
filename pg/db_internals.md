@@ -13,3 +13,5 @@ https://www.reddit.com/r/databasedevelopment/comments/1iqui1e/how_we_made_most_o
 https://pingcap.medium.com/doubling-system-read-throughput-with-only-26-lines-of-code-95f89505c880
 
 https://medium.com/@mgalalen/how-databases-work-under-the-hood-building-a-key-value-store-in-go-2af9a772c10d
+
+https://arpitbhayani.me/blogs/bitcask/
