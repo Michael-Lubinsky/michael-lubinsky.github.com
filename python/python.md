@@ -46,6 +46,24 @@ print(sorted(names, key=str.lower))
 sorted_numbers = sorted(names, reverse=True)
 ```
 
+### Context manager
+
+```python
+class DatabaseConnection:  
+    def __enter__(self):  
+        self.conn = connect_to_database()  # Simulate connection  
+        print("Connected to database.")  
+        return self.conn  
+
+    def __exit__(self, exc_type, exc_val, exc_tb):  
+        self.conn.close()  
+        print("Connection closed.")  
+
+# Usage  
+with DatabaseConnection() as db:  
+    db.query("SELECT * FROM users") 
+```
+
 ### reverse
 ```python
 nums = [1, 2, 3]
