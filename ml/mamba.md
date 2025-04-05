@@ -38,6 +38,7 @@ https://habr.com/ru/articles/795251/
 
 https://habr.com/ru/articles/795785/
 
+https://eli.thegreenplace.net/2025/reproducing-word2vec-with-jax/
 
 https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
 
