@@ -17,7 +17,7 @@ https://polylith.gitbook.io/polylith
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
-
+https://www.youtube.com/watch?v=vGcjIz38Mbs cohort retension python
 ### Customer Live Time Value
 https://habr.com/ru/companies/appodeal/articles/294864/  
 https://habr.com/ru/articles/436236/  
