@@ -34,10 +34,11 @@ https://www.kdnuggets.com/10-github-repositories-to-master-machine-learning
 
 https://github.com/Coder-World04/Data-and-ML-Projects-
 
-https://habr.com/ru/articles/795251/
+https://habr.com/ru/articles/795251/ Типичные задачи аналитика. Часть 2. А есть ли тренд?
 
-https://habr.com/ru/articles/795785/
+https://habr.com/ru/articles/795785/ 
 
+https://habr.com/ru/articles/897946/ Error backpropagation
 https://eli.thegreenplace.net/2025/reproducing-word2vec-with-jax/
 
 https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
