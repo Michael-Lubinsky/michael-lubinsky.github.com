@@ -20,3 +20,7 @@ https://github.com/taskflow/taskflow
 Flame Graph
 https://github.com/ibogosavljevic/fiya
 https://johnnysswlab.com/fiya-flamegraphs-in-your-app
+
+### C
+
+https://www.youtube.com/@olgapavlova/videos
