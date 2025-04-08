@@ -50,13 +50,16 @@ Let me know if you want a comparison with something like Delta Lake or Iceberg �
 
 Here's a clear side-by-side comparison to help you decide:
 
-🧱 Overview
+### 🧱 Overview
+```
 Feature	Apache Hudi	Delta Lake	Apache Iceberg
 Creator	Uber	Databricks	Netflix
 Open Source	Yes (Apache Incubator)	Yes (Linux Foundation)	Yes (Apache Top-Level)
 Write Engine	Spark	Spark	Spark, Flink, Trino, Hive, etc.
 Query Engines	Spark, Presto, Hive, Trino, Flink	Spark, Presto, Trino	Spark, Trino, Flink, Hive, Dremio
-📌 Key Features Comparison
+```
+### 📌 Key Features Comparison
+```
 Feature	Hudi	Delta Lake	Iceberg
 ✅ Upserts/Deletes	Yes	Yes	Yes
 🔁 Incremental Reads	Native support	Limited	Yes, via snapshot diffs
@@ -68,16 +71,21 @@ Feature	Hudi	Delta Lake	Iceberg
 📊 Metadata Table	Yes	Yes	Yes (highly optimized)
 🔍 Query Optimization	File-level indexing	Z-ordering	Metadata + hidden partitioning
 🔄 Streaming Support	Yes (built-in, Spark structured streaming)	Yes (Spark Streaming)	Yes (via Flink)
-🔧 File Layout & Format
+```
+### 🔧 File Layout & Format
+```
 Feature	Hudi	Delta Lake	Iceberg
 File Format	Parquet, Avro, ORC	Parquet	Parquet, Avro, ORC
 Table Type	Copy-on-write / Merge-on-read	Copy-on-write	Snapshot-based
 Metadata Storage	Timeline log files + Metadata Table	Transaction log (JSON in _delta_log)	Manifest and snapshot files
-💬 Strengths & Best Use Cases
+```
+### 💬 Strengths & Best Use Cases
+```
 Tool	Strengths	Best For
 Hudi	Native support for upserts, incremental pulls, streaming ingestion, CDC	Real-time pipelines, high-change-rate datasets
 Delta Lake	Tight Spark integration, Z-ordering, simple to use	Batch and streaming with Spark, data science workloads
 Iceberg	Engine-agnostic, strong schema evolution, partition evolution	Multi-engine environments, slowly changing dimensions, large-scale OLAP
+```
 📈 Who Uses Them?
 Hudi: Uber, Robinhood, ByteDance
 
