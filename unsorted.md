@@ -22,7 +22,9 @@ https://medium.com/data-science/building-effective-metrics-to-describe-users-321
 https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
 https://www.youtube.com/watch?v=vGcjIz38Mbs cohort retension python
+
 ### Customer Live Time Value
+https://medium.com/airbnb-engineering/how-airbnb-measures-listing-lifetime-value-a603bf05142c
 https://habr.com/ru/companies/appodeal/articles/294864/  
 https://habr.com/ru/articles/436236/  
 https://medium.com/bolt-labs/understanding-the-customer-lifetime-value-with-data-science-c14dcafa0364  
