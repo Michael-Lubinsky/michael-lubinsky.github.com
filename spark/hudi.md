@@ -83,15 +83,8 @@ Hudi	Native support for upserts, incremental pulls, streaming ingestion, CDC	Rea
 Delta Lake	Tight Spark integration, Z-ordering, simple to use	Batch and streaming with Spark, data science workloads
 Iceberg	Engine-agnostic, strong schema evolution, partition evolution	Multi-engine environments, slowly changing dimensions, large-scale OLAP
 ```
-📈 Who Uses Them?
-Hudi: Uber, Robinhood, ByteDance
+### Who Uses Them?
+Hudi: Uber, Robinhood, ByteDance  
+Delta Lake: Databricks, Zillow, Comcast  
+Iceberg: Netflix, Apple, LinkedIn, Adobe  
 
-Delta Lake: Databricks, Zillow, Comcast
-
-Iceberg: Netflix, Apple, LinkedIn, Adobe
-
-🧠 TL;DR Recommendation
-Scenario	Use This
-Streaming + CDC + Spark	Apache Hudi
-Spark-heavy ecosystem, tight Delta integration	Delta Lake
-Engine-agnostic, complex schema/partitioning needs	Apache Iceberg
