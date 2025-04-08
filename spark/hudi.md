@@ -1,10 +1,17 @@
 ## Apache Hudi (Hadoop Upserts Deletes and Incrementals) 
-is an open-source data lake platform that helps you efficiently manage large-scale data on cloud storage like Amazon S3, Azure Blob Storage, or HDFS. It's designed for streaming and batch data processing, and it brings database-like capabilities to data lakes.
+```
+Hidi is an open-source data lake platform that helps you efficiently manage large-scale data
+ on cloud storage like Amazon S3, Azure Blob Storage, or HDFS.
+ It's designed for streaming and batch data processing, and it brings database-like capabilities to data lakes.
 
-🔍 In simple terms:
-Hudi lets you insert, update, and delete records on a data lake — something traditional data lakes aren't great at. It supports near real-time ingestion and incremental queries, making it ideal for modern data engineering and analytics.
+Hudi lets you insert, update, and delete records on a data lake —
+something traditional data lakes aren't great at.
+It supports near real-time ingestion and incremental queries,
+making it ideal for modern data engineering and analytics.
 
-🧠 Key Features:
+```
+
+### 🧠 Key Features:
 Upserts & Deletes: Unlike standard Parquet or ORC files, Hudi allows record-level updates and deletes.
 
 Incremental Processing: Query only what's changed (like CDC—Change Data Capture).
@@ -23,29 +30,19 @@ Compaction & Cleaning: Background processes to optimize storage and performance.
 
 Metadata Table: Improves query performance by avoiding directory listings.
 
-🛠️ Works well with:
-Apache Spark (primary engine for writes)
-
-Presto / Trino / Hive (for querying)
-
-Databricks
-
-AWS EMR / GCP / Azure
+### 🛠️ Works well with:
+- Apache Spark (primary engine for writes)
+- Presto / Trino / Hive (for querying)
+- Databricks
+- AWS EMR / GCP / Azure
 
 📦 Use Cases:
-Real-time data ingestion (e.g., from Kafka)
-
-Change Data Capture (CDC)
-
-GDPR/CCPA compliance (deleting or updating records)
-
-Streaming ETL pipelines
-
-Large-scale data lake management
-
-Let me know if you want a comparison with something like Delta Lake or Iceberg — or help setting up Hudi in a Spark environment!
-
-
+1. Real-time data ingestion (e.g., from Kafka)
+2. Change Data Capture (CDC)
+3. GDPR/CCPA compliance (deleting or updating records)
+4. Streaming ETL pipelines
+5. Large-scale data lake management
+ 
 ### Compare Apache Hudi with  Delta Lake and Iceberg .
 
 Here's a clear side-by-side comparison to help you decide:
