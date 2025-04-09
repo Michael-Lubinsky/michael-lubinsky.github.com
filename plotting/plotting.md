@@ -137,3 +137,5 @@ https://panel.holoviz.org/reference/panes/ECharts.html
 
 https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html 
 
+https://airbnb.io/visx/ VisX
+
