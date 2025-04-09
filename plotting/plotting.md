@@ -129,6 +129,8 @@ https://pypi.org/project/highcharts-core/
 
 https://github.com/ecomfe/awesome-echarts
 
+https://news.ycombinator.com/item?id=43624220
+
 https://echarts-python.readthedocs.io/en/latest/
 
 https://panel.holoviz.org/reference/panes/ECharts.html
