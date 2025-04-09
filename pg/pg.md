@@ -220,6 +220,9 @@ ORDER BY t1.fivethous;
 
 <https://habr.com/ru/companies/sigma/articles/890668/>
 
+### Full text search
+
+https://blog.vectorchord.ai/postgresql-full-text-search-fast-when-done-right-debunking-the-slow-myth
 
 ### Logging every change in your database
 
