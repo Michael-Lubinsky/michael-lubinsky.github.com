@@ -224,6 +224,8 @@ ORDER BY t1.fivethous;
 
 https://blog.vectorchord.ai/postgresql-full-text-search-fast-when-done-right-debunking-the-slow-myth
 
+https://news.ycombinator.com/item?id=43627646
+
 ### Logging every change in your database
 
 <https://medium.com/@ihcnemed/postgresql-record-every-change-in-your-database-a98a6586527c>
