@@ -15,3 +15,5 @@ https://pingcap.medium.com/doubling-system-read-throughput-with-only-26-lines-of
 https://medium.com/@mgalalen/how-databases-work-under-the-hood-building-a-key-value-store-in-go-2af9a772c10d
 
 https://arpitbhayani.me/blogs/bitcask/
+
+https://habr.com/ru/companies/ydb/articles/898716/
