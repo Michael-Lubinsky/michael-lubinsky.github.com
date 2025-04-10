@@ -6,6 +6,18 @@ SUM(COALESCE(salary, 0)) AS total_salary
 FROM employees
 GROUP BY department_id;
 ```
+### WITH ... AS VALUES
+```sql
+WITH sample_data(id, name, age) AS (
+    VALUES
+        (1, 'Alice', 30),
+        (2, 'Bob', 25),
+        (3, 'Charlie', 35)
+)
+SELECT *
+FROM sample_data
+WHERE age > 28;
+```
 
 ### Pivot rows to columns
 
