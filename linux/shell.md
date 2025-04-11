@@ -58,6 +58,20 @@ echo "Any text here.." | tee log.txt
 cat input.txt | tee step1.log | grep "filter_pattern" | tee step2.log | sort | tee final.log
 ```
 
+### file
+```
+$ file $(which useradd)
+/usr/sbin/useradd: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2 (...)
+
+$ file $(which adduser)
+/usr/sbin/adduser: Perl script text executable
+```
+
+### shebang
+```
+#! /usr/bin/sh
+#! /usr/bin/python3
+```
 ### monitor memory consumption
 ```bash
 while true; do date; free -h; sleep 10; done >> system_usage.log
