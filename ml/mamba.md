@@ -14,6 +14,13 @@ https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://www.kaggle.com/discussions/getting-started/390402
 
+ML System design 
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
+
+Ads clicks prediction
+
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/mlsd-ads-ranking.md
+
 ### ML
 
 Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
