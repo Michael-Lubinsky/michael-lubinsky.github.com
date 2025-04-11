@@ -9,6 +9,8 @@ https://medium.com/data-science/5-must-know-techniques-for-mastering-time-series
 
 https://python.plainenglish.io/feature-engineering-for-time-series-forecasting-in-python-7c469f69e260
 
+https://habr.com/ru/articles/899408/  Gaps in TS
+
 ### Outlier detections
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
