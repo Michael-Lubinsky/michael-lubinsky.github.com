@@ -136,20 +136,33 @@ Similar to Kind, you must manually deploy it:
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
 
 Access requires additional steps (e.g., kubectl proxy or configuring ingress).
+
 Rancher Dashboard: If you install Rancher on top of K3s, you get a powerful, enterprise-grade GUI for managing clusters.
 Pros: Feature-rich, supports multi-cluster management.
 Cons: Overkill for self-education, heavier resource usage, and complex setup.
+
 Lens/Octant: K3s clusters work seamlessly with Lens or Octant, providing the same modern GUI experience.
 Cons: No built-in GUI launcher; Rancher adds complexity for local learning.
-Verdict: K3s offers good GUI options with external tools, but like Kind, it lacks Minikube’s simplicity for quick Dashboard access.
+
+Verdict:
+ K3s offers good GUI options with external tools, but like Kind, it lacks Minikube’s simplicity for quick Dashboard access.
+
 Comparison and Recommendation
-Best GUI Experience: Minikube wins for its one-command access to the Kubernetes Dashboard (minikube dashboard),
+
+Best GUI Experience:
+Minikube wins for its one-command access to the Kubernetes Dashboard (minikube dashboard),
  which is ideal for beginners wanting a quick, no-fuss GUI.
+
 It also integrates effortlessly with advanced tools like Lens or Octant for a more polished experience.
+
 Kind and K3s: Both rely on manual Dashboard setup or third-party tools, making them slightly less convenient for GUI users.
 Their GUI experience is equivalent to Minikube’s once configured, but the setup process is less streamlined.
-Lens/OpenLens (Universal Option): If you want the best GUI regardless of the tool, install Lens (free, open-source as OpenLens).
- It provides a consistent, modern interface across Minikube, Kind, and K3s, with features like resource visualization, metrics, and terminal access.
+
+Lens/OpenLens (Universal Option):
+If you want the best GUI regardless of the tool, install Lens (free, open-source as OpenLens).
+ It provides a consistent, modern interface across Minikube, Kind, and K3s,
+with features like resource visualization, metrics, and terminal access.
+
 For self-education on a MacBook, I recommend Minikube with its built-in Dashboard for simplicity,
  or pair any of the three with Lens for a richer GUI.
 
