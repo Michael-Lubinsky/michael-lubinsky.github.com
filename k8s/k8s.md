@@ -24,7 +24,18 @@ minikube start --driver=docker
 - Verify Installation:
 ``` 
 minikube status
+------------------
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+
 kubectl get nodes
+------------------
+NAME       STATUS   ROLES           AGE     VERSION
+minikube   Ready    control-plane   2m29s   v1.32.0
 ```
 - Install kubectl (if not installed with Minikube):
 ``` 
