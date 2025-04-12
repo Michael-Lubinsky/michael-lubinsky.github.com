@@ -1,6 +1,9 @@
 ## Kubernetes on   MacBook  
 
 ### Option 1: Minikube (Recommended for Beginners)
+
+<https://minikube.sigs.k8s.io/docs/start>
+
 Minikube runs a single-node Kubernetes cluster locally, ideal for learning.
 ``` 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
