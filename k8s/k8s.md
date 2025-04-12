@@ -70,6 +70,7 @@ kubectl version --client
 
 ```
 kubectl get po -A
+kubectl get pods --all-namespaces
 
 NAMESPACE     NAME                               READY   STATUS    RESTARTS      AGE
 kube-system   coredns-668d6bf9bc-cfpfl           1/1     Running   0             11m
@@ -83,6 +84,7 @@ kube-system   storage-provisioner                1/1     Running   1 (10m ago)  
 
 * For Minikube errors, try ```minikube delete``` and ```minikube start``` again.
 ```
+minikube addons enable metrics-server
 minikube dashboard
 http://127.0.0.1:57617/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=default
 ```
