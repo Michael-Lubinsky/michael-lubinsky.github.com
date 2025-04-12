@@ -93,8 +93,11 @@ Would you like me to guide you through a sample deployment?
 
 ### Which of these 3 options has better GUI?
 
+brew install lens
+
 ```
-Among Minikube, Kind, and K3s, none of them come with a built-in graphical user interface (GUI) by default,
+Among Minikube, Kind, and K3s,
+none of them come with a built-in graphical user interface (GUI) by default,
 as they are primarily CLI-driven tools designed for managing Kubernetes clusters.
 However, you can pair them with external GUI tools to visualize and manage your Kubernetes clusters.
 The quality of the GUI experience depends on the tool you choose rather than the Kubernetes distribution itself.
@@ -115,8 +118,11 @@ Cons: Basic compared to commercial tools; limited to cluster-specific views with
 
 Lens/Octant: Minikube clusters are easily added to Lens (now OpenLens) or Octant,
 which offer modern, feature-rich GUIs with metrics, logs, and resource editing.
+
 Lens: Polished, user-friendly, supports multiple clusters.
+
 Octant: Open-source, lightweight, good for local development.
+
 Verdict: Minikube’s seamless integration with the Kubernetes Dashboard and compatibility with Lens make it the most GUI-friendly out of the box.
 
 
@@ -130,10 +136,14 @@ Kubernetes Dashboard:
 You can manually deploy the Dashboard to a Kind cluster:
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+
 Then access it via kubectl proxy.
 This requires extra setup compared to Minikube’s one-command approach.
+
 Lens/Octant: Kind clusters can be imported into Lens or Octant, offering the same rich GUI experience as with Minikube.
+
 Cons: No native GUI integration; setting up the Dashboard is less streamlined.
+
 Verdict: Kind’s GUI experience is solid with external tools but requires more manual configuration than Minikube.
 
 3. K3s
@@ -159,16 +169,18 @@ Verdict:
  K3s offers good GUI options with external tools, but like Kind, it lacks Minikube’s simplicity for quick Dashboard access.
 
 Comparison and Recommendation
-
+---------------------------------
 Best GUI Experience:
+
 Minikube wins for its one-command access to the Kubernetes Dashboard (minikube dashboard),
  which is ideal for beginners wanting a quick, no-fuss GUI.
 
 It also integrates effortlessly with advanced tools like Lens or Octant for a more polished experience.
 
+--
 Kind and K3s: Both rely on manual Dashboard setup or third-party tools, making them slightly less convenient for GUI users.
 Their GUI experience is equivalent to Minikube’s once configured, but the setup process is less streamlined.
-
+-----
 Lens/OpenLens (Universal Option):
 If you want the best GUI regardless of the tool, install Lens (free, open-source as OpenLens).
  It provides a consistent, modern interface across Minikube, Kind, and K3s,
