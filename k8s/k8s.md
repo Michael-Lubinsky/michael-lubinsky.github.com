@@ -2,29 +2,40 @@
 
 ### Option 1: Minikube (Recommended for Beginners)
 Minikube runs a single-node Kubernetes cluster locally, ideal for learning.
- 
+``` 
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
+```
 - Install Minikube:
- 
+``` 
 brew install minikube
-
+```
 - Install a Driver (e.g., Docker ):
- 
+ ```
 brew install docker
- 
+docker --version
+``` 
 - Start Minikube:
- 
+``` 
 minikube start --driver=docker
- 
+``` 
 - Verify Installation:
- 
+``` 
 minikube status
 kubectl get nodes
-
+```
 - Install kubectl (if not installed with Minikube):
- 
+``` 
 brew install kubectl
+minikube status
+minikube version
+kubectl version --client
+```
+
+* Ensure Docker Desktop is running before starting Minikube or Kind.  
+* Use kubectl to practice commands, e.g.
+   kubectl apply, kubectl get, kubectl describe
+* For Minikube errors, try ```minikube delete``` and ```minikube start``` again.
+
 
 ### Option 2: Kind (Kubernetes in Docker)
 Kind runs Kubernetes clusters in Docker containers, great for testing multi-node setups.
