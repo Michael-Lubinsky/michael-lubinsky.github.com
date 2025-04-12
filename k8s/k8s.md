@@ -68,8 +68,24 @@ kubectl version --client
 * Use kubectl to practice commands, e.g.  
    ```kubectl apply```, ```kubectl get```, ```kubectl describe```
 
-* For Minikube errors, try ```minikube delete``` and ```minikube start``` again.
+```
+kubectl get po -A
 
+NAMESPACE     NAME                               READY   STATUS    RESTARTS      AGE
+kube-system   coredns-668d6bf9bc-cfpfl           1/1     Running   0             11m
+kube-system   etcd-minikube                      1/1     Running   0             11m
+kube-system   kube-apiserver-minikube            1/1     Running   0             11m
+kube-system   kube-controller-manager-minikube   1/1     Running   0             11m
+kube-system   kube-proxy-gpv2x                   1/1     Running   0             11m
+kube-system   kube-scheduler-minikube            1/1     Running   0             11m
+kube-system   storage-provisioner                1/1     Running   1 (10m ago)   11m
+```  
+
+* For Minikube errors, try ```minikube delete``` and ```minikube start``` again.
+```
+minikube dashboard
+http://127.0.0.1:57617/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=default
+```
 
 ### Option 2: Kind (Kubernetes in Docker)
 Kind runs Kubernetes clusters in Docker containers, great for testing multi-node setups.
