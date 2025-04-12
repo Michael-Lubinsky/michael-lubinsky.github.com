@@ -19,7 +19,9 @@ https://www.cosmicpython.com/book/preface.html
 
 https://polylith.gitbook.io/polylith
 
+### Queue
 
+https://concerningquality.com/queue-simulations/
 
 ### сегментацию и кластеризацию клиентской базы
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
