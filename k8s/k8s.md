@@ -35,8 +35,9 @@ kubectl version --client
 ```
 
 * Ensure Docker Desktop is running before starting Minikube or Kind.  
-* Use kubectl to practice commands, e.g.
-   kubectl apply, kubectl get, kubectl describe
+* Use kubectl to practice commands, e.g.  
+   ```kubectl apply```, ```kubectl get```, ```kubectl describe```
+
 * For Minikube errors, try ```minikube delete``` and ```minikube start``` again.
 
 
