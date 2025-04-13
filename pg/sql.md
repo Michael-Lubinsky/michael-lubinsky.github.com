@@ -475,7 +475,7 @@ from (select rownum n, val from data) t;
 ```
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
-
+https://blog.devgenius.io/my-tough-sql-interview-experience-at-paytm-what-i-was-asked-and-what-i-learned-e987f88de733
 <https://medium.com/h7w/sql-interview-at-microsoft-apple-ibm-b5d94f0194eb>
 <https://medium.com/ai-ml-interview-playbook/top-10-sql-interview-questions-youll-actually-be-asked-d8ca55930d68>
 <https://blog.devgenius.io/advanced-sql-interview-quesiton-top-3-product-combinations-245ce6e9c068>
