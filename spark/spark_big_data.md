@@ -77,5 +77,7 @@ df.explain(True)  # Displays physical/logical plansConclusion
 
 <https://medium.com/@sgouda835/handling-large-data-volumes-100gb-1tb-in-pyspark-best-practices-optimizations-b0ce2fe73f24>
 
+<https://medium.com/@abheshekh1285/how-to-master-spark-caching-myths-mistakes-and-best-practices-410a90054c45>
+
 
 <https://medium.com/towards-data-engineering/parquet-internals-7a51d2aaf8ae>
