@@ -36,6 +36,11 @@ https://justincartwright.com/2025/02/25/dice-and-queues.html
 
 https://news.ycombinator.com/item?id=43640115
 
+### Stat
+https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
+
+## Customer analysis
+
 ### сегментацию и кластеризацию клиентской базы
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
