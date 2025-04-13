@@ -233,6 +233,8 @@ https://medium.com/@swathireddythokala16/youtube-trend-analysis-pipeline-etl-wit
 
 https://medium.com/apache-airflow/apache-airflow-2-0-tutorial-41329bbf7211
 
+https://medium.com/@databy-uav/dbt-and-bashcommand-effectively-utilizing-dbt-core-functionality-with-airflow-f369375c6ef1
+
 https://medium.com/indiciumtech/apache-airflow-best-practices-bc0dd0f65e3f
 
 https://medium.com/datavidhya/understand-apache-airflow-like-never-before-311c00ef0e5a 
