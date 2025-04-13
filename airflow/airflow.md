@@ -5,6 +5,69 @@ Perform specific actions such as running a Python function, executing a Bash com
 Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
 #### Transfer Operators:
 Facilitate moving data between systems, such as S3ToGCSOperator or MySqlToPostgresOperator.
+
+### Branch operator
+```python
+from airflow import DAG
+from airflow.operators.python import BranchPythonOperator, PythonOperator
+from airflow.operators.dummy import DummyOperator
+from datetime import datetime
+import random
+
+# Define the DAG
+default_args = {
+    'owner': 'airflow',
+    'start_date': datetime(2023, 10, 1),
+    'retries': 1,
+}
+
+dag = DAG(
+    'branching_example',
+    default_args=default_args,
+    description='A simple branching DAG',
+    schedule_interval=None,
+)
+
+# Define the branching logic
+def decide_branch():
+    # Randomly choose a path
+    if random.choice([True, False]):
+        return 'task_a'  # Task ID to follow if True
+    else:
+        return 'task_b'  # Task ID to follow if False
+
+# Branching task
+branch_task = BranchPythonOperator(
+    task_id='branch_task',
+    python_callable=decide_branch,
+    dag=dag,
+)
+
+# Tasks for different branches
+task_a = DummyOperator(
+    task_id='task_a',
+    dag=dag,
+)
+
+task_b = DummyOperator(
+    task_id='task_b',
+    dag=dag,
+)
+
+# Final task after branching
+final_task = DummyOperator(
+    task_id='final_task',
+    dag=dag,
+    trigger_rule='none_failed',  # Ensures it runs regardless of which branch is taken
+)
+
+# Define task dependencies
+branch_task >> [task_a, task_b]  # Branch task leads to either task_a or task_b
+task_a >> final_task  # task_a leads to final_task
+task_b >> final_task  # task_b l
+
+```
+
 #### Sensor Operators: 
 Wait for an external condition to be met before proceeding. 
 Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
@@ -240,6 +303,8 @@ https://medium.com/indiciumtech/apache-airflow-best-practices-bc0dd0f65e3f
 https://medium.com/datavidhya/understand-apache-airflow-like-never-before-311c00ef0e5a 
 
 https://medium.com/data-science/stop-creating-bad-dags-optimize-your-airflow-environment-by-improving-your-python-code-146fcf4d27f7
+
+https://medium.com/@vmpavan/airflow-interview-question-conditional-task-execution-with-branchpythonoperator-hey-folks-3e2f8fc09a64
 
 https://medium.com/plum-fintech/dbt-airflow-50b2c93f91cc
 
