@@ -220,6 +220,7 @@ with DAG(dag_id="sensor_example", start_date=datetime(2025, 1, 1)) as dag:
     check_file >> process_task
 ```
 
+{%
 #### Links
 
 https://blog.det.life/stop-creating-multiple-airflow-dags-for-reloads-and-parallel-processing-3912974b5866
@@ -241,3 +242,5 @@ https://medium.com/data-science/stop-creating-bad-dags-optimize-your-airflow-env
 https://medium.com/plum-fintech/dbt-airflow-50b2c93f91cc
 
 https://medium.com/dev-genius/airflow-interview-questions-iv-cef5100d44c5 
+
+%}
