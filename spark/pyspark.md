@@ -343,6 +343,8 @@ https://medium.com/towards-data-engineering/cracking-pyspark-json-handling-from-
 
 https://medium.com/@rames1000/50-pyspark-problems-solutions-part-1-c40c19c3416e
 
+https://medium.com/meanlifestudies/pyspark-data-engineer-interview-questions-part-iv-5e091d14b31f
+
 https://medium.com/@rames1000/50-pyspark-problems-solutions-part-2-1dbdbf892e1e
 https://medium.com/@rames1000/50-pyspark-problems-solutions-part-3-4b8472b068fb
 
