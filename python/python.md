@@ -682,6 +682,7 @@ with open('test.txt', "r+b") as f:
         print(snippet.decode('utf-8'))
 ```
 
+<!--
 ### Decorators and other code snippets
 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
@@ -691,6 +692,8 @@ https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
+
+<https://medium.com/@abdullah.iu.cse/mastering-python-with-these-code-snippets-part-4-de4441e29260>
 
 <https://pythonhelper.com/python/python-dictionary-methods/>
 
@@ -727,4 +730,4 @@ https://habr.com/ru/articles/562380/ Statistics
 <https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
 <https://github.com/salabim/salabim>
 
-
+-->
