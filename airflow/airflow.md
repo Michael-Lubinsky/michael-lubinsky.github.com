@@ -140,6 +140,86 @@ data_cleaning_instance = data_cleaning_dag()
 
 <https://medium.com/@mcgeehan/task-groups-and-pools-in-apache-airflow-872ee02da3bd>
 
+### Datasets vs Sensors
+
+
+#### Datasets:
+Datasets were introduced in Apache Airflow 2.4, released in August 2022
+Focus on data dependencies, triggering downstream DAGs when a dataset is updated by a producer task. 
+They abstract the scheduling logic to react to data changes,
+such as a file being written or a database table being updated.
+Operate at the DAG level, using a passive, event-driven model. A producer task marks a dataset as updated upon successful completion, and Airflow’s scheduler triggers dependent DAGs automatically. No active polling is required.
+Ideal for orchestrating complex, data-dependent pipelines where DAGs should run only after specific data is available or updated, 
+e.g., triggering a reporting DAG after a data ingestion DAG updates a table.
+
+Datasets: Enable cross-DAG dependencies natively, simplifying data lineage and visualization in the Airflow UI. 
+They support one-to-many or many-to-one relationships between DAGs and datasets.
+
+
+Failure Handling:
+Datasets: A dataset is marked as updated only if the producer task succeeds,
+ensuring downstream DAGs don’t run on failed or incomplete data.
+
+```python
+from airflow import Dataset
+from airflow.decorators import dag, task
+example_dataset = Dataset("s3://bucket/example.csv")
+
+@dag(schedule=None)
+def producer():
+    @task(outlets=[example_dataset])
+    def update_data():
+        # Write to dataset
+        pass
+    update_data()
+
+@dag(schedule=[example_dataset])
+def consumer():
+    @task
+    def process_data():
+        # Read from dataset
+        pass
+    process_data()
+```
+#### Sensors: 
+Actively poll for specific conditions or events, such as the presence of a file, a database row, or an API response. 
+They are tasks within a DAG that pause execution until a criterion is met.
+Run as tasks within a DAG, actively checking (or "poking") for a condition at set intervals (e.g., every 60 seconds). 
+This can consume resources, especially for long-running checks.
+Suited for waiting on external events or conditions within a single DAG,
+e.g., checking if a file exists in an S3 bucket before processing it.
+
+Typically manage dependencies within a DAG or require specific implementations 
+(e.g., ExternalTaskSensor) for cross-DAG coordination, which can be less intuitive and harder to maintain.
+
+Failure Handling:
+Can be configured to handle exceptions (e.g., soft_fail or silent_fail),
+but their success depends on the condition being met, regardless of data integrity unless explicitly coded.
+
+```python
+from airflow import DAG
+from airflow.sensors.s3_key_sensor import S3KeySensor
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+def process_data():
+    # Process file
+    pass
+
+with DAG(dag_id="sensor_example", start_date=datetime(2025, 1, 1)) as dag:
+    check_file = S3KeySensor(
+        task_id="check_s3_file",
+        bucket_key="s3://bucket/example.csv",
+        poke_interval=60,
+        timeout=3600
+    )
+    process_task = PythonOperator(
+        task_id="process_data",
+        python_callable=process_data
+    )
+    check_file >> process_task
+```
+
 #### Links
 
 https://blog.det.life/stop-creating-multiple-airflow-dags-for-reloads-and-parallel-processing-3912974b5866
