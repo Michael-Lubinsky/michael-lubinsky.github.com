@@ -64,7 +64,7 @@ final_task = DummyOperator(
 # Define task dependencies
 branch_task >> [task_a, task_b]  # Branch task leads to either task_a or task_b
 task_a >> final_task  # task_a leads to final_task
-task_b >> final_task  # task_b l
+task_b >> final_task  # task_b leads to final_task
 
 ```
 
