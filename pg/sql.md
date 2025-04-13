@@ -473,6 +473,7 @@ over(order by n rows between current row and 1 following) avg
 from (select rownum n, val from data) t;
 
 ```
+<!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
 
 <https://medium.com/h7w/sql-interview-at-microsoft-apple-ibm-b5d94f0194eb>
@@ -482,3 +483,4 @@ from (select rownum n, val from data) t;
 <https://medium.com/@mariusz_kujawski/advanced-sql-for-data-professionals-875ab725730c>  
 <https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>  
 <https://skphd.medium.com/sql-scenario-based-interview-questions-and-answers-08d6ca4bcabf>
+-->
