@@ -196,6 +196,13 @@ Output:
 hello world this is python
 ```
 
+### flat nested list
+```python
+nested = [[1, 2], [3, 4], [5]]
+ flat = [item for sublist in nested for item in sublist]
+>>> flat
+[1, 2, 3, 4, 5]
+```
 ### Dataclass
 Automatically generates methods like __init__() and __repr__().
 
