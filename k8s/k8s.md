@@ -1,5 +1,9 @@
 https://medium.com/tag/kubernetes
 
+https://levelup.gitconnected.com/i-asked-this-kubernetes-question-in-every-interview-and-heres-the-catch-6d37cc7cb7a5
+
+https://medium.com/@haroldfinch01/top-15-secret-kubernetes-tricks-you-didnt-know-d4cf38334f06
+
 ### Helm 
 is a package manager for Kubernetes. It uses “charts” to define, install and upgrade applications.
 
