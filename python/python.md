@@ -98,6 +98,7 @@ result = divmod(10, 3)
 print(result)  # Output: (3, 1)
 ```
 ### Enum
+https://mayursurani.medium.com/the-enum-trick-every-python-developer-should-know-a-comprehensive-guide-6092ff7167ea
 ```python
 from enum import Enum
 
