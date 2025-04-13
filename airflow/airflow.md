@@ -67,6 +67,42 @@ task_a >> final_task  # task_a leads to final_task
 task_b >> final_task  # task_b leads to final_task
 
 ```
+one more example of branch operator
+```python
+from airflow import DAG
+from airflow.operators.python import PythonOperator, BranchPythonOperator
+from airflow.operators.dummy import DummyOperator
+from datetime import datetime
+
+def check_file():
+    file_found = True # Replace with actual file check logic
+    return ‘load_to_bq’ if file_found else ‘send_alert’
+def load_to_bq():
+    print(“Loading to BigQuery…”)
+def send_alert():
+    print(“File not found! Sending alert…”)
+
+with DAG(‘conditional_execution_dag’,
+  start_date=datetime(2023, 1, 1),
+  schedule_interval=’@daily’,
+  catchup=False) as dag:
+     start = DummyOperator(task_id=’start’)
+     branch = BranchPythonOperator(
+     task_id=’branching’,
+     python_callable=check_file
+)
+
+task_load = PythonOperator(
+    task_id=’load_to_bq’,
+    python_callable=load_to_bq
+)
+task_alert = PythonOperator(
+    task_id=’send_alert’,
+    python_callable=send_alert
+)
+end = DummyOperator(task_id=’end’, trigger_rule=’none_failed_min_one_success’)
+start >> branch >> [task_load, task_alert] >> end
+```
 
 #### Sensor Operators: 
 Wait for an external condition to be met before proceeding. 
