@@ -1,3 +1,12 @@
+https://medium.com/tag/kubernetes
+
+### Helm 
+is a package manager for Kubernetes. It uses “charts” to define, install and upgrade applications.
+
+https://blog.devgenius.io/deploying-apache-airflow-on-kubernetes-a-step-by-step-guide-for-beginners-532c15ccc914
+
+brew install helm
+
 ## Kubernetes on   MacBook  
 
 ### Option 1: Minikube (Recommended for Beginners)
