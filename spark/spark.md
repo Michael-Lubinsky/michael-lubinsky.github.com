@@ -572,6 +572,7 @@ https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venk
 ### Links
 https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
 
+https://mayursurani.medium.com/advanced-pyspark-interview-questions-a-deep-dive-into-distributed-computing-excellence-c04b791d133d
 
 Databricks Photon Spark engine
 https://blog.det.life/why-did-databricks-build-the-photon-engine-90546429a31c
