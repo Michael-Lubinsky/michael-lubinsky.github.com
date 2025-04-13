@@ -37,6 +37,10 @@ https://justincartwright.com/2025/02/25/dice-and-queues.html
 https://news.ycombinator.com/item?id=43640115
 
 ### Stat
+Gini index
+https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
+
+Poisson distrib
 https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
 
 ## Customer analysis
