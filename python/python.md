@@ -361,6 +361,8 @@ Based on this we can build Python program which supports plugins:
 Protocols provide a way to define structural typing in Python, 
 allowing you to create interfaces without the need for explicit inheritance.
 <https://realpython.com/python-protocol/>
+<https://towardsdev.com/interfaces-en-python-2a7365a9ba14> ABC vs Protocol
+ 
 ```python
 from typing import Protocol
 from abc import ABC, abstractmethod
@@ -681,7 +683,7 @@ with open('test.txt', "r+b") as f:
         snippet = mm[0:10]
         print(snippet.decode('utf-8'))
 ```
-
+  
 <!--
 ### Decorators and other code snippets
 
