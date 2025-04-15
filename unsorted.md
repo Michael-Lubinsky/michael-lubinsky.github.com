@@ -1,5 +1,10 @@
 https://grep.app/ search on github
 
+Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
+
+Awesome
+https://github.com/sindresorhus/awesome
+
 ### S3
 AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40
 S3:  
