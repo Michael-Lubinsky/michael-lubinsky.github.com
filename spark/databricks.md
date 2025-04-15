@@ -1,3 +1,10 @@
+Databricks Tutorial (From Zero to Hero) | Azure Databricks Masterclass
+https://lnkd.in/ejy68rEc
+
+PySpark Tutorial | Full Course (From Zero to Pro!)
+https://lnkd.in/erj2swjE
+
+
 https://learn.microsoft.com/en-us/azure/databricks/languages/python
 
 https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
