@@ -37,7 +37,8 @@ fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
 <https://github.com/alexpasmantier/television>
 #### rigrep
 ```
-rg '123456789012' -g '*.tf'  $ using glob to search files whose paths match the specified glob
+rg '123456789012' -g '*.tf'  # using glob to search files whose paths match the specified glob
+rg pattern -tcsv --type-add 'csv:*.csv'   # add custom type csv
 rg --type-list
 rg "localhost:4531" --type python
 rg "localhost:4531" --tpy
