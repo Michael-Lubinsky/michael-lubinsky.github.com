@@ -127,7 +127,7 @@ else
 fi
 ```
 
-#### Retry with timeout
+### Retry with timeout
 ```bash
 #!/bin/bash
 TIMEOUT=5
