@@ -1,4 +1,4 @@
-## Command line
+## Linux shell scripting
 
 ### File watcher
 ```bash
@@ -32,15 +32,21 @@ script.sh 1> out.log 2> err.log
 script.sh &> combined_out_and_err.log
 echo "This message goes to stderr" 1>&2
 ```
-### 
+### awk
 ```
-awk '{print $2}' file.txt 
+awk '{print $2}' file.txt
+myvariable=$(awk '{print $2}' file.txt | sort | uniq)
+```
+
+### command chaining 
+```bash
 diff <(ls dir1) <(ls dir2)    # compares 2 folders
 diff <(sort file1.txt) <(sort file2.txt)
+
 command1 & command2 & wait   # starts command1 and command2 in parallel and waits for both to finish.
 command1 && command2 # Executes command2 only if command1 is successful.
 command1 || command2  # Executes command2 if command1 fails.
-myvariable=$(awk '{print $2}' file.txt | sort | uniq) 
+
 ```
 
 ### Find files: grep, rigrep, fzf, television
@@ -52,9 +58,11 @@ find /var/log -type f -name "*.log" -exec grep -H "ERROR" {} \;
 fzf (fuzzy finder) <https://junegunn.github.io/fzf/>
 
 #### Television is a cross-platform, fast and extensible fuzzy finder TUI.
-<https://crates.io/crates/television>
+<https://crates.io/crates/television>  
 <https://github.com/alexpasmantier/television>
-#### rigrep
+
+#### ripgrep
+https://github.com/BurntSushi/ripgrep
 ```
 rg '123456789012' -g '*.tf'  # using glob to search files whose paths match the specified glob
 rg pattern -tcsv --type-add 'csv:*.csv'   # add custom type csv
@@ -87,16 +95,16 @@ $ file $(which adduser)
 /usr/sbin/adduser: Perl script text executable
 ```
 
-### shebang
+### Shebang
 ```
 #! /usr/bin/sh
 #! /usr/bin/python3
 ```
-### monitor memory consumption
+### Monitor memory consumption
 ```bash
 while true; do date; free -h; sleep 10; done >> system_usage.log
 ```
-#### monitor resource consumption with Python
+### Monitor resource consumption with Python
 ```python
 import psutil
 
@@ -118,7 +126,8 @@ else
   echo "Sorry, time out after 5 sec"
 fi
 ```
-Retry with timeout
+
+#### Retry with timeout
 ```bash
 #!/bin/bash
 TIMEOUT=5
