@@ -1,5 +1,24 @@
 ## Command line
 
+### File watcher
+```bash
+#!/bin/bash
+directory="/path/to/watch"
+inotifywait -m -r -e create,modify,delete "$directory" |
+while read path action file; do
+    echo "File $file was $action."
+done
+```
+
+### jq
+```bash
+#!/bin/bash
+json_string='{"name": "John", "age": 30}'
+name=$(echo "$json_string" | jq -r '.name')
+age=$(echo "$json_string" | jq -r '.age')
+echo "Name: $name, Age: $age"
+```
+
 ### lsof - show open files 
 ```
 lsof +D /path/to/directory #  which processes are using files in a specific directory
