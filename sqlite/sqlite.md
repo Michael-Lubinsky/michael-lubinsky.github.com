@@ -17,10 +17,25 @@ for record in records:
 conn.close()
 ```
 
-PRAGMA statements can be executed like SQL commands
+### CTE as lookup table
+
+```sql
+WITH countries (code, name) AS (
+     SELECT * FROM (VALUES
+    ('us', 'United States'), ('fr', 'France'), ('in', 'India')
+    ) AS codes
+)
+SELECT data.code, name FROM data LEFT JOIN countries ON countries.code = data.code;
+```
+
+#### Virtual tables
+
+SQLite’s virtual tables let you expose external data sources as if they were normal tables.
+
+
 
 #### 1. General PRAGMA Commands
-   
+   PRAGMA statements can be executed like SQL commands
 ```
 1.1. PRAGMA database_list
 Lists all attached databases and their file paths.
