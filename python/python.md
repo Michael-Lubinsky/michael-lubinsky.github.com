@@ -131,7 +131,7 @@ s.strip('?!')    # 'abc'
 string.removeprefix(prefix)
 string.removesuffix(suffix)
 ```
-### Dictionary: get() and setdefault()
+### Dictionary: get() and setdefault(), defaultdict
 
 If you use [] to access a non-existent key, you’ll get a KeyError.   
 But if you use .get(), you’ll get None (or a default value you specify).
@@ -148,6 +148,13 @@ else:
 
 # Into this elegant one-liner
 user_stats.setdefault("login_count", 0) += 1
+
+from collections import defaultdict
+
+# Track word frequencies elegantly
+word_counts = defaultdict(int)
+for word in ["apple", "banana", "apple", "cherry"]:
+    word_counts[word] += 1  # No need for key existence check!
 
 ```
 #### Sort dict by key and by val
