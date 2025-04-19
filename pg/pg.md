@@ -35,7 +35,7 @@ SELECT * FROM (
 ) as t (digit_number, string_number);
 
 WITH sv(sex, value) AS (
-     VALUES(0, 'мужской'), (1, 'женский'), (2, 'не знаю')
+     VALUES(0, 'man'), (1, 'woman') 
 )
 SELECT fullname, sv.value FROM "user" INNER JOIN sv USING(sex);
 ```
@@ -63,6 +63,27 @@ FROM
 LEFT JOIN stats 
 ON stats.added_at = gs.added_at;
 ```
+
+### JSON_TABLE() function (Postgres 17)
+```sql
+SELECT *
+FROM JSON_TABLE(
+  '[{"name":"Alice","age":30},{"name":"Bob","age":25}]',
+  '$[*]'
+  COLUMNS(name TEXT PATH '$.name', age INT PATH '$.age')
+) AS jt;
+```
+### MERGE with RETURN (Postgres 17)
+```sql
+MERGE INTO employees AS e
+USING new_data AS d
+ON e.id = d.id
+WHEN MATCHED THEN
+  UPDATE SET salary = d.salary
+WHEN NOT MATCHED THEN
+  INSERT (id, salary) VALUES (d.id, d.salary)
+RETURNING *;
+```
 ### Lateral JOIN
 ```sql
 CREATE TABLE customers (
@@ -75,7 +96,7 @@ CREATE TABLE orders (
     order_date TIMESTAMP
 );
 ```
-Task: fetch the latest order per customer.
+Task: fetch the latest order per customer using Partition and ROW_NUMBER()
 ```sql
 WITH ranked_orders AS (
     SELECT o.id, o.order_date, o.customer_id, 
