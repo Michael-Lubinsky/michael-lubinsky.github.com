@@ -7,6 +7,8 @@ https://lnkd.in/erj2swjE
 
 https://learn.microsoft.com/en-us/azure/databricks/languages/python
 
+https://medium.com/dbsql-sme-engineering/databricks-sql-orchestration-patterns-with-for-each-and-dynamic-value-references-18bba1696577
+
 https://blog.det.life/10-essential-commands-to-boost-your-productivity-in-databricks-4f3586ddb528
 
 https://customer-academy.databricks.com/learn/signin
