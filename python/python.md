@@ -81,12 +81,13 @@ nums = [1, 2, 3]
 print(nums[::-1])
 print(list(reversed(nums))) 
 ```
-### Stack and queue and  heap
+### Stack, queue and  deque
 In Python, there is no built-in stack type. 
-Instead, we can simply use a list to represent a stack efficiently. 
- .append to perform push operations.  
- .pop to perform pop operations.  
-This removes the last element of our list (representing the top of the stack), and returns this element
+Instead, we can simply use a list to represent a stack efficiently: 
+```
+ .append  -  perform push operations.  
+ .pop removes the last element of  list (representing the top of the stack), and returns this element
+```
 
 deque (in collections module) is actually a doubly linked list.
 
