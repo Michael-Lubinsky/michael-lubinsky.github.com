@@ -25,6 +25,8 @@ https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/mls
 
 Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
 
+https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
+
 https://news.ycombinator.com/item?id=43586073
 
 https://habr.com/ru/articles/895332/ Bayes
