@@ -130,13 +130,24 @@ s.strip('?!')    # 'abc'
 string.removeprefix(prefix)
 string.removesuffix(suffix)
 ```
-### Dictionary
+### Dictionary: get() and setdefault()
 
 If you use [] to access a non-existent key, you’ll get a KeyError.   
 But if you use .get(), you’ll get None (or a default value you specify).
 
 ```python
-dictionary.get(key, default=None)
+dictionary.get(key, default=None)   -- will not raise exception if key not found
+
+# Transform this verbose code
+user_stats = {}
+if "login_count" not in user_stats:
+    user_stats["login_count"] = 1
+else:
+    user_stats["login_count"] += 1
+
+# Into this elegant one-liner
+user_stats.setdefault("login_count", 0) += 1
+
 ```
 #### Sort dict by key and by val
 ```python
