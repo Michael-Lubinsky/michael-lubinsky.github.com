@@ -78,6 +78,7 @@ https://habr.com/ru/companies/beeline_tech/articles/802005/
 - Кто покупает дорого
 - Кто давно не заходил, но когда‑то приносил тебе деньги
 
+https://habr.com/ru/articles/900172/
 https://habr.com/ru/companies/otus/articles/894850/  
 https://habr.com/ru/companies/otus/articles/893964/  
 https://habr.com/ru/companies/otus/articles/666862/  
