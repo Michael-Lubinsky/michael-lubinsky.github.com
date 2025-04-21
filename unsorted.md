@@ -2,6 +2,9 @@ https://grep.app/ search on github
 
 Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
 
+### Performance book
+https://github.com/dendibakh/perf-book
+
 Awesome
 https://github.com/sindresorhus/awesome
 
