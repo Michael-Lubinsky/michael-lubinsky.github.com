@@ -4,6 +4,8 @@ https://lnkd.in/ejy68rEc
 PySpark Tutorial | Full Course (From Zero to Pro!)
 https://lnkd.in/erj2swjE
 
+https://awstip.com/100-days-of-data-engineering-on-databricks-day-22-writing-efficient-python-code-for-data-cdde7c4b47c1
+
 
 https://learn.microsoft.com/en-us/azure/databricks/languages/python
 
