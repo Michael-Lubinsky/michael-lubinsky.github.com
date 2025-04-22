@@ -1,6 +1,8 @@
 Databricks Tutorial (From Zero to Hero) | Azure Databricks Masterclass
 https://lnkd.in/ejy68rEc
 
+https://blog.devgenius.io/14-critical-databricks-mistakes-advanced-developers-make-security-workflows-environment-7da269c46795
+
 PySpark Tutorial | Full Course (From Zero to Pro!)
 https://lnkd.in/erj2swjE
 
