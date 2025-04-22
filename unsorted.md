@@ -51,6 +51,9 @@ https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3
 Poisson distrib
 https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
 
+Monte Carlo
+https://thenumb.at/Sampling/
+
 ## Customer analysis
 
 ### сегментацию и кластеризацию клиентской базы
