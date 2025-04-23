@@ -1,5 +1,9 @@
+
+
 Databricks Tutorial (From Zero to Hero) | Azure Databricks Masterclass
 https://lnkd.in/ejy68rEc
+
+https://databrickster.medium.com/
 
 https://blog.devgenius.io/14-critical-databricks-mistakes-advanced-developers-make-security-workflows-environment-7da269c46795
 
