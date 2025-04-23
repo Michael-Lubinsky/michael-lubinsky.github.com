@@ -1,4 +1,4 @@
-
+https://community.databricks.com/t5/events/virtual-learning-festival-9-april-30-april/ec-p/111620#M2286
 
 Databricks Tutorial (From Zero to Hero) | Azure Databricks Masterclass
 https://lnkd.in/ejy68rEc
