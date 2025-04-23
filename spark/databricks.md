@@ -7,12 +7,31 @@ Data ingestion, transformation, and orchestration
 Lakehouse architecture
 
 Big shoutout and thanks to:
-Derar Alhussein for his well-structured Udemy course 👏
+Derar Alhussein for his well-structured Udemy course 👏  
  🔗 Databricks Certification Course
-https://lnkd.in/gr4-YHMH
-Ansh Lamba for his free and practical YouTube series 🎥
+https://lnkd.in/gr4-YHMH  
+Ansh Lamba for his free and practical YouTube series 🎥  
  🔗 YouTube Course
 https://lnkd.in/gs-JGDNz
+
+4 Certifications Completed on My Data Journey ✨
+▸ Databricks Data Engineer Professional
+▸ Microsoft DP-700: Data Analyst Associate
+▸ Microsoft DP-600: Fabric Analytics Solution Expert
+▸ Databricks Data Engineer Associate
+
+Over the past few months, I set a clear goal to deepen my skills across Databricks, Microsoft Azure, and Microsoft Fabric —with a core focus on data engineering: building scalable pipelines, lakehouse architecture, and robust data solutions.
+To complement this, I pursued DP-600 to enhance my understanding of analytics, reporting, and data modeling — bridging engineering with business insights across the full data lifecycle.
+
+This journey taught me that success is not just about certifications — it’s about learning with purpose, staying consistent, and having the right guidance along the way.
+
+🔴 A special thank you to Ansh Lamba — your well-structured videos, from beginner to advanced, made every concept crystal clear. Your content has been my go-to resource throughout this journey.  
+🔴 Grateful to Siddhesh Hindalekar — your timely guidance, encouragement, and support kept me on track and made this achievement possible.  
+🔴 Appreciation to the Microsoft Fabric team — the hands-on learning paths and training resources truly made a difference.  
+🔴  Thanks to the Databricks team for the robust documentation and learning support that simplified even the most complex topics.
+
+
+### virtual-learning-festival-9-april-30-apri
 
 https://community.databricks.com/t5/events/virtual-learning-festival-9-april-30-april/ec-p/111620#M2286
 
