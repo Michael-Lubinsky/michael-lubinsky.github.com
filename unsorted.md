@@ -1,5 +1,8 @@
 https://grep.app/ search on github
 
+Book:
+https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
+
 Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
 
 ### Performance book
