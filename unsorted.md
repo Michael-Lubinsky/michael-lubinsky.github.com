@@ -44,6 +44,8 @@ https://justincartwright.com/2025/02/25/dice-and-queues.html
 
 https://news.ycombinator.com/item?id=43640115
 
+https://luminousmen.com/post/change-data-capture  Change Data Capture
+
 ### Stat
 Gini index
 https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
