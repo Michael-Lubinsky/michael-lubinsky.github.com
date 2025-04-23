@@ -1,3 +1,19 @@
+It's official! I'm now a Databricks Certified Data Engineer Associate! 🚀
+After weeks of focused study and hands-on practice, I’m excited to share that I’ve cleared the Databricks Certified Data Engineer Associate exam ✅
+This journey sharpened my skills in:
+Apache Spark ⚡
+Delta Lake
+Data ingestion, transformation, and orchestration
+Lakehouse architecture
+
+Big shoutout and thanks to:
+Derar Alhussein for his well-structured Udemy course 👏
+ 🔗 Databricks Certification Course
+https://lnkd.in/gr4-YHMH
+Ansh Lamba for his free and practical YouTube series 🎥
+ 🔗 YouTube Course
+https://lnkd.in/gs-JGDNz
+
 https://community.databricks.com/t5/events/virtual-learning-festival-9-april-30-april/ec-p/111620#M2286
 
 Databricks Tutorial (From Zero to Hero) | Azure Databricks Masterclass
