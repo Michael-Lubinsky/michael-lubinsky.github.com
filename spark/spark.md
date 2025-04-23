@@ -1,10 +1,10 @@
 ## Spark
 
 ### Reading files
-
+```
 spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
 df = spark.read.parquet("data/").coalesce(10) 
-
+```
 ### Writing files
 
 sort before writing:
@@ -44,6 +44,33 @@ https://www.mdpi.com/2076-3417/13/10/6257
 - Cartesian Join
 - Broadcast Nested Loop Join
 
+
+
+https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
+```
+🔹🔹Broadcast Join🔹🔹
+Best For: When one DataFrame is small enough to fit in memory.
+How It Works: The smaller DataFrame is broadcasted to all nodes in the cluster, allowing the join to be performed locally on each partition.
+✅Pros: Reduces network shuffling, leading to faster execution times.
+❌Cons: Limited by the size of the smaller DataFrame; memory-intensive if not managed properly.
+
+🔹🔹Sort-Merge Join🔹🔹
+Best For: Large datasets that are already sorted or can be efficiently sorted by the join key.
+How It Works: Spark sorts the data in each partition by the join key and then merges the partitions.
+✅Pros: Efficient for large datasets and multi-column joins.
+❌Cons: Requires sorting, which can be computationally expensive; may require more memory.
+
+🔹🔹Shuffle Hash Join🔹🔹
+Best For: General-purpose join when neither broadcast nor sort-merge is feasible.
+How It Works: Data is shuffled across nodes based on the join key, and a hash table is used to perform the join.
+✅Pros: Works well with large, unsorted datasets.
+❌Cons: High network I/O due to shuffling; slower than the other join strategies.
+
+🔹🔹Which One Should You Use?🔹🔹
+Small DataFrame? Go for Broadcast Join.
+Large, Pre-Sorted DataFrames? Sort-Merge Join is your friend.
+Unsorted, Massive Data? Use Shuffle Hash Join, but be mindful of its performance impact.
+```
 
 ### Join: Repartitioning on Join Key
 
@@ -250,31 +277,6 @@ https://rahultiwari876.medium.com/big-data-spark-optimization-techniques-part-2-
 
 https://towardsdev.com/spark-beyond-basics-smb-join-in-apache-spark-no-shuffle-join-3c0559105b87
 
-```
-🔹🔹Broadcast Join🔹🔹
-Best For: When one DataFrame is small enough to fit in memory.
-How It Works: The smaller DataFrame is broadcasted to all nodes in the cluster, allowing the join to be performed locally on each partition.
-✅Pros: Reduces network shuffling, leading to faster execution times.
-❌Cons: Limited by the size of the smaller DataFrame; memory-intensive if not managed properly.
-
-🔹🔹Sort-Merge Join🔹🔹
-Best For: Large datasets that are already sorted or can be efficiently sorted by the join key.
-How It Works: Spark sorts the data in each partition by the join key and then merges the partitions.
-✅Pros: Efficient for large datasets and multi-column joins.
-❌Cons: Requires sorting, which can be computationally expensive; may require more memory.
-
-🔹🔹Shuffle Hash Join🔹🔹
-Best For: General-purpose join when neither broadcast nor sort-merge is feasible.
-How It Works: Data is shuffled across nodes based on the join key, and a hash table is used to perform the join.
-✅Pros: Works well with large, unsorted datasets.
-❌Cons: High network I/O due to shuffling; slower than the other join strategies.
-
-
-🔹🔹Which One Should You Use?🔹🔹
-Small DataFrame? Go for Broadcast Join.
-Large, Pre-Sorted DataFrames? Sort-Merge Join is your friend.
-Unsorted, Massive Data? Use Shuffle Hash Join, but be mindful of its performance impact.
-```
 
 
 ### Caching
@@ -558,16 +560,7 @@ val repartitionedDF = largeDF.repartition(100, col(“key”))
 // Decrease the number of partitions
 val coalescedDF = largeDF.coalesce(10)
 ```
-### Spark Joins
-```
-Broadcast Hash Join
-Shuffle Hash Join
-Sort Merge Join
-Cartesian Join
-Broadcast Nested Loop Join
-```
 
-https://www.linkedin.com/pulse/spark-join-strategies-mastering-joins-apache-venkatesh-nandikolla-mk4qc/
 
 ### Links
 https://medium.com/towards-data-engineering/the-most-discussed-spark-questions-in-2024-8aeb5bcb82be
