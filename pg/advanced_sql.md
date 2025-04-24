@@ -23,7 +23,8 @@ WHERE salary > (SELECT AVG(salary) FROM employees);
 ### 4. Write a query to display the current date and time in .
 
 SELECT CURRENT_TIMESTAMP;
-5. How to find duplicate records in a table?
+
+### 5. How to find duplicate records in a table?
 
 SELECT column_name, COUNT(*)
 FROM table_name
@@ -38,20 +39,23 @@ column_name) AS row_num
  FROM table_name
 )
 DELETE FROM CTE WHERE row_num > 1;
-7. How to get the common records from two tables?
+
+### 7. How to get the common records from two tables?
 
 SELECT *
 FROM table1
 INTERSECT
 SELECT *
 FROM table2;
-8. How to retrieve the last 10 records from a table?
+
+### 8. How to retrieve the last 10 records from a table?
  
 SELECT *
 FROM employees
 ORDER BY employee_id DESC
 LIMIT 10;
-9. How do you fetch the top 5 employees with the highest salaries?
+
+### 9. How do you fetch the top 5 employees with the highest salaries?
 
 SELECT *
 FROM employees
@@ -61,42 +65,42 @@ LIMIT 5;
 
 SELECT SUM(salary)
 FROM employees;
-11. How to write a query to find all employees who joined in the year 2020?
+
+### 11. How to write a query to find all employees who joined in the year 2020?
 
 SELECT *
 FROM employees
 WHERE YEAR(join_date) = 2020;
-12. Write a query to find employees whose name starts with 'A'.
+### 12. Write a query to find employees whose name starts with 'A'.
 
 SELECT * 
 FROM employees
 WHERE name LIKE 'A%';
-13. How can you find the employees who do not have a manager?
+### 13. How can you find the employees who do not have a manager?
 
 SELECT *
 FROM employees
 WHERE manager_id IS NULL;
-14. How to find the department with the highest number of employees?
+### 14. How to find the department with the highest number of employees?
 
 SELECT department_id, COUNT(*)
 FROM employees
 GROUP BY department_id
 ORDER BY COUNT(*) DESC
 LIMIT 1;
-15. How to get the count of employees in each department?
+### 15. How to get the count of employees in each department?
 
 SELECT department_id, COUNT(*)
 FROM employees
 GROUP BY department_id;
-16. Write a query to fetch employees having the highest salary in each
-department.
+### 16. Write a query to fetch employees having the highest salary in each department.
 
 SELECT department_id, employee_id, salary 
 FROM employees AS e
 WHERE salary = (SELECT MAX(salary)
  FROM employees
  WHERE department_id = e.department_id);
-17. How to write a query to update the salary of all employees by 10%?
+### 17. How to write a query to update the salary of all employees by 10%?
 
 UPDATE employees
 SET salary = salary * 1.1;
@@ -330,15 +334,16 @@ WHERE department_id IN (SELECT department_id
  GROUP BY department_id
  HAVING MAX(hire_date) < ADDDATE(CURDATE(), INTERVAL -2
 YEAR));
-57. Write a query to find all employees who earn more than the average
-salary of their department.
+
+### 57. Write a query to find all employees who earn more than the average salary of their department.
 
 SELECT *
 FROM employees e
 WHERE salary > (SELECT AVG(salary)
  FROM employees
  WHERE department_id = e.department_id);
-58. How to list all managers who have more than 5 subordinates?
+
+### 58. How to list all managers who have more than 5 subordinates?
 
 SELECT *
 FROM employees
@@ -346,21 +351,23 @@ WHERE employee_id IN (SELECT manager_id
  FROM employees 
  GROUP BY manager_id
  HAVING COUNT(*) > 5);
-59. Write a query to display employee names and hire dates in the format
+
+### 59. Write a query to display employee names and hire dates in the format
 "Name - MM/DD/YYYY".
 
 SELECT CONCAT(name, ' - ', DATE_FORMAT(hire_date, '%m/%d/%Y')) AS
 employee_info
 FROM employees;
-60. How to find employees whose salary is in the top 10%?
+
+### 60. How to find employees whose salary is in the top 10%?
 
 SELECT *
 FROM employees
 WHERE salary >= (SELECT PERCENTILE_CONT(0.9)
  WITHIN GROUP (ORDER BY salary ASC)
  FROM employees);
-61. Write a query to display employees grouped by their age brackets (e.g.,
-20-30, 31-40, etc.).
+
+### 61. Write a query to display employees grouped by their age brackets (e.g.,20-30, 31-40, etc.).
 
 SELECT CASE
  WHEN age BETWEEN 20 AND 30 THEN '20-30'
@@ -370,7 +377,8 @@ SELECT CASE
  COUNT(*) 
 FROM employees
 GROUP BY age_bracket;
-62. How to find the average salary of the top 5 highest-paid employees in
+
+### 62. How to find the average salary of the top 5 highest-paid employees in
 each department?
 
 SELECT department_id, AVG(salary)
@@ -380,35 +388,41 @@ DESC) AS rank
  FROM employees) AS ranked_employees
 WHERE rank <= 5
 GROUP BY department_id;
-63. How to calculate the percentage of employees in each department?
+
+### 63. How to calculate the percentage of employees in each department?
 
 SELECT department_id,
  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM employees)) AS percentage
 FROM employees
 GROUP BY department_id;
-64. Write a query to find all employees whose email contains the domain
+
+### 64. Write a query to find all employees whose email contains the domain
 '@example.com'.
 
 SELECT *
 FROM employees
 WHERE email LIKE '%@example.com';
-65. How to retrieve the year-to-date sales for each customer?
+
+### 65. How to retrieve the year-to-date sales for each customer?
 
 SELECT customer_id, SUM(sales_amount)
 FROM sales
 WHERE sale_date BETWEEN '2024-01-01' AND CURDATE()
 GROUP BY customer_id;
-66. Write a query to display the hire date and day of the week for each
+
+## 66. Write a query to display the hire date and day of the week for each
 employee.
 
 SELECT name, hire_date, DAYNAME(hire_date) AS day_of_week
 FROM employees;
-67. How to find all employees who are older than 30 years?
+
+### 67. How to find all employees who are older than 30 years?
 
 SELECT *
 FROM employees
 WHERE DATEDIFF(CURDATE(), birth_date) / 365 > 30;
-68. Write a query to display employees grouped by their salary range (e.g., 0-
+
+### 68. Write a query to display employees grouped by their salary range (e.g., 0-
 20K, 20K-50K).
 
 SELECT CASE
@@ -419,13 +433,14 @@ SELECT CASE
  COUNT(*)
 FROM employees
 GROUP BY salary_range;
-69. How to list all employees who do not have a bonus?
+
+### 69. How to list all employees who do not have a bonus?
 
 SELECT *
 FROM employees
 WHERE bonus IS NULL;
-70. Write a query to display the highest, lowest, and average salary for each
-job role.
+
+### 70. Write a query to display the highest, lowest, and average salary for each job role.
 SELECT job_role, MAX(salary) AS highest_salary, MIN(salary) AS lowest_salary,
 AVG(salary) AS avg_salary
 FROM employees
