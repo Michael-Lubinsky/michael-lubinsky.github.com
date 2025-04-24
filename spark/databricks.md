@@ -1,3 +1,5 @@
+https://blog.det.life/i-passed-the-databricks-certified-associate-developer-for-apache-spark-exam-heres-how-you-can-too-6c2f9b66fdb5
+
 It's official! I'm now a Databricks Certified Data Engineer Associate! 🚀
 After weeks of focused study and hands-on practice, I’m excited to share that I’ve cleared the Databricks Certified Data Engineer Associate exam ✅
 This journey sharpened my skills in:
