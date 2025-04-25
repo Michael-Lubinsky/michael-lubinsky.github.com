@@ -59,6 +59,10 @@ https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distributio
 Monte Carlo
 https://thenumb.at/Sampling/
 
+### Kubernetes
+
+https://developers.redhat.com/learn/openshift/learn-kubernetes-using-developer-sandbox 
+
 ## Customer analysis
 
 ### сегментацию и кластеризацию клиентской базы
