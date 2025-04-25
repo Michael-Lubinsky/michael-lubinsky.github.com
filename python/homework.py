@@ -1,5 +1,6 @@
 ### Python program to find the area of the largest square containing 
-### only 1s in a given binary matrix. This uses dynamic programming for an efficient solution:
+### only 1s in a given binary matrix. 
+## This uses dynamic programming for an efficient solution:
 
 def maximalSquare(matrix):
     if not matrix or not matrix[0]:
@@ -41,8 +42,41 @@ Input can be a list of lists of '0'/'1' strings or 0/1 integers — both are han
 Time complexity: O(m × n)
 
 Space complexity: O(m × n) (can be optimized to O(n) if needed)
+"""
+# Here's a space-optimized version of the same algorithm that reduces the space complexity 
+# from O(m × n) to O(n) by using just one row at a time:
 
 
+def maximalSquare(matrix):
+    if not matrix or not matrix[0]:
+        return 0
+
+    m, n = len(matrix), len(matrix[0])
+    dp = [0] * (n + 1)
+    max_side = 0
+    prev = 0  # This keeps track of the top-left value (dp[i-1][j-1])
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            temp = dp[j]
+            if matrix[i-1][j-1] == '1' or matrix[i-1][j-1] == 1:
+                dp[j] = min(dp[j], dp[j-1], prev) + 1
+                max_side = max(max_side, dp[j])
+            else:
+                dp[j] = 0
+            prev = temp  # Update prev for next cell
+
+    return max_side * max_side
+
+# Example usage
+binary_matrix = [
+    ['1', '0', '1', '0', '0'],
+    ['1', '0', '1', '1', '1'],
+    ['1', '1', '1', '1', '1'],
+    ['1', '0', '0', '1', '0']
+]
+
+print("Max square area:", maximalSquare(binary_matrix))
 
 
 """
