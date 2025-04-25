@@ -1,6 +1,6 @@
 ## Pandas
 
-### Read csv, detect encoding, remove empty lines
+### Read csv, detect encoding, remove NaN lines
 ```python
 import pandas as pd
 import chardet
@@ -10,7 +10,9 @@ import numpy as np
 with open("./test_dataset.csv", "rb") as f:
    enc = chardet.detect(f.read())
 df = pd.read_csv("./test_dataset.csv", encoding= enc["encoding"])
-df.dropna(how="all",axis=0,inplace=True)
+df.dropna(how="all",axis=0,inplace=True) # remove NaN lines
+
+df[df.product_name.isna()] # returns only rows where product_name isna()
 ```
 
 ### Check if data in column follow the rule: 1 letter and 4 digits
