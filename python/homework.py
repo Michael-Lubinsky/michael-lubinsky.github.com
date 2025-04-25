@@ -1,3 +1,28 @@
+def longest_unique_substring(s):
+    char_index = {}
+    start = max_len = 0
+    max_substr = ""
+
+    for i, char in enumerate(s):
+        if char in char_index and char_index[char] >= start:
+            start = char_index[char] + 1  # move start right after last seen char
+        char_index[char] = i
+        current_len = i - start + 1
+        if current_len > max_len:
+            max_len = current_len
+            max_substr = s[start:i+1]
+
+    return max_substr
+
+# Example usage
+input_str = "abcabcbb"
+result = longest_unique_substring(input_str)
+print("Longest unique substring:", result)
+print("Length:", len(result))
+
+
+
+
 ### Python program to find the area of the largest square containing 
 ### only 1s in a given binary matrix. 
 ## This uses dynamic programming for an efficient solution:
