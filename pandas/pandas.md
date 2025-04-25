@@ -12,6 +12,21 @@ with open("./test_dataset.csv", "rb") as f:
 df = pd.read_csv("./test_dataset.csv", encoding= enc["encoding"])
 df.dropna(how="all",axis=0,inplace=True)
 ```
+
+### Check if data in column follow the rule: 1 letter and 4 digits
+
+```python
+def rule_checker(data_point:str) -> bool:
+   alphabet_count = sum(1 for i in data_point if i.isalpha())
+   numeric_count = sum(1 for i in data_point if i.isnumeric())
+   if (alphabet_count == 1) & (numeric_count == 4):  # 1 letter and 4 digits
+       return True
+   else:
+       return False
+
+df[~df.product_code.apply(rule_checker)]
+```
+
 ### Merge, Join, Concat
 ```python
 import pandas as pd
