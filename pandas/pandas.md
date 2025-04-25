@@ -29,6 +29,12 @@ def rule_checker(data_point:str) -> bool:
 df[~df.product_code.apply(rule_checker)]
 ```
 
+### check phone number
+```python
+phone_numeral_count = 10
+
+df[df.vendor_contact.apply(lambda x: True if sum(1 for i in x if i.isnumeric())!=phone_numeral_count else False)]
+```
 ### Merge, Join, Concat
 ```python
 import pandas as pd
