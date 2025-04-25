@@ -11,10 +11,11 @@ Solution 3:
 generate the row number of each emp_id order by time in descending order.   
 Then, we will create a CTE, and after that, we will extract that emp_id where the row number will be =1 and the activity is ‘in’.
 ```sql
+WITH x as (
 SELECT *,ROW_NUMBER() OVER(PARTITION BY emp_id ORDER BY time DESC) AS rnk
-FROM hospital)
-SELECT *
-FROM x
+FROM hospital
+)
+SELECT * FROM x
 WHERE rnk=1 AND action='in';
 ```
 
