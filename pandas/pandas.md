@@ -1,5 +1,17 @@
 ## Pandas
 
+### Read csv, detect encoding, remove empty lines
+```python
+import pandas as pd
+import chardet
+import re
+import numpy as np
+
+with open("./test_dataset.csv", "rb") as f:
+   enc = chardet.detect(f.read())
+df = pd.read_csv("./test_dataset.csv", encoding= enc["encoding"])
+df.dropna(how="all",axis=0,inplace=True)
+```
 ### Merge, Join, Concat
 ```python
 import pandas as pd
