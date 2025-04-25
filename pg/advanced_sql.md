@@ -1,10 +1,55 @@
+https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9
 https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17
+https://medium.com/@bigtechinterviews/5-real-amazon-sql-questions-answers-d1733a2a2c4c
 https://leonwei.com/a-collection-of-amazon-sql-interview-questions-48d84d9612f7
 https://blog.devgenius.io/ace-the-data-science-interview-day-48-amazon-sql-interview-question-1cae2a8136b5
 https://www.stratascratch.com/blog/amazon-sql-interview-questions/
 https://medium.com/@bigtechinterviews/3-most-common-amazon-sql-interview-questions-and-answers-963e33ef27b1
 https://medium.com/@bigtechinterviews/10-latest-meta-facebook-sql-interview-questions-409542618599
 https://medium.com/@lozhihao/ace-the-data-science-interview-40-amazon-sql-interview-question-82164206ad03
+https://medium.com/@gunjansahu/leetcode-amazon-sql-interview-questions-list-43b034353732
+
+https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9
+### For each user, find the longest streak of consecutive days they logged in. 
+
+```sql
+WITH min_date AS (
+  SELECT  MIN(login_date) AS min_login_date
+  FROM user_logins
+),
+cte AS (
+  SELECT
+    ul.user_id,
+    ul.login_date,
+    DATEDIFF(ul.login_date, md.min_login_date) AS date_int,
+    ROW_NUMBER() OVER (PARTITION BY ul.user_id ORDER BY ul.login_date) AS rn
+  FROM  user_logins ul
+    CROSS JOIN min_date md
+),
+cte2 AS (
+  SELECT
+    user_id,
+    login_date,
+    date_int,
+    rn,
+    rn - date_int AS diff
+  FROM  cte
+),
+streaks AS (
+  SELECT
+    user_id,
+    diff,
+    COUNT(*) AS streak_length
+  FROM  cte2
+  GROUP BY user_id, iff
+)
+SELECT
+  user_id,
+  MAX(streak_length) AS longest_streak
+FROM streaks
+GROUP BY user_id
+ORDER BY  user_id;
+```
 
 
 ###  Monthly Percentage Difference.
