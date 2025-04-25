@@ -1,9 +1,51 @@
-## Top 100 advanced SQL questions and answers for query writing!
+## https://medium.com/@shaantanutripathi/google-advanced-sql-interview-question-walkthrough-7ed81b04ad17
+
+Given a table employee_attendance that records the daily attendance status of employees 
+(whether they are present or absent) over a period of time.  
+Each record includes the employee_id, attendance_date, and status.
+
+Write a query to calculate the streak of consecutive days each employee has been present, where a streak is defined as a series of consecutive days with “present” status. Return the maximum streak for each employee.
+
+```sql
+WITH Streaks AS (
+    -- Step 1: Assign Row Numbers and Identify Streak Groups
+    SELECT 
+        employee_id, 
+        attendance_date, 
+        status,
+        ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY attendance_date) AS row_num_by_date,
+        ROW_NUMBER() OVER (PARTITION BY employee_id, status ORDER BY attendance_date) AS row_num_by_status,
+        ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY attendance_date) - 
+        ROW_NUMBER() OVER (PARTITION BY employee_id, status ORDER BY attendance_date) AS streak_group
+    FROM employee_attendance
+    WHERE status = 'present'
+),
+Grouped_Streaks AS (
+    -- Step 2: Group by Streak Group and Count the Number of Consecutive "present" Days
+    SELECT 
+        employee_id, 
+        streak_group, 
+        COUNT(*) AS streak_count
+    FROM Streaks
+    GROUP BY employee_id, streak_group
+),
+Max_Streaks AS (
+    -- Step 3: Find the Maximum Streak for Each Employee
+    SELECT 
+        employee_id, 
+        MAX(streak_count) AS max_streak
+    FROM Grouped_Streaks
+    GROUP BY employee_id
+)
+SELECT * FROM Max_Streaks;
+```
+
+## Top 100 advanced SQL questions and answers 
 
 ### 1. How to retrieve the second-highest salary of an employee?
 
-SELECT MAX(salary)
-FROM employees
+SELECT MAX(salary)  
+FROM employees  
 WHERE salary < (SELECT MAX(salary) FROM employees);
 
 ### 2. How to get the nth highest salary in ?
@@ -16,8 +58,8 @@ WHERE rank = N;
 ### 3. How do you fetch all employees whose salary is greater than the average
 salary?
 
-SELECT *
-FROM employees
+SELECT *  
+FROM employees  
 WHERE salary > (SELECT AVG(salary) FROM employees);
 
 ### 4. Write a query to display the current date and time in .
@@ -81,6 +123,7 @@ WHERE name LIKE 'A%';
 SELECT *
 FROM employees
 WHERE manager_id IS NULL;
+
 ### 14. How to find the department with the highest number of employees?
 
 SELECT department_id, COUNT(*)
@@ -88,11 +131,13 @@ FROM employees
 GROUP BY department_id
 ORDER BY COUNT(*) DESC
 LIMIT 1;
+
 ### 15. How to get the count of employees in each department?
 
 SELECT department_id, COUNT(*)
 FROM employees
 GROUP BY department_id;
+
 ### 16. Write a query to fetch employees having the highest salary in each department.
 
 SELECT department_id, employee_id, salary 
@@ -100,48 +145,56 @@ FROM employees AS e
 WHERE salary = (SELECT MAX(salary)
  FROM employees
  WHERE department_id = e.department_id);
+ 
 ### 17. How to write a query to update the salary of all employees by 10%?
 
 UPDATE employees
 SET salary = salary * 1.1;
-18. How can you find employees whose salary is between 50,000 and
-1,00,000?
+
+### 18. How can you find employees whose salary is between 50,000 and1,00,000?
 
 SELECT *
 FROM employees
 WHERE salary BETWEEN 50000 AND 100000;
-19. How to find the youngest employee in the organization?
+
+### 19. How to find the youngest employee in the organization?
 
 SELECT *
 FROM employees
 ORDER BY birth_date DESC
 LIMIT 1;
-20. How to fetch the first and last record from a table?
+
+### 20. How to fetch the first and last record from a table?
 
 (SELECT * FROM employees ORDER BY employee_id ASC LIMIT 1)
 UNION ALL
 (SELECT * FROM employees ORDER BY employee_id DESC LIMIT 1);
-21. Write a query to find all employees who report to a specific manager.
+
+### 21. Write a query to find all employees who report to a specific manager.
 
 SELECT *
 FROM employees
 WHERE manager_id = ?;
-22. How can you find the total number of departments in the company?
+
+### 22. How can you find the total number of departments in the company?
 
 SELECT COUNT(DISTINCT department_id)
 FROM employees;
-23. How to find the department with the lowest average salary?
+
+### 23. How to find the department with the lowest average salary?
 
 SELECT department_id, AVG(salary)
 FROM employees
 GROUP BY department_id
 ORDER BY AVG(salary) ASC
 LIMIT 1;
-24. How to delete all employees from a department in one query?
+
+### 24. How to delete all employees from a department in one query?
 
 DELETE FROM employees
 WHERE department_id = ?;
-25. How to display all employees who have been in the company for more
+
+### 25. How to display all employees who have been in the company for more
 than 5 years?
 
 SELECT *
@@ -152,11 +205,13 @@ WHERE DATEDIFF(CURDATE(), join_date) > 1825;
 SELECT MAX(column_name)
 FROM table_name
 WHERE column_name < (SELECT MAX(column_name) FROM table_name);
-27. How to write a query to remove all records from a table but keep the
+
+### 27. How to write a query to remove all records from a table but keep the
 table structure?
 
 TRUNCATE TABLE table_name;
-28. Write a query to get all employee records in XML format.
+
+### 28. Write a query to get all employee records in XML format.
 
 SELECT employee_id, name, department_id
 FROM employees
