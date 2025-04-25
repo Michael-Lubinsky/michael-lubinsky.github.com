@@ -1,3 +1,35 @@
+https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17
+https://leonwei.com/a-collection-of-amazon-sql-interview-questions-48d84d9612f7
+https://blog.devgenius.io/ace-the-data-science-interview-day-48-amazon-sql-interview-question-1cae2a8136b5
+https://www.stratascratch.com/blog/amazon-sql-interview-questions/
+https://medium.com/@bigtechinterviews/3-most-common-amazon-sql-interview-questions-and-answers-963e33ef27b1
+https://medium.com/@bigtechinterviews/10-latest-meta-facebook-sql-interview-questions-409542618599
+https://medium.com/@lozhihao/ace-the-data-science-interview-40-amazon-sql-interview-question-82164206ad03
+
+
+###  Monthly Percentage Difference.
+```
+Given a table of purchases by date, calculate the month-over-month percentage change in revenue.
+The output should include the year-month date (YYYY-MM) and percentage change, rounded to the 2nd decimal point,
+and sorted from the beginning of the year to the end of the year.
+The percentage change column will be populated from the 2nd month forward and calculated as
+((this month’s revenue — last month’s revenue) / last month’s revenue)*100.
+```
+
+```sql
+select ym, round(((revenue-last_month_revenue)/last_month_revenue)*100,2) as 'month-over-month percentage'
+from (
+     select ym,revenue, lag(revenue) over(order by ym)  as last_month_revenue
+     from (
+        select date_format(created_at, '%Y-%m') as ym, sum(value) as revenue
+        from sf_transactions 
+        group by 1
+     )
+ a )
+b
+```
+
+
 ### Given table with 3 columns: emp_id, action, time  
 action can be 'in' or 'out'
 Qeestion: find the emp_id who are inside 
