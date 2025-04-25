@@ -1,3 +1,23 @@
+### Given table with 3 columns: emp_id, action, time  
+action can be 'in' or 'out'
+Qeestion: find the emp_id who are inside 
+
+Solution 1: Employees will be in hospital if latest in time is more than latest out time or latest out time is not known.
+
+Solution 2: find each employees latest activity time then we will find at that time what was employees activity.
+
+Solution 3:
+
+generate the row number of each emp_id order by time in descending order.   
+Then, we will create a CTE, and after that, we will extract that emp_id where the row number will be =1 and the activity is ‘in’.
+```sql
+SELECT *,ROW_NUMBER() OVER(PARTITION BY emp_id ORDER BY time DESC) AS rnk
+FROM hospital)
+SELECT *
+FROM x
+WHERE rnk=1 AND action='in';
+```
+
 ## https://medium.com/@shaantanutripathi/google-advanced-sql-interview-question-walkthrough-7ed81b04ad17
 
 Given a table employee_attendance that records the daily attendance status of employees 
