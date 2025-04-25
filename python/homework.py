@@ -1,3 +1,50 @@
+### Python program to find the area of the largest square containing 
+### only 1s in a given binary matrix. This uses dynamic programming for an efficient solution:
+
+def maximalSquare(matrix):
+    if not matrix or not matrix[0]:
+        return 0
+
+    m, n = len(matrix), len(matrix[0])
+    # Create a DP table initialized with zeros
+    dp = [[0] * n for _ in range(m)]
+    max_side = 0
+
+    for i in range(m):
+        for j in range(n):
+            if matrix[i][j] == '1' or matrix[i][j] == 1:
+                if i == 0 or j == 0:
+                    dp[i][j] = 1  # First row or column
+                else:
+                    dp[i][j] = min(
+                        dp[i-1][j],      # top
+                        dp[i][j-1],      # left
+                        dp[i-1][j-1]     # top-left
+                    ) + 1
+                max_side = max(max_side, dp[i][j])
+
+    return max_side * max_side  # Area
+
+# Example usage
+binary_matrix = [
+    ['1', '0', '1', '0', '0'],
+    ['1', '0', '1', '1', '1'],
+    ['1', '1', '1', '1', '1'],
+    ['1', '0', '0', '1', '0']
+]
+
+print("Max square area:", maximalSquare(binary_matrix))
+"""
+Notes:
+Input can be a list of lists of '0'/'1' strings or 0/1 integers — both are handled.
+
+Time complexity: O(m × n)
+
+Space complexity: O(m × n) (can be optimized to O(n) if needed)
+
+
+
+
 """
 An algebraic data type is a type formed by combining other types using one of two main ways:
 Sum types (aka tagged unions, variants, choices)
