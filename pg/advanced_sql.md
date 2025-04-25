@@ -12,6 +12,14 @@ https://medium.com/@gunjansahu/leetcode-amazon-sql-interview-questions-list-43b0
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9
 ### For each user, find the longest streak of consecutive days they logged in. 
 
+Explanation :
+```
+min_login_date is used as a base date to find the delta with the login_date s for a user_id.
+ROW_NUMBER() is used to get the ranks of each row for the user_id based on login_date in ascending order.
+diff= rn — date_int gives out the difference of the above two columns, which is static for consecutive login_dates.
+Rest is simple logic where we get the COUNT(*) for each [user_id,diff] combination ie. the streak_length and then get the max(streak_length) for each user_id.
+```
+
 ```sql
 WITH min_date AS (
   SELECT  MIN(login_date) AS min_login_date
