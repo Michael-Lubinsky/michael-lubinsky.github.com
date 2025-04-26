@@ -63,6 +63,76 @@ FROM
 LEFT JOIN stats 
 ON stats.added_at = gs.added_at;
 ```
+### Find the maximum interval of consecutive dates without gaps:
+
+```SQL
+
+WITH DateDiff AS (
+    SELECT
+        your_date_column,
+        LAG(your_date_column, 1, your_date_column - INTERVAL '1 day') OVER (ORDER BY your_date_column) AS prev_date
+    FROM
+        your_table
+),
+ConsecutiveGroups AS (
+    SELECT
+        your_date_column,
+        CASE
+            WHEN your_date_column = prev_date + INTERVAL '1 day' THEN 0
+            ELSE 1
+        END AS is_new_group,
+        ROW_NUMBER() OVER (ORDER BY your_date_column) AS rn
+    FROM
+        DateDiff
+),
+GroupStarts AS (
+    SELECT
+        your_date_column,
+        SUM(is_new_group) OVER (ORDER BY rn) AS group_id
+    FROM
+        ConsecutiveGroups
+)
+SELECT
+    MIN(your_date_column) AS start_date,
+    MAX(your_date_column) AS end_date,
+    MAX(your_date_column) - MIN(your_date_column) AS max_consecutive_interval
+FROM
+    GroupStarts
+GROUP BY
+    group_id
+ORDER BY
+    max_consecutive_interval DESC
+LIMIT 1;
+```
+
+### find the maximum gap between consecutive dates:
+
+```SQL
+WITH DateDiff AS (
+    SELECT
+        your_date_column,
+        LAG(your_date_column) OVER (ORDER BY your_date_column) AS prev_date
+    FROM
+        your_table
+),
+Gaps AS (
+    SELECT
+        your_date_column,
+        prev_date,
+        your_date_column - prev_date AS date_difference
+    FROM
+        DateDiff
+    WHERE
+        prev_date IS NOT NULL
+)
+SELECT
+    MAX(date_difference) AS max_gap_interval
+FROM
+    Gaps;
+```
+
+
+
 
 ### JSON_TABLE() function (Postgres 17)
 ```sql
