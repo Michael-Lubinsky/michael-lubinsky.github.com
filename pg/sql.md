@@ -1,3 +1,42 @@
+
+### Find maximum interval of consecutive dates (no gaps)
+```sql
+WITH date_sequence AS (
+    SELECT 
+        date_col,
+        ROW_NUMBER() OVER (ORDER BY date_col) AS rn,
+        date_col - ROW_NUMBER() OVER (ORDER BY date_col) AS group_id
+    FROM my_table
+    WHERE date_col IS NOT NULL
+)
+SELECT 
+    MIN(date_col) AS start_date,
+    MAX(date_col) AS end_date,
+    DATEDIFF(MAX(date_col), MIN(date_col)) + 1 AS interval_days
+FROM date_sequence
+GROUP BY group_id
+ORDER BY interval_days DESC
+LIMIT 1;
+```
+### Find maximum gap interval
+```sql
+WITH ordered_dates AS (
+    SELECT 
+        date_col,
+        LEAD(date_col) OVER (ORDER BY date_col) AS next_date
+    FROM my_table
+    WHERE date_col IS NOT NULL
+)
+SELECT 
+    date_col AS gap_start,
+    next_date AS gap_end,
+    DATEDIFF(next_date, date_col) - 1 AS gap_days
+FROM ordered_dates
+WHERE next_date IS NOT NULL
+ORDER BY gap_days DESC
+LIMIT 1;
+```
+
 ### Handle NULL in aggregation using COALESCE
 ```sql
 SELECT department_id,
