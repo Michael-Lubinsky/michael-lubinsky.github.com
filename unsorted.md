@@ -8,6 +8,8 @@ Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/
 ### Performance book
 https://github.com/dendibakh/perf-book
 
+https://www.youtube.com/watch?v=-HNpim5x-IE  How CPU works
+
 Awesome
 https://github.com/sindresorhus/awesome
 
