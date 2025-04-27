@@ -4,7 +4,7 @@ https://habr.com/ru/companies/dockhost/articles/891544/
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
 
-<!--
+ 
 ### Decorators and other code snippets
 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
@@ -52,4 +52,4 @@ https://habr.com/ru/articles/562380/ Statistics
 <https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
 <https://github.com/salabim/salabim>
 
--->
+ 
