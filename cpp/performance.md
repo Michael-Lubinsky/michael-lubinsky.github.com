@@ -42,6 +42,83 @@ Intel VTune (can do both sampling and instrumentation)
 Tracy Profiler  
 RAD Telemetry
 
+### 3. Manual ("tracing") profilers
+You (the programmer) explicitly mark areas of your code ("start event", "stop event").
+Profilers just record these events with timestamps.
+Very controllable: you decide what to profile.
+
+Advantages:
+Extremely low overhead if used wisely
+Perfect for custom things (like profiling just AI, physics, etc.)
+
+Disadvantages:
+You have to insert the code manually
+
+Example manual profilers:
+Tracy  
+Remotery  
+Chrome’s Trace Event Format (you can view trace JSON in Chrome)
+
+### Specific profilers
+
+#### Tracy Profiler
+Open source.
+
+Uses manual instrumentation and sampling (for fibers/threads).
+Extremely low overhead and real-time.
+
+Features:
+```
+High-resolution timings.
+Real-time remote server to view data.
+Memory allocation tracking.
+Context switching, lock contention, and more.
+Great for games and real-time systems.
+Works across threads very nicely.
+```
+👉 Think of Tracy as a "professional-grade tracing profiler."
+
+#### RAD Telemetry
+Commercial product from RAD Game Tools (now Epic Games).
+Designed for games and high-performance apps.
+Primarily manual instrumentation.
+
+Features:
+```
+Remote visualization
+Multiple platforms (Windows, consoles, mobile)
+Timeline view, function call chains
+Very low cost on runtime performance
+Often used in AAA game development.
+```
+It is known for excellent scaling even with many threads.
+
+👉 Think of RAD Telemetry as a "studio-grade, battle-tested profiler."
+
+#### Remotery
+Open source.
+Very lightweight real-time CPU/GPU profiler.
+Also uses manual instrumentation.
+
+Designed for:
+Web view visualization (you open a browser to see the results)
+Very low memory footprint
+Embeddable into almost any project
+
+Supports GPU profiling via Direct3D / OpenGL / Metal in addition to CPU.
+
+Simple to integrate.
+
+👉 Think of Remotery as "quick and tiny profiling for small or mid-size projects."
+
+#### Quick comparison
+
+Profiler	Type	Best for	Notes  
+Tracy	Manual + sampling	Game engines, real-time apps	Extremely powerful, needs setup  
+RAD Telemetry	Manual	AAA game studios	Paid, extremely polished  
+Remotery	Manual	Indie games, small apps	Lightweight, very easy   
+
+
 ### Links
 
 <https://github.com/google/benchmark>
