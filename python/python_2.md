@@ -1,5 +1,49 @@
 ## Python notes 2
 
+### @staticmethod 
+Use @staticmethod when you have a method inside a class 
+that doesn't access the instance (self) or the class (cls) — it’s just logically grouped under the class.
+
+Example: A utility function inside a class
+
+```python
+class MathHelper:
+    @staticmethod
+    def add(a, b):
+        return a + b
+
+    @staticmethod
+    def multiply(a, b):
+        return a * b
+```
+
+### @classmethod 
+Use @classmethod when you need a method that acts on the class itself (receiving cls as the first argument).  
+Typically used for alternative constructors or class-level operations.
+
+Example: Creating an instance in different ways
+
+```python
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+    @classmethod
+    def from_string(cls, book_str):
+        title, author = book_str.split(' - ')
+        return cls(title, author)
+
+# Usage
+b1 = Book("1984", "George Orwell")
+b2 = Book.from_string("To Kill a Mockingbird - Harper Lee")
+
+print(b1.title, "-", b1.author)  # Output: 1984 - George Orwell
+print(b2.title, "-", b2.author)  # Output: To Kill a Mockingbird - Harper Lee
+✅ from_string creates a Book instance from a formatted string — it needs access to cls to create a new object.
+```
+
+
 ### Generators and yeld
 When a normal function returns, its stack frame (containing local variables and execution context) is immediately destroyed.  
 In contrast, a generator’s stack frame is suspended when it yields a value and resumed when next() is called again.   
