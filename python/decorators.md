@@ -18,8 +18,92 @@ def printlog ( func ) :
 ### @dataclass decorator
 
  can automatically generate several special methods for a class, such as
- __init__, __repr__, __eq__, __lt__, and so on.
+ ```
+ __init__,
+ __repr__,
+ __eq__,
+ __lt__,  
+```
 
+### @property decorator.
+```python
+class Student:
+    def __init__(self):
+        self._score = 0
+
+    @property
+    def score(self):
+        return self._score
+
+    @score.setter
+    def score(self, s):
+        if 0 <= s <= 100:
+            self._score = s
+        else:
+            raise ValueError('The score must be between 0 ~ 100!')
+
+Yang = Student()
+
+Yang.score=99
+print(Yang.score)
+# 99
+
+Yang.score = 999
+# ValueError: The score must be between 0 ~ 100!
+```
+
+###  @lru_cache: Speed Up Your Programs by Caching
+The simplest way to speed up your Python functions with caching tricks is to use the @lru_cache decorator.  
+This decorator can be used to cache the results of a function,   
+so that subsequent calls to the function with the same arguments will not be executed again.
+It is especially helpful for functions that are computationally expensive or that are called frequently with the same arguments.
+
+Example:
+```
+import time
+
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+
+start_time = time.perf_counter()
+print(fibonacci(30))
+end_time = time.perf_counter()
+print(f"The execution time: {end_time - start_time:.8f} seconds")
+# The execution time: 0.18129450 seconds
+```
+The above program calculates the Nth Fibonacci number with a Python function. 
+It’s time-consuming cause when you calculate the fibonacci(30), many previous Fibonacci numbers will be calculated many times during the recursion process.
+
+Now, let’s speed it up with the @lru_cache decorator:
+```python
+from functools import lru_cache
+import time
+@lru_cache(maxsize=None)
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
+
+
+start_time = time.perf_counter()
+print(fibonacci(30))
+end_time = time.perf_counter()
+print(f"The execution time: {end_time - start_time:.8f} seconds")
+# The execution time: 0.00002990 seconds
+```
+As the above code shows, after using the @lru_cache decorator, we can get the same result in 0.00002990 seconds, 
+which is super faster than the previous 0.18129450 seconds.
+
+The @lru_cache decorator has a maxsize parameter that specifies the maximum number of results to store in the cache.  
+When the cache is full and a new result needs to be stored, 
+the least recently used result is evicted from the cache to make room for the new one. 
+This is called the least recently used (LRU) strategy.
+
+By default, the maxsize is set to 128. 
+If it is set to None, as our example, the LRU features are disabled and the cache can grow without bound.
 
  ###  @contextmanager decorator
  returns object with automatically created  __enter__() и __exit__()
