@@ -1,4 +1,4 @@
-<https://onecompiler.com/postgresql>
+
 
 ### Information schema
 ```sql
@@ -320,3 +320,7 @@ https://news.ycombinator.com/item?id=43627646
 ### Logging every change in your database
 
 <https://medium.com/@ihcnemed/postgresql-record-every-change-in-your-database-a98a6586527c>
+
+### DB diagrams
+
+https://news.ycombinator.com/item?id=43808803
