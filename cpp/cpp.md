@@ -1,4 +1,5 @@
 https://www.amazon.com/dp/0136905692  
+https://habr.com/ru/companies/pvs-studio/articles/708138/
 https://accu.org/  
 https://www.learncpp.com/  
 https://roadmap2.me/PA74IVSGMe C++ exersizes
