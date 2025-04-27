@@ -61,6 +61,44 @@ Chrome’s Trace Event Format (you can view trace JSON in Chrome)
 
 ### Specific profilers
 
+
+#### gprof
+Type: Instrumentation (compile-time)
+Platform: Linux, Unix
+Notes: Old but famous.
+
+Compile with -pg to enable it.
+
+Gives function call counts and time spent.
+Problems: Can't handle multithreading well, limited for modern needs.
+
+#### perf (Linux Perf Events)
+Type: Sampling (hardware counters)
+
+Platform: Linux
+Notes:
+Very powerful.
+
+Low overhead, uses CPU's performance monitoring unit (PMU).
+Can do CPU, cache, branch mispredictions, etc.
+Used heavily for performance tuning in production.
+
+Can be combined with FlameGraphs.
+
+#### Valgrind / Callgrind
+Type: Instrumentation (simulated execution)
+
+Platform: Linux, Unix, Mac
+
+Notes:
+```
+Valgrind is actually a suite.
+Callgrind gives very detailed call graphs and timings.
+Very slow (your app may run 10–50x slower).
+Great for super detailed offline analysis.
+```
+
+
 #### Tracy Profiler
 Open source.
 
