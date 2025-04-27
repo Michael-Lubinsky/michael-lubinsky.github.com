@@ -25,7 +25,7 @@ def printlog ( func ) :
  __lt__,  
 ```
 
-### @property decorator.
+### @property decorator
 ```python
 class Student:
     def __init__(self):
