@@ -1,5 +1,6 @@
 ## Spark
 
+![](Spark_plan_building_steps.png)
 ### Reading files
 ```
 spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
