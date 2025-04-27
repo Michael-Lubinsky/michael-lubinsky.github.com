@@ -138,6 +138,40 @@ def foo():
     print('foo() called')
 ```
 
+### @functools.wraps(func)
+
+@functools.wraps(func) is just a helper that copies metadata from the original function onto your wrapper.  
+It's a best practice to always use it when writing decorators.
+
+When you decorate a function _without_ @functools.wraps, you lose important information about the original function:
+
+- __name__ (function name)
+- __doc__ (docstring)
+- __annotations__ (type hints)
+
+Because the decorator replaces the function with wrapper, 
+Python thinks the function is now called "wrapper", not the original name.
+
+```python
+import functools
+
+def my_decorator(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        print("Before call")
+        return func(*args, **kwargs)
+    return wrapper
+
+@greet = my_decorator
+def greet():
+    """Say hello"""
+    print("Hello!")
+
+print(greet.__name__)   # greet ✅
+print(greet.__doc__)    # Say hello ✅
+```
+
+
 ### Loggging decorator
 <https://towardsdatascience.com/python-decorators-for-data-science-6913f717669a>
 
