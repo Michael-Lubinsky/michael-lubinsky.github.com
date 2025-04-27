@@ -1,7 +1,7 @@
 
 ### Airflow
 #### Action Operators: 
-Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call. 
+Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call.   
 Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
 #### Transfer Operators:
 Facilitate moving data between systems, such as S3ToGCSOperator or MySqlToPostgresOperator.
@@ -105,12 +105,12 @@ start >> branch >> [task_load, task_alert] >> end
 ```
 
 #### Sensor Operators: 
-Wait for an external condition to be met before proceeding. 
+Wait for an external condition to be met before proceeding.   
 Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
 
 ### Hooks
 We use Hooks to define interfaces that manage connections to external systems. 
-They handle authentication, session management, and other connection-related tasks. 
+They handle authentication, session management, and other connection-related tasks.  
 Hooks are often used within Operators to simplify integration with services like databases or APIs.
 
 #### Database Hooks:
@@ -164,10 +164,12 @@ with DAG('weather_check',
 <https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html>
 ```
 XCom allows tasks to push and pull small amounts of data during execution.
-One task can push a result using xcom_push (or achieve by simply returning in the execute method ) and another task can retrieve that result using xcom_pull.
+One task can push a result using xcom_push (or achieve by simply returning in the execute method)
+and another task can retrieve that result using xcom_pull.
 
-The way the data in XCom is stored, written, and retrieved can be controlled by the XCom backend. The default one will store the XCom data in the metadata database.
- In addition, we can configure Xcom to be stored in Object Storage or desired custom backend.
+The way the data in XCom is stored, written, and retrieved can be controlled by the XCom backend.
+The default one will store the XCom data in the metadata database.
+In addition, we can configure Xcom to be stored in Object Storage or desired custom backend.
 ```
  
 #### TaskFlow API with Direct Communication (instead of Xcom)
@@ -243,17 +245,18 @@ data_cleaning_instance = data_cleaning_dag()
 
 
 #### Datasets:
-Datasets were introduced in Apache Airflow 2.4, released in August 2022
+Datasets were introduced in Apache Airflow 2.4, released in August 2022  
 Focus on data dependencies, triggering downstream DAGs when a dataset is updated by a producer task. 
-They abstract the scheduling logic to react to data changes,
-such as a file being written or a database table being updated.
-Operate at the DAG level, using a passive, event-driven model. A producer task marks a dataset as updated upon successful completion, and Airflow’s scheduler triggers dependent DAGs automatically. No active polling is required.
-Ideal for orchestrating complex, data-dependent pipelines where DAGs should run only after specific data is available or updated, 
+They abstract the scheduling logic to react to data changes,  
+such as a file being written or a database table being updated.  
+Operate at the DAG level, using a passive, event-driven model.  
+A producer task marks a dataset as updated upon successful completion,    
+and Airflow’s scheduler triggers dependent DAGs automatically. No active polling is required.
+Ideal for orchestrating complex, data-dependent pipelines where DAGs should run only after specific data is available or updated,   
 e.g., triggering a reporting DAG after a data ingestion DAG updates a table.
 
 Datasets: Enable cross-DAG dependencies natively, simplifying data lineage and visualization in the Airflow UI. 
 They support one-to-many or many-to-one relationships between DAGs and datasets.
-
 
 Failure Handling:
 Datasets: A dataset is marked as updated only if the producer task succeeds,
@@ -282,17 +285,17 @@ def consumer():
 ```
 #### Sensors: 
 Actively poll for specific conditions or events, such as the presence of a file, a database row, or an API response. 
-They are tasks within a DAG that pause execution until a criterion is met.
+They are tasks within a DAG that pause execution until a criterion is met.  
 Run as tasks within a DAG, actively checking (or "poking") for a condition at set intervals (e.g., every 60 seconds). 
-This can consume resources, especially for long-running checks.
-Suited for waiting on external events or conditions within a single DAG,
+This can consume resources, especially for long-running checks.  
+Suited for waiting on external events or conditions within a single DAG,  
 e.g., checking if a file exists in an S3 bucket before processing it.
 
 Typically manage dependencies within a DAG or require specific implementations 
 (e.g., ExternalTaskSensor) for cross-DAG coordination, which can be less intuitive and harder to maintain.
 
-Failure Handling:
-Can be configured to handle exceptions (e.g., soft_fail or silent_fail),
+Failure Handling:  
+Can be configured to handle exceptions (e.g., soft_fail or silent_fail),  
 but their success depends on the condition being met, regardless of data integrity unless explicitly coded.
 
 ```python
