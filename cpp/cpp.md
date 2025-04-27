@@ -1,3 +1,5 @@
+https://habr.com/ru/articles/270009/
+
 https://www.amazon.com/dp/0136905692  
 https://habr.com/ru/companies/pvs-studio/articles/708138/
 https://accu.org/  
