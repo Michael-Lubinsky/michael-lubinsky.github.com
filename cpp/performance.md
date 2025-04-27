@@ -164,3 +164,5 @@ https://github.com/dendibakh/perf-book/tree/main
 <https://github.com/google/benchmark>
 
 <https://github.com/ibogosavljevic/fiya>
+
+<https://github.com/yse/easy_profiler>
