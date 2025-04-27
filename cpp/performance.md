@@ -166,3 +166,7 @@ https://github.com/dendibakh/perf-book/tree/main
 <https://github.com/ibogosavljevic/fiya>
 
 <https://github.com/yse/easy_profiler>
+
+<https://www.oracle.com/application-development/technologies/developerstudio-features.html#performance-analyzer-tab>
+
+<https://habr.com/ru/articles/469409/>
