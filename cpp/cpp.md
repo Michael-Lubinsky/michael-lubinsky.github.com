@@ -1,5 +1,5 @@
 https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри
-
+https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C
 https://www.amazon.com/dp/0136905692   C++20 for Programmers: An Objects-Natural Approach (Deitel Developer Series) 3
 https://habr.com/ru/companies/pvs-studio/articles/708138/
 https://accu.org/  
