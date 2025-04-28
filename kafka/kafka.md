@@ -89,3 +89,4 @@ admin_client.create_topics(new_topics=topic_list, validate_only=False)
 ```
 
 <https://habr.com/en/articles/872976/>
+<https://medium.com/@cobch7/kafka-architecture-43333849e0f4>
