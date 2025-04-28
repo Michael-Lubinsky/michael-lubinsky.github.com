@@ -165,6 +165,8 @@ Remotery	Manual	Indie games, small apps	Lightweight, very easy
 
 <https://github.com/dendibakh/perf-book/tree/main>
 
+<https://en.algorithmica.org/hpc/>
+
 <https://github.com/google/benchmark>
 
 <https://github.com/ibogosavljevic/fiya>
