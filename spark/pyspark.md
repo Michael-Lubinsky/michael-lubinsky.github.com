@@ -9,7 +9,7 @@ df \
 
 df.dropDuplicates(['id', 'name']).show()
 ```
-https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
+
 ### sum(column)
 ```python
 data = [("John Doe", "john@example.com", 50000.0),
@@ -113,11 +113,7 @@ df.groupBy(col("year"),col("week_num")).agg(min(col("dates")).alias("start_day_w
    max(col("dates")).alias("end_day_week")).display()
 ```
 
-<https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
 
-https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6  
-https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
-https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
 
 ### Example
 
@@ -337,6 +333,15 @@ df_final = df_final.withColumn(
 
 df_final.orderBy("product_id", "year").show()
 ```
+<!--
+https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
+
+<https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
+
+https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6  
+https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
+https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
+
 https://medium.com/towards-data-engineering/discover-how-spark-functions-like-collect-set-concat-ws-collect-list-explode-and-array-union-e506a63bd571
 
 https://medium.com/towards-data-engineering/cracking-pyspark-json-handling-from-json-to-json-and-interview-ready-insights-6f5bacbce4dd
@@ -350,4 +355,5 @@ https://medium.com/@rames1000/50-pyspark-problems-solutions-part-3-4b8472b068fb
 
 https://medium.com/@rames1000/pyspark-transformation-solutions-part-1-7a879d5dcec7
 https://medium.com/@rames1000/pyspark-transformation-solutions-part-2-200d2bf82398
- 
+
+ -->
