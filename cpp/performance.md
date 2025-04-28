@@ -159,7 +159,9 @@ Remotery	Manual	Indie games, small apps	Lightweight, very easy
 
 ### Links
 
-https://github.com/dendibakh/perf-book/tree/main
+<https://diveintosystems.org/>
+
+<https://github.com/dendibakh/perf-book/tree/main>
 
 <https://github.com/google/benchmark>
 
