@@ -161,6 +161,8 @@ Remotery	Manual	Indie games, small apps	Lightweight, very easy
 
 <https://diveintosystems.org/>
 
+<https://www.youtube.com/watch?v=-HNpim5x-IE> How CPU works
+
 <https://github.com/dendibakh/perf-book/tree/main>
 
 <https://github.com/google/benchmark>
