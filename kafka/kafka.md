@@ -10,20 +10,19 @@ from json import dumps
 kafka_servers = ["localhost:9092"]
 try:
     topic_name = 'incremental_updates'
-    #producer code
-myproducer = KafkaProducer(bootstrap_servers=kafka_servers, value_serializer=lambda x: dumps(x).encode('utf-8'))
-#open file , read and send the data
+    myproducer = KafkaProducer(bootstrap_servers=kafka_servers, value_serializer=lambda x: dumps(x).encode('utf-8'))
+    #open file , read and send the data
     f = open("test_file.csv", 'r')
     for msg in f:
     #for e in range(100):
         csv_data = msg
         print(csv_data)
         #data = {'data' : csv_data}
-       #myproducer.send('incremental_updates_test', value=data)
+        #myproducer.send('incremental_updates_test', value=data)
         # sleep(300)
         #myproducer.flush()
-        future =          myproducer.send('incremental_updates_test',value=csv_data)
-# Block for 'synchronous' sends
+        future = myproducer.send('incremental_updates_test',value=csv_data)
+        # Block for 'synchronous' sends
         try:
             record_metadata = future.get(timeout=10)
         except KafkaError as e:
@@ -50,19 +49,20 @@ from json import loads
 import sys
 try:
     # Define server with port
-kafka_servers = ["localhost:9092"]
+    kafka_servers = ["localhost:9092"]
     # Define topic name from where the message will recieve
     #topicName = 'incremental_updates'
-# Initialize consumer variable
+    # Initialize consumer variable
     consumer = KafkaConsumer('incremental_updates_test' ,bootstrap_servers = kafka_servers, enable_auto_commit=True,
                                 group_id='my-group1-amit', value_deserializer=lambda x: loads(x.decode('utf-8')))
     #consumer.topics()
     print("list kafka topics")
     #list all the topic_list
-admin_client = kafka.KafkaAdminClient(bootstrap_servers=kafka_servers)
+    admin_client = kafka.KafkaAdminClient(bootstrap_servers=kafka_servers)
     print(admin_client.list_topics())
     #print(admin_client.describe_topics())
-# Read and print message from consumer
+
+    # Read and print message from consumer
     for msg in consumer:
         #print(msg.value)
         #print("recving data")
