@@ -1,5 +1,10 @@
 ## Spark
 
+
+![](Spark_architecture.png)
+
+### Query plan  builder
+
 ![](Spark_plan_building_steps.png)
 ### Reading files
 ```
