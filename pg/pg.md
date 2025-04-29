@@ -1,5 +1,7 @@
 ## Postgres
-
+https://dbfiddle.uk/  
+https://sqlfiddle.com/  
+https://rextester.com/  
 ### Information schema
 ```sql
 SELECT table_schema, table_name, column_name, data_type, is_nullable 
