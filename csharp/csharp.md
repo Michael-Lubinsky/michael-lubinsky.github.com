@@ -6,13 +6,11 @@ You need the .NET SDK (Software Development Kit), which includes everything you 
 
 Go to https://dotnet.microsoft.com/en-us/download
 
-Download the latest stable .NET SDK for macOS.
-
-Run the installer (.pkg file) and complete installation.
-
-After installation, confirm it works:
+Download the latest stable .NET SDK for macOS.  
+Run the installer (.pkg file) and complete installation.  
+After installation, confirm it works:  
  
-dotnet --version
+dotnet --version  
 (You should see something like 8.0.x.)
 
 ### 2. Choose a Code Editor or IDE
@@ -21,10 +19,14 @@ You have a few good options:
 
 Editor/IDE	Notes
 
-Visual Studio for Mac	Full IDE, C#-first. Download from https://visualstudio.microsoft.com/vs/mac/.
-(⚠️ Note: Microsoft announced Visual Studio for Mac will be retired by end of 2024, but it's still usable now.)
-VS Code + C# Extensions	Lightweight, fast. Install from https://code.visualstudio.com/, and then add the C# Dev Kit and C# extensions from the Extensions marketplace.
-JetBrains Rider	Commercial (paid) IDE. Very powerful for C#, but costs money after trial. https://www.jetbrains.com/rider/
+Visual Studio for Mac	Full IDE, C#-first. Download from https://visualstudio.microsoft.com/vs/mac/.  
+(⚠️ Note: Microsoft announced Visual Studio for Mac will be retired by end of 2024, but it's still usable now.)  
+VS Code + C# Extensions	Lightweight, fast.    
+Install from https://code.visualstudio.com/,   
+and then add the C# Dev Kit and C# extensions from the Extensions marketplace.
+JetBrains Rider	Commercial (paid) IDE. Very powerful for C#, but costs money after trial.   
+https://www.jetbrains.com/rider/
+
 I recommend starting with VS Code, because it's light and will likely be better supported in the future.
 
 ### 3. Create Your First C# Project
@@ -40,7 +42,6 @@ cd HelloWorldApp
 dotnet run
 
 It should print:
-
  
 Hello, World!
 
@@ -51,9 +52,9 @@ Modify the Program.cs file.
 
 Use the terminal inside your editor, or the IDE's "Run" button, to build and run:
 
- 
-dotnet build
+dotnet build  
 dotnet run
+
 ### 5. Bonus: Helpful Extensions (for VS Code)
 If you're using VS Code, install these from the Extensions Marketplace:
 
@@ -66,14 +67,13 @@ C# Dev Kit — for project management, debugging, testing.
 Quick Summary
 
 Step	Action
-
+```
 1	Install .NET SDK
 2	Install VS Code (or Visual Studio for Mac)
 3	Install C# extensions if using VS Code
 4	Create project: dotnet new console -n MyApp
 5	Build & run: dotnet build + dotnet run
-
-
+```
 ### Would you like me to also show you how to set up debugging C# apps in VS Code, 
 or how to create a basic C# web app 
 (with ASP.NET Core) on your Mac? 🚀
@@ -82,14 +82,10 @@ or how to create a basic C# web app
 
 ### How to deploy C# app developed on MacBook to another machine or another OS (Windows, Linux)?
 
- 
-
-✅ This is very doable because .NET Core / .NET 5/6/7/8+ is cross-platform!
-
 Here's How to Deploy C# App from Mac to Other Machines
 
 #### 1. Publish your C# app
-On your MacBook, use the dotnet publish command.
+On your MacBook, use the dotnet publish command.  
 ```
 cd HelloWorldApp
 dotnet publish -c Release -r win-x64 --self-contained true
@@ -102,14 +98,13 @@ dotnet publish -c Release -r win-x64 --self-contained true
 ✅ This creates an executable .exe file for Windows!
 
 Other runtimes (-r values) you can target:
-
-
+```
 OS	Runtime Identifier (-r)
 Windows	win-x64, win-arm64
 Linux	linux-x64, linux-arm64
 macOS	osx-x64, osx-arm64
+```
 👉 You can list all RIDs (runtime identifiers) by running:
-
 
 dotnet --list-runtimes
 
@@ -117,7 +112,7 @@ dotnet --list-runtimes
 After publishing, check:
 
 bin/Release/net8.0/win-x64/publish/
-You'll find:
+You'll find:  
 
 HelloWorldApp.exe (Windows executable)
 
