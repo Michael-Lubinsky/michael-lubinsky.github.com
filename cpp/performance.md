@@ -16,6 +16,12 @@ Read 1 MB sequentially from disk    20,000,000   ns   20,000 us   20 ms  80x mem
 Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
 ```
 
+### OpenTelemetry
+
+https://www.causely.ai/blog/using-opentelemetry-and-the-otel-collector-for-logs-metrics-and-traces?utm_source=cncf&utm_medium=referral
+
+https://www.linux.com/news/using-opentelemetry-and-the-otel-collector-for-logs-metrics-and-traces/
+
 ### https://perfwiki.github.io/main/
 
 https://perfwiki.github.io/main/tutorial/
