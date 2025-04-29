@@ -10,7 +10,19 @@ https://carlos.bueno.org/optimization/mature-optimization.pdf Book
 
 What Every Programmer Should Know about Memory (Ulrich Drepper)
 
+
+### Linux monitoring tools
+
+https://www.cyberciti.biz/tips/how-do-i-find-out-linux-cpu-utilization.html
+
+https://manybutfinite.com/best-of/
+
+https://elinux.org/Runtime_Memory_Measurement
+
 https://habr.com/ru/companies/oleg-bunin/articles/319020/
+
+
+https://habr.com/ru/articles/167837/ gprof
 
 ## Latency Comparison Numbers
 ```
