@@ -1,5 +1,17 @@
 http://www.brendangregg.com/linuxperf.html
 
+https://www.brendangregg.com/USEmethod/use-linux.html
+
+https://techtalk.intersec.com/2013/07/memory-part-2-understanding-process-memory/
+
+https://engineering.linkedin.com/performance/optimizing-linux-memory-management-low-latency-high-throughput-databases
+
+https://carlos.bueno.org/optimization/mature-optimization.pdf Book
+
+What Every Programmer Should Know about Memory (Ulrich Drepper)
+
+https://habr.com/ru/companies/oleg-bunin/articles/319020/
+
 ## Latency Comparison Numbers
 ```
 L1 cache reference                           0.5 ns
