@@ -1,4 +1,4 @@
-
+## Postgres
 
 ### Information schema
 ```sql
@@ -132,6 +132,37 @@ FROM
 ```
 
 
+### Find gaps in date column
+```sql
+WITH calendar AS (
+  SELECT gs::date AS d
+  FROM   generate_series('2025-04-01','2025-04-30','1 day') AS gs
+), gaps AS (
+  SELECT c.d
+  FROM   calendar c
+  LEFT   JOIN daily_balance b ON b.trn_date = c.d
+  WHERE  b.balance_date IS NULL
+)
+SELECT d FROM gaps ORDER BY d;
+
+```
+
+
+### Issue with LAG, LEAD, ROW_NUMBER, RAND with NULLS 
+<https://habr.com/ru/companies/otus/articles/905062/>
+```sql
+WITH daily_balance AS (
+  SELECT * FROM (VALUES
+    ('2025-04-20'::date, 100),
+    ('2025-04-22',        150) -- no record for  04-21 
+  ) AS t(trn_date, balance)
+)
+SELECT
+  trn_date,
+  balance,
+  balance - LAG(balance) OVER (ORDER BY trn_date) AS diff    -- will be NULL ?! because no record for  04-21 
+FROM daily_balance;
+```
 
 
 ### JSON_TABLE() function (Postgres 17)
