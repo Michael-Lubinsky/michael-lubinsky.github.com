@@ -62,6 +62,15 @@ https://ingau.me/blog/how-i-write-my-blogs-in-obsidian-and-publish-instantly/
 
 https://news.ycombinator.com/item?id=43771645
 
+#### How to copy ChatGPT output as Markdown
+Use "Copy as Markdown" (Browser Extension)  
+You can install a browser extension that forces copying from ChatGPT as Markdown.
+
+✅ Example for Chrome/Safari:  
+
+Extension: Copy as Markdown (for Chrome Web Store or Safari Extensions)  
+
+Once installed, right-click inside ChatGPT → Copy as Markdown.
 
 ### Job-Scout
 https://github.com/ShreeshaBhat1004/Job-scout
