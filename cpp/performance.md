@@ -16,6 +16,32 @@ Read 1 MB sequentially from disk    20,000,000   ns   20,000 us   20 ms  80x mem
 Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
 ```
 
+## Load average    
+
+http://en.wikipedia.org/wiki/Load_(computing)
+
+http://www.linuxjournal.com/article/9001
+
+Load average (returned by w, uptime and tload) number tells you how many processes on average are using or waiting on CPU for execution.   
+If it is close to or over 1.0 * (NUMBER OF CPUs), it means the system is constantly busy with something. 
+If load average is constantly raising, it means that system cannot keep up with the demand and tasks start to pile up.   
+Monitoring load average instead of CPU utilization for system "health" has two advantages:
+
+1. Load averages given by system are already averaged.  
+They don't fluctuate that much so you don't get that problem with parsing "ps" output.
+
+3. Some app may be thrashing disk and rendering system unresponsive.  
+In this case CPU utilization might be low, but load average would still be high indicating a problem.
+
+Script to show load average with timestamp
+```bash
+while true; do
+   L=$(awk '{ print $1 }'  /proc/loadavg);
+   D=$(date +%H:%M:%S);
+   echo -e "$D\t$L";
+   sleep 1;
+done
+```
 ## Profiling
 
 A profiler is a tool that measures:  
