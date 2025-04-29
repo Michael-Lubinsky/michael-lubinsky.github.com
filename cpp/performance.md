@@ -16,6 +16,39 @@ Read 1 MB sequentially from disk    20,000,000   ns   20,000 us   20 ms  80x mem
 Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
 ```
 
+### http://www.linuxhowtos.org/System/procstat.htm
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
+
+int main(int argc, const char *argv[]) {
+    char path[32], data[2048];
+    int tps = sysconf(_SC_CLK_TCK);  
+    sprintf(path, "/proc/%s/stat", argv[1]);
+    int fd = open(path, O_RDONLY);
+    if (fd < 0) {
+        perror("open");
+        return -1;
+    }
+    if (read(fd, data, 2048) == -1) {
+        perror("read");
+        return -1;
+    }
+    close(fd);
+    char name[1024];
+    long unsigned int utime, virt;
+    long int rss;
+    sscanf(data, "%*d %s %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %lu"" %*u %*d %*d %*d %*d %*d %*d %*u %lu %ld", 
+    name, &utime, &virt, &rss);
+    printf("%s active %lus, virtual size: %ld kB, resident pages: %ld\n", name, utime/tps, virt/1024, rss);
+    return 0;
+}
+```
+Usage: program <pid>
+
+
 ## Load average    
 
 http://en.wikipedia.org/wiki/Load_(computing)
