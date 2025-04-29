@@ -1,3 +1,5 @@
+https://nostarch.com/linux-memory-manager
+
 http://www.brendangregg.com/linuxperf.html
 
 https://www.brendangregg.com/USEmethod/use-linux.html
