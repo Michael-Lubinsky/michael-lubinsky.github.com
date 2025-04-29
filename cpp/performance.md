@@ -16,6 +16,13 @@ Read 1 MB sequentially from disk    20,000,000   ns   20,000 us   20 ms  80x mem
 Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
 ```
 
+### https://perfwiki.github.io/main/
+
+https://perfwiki.github.io/main/tutorial/
+perf: Linux profiling with performance counters
+
+it can instrument CPU performance counters, tracepoints, kprobes, and uprobes (dynamic tracing). It is capable of lightweight profiling. It is also included in the Linux kernel, under tools/perf, and is frequently updated and enhanced.
+
 ### System-wide profiling vs Application level profiling
 
 
