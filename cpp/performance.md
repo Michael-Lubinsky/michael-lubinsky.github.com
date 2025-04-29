@@ -16,6 +16,9 @@ Read 1 MB sequentially from disk    20,000,000   ns   20,000 us   20 ms  80x mem
 Send packet CA->Netherlands->CA    150,000,000   ns  150,000 us  150 ms
 ```
 
+### System-wide profiling vs Application level profiling
+
+
 ### http://www.linuxhowtos.org/System/procstat.htm
 ```c
 #include <stdio.h>
