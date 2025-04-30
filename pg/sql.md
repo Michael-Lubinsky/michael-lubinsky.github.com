@@ -191,7 +191,7 @@ WHERE id NOT IN (
   GROUP BY email
 ```
 ### GROUP_CONCAT
-There are 2 tables with 1 : M relation. The join output shall have 2 columns: 
+There are 2 tables with 1 : M relation. The join output shall have 2 columns:  
 1st column - from Parent table and  
 2nd column - concatenation of all related records from the child table.  
 A total number of records in output shall be # of records in the parent table.  
@@ -220,6 +220,26 @@ FROM table_name;
 SELECT
 GREATEST(5, 18, 21, 3, 65) AS GREATEST_CHECK,
 LEAST(5, 18, 21, 3, 65) AS LEAST_CHECK;
+```
+
+
+### SELECT Top N Rows For Each Group
+```sql
+WITH CTE AS (
+  SELECT
+    <group_column>,
+    <value_column>,
+    ROW_NUMBER() OVER (PARTITION BY <group_column> ORDER BY <value_column> DESC) AS row_num
+  FROM T
+)
+SELECT * FROM CTE WHERE row_num <= N;
+
+-- Retrieve top 2 salespersons per region
+WITH  CTE  AS (
+  SELECT *, ROW_NUMBER()  OVER (PARTITION BY  Region  ORDER BY  Revenue DESC)  AS  row_num
+  FROM Sales
+)
+SELECT * FROM CTE WHERE row_num <= 2;
 ```
 
 ### correlated subquery usually slow
