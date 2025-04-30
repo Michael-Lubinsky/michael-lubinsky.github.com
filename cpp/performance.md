@@ -2,7 +2,12 @@ https://nostarch.com/linux-memory-manager
 
 http://www.brendangregg.com/linuxperf.html
 
+The width of each rectangle represents the relative resource usage for a function,   
+including the time spent in its child functions.
+
 https://www.polarsignals.com/blog/posts/2023/03/28/how-to-read-icicle-and-flame-graphs
+
+https://www.parca.dev/docs/icicle-graph-anatomy/
 
 https://www.brendangregg.com/USEmethod/use-linux.html
 
