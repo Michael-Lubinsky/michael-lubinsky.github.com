@@ -191,6 +191,15 @@ WHERE id NOT IN (
   GROUP BY email
 ```
 ### GROUP_CONCAT
+```
+GROUP_CONCAT and STRING_AGG are both SQL functions used to concatenate (combine)
+values from multiple rows into a single string, grouped by a specific column. 
+The key differences between them mainly depend on which SQL database you are using,
+as they are not part of the same SQL standard.
+GROUP_CONCAT: MySQL, SQLite
+STRING_AGG:  PostgreSQL, SQL Server, Oracle
+```
+
 There are 2 tables with 1 : M relation. The join output shall have 2 columns:  
 1st column - from Parent table and  
 2nd column - concatenation of all related records from the child table.  
