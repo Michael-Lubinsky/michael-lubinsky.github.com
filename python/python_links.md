@@ -40,6 +40,8 @@ https://habr.com/ru/companies/otus/articles/888974/ Type Annotations
 ### Parsing
  https://habr.com/ru/articles/905582/
 
+ https://habr.com/ru/articles/901324/
+
 ### Pipelines
 
 https://hamilton.dagworks.io/en/latest/
