@@ -2,6 +2,8 @@ https://nostarch.com/linux-memory-manager
 
 http://www.brendangregg.com/linuxperf.html
 
+https://www.polarsignals.com/blog/posts/2023/03/28/how-to-read-icicle-and-flame-graphs
+
 https://www.brendangregg.com/USEmethod/use-linux.html
 
 https://techtalk.intersec.com/2013/07/memory-part-2-understanding-process-memory/
