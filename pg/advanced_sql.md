@@ -1,15 +1,15 @@
-https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9
-https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17
-https://medium.com/@bigtechinterviews/5-real-amazon-sql-questions-answers-d1733a2a2c4c
-https://leonwei.com/a-collection-of-amazon-sql-interview-questions-48d84d9612f7
-https://blog.devgenius.io/ace-the-data-science-interview-day-48-amazon-sql-interview-question-1cae2a8136b5
-https://www.stratascratch.com/blog/amazon-sql-interview-questions/
-https://medium.com/@bigtechinterviews/3-most-common-amazon-sql-interview-questions-and-answers-963e33ef27b1
-https://medium.com/@bigtechinterviews/10-latest-meta-facebook-sql-interview-questions-409542618599
-https://medium.com/@lozhihao/ace-the-data-science-interview-40-amazon-sql-interview-question-82164206ad03
-https://medium.com/@gunjansahu/leetcode-amazon-sql-interview-questions-list-43b034353732
+https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
+https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17  
+https://medium.com/@bigtechinterviews/5-real-amazon-sql-questions-answers-d1733a2a2c4c  
+https://leonwei.com/a-collection-of-amazon-sql-interview-questions-48d84d9612f7  
+https://blog.devgenius.io/ace-the-data-science-interview-day-48-amazon-sql-interview-question-1cae2a8136b5  
+https://www.stratascratch.com/blog/amazon-sql-interview-questions/  
+https://medium.com/@bigtechinterviews/3-most-common-amazon-sql-interview-questions-and-answers-963e33ef27b1  
+https://medium.com/@bigtechinterviews/10-latest-meta-facebook-sql-interview-questions-409542618599  
+https://medium.com/@lozhihao/ace-the-data-science-interview-40-amazon-sql-interview-question-82164206ad03  
+https://medium.com/@gunjansahu/leetcode-amazon-sql-interview-questions-list-43b034353732  
 
-https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9
+https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
 ### For each user, find the longest streak of consecutive days they logged in. 
 
 Explanation :
@@ -17,7 +17,8 @@ Explanation :
 min_login_date is used as a base date to find the delta with the login_date s for a user_id.
 ROW_NUMBER() is used to get the ranks of each row for the user_id based on login_date in ascending order.
 diff= rn — date_int gives out the difference of the above two columns, which is static for consecutive login_dates.
-Rest is simple logic where we get the COUNT(*) for each [user_id,diff] combination ie. the streak_length and then get the max(streak_length) for each user_id.
+Rest is simple logic where we get the COUNT(*) for each [user_id,diff] combination
+ie. the streak_length and then get the max(streak_length) for each user_id.
 ```
 
 ```sql
