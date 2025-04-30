@@ -4,6 +4,8 @@ https://habr.com/ru/companies/dockhost/articles/891544/
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
 https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
+
+https://github.com/EntilZha/PyFunctional
  
 ### Decorators and other code snippets
 
