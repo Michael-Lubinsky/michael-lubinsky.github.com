@@ -1,4 +1,35 @@
+I passed the Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻!
+
+Honestly, this was one of the most brain-cracking certifications I've taken — it covers a wider range of concepts like Delta Live Tables (DLT), Unity Catalog, Apache Spark, Delta Lake, MLflow, Databricks CLI, and a lot more. It took me around 4 weeks to prepare.
+
+As per the official Databricks guide, the exam consists of 60 questions, but lucky me — I got 65 questions! 😂 You get 2 hours to complete it. Need to manage time, as the questions are too lengthy. The questions are seriously designed to make you doubt yourself at every step. 😅 
+
+Here’s how the topics are distributed:
+```
+• Data Processing (30%)
+• Databricks Tooling (20%)
+• Data Modeling (20%)
+• Security & Governance (10%)
+• Monitoring & Logging (10%)
+• Testing & Deployment (10%)
+```
+I highly recommend going thoroughly through all the official documentation provided by Databricks (I stuck to their course material and notebooks).
+
+Since there’s no official practice test from Databricks, it was a bit difficult to test knowledge — but there are a few good ones available on Udemy if you want extra practice.
+
+𝗥𝗲𝘀𝗼𝘂𝗿𝗰𝗲𝘀 𝗜 𝗳𝗼𝗹𝗹𝗼𝘄𝗲𝗱:
+
+1) Databricks Learning Academy (Self-paced learning course)
+
+2) Advanced Data Engineering course material (Databricks Notebooks + Slides): https://lnkd.in/eHtyrp9B
+
+3) YouTube tutorials—‘𝗘𝗮𝘀𝗲 𝘄𝗶𝘁𝗵 𝗗𝗮𝘁𝗮’ by Subham Khandelwal
+https://lnkd.in/eZ8bfARx
+
+
 https://blog.det.life/i-passed-the-databricks-certified-associate-developer-for-apache-spark-exam-heres-how-you-can-too-6c2f9b66fdb5
+
+--------
 
 It's official! I'm now a Databricks Certified Data Engineer Associate! 🚀
 After weeks of focused study and hands-on practice, I’m excited to share that I’ve cleared the Databricks Certified Data Engineer Associate exam ✅
