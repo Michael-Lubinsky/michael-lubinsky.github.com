@@ -1,6 +1,7 @@
 
 streamlit run myapp.py
 
+https://pybit.es/articles/from-backend-to-frontend-connecting-fastapi-and-streamlit/
 
 https://drlee.io/a-comprehensive-guide-to-streamlit-cloud-building-interactive-and-beautiful-data-apps-af747bbac3e0
 
