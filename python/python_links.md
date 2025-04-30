@@ -37,6 +37,8 @@ https://riverml.xyz/latest/ Online machine learning in Python
 
 https://habr.com/ru/companies/otus/articles/888974/ Type Annotations 
 
+### Parsing
+ https://habr.com/ru/articles/905582/
 
 ### Pipelines
 
