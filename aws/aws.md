@@ -1,16 +1,4 @@
-
-
-Send
-
-Skip to LinkedIn News
-Feed post number 37
-View Hema Edavalapati’s open to work graphic link
-Hema EdavalapatiHema Edavalapati
- • FollowingFollowing
-Data Engineer| ETL Developer| Data analyst| Business Analyst| Business Intelligence |SQL Developer| business analytics and information systems at University of south FloridaData Engineer| ETL Developer| Data analyst| Business Analyst| Business Intelligence |SQL Developer| business analytics and information systems at University of south Florida
-1w •  1 week ago • Visible to anyone on or off LinkedIn
-
-
+```
 I’m happy to share that I’ve obtained a new certification: AWS Certified Data Engineer – Associate from Amazon Web Services (AWS)!
 
 I worked with a wide range of AWS services throughout this journey, covering everything from data ingestion, transformation, storage, orchestration, to security and monitoring.
@@ -40,8 +28,7 @@ Compute & Containers:
  Migration & Integration:
  I also explored AWS DMS and SCT for data migration, Transfer Family and DataSync for moving data in and out of AWS, and AppFlow for SaaS integrations.
 
- Looking forward to applying all this knowledge in upcoming projects and continuing to build impactful data solutions on AWS!
-
+```
 ### Amazon Glue paper
 
 https://www.vldb.org/pvldb/vol16/p3557-saxena.pdf
