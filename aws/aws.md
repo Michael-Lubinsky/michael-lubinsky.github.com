@@ -1,3 +1,8 @@
+### Amazon Glue paper
+
+https://www.vldb.org/pvldb/vol16/p3557-saxena.pdf
+
+
 https://www.pluralsight.com/resources/blog/cloud/which-aws-certification-should-i-take
 
 AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40
