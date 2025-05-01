@@ -1,3 +1,77 @@
+**Backpressure** refers to a condition where **downstream consumers or processors can't keep up with the data ingestion rate**, leading to a buildup of unprocessed data upstream.
+
+#### 🧩 In Kafka Context:
+
+-   Kafka **itself** (the broker) doesn't apply backpressure.
+    
+-   Kafka **producers** keep writing as long as the broker accepts data (limited by `buffer.memory`, etc.).
+    
+-   **Consumers** pull data at their own pace — but **consumer lag** (how far behind the consumer is) grows if they’re slow.
+    
+
+#### ⚠️ Symptoms of Backpressure:
+
+-   Increased **consumer lag**.
+    
+-   Brokers using more disk (partitions not getting cleaned up because offsets are old).
+    
+-   Downstream systems (e.g., Flink/Spark, databases) showing latency or errors.
+    
+
+#### 💡 How to Handle:
+
+-   **Parallelize** consumers (scale out).
+    
+-   Use **rate limiting** or **backpressure-aware frameworks** (like Apache Flink).
+    
+-   Monitor **consumer lag** with Kafka tools (e.g., `kafka-consumer-groups.sh`).
+    
+-   Use **bounded queues/buffers** in your application logic.
+    
+
+* * *
+
+### 🧭 2. What is a **Dead Letter Queue (DLQ)** in Kafka?
+
+#### 📌 Definition:
+
+A **dead letter queue** is a **separate Kafka topic** where you send **events that failed processing** — e.g., due to parsing errors, schema mismatches, business rule violations, etc.
+
+#### 🧩 In Kafka Context:
+
+Kafka doesn’t provide a DLQ **out of the box**, but:
+
+-   **Kafka Connect** supports DLQ configuration.
+    
+-   In **custom consumer applications**, you implement it:
+    
+    python
+    
+    CopyEdit
+    
+    `try:     process(event) except Exception:     producer.send('dead-letter-topic', event)`
+    
+
+#### ✅ Benefits:
+
+-   Avoids data loss: failed messages are not discarded.
+    
+-   Enables **reprocessing** after fixing logic.
+    
+-   Helps **debug and monitor** edge cases or bad data.
+    
+
+#### 🔧 DLQ Best Practices:
+
+-   Include **error metadata** (timestamp, error type, stack trace).
+    
+-   Set **retention policy** on DLQ topic (e.g., 7 days).
+    
+-   Build a tool to **reprocess messages from DLQ** into main pipeline once fixed.
+    
+
+* * *
+
 * * *
 
 ## 🔧 Requirements Summary:
