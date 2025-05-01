@@ -156,4 +156,90 @@ Monitoring
 
 Prometheus + Grafana
 
+* * *  NiFi
+
+**Apache NiFi** is a powerful tool for **data flow automation**, especially in **data ingestion, transformation, and routing**, but it has some limitations for your specific **low-latency, high-throughput clickstream pipeline**:
+
 * * *
+
+### ❌ Reasons NiFi May Not Be Ideal for Your Case:
+
+#### 1\. **Streaming at Scale Limitations**
+
+-   NiFi is **not optimized for continuous high-throughput streaming analytics**.
+    
+-   Your workload (100M events/day ≈ 1.2K/sec) with **stateful joins** and <5 min latency is better handled by a **stream processing engine** like **Spark Streaming** or **Apache Flink**.
+    
+
+#### 2\. **Joins and State Management**
+
+-   NiFi does not natively support complex **stream-table joins** or **stateful processing** like Flink/Spark.
+    
+-   Workarounds (e.g., ExecuteScript, LookupRecord, or custom processors) are **cumbersome** and not scalable when joining against 50M-record dimension tables.
+    
+
+#### 3\. **Limited Backpressure Handling**
+
+-   NiFi has **limited flow control** when compared to event-driven systems like Kafka + Flink/Spark, which offer **fine-grained backpressure** and **exactly-once** semantics.
+    
+
+#### 4\. **Operational Overhead**
+
+-   Scaling NiFi clusters is more manual and **resource-intensive** compared to Spark or Flink clusters with **auto-scaling, parallelism tuning**, and **dynamic partitioning**.
+    
+
+#### 5\. **Latency Expectations**
+
+-   Achieving **consistent <5 minute latency** with joins in NiFi is difficult without relying on external processing tools, defeating the purpose of using NiFi alone.
+    
+
+* * *
+
+### ✅ When NiFi Is a Good Fit:
+
+-   **Data ingestion and routing** (e.g., moving logs, CSVs, JSON, from source to target)
+    
+-   **ETL batch jobs** that don’t require complex joins or sub-5-minute latencies
+    
+-   **Prototyping** or **low-volume flows** with minimal transformation
+    
+
+* * *
+
+### 📝 Summary:
+
+Feature
+
+Apache NiFi
+
+Apache Spark/Flink
+
+High-volume streaming
+
+⚠️ Limited
+
+✅ Strong
+
+Stateful joins
+
+❌ Poor support
+
+✅ Built-in
+
+Sub-5-minute latency
+
+⚠️ Hard to guarantee
+
+✅ Tunable
+
+Complex event processing
+
+❌ Limited
+
+✅ Native CEP/windowing
+
+Operational scalability
+
+⚠️ Manual
+
+✅ Cloud-native support
