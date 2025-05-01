@@ -386,4 +386,26 @@ If your team is already using Spark (and especially **Databricks**), then **Stru
 
 But for **ultra-low latency, large stateful joins, and precise event-time control**, **Flink is the better fit technically** — that’s why it got top mention.
 
-Would you like a Spark-based version of the pipeline design or Flink code sample for your clickstream use case?
+
+
+⚙️ Apache Flink  flink.apache.org
+Latest Version: 2.0.0 (Released in 2025)
+Compatible with AWS Connectors 5.0.0.
+
+
+🔄 Apache Spark Structured Streaming
+Latest Version: 4.0.0-preview2 (As per the latest available preview documentation)
+
+Highlights: Deprecation of Trigger.Once in favor of Trigger.AvailableNow.
+
+Changes in Kafka offset fetching configuration defaults.
+
+🔁 Apache NiFi
+Latest Version: 2.3.0 (Released March 11, 2025)
+
+🧩 Kafka Streams
+Latest Version: 4.0.0 (Aligned with Apache Kafka 4.0.0)
+
+Highlights:
+
+Includes updates and improvements consistent with the Kafka 4.0.0 release.
