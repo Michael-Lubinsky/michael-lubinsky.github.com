@@ -22,9 +22,7 @@
 -   **Why**: Kafka is highly scalable and supports real-time ingestion with partitioned topics.
     
 
-plaintext
-
-CopyEdit
+ 
 
 `Clickstream Events → Kafka Topic ("clickstream")`
 
@@ -59,12 +57,20 @@ CopyEdit
 
 ##### Example in Spark:
 
-python
+```
 
-CopyEdit
-
-`# Load dimension data periodically users_df = spark.read.format("jdbc").load(...)  # or Delta Lake devices_df = ... urls_df = ...  # Stream clickstream clicks_stream = spark.readStream.format("kafka").load(...)  # Join stream with static/broadcasted dims enriched_stream = clicks_stream \     .join(broadcast(users_df), "user_id") \     .join(broadcast(devices_df), "device_id") \     .join(broadcast(urls_df), "url")`
-
+`# Load dimension data periodically users_df = spark.read.format("jdbc").load(...)
+# or Delta Lake
+devices_df = ...
+urls_df = ...
+ # Stream clickstream
+clicks_stream = spark.readStream.format("kafka").load(...)
+ # Join stream with static/broadcasted dims
+enriched_stream = clicks_stream \
+    .join(broadcast(users_df), "user_id") \
+    .join(broadcast(devices_df), "device_id") \
+    .join(broadcast(urls_df), "url")`
+```
 * * *
 
 ### 3\. **Serving Layer**
@@ -75,10 +81,6 @@ CopyEdit
         
     -   Low-latency queries: Apache Druid / ClickHouse / BigQuery
         
-
-plaintext
-
-CopyEdit
 
 `Processed Stream → Delta Lake / ClickHouse`
 
