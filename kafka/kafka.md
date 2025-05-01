@@ -96,123 +96,51 @@ admin_client.create_topics(new_topics=topic_list, validate_only=False)
 
 ### ✅ Broker-side
 
-Parameter
+Parameter  Recommended Value    Purpose
 
-Recommended Value
+`num.partitions`   100–500 (depends on topic throughput & consumer parallelism)  Enables parallelism across partitions.
 
-Purpose
+`log.retention.hours` 72 (or per data lifecycle)   Controls how long Kafka retains data.
 
-`num.partitions`
+`log.segment.bytes`  512MB–1GB Smaller segments improve log cleaning efficiency.
 
-100–500 (depends on topic throughput & consumer parallelism)
+`log.retention.check.interval.ms` 300000 Controls how often retention is enforced.
 
-Enables parallelism across partitions.
+`num.replica.fetchers` ≥ 2 Helps with faster replication.
 
-`log.retention.hours`
+`message.max.bytes`  1MB–10MB  Adjust based on max message size.
 
-72 (or per data lifecycle)
-
-Controls how long Kafka retains data.
-
-`log.segment.bytes`
-
-512MB–1GB
-
-Smaller segments improve log cleaning efficiency.
-
-`log.retention.check.interval.ms`
-
-300000
-
-Controls how often retention is enforced.
-
-`num.replica.fetchers`
-
-≥ 2
-
-Helps with faster replication.
-
-`message.max.bytes`
-
-1MB–10MB
-
-Adjust based on max message size.
-
-`replica.lag.time.max.ms`
-
-10000
-
-Controls follower sync timing.
+`replica.lag.time.max.ms` 10000 Controls follower sync timing.
 
 ### ✅ Producer-side
 
-Parameter
+Parameter Recommended Value  Purpose
 
-Recommended Value
+`acks`  `all` Ensures durability via ISR (in-sync replicas).
 
-Purpose
+`compression.type` `lz4` or `zstd` Improves throughput and reduces disk I/O.
 
-`acks`
+`linger.ms` 5–10 Slight batching improves performance.
 
-`all`
+`batch.size` 32KB–64KB Adjust for network efficiency.
 
-Ensures durability via ISR (in-sync replicas).
-
-`compression.type`
-
-`lz4` or `zstd`
-
-Improves throughput and reduces disk I/O.
-
-`linger.ms`
-
-5–10
-
-Slight batching improves performance.
-
-`batch.size`
-
-32KB–64KB
-
-Adjust for network efficiency.
-
-`retries`
-
-3+
-
-Handles transient errors gracefully.
+`retries` 3+ Handles transient errors gracefully.
 
 ### ✅ Consumer-side
 
-Parameter
+Parameter Recommended Value Purpose
 
-Recommended Value
-
-Purpose
-
-`max.poll.records`
-
-500–1000
-
-Controls how many messages per fetch.
+`max.poll.records` 500–1000 Controls how many messages per fetch.
 
 `fetch.max.bytes`
 
 1MB–50MB
 
-Adjust to support large messages.
+Adjust to support large messages. `auto.offset.reset`
 
-`auto.offset.reset`
+`latest` or `earliest` Depends on restart behavior.
 
-`latest` or `earliest`
-
-Depends on restart behavior.
-
-`enable.auto.commit`
-
-`false`
-
-You should commit manually after processing.
+`enable.auto.commit` `false` You should commit manually after processing.
 
 * * *
 
@@ -220,65 +148,25 @@ You should commit manually after processing.
 
 ### ✅ Spark Config
 
-Parameter
+Parameter Recommended Value Purpose
 
-Recommended Value
+`spark.sql.shuffle.partitions`  100–200+ More partitions improve parallelism.
 
-Purpose
+`spark.streaming.backpressure.enabled` `true` Enables auto-rate adjustment (batch mode only).
 
-`spark.sql.shuffle.partitions`
+`spark.streaming.kafka.maxRatePerPartition` 1000–5000 Rate control per Kafka partition. 
 
-100–200+
+`spark.sql.streaming.stateStore.maintenanceInterval` ~30s Cleans up old state.
 
-More partitions improve parallelism.
+`spark.sql.streaming.stateStore.providerClass` `RocksDB` (if using Delta Live Tables) Improves stateful operations.
 
-`spark.streaming.backpressure.enabled`
+`spark.sql.streaming.join.stateFormatVersion` `2` Required for production stateful joins.
 
-`true`
+`spark.executor.memory` 4–16GB Based on workload.
 
-Enables auto-rate adjustment (batch mode only).
+`spark.executor.cores` 2–4 Tune based on cluster size.
 
-`spark.streaming.kafka.maxRatePerPartition`
-
-1000–5000
-
-Rate control per Kafka partition.
-
-`spark.sql.streaming.stateStore.maintenanceInterval`
-
-~30s
-
-Cleans up old state.
-
-`spark.sql.streaming.stateStore.providerClass`
-
-`RocksDB` (if using Delta Live Tables)
-
-Improves stateful operations.
-
-`spark.sql.streaming.join.stateFormatVersion`
-
-`2`
-
-Required for production stateful joins.
-
-`spark.executor.memory`
-
-4–16GB
-
-Based on workload.
-
-`spark.executor.cores`
-
-2–4
-
-Tune based on cluster size.
-
-`spark.streaming.stopGracefullyOnShutdown`
-
-`true`
-
-Allows clean exit.
+`spark.streaming.stopGracefullyOnShutdown` `true` Allows clean exit.
 
 > Note: Spark runs on **micro-batches**, not true streaming. Use **watermarking** and **windowing** for stream joins.
 
@@ -288,11 +176,7 @@ Allows clean exit.
 
 ### ✅ Flink Config
 
-Parameter
-
-Recommended Value
-
-Purpose
+Parameter Recommended Value Purpose
 
 `taskmanager.numberOfTaskSlots`
 
