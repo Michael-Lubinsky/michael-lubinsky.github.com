@@ -59,13 +59,16 @@ CopyEdit
 
 ```
 
-`# Load dimension data periodically users_df = spark.read.format("jdbc").load(...)
+`# Load dimension data periodically users_
+df = spark.read.format("jdbc").load(...)
 # or Delta Lake
 devices_df = ...
 urls_df = ...
- # Stream clickstream
+
+# Stream clickstream
 clicks_stream = spark.readStream.format("kafka").load(...)
- # Join stream with static/broadcasted dims
+
+# Join stream with static/broadcasted dims
 enriched_stream = clicks_stream \
     .join(broadcast(users_df), "user_id") \
     .join(broadcast(devices_df), "device_id") \
