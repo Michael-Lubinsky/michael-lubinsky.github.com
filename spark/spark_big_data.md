@@ -1,6 +1,5 @@
-
 ### Config
-
+```python
 from pyspark.sql import SparkSession
 spark = SparkSession.builder \
     .appName("LargeDataProcessing") \
@@ -8,7 +7,7 @@ spark = SparkSession.builder \
     .config("spark.driver.memory", "8g") \            # Increase if needed
     .config("spark.executor.memory", "16g") \         # Allocate more for large jobs
     .getOrCreate()
-
+```
 ###   Reading Large Datasets
 
 ```
@@ -45,7 +44,7 @@ spark.conf.set("spark.executor.memory", "32g")         # Increase for heavy work
 ```
 ### Use Broadcast Joins for Small Tables
 Avoid shuffling by broadcasting small DataFrames:
-```
+```python
 from pyspark.sql.functions import broadcast
 df_large = spark.read.parquet("hdfs:///data/large_dataset.parquet")
 df_small = spark.read.parquet("hdfs:///data/small_lookup.parquet")
@@ -65,9 +64,89 @@ df.write.mode("overwrite").parquet("hdfs:///data/output")
 ```
 ###  Monitoring & Debugging Performance
 
-Access the Spark Web UI at:
+Access the Spark Web UI at:  <http://localhost:4040>
 
-http://localhost:4040
+
+### Configure Spark to process 10–100 TB of data
+```
+To process **10–100 TB of data per day** with Apache Spark efficiently, the optimal cluster configuration depends on several factors including data format, processing complexity, 
+I/O throughput, and the SLAs (e.g., whether you need to finish processing in real-time, hourly, or daily). 
+That said, here's a **baseline recommendation** for batch workloads, assuming structured data in formats like Parquet or ORC, and moderate-to-complex Spark transformations.
+```
+* * *
+
+### 🔧 **Cluster Configuration (Baseline for 50 TB/day)**
+
+#### **1\. Number of Nodes**
+
+-   **Total nodes**: 50–200 worker nodes (adjust based on throughput needs and data volume).
+    
+-   **Node type**: 16–32 cores, 128–256 GB RAM, SSD-backed disks or networked storage (like EBS or HDFS).
+    
+-   For 100 TB/day, scale to 300–400 nodes if needed.
+```
+Volume	Nodes	Cores/Node	RAM/Node	Total Cores	Daily Throughput Target
+10 TB	~50	16	128 GB	800	~417 MB/sec
+50 TB	~150	32	256 GB	4800	~2.4 GB/sec
+100 TB	~300	32	256 GB	9600	~4.8 GB/sec
+```    
+
+### ⚙️ **Spark JVM Configuration**
+
+Tweak these based on executor size and garbage collection overhead:
+
+```bash
+--executor-memory 20G
+--driver-memory 20G
+--executor-cores 5
+--num-executors 500  # or use dynamic allocation
+--conf spark.executor.memoryOverhead=4G
+--conf spark.serializer=org.apache.spark.serializer.KryoSerializer
+--conf spark.sql.shuffle.partitions=2000  # tune based on input size
+--conf spark.sql.adaptive.enabled=true
+--conf spark.network.timeout=800s
+--conf spark.rpc.askTimeout=600s
+--conf spark.storage.memoryFraction=0.3
+--conf spark.shuffle.service.enabled=true
+--conf spark.dynamicAllocation.enabled=true
+```
+
+* * *
+
+### 🔄 **Jobs per Node / Job Concurrency**
+
+-   **Jobs per node**: 2–4 concurrent Spark jobs per node if they are not CPU-bound.
+    
+-   For streaming or real-time batch ingestion, use **separate clusters** or **YARN/Mesos pools** to isolate workloads.
+    
+
+* * *
+
+### 🧠 **Tuning Recommendations**
+
+-   Use **columnar formats** like Parquet with predicate pushdown.
+    
+-   Ensure data is **evenly partitioned** (~128–512 MB per partition).
+    
+-   Avoid **data skews** in joins or aggregations.
+    
+-   Consider **caching** reference datasets (`broadcast` joins for small tables).
+    
+-   Enable **adaptive query execution (AQE)** for dynamic optimizations.
+    
+
+* * *
+
+### ☁️ Cloud-specific Notes
+
+If using EMR, Databricks, or GCP Dataproc:
+
+-   Use **auto-scaling** with spot/preemptible nodes for cost savings.
+    
+-   Leverage **autoscaling clusters** to handle variance between 10–100 TB loads.
+
+
+
 
 ### Analyze Query Execution Plans
 Check optimization opportunities with:
