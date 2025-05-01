@@ -297,3 +297,93 @@ Complex transformations/CEP   ⚠️ Limited   ✅ Advanced built-in features
 Kafka Streams is great for **smaller-scale or tightly coupled Kafka applications**, but for your case — **large joins, massive scale, and operational simplicity** — **Flink or Spark Structured Streaming** is better suited.
 
 
+## ✅ When Spark Structured Streaming is Great
+
+It’s very well-suited for:
+
+-   **High-throughput streaming** (100M records/day is no issue)
+    
+-   **ETL pipelines that use batch+streaming together** (thanks to unified APIs)
+    
+-   **Easy scaling** with YARN/Kubernetes
+    
+-   **Spark ecosystem familiarity** (if you already use Spark in your stack)
+    
+
+And **Structured Streaming is production-grade** for most use cases — especially when using:
+
+-   **Delta Lake** (for fault-tolerant, ACID-compliant sinks)
+    
+-   **Broadcast joins** with dimension tables
+    
+-   **Streaming joins with watermarking and windowing**
+    
+
+* * *
+
+## ❌ Why Flink Was Prioritized for _Your Specific Scenario_
+
+### 1\. **True Low-Latency Processing**
+
+-   **Spark micro-batch model** introduces a small but real latency (even 1s triggers).
+    
+-   **Flink is pure event-at-a-time (true streaming)** — better for pushing towards **sub-5-minute end-to-end latency**, especially when doing stateful joins.
+    
+
+### 2\. **Richer Stream Joins & State Management**
+
+-   **Spark joins are limited to certain window types** (e.g., time-bounded joins).
+    
+-   **Flink offers full-featured joins** (non-windowed, interval, temporal, etc.) and more precise state TTL & eviction control.
+    
+-   With large dimension tables (50M), **Flink's RocksDB state backend** is more efficient for long-lived state and low-latency access.
+    
+
+### 3\. **Better Event-Time & Watermark Semantics**
+
+-   Flink has **more advanced event-time processing**, fine-grained **watermarks**, **late event handling**, and **custom triggers** — useful for real-time clickstream handling where events can arrive out-of-order.
+    
+
+### 4\. **Checkpointing & Recovery**
+
+-   **Flink's exactly-once semantics** are stronger and simpler out-of-the-box in many cases.
+    
+-   Spark supports this, but it often depends on sinks like Delta Lake and proper configurations.
+    
+
+### 5\. **Backpressure Handling**
+
+-   Flink has **native backpressure propagation** from sink to source.
+    
+-   Spark does not handle backpressure as gracefully, especially when using file-based sinks.
+    
+
+* * *
+
+## 📝 Summary: Flink vs Spark Structured Streaming for Your Use Case
+
+Feature Apache Flink   Spark Structured Streaming
+
+Processing model True streaming (event-at-a-time) Micro-batch (trigger intervals)
+
+Latency (end-to-end) ✅ Lower (<1s possible) ⚠️ Slightly higher (>=1s batches)
+
+Stateful joins on large dims  ✅ Efficient (RocksDB)  ⚠️ Less flexible
+
+Event-time handling ✅ Fine-grained, flexible  ⚠️ Good, but coarser
+
+Ecosystem integration  ⚠️ Slightly niche  ✅ Rich with Delta, Hive, etc.
+
+Developer familiarity ⚠️ Less common ✅ Widely adopted
+
+Operational simplicity ⚠️ More configs  ✅ Easier with Databricks
+
+* * *
+
+## 🔚 Conclusion
+
+If your team is already using Spark (and especially **Databricks**), then **Structured Streaming with smart tuning** can meet your 5-minute latency target and give you a unified stack.
+
+But for **ultra-low latency, large stateful joins, and precise event-time control**, **Flink is the better fit technically** — that’s why it got top mention.
+
+Would you like a Spark-based version of the pipeline design or Flink code sample for your clickstream use case?
