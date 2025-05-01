@@ -1,6 +1,30 @@
 pip install confluent-kafka
 
 #### Kafka Producer:
+Example 1
+```python
+from confluent_kafka import Producer
+import json
+
+producer = Producer({'bootstrap.servers': 'localhost:9092'})
+
+record_key = "user123"
+record_value = json.dumps({
+    "timestamp": "2025-04-30T14:35:00Z",
+    "url": "https://example.com/page",
+    "device_id": "dev456"
+})
+
+producer.produce(
+    topic="clickstream",
+    key=record_key,
+    value=record_value.encode("utf-8"),
+    headers={"source": "web"}
+)
+producer.flush()
+
+```
+Example 2
 ```python
 from confluent_kafka import Producer
 
@@ -29,7 +53,7 @@ consumer = Consumer(conf)
 consumer.subscribe(['clickstream'])
 
 while True:
-    msg = consumer.poll(1.0)
+    msg = consumer.poll(1.0)  # If no messages are available after 1 second → returns None.
     if msg is None:
         continue
     if msg.error():
