@@ -211,38 +211,14 @@ Prometheus + Grafana
 
 ### 📝 Summary:
 
-Feature
+Feature  Apache NiFi             Apache Spark/Flink  
 
-Apache NiFi
+High-volume streaming ⚠️ Limited     ✅ Strong     
 
-Apache Spark/Flink
+Stateful joins ❌ Poor support  ✅ Built-in
 
-High-volume streaming
+Sub-5-minute latency ⚠️ Hard to guarantee  ✅ Tunable
 
-⚠️ Limited
+Complex event processing ❌ Limited ✅ Native CEP/windowing
 
-✅ Strong
-
-Stateful joins
-
-❌ Poor support
-
-✅ Built-in
-
-Sub-5-minute latency
-
-⚠️ Hard to guarantee
-
-✅ Tunable
-
-Complex event processing
-
-❌ Limited
-
-✅ Native CEP/windowing
-
-Operational scalability
-
-⚠️ Manual
-
-✅ Cloud-native support
+Operational scalability ⚠️ Manual  ✅ Cloud-native support
