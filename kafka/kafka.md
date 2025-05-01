@@ -1,3 +1,44 @@
+pip install confluent-kafka
+
+#### Kafka Producer:
+```python
+from confluent_kafka import Producer
+
+conf = {'bootstrap.servers': 'localhost:9092'}
+producer = Producer(conf)
+
+def delivery_report(err, msg):
+    if err is not None:
+        print(f"Delivery failed: {err}")
+    else:
+        print(f"Message delivered to {msg.topic()} [{msg.partition()}]")
+
+producer.produce("clickstream", key="user1", value="page1", callback=delivery_report)
+producer.flush()
+```
+#### Kafka Consumer
+```python
+from confluent_kafka import Consumer
+
+conf = {
+    'bootstrap.servers': 'localhost:9092',
+    'group.id': 'clickstream-group',
+    'auto.offset.reset': 'earliest'
+}
+consumer = Consumer(conf)
+consumer.subscribe(['clickstream'])
+
+while True:
+    msg = consumer.poll(1.0)
+    if msg is None:
+        continue
+    if msg.error():
+        print(f"Error: {msg.error()}")
+        continue
+    print(f"Received: {msg.key()} - {msg.value().decode('utf-8')}")
+
+```
+
 
 <https://kafka-python.readthedocs.io/en/master/>
 #### Kafka Producer:
