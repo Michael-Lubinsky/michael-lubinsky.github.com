@@ -126,7 +126,10 @@ These are usually **not stored on the server** but provided at runtime by client
 Example in Java:
 
 ```java
-Properties props = new Properties(); props.put("bootstrap.servers", "localhost:9092"); props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer"); props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+Properties props = new Properties();
+props.put("bootstrap.servers", "localhost:9092");
+props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 ```
 
 #### Option B: **Load from config file**
@@ -155,11 +158,10 @@ Stored as JSON files, typically:
     
 -   Or deployed directly via REST to Kafka Connect.
     
-
 * * *
-
  
-Here's a **sample directory structure** to organize Kafka-related config files for a production-grade data pipeline involving Kafka, Connect, Spark/Flink, and consumers.
+Here's a **sample directory structure** to organize Kafka-related config files   
+for a production-grade data pipeline involving Kafka, Connect, Spark/Flink, and consumers.
 
 * * *
 
@@ -436,7 +438,8 @@ spark-submit \
 * * *
 
 
-Here are **sample code examples** for both **Apache Flink** (Java) and **Apache Spark Structured Streaming** (PySpark), showing how to process Kafka clickstream data and join it with dimension tables (`users`, `urls`, `devices`).
+Here are **sample code examples** for both **Apache Flink** (Java) and **Apache Spark Structured Streaming** (PySpark),   
+showing how to process Kafka clickstream data and join it with dimension tables (`users`, `urls`, `devices`).
 
 * * *
 
