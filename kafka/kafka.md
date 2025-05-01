@@ -24,7 +24,7 @@ producer.produce(
 producer.flush()
 
 ```
-Example 2
+Example 2: with callback (recommended)
 ```python
 from confluent_kafka import Producer
 
