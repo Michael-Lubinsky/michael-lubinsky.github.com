@@ -12,6 +12,8 @@ https://machine-learning-with-python.readthedocs.io/
 
 https://sebastianraschka.com/notebooks/ml-notebooks/
 
+https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
+
 https://www.kaggle.com/discussions/getting-started/390402
 
 ML System design 
