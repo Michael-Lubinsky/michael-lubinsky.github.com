@@ -1,3 +1,5 @@
+https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+javascript+learnmachinelearning+programming/
+
 ### How to use jekyll for static site:
 https://chat-to.dev/post?id=296
 
