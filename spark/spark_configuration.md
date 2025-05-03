@@ -19,6 +19,85 @@ Controls the fraction of total memory available for execution and storage
 
 Defines the fraction of memory reserved for storage-related tasks (default is 0.5 of the memory fraction).
 ```
+
+### EXAMPLE
+```
+
+Lets say you have a 1000 node spark cluster
+
+Each node is of size - 16 cpu cores / 64 gb RAM
+
+Let's say each node has 3 executors,
+with each executor of size - 5 cpu cores / 21 GB RAM (Remaining goes for overheads)
+
+Let's answer the following questions..
+
+=> 1. What's the total capacity of cluster?
+
+We will have 1000 * 3 = 3000 executors
+
+Total CPU capacity: 3000 * 5 = 15000 cpu Cores
+
+Total Memory capacity: 3000 * 21 = 63000 GB RAM (63 TB)
+
+=> 2. How many parallel tasks can run on this cluster?
+
+We have 15000 CPU cores, so we can run at the max 15000 parallel tasks on this cluster.
+
+=> 3. Let's say you requested for 4 executors then how many parallel tasks can run?
+
+so the capacity we got is (4 * 5 = 20) cpu cores
+
+(4 * 21 = 84) GB RAM
+
+so a total of 20 parallel tasks can run at the max.
+
+=> 4. Let's say we have a 1 TB file stored in datalake and have to do some filtering of data, how many tasks will run.
+Assume we are requesting for 50 executors (5 cores, 21 GB RAM each)
+
+if we create a dataframe out of 1 TB file we will get 8000 partitions in our dataframe. (will cover in my next post on how many partitions are created)
+
+so we have 8000 partitions each of size 128 mb.
+
+so our job will run 8000 total tasks but are all of this in parallel? let's see.
+
+we have (50 * 5 = 250) cpu cores
+
+lets say each task takes around 10 second to process 128 mb data.
+
+so first 250 tasks run in parallel,
+
+once these 250 tasks are done the other 250 tasks are executed and so on...
+
+so totally 32 cycles (in sequence), if we think the most ideal scenario.
+
+10 sec + 10 sec + .... (32 times) = 320 seconds.
+
+=> 5. is there a possibility of, out of memory error in the above scenario?
+
+Each executor has 5 cpu cores and 21 gb ram.
+
+This 21 gb RAM is divided in various parts -
+
+300 mb reserved memory,
+
+40% user memory to store user defined variables/data. example hashmap
+
+60% spark memory - this is divided 50:50 between storage memory and execution memory.
+
+so basically we are looking at execution memory and it will be around 28% roughly of the total memory allotted.
+
+so consider around 6 GB of 21 GB memory is meant for execution memory.
+
+per cpu core we have (6 GB / 5 cores) = 1.2 GB execution memory.
+
+That means our task can roughly handle around 1.2 GB of data.
+
+however, we are handling 128 mb so we are well under this range.
+
+```
+
+
 ### Executor and Memory Tuning Strategies
 ```
 1. Determine Executor Count and Core Allocation
