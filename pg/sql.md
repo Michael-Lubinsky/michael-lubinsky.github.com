@@ -36,7 +36,21 @@ WHERE next_date IS NOT NULL
 ORDER BY gap_days DESC
 LIMIT 1;
 ```
-
+### all cities with more customers than the average number of customers per city
+```sql
+Copy code
+SELECT city, COUNT(*) AS customer_count
+FROM customers
+GROUP BY city
+HAVING COUNT(*) > (
+    SELECT AVG(customer_count)
+    FROM (
+        SELECT COUNT(*) AS customer_count
+        FROM customers
+        GROUP BY city
+    ) AS city_counts
+);
+```
 ### Handle NULL in aggregation using COALESCE
 ```sql
 SELECT department_id,
