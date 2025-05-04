@@ -1,9 +1,14 @@
 ## Postgres
+<!--
 <https://dbfiddle.uk/>  
 <https://sqlfiddle.com/>  
 <https://rextester.com/>  
 
+<https://postgresql.leopard.in.ua/>
+
 <https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
+-->
+
 ### Information schema
 ```sql
 SELECT table_schema, table_name, column_name, data_type, is_nullable 
