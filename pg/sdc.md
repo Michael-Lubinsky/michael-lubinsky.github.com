@@ -179,7 +179,6 @@ SELECT dim.ProductBusinessKey,
  dim.Color,
  dim.Size,
  dim.ListPrice,
-Untitled 24
  dim.Discontinued
 FROM dbo.DimProduct AS dim
 WHERE NOT EXISTS
