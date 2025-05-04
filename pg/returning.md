@@ -94,9 +94,7 @@ You can use a temporary table or CTE to hold references to the affected rows.
 
 ### 🛠 Example: Simulating `UPDATE ... RETURNING` in Hive or SparkSQL
 
-#### Goal:
-
-Update user email and return affected rows.
+#### Goal: Update user email and return affected rows.
 
 #### Step-by-step:
 
@@ -183,9 +181,7 @@ Here’s a **reusable SQL snippet** to simulate `INSERT ... RETURNING` behavior 
 
 ### 🆕 Simulating `INSERT ... RETURNING` in Hive/SparkSQL
 
-#### Goal:
-
-Insert new rows and get them back immediately.
+#### Goal: Insert new rows and get them back immediately.
 
 * * *
 
