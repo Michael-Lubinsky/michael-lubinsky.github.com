@@ -63,47 +63,21 @@ RETURNING id, name;
 
 Platform
 
-`RETURNING` Supported
+`RETURNING` Supported   Notes
 
-Notes
+PostgreSQL  ✅ Yes Fully supported
 
-PostgreSQL
+Hive  ❌ No Not supported
 
-✅ Yes
+Spark SQL ❌ No Not supported
 
-Fully supported
-
-Hive
-
-❌ No
-
-Not supported
-
-Spark SQL
-
-❌ No
-
-Not supported
-
-Redshift
-
-⚠️ Partial
-
-Supported in newer versions
+Redshift ⚠️ Partial
+  Supported in newer versions
 
 * * *
 
-Would you like an alternative way to simulate `RETURNING` in systems that don’t support it?
 
-4o
-
-##### You said:
-
-Yes, please
-
-###### ChatGPT said:
-
-Here’s how you can **simulate the `RETURNING` clause** in SQL systems that **do not support it directly** (like Hive, SparkSQL, or older versions of Redshift):
+You can **simulate the `RETURNING` clause** in SQL systems that **do not support it directly** (like Hive, SparkSQL, or older versions of Redshift):
 
 * * *
 
@@ -130,11 +104,23 @@ Update user email and return affected rows.
 
 #### Step-by-step:
 
-sql
+```sql
+-- Step 1: Capture the IDs you plan to update
+CREATE TEMPORARY TABLE to_update AS
+SELECT id
+FROM users
+WHERE email = 'old@example.com';
 
-CopyEdit
+-- Step 2: Perform the update
+UPDATE users
+SET email = 'new@example.com'
+WHERE id IN (SELECT id FROM to_update);
 
-`-- Step 1: Capture the IDs you plan to update CREATE TEMPORARY TABLE to_update AS SELECT id FROM users WHERE email = 'old@example.com';  -- Step 2: Perform the update UPDATE users SET email = 'new@example.com' WHERE id IN (SELECT id FROM to_update);  -- Step 3: Return updated rows SELECT * FROM users WHERE id IN (SELECT id FROM to_update);`
+-- Step 3: Return updated rows
+SELECT *
+FROM users
+WHERE id IN (SELECT id FROM to_update);
+```
 
 _Note: Syntax for temporary tables may vary slightly depending on Hive vs SparkSQL._
 
@@ -146,11 +132,16 @@ If you're inserting data with an auto-increment ID and want the inserted rows ba
 
 #### Redshift (older versions), Hive, SparkSQL:
 
-sql
+```sql
+-- Step 1: Capture inserted values (assuming you provide something unique)
+INSERT INTO users (name, email)
+VALUES ('Alice', 'alice@example.com');
 
-CopyEdit
-
-`-- Step 1: Capture inserted values (assuming you provide something unique) INSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com');  -- Step 2: Select just-inserted row SELECT * FROM users WHERE email = 'alice@example.com';`
+-- Step 2: Select just-inserted row
+SELECT *
+FROM users
+WHERE email = 'alice@example.com';
+```
 
 To avoid race conditions in concurrent environments, include a timestamp or UUID in the inserted data to make the follow-up `SELECT` reliable.
 
