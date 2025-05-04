@@ -1,3 +1,5 @@
+## RETURNING keyword in SQL
+
 The `RETURNING` clause in SQL allows you to return data from rows that are modified by `INSERT`, `UPDATE`, or `DELETE` statements. It's useful when you want to immediately retrieve values (e.g., auto-generated IDs or changed columns) from the affected rows without making a separate `SELECT` query.
 
 * * *
