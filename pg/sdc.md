@@ -72,16 +72,16 @@ Result?
 
 ### Type 2 (Add a new Row):
 
-A Type 2 SCD supports the versioning of dimension members. It includes columns that define the date range validity of the
-version (for example,  StartDate  and  EndDate ) and possibly a flag column (for example,  IsCurrent ) to easily filter by current
-dimension members.
-Current versions may define an empty end date (or 12/31/9999), which indicates that the row is the current version. The table
-must also define a surrogate key because the business key (in this instance, RepSourceID) won't be unique.
+A Type 2 SCD supports the versioning of dimension members. It includes columns that define the date range validity of the  
+version (for example,  StartDate  and  EndDate ) and possibly a flag column (for example,  IsCurrent )   
+to easily filter by current dimension members.  
+Current versions may define an empty end date (or 12/31/9999), which indicates that the row is the current version. 
+The table must also define a surrogate key because the business key (in this instance, RepSourceID) won't be unique.  
 
-Code to apply type 1 and 2 logic
-/*Logic to implement Type 1 and Type 2 updates can be complex, and there are various techniques you can use.
+Code to apply type 1 and 2 logic  
+Logic to implement Type 1 and Type 2 updates can be complex, and there are various techniques you can use.  
+For example, you could use a combination of UPDATE and INSERT statements as shown in the following code example:  
 
-For example, you could use a combination of UPDATE and INSERT statements asshown in the following code example:*/
 ```sql
 -- Insert new customers
 INSERT INTO dbo.DimCustomer
@@ -102,6 +102,7 @@ SET CustomerName = stg.CustomerName,
  Phone = stg.Phone
 FROM dbo.StageCustomers AS stg
 WHERE dbo.DimCustomer.CustomerAltKey = stg.CustomerNo;
+
 -- Type 2 updates (geographic address)
 INSERT INTO dbo.DimCustomer
 SELECT stg.CustomerNo AS CustomerAltKey,
@@ -112,17 +113,19 @@ SELECT stg.CustomerNo AS CustomerAltKey,
  stg.City,
  stg.PostalCode,
  stg.CountryRegion
-
 -- Instead of putting NULL for the End date, its better to put a future date
-
 FROM dbo.StageCustomers AS stg
 JOIN dbo.DimCustomer AS dim
 ON stg.CustomerNo = dim.CustomerAltKey
 AND stg.StreetAddress <> dim.StreetAddress;
-/*As an alternative to using multiple INSERT and UPDATE statement, you can use a single MERG
-E statement to perform an "upsert" operation to insert new records and update existing ones,
-as shown in the following example, which loads new product records and applies type 1 update
-s to existing products*/
+```
+
+As an alternative to using multiple INSERT and UPDATE statement,  
+you can use a single MERGE statement to perform an "upsert" operation to insert new records and update existing ones,  
+as shown in the following example,  
+which loads new product records and applies type 1 updates to existing products.
+
+```sql
 MERGE dbo.DimProduct AS tgt
  USING (SELECT * FROM dbo.StageProducts) AS src
  ON src.ProductID = tgt.ProductBusinessKey
