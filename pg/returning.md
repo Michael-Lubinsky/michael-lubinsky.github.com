@@ -63,18 +63,11 @@ RETURNING id, name;
 
 ### Summary Table
 
-Platform
-
-`RETURNING` Supported   Notes
-
-PostgreSQL  ✅ Yes Fully supported
-
-Hive  ❌ No Not supported
-
-Spark SQL ❌ No Not supported
-
-Redshift ⚠️ Partial
-  Supported in newer versions
+| Platform `RETURNING` | Supported | Notes |
+| PostgreSQL | ✅ Yes |Fully supported |
+| Hive|  ❌ |No Not supported|
+| Spark SQL| ❌ | No Not supported |
+| Redshift | ⚠️ Partial | Supported in newer versions|
 
 * * *
 
