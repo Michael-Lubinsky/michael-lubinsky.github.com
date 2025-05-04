@@ -7,14 +7,23 @@ The `RETURNING` clause in SQL allows you to return data from rows that are modif
 **Supported**: Yes
 
 PostgreSQL has full support for the `RETURNING` clause.
+```sql
+-- Return generated ID after INSERT
+INSERT INTO users (name, email)
+VALUES ('Alice', 'alice@example.com')
+RETURNING id;
 
-#### Examples:
+-- Return updated rows
+UPDATE users
+SET email = 'new@example.com'
+WHERE id = 1
+RETURNING *;
 
-sql
-
-CopyEdit
-
-`-- Return generated ID after INSERT INSERT INTO users (name, email) VALUES ('Alice', 'alice@example.com') RETURNING id;  -- Return updated rows UPDATE users SET email = 'new@example.com' WHERE id = 1 RETURNING *;  -- Return deleted rows DELETE FROM users WHERE id = 1 RETURNING name;`
+-- Return deleted rows
+DELETE FROM users
+WHERE id = 1
+RETURNING name;
+```
 
 * * *
 
@@ -38,13 +47,13 @@ Spark SQL typically operates on DataFrames, and when using SQL-like commands, th
 
 **Partially supported**: Redshift added limited `RETURNING` support in recent versions (e.g., late 2023+), but it may **depend on your Redshift version**.
 
-#### Example:
-
-sql
-
-CopyEdit
-
-`-- As of Redshift 1.0.39581 and later UPDATE users SET name = 'Bob' WHERE id = 10 RETURNING id, name;`
+-- As of Redshift 1.0.39581 and later
+```sql
+UPDATE users
+SET name = 'Bob'
+WHERE id = 10
+RETURNING id, name;
+```
 
 > 📌 Check your Redshift version with: `SELECT version();`
 
