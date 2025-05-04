@@ -147,24 +147,30 @@ To avoid race conditions in concurrent environments, include a timestamp or UUID
 
 * * *
 
-Would you like me to give a reusable SQL snippet for one of these systems (e.g., Hive or Spark)?
-
-4o
-
-##### You said:
-
-Yes, please
-
-###### ChatGPT said:
 
 Here’s a **reusable SQL snippet for Hive or SparkSQL** to simulate `UPDATE ... RETURNING` using temporary tables. This is helpful when you need to both update records and retrieve them.
 
 * * *
 
 ### 🔄 **Reusable Template for `UPDATE ... RETURNING` in Hive/SparkSQL**
- 
-`-- Step 1: Identify rows to update CREATE OR REPLACE TEMPORARY VIEW to_update AS SELECT id, name, email FROM users WHERE email = 'old@example.com';  -- Step 2: Perform the update using a join -- SparkSQL & Hive support UPDATE ... JOIN with some limitations UPDATE users SET email = 'new@example.com' WHERE id IN (SELECT id FROM to_update);  -- Step 3: Retrieve updated rows SELECT * FROM users WHERE id IN (SELECT id FROM to_update);`
+```sql 
+-- Step 1: Identify rows to update
+CREATE OR REPLACE TEMPORARY VIEW to_update AS
+SELECT id, name, email
+FROM users
+WHERE email = 'old@example.com';
 
+-- Step 2: Perform the update using a join
+-- SparkSQL & Hive support UPDATE ... JOIN with some limitations
+UPDATE users
+SET email = 'new@example.com'
+WHERE id IN (SELECT id FROM to_update);
+
+-- Step 3: Retrieve updated rows
+SELECT *
+FROM users
+WHERE id IN (SELECT id FROM to_update);
+```
 * * *
 
 ### 📝 Notes
@@ -189,9 +195,22 @@ Insert new rows and get them back immediately.
 
 ### ✅ **Preferred Method: Add a unique tracking column (e.g., UUID or timestamp)**
 
+```sql
+-- Step 1: Generate a unique ID or timestamp for tracking
+-- Example uses a timestamp; you could also use a UUID if supported
 
+-- Capture timestamp
+SET hivevar:insert_time = CURRENT_TIMESTAMP;
 
-`-- Step 1: Generate a unique ID or timestamp for tracking -- Example uses a timestamp; you could also use a UUID if supported  -- Capture timestamp SET hivevar:insert_time = CURRENT_TIMESTAMP;  -- Step 2: Insert new rows with tracking info INSERT INTO users (name, email, created_at) VALUES ('Alice', 'alice@example.com', '${hivevar:insert_time}');  -- Step 3: Retrieve inserted row(s) SELECT * FROM users WHERE created_at = '${hivevar:insert_time}';`
+-- Step 2: Insert new rows with tracking info
+INSERT INTO users (name, email, created_at)
+VALUES ('Alice', 'alice@example.com', '${hivevar:insert_time}');
+
+-- Step 3: Retrieve inserted row(s)
+SELECT *
+FROM users
+WHERE created_at = '${hivevar:insert_time}';
+```
 
 * * *
 
@@ -211,10 +230,19 @@ In Hive/SparkSQL:
 ### 💡 Tip: Use `uuid()` if available
 
 In SparkSQL, you can do this:
+```sql
+-- Generate UUID and assign to a variable (in PySpark, for example)
+val insertId = java.util.UUID.randomUUID().toString
 
+-- Then include it in your INSERT
+INSERT INTO users (name, email, insert_id)
+VALUES ('Alice', 'alice@example.com', '${insertId}');
 
-
-`-- Generate UUID and assign to a variable (in PySpark, for example) val insertId = java.util.UUID.randomUUID().toString  -- Then include it in your INSERT INSERT INTO users (name, email, insert_id) VALUES ('Alice', 'alice@example.com', '${insertId}');  -- Query inserted rows SELECT * FROM users WHERE insert_id = '${insertId}';`
+-- Query inserted rows
+SELECT *
+FROM users
+WHERE insert_id = '${insertId}';
+```
 
 * * *
  
@@ -225,10 +253,34 @@ Here’s a **PySpark example** that simulates `INSERT ... RETURNING` by adding a
 * * *
 
 ### 🐍 PySpark Code to Simulate `INSERT ... RETURNING`
+```sql
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import lit
+import uuid
 
+# Initialize Spark session
+spark = SparkSession.builder.appName("InsertReturningSimulation").getOrCreate()
 
-`from pyspark.sql import SparkSession from pyspark.sql.functions import lit import uuid  # Initialize Spark session spark = SparkSession.builder.appName("InsertReturningSimulation").getOrCreate()  # Generate a unique insert ID insert_id = str(uuid.uuid4())  # Prepare the new row as a DataFrame new_data = spark.createDataFrame([     ("Alice", "alice@example.com", insert_id) ], ["name", "email", "insert_id"])  # Append to the existing table (e.g., 'users') new_data.write.mode("append").insertInto("users")  # Simulate RETURNING by querying back the inserted row inserted_row = spark.sql(f"""     SELECT * FROM users     WHERE insert_id = '{insert_id}' """)  # Show the inserted row inserted_row.show()`
+# Generate a unique insert ID
+insert_id = str(uuid.uuid4())
 
+# Prepare the new row as a DataFrame
+new_data = spark.createDataFrame([
+    ("Alice", "alice@example.com", insert_id)
+], ["name", "email", "insert_id"])
+
+# Append to the existing table (e.g., 'users')
+new_data.write.mode("append").insertInto("users")
+
+# Simulate RETURNING by querying back the inserted row
+inserted_row = spark.sql(f"""
+    SELECT * FROM users
+    WHERE insert_id = '{insert_id}'
+""")
+
+# Show the inserted row
+inserted_row.show()
+```
 * * *
 
 ### ✅ Requirements
