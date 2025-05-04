@@ -117,3 +117,4 @@ WHEN NOT MATCHED THEN
 INSERT (customer_id, name, current_address, previous_address, start_date, end_date)
 VALUES (source.customer_id, source.name, source.address, NULL, current_date(), NULL);
  ```
+<https://github.com/bartosz25/data-engineering-design-patterns-book/tree/master/chapter-05/01-data-enrichment/01-static-joiner-data-at-rest>
