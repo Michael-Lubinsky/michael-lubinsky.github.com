@@ -32,7 +32,43 @@ VALUES (source.customer_id, source.name, source.address, GETDATE(), NULL)
 WHEN NOT MATCHED BY TARGET THEN
 INSERT (customer_id, name, address, start_date, end_date)
 VALUES (source.customer_id, source.name, source.address, GETDATE(), NULL);
-``` 
+```
+
+#### How to implement SCD Type 2 in Databricks?
+```
+1. Read Source and Target Tables
+
+source_df = spark.read.table("source_data")
+target_df = spark.read.table("dim_customer")
+
+2. Identify Changed Records
+
+Join source and target on customer_id, and filter where relevant fields have changed and is_current = true.
+
+3. Expire Old Records (Mark as Inactive)
+
+Use Delta Lake’s MERGE to set is_current = false and update end_date.
+
+MERGE INTO dim_customer AS tgt
+USING changed_records AS src
+ON tgt.customer_id = src.customer_id AND tgt.is_current = true
+WHEN MATCHED THEN 
+UPDATE SET tgt.is_current = false, tgt.end_date = current_date()
+
+4. Insert New Versions of Updated Records
+
+Add new rows with is_current = true, start_date = today, and end_date = null.
+
+5. Insert Completely New Records
+
+Detect records that don’t exist in the target (left_anti join), and insert them with the same structure.
+
+Result?
+ • You preserve full history
+ • The latest record is always marked as is_current = true
+ • Queries can filter on date ranges or just the active row
+```
+ 
 ### SCD Type 3 – Limited History
  In SCD Type 3, only the previous value is kept in an additional column.
 Use Case: Tracking a customer’s previous job title.
