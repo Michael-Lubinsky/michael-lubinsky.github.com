@@ -68,6 +68,128 @@ Result?
  • The latest record is always marked as is_current = true
  • Queries can filter on date ranges or just the active row
 ```
+
+
+### Type 2 (Add a new Row):
+
+A Type 2 SCD supports the versioning of dimension members. It includes columns that define the date range validity of the
+version (for example,  StartDate  and  EndDate ) and possibly a flag column (for example,  IsCurrent ) to easily filter by current
+dimension members.
+Current versions may define an empty end date (or 12/31/9999), which indicates that the row is the current version. The table
+must also define a surrogate key because the business key (in this instance, RepSourceID) won't be unique.
+
+Code to apply type 1 and 2 logic
+/*Logic to implement Type 1 and Type 2 updates can be complex, and there are various techniques you can use.
+
+For example, you could use a combination of UPDATE and INSERT statements asshown in the following code example:*/
+```sql
+-- Insert new customers
+INSERT INTO dbo.DimCustomer
+SELECT stg.CustomerNo,
+ stg.CustomerName,
+ stg.EmailAddress,
+ stg.Phone,
+ stg.StreetAddress
+FROM dbo.StageCustomers AS stg
+WHERE NOT EXISTS
+ (SELECT * FROM dbo.DimCustomer AS dim
+ WHERE dim.CustomerAltKey = stg.CustomerNo);
+
+-- Type 1 updates (name, email, phone)
+UPDATE dbo.DimCustomer
+SET CustomerName = stg.CustomerName,
+ EmailAddress = stg.EmailAddress,
+ Phone = stg.Phone
+FROM dbo.StageCustomers AS stg
+WHERE dbo.DimCustomer.CustomerAltKey = stg.CustomerNo;
+-- Type 2 updates (geographic address)
+INSERT INTO dbo.DimCustomer
+SELECT stg.CustomerNo AS CustomerAltKey,
+ stg.CustomerName,
+ stg.EmailAddress,
+ stg.Phone,
+ stg.StreetAddress,
+ stg.City,
+ stg.PostalCode,
+ stg.CountryRegion
+
+-- Instead of putting NULL for the End date, its better to put a future date
+
+FROM dbo.StageCustomers AS stg
+JOIN dbo.DimCustomer AS dim
+ON stg.CustomerNo = dim.CustomerAltKey
+AND stg.StreetAddress <> dim.StreetAddress;
+/*As an alternative to using multiple INSERT and UPDATE statement, you can use a single MERG
+E statement to perform an "upsert" operation to insert new records and update existing ones,
+as shown in the following example, which loads new product records and applies type 1 update
+s to existing products*/
+MERGE dbo.DimProduct AS tgt
+ USING (SELECT * FROM dbo.StageProducts) AS src
+ ON src.ProductID = tgt.ProductBusinessKey
+WHEN MATCHED THEN
+ UPDATE SET
+ tgt.ProductName = src.ProductName,
+ tgt.ProductCategory = src.ProductCategory
+ tgt.Color = src.Color,
+ tgt.Size = src.Size,
+ tgt.ListPrice = src.ListPrice,
+ tgt.Discontinued = src.Discontinued
+WHEN NOT MATCHED THEN
+ INSERT VALUES
+ (src.ProductID,
+ src.ProductName,
+ src.ProductCategory,
+ src.Color,
+ src.Size,
+ src.ListPrice,
+ src.Discontinued);
+
+/*Another way to load a combination of new and updated data into a dimension table is to use
+ 
+CREATE TABLE AS (CTAS) statement
+to create a new table that contains the existing rows from the dimension table and the new and updated records from the staging table.
+After creating the new table, you can delete or rename the current dimension table,
+and rename the new table to replace it.*/
+
+CREATE TABLE dbo.DimProductUpsert
+WITH
+(
+ DISTRIBUTION = REPLICATE,
+ CLUSTERED COLUMNSTORE INDEX
+)
+AS
+-- New or updated rows
+SELECT stg.ProductID AS ProductBusinessKey,
+ stg.ProductName,
+ stg.ProductCategory,
+ stg.Color,
+ stg.Size,
+ stg.ListPrice,
+ stg.Discontinued
+FROM dbo.StageProduct AS stg
+UNION ALL
+-- Existing rows
+SELECT dim.ProductBusinessKey,
+ dim.ProductName,
+ dim.ProductCategory,
+ dim.Color,
+ dim.Size,
+ dim.ListPrice,
+Untitled 24
+ dim.Discontinued
+FROM dbo.DimProduct AS dim
+WHERE NOT EXISTS
+( SELECT *
+ FROM dbo.StageProduct AS stg
+ WHERE stg.ProductId = dim.ProductBusinessKey
+);
+
+RENAME OBJECT dbo.DimProduct TO DimProductArchive;
+RENAME OBJECT dbo.DimProductUpsert TO DimProduct;
+```
+
+
+
  
 ### SCD Type 3 – Limited History
  In SCD Type 3, only the previous value is kept in an additional column.
