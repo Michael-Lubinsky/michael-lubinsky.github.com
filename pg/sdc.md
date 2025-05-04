@@ -146,14 +146,15 @@ WHEN NOT MATCHED THEN
  src.Size,
  src.ListPrice,
  src.Discontinued);
+```
+Another way to load a combination of new and updated data into a dimension table is to use
 
-/*Another way to load a combination of new and updated data into a dimension table is to use
- 
-CREATE TABLE AS (CTAS) statement
-to create a new table that contains the existing rows from the dimension table and the new and updated records from the staging table.
+CREATE TABLE AS (CTAS) statement to create a new table that contains the existing rows from the dimension table   
+and the new and updated records from the staging table.
 After creating the new table, you can delete or rename the current dimension table,
-and rename the new table to replace it.*/
+and rename the new table to replace it 
 
+```sql 
 CREATE TABLE dbo.DimProductUpsert
 WITH
 (
@@ -190,9 +191,6 @@ WHERE NOT EXISTS
 RENAME OBJECT dbo.DimProduct TO DimProductArchive;
 RENAME OBJECT dbo.DimProductUpsert TO DimProduct;
 ```
-
-
-
  
 ### SCD Type 3 – Limited History
  In SCD Type 3, only the previous value is kept in an additional column.
