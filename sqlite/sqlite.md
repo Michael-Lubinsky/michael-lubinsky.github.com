@@ -255,3 +255,5 @@ A full list of output modes can be seen like this:
      tcl       TCL list elements
 ```
 <https://til.simonwillison.net/sqlite/one-line-csv-operations>
+
+<https://github.com/tursodatabase/libsql>
