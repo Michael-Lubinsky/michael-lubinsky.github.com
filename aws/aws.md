@@ -1,3 +1,141 @@
+## what is a difference between Amanon SQS queue and Kafka?
+
+ 
+
+Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems, but they serve different purposes and have different architectures. Here's a concise comparison:
+
+* * *
+
+### **1\. Purpose & Use Cases**
+
+-   **Amazon SQS**:
+    
+    -   **Message queue** (point-to-point communication).
+        
+    -   Designed for **decoupling** components of a distributed system.
+        
+    -   Common use: triggering background jobs, task queues, simple event-driven workflows.
+        
+-   **Kafka**:
+    
+    -   **Distributed event streaming platform** (publish-subscribe model).
+        
+    -   Designed for **high-throughput, durable event streaming** and real-time analytics.
+        
+    -   Common use: real-time data pipelines, logs, stream processing, analytics.
+        
+
+* * *
+
+### **2\. Message Retention**
+
+-   **SQS**:
+    
+    -   Default retention up to **14 days** (standard queue).
+        
+    -   Once a message is consumed and deleted, it's gone.
+        
+-   **Kafka**:
+    
+    -   Messages can be retained **for a configured period or size**, regardless of whether they're consumed.
+        
+    -   Allows **replay** of messages.
+        
+
+* * *
+
+### **3\. Ordering**
+
+-   **SQS**:
+    
+    -   **Standard Queue**: No guaranteed order, possible duplicates.
+        
+    -   **FIFO Queue**: Guarantees **first-in-first-out** and exactly-once processing (but with lower throughput).
+        
+-   **Kafka**:
+    
+    -   Guarantees **ordering within a partition**.
+        
+
+* * *
+
+### **4\. Delivery Semantics**
+
+-   **SQS**:
+    
+    -   **At-least-once** delivery (you may need to handle duplicates).
+        
+    -   FIFO queues offer **exactly-once** within some constraints.
+        
+-   **Kafka**:
+    
+    -   Supports **at-least-once**, **at-most-once**, and with proper setup, **exactly-once** processing.
+        
+
+* * *
+
+### **5\. Throughput and Scalability**
+
+-   **SQS**:
+    
+    -   Highly scalable, **but throughput is lower** than Kafka.
+        
+    -   AWS manages scaling automatically.
+        
+-   **Kafka**:
+    
+    -   Extremely **high throughput**, scalable via partitions and broker nodes.
+        
+    -   You manage the scaling or use a managed service (e.g., Amazon MSK, Confluent Cloud).
+        
+
+* * *
+
+### **6\. Consumer Model**
+
+-   **SQS**:
+    
+    -   Consumers **pull** messages.
+        
+    -   Each message is delivered to **one consumer only** (unless using fan-out with SNS).
+        
+-   **Kafka**:
+    
+    -   Consumers **pull** messages, but allows **multiple consumers** (consumer groups) to read independently.
+        
+
+* * *
+
+### **7\. Durability and Reliability**
+
+-   **SQS**:
+    
+    -   Durable and reliable as a fully managed AWS service.
+        
+-   **Kafka**:
+    
+    -   Durable and fault-tolerant, but requires correct configuration and infrastructure if self-hosted.
+        
+
+* * *
+
+### **Summary Table**
+
+|Feature | Amazon SQS |  Apache Kafka |
+|Model  | Message Queue (P2P) | Event Stream (Pub/Sub)
+
+Retention |  Up to 14 days  | Configurable (time/size based)
+
+Ordering | FIFO or unordered | Ordered within partition
+
+Delivery | At-least-once / Exactly-once | Configurable
+
+Consumer Model| One message = one consumer | Multiple consumers possible
+
+Use Case | Decoupling apps, simple queues | Stream processing, analytics
+
+
+
 ```
 I’m happy to share that I’ve obtained a new certification: AWS Certified Data Engineer – Associate from Amazon Web Services (AWS)!
 
