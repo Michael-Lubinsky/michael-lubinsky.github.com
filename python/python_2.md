@@ -1,4 +1,4 @@
-## Python notes 2
+## Python notes continued
 
 ### @staticmethod 
 Use @staticmethod when you have a method inside a class 
