@@ -5,3 +5,61 @@ https://github.com/medialab/xan
 https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
+
+
+### https://devtoys.app/
+
+30 tools by default, and many more to be downloaded
+#### Converters
+ Cron Parser
+ Date
+ JSON Array to Table, CSV
+ JSON <> YAML
+ Number Base
+#### Text
+ Escape / Unescape
+ List Comparer
+ Markdown Preview
+ Analyzer & Utilities
+ Text Comparer
+#### Encoders / Decoders
+ Base64 Image
+ Base64 Text
+ Certificate
+ GZIP
+ HTML
+ JWT
+ QR Code
+ URL
+#### Formatters
+ JSON
+ SQL
+ XML
+#### Generators
+ Hash / Checksum
+ Lorem Ipsum
+ Password
+ UUID
+#### Graphic
+ Color Blind Simulator
+ Image Converter
+#### Testers
+ JSONPath
+ Regular Expression
+ XML / XSD
+#### Third party
+ Duplicate Detector
+ File Splitter
+ JSON Schema
+ JSON to PHP
+ JSON to C#
+ PNG Compressor
+ Randomizer
+ RESX Translator
+ RSA Generator
+ Semver Calculator
+ Text Delimiter
+ ULID Generator
+ XSD Generator
+ 
+ And many more on NuGet.org!
