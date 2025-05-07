@@ -39,7 +39,19 @@ df_final=df.groupBy(col("ID"),col("Name")).agg(collect_list(col('Marks')))
 display(df_final)
 ```
 
+### Partitioning + Bucketing in PySpark 
+```python
+orders_df.write \
+ .partitionBy("year") \
+ .bucketBy(4, "customer_id") \
+ .sortBy("customer_id") \
+ .saveAsTable("orders_partitioned_bucketed") 
 
+Here:
+.partitionBy("year") → Create a folder for each year
+.bucketBy(4, "customer_id") → Create 4 groups inside each partition
+.sortBy("customer_id") → Optional: Helps optimize even further!
+```
 ### rlike
 ```python
 from pyspark.sql.types import *
