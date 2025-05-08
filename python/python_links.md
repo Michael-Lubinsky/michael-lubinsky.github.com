@@ -8,6 +8,9 @@ https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/
 https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://github.com/EntilZha/PyFunctional
+
+
+https://realpython.com/python-loguru/  Loguru
  
 ### Decorators and other code snippets
 
