@@ -256,4 +256,8 @@ A full list of output modes can be seen like this:
 ```
 <https://til.simonwillison.net/sqlite/one-line-csv-operations>
 
+<https://antonz.org/install-sqlite-extension/> sqlite extensions
+
+<https://sqlpkg.org/>  sqlite extensions
+
 <https://github.com/tursodatabase/libsql>
