@@ -11,6 +11,8 @@ https://github.com/EntilZha/PyFunctional
 
 
 https://realpython.com/python-loguru/  Loguru
+
+https://connect.posit.cloud/ A cloud environment to easily showcase your Python and R content.
  
 ### Decorators and other code snippets
 
