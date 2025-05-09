@@ -13,6 +13,7 @@ https://github.com/mahmoud/boltons  useful libs
 
 https://github.com/jlevy/strif  string, file, and object utilities
 
+https://github.com/Erotemic/ubelt 
 
 https://realpython.com/python-loguru/  Loguru
 
