@@ -6,6 +6,7 @@ https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
 
+https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/
 
 ### https://devtoys.app/
 
