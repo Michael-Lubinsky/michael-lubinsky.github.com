@@ -9,6 +9,10 @@ https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://github.com/EntilZha/PyFunctional
 
+https://github.com/mahmoud/boltons  useful libs
+
+https://github.com/jlevy/strif  string, file, and object utilities
+
 
 https://realpython.com/python-loguru/  Loguru
 
