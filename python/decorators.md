@@ -105,7 +105,7 @@ This is called the least recently used (LRU) strategy.
 By default, the maxsize is set to 128. 
 If it is set to None, as our example, the LRU features are disabled and the cache can grow without bound.
 
- ###  @contextmanager decorator
+ ###  contextmanager decorator
  returns object with automatically created  __enter__() и __exit__()
 ```python
 
@@ -130,7 +130,6 @@ def set_environ(**kwargs):
 with set_environ(SCRAPY_CHECK='true'):
     for spidername in args or spider_loader.list():
         spidercls = spider_loader.load(spidername)
-
 ```
 
 ### Printing the inputs and outputs of each function
@@ -305,8 +304,60 @@ def main():
     load_data(transformed_data, target)
 ```
 
+### one more logging decorator
+```
+import logging
+import functools
 
+def log_calls(func=None, level=logging.INFO):
+    """Log function calls with arguments and return values."""
 
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            args_str = ", ".join([str(a) for a in args])
+            kwargs_str = ", ".join([f"{k}={v}" for k, v in kwargs.items()])
+            all_args = f"{args_str}{', ' if args_str and kwargs_str else ''}{kwargs_str}"
+
+            logging.log(level, f"Calling {func.__name__}({all_args})")
+            result = func(*args, **kwargs)
+            logging.log(level, f"{func.__name__} returned {result}")
+
+            return result
+        return wrapper
+
+    # Handle both @log_calls and @log_calls(level=logging.DEBUG)
+    if func is None:
+        return decorator
+    return decorator(func)
+```
+
+### memoization
+
+```python
+def memoize(func):
+    """Caches the return value of a function based on its arguments."""
+    cache = {}
+
+    def wrapper(*args, **kwargs):
+        # Create a key that uniquely identifies the function call
+        key = str(args) + str(kwargs)
+
+        if key not in cache:
+            cache[key] = func(*args, **kwargs)
+        return cache[key]
+
+    return wrapper
+
+@memoize
+def fibonacci(n):
+    """Calculate the nth Fibonacci number."""
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+```
+
+<https://www.kdnuggets.com/custom-python-decorator-patterns-worth-copy-pasting-forever>
  
 
 
