@@ -6,6 +6,9 @@ https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
 
+brew install poppler  
+pdftotext -layout your_file.pdf output.txt
+
 https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/
 
 ### https://devtoys.app/
