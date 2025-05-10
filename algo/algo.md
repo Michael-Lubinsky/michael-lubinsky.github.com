@@ -22,4 +22,10 @@ https://habr.com/ru/articles/904508/ dejkstra
 
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
+
+https://habr.com/ru/companies/ruvds/articles/850474/ Сравнение хранилищ данных AoS и SoA
+
+
+https://habr.com/ru/articles/850296/  Sorting
+
 https://habr.com/ru/articles/904130/
