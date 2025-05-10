@@ -6,6 +6,9 @@ https://habr.com/ru/articles/901190/
 
 https://habr.com/ru/articles/901190/
 
+#### Кнут, Моррис и Пратт  префикс-функцию
+
+https://habr.com/ru/articles/843376/
 
 #### Bloom filter
 
