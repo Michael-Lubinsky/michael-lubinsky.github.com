@@ -40,7 +40,10 @@ https://habr.com/ru/articles/904130/
 
 
 ### Find the maximum area of connected 0's in a 2D binary array. 
-The solution uses Depth-First Search (DFS) to explore connected regions of 0s.
+The solution uses Depth-First Search (DFS) to explore connected regions of 0s.  
+The function considers 4-directional connectivity (up, down, left, right).  
+To include diagonals (8 directions), you'd expand the DFS to check all 8 neighbors.  
+
 
 ```python
 def max_area_of_zeros(grid):
