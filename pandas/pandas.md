@@ -301,6 +301,9 @@ newdf2 = df.query("{0} == 'A A' & {1} == 'B B'".format(myvar1, myvar2))
 <!--
 ### Pandas and NumPy links
 
+https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-1-0efd0dedff75
+
+https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91
 
 https://python.plainenglish.io/35-pandas-tricks-to-save-in-your-list-a6120fed2cb4
 
