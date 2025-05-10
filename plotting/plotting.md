@@ -38,6 +38,8 @@ plt.show()
 
 <https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577>
 
+<https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91>
+
 ### Heatmap (Seaborn)
 ```python
 import matplotlib.pyplot as plt
