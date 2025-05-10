@@ -29,6 +29,16 @@ if invalid_rows.count() > 0:
 ```
 
 ### Find and drop duplicates
+
+dropDuplicates() in PySpark is used to remove duplicate rows from a DataFrame. 
+It can operate on all columns or a subset of columns.
+
+`df.dropDuplicates(subset=None, keep='first')`
+```
+subset: (Optional) A list of column names to consider when identifying duplicates. If None, all columns are considered.
+keep: (Optional) Specifies which duplicate row to keep. It can be 'first' (default), 'last', or False (to drop all duplicates).
+```
+
 ```python
 df \
 .groupby(['column1', 'column2']) \
@@ -39,7 +49,7 @@ df \
 
 df.dropDuplicates(['id', 'name']).show()
 
-
+# using Window: 
 
 from pyspark.sql.window import Window
 from pyspark.sql.functions import row_number, col
@@ -92,7 +102,7 @@ df_final=df.groupBy(col("ID"),col("Name")).agg(collect_list(col('Marks')))
 display(df_final)
 ```
 
-# Explicit broadcast to avoid shuffle joins
+### Explicit broadcast to avoid shuffle joins
 ```python
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
 
