@@ -20,6 +20,8 @@ https://habr.com/ru/articles/856166/  Алгоритм Дейкстры
 
 https://habr.com/ru/articles/904508/ dejkstra
 
+https://habr.com/ru/articles/849894/ Поиск соседей в двумерном массиве
+
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
 
