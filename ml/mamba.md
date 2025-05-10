@@ -105,7 +105,7 @@ https://habr.com/ru/articles/874592/
 
 https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
 
-
+MLFlow https://habr.com/ru/companies/pgk/articles/904078/
 
 ### Outliers and Anomaly  detection
 
