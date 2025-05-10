@@ -64,6 +64,9 @@ https://www.youtube.com/watch?v=tyWpb8E4fqo  10 python libs
 
 https://habr.com/ru/articles/562380/ Statistics
 
+
+How python manage memory: https://habr.com/ru/companies/ibs/articles/905376/
+
 ### Discrete event simulation SimPy, Salabim
 <https://en.wikipedia.org/wiki/Discrete-event_simulation>
 <https://simpy.readthedocs.io/en/latest/>
