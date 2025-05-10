@@ -18,7 +18,6 @@ To safely tail a growing file in real-time, line by line, and ensure only fully 
 ```bash
 #!/bin/bash
 
-# Path to the growing file
 INPUT_FILE="/path/to/growing_file.txt"
 
 # Path to the processing program
