@@ -10,6 +10,31 @@ while read path action file; do
 done
 ```
 
+#### Processing ever growing text file
+
+To safely tail a growing file in real-time, line by line, and ensure only fully written lines  
+(i.e., those ending with \n) are processed, you can use a Bash script like the following:  
+
+```bash
+#!/bin/bash
+
+# Path to the growing file
+INPUT_FILE="/path/to/growing_file.txt"
+
+# Path to the processing program
+PROCESSOR="/path/to/your_processor_program"
+
+# Read file in real-time using tail -n0 to avoid historical content
+tail -n0 -F "$INPUT_FILE" | while IFS= read -r line; do
+    # Only process complete lines (i.e., those ending with \n)
+    if [[ -n "$line" ]]; then
+        # Invoke external program with line as input
+        "$PROCESSOR" "$line"
+    fi
+done
+```
+
+
 ### jq
 ```bash
 #!/bin/bash
