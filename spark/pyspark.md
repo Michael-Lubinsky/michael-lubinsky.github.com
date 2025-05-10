@@ -1,4 +1,34 @@
-### find and drop duplicates
+### Read from S3
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+spark = SparkSession.builder.appName("IngestWithSchema").getOrCreate()
+
+schema = StructType([
+    StructField("order_id", StringType(), True),
+    StructField("customer_id", StringType(), True),
+    StructField("product_id", StringType(), True),
+    StructField("quantity", IntegerType(), True)
+])
+
+df = spark.read.schema(schema).json("s3a://ecommerce-bucket/orders/")
+df.show(5)
+```
+### Data quality check
+```python
+from pyspark.sql.functions import col
+
+invalid_rows = df.filter(
+    col("policy_number").isNull() | (col("premium") <= 0)
+)
+
+if invalid_rows.count() > 0:
+    invalid_rows.write.mode("overwrite").json("s3a://dq-logs/errors/")
+    raise ValueError("Data Quality Issues Found: Null policy numbers or non-positive premium values")
+```
+
+### Find and drop duplicates
 ```python
 df \
 .groupby(['column1', 'column2']) \
@@ -37,6 +67,18 @@ from pyspark.sql.functions import col,sum
 df_final=df.agg(sum(col("salary")).alias("total_salary")).first()[0]
 ```
 
+
+
+### Calculate the monthly average balance for banking customers.
+```python
+from pyspark.sql.functions import avg, month
+from pyspark.sql.window import Window
+
+windowSpec = Window.partitionBy("customer_id", month("date"))
+
+df = df.withColumn("monthly_avg_balance", avg("balance").over(windowSpec))
+```
+
 ### collect_list, collect_set
 ```python
 data=[(1,'Watson',34),(1,'Watson',40),(1,'Watson',34),(2,'Alex',45),(2,'Alex',50)]
@@ -50,6 +92,23 @@ df_final=df.groupBy(col("ID"),col("Name")).agg(collect_list(col('Marks')))
 display(df_final)
 ```
 
+# Explicit broadcast to avoid shuffle joins
+```python
+spark.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
+
+optimized_df = large_df.join(
+    small_df.hint("broadcast"), on="product_id", how="inner"
+)
+```
+
+### Write to Partitioned Parquet with Overwrite Mode
+```python
+output_path = "s3a://reports-bucket/daily/"
+
+report_df.write.partitionBy("region", "report_date") \
+    .mode("overwrite") \
+    .parquet(output_path)
+```
 ### Partitioning + Bucketing in PySpark 
 ```python
 orders_df.write \
@@ -135,8 +194,33 @@ df=df.withColumn("dates",to_date(col("dates")))
 df.groupBy(col("year"),col("week_num")).agg(min(col("dates")).alias("start_day_week"),
    max(col("dates")).alias("end_day_week")).display()
 ```
+### Slow changing dimentions type 2 
+```
+from pyspark.sql.functions import lit, current_date
 
+source_df = source_df.withColumn("start_date", current_date())
+source_df = source_df.withColumn("end_date", lit(None).cast("date"))
 
+# Assume `customer_id` is the business key
+changes_df = source_df.join(target_df, ["customer_id"], "left_anti")
+
+final_df = target_df.unionByName(changes_df)
+```
+
+### Logging and Exception Handling in PySpark Jobs
+```python
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger("DataPipelineLogger")
+
+try:
+    df = spark.read.parquet("s3a://input-bucket/data/")
+    logger.info("Data ingestion successful")
+except Exception as e:
+    logger.error(f"Error occurred: {e}")
+    raise
+```
 
 ### Example
 
