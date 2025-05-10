@@ -30,4 +30,6 @@ https://habr.com/ru/companies/ruvds/articles/850474/ Сравнение хран
 
 https://habr.com/ru/articles/850296/  Sorting
 
+https://habr.com/ru/companies/ruvds/articles/845652/  поиск собственных значений матриц
+
 https://habr.com/ru/articles/904130/
