@@ -19,6 +19,9 @@ https://www.kaggle.com/discussions/getting-started/390402
 ML System design 
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
 
+https://habr.com/ru/articles/900788/  ML project setup
+
+
 Ads clicks prediction
 
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/mlsd-ads-ranking.md
