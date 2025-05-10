@@ -1,4 +1,4 @@
-### duplicates
+### find and drop duplicates
 ```python
 df \
 .groupby(['column1', 'column2']) \
@@ -8,6 +8,17 @@ df \
 .show()
 
 df.dropDuplicates(['id', 'name']).show()
+
+
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import row_number, col
+
+windowSpec = Window.partitionBy("transaction_id").orderBy(col("timestamp").desc())
+
+unique_df = df.withColumn("row_num", row_number().over(windowSpec)) \
+             .filter(col("row_num") == 1) \
+             .drop("row_num")
 ```
 
 ### sum(column)
