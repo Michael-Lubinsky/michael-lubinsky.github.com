@@ -1,5 +1,7 @@
 pip install confluent-kafka
 
+<!-- https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de -->
+
 #### Kafka Producer:
 Example 1
 ```python
