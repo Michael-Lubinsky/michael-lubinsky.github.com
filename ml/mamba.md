@@ -112,6 +112,8 @@ MLFlow https://habr.com/ru/companies/pgk/articles/904078/
 
 ### Outliers and Anomaly  detection
 
+https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/
+
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
 алгоритмы HBOS и ECOD,  и их реализации в библиотеке PyOD: 
