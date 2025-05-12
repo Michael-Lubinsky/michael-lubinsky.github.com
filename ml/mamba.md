@@ -129,6 +129,10 @@ https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
 https://github.com/alteryx/featuretools Feature Engineering
 
+### Comp vision
+
+https://habr.com/ru/articles/908168/
+
 ### Mamba
 https://habr.com/ru/articles/786278/
 
