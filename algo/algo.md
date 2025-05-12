@@ -9,6 +9,10 @@ https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 
 https://neetcode.io/roadmap
 
+### Stack for solving interview
+
+https://habr.com/ru/articles/904130/
+
 #### Prefix sums 
 
 https://habr.com/ru/articles/901190/
