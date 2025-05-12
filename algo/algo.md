@@ -1,5 +1,8 @@
 ### Algorithms
 
+https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
+
+
 https://github.com/tayllan/awesome-algorithms
 
 https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
