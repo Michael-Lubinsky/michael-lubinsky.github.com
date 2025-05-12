@@ -92,6 +92,8 @@ https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-p
 
 ### EDA
 
+https://github.com/ydataai/ydata-profiling
+
 https://realpython.com/python-for-data-analysis/
 
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
