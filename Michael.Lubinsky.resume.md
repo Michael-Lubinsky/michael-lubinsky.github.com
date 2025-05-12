@@ -11,9 +11,9 @@ Adept at transforming complex data into actionable insights through data visuali
 ### Technical Skills
 - Big Data: Apache Spark, Hadoop, Hive, Kafka, Databricks, Snowflake
 - Real-time Processing: Apache Flink, Apache Spark Structured Streaming
-- Databases: PostgreSQL, MySQL, Amazon Redshift, Presto, Druid
+- Databases: PostgreSQL, MySQL, Amazon Redshift, Trino, Druid
 - Programming Languages: SQL, Python, Java, Scala, C/C++, Bash
-- Data Engineering Tools: Apache Airflow,  REST API development
+- Data Engineering: Apache Airflow, dbt, Iceberg, Unity Catalog, REST API development
 - Cloud Platforms: AWS (S3, EMR, RDS), Azure, Google Cloud Platform
 - Data Visualization: Looker, Tableau, Superset, Grafana
 
@@ -24,14 +24,14 @@ Adept at transforming complex data into actionable insights through data visuali
 - Designed and deployed ETL pipelines using Apache Airflow, Databricks, and AWS.
 - Created the logical and physical data models for Data warehouse and Data Lakes.
 - Optimized complex SQL queries and improved query performance by analyzing and tuning execution plans.
-- Developed anomaly detection algorithms for time-series data using NumPy and Pandas.
+- Developed anomaly detection algorithms for time-series data using Python, NumPy and Pandas.
 - Collaborated with cross-functional teams on project designs.
-- Built dashboards in Grafana and Tableau.
+- Built dashboards using Grafana and Tableau.
 
 ### Roku — San Jose, CA
 #### Senior Data Engineer (Apr 2020 – Dec 2022)
 
-- Built and maintained data pipelines using Apache Airflow, Apache Spark and SQL to track and analyze user behavior (click stream) across Roku devices.
+- Built and maintained data pipelines using Apache Airflow, Apache Spark, Python and SQL to track and analyze user behavior (click stream) across Roku devices.
 - Delivered A/B testing framework and deployed machine learning models.
 - Designed star schema models for data warehouse.
 - Optimized data partitioning strategies resulting in a 35% improvement in query performance.
@@ -43,7 +43,7 @@ Adept at transforming complex data into actionable insights through data visuali
 
 - Architected IoT data acquisition pipelines using MQTT and Kafka, handling >10K device messages daily.
 - Built SQL-based materialized views and stored procedures for PostgreSQL.
-- Implemented scalable anomaly detection algorithms to identify faults in IoT device behavior.
+- Implemented scalable anomaly detection algorithms using Python to identify faults in IoT device behavior.
 - Managed Docker environments and automated deployments on AWS infrastructure.
 
 ### Apple — Cupertino, CA
