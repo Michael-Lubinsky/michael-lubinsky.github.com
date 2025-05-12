@@ -5,6 +5,8 @@ https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp
 
 https://github.com/tayllan/awesome-algorithms
 
+https://habr.com/ru/articles/879914/ interview
+
 https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 
 https://neetcode.io/roadmap
