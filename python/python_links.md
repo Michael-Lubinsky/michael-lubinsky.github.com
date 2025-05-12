@@ -54,6 +54,8 @@ https://habr.com/ru/companies/otus/articles/888974/ Type Annotations
 
  https://habr.com/ru/articles/901324/
 
+ https://habr.com/ru/articles/883390/
+
 ### Pipelines
 
 https://hamilton.dagworks.io/en/latest/
