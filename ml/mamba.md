@@ -124,6 +124,9 @@ https://medium.com/pythoneers/hidden-gems-in-outlier-detection-3-powerful-lesser
 
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
+
+https://github.com/alteryx/featuretools Feature Engineering
+
 ### Mamba
 https://habr.com/ru/articles/786278/
 
