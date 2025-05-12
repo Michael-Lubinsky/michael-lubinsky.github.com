@@ -1,5 +1,7 @@
 ### Algorithms
 
+https://github.com/tayllan/awesome-algorithms
+
 https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 #### Prefix sums 
 
