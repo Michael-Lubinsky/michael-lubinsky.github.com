@@ -1097,119 +1097,52 @@ Fully autoscaled
 
 ### 4\. **Integration & Extensibility**
 
-Integration | Cloud Composer (Airflow) | Workflows
-|-------|----------------|----------|
-BigQuery, Dataflow, GCS, etc.
+| Integration                   | Cloud Composer (Airflow) | Workflows                    |
+| ----------------------------- | ------------------------ | ---------------------------- |
+| BigQuery, Dataflow, GCS, etc. | ✅ Built-in operators     | ✅ Via HTTP API calls         |
+| Third-party APIs              | ✅ Possible, more complex | ✅ Native in workflows        |
+| Cloud Functions / Pub/Sub     | ✅ Good via sensors       | ✅ Excellent (event triggers) |
 
-✅ Built-in operators
-
-✅ Via HTTP API calls
-
-Third-party APIs
-
-✅ Possible, more complex
-
-✅ Native in workflows
-
-Cloud Functions / Pub/Sub
-
-✅ Good via sensors
-
-✅ Excellent (event triggers)
 
 * * *
 
 ### 5\. **Pricing Model**
 
-Model | Cloud Composer | Workflows
-|-------|----------------|----------|
-Cost Basis
+| Model           | Cloud Composer                               | Workflows                       |
+| --------------- | -------------------------------------------- | ------------------------------- |
+| Cost Basis      | Environment uptime + resources + GKE cluster | Per execution + step count      |
+| Free Tier       | No free tier                                 | Yes — 5,000 steps/month free    |
+| Cost Efficiency | Expensive for low-frequency tasks            | Cheap for lightweight workflows |
 
-Environment uptime + resources + GKE cluster
-
-Per execution + step count
-
-Free Tier
-
-No free tier
-
-Yes — 5,000 steps/month free
-
-Cost Efficiency
-
-Expensive for low-frequency tasks
-
-Cheap for lightweight workflows
 
 * * *
 
 ## 🧪 Example Use Cases
 
-Use Case
+| Use Case                                     | Recommended Tool |
+| -------------------------------------------- | ---------------- |
+| ETL pipeline: GCS → Dataflow → BigQuery      | ✅ Cloud Composer |
+| Orchestrating Cloud Functions                | ✅ Workflows      |
+| Automating ML pipeline with training + eval  | ✅ Cloud Composer |
+| Calling multiple external APIs conditionally | ✅ Workflows      |
+| Real-time API event → log → notify           | ✅ Workflows      |
 
-Recommended Tool
-
-ETL pipeline: GCS → Dataflow → BigQuery
-
-✅ Cloud Composer
-
-Orchestrating Cloud Functions
-
-✅ Workflows
-
-Automating ML pipeline with training + eval
-
-✅ Cloud Composer
-
-Calling multiple external APIs conditionally
-
-✅ Workflows
-
-Real-time API event → log → notify
-
-✅ Workflows
 
 * * *
 
 ## 🏁 **Summary**
 
-Feature/Focus
 
-**Cloud Composer**
 
-**Google Cloud Workflows**
 
-Orchestration Type
+| Feature/Focus       | **Cloud Composer**                | **Google Cloud Workflows**        |
+| ------------------- | --------------------------------- | --------------------------------- |
+| Orchestration Type  | Data pipelines & batch            | Microservices, APIs, event-driven |
+| Developer Skill Fit | Data engineers, Python users      | Cloud developers, low-code users  |
+| Infrastructure      | Managed Airflow on GKE            | Fully serverless                  |
+| Setup Time          | Minutes to hours                  | Seconds                           |
+| Pricing             | Medium to high (persistent infra) | Low (pay-per-use)                 |
 
-Data pipelines & batch
-
-Microservices, APIs, event-driven
-
-Developer Skill Fit
-
-Data engineers, Python users
-
-Cloud developers, low-code users
-
-Infrastructure
-
-Managed Airflow on GKE
-
-Fully serverless
-
-Setup Time
-
-Minutes to hours
-
-Seconds
-
-Pricing
-
-Medium to high (persistent infra)
-
-Low (pay-per-use)
-
-* * *
 
 ### ✅ **Choose Cloud Composer if:**
 
