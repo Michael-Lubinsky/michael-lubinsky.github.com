@@ -633,17 +633,9 @@ Excellent (QuickSight, Tableau, Power BI)
 Feature | **BigQuery** | **Redshift**
 |--------|------------|---------------|
 
-**Built-in ML**
+**Built-in ML** | Yes (BigQuery ML — SQL-based ML) | Limited (integrates with SageMaker)
 
-Yes (BigQuery ML — SQL-based ML)
-
-Limited (integrates with SageMaker)
-
-**AI Features**
-
-Native model training in SQL
-
-External via Redshift ML (calls SageMaker)
+**AI Features** | Native model training in SQL | External via Redshift ML (calls SageMaker)
 
 ✅ **Advantage**: **BigQuery**, for SQL-based machine learning without leaving the warehouse.
 
@@ -651,74 +643,39 @@ External via Redshift ML (calls SageMaker)
 
 ### ✅ **When to Choose What**
 
-Use Case
+| Use Case | Recommended Platform | 
+|--------|------------|---------------|
+Ad hoc queries on large datasets | **BigQuery**  
+Fully serverless, no cluster management| **BigQuery**
 
-Recommended Platform
+Tight AWS ecosystem integration | **Redshift**
 
-Ad hoc queries on large datasets
+High concurrency + predictable workloads | **Redshift (with tuning)**
 
-**BigQuery**
+SQL-based ML modeling | **BigQuery**
 
-Fully serverless, no cluster management
-
-**BigQuery**
-
-Tight AWS ecosystem integration
-
-**Redshift**
-
-High concurrency + predictable workloads
-
-**Redshift (with tuning)**
-
-SQL-based ML modeling
-
-**BigQuery**
-
-Real-time data ingestion & analysis
-
-**BigQuery**
+Real-time data ingestion & analysis | **BigQuery**
 
 * * *
 
 ### 🏁 Summary
 
-Feature
-
-**BigQuery**
-
-**Amazon Redshift**
-
-**Architecture**
-
-Serverless
-
-Managed cluster-based
-
-**Cost Efficiency**
+Feature | **BigQuery** | **Amazon Redshift**
+|--------|------------|---------------|
+**Architecture** | Serverless |  Managed cluster-based 
+| **Cost Efficiency** | 
 
 Best for bursty / sporadic usage
 
 Best for steady-state usage
 
-**ML Integration**
+**ML Integration** | Built-in (BigQuery ML) | External (SageMaker)
 
-Built-in (BigQuery ML)
+**Performance Optimization** | Automatic | Manual (keys, distribution)
 
-External (SageMaker)
+**User Experience** | Simple & fast | More control, more complexity
 
-**Performance Optimization**
-
-Automatic
-
-Manual (keys, distribution)
-
-**User Experience**
-
-Simple & fast
-
-More control, more complexity
-
+### Dataflow** and **Dataproc
 
 **Dataflow** and **Dataproc** are two different Google Cloud services for processing large-scale data — but they serve different use cases and are built on different paradigms:
 
@@ -812,12 +769,8 @@ User-managed or semi-managed clusters
 
 ## ⚖️ **When to Use Which?**
 
-Use Case / Factor
-
-**Choose Dataflow**
-
-**Choose Dataproc**
-
+|Use Case / Facto | **Choose Dataflow** | **Choose Dataproc** |
+|-----------------|---------------------|---------------------|
 Real-time stream processing
 
 ✅ Ideal
@@ -871,15 +824,8 @@ Pay-per-cluster
 
 * * *
 
-Would you like a **side-by-side code example** or help deciding which fits your pipeline?
+ 
 
-4o
-
-##### You said:
-
-What is an equivalent for Apache Airflow in GCP?
-
-###### ChatGPT said:
 
 The **closest equivalent to Apache Airflow** in **Google Cloud Platform (GCP)** is:
 
@@ -1031,23 +977,11 @@ It’s perfect if you:
 
 ## 🧠 **High-Level Summary**
 
-Feature
+Feature | **Cloud Composer (Apache Airflow)** | **Google Cloud Workflows**
+|--------|------------------------------------|---------------------------|
+**Best For** | Complex, data-oriented workflows | Lightweight, event-driven workflows
 
-**Cloud Composer (Apache Airflow)**
-
-**Google Cloud Workflows**
-
-**Best For**
-
-Complex, data-oriented workflows
-
-Lightweight, event-driven workflows
-
-**Programming**
-
-Python-based DAGs
-
-YAML / JSON-like DSL
+**Programming** | Python-based DAGs | YAML / JSON-like DSL
 
 **Infrastructure**
 
@@ -1073,12 +1007,8 @@ Event-driven, microservices, APIs
 
 ### 1\. **Use Case Focus**
 
-Area
-
-Cloud Composer
-
-Workflows
-
+| Area | Cloud Composer | Workflows |
+|--------|-------------|---------------------------|
 Data pipelines
 
 ✅ Ideal (BigQuery, Dataflow, etc.)
@@ -1113,12 +1043,8 @@ Real-time workflows
 
 ### 2\. **Programming Model**
 
-Feature
-
-Cloud Composer
-
-Workflows
-
+Feature | Cloud Composer |  Workflows
+|-------|----------------|----------|
 Language
 
 Python (Airflow DAGs)
@@ -1147,12 +1073,8 @@ Built-in (`retry`, `timeout`, etc.)
 
 ### 3\. **Execution & Performance**
 
-Feature
-
-Cloud Composer
-
-Workflows
-
+|Feature | Cloud Composer | Workflows |
+|-------|----------------|----------|
 Cold start latency
 
 1–2 minutes (GKE startup)
@@ -1175,12 +1097,8 @@ Fully autoscaled
 
 ### 4\. **Integration & Extensibility**
 
-Integration
-
-Cloud Composer (Airflow)
-
-Workflows
-
+Integration | Cloud Composer (Airflow) | Workflows
+|-------|----------------|----------|
 BigQuery, Dataflow, GCS, etc.
 
 ✅ Built-in operators
@@ -1203,12 +1121,8 @@ Cloud Functions / Pub/Sub
 
 ### 5\. **Pricing Model**
 
-Model
-
-Cloud Composer
-
-Workflows
-
+Model | Cloud Composer | Workflows
+|-------|----------------|----------|
 Cost Basis
 
 Environment uptime + resources + GKE cluster
