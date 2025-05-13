@@ -127,19 +127,15 @@ Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging system
 
 ### **Summary Table**
 
-|Feature | Amazon SQS |  Apache Kafka |
-|--------|------------|---------------|
-|Model  | Message Queue (P2P) | Event Stream (Pub/Sub)
+| Feature        | Amazon SQS                     | Apache Kafka                   |
+| -------------- | ------------------------------ | ------------------------------ |
+| Model          | Message Queue (P2P)            | Event Stream (Pub/Sub)         |
+| Retention      | Up to 14 days                  | Configurable (time/size based) |
+| Ordering       | FIFO or unordered              | Ordered within partition       |
+| Delivery       | At-least-once / Exactly-once   | Configurable                   |
+| Consumer Model | One message = one consumer     | Multiple consumers possible    |
+| Use Case       | Decoupling apps, simple queues | Stream processing, analytics   |
 
-Retention |  Up to 14 days  | Configurable (time/size based)
-
-Ordering | FIFO or unordered | Ordered within partition
-
-Delivery | At-least-once / Exactly-once | Configurable
-
-Consumer Model| One message = one consumer | Multiple consumers possible
-
-Use Case | Decoupling apps, simple queues | Stream processing, analytics
 
 
 
