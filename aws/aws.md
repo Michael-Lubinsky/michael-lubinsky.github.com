@@ -1,4 +1,10 @@
-## what is a difference between Amanon SQS queue and Kafka?
+### Prompt
+
+Please output the Markdown table inside triple backticks, using markdown syntax highlighting, so I can copy and paste it easily into a .md file.
+
+
+
+## What is a difference between Amanon SQS queue and Kafka?
 
  
 
