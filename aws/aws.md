@@ -1102,29 +1102,12 @@ In Apache Spark, **RDD** (Resilient Distributed Dataset) and **DataFrame** are t
 
 ### 🔹 1. **Definition**
 
-Feature
+| Feature       | RDD                               | DataFrame                                    |
+| ------------- | --------------------------------- | -------------------------------------------- |
+| **Type**      | Low-level API                     | High-level API                               |
+| **Structure** | Distributed collection of objects | Distributed collection of rows with a schema |
+| **Schema**    | No schema (unstructured)          | Has a schema (structured)                    |
 
-RDD
-
-DataFrame
-
-**Type**
-
-Low-level API
-
-High-level API
-
-**Structure**
-
-Distributed collection of objects
-
-Distributed collection of rows with a schema
-
-**Schema**
-
-No schema (unstructured)
-
-Has a schema (structured)
 
 * * *
 
@@ -1178,21 +1161,12 @@ Columns accessed by name (less compile-time checking)
 
 ### 🔹 5. **Use Cases**
 
-RDD
+| RDD                                            | DataFrame                                                       |
+| ---------------------------------------------- | --------------------------------------------------------------- |
+| When low-level transformations are needed      | When you need performance and SQL-like queries                  |
+| When working with unstructured data            | Ideal for structured/semi-structured data (e.g., JSON, Parquet) |
+| When needing full control over data processing | When productivity and performance are priorities                |
 
-DataFrame
-
-When low-level transformations are needed
-
-When you need performance and SQL-like queries
-
-When working with unstructured data
-
-Ideal for structured/semi-structured data (e.g., JSON, Parquet)
-
-When needing full control over data processing
-
-When productivity and performance are priorities
 
 * * *
 
@@ -1200,51 +1174,26 @@ When productivity and performance are priorities
 
 You can convert between RDD and DataFrame:
 
-python
 
-CopyEdit
-
-`# From RDD to DataFrame (Python) df = rdd.toDF(schema)  # From DataFrame to RDD rdd = df.rdd`
+```python
+# From RDD to DataFrame (Python)
+df = rdd.toDF(schema) 
+# From DataFrame to 
+RDD rdd = df.rdd
+```
 
 * * *
 
 ### ✅ Summary
 
-Feature
+| Feature           | RDD                            | DataFrame                        |
+| ----------------- | ------------------------------ | -------------------------------- |
+| Abstraction level | Low                            | High                             |
+| Performance       | Slower                         | Faster                           |
+| Type safety       | Yes (Scala/Java)               | No (Python/Scala)                |
+| Optimization      | Manual                         | Automatic                        |
+| Use case          | Custom processing, legacy code | Analytics, ETL, SQL-like queries |
 
-RDD
-
-DataFrame
-
-Abstraction level
-
-Low
-
-High
-
-Performance
-
-Slower
-
-Faster
-
-Type safety
-
-Yes (Scala/Java)
-
-No (Python/Scala)
-
-Optimization
-
-Manual
-
-Automatic
-
-Use case
-
-Custom processing, legacy code
-
-Analytics, ETL, SQL-like queries
 
 * * *
 
@@ -1289,11 +1238,14 @@ Let me know your Spark context (e.g., Python, Scala, Databricks), and I can tail
 
 Add a random prefix or suffix to the skewed key to artificially distribute the load across partitions.
 
-python
+```python
+# Before salting
+skewed_df = df.filter(df["key"] == "hot_key")
 
-CopyEdit
-
-`# Before salting skewed_df = df.filter(df["key"] == "hot_key")  # After salting (example in PySpark) import random df = df.withColumn("salted_key", concat(df["key"], lit("_"), lit(random.randint(0, 10))))`
+# After salting (example in PySpark)
+import random
+df = df.withColumn("salted_key", concat(df["key"], lit("_"), lit(random.randint(0, 10))))
+```
 
 Then, join using `salted_key` instead of `key`.
 
@@ -1310,11 +1262,13 @@ If only a few keys are skewed, treat them differently:
 -   Combine results afterward.
     
 
-python
+```python
+# Pseudo-strategy
+skewed = df.filter("key = 'skewed_value'")
+normal = df.filter("key != 'skewed_value'")
 
-CopyEdit
-
-`# Pseudo-strategy skewed = df.filter("key = 'skewed_value'") normal = df.filter("key != 'skewed_value'")  # Handle them separately and then union`
+# Handle them separately and then union
+```
 
 * * *
 
@@ -1322,9 +1276,7 @@ CopyEdit
 
 If one side of the join is small, broadcast it to all worker nodes to avoid shuffle altogether.
 
-python
-
-CopyEdit
+ 
 
 `from pyspark.sql.functions import broadcast df_large.join(broadcast(df_small), "key")`
 
@@ -1334,9 +1286,7 @@ CopyEdit
 
 Manually repartition the data to try to balance it better.
 
-python
 
-CopyEdit
 
 `df.repartition("key")  # Caution: might worsen performance if skew still exists`
 
@@ -1346,9 +1296,6 @@ CopyEdit
 
 Increase the number of shuffle partitions:
 
-python
-
-CopyEdit
 
 `spark.conf.set("spark.sql.shuffle.partitions", "200")  # default is 200, increase if needed`
 
@@ -1373,17 +1320,13 @@ Use a custom partitioner to better distribute skewed keys, especially in RDD-bas
 
 ### ✅ Summary Table
 
-Fix | When to Use | Pros | Cons
-
-Salting | Small number of skewed keys|  Simple, effective | Needs custom logic
-
-Broadcast Join | One table is small | No shuffle|  Doesn't scale for large tables
-
-Repartitioning | Moderate skew Easy to try Not always effective
-
-Skewed Join | Handling Known skewed keys Very efficient Complex to manage
-
-Custom Partitioner | Using RDDs Full control | Needs careful tuning
+| Fix                  | When to Use                 | Pros              | Cons                           |
+| -------------------- | --------------------------- | ----------------- | ------------------------------ |
+| Salting              | Small number of skewed keys | Simple, effective | Needs custom logic             |
+| Broadcast Join       | One table is small          | No shuffle        | Doesn't scale for large tables |
+| Repartitioning       | Moderate skew               | Easy to try       | Not always effective           |
+| Skewed Join Handling | Known skewed keys           | Very efficient    | Complex to manage              |
+| Custom Partitioner   | Using RDDs                  | Full control      | Needs careful tuning           |
 
 
 
