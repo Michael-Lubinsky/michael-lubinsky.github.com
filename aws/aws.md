@@ -226,17 +226,14 @@ https://lnkd.in/ggqBu-Vj
 
 ### 🧱 **1\. Core Services and Breadth**
 
-Feature **AWS** **GCP**
+| Feature            | **AWS**                         | **GCP**                                    |
+| ------------------ | ------------------------------- | ------------------------------------------ |
+| **Compute**        | EC2, Lambda, ECS, EKS, etc.     | Compute Engine, Cloud Functions, GKE       |
+| **Storage**        | S3, EBS, EFS                    | Cloud Storage, Persistent Disks, Filestore |
+| **Databases**      | RDS, DynamoDB, Aurora, Redshift | Cloud SQL, Firestore, BigQuery, Spanner    |
+| **AI/ML Services** | SageMaker, Rekognition, Lex     | Vertex AI, AutoML, TPUs, BigQuery ML       |
+| **Big Data**       | EMR, Glue, Redshift             | BigQuery, Dataflow, Dataproc               |
 
-**Compute** | EC2, Lambda, ECS, EKS, etc.   | Compute Engine, Cloud Functions, GKE
-
-**Storage** | S3, EBS, EFS | Cloud Storage, Persistent Disks, Filestore
-
-**Databases** | RDS, DynamoDB, Aurora, Redshift |  Cloud SQL, Firestore, BigQuery, Spanner
-
-**AI/ML Services** | SageMaker, Rekognition, Lex | Vertex AI, AutoML, TPUs, BigQuery ML
-
-**Big Data** | EMR, Glue, Redshift | BigQuery, Dataflow, Dataproc
 
 🔸 **Summary**:
 
@@ -249,15 +246,13 @@ Feature **AWS** **GCP**
 
 ### 💲 **2\. Pricing**
 
-|Area | **AWS**  | **GCP**
-|--------|------------|---------------|
-**Pricing Model** | Pay-as-you-go, reserved, spot | Pay-as-you-go, sustained-use discounts
+| Area                    | **AWS**                       | **GCP**                                   |
+| ----------------------- | ----------------------------- | ----------------------------------------- |
+| **Pricing Model**       | Pay-as-you-go, reserved, spot | Pay-as-you-go, sustained-use discounts    |
+| **Free Tier**           | Yes, 12-month + always free   | Yes, always free + generous trial credits |
+| **Sustained Discounts** | Limited                       | Automatic & more generous                 |
+| **Preemptible/Spot**    | Spot Instances                | Preemptible VMs                           |
 
-**Free Tier** | Yes, 12-month + always free | Yes, always free + generous trial credits
-
-**Sustained Discounts** | Limited | Automatic & more generous
-
-**Preemptible/Spot** | Spot Instances | Preemptible VMs
 
 🔸 **Summary**:
 
@@ -270,15 +265,12 @@ Feature **AWS** **GCP**
 
 ### 🧠 **3\. Ease of Use**
 
-|Feature |  **AWS** | **GCP**
-|--------|------------|---------------|
-**Console UI/UX**
+| Feature              | **AWS**                              | **GCP**                        |
+| -------------------- | ------------------------------------ | ------------------------------ |
+| **Console UI/UX**    | Functional but complex               | Cleaner and more intuitive     |
+| **Learning Curve**   | Steeper (due to size and complexity) | Gentler for beginners          |
+| **Docs & Tutorials** | Extensive but sometimes scattered    | Concise and developer-friendly |
 
-Functional but complex | Cleaner and more intuitive
-
-**Learning Curve** | Steeper (due to size and complexity) | Gentler for beginners
-
-**Docs & Tutorials** | Extensive but sometimes scattered | Concise and developer-friendly
 
 🔸 **Summary**:
 
@@ -291,12 +283,11 @@ Functional but complex | Cleaner and more intuitive
 
 ### 🌍 **4\. Global Infrastructure**
 
-|Metric | **AWS** | **GCP**|
-|--------|------------|---------------|
+| Metric             | **AWS**                              | **GCP**                                                   |
+| ------------------ | ------------------------------------ | --------------------------------------------------------- |
+| **Regions (2024)** | 33+ regions, 100+ AZs                | 40+ regions                                               |
+| **Network**        | Excellent, optimized global backbone | Industry-leading backbone (same as Google Search/YouTube) |
 
-**Regions (2024)** | 33+ regions, 100+ AZs | 40+ regions
-
-**Network** | Excellent, optimized global backbone | Industry-leading backbone (same as Google Search/YouTube)
 
 🔸 **Summary**:  
 Both have strong infrastructure, but **Google’s network performance** (e.g. latency and bandwidth) is often superior due to their own global fiber network.
@@ -305,25 +296,12 @@ Both have strong infrastructure, but **Google’s network performance** (e.g. la
 
 ### 🔐 **5\. Security and Compliance**
 
-Feature | **AWS** |**GCP**
-|--------|------------|---------------|
-**Certifications**
+| Feature            | **AWS**                   | **GCP**                      |
+| ------------------ | ------------------------- | ---------------------------- |
+| **Certifications** | Broadest in the market    | Strong but slightly fewer    |
+| **Security Tools** | IAM, GuardDuty, Inspector | IAM, Security Command Center |
+| **Zero Trust**     | Supported                 | Native with BeyondCorp       |
 
-Broadest in the market
-
-Strong but slightly fewer
-
-**Security Tools**
-
-IAM, GuardDuty, Inspector
-
-IAM, Security Command Center
-
-**Zero Trust**
-
-Supported
-
-Native with BeyondCorp
 
 🔸 **Summary**:  
 Both meet high security standards. GCP’s **BeyondCorp** is notable for built-in zero trust architecture.
@@ -332,25 +310,13 @@ Both meet high security standards. GCP’s **BeyondCorp** is notable for built-i
 
 ### 👥 **6\. Ecosystem & Market Share**
 
-Factor| **AWS** | **GCP**
-|--------|------------|---------------|
-**Market Share (2024)**
+| Factor                       | **AWS**                       | **GCP**                              |
+| ---------------------------- | ----------------------------- | ------------------------------------ |
+| **Market Share (2024)**      | \~30–32%                      | \~10–12%                             |
+| **Community & Integrations** | Largest ecosystem             | Growing rapidly, good OSS support    |
+| **Enterprise Adoption**      | Strongest enterprise presence | Popular with data/AI-heavy companies |
 
-~30–32%
-
-~10–12%
-
-**Community & Integrations**
-
-Largest ecosystem
-
-Growing rapidly, good OSS support
-
-**Enterprise Adoption**
-
-Strongest enterprise presence
-
-Popular with data/AI-heavy companies
+ 
 
 🔸 **Summary**:
 
@@ -363,27 +329,14 @@ Popular with data/AI-heavy companies
 
 ### 🏁 **Conclusion: Which to Choose?**
 
-Scenario
+| Scenario                                 | Recommended Platform          |
+| ---------------------------------------- | ----------------------------- |
+| Broad enterprise workloads & flexibility | **AWS**                       |
+| Data analytics, ML/AI, or startups       | **GCP**                       |
+| Simple pricing and intuitive UX          | **GCP**                       |
+| Long-term hybrid cloud / GovCloud        | **AWS**                       |
+| Cost-sensitive development               | **GCP (especially BigQuery)** |
 
-Recommended Platform
-
-Broad enterprise workloads & flexibility
-
-**AWS**
-
-Data analytics, ML/AI, or startups
-
-**GCP**
-
-Simple pricing and intuitive UX
-
-**GCP**
-
-Long-term hybrid cloud / GovCloud
-
-**AWS**
-
-Cost-sensitive development
 
 **GCP (especially BigQuery)**
 
@@ -394,41 +347,17 @@ Cost-sensitive development
 
 ### 🔍 **Key Features of BigQuery**
 
-Feature
+| Feature                             | Description                                                                                              |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Serverless**                      | No infrastructure management — Google handles provisioning, scaling, and maintenance.                    |
+| **SQL-Based**                       | Use standard SQL to query structured, semi-structured (JSON), or nested data.                            |
+| **Massively Scalable**              | Handles **petabytes** of data with high performance.                                                     |
+| **Separation of Storage & Compute** | You can store data separately and only pay for what you query.                                           |
+| **Real-Time Analytics**             | Can stream data in and analyze it in near real-time.                                                     |
+| **Machine Learning (BigQuery ML)**  | Run ML models directly using SQL, without moving data.                                                   |
+| **Federated Queries**               | Query data directly from Google Cloud Storage, Google Sheets, or external databases.                     |
+| **Integration**                     | Works well with GCP services like Dataflow, Dataproc, Looker, and external tools like Tableau, Power BI. |
 
-Description
-
-**Serverless**
-
-No infrastructure management — Google handles provisioning, scaling, and maintenance.
-
-**SQL-Based**
-
-Use standard SQL to query structured, semi-structured (JSON), or nested data.
-
-**Massively Scalable**
-
-Handles **petabytes** of data with high performance.
-
-**Separation of Storage & Compute**
-
-You can store data separately and only pay for what you query.
-
-**Real-Time Analytics**
-
-Can stream data in and analyze it in near real-time.
-
-**Machine Learning (BigQuery ML)**
-
-Run ML models directly using SQL, without moving data.
-
-**Federated Queries**
-
-Query data directly from Google Cloud Storage, Google Sheets, or external databases.
-
-**Integration**
-
-Works well with GCP services like Dataflow, Dataproc, Looker, and external tools like Tableau, Power BI.
 
 * * *
 
