@@ -1,3 +1,4 @@
+<https://schemaspy.org/>
 
 ### Find maximum interval of consecutive dates (no gaps)
 ```sql
