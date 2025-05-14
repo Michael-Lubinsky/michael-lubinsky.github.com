@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/arenadata/articles/899846/
+
 https://www.dolthub.com/blog/2025-04-25-sql-engine-anatomy/
 
 https://medium.com/@hari-db/database-architectures-750297f5d6f4
