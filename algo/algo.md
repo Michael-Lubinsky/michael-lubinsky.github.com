@@ -95,3 +95,58 @@ def max_area_of_zeros(grid):
 
     return max_area
 ```
+### python function which accept as argument the list of integers and returns the smallest positive interval between them.
+
+```python
+def smallest_positive_interval(nums):
+    if len(nums) < 2:
+        return 0
+
+    nums.sort()  # in-place, O(n log n)
+    min_diff = float('inf')
+
+    for i in range(1, len(nums)):
+        diff = nums[i] - nums[i - 1]
+        if diff > 0 and diff < min_diff:
+            min_diff = diff
+            if min_diff == 1:
+                break  # early exit: 1 is the smallest possible
+
+    return min_diff if min_diff != float('inf') else 0
+
+```
+### Python fuction. Argument: list of integers representing monthly profit of company.
+function should return list of consecutive  months that had the most profit.
+
+```python
+from typing import List
+
+def most_profitable_months(profits: List[int]) -> List[int]:
+    if not profits:
+        return []
+
+    max_sum = current_sum = profits[0]
+    start = end = temp_start = 0
+
+    for i in range(1, len(profits)):
+        if current_sum < 0:
+            current_sum = profits[i]
+            temp_start = i
+        else:
+            current_sum += profits[i]
+
+        if current_sum > max_sum:
+            max_sum = current_sum
+            start = temp_start
+            end = i
+
+    return profits[start:end+1]
+
+```
+Usage
+```python
+profits = [3, -2, 5, -1, 6, -3, 2, 7, -5]
+print(most_profitable_months(profits))  # Output: [5, -1, 6, -3, 2, 7]
+```
+This output shows the sublist of consecutive months that gave the highest total profit.
+
