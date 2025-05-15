@@ -82,7 +82,10 @@ SELECT * FROM users WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
 UPDATE users SET age = 31 WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
 
 DELETE FROM users WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
-🔶 Apache HBase – Shell Commands
+
+🔷 
+🔶 Apache HBase – Shell Commands  
+
 HBase uses a command-line shell with its own DSL (not SQL-like). It’s more low-level.
 
 1. Create Table
