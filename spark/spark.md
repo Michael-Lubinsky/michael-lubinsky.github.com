@@ -23,6 +23,87 @@ df.sortWithinPartitions("timestamp").write.partitionBy("date").parquet("data/")
 OPTIMIZE delta.`/path/table` ZORDER BY (date, user_id);
 
 
+### 🔹 Partitioning
+ 
+Partitioning is the process of dividing data into **directories** based on column values.
+
+**Key Characteristics**:
+
+-   Implemented at the **directory level**.
+    
+-   Each unique value (or combination) of the partition column(s) creates a **separate folder**.
+    
+-   Commonly used in **DataFrame write operations** with `.partitionBy()`.
+    
+
+**Example**:
+
+`df.write.partitionBy("country").parquet("/path/to/output")`
+
+This creates a structure like:
+
+`/path/to/output/country=US/... /path/to/output/country=IN/...`
+
+**Benefits**:
+
+-   Efficient **data skipping** during reads (e.g., filters on partition columns).
+    
+-   Reduces the amount of data scanned during queries.
+    
+
+**Trade-offs**:
+
+-   Too many unique values can lead to **too many small files** (small file problem).
+    
+-   Works best when filtering on the **partition columns**.
+    
+
+* * *
+
+### 🔹 Bucketing
+ 
+Bucketing (or **bucketing with sorting**) divides data into a fixed number of **files (buckets)** based on a hash of a column value.
+
+**Key Characteristics**:
+
+-   Implemented at the **file level**, not the directory level.
+    
+-   Each bucket gets a file like `part-00000`, `part-00001`, etc.
+    
+-   Defined using `.bucketBy(numBuckets, column)` and used with `saveAsTable()`.
+    
+
+**Example**:
+
+
+`df.write.bucketBy(8, "user_id").sortBy("user_id").saveAsTable("bucketed_users")`
+
+**Benefits**:
+
+-   Optimizes **joins** and **groupBy** operations when both datasets are bucketed on the same column.
+    
+-   Reduces shuffle during joins if bucketing and number of buckets are aligned.
+    
+-   Works even when not filtering on the bucketed column.
+    
+
+**Trade-offs**:
+
+-   Requires writing to a **Hive-compatible table** (e.g., `.saveAsTable()`).
+    
+-   Not dynamically adjusted — you must choose the number of buckets in advance.
+
+
+| Feature        | Partitioning                     | Bucketing                                   |
+| -------------- | -------------------------------- | ------------------------------------------- |
+| Level          | Directory                        | File                                        |
+| Based On       | Column values                    | Hash of column values                       |
+| Output Layout  | Folders per partition value      | Fixed number of files per table             |
+| Use Cases      | Data skipping during filtering   | Optimized joins and aggregations            |
+| Requires Hive? | No                               | Yes (for full support, e.g., `saveAsTable`) |
+| Flexibility    | Dynamic (based on column values) | Static (number of buckets fixed)            |
+
+
 #### block size tuning:
 
  Parquet
