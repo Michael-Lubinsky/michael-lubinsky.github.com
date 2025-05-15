@@ -6,6 +6,8 @@
 ### Query plan  builder
 
 ![](Spark_plan_building_steps.png)
+
+
 ### Reading files
 ```
 spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
@@ -316,6 +318,85 @@ spark.conf.set(“spark.sql.adaptive.enabled”, “true”)  Enable AQE
 spark.conf.set(“spark.sql.adaptive.enabled”, “true”)      Skew Join Optimization
 spark.conf.set(“spark.sql.adaptive.skewJoin.enabled”, “true”) Skew Join Optimization
 ```
+
+
+### Here are some of the main Spark configuration parameters that  impact performance:
+
+#### 1. Resource Allocation
+- spark.executor.instances: This controls the number of executors to launch for an application. More executors generally mean more parallelism, but also more overhead. Tune this based on the cluster size and application needs.
+- spark.executor.cores: This sets the number of cores each executor can use. More cores per executor can improve parallelism within each executor but can also lead to more competition for memory.
+- spark.executor.memory: This defines the amount of memory allocated to each executor. Sufficient memory is crucial to avoid disk spills during shuffles and for caching data.
+
+- spark.driver.memory: This sets the memory allocated to the driver process. Increase this if the driver is handling large amounts of data or complex operations.
+- spark.cores.max: In standalone and YARN modes, this limits the total number of cores the application can request.
+
+Tuning Strategy: Experiment with different combinations of executors, cores, and memory based on your workload and cluster resources. Monitor resource utilization in the Spark UI. A common starting point is 2-3 cores per executor.
+
+#### 2. Parallelism and Partitioning
+- spark.default.parallelism: This sets the default number of partitions for RDDs created from sources like files. A good rule of thumb is to have 2-3 tasks per CPU core in your cluster.
+- spark.sql.shuffle.partitions: This controls the number of partitions used when shuffling data for operations like joins and aggregations in Spark SQL. Increasing this can improve parallelism after a shuffle but can also increase overhead.
+
+Partitioning of Input Data: The number and size of input partitions directly affect parallelism. Ensure your data is partitioned appropriately based on the cluster size. Consider repartitioning or coalescing RDDs/DataFrames.
+
+Tuning Strategy: Aim for a number of partitions that allows for parallel processing without overwhelming the cluster. Partition sizes of around 100-200MB are often recommended.
+
+#### 3. Memory Management
+spark.memory.fraction: This parameter determines the fraction of JVM heap space used for Spark execution and storage. The rest is reserved for user code and metadata.
+spark.memory.storageFraction: Within the Spark memory fraction, this determines the fraction used for caching (storage). Execution memory can borrow from storage if needed.
+
+- spark.shuffle.memoryFraction: This fraction of the execution memory is used for in-memory shuffle buffers. Increasing this can reduce disk spills during shuffles.
+- spark.storage.level: This controls how RDDs/DataFrames are cached (e.g., memory-only, memory-and-disk, with or without serialization). Choose the level based on data access patterns and memory availability.
+- spark.sql.cache.compressed: When set to true, Spark SQL will store cached tables in a compressed format to reduce memory usage.
+Tuning Strategy: Monitor memory usage in the Spark UI. If you see excessive disk spills, consider increasing executor memory or adjusting memory fractions. Choose the appropriate storage level for caching based on how frequently the data is accessed.
+
+#### 4. Shuffle Performance
+- spark.shuffle.file.buffer: Size of the in-memory buffer for each shuffle file output stream (in KB). Increasing this can reduce disk I/O during shuffles.
+- spark.shuffle.spill.compress: Whether to compress data spilled to disk during shuffles. Compression can save disk space but adds CPU overhead.
+
+- spark.shuffle.sort.bypassMergeThreshold: For shuffles with fewer than this many reduce tasks,
+Spark can use a memory-efficient but potentially less performant code path that avoids sorting.
+  
+Tuning Strategy: Monitor shuffle read and write times in the Spark UI. Experiment with buffer sizes and compression based on your workload and disk I/O characteristics.
+
+#### 5. Data Serialization
+- spark.serializer: This specifies the serialization library to use (e.g., org.apache.spark.serializer.JavaSerializer or org.apache.spark.serializer.KryoSerializer). Kryo is often more efficient and faster than Java serialization.
+- spark.kryo.registrator: If using Kryo, you can register your custom classes for more efficient serialization.
+- spark.kryoserializer.buffer.max: Maximum buffer size used by Kryo (in MB). Increase this if you encounter "buffer overflow" exceptions during serialization.
+
+Tuning Strategy: Generally, using Kryo serialization is recommended for better performance and reduced memory usage. Register your custom classes with Kryo for optimal efficiency.
+
+### 6. Garbage Collection (GC)
+spark.executor.extraJavaOptions: Allows you to set JVM options for executors, including GC settings (e.g., -XX:+UseG1GC).
+spark.driver.extraJavaOptions: Allows you to set JVM options for the driver.
+Tuning Strategy: Monitor GC activity in the Spark UI. If you see long GC pauses, experiment with different GC algorithms (like G1 GC) and adjust JVM heap sizes.
+
+## 7. Adaptive Query Execution (AQE)
+- spark.sql.adaptive.enabled: Enables Adaptive Query Execution, which allows Spark to re-optimize query plans during runtime based on statistics.
+- spark.sql.adaptive.coalescePartitions.enabled: Enables coalescing of shuffle output partitions to reduce the number of downstream tasks.
+- spark.sql.adaptive.skewJoin.enabled: Enables handling of skew joins by splitting larger partitions into smaller ones.
+spark.sql.adaptive.autoBroadcastJoinThreshold: Configures the threshold below which Spark will automatically broadcast a join side.
+
+Tuning Strategy: Enabling AQE is generally recommended as it can automatically improve query performance. Tune the related parameters based on your data characteristics.
+
+#### 8. Data Format
+Using efficient columnar formats like Parquet or ORC can significantly improve performance compared to row-based formats like CSV or JSON, especially for analytical workloads. These formats allow for predicate pushdown and efficient column pruning.
+Tuning Strategy: Store your data in columnar formats whenever possible.
+
+#### 9. Avoiding Unnecessary Operations
+Minimize Shuffles: Operations like groupByKey, reduceByKey, and joins can trigger shuffles, which are expensive.  
+Try to use more efficient alternatives like reduceByKey instead of groupByKey followed by a reduce operation, or use broadcast joins for smaller datasets.
+Avoid Collecting Large Datasets to the Driver:   
+Operations like collect() can bring the entire dataset to the driver's memory, which can cause out-of-memory errors.
+Use Built-in Functions: Spark's built-in functions are often more optimized than User-Defined Functions (UDFs), especially those written in Python.  
+If you must use UDFs, consider using Pandas UDFs (vectorized UDFs) for better performance.
+
+Monitoring is Key:
+
+The most crucial aspect of performance tuning is monitoring your Spark application's execution using the Spark UI.  
+This will provide insights into resource utilization, task durations, shuffle sizes, memory usage, and garbage collection activity, helping you identify bottlenecks and the impact of your configuration changes.
+
+Remember that the optimal configuration parameters depend heavily on your specific workload, data size, cluster configuration, and the nature of your Spark applications. It often involves experimentation and iterative tuning.
+
 
 
 ## Apache Spark 4.0
