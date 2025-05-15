@@ -1,3 +1,8 @@
+| Feature      | HBase                          | Cassandra                       |
+| ------------ | ------------------------------ | ------------------------------- |
+| Type         | Wide-column store (on Hadoop)  | Wide-column store (independent) |
+| Consistency  | Strong consistency             | Tunable (eventual by default)   |
+| Architecture | Master-slave (HDFS, Zookeeper) | Peer-to-peer                    |
 
 Because both databases are NoSQL wide-column stores, schema and query patterns are quite different from traditional RDBMS.
 
