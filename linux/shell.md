@@ -1,5 +1,40 @@
 ## Linux shell scripting
 
+### SIGTERM and trap
+```bash
+#!/bin/sh
+cleanup() {
+    echo "Received SIGTERM, shutting down gracefully..."
+    sleep 5
+    echo "Cleanup complete, exiting."
+    exit 0
+}
+trap cleanup TERM
+
+
+echo "App is running..."
+while true; do sleep 1; done
+```
+kill --signal=SIGTERM program_id
+
+```python
+import signal
+import time
+
+def shutdown_handler(signum, frame):
+    print("Received SIGTERM, shutting down gracefully...")
+    time.sleep(5)
+    print("Cleanup complete, exiting.")
+    exit(0)
+
+signal.signal(signal.SIGTERM, shutdown_handler)
+
+print("Application running...")
+while True:
+    time.sleep(1)
+```
+
+
 ### File watcher
 ```bash
 #!/bin/bash
