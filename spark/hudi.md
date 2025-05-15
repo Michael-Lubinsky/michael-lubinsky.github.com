@@ -70,18 +70,20 @@ Feature	Hudi	Delta Lake	Iceberg
 🔄 Streaming Support	Yes (built-in, Spark structured streaming)	Yes (Spark Streaming)	Yes (via Flink)
 ```
 ### 🔧 File Layout & Format
-```
-Feature	Hudi	Delta Lake	Iceberg
-File Format	Parquet, Avro, ORC	Parquet	Parquet, Avro, ORC
-Table Type	Copy-on-write / Merge-on-read	Copy-on-write	Snapshot-based
-Metadata Storage	Timeline log files + Metadata Table	Transaction log (JSON in _delta_log)	Manifest and snapshot files
-```
+ 
+| Feature | 	Hudi	Delta Lake	Iceberg |
+|-----|--------|----|
+| File Format	| Parquet, Avro, ORC | 	Parquet |	Parquet, Avro, ORC
+| Table Type	| Copy-on-write / Merge-on-read	| Copy-on-write |	Snapshot-based
+| Metadata Storage	| Timeline log files + Metadata Table| 	Transaction log (JSON in _delta_log)	| Manifest and snapshot files
+ 
 ### 💬 Strengths & Best Use Cases
-```
-Tool	Strengths	Best For
-Hudi	Native support for upserts, incremental pulls, streaming ingestion, CDC	Real-time pipelines, high-change-rate datasets
-Delta Lake	Tight Spark integration, Z-ordering, simple to use	Batch and streaming with Spark, data science workloads
-Iceberg	Engine-agnostic, strong schema evolution, partition evolution	Multi-engine environments, slowly changing dimensions, large-scale OLAP
+ 
+| Tool	| Strengths	| Best For |
+|-----|--------|----|
+| Hudi	| Native support for upserts, incremental pulls, streaming ingestion | CDC	Real-time pipelines, high-change-rate datasets
+| Delta Lake | 	Tight Spark integration, Z-ordering, simple to use	Batch and streaming with Spark | data science workloads
+| Iceberg	| Engine-agnostic, strong schema evolution, partition evolution	| Multi-engine environments, slowly changing dimensions, large-scale OLAP
 ```
 ### Who Uses Them?
 Hudi: Uber, Robinhood, ByteDance  
