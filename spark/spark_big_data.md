@@ -69,9 +69,11 @@ Access the Spark Web UI at:  <http://localhost:4040>
 
 ### Configure Spark to process 10–100 TB of data
 ```
-To process **10–100 TB of data per day** with Apache Spark efficiently, the optimal cluster configuration depends on several factors including data format, processing complexity, 
-I/O throughput, and the SLAs (e.g., whether you need to finish processing in real-time, hourly, or daily). 
-That said, here's a **baseline recommendation** for batch workloads, assuming structured data in formats like Parquet or ORC, and moderate-to-complex Spark transformations.
+To process **10–100 TB of data per day** with Apache Spark efficiently,
+the optimal cluster configuration depends on several factors including data format, processing complexity, 
+I/O throughput, and the SLAs (e.g., whether you need to finish processing in real-time, hourly, or daily).
+That said, here's a **baseline recommendation** for batch workloads, assuming structured data in formats like Parquet or ORC,
+ and moderate-to-complex Spark transformations.
 ```
 * * *
 
@@ -146,13 +148,11 @@ If using EMR, Databricks, or GCP Dataproc:
 -   Leverage **autoscaling clusters** to handle variance between 10–100 TB loads.
 
 
-
-
 ### Analyze Query Execution Plans
 Check optimization opportunities with:
-
+```
 df.explain(True)  # Displays physical/logical plansConclusion
- 
+```
 
 <https://medium.com/@sgouda835/handling-large-data-volumes-100gb-1tb-in-pyspark-best-practices-optimizations-b0ce2fe73f24>
 
