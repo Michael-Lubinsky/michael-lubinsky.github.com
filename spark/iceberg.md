@@ -179,12 +179,14 @@ This is useful for auditing, debugging, and reproducing analyses.
 
 Apache Iceberg: Introduces "hidden partitioning," where users query data using actual column values, and Iceberg automatically maps these to the underlying physical partitions. 
 This avoids common pitfalls of traditional partitioning, like creating too many or too few partitions.  
-Iceberg also supports partition evolution, allowing changes to the partitioning scheme without data rewrites. It utilizes metadata for efficient partition pruning and data skipping. 
+Iceberg also supports partition evolution, allowing changes to the partitioning scheme without data rewrites.   
+It utilizes metadata for efficient partition pruning and data skipping. 
 Sorted tables can further improve performance by enabling more effective data skipping.
 
 
 Databricks Delta: Supports traditional partitioning based on user-defined columns. 
-It offers features like Z-order clustering to improve data locality for faster filtering and joins on high-cardinality columns. Data skipping based on file-level statistics is also employed. 
+It offers features like Z-order clustering to improve data locality for faster filtering and joins on high-cardinality columns. 
+Data skipping based on file-level statistics is also employed. 
 While partition evolution is being worked on, it's not as mature as in Iceberg.
 
 ### Query Engine Compatibility:
@@ -234,7 +236,6 @@ SQL
 
 Accessing a Delta table is usually straightforward, especially if it's registered in the metastore. If the table is not registered, you might need to specify the path to its storage location.
 
-SQL
 
     -- If the Delta table is registered in the metastore
     SELECT * FROM delta_table LIMIT 10;
@@ -252,7 +253,8 @@ Iceberg provides several ways to specify the historical version you want to quer
 
 -   **`AS OF` timestamp:** Query the table as it existed at a specific point in time.
     
-    
+        SELECT * FROM <catalog_name>.<database_name>.<table_name>.snapshots;
+
         SELECT *
         FROM iceberg_catalog.default.iceberg_table
         AS OF TIMESTAMP '2025-05-14 10:00:00 PDT'
