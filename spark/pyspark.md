@@ -451,6 +451,31 @@ df_final = df_final.withColumn(
 
 df_final.orderBy("product_id", "year").show()
 ```
+
+### .createOrReplaceTempView() retired
+Still using .createOrReplaceTempView() just to run SQL on your DataFrames?
+Cleaner, safer, and more modular approach in PySpark and Fabric Notebooks. 🧼⚙️
+
+💡 𝐐𝐮𝐢𝐜𝐤 𝐁𝐫𝐞𝐚𝐤𝐝𝐨𝐰𝐧:
+🔹 𝟏. 𝐓𝐡𝐞 𝐎𝐥𝐝 𝐖𝐚𝐲 (❌ Temp Views)
+```sql
+df_customers.createOrReplaceTempView("customers_view")
+spark.sql("SELECT * FROM customers_view")
+```
+⚠️ Pollutes session with global views
+ ⚠️ Easy to overwrite accidentally
+ ⚠️ Not notebook-friendly
+
+🔹 𝟐. 𝐓𝐡𝐞 𝐁𝐞𝐭𝐭𝐞𝐫 𝐖𝐚𝐲 (✅ SQL Variable Binding)
+```sql
+spark.sql(
+ "SELECT * FROM {customers}",
+ customers=df_customers
+)
+```
+✅ No need to register views
+ ✅ Keeps code modular & testable
+ ✅ Direct reference to DataFrames in SQL
 <!--
 https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
 
