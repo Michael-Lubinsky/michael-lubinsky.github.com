@@ -48,13 +48,14 @@ Metadata Table: Improves query performance by avoiding directory listings.
 Here's a clear side-by-side comparison to help you decide:
 
 ### 🧱 Overview
-```
-Feature	Apache Hudi	Delta Lake	Apache Iceberg
-Creator	Uber	Databricks	Netflix
-Open Source	Yes (Apache Incubator)	Yes (Linux Foundation)	Yes (Apache Top-Level)
-Write Engine	Spark	Spark	Spark, Flink, Trino, Hive, etc.
-Query Engines	Spark, Presto, Hive, Trino, Flink	Spark, Presto, Trino	Spark, Trino, Flink, Hive, Dremio
-```
+ 
+| Feature	| Apache Hudi | 	Delta Lake |	Apache Iceberg |
+|---------|-------------|-------------|--------------|
+| Creator| 	Uber	| Databricks |	Netflix
+| Open Source	| Yes (Apache Incubator)	Yes|  (Linux Foundation)	| Yes (Apache Top-Level)
+| Write Engine |	Spark |	Spark	| Spark, Flink, Trino, Hive, etc.
+| Query Engines	| Spark, Presto, Hive, Trino, Flink	| Spark, Presto, Trino | 	Spark, Trino, Flink, Hive, Dremio
+ 
 ### 📌 Key Features Comparison
 ```
 Feature	Hudi	Delta Lake	Iceberg
