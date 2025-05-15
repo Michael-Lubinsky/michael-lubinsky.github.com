@@ -6,37 +6,15 @@ A **Databricks Delta Table** (based on **Delta Lake**) is a **storage format** a
 
 ### ✅ **Key Features of Delta Tables**
 
-Feature
-
-Description
-
-**ACID Transactions**
-
-Supports atomic writes, rollback, and concurrent reads/writes
-
-**Schema Enforcement**
-
-Automatically validates schema consistency during data writes
-
-**Schema Evolution**
-
-Allows you to change table schemas without manual data migration
-
-**Time Travel**
-
-Lets you query previous versions of the data (e.g., `VERSION AS OF 10`)
-
-**Data Compaction**
-
-Optimizes small files into larger ones (`OPTIMIZE` command)
-
-**Audit History**
-
-Tracks table changes over time (`DESCRIBE HISTORY`)
-
-**Streaming + Batch**
-
-Supports both real-time streaming and batch processing
+| Feature | Description |
+|--------|-------------|
+| **ACID Transactions**  | Supports atomic writes, rollback, and concurrent reads/writes
+| **Schema Enforcement** | Automatically validates schema consistency during data writes
+| **Schema Evolution** | Allows you to change table schemas without manual data migration
+| **Time Travel** | Lets you query previous versions of the data (e.g., `VERSION AS OF 10`)
+| **Data Compaction** | Optimizes small files into larger ones (`OPTIMIZE` command)
+| **Audit History** | Tracks table changes over time (`DESCRIBE HISTORY`)
+| **Streaming + Batch** | Supports both real-time streaming and batch processing
 
 * * *
 
