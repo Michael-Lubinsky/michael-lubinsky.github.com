@@ -94,11 +94,9 @@ Here’s a comparison to clarify how they relate:
 
 | Feature | Iceberg Catalog | Delta Lake (Databricks)
 |---------|-----------------|------------------------
-**Purpose** Manages metadata for Iceberg tables  Manages metadata and data for Delta tables
-
-**Catalog** Separate system (Hive, REST, etc.) for metadata  Built into Delta Lake / Unity Catalog on Databricks
-
-**Table Format** Apache Iceberg open standard Delta Lake table format developed by Databricks
+| **Purpose** | Manages metadata for Iceberg tables | Manages metadata and data for Delta tables
+| **Catalog** | Separate system (Hive, REST, etc.) for metadata  | Built into Delta Lake / Unity Catalog on Databricks
+| **Table Format** | Apache Iceberg open standard | Delta Lake table format developed by Databricks
 
 * * *
 
