@@ -2,8 +2,9 @@
 (e.g., names and addresses with typos), 
 exact matching won’t work — instead, you need fuzzy matching techniques.
 
-✅ Approaches to Detect Duplicates with Typos in SQL
-🔹 1. Use LOWER() and TRIM() for normalization
+✅ Approaches to Detect Duplicates with Typos in SQL  
+
+🔹 1. Use LOWER() and TRIM() for normalization  
 Start by cleaning up formatting differences.
 
 ```sql
