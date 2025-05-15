@@ -153,13 +153,17 @@ values, file-level statistics (like row count, min/max values for columns), and 
 
 ### ACID Transactions and Data Consistency:
 
-Apache Iceberg: Provides ACID (Atomicity, Consistency, Isolation, Durability) transactions using optimistic concurrency control and snapshots. Each change to the table creates a new snapshot, ensuring that readers always see a consistent view of the data.
-Databricks Delta: Also offers full ACID transaction guarantees through its transaction log. It ensures that concurrent read and write operations are consistent and that data is not corrupted in case of failures.
+Apache Iceberg: Provides ACID (Atomicity, Consistency, Isolation, Durability) transactions using optimistic concurrency control and snapshots.   
+Each change to the table creates a new snapshot, ensuring that readers always see a consistent view of the data.  
+
+Databricks Delta: Also offers full ACID transaction guarantees through its transaction log.  
+It ensures that concurrent read and write operations are consistent and that data is not corrupted in case of failures.
 
 ### Schema Evolution:
 
 Apache Iceberg: Offers robust and flexible schema evolution. It tracks columns by ID, allowing for operations like adding, renaming, dropping, and reordering columns without rewriting the data files.  
-It also supports more complex type changes.
+It also supports more complex type changes.  
+
 Databricks Delta: Supports schema evolution, allowing adding columns and widening column types without rewriting data. 
 However, it can have limitations with more complex type changes or incompatible type conversions. Schema changes are recorded in the Delta Log.
 
