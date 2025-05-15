@@ -49,21 +49,11 @@ Or using PySpark:
 
 ### 📚 Delta Table Types in Databricks
 
-Table Type
-
-Description
-
-**Managed**
-
-Databricks manages the data and metadata location
-
-**External**
-
-You manage the storage location; metadata stored in the metastore
-
-**Unity Catalog Table**
-
-Fully governed table under Unity Catalog with access control & lineage
+| Table Type | Description |
+|----|-----|
+| **Managed** | Databricks manages the data and metadata location
+| **External** | You manage the storage location; metadata stored in the metastore
+| **Unity Catalog Table** | Fully governed table under Unity Catalog with access control & lineage
 
 * * *
 
