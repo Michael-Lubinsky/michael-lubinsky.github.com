@@ -255,6 +255,17 @@ Iceberg provides several ways to specify the historical version you want to quer
     
         SELECT * FROM <catalog_name>.<database_name>.<table_name>.snapshots;
 
+SELECT * FROM iceberg_catalog.default.my_iceberg_table.snapshots;
+Columns in the snapshots metadata table typically include:
+
+- snapshot_id: A unique identifier for the snapshot. This is what you use for time travel with AT SNAPSHOT.
+- committed_at: The timestamp (usually in UTC) when the snapshot was committed. This is what corresponds to the time you can use for time travel with AS OF TIMESTAMP.
+- operation: The type of operation that created the snapshot (e.g., append, overwrite, delete).
+- summary: A map containing additional information about the snapshot, such as the Spark application ID that performed the operation.
+- manifest_list: The location of the manifest list file for this snapshot.
+- parent_id: The ID of the previous snapshot, forming the lineage.
+is_current_ancestor: Indicates if this snapshot is an ancestor of the current table state.
+
         SELECT *
         FROM iceberg_catalog.default.iceberg_table
         AS OF TIMESTAMP '2025-05-14 10:00:00 PDT'
