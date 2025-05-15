@@ -14,6 +14,8 @@ https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
+https://habr.com/ru/companies/yandex_praktikum/articles/901432/
+
 https://www.kaggle.com/discussions/getting-started/390402
 
 ML System design 
