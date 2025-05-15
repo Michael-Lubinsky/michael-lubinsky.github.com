@@ -209,6 +209,163 @@ It can perform eager data file rewriting or use delete deltas for faster updates
 
 Databricks Delta: Provides SQL, Scala/Java, and Python APIs for DML operations like MERGE, UPDATE, and DELETE.
 
+-   let's assume the following table names:
+    -   `iceberg_table` (in an Iceberg catalog named `iceberg_catalog`)
+    -   `delta_table` (in the default Delta Lake location or a registered Delta table)
+
+**Accessing Tables with SQL:**
+
+**Iceberg:**
+
+To access an Iceberg table, you typically need to specify the catalog and the table name. The exact syntax might vary slightly depending on your query engine.
+
+SQL
+
+    -- Using Spark SQL
+    SELECT * FROM iceberg_catalog.default.iceberg_table LIMIT 10;
+    
+    -- Using Trino
+    SELECT * FROM iceberg_catalog.default.iceberg_table LIMIT 10;
+    
+    -- Using Flink SQL (assuming a configured Iceberg catalog)
+    SELECT * FROM iceberg_table LIMIT 10;
+
+**Databricks Delta:**
+
+Accessing a Delta table is usually straightforward, especially if it's registered in the metastore. If the table is not registered, you might need to specify the path to its storage location.
+
+SQL
+
+    -- If the Delta table is registered in the metastore
+    SELECT * FROM delta_table LIMIT 10;
+    
+    -- If you need to specify the path (replace 's3://your-bucket/delta/table' with the actual path)
+    SELECT * FROM delta.`s3://your-bucket/delta/table` LIMIT 10;
+
+**Time Travel with SQL:**
+
+Both Iceberg and Delta Lake allow you to query historical versions of your tables.
+
+**Iceberg Time Travel:**
+
+Iceberg provides several ways to specify the historical version you want to query:
+
+-   **`AS OF` timestamp:** Query the table as it existed at a specific point in time.
+    
+    
+        SELECT *
+        FROM iceberg_catalog.default.iceberg_table
+        AS OF TIMESTAMP '2025-05-14 10:00:00 PDT'
+        LIMIT 10;
+    
+-   **`AT SNAPSHOT` snapshot ID:** Query a specific snapshot of the table. You can find snapshot IDs in the Iceberg metadata.
+    
+    
+        SELECT *
+        FROM iceberg_catalog.default.iceberg_table
+        AT SNAPSHOT '39485729384756'
+        LIMIT 10;
+    
+-   **`AT VERSION` version ID:** (Less common in SQL, often used in APIs) Query a specific version of the table.
+    
+
+**Databricks Delta Time Travel:**
+
+Delta Lake also offers time travel using timestamps or version numbers:
+
+-   **`VERSION AS OF` version:** Query a specific version of the Delta table. You can see the history of versions using the `DESCRIBE HISTORY` command.
+    
+    
+        SELECT *
+        FROM delta_table
+        VERSION AS OF 5
+        LIMIT 10;
+    
+-   **`TIMESTAMP AS OF` timestamp:** Query the table as it existed at a specific point in time.
+    
+        SELECT *
+        FROM delta_table
+        TIMESTAMP AS OF '2025-05-14 10:00:00 PDT'
+        LIMIT 10;
+    
+
+**Schema Evolution with SQL:**
+
+Both formats allow you to evolve the schema of your tables without rewriting all the data.
+
+**Iceberg Schema Evolution:**
+
+Iceberg supports various schema evolution operations using SQL `ALTER TABLE` statements:
+
+-   **Adding a column:**
+    
+        ALTER TABLE iceberg_catalog.default.iceberg_table
+        ADD COLUMN new_column STRING;
+    
+-   **Renaming a column:**
+    
+        ALTER TABLE iceberg_catalog.default.iceberg_table
+        RENAME COLUMN old_column TO new_column;
+    
+-   **Dropping a column:**
+    
+        ALTER TABLE iceberg_catalog.default.iceberg_table
+        DROP COLUMN old_column;
+    
+-   **Altering a column's type (if compatible):**
+
+        ALTER TABLE iceberg_catalog.default.iceberg_table
+        ALTER COLUMN existing_column TYPE BIGINT;
+    
+
+After performing schema evolution, subsequent reads will reflect the updated schema.   
+Older snapshots will still adhere to the schema they had at the time of creation.  
+When querying older snapshots, newly added columns will appear as `NULL`.  
+
+**Databricks Delta Schema Evolution:**
+
+Delta Lake also uses `ALTER TABLE` statements for schema evolution:
+
+-   **Adding a column:**
+    
+    
+        ALTER TABLE delta_table
+        ADD COLUMN new_column STRING;
+    
+-   **Renaming a column:**
+    
+        ALTER TABLE delta_table
+        RENAME COLUMN old_column TO new_column;
+    
+-   **Dropping a column:**
+    
+    SQL
+    
+        ALTER TABLE delta_table
+        DROP COLUMN old_column;
+    
+-   **Changing a column's type or nullability:**
+    
+    
+        ALTER TABLE delta_table
+        ALTER COLUMN existing_column TYPE BIGINT;
+        
+        ALTER TABLE delta_table
+        ALTER COLUMN existing_column SET NOT NULL;
+    
+
+Delta Lake also supports automatic schema evolution for data being added through Spark DataFrames, allowing new columns to be added automatically during writes.
+
+**Iceberg Supported File Formats:**
+
+Apache Iceberg is designed to be file format agnostic through its metadata layer. However, the most commonly used and well-supported data file formats are:
+
+-   **Apache Parquet:** This is the **recommended and most widely used format** with Iceberg due to its columnar storage, efficient compression, and predicate pushdown capabilities, leading to optimized query performance.
+-   **Apache ORC (Optimized Row Columnar):** Another columnar storage format that is supported by Iceberg.
+-   **Apache Avro:** A row-based storage format that is also supported.
+
+
+
 
  
 ### The choice between Iceberg and Delta Lake depends on your infrastructure, workload, and strategic goals:
