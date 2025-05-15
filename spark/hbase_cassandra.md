@@ -4,7 +4,117 @@
 | Consistency  | Strong consistency             | Tunable (eventual by default)   |
 | Architecture | Master-slave (HDFS, Zookeeper) | Peer-to-peer                    |
 
-Because both databases are NoSQL wide-column stores, schema and query patterns are quite different from traditional RDBMS.
+### Apache Cassandra
+Inspired by Google Bigtable
+
+Each row is identified by a primary key and can contain thousands to millions of columns
+Columns are sorted by clustering keys
+Data model: Partition key → clustering columns → column values
+
+
+UserID | Timestamp1 | Timestamp2 | Timestamp3 ...
+-------|------------|------------|------------
+  A123 |  "login"   | "purchase" | "logout"
+
+
+Row key: A123 
+Columns: dynamic timestamps with actions 
+Perfect for time-series or sensor data 
+
+### HBase (Apache HBase)
+Built on top of Hadoop HDFS
+Data is organized into:
+- Row keys
+- Column families (predefined groups)
+- Columns (added dynamically)
+- Timestamps (for versioning)
+
+HBase Logical Structure:
+
+RowKey: user123
+Column Family: activity
+    - login: "2025-01-01"
+    - purchase: "2025-01-02"
+    - logout: "2025-01-03"
+
+### Summary: Why "Wide-Column"?
+Each row can have many columns (wide).  
+Columns can differ across rows.  
+Data is stored in a sparse, column-oriented fashion.  
+Optimized for fast reads/writes with large volumes of data.
+
+| Use Case                     | Wide-Column Store Advantage |
+| ---------------------------- | --------------------------- |
+| Time-series data             | Easy column-based modeling  |
+| User activity/event tracking | Flexible schema             |
+| IoT sensor logs              | Millions of columns per row |
+| Real-time analytics at scale | High write throughput       |
+
+🔷 Apache Cassandra – CQL Examples
+Cassandra uses CQL, a SQL-like language designed for ease of use with Cassandra’s architecture.
+
+1. Create Keyspace (like a database)
+
+CREATE KEYSPACE IF NOT EXISTS my_keyspace
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
+2. Create Table
+
+USE my_keyspace;
+
+CREATE TABLE users (
+    user_id UUID PRIMARY KEY,
+    name TEXT,
+    email TEXT,
+    age INT
+);
+
+3. Insert Data
+
+INSERT INTO users (user_id, name, email, age)
+VALUES (uuid(), 'Alice', 'alice@example.com', 30);
+
+4. Query Data
+
+SELECT * FROM users WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
+
+5. Update and Delete
+
+UPDATE users SET age = 31 WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
+
+DELETE FROM users WHERE user_id = 123e4567-e89b-12d3-a456-426614174000;
+🔶 Apache HBase – Shell Commands
+HBase uses a command-line shell with its own DSL (not SQL-like). It’s more low-level.
+
+1. Create Table
+
+create 'users', 'info'
+users: table name
+
+info: column family
+
+2. Insert Data (Put)
+ 
+put 'users', 'user1', 'info:name', 'Alice'
+put 'users', 'user1', 'info:email', 'alice@example.com'
+put 'users', 'user1', 'info:age', '30'
+'user1' is the row key
+
+3. Get Row
+ 
+get 'users', 'user1'
+4. Scan Table
+ 
+scan 'users'
+
+5. Delete Data
+
+delete 'users', 'user1', 'info:email'
+
+6. Drop Table
+
+disable 'users'
+drop 'users'
+
 
 🔷 PART 1: HBase
 🔹 Key Concepts: Tables have row keys, column families, and columns.
