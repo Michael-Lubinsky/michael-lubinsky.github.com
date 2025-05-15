@@ -76,14 +76,9 @@ The catalog enables Iceberg to:
 
 * * *
 
-Would you like a diagram showing how catalogs fit into the Iceberg architecture?
-
-4o
-
 ##### How Iceberg catalog is related to Databricks delta tables?
 
  
-
 Apache Iceberg catalogs and **Databricks Delta tables (Delta Lake)** serve **similar purposes** in the big data ecosystem, but they are **distinct technologies** developed by different organizations and have **different underlying architectures**.
 
 Here’s a comparison to clarify how they relate:
@@ -150,3 +145,41 @@ So, **Unity Catalog is to Delta tables what Hive/REST catalog is to Iceberg tabl
 | **Compute Decoupled**  |  Yes  | Mostly Spark-based (Databricks optimized)
 |**Standard Format**  | Apache Iceberg  | Delta Lake format
 
+
+### Databricks Delta: 
+Uses a transaction log (Delta Log) stored alongside the data in the object storage.  
+This log is an ordered record of every transaction (commit) made to the table.  
+The log contains information about added and removed data files, schema changes, and other metadata.  Periodically, the Delta Log is compacted into Parquet checkpoint files to improve query performance and manage the log size
+
+### Apache Iceberg: Employs a three-tiered metadata architecture:
+1. Metadata Files: Store the table's schema, partitioning specification, and a pointer to the current manifest list.
+
+2. Manifest Lists: List all the manifest files for the table.
+
+3. Manifest Files: List the data files that make up a snapshot of the table, along with their partition
+values,
+file-level statistics (like row count, min/max values for columns), and column-level statistics.
+
+ This hierarchical structure allows for efficient metadata management and faster query planning, especially for large tables. 
+ Iceberg avoids reliance on a central metastore for most operations, only using it to store the pointer to the latest metadata.
+
+
+
+ 
+### The choice between Iceberg and Delta Lake depends on your infrastructure, workload, and strategic goals:
+
+For flexibility and future-proofing: Iceberg is the safer bet due to its open ecosystem, 
+scalability, and broad adoption across clouds and engines. 
+It’s ideal for organizations avoiding vendor lock-in or managing complex, large-scale datasets.
+
+For Databricks-centric environments: Delta Lake is superior for Spark/Databricks users, offering seamless integration, real-time capabilities, and UniForm for Iceberg compatibility.
+
+Proof of Concept (PoC): Test both formats with your workload, focusing on schema evolution, query performance, and integration with your stack. 
+High-volume jobs will reveal practical differences (e.g., Iceberg’s metadata efficiency vs. Delta’s streaming speed).
+
+If you’re starting fresh and prioritize openness, Iceberg’s momentum (e.g., AWS S3 Tables, Snowflake Polaris) makes it a strong contender for 2025 and beyond.
+If you’re in Databricks, Delta’s optimizations and UniForm provide immediate value with future Iceberg compatibility.
+
+
+Iceberg’s documentation: apache.iceberg.io
+Delta Lake’s documentation: delta.io
