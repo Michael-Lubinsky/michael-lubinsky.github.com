@@ -6,25 +6,14 @@
 
 Apache Iceberg is an open table format for huge analytic datasets, designed to work with engines like:
 
--   **Apache Spark**
-    
--   **Trino**
-    
--   **Presto**
-    
--   **Flink**
-    
--   **Hive**
+ **Apache Spark**     **Trino**  **Presto** **Flink**  **Hive**
     
 
 It solves problems with traditional Hive-style tables such as:
 
 -   Lack of ACID guarantees
-    
 -   Poor performance on large datasets
-    
 -   Difficulty managing metadata
-    
 
 * * *
 
