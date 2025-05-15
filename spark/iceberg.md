@@ -157,12 +157,64 @@ The log contains information about added and removed data files, schema changes,
 2. Manifest Lists: List all the manifest files for the table.
 
 3. Manifest Files: List the data files that make up a snapshot of the table, along with their partition
-values,
-file-level statistics (like row count, min/max values for columns), and column-level statistics.
+values, file-level statistics (like row count, min/max values for columns), and column-level statistics.
 
  This hierarchical structure allows for efficient metadata management and faster query planning, especially for large tables. 
  Iceberg avoids reliance on a central metastore for most operations, only using it to store the pointer to the latest metadata.
 
+### ACID Transactions and Data Consistency:
+
+Apache Iceberg: Provides ACID (Atomicity, Consistency, Isolation, Durability) transactions using optimistic concurrency control and snapshots. Each change to the table creates a new snapshot, ensuring that readers always see a consistent view of the data.
+Databricks Delta: Also offers full ACID transaction guarantees through its transaction log. It ensures that concurrent read and write operations are consistent and that data is not corrupted in case of failures.
+
+### Schema Evolution:
+
+Apache Iceberg: Offers robust and flexible schema evolution. It tracks columns by ID, allowing for operations like adding, renaming, dropping, and reordering columns without rewriting the data files.  
+It also supports more complex type changes.
+Databricks Delta: Supports schema evolution, allowing adding columns and widening column types without rewriting data. 
+However, it can have limitations with more complex type changes or incompatible type conversions. Schema changes are recorded in the Delta Log.
+
+### Time Travel and Data Versioning:
+
+Apache Iceberg: Supports time travel by allowing users to query historical snapshots of the table. 
+Every change creates a new snapshot, and users can query data as it existed at a specific point in time or snapshot ID. Rollback to previous versions is also straightforward. 
+
+Databricks Delta: Provides time travel capabilities by leveraging its transaction log. Users can query previous versions of the data based on timestamps or version numbers. 
+This is useful for auditing, debugging, and reproducing analyses.
+
+### Partitioning and Performance:
+
+Apache Iceberg: Introduces "hidden partitioning," where users query data using actual column values, and Iceberg automatically maps these to the underlying physical partitions. 
+This avoids common pitfalls of traditional partitioning, like creating too many or too few partitions.  
+Iceberg also supports partition evolution, allowing changes to the partitioning scheme without data rewrites. It utilizes metadata for efficient partition pruning and data skipping. 
+Sorted tables can further improve performance by enabling more effective data skipping.
+
+
+Databricks Delta: Supports traditional partitioning based on user-defined columns. 
+It offers features like Z-order clustering to improve data locality for faster filtering and joins on high-cardinality columns. Data skipping based on file-level statistics is also employed. 
+While partition evolution is being worked on, it's not as mature as in Iceberg.
+
+### Query Engine Compatibility:
+
+Apache Iceberg: Designed to be engine-agnostic and boasts broad compatibility with various query engines, including Apache Spark, Trino, Presto, Flink, Apache Hive, and more.  
+This makes it a versatile choice for organizations using a multi-engine environment.
+
+Databricks Delta: Has strong and seamless integration with Apache Spark, as it was initially developed by the creators of Spark. 
+While it also supports other engines like Trino, PrestoDB, Flink, and others through connectors, 
+its ecosystem is most tightly coupled with Spark. 
+The introduction of Delta Lake UniForm aims to bridge this gap by allowing Iceberg and Hudi clients to read Delta tables.
+
+### Scalability and Resource Management:
+
+Apache Iceberg: Its metadata management, with the hierarchical structure and avoidance of a central metastore for most operations, makes it highly scalable for petabyte-scale datasets and tables with billions of files.
+Databricks Delta: Is also highly scalable and used in many large-scale production environments. However, the transaction log can grow large and requires periodic compaction. Iceberg's distributed metadata approach is often considered more efficient for extremely large datasets.
+
+### Data Manipulation Language (DML):
+
+Apache Iceberg: Supports expressive SQL-like DML operations, including MERGE INTO for upserts, UPDATE, and DELETE. 
+It can perform eager data file rewriting or use delete deltas for faster updates.
+
+Databricks Delta: Provides SQL, Scala/Java, and Python APIs for DML operations like MERGE, UPDATE, and DELETE.
 
 
  
