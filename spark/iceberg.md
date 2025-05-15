@@ -103,12 +103,11 @@ Here’s a comparison to clarify how they relate:
 * * *
 
 ### 🔶 2. **Integration with Engines**
----------------------------------
+ 
 | Feature | Iceberg | Delta Lake
 |---------|---------|------------
-**Engine Compatibility**  Spark, Trino, Flink, Presto, etc. Primarily Spark (esp. Databricks), now Trino, Flink
-
-**Catalog Use** External catalogs (Hive, REST, Glue) Databricks Unity Catalog or Hive metastore
+| **Engine Compatibility**  | Spark, Trino, Flink, Presto, etc. | Primarily Spark (esp. Databricks), now Trino, Flink
+| **Catalog Use** | External catalogs (Hive, REST, Glue)|  Databricks Unity Catalog or Hive metastore
 
 * * *
 
@@ -146,13 +145,10 @@ So, **Unity Catalog is to Delta tables what Hive/REST catalog is to Iceberg tabl
 
 ### 🧩 Summary
 
-Concept  Iceberg   Delta Lake (Databricks)
-
-**Open Source** Yes    Yes (core), but enhanced on Databricks
-
-**Metadata Storage**  External catalog (Hive, REST, etc.)   Built-in or Unity Catalog
-
-**Compute Decoupled**  Yes  Mostly Spark-based (Databricks optimized)
-
-**Standard Format**  Apache Iceberg  Delta Lake format
+| Concept |  Iceberg |  Delta Lake (Databricks) |
+|---------|----------|--------------------------|
+| **Open Source** | Yes |    Yes (core), but enhanced on Databricks|
+|**Metadata Storage**  | External catalog (Hive, REST, etc.)  |  Built-in or Unity Catalog
+| **Compute Decoupled**  |  Yes  | Mostly Spark-based (Databricks optimized)
+|**Standard Format**  | Apache Iceberg  | Delta Lake format
 
