@@ -72,9 +72,9 @@ WHERE levenshtein(u1.name, u2.name) < 3
 ### Jaccard Similarity
 
 The Jaccard similarity between two sets A and B is:
-```
+ 
 J(A,B)= ∣A∪B∣ / ∣A∩B∣
-​```
+ 
  Implementing Jaccard Similarity in Apache Spark is a great way to find near-duplicate text records — like user names or addresses — especially when typos or word-order differences exist.
 In the context of text, we typically tokenize the string into words or character shingles, then compute similarity between those sets.
 
@@ -86,7 +86,6 @@ You can split into sets of words or n-grams.
 
 ```python
 from pyspark.sql.functions import split, col, array_distinct
-
 df = df.withColumn("name_tokens", array_distinct(split(col("name"), "\\s+")))
 ```
 🔹 Step 2: Self-join the table
@@ -95,7 +94,6 @@ We'll compare each row to every other row using a cross join or cartesian produc
 ```python
 df1 = df.alias("a")
 df2 = df.alias("b")
-
 pairs = df1.join(df2, col("a.id") < col("b.id"))
 ```
 🔹 Step 3: Define Jaccard similarity UDF
