@@ -556,7 +556,7 @@ over(order by n rows between current row and 1 following) avg
 from (select rownum n, val from data) t;
 
 ```
-### find people with 3 or more  consequtive ERROR types
+### find people with 3 or more consequtive ERROR types
 ```sql
 WITH error_ranks AS (
   SELECT 
@@ -799,6 +799,50 @@ group by user_id
 order by 2 desc
 limit 3;
 ```
+
+
+### Cohort Analysis — New, Active, and Churned Customers
+Problem Statement:
+Given the table Orders(OrderId, CustID, Date, Category, Value), write a SQL query to output the DATE, COHORT,   
+and the NUMBER OF CUSTOMERS categorized as new, active (<90 days), and churn (>90 days).
+
+Approach:
+The challenge here was to identify customer activity based on the order date and categorize them as ‘New,’ ‘Active,’ or ‘Churned’ based on the last order date.  
+The query used a combination of lag and DATEDIFF to calculate the time difference between the current and the last order date.
+
+```sql
+
+WITH LastActivity AS (
+    SELECT 
+        CUSTID, 
+        DATE AS CURR_DATE,
+        LAG(DATE) OVER (
+            PARTITION BY CUSTID 
+            ORDER BY DATE
+        ) AS LAST_ORDER_DATE
+    FROM ORDERS
+),
+ClassifiedActivity AS (
+    SELECT 
+        CUSTID,
+        CURR_DATE,
+        LAST_ORDER_DATE,
+        DATEDIFF(CURR_DATE, LAST_ORDER_DATE) AS DATEDIFFE
+    FROM LastActivity
+)
+SELECT 
+    CURR_DATE AS DATE,
+    CASE
+        WHEN LAST_ORDER_DATE IS NULL THEN 'NEW'
+        WHEN DATEDIFFE <= 90 THEN 'ACTIVE'
+        ELSE 'CHURN'
+    END AS COHORT,
+    COUNT(DISTINCT CUSTID) AS NUMBER_OF_CUSTOMERS
+FROM ClassifiedActivity
+GROUP BY CURR_DATE, COHORT
+ORDER BY CURR_DATE, COHORT;
+```
+
 
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
