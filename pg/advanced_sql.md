@@ -10,6 +10,107 @@ https://medium.com/@lozhihao/ace-the-data-science-interview-40-amazon-sql-interv
 https://medium.com/@gunjansahu/leetcode-amazon-sql-interview-questions-list-43b034353732  
 
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
+
+
+
+###  Interview
+
+There is Postgres table named 'accounts' with 2 columns: id and mac.
+There is another table 'activities' with 3 columns: account_id, dt and type.
+The column named 'type' can be 'SUCCESS' or 'ERROR'
+The column 'dt' contains timestamp as a  string.
+Please create a SQL which returns 
+all sequences of 3 or more consecutive (by dt column)   'ERROR'  in type column 
+for each  mac column in accounts table.
+Example: if for given mac value the sorted by dt type values are:
+ERROR,ERROR, SUCCESS, ERROR 
+then there is no 3 consecutive  ERRORs here, because of SUCCESS in between.
+
+```sql
+
+WITH activities(account_id, dt, type) AS (
+    VALUES
+        (1, '2024-01-01', 'ERROR'),
+        (1, '2024-01-02', 'ERROR'),
+        (1, '2024-01-03', 'SUCCESS'),
+        (1, '2024-01-04', 'ERROR'),
+        (2, '2024-01-01', 'ERROR'),
+        (2, '2024-01-02', 'ERROR'),
+        (2, '2024-01-03', 'ERROR'),
+        (2, '2024-01-04', 'ERROR'),
+  (1, '2024-01-06', 'ERROR'),
+  (1, '2024-01-08', 'ERROR')
+),
+accounts (id , mac ) as (
+   values
+    (1, 50) ,
+    (2, 20)
+)
+-- SELECT accounts.*, activities.* 
+-- from activities join accounts on 
+-- accounts.id = activities.account_id;
+,   RankedActivities AS (
+    SELECT
+        a.mac,
+        b.dt,
+        b.type,
+        ROW_NUMBER() OVER (PARTITION BY a.id ORDER BY b.dt) AS rn
+    FROM
+        accounts a
+    JOIN
+        activities b ON a.id = b.account_id
+),
+ErrorActivities AS (
+    SELECT
+        mac,
+        dt,
+        type,
+        rn
+    FROM  RankedActivities
+    WHERE type = 'ERROR'
+),
+ConsecutiveErrorGroups AS (
+    SELECT
+        mac,
+        dt,
+        type,
+        rn,
+        ROW_NUMBER() OVER (PARTITION BY mac ORDER BY dt) AS error_rn
+    FROM ErrorActivities
+),
+GroupStarts AS (
+    SELECT
+        mac,
+        dt,
+        type,
+        rn,
+        error_rn,
+        rn - error_rn AS group_id
+    FROM     ConsecutiveErrorGroups
+),
+ConsecutiveSequences AS (
+    SELECT
+        mac,
+        MIN(dt) AS started_at,
+        MAX(dt) AS ended_at,
+        COUNT(*) AS activities
+    FROM   GroupStarts
+    GROUP BY
+        mac,
+        group_id
+    HAVING   COUNT(*) >= 3
+)
+SELECT
+    cs.mac,
+    'ERROR' AS type,
+    cs.started_at,
+    cs.ended_at,
+    cs.activities
+FROM ConsecutiveSequences cs;
+```
+
+
+
 ### For each user, find the longest streak of consecutive days they logged in. 
 
 Explanation :
