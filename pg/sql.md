@@ -556,6 +556,48 @@ over(order by n rows between current row and 1 following) avg
 from (select rownum n, val from data) t;
 
 ```
+### find people with 2 consequtive ERROR types
+```sql
+WITH error_ranks AS (
+  SELECT 
+    a.mac,
+    act.type,
+    act.dt,
+    act.account_id,
+    ROW_NUMBER() OVER (PARTITION BY a.mac ORDER BY act.dt) AS rn_all,
+    ROW_NUMBER() OVER (PARTITION BY a.mac, act.type ORDER BY act.dt) AS rn_type
+  FROM accounts a
+  JOIN activities act ON a.id = act.account_id
+  WHERE act.type = 'ERROR'
+),
+sequence_groups AS (
+  SELECT 
+    mac,
+    type,
+    dt,
+    rn_all - rn_type AS seq_group
+  FROM error_ranks
+),
+grouped_sequences AS (
+  SELECT 
+    mac,
+    type,
+    MIN(dt) AS started_at,
+    MAX(dt) AS ended_at,
+    COUNT(*) AS activities
+  FROM sequence_groups
+  GROUP BY mac, type, seq_group
+  HAVING COUNT(*) >= 3
+)
+SELECT 
+  mac,
+  type,
+  started_at,
+  ended_at,
+  activities
+FROM grouped_sequences
+ORDER BY mac, started_at;
+```
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
 https://blog.devgenius.io/my-tough-sql-interview-experience-at-paytm-what-i-was-asked-and-what-i-learned-e987f88de733
