@@ -14,7 +14,7 @@ https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-the
 
 
 ###  Interview
-``
+```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
 There is another table 'activities' with 3 columns: account_id, dt and type.
 The column named 'type' can be 'SUCCESS' or 'ERROR'
