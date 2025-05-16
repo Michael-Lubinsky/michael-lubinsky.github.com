@@ -198,7 +198,7 @@ WHERE id NOT IN (
     GROUP BY name, department_id, salary)
 ```
 #### Remove duplicate rows but keep the most recent based on a timestamp
-```
+```sql
 DELETE FROM employees
 WHERE id NOT IN (
   SELECT MAX(id)
@@ -280,7 +280,7 @@ GROUP BY department_id;
 ```
 
 ### recursive SQL
-```
+```sql
 WITH RECURSIVE EmployeeHierarchy AS (
     SELECT employee_id, manager_id, 1 as level
     FROM employees
@@ -295,7 +295,7 @@ WITH RECURSIVE EmployeeHierarchy AS (
 SELECT * FROM EmployeeHierarchy;
 ```
 Generate dates with recursive SQL
-```
+```sql
 WITH RECURSIVE dates AS (
     SELECT DATE '2025-01-01' AS dt
     UNION ALL
@@ -327,7 +327,7 @@ WHERE column_name REGEXP '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
 ```
 
 ### INTERSECT EXCEPT
-```
+```sql
 SELECT country FROM people
 INTERSECT
 SELECT country FROM customers;
@@ -338,12 +338,12 @@ SELECT country FROM customers;
 ```
 
 ### SUBSTRING , SUBSTRING_INDEX, POSITION and REPLACE
-```
+```sql
 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(column_name, 'key=', -1), ';', 1) AS value
 FROM table_name;
 ```
 ### ESCAPE
-```
+```sql
 SELECT *
 FROM employees
 WHERE name LIKE 'A\_%' ESCAPE '\';
@@ -430,7 +430,7 @@ SELECT customer_id,
 FROM orders;
 ```
 ### FIRST_VALUE, LAST_VALUE
-```
+```sql
 SELECT 
     game_name,
     platform,
@@ -604,7 +604,8 @@ ORDER BY mac, started_at;
 ### Query to find out the third-highest mountain name for each country;  order the country in ASC order.
 
 Table: mountains
-|---------------------|------|-------------|
+
+
 |name                 |height|country      |
 |---------------------|------|-------------|
 |Denalli              |20310 |United States|
@@ -613,7 +614,7 @@ Table: mountains
 |Pico de Orizab       |18491 |Mexico       |
 |Popocatépetl         |17820 |Mexico       |
 |Iztaccihuatl         |17160 |Mexico       |
-+---------------------+------+-------------+
+
  
 ```sql
 SELECT "country", "name"
@@ -631,16 +632,16 @@ Write a query to find the number of pages that are currently on with the latest_
 Hint: The page_flag column will be used to identify whether or not a page is “OFF” or “ON”.
 
 Table: pages_info
-+-------+--------------------------------------+----------+
+
 |page_id|event_time                            |page_flag |
-+-------+--------------------------------------+----------+
+|-------|-------------------------------------------------|
 |1      |current_timestamp - interval '6 hours'|ON        |
 |1      |current_timestamp - interval '3 hours'|OFF       |
 |1      |current_timestamp - interval '1 hours'|ON        |
 |2      |current_timestamp - interval '3 hours'|ON        |
 |2      |current_timestamp - interval '1 hours'|OFF       |
 |3      |current_timestamp                     |ON        |
-+-------+--------------------------------------+----------+
+
 Solution
 
 First, for each page id, let’s select the latest record (based on the event time column):
@@ -676,9 +677,9 @@ Write a query to return the 3 users with the longest continuous streak of visiti
 Order the 3 users from longest to shortest streak.
 
 Table: visits
-+--------+----------------------------+
+
 |user_id |date                        | 
-+--------+----------------------------+
+|--------|----------------------------|
 |1       |current_timestamp::DATE - 0 |
 |1       |current_timestamp::DATE - 1 |
 |1       |current_timestamp::DATE - 2 |
@@ -690,11 +691,11 @@ Table: visits
 |4       |current_timestamp::DATE - 3 |
 |4       |current_timestamp::DATE - 4 |
 |4       |current_timestamp::DATE - 62|   
-+--------+----------------------------+
+
 Solution
 
 First, let’s add a new column whose value is the next visit (different from the current date) for each user. We are gonna use the lead function to do so:
-```
+```sql
 select distinct
 user_id,
 date,
@@ -756,7 +757,7 @@ end
 from streaks;
 ```
 Once we have this partition the problem is easier, now we only need to calculate the number of records per user and partition, and find the users with the greatest count. The complete query will look like this:
-```
+```sql
 with next_dates as (
 select distinct
 user_id,
