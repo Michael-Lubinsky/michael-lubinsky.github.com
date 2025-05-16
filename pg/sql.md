@@ -556,7 +556,7 @@ over(order by n rows between current row and 1 following) avg
 from (select rownum n, val from data) t;
 
 ```
-### find people with 2 consequtive ERROR types
+### find people with 3 or more  consequtive ERROR types
 ```sql
 WITH error_ranks AS (
   SELECT 
@@ -598,6 +598,208 @@ SELECT
 FROM grouped_sequences
 ORDER BY mac, started_at;
 ```
+
+
+ 
+### Query to find out the third-highest mountain name for each country;  order the country in ASC order.
+
+Table: mountains
+|---------------------|------|-------------|
+|name                 |height|country      |
+|---------------------|------|-------------|
+|Denalli              |20310 |United States|
+|Saint Elias          |18008 |United States|
+|Foraker              |17402 |United States|
+|Pico de Orizab       |18491 |Mexico       |
+|Popocatépetl         |17820 |Mexico       |
+|Iztaccihuatl         |17160 |Mexico       |
++---------------------+------+-------------+
+ 
+```sql
+SELECT "country", "name"
+FROM (
+  SELECT "country", "name", RANK() OVER (PARTITION BY "country" ORDER BY "height" DESC) as "rank"
+  FROM mountains
+  ) as m
+WHERE "rank" = 3
+ORDER BY country ASC
+```
+### Find the number of pages that are currently on with latest_event
+Prompt: Given the following table with information about when the status of a page was changed.   
+Write a query to find the number of pages that are currently on with the latest_event.
+
+Hint: The page_flag column will be used to identify whether or not a page is “OFF” or “ON”.
+
+Table: pages_info
++-------+--------------------------------------+----------+
+|page_id|event_time                            |page_flag |
++-------+--------------------------------------+----------+
+|1      |current_timestamp - interval '6 hours'|ON        |
+|1      |current_timestamp - interval '3 hours'|OFF       |
+|1      |current_timestamp - interval '1 hours'|ON        |
+|2      |current_timestamp - interval '3 hours'|ON        |
+|2      |current_timestamp - interval '1 hours'|OFF       |
+|3      |current_timestamp                     |ON        |
++-------+--------------------------------------+----------+
+Solution
+
+First, for each page id, let’s select the latest record (based on the event time column):
+```sql
+select
+   page_id,
+   max(event_time) as latest_event
+from pages_info
+group by page_id
+```
+Now, we need to join the previous query with the original table,  
+and check how many of them have their flagged pages is equals to ON.   
+```sql
+with latest_event as (
+select
+   page_id,
+   max(event_time) as latest_event
+from pages_info
+group by page_id
+)
+select
+  sum(
+      case
+      when page_flag = 'ON' then 1
+      else 0
+      end
+     ) as result
+from pages_info pi
+join latest_event le on pi.page_id = le.page_id and pi.event_time = le.latest_event;
+```
+###  Given a table with information about the visits of users to a web page. 
+Write a query to return the 3 users with the longest continuous streak of visiting the page.
+Order the 3 users from longest to shortest streak.
+
+Table: visits
++--------+----------------------------+
+|user_id |date                        | 
++--------+----------------------------+
+|1       |current_timestamp::DATE - 0 |
+|1       |current_timestamp::DATE - 1 |
+|1       |current_timestamp::DATE - 2 |
+|1       |current_timestamp::DATE - 3 |
+|1       |current_timestamp::DATE - 4 |
+|2       |current_timestamp::DATE - 1 |
+|4       |current_timestamp::DATE - 0 |
+|4       |current_timestamp::DATE - 1 |
+|4       |current_timestamp::DATE - 3 |
+|4       |current_timestamp::DATE - 4 |
+|4       |current_timestamp::DATE - 62|   
++--------+----------------------------+
+Solution
+
+First, let’s add a new column whose value is the next visit (different from the current date) for each user. We are gonna use the lead function to do so:
+```
+select distinct
+user_id,
+date,
+lead(date) over (partition by user_id order by date) as next_date
+from (select distinct * from visits) as t;
+```
+Once we have this, let’s create another column whose purpose will be to let us know then a streak stops. This basically consists in checking when the next date is different from the current date + 1. Like this
+```sql
+with next_dates as (
+select distinct
+user_id,
+date,
+lead(date) over (partition by user_id order by date) as next_date
+from (select distinct * from visits) as t -- remove duplicates
+)
+select
+user_id,
+date,
+next_date,
+case
+when next_date is null or next_date = date + 1 then 1
+else null
+end as streak
+from next_dates;
+```
+Once we have this, we are gonna create a partition for each user, where each partition represents a continuous streak. 
+Conceptually, what we are going to do is, for each user,   take the most recent record (based on date) and assign 0, 
+then look for the following record and assign 0 if the streak hasn’t stopped,   
+or 1 if the streak stopped (if the streak column is null),  
+and then continuing doing this until each streak is represented by a different partition.  
+The code that does this logic is the following:
+```sql
+with next_dates as (
+select distinct
+user_id,
+date,
+lead(date) over (partition by user_id order by date) as next_date
+from (select distinct * from visits)
+),
+streaks as (
+select
+user_id,
+date,
+next_date,
+case
+when next_date is null or next_date = date + 1 then 1
+else null
+end as streak
+from next_dates
+)
+select
+*,
+sum(
+case
+when streak is null then 1
+else 0
+end
+) over (partition by user_id order by date) as partition
+from streaks;
+```
+Once we have this partition the problem is easier, now we only need to calculate the number of records per user and partition, and find the users with the greatest count. The complete query will look like this:
+```
+with next_dates as (
+select distinct
+user_id,
+date,
+lead(date) over (partition by user_id order by date) as next_date
+from visits
+),
+streaks as (
+select
+user_id,
+date,
+next_date,
+case
+when next_date is null or next_date = date + 1 then 1
+else null
+end as streak
+from next_dates
+),
+partitions as (
+select
+*,
+sum(
+case
+when streak is null then 1
+else 0
+end
+) over (partition by user_id order by date) as partition
+from streaks
+),
+count_partitions as (
+select user_id, partition, count(1) as streak_days
+from partitions
+group by user_id, partition
+)
+select
+user_id,
+max(streak_days) as longest_streak
+from count_partitions
+group by user_id
+order by 2 desc
+limit 3;
+```
+
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
 https://blog.devgenius.io/my-tough-sql-interview-experience-at-paytm-what-i-was-asked-and-what-i-learned-e987f88de733
