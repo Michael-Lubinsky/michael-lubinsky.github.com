@@ -13,7 +13,7 @@ https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-the
 
 
 
-###  Interview
+###  Interview question
 ```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
 There is another table 'activities' with 3 columns: account_id, dt and type.
@@ -110,6 +110,49 @@ SELECT
     cs.ended_at,
     cs.activities
 FROM ConsecutiveSequences cs;
+```
+
+
+### Interview question 2
+
+```sql
+WITH premiums AS (
+  SELECT * FROM (VALUES
+    ('Term Life',   100),
+    ('Whole Life',  100),
+    ('Health',      400),
+    ('Endowment',   500)
+  ) AS p(insurance_type, monthly_premium)
+),
+rates AS (
+  SELECT * FROM (VALUES
+    ('Term Life',   'Low',    0.10),
+    ('Term Life',   'Medium', 0.085),
+    ('Term Life',   'High',   0.07),
+    ('Whole Life',  'Low',    0.10),
+    ('Whole Life',  'Medium', 0.085),
+    ('Whole Life',  'High',   0.07),
+    ('Health',      'Low',    0.02),
+    ('Health',      'Medium', 0.015),
+    ('Health',      'High',   0.01),
+    ('Endowment',   'Low',    0.15),
+    ('Endowment',   'Medium', 0.12),
+    ('Endowment',   'High',   0.10)
+  ) AS r(insurance_type, risk, annual_rate)
+)
+SELECT
+  u.user_id,
+  u.insurance_type,
+  u.risc AS risk,
+  ROUND( (p.monthly_premium * 12) / r.annual_rate ) AS insured_amount
+FROM users u
+JOIN premiums p
+  ON u.insurance_type = p.insurance_type
+JOIN rates r
+  ON u.insurance_type = r.insurance_type
+ AND u.risc = r.risk
+ORDER BY u.user_id;
+
 ```
 
 
