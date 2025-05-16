@@ -14,7 +14,7 @@ https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-the
 
 
 ###  Interview
-
+``
 There is Postgres table named 'accounts' with 2 columns: id and mac.
 There is another table 'activities' with 3 columns: account_id, dt and type.
 The column named 'type' can be 'SUCCESS' or 'ERROR'
@@ -25,6 +25,13 @@ for each  mac column in accounts table.
 Example: if for given mac value the sorted by dt type values are:
 ERROR,ERROR, SUCCESS, ERROR 
 then there is no 3 consecutive  ERRORs here, because of SUCCESS in between.
+
+In code below CTE GroupStarts is important:
+As long as the 'ERROR' events are consecutive (meaning no other activity types interrupt them), 
+the difference between their overall rank (rn) and their rank within the 'ERROR' events (error_rn) 
+will remain constant. 
+When a non-'ERROR' event occurs, the error_rn sequence is broken, and the next 'ERROR' event will have a different group_id.
+```
 
 ```sql
 
@@ -55,10 +62,8 @@ accounts (id , mac ) as (
         b.dt,
         b.type,
         ROW_NUMBER() OVER (PARTITION BY a.id ORDER BY b.dt) AS rn
-    FROM
-        accounts a
-    JOIN
-        activities b ON a.id = b.account_id
+    FROM       accounts a
+    JOIN  activities b ON a.id = b.account_id
 ),
 ErrorActivities AS (
     SELECT
@@ -95,9 +100,7 @@ ConsecutiveSequences AS (
         MAX(dt) AS ended_at,
         COUNT(*) AS activities
     FROM   GroupStarts
-    GROUP BY
-        mac,
-        group_id
+    GROUP BY      mac,  group_id
     HAVING   COUNT(*) >= 3
 )
 SELECT
