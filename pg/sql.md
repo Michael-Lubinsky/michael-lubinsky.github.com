@@ -847,6 +847,8 @@ ORDER BY CURR_DATE, COHORT;
 
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
+
+https://leonwei.com/a-collection-of-google-sql-coding-interview-questions-8dd19b060abe
 https://blog.devgenius.io/my-tough-sql-interview-experience-at-paytm-what-i-was-asked-and-what-i-learned-e987f88de733
 <https://medium.com/h7w/sql-interview-at-microsoft-apple-ibm-b5d94f0194eb>
 <https://medium.com/ai-ml-interview-playbook/top-10-sql-interview-questions-youll-actually-be-asked-d8ca55930d68>
