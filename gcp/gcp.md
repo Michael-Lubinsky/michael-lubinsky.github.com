@@ -314,4 +314,82 @@ Feature | Cloud Composer |  Workflows
 * * *
 
 
+**BigQuery** is **Google Cloud Platform’s (GCP)** **fully-managed, serverless data warehouse** designed for fast SQL analytics on large-scale datasets.
+
+* * *
+
+### 🔍 **Key Features of BigQuery**
+
+| Feature                             | Description                        |
+| ----------------------------------- | ------------------------------------------------------------------- |
+| **Serverless**                      | No infrastructure management — Google handles provisioning, scaling, and maintenance.                    |
+| **SQL-Based**                       | Use standard SQL to query structured, semi-structured (JSON), or nested data.                            |
+| **Massively Scalable**              | Handles **petabytes** of data with high performance.                                                     |
+| **Separation of Storage & Compute** | You can store data separately and only pay for what you query.                                           |
+| **Real-Time Analytics**             | Can stream data in and analyze it in near real-time.                                                     |
+| **Machine Learning (BigQuery ML)**  | Run ML models directly using SQL, without moving data.                                                   |
+| **Federated Queries**               | Query data directly from Google Cloud Storage, Google Sheets, or external databases.                     |
+| **Integration**                     | Works well with GCP services like Dataflow, Dataproc, Looker, and external tools like Tableau, Power BI. |
+
+
+* * *
+
+### 🧪 Example Use Case
+
+
+
+```sql
+SELECT   country,   COUNT(*) AS num_sales
+FROM   `my_project.sales_data.transactions`
+WHERE   DATE(transaction_time) = "2025-05-01"
+GROUP BY   country ORDER BY   num_sales DESC;
+```
+
+This query could scan **terabytes of data** in seconds — no tuning, indexing, or infrastructure setup needed.
+
+* * *
+
+### 💲 **Pricing**
+
+-   **Storage**: ~$0.02/GB/month (for active storage)
+    
+-   **Query**: ~$5 per TB scanned (first 1 TB/month is free)
+    
+-   **Streaming inserts**: ~$0.01 per 200 MB
+    
+-   **Flat-rate pricing**: Available for large, predictable workloads
+    
+
+🔸 **Pro tip**: Use **partitioned** and **clustered tables** to reduce costs by limiting the amount of data scanned.
+
+* * *
+
+### 📊 When to Use BigQuery
+
+**Ideal for:**
+
+-   Analyzing huge datasets quickly
+    
+-   Real-time analytics
+    
+-   Building dashboards (Looker, Data Studio)
+    
+-   Running ML/AI on tabular data without exporting
+    
+
+**Less ideal for:**
+
+-   OLTP (transaction-heavy systems)
+    
+-   Small, frequent row-level updates
+    
+
+* * *
+
+### 🚀 Summary
+
+**BigQuery** is:
+
+ A powerful, SQL-driven analytics engine for massive-scale data — fast, flexible, and managed by Google.
+
 
