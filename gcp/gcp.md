@@ -1,6 +1,6 @@
 ### GCP
 
-### Dataflow** and **Dataproc
+### Dataflow  and Dataproc
 
 **Dataflow** and **Dataproc** are two different Google Cloud services for processing large-scale data — 
 but they serve different use cases and are built on different paradigms:
@@ -83,14 +83,11 @@ but they serve different use cases and are built on different paradigms:
 | Familiar with Apache Beam | ✅ Native | 🚫 Not supported
 | Already using Spark/Hadoop jobs | 🚫 Not compatible | ✅ Ideal
 | Long-running batch jobs | ✅ Yes | ✅ Yes
-
 | Ad hoc big data exploration | 🚫 Harder | ✅ Spark notebooks supported
-
 | Pricing model | Pay-per-use | Pay-per-cluster
 
 * * *
 
-## 🏁 TL;DR
 
 -   **Cloud Dataflow** = Best for **streaming + batch**, **serverless**, future-proof ETL.
     
@@ -98,8 +95,6 @@ but they serve different use cases and are built on different paradigms:
     
 
 * * *
-
- 
 
 
 The **closest equivalent to Apache Airflow** in **Google Cloud Platform (GCP)** is:
@@ -120,21 +115,14 @@ but without the burden of managing the underlying infrastructure.
 
 Feature  | Cloud Composer (GCP Managed Airflow) |
 |--------|------------| 
-**Orchestrator** | Apache Airflow (open source) |
-
-**Managed by** | Google Cloud (updates, scaling, security)
-
-**Language** | Python (Airflow DAGs)
-
-**Integrations** | BigQuery, Dataflow, Dataproc, Cloud Run, GCS, Pub/Sub, etc.
-
-**Version Control** | Supports custom Airflow versions
-
-**UI** | Airflow Web UI via GCP Console
-
-**Environment Isolation** | Each Composer environment runs in its own GKE cluster
-
-**Monitoring** | Integrated with Stackdriver (Cloud Logging, Monitoring)
+| **Orchestrator** | Apache Airflow (open source) |
+| **Managed by** | Google Cloud (updates, scaling, security)
+| **Language** | Python (Airflow DAGs)
+| **Integrations** | BigQuery, Dataflow, Dataproc, Cloud Run, GCS, Pub/Sub, etc.
+| **Version Control** | Supports custom Airflow versions
+| **UI** | Airflow Web UI via GCP Console
+| **Environment Isolation** | Each Composer environment runs in its own GKE cluster
+| **Monitoring** | Integrated with Stackdriver (Cloud Logging, Monitoring)
 
 * * *
 
@@ -177,14 +165,10 @@ from datetime import datetime
 |--------|--------|----| 
 | **Hosting** | GCP-managed (runs on GKE) | User-managed |
 | **Setup Time** | Minutes | Hours or more
-
 | **Scaling** | Automatic (within limits) | Manual
-
 |**Integration** | Deep GCP integration | Requires plugins
-
 | **Cost** | Higher (GCP infra + Composer) | Lower infra, but labor cost
-
-**Upgrades** | Google-managed or manual | Manual
+| **Upgrades** | Google-managed or manual | Manual
 
 * * *
 
@@ -235,15 +219,11 @@ Feature | **Cloud Composer (Apache Airflow)** | **Google Cloud Workflows**
 
 | Area    | Cloud Composer |      Workflows |
 |--------|-----------------|---------------------------|
-Data pipelines| ✅ Ideal (BigQuery, Dataflow, etc.) | 🚫 Not ideal
-
-Microservice orchestration |  🚫 Complex, overkill | ✅ Designed for this
-
+| Data pipelines| ✅ Ideal (BigQuery, Dataflow, etc.) | 🚫 Not ideal
+| Microservice orchestration |  🚫 Complex, overkill | ✅ Designed for this
 | API calls & chaining 🚫 Requires Python boilerplate | ✅ Native support
-
-Long-running workflows | ✅ Handles retries, dependencies | ✅ With constraints
-
-Real-time workflows | 🚫 Not ideal (GKE startup time) | ✅ Excellent
+| Long-running workflows | ✅ Handles retries, dependencies | ✅ With constraints
+| Real-time workflows | 🚫 Not ideal (GKE startup time) | ✅ Excellent
 
 * * *
 
@@ -251,13 +231,10 @@ Real-time workflows | 🚫 Not ideal (GKE startup time) | ✅ Excellent
 
 Feature | Cloud Composer |  Workflows
 |-------|----------------|----------|
-Language | Python (Airflow DAGs) | YAML/JSON DSL
-
-Ease of Use | Familiar for Python developers | Simpler for event/API chaining
-
-Conditional Logic | Python-native | Limited, but supported in DSL
-
-Retry/Timeouts | Advanced (Airflow operators) Built-in (`retry`, `timeout`, etc.)
+| Language | Python (Airflow DAGs) | YAML/JSON DSL
+| Ease of Use | Familiar for Python developers | Simpler for event/API chaining
+| Conditional Logic | Python-native | Limited, but supported in DSL
+| Retry/Timeouts | Advanced (Airflow operators) Built-in (`retry`, `timeout`, etc.)
 
 * * *
 
@@ -265,11 +242,9 @@ Retry/Timeouts | Advanced (Airflow operators) Built-in (`retry`, `timeout`, etc.
 
 |Feature | Cloud Composer | Workflows |
 |-------|----------------|----------|
-Cold start latency | 1–2 minutes (GKE startup) | Sub-second
-
-Concurrency | High with tuning | High by default
-
-Autoscaling | Composer 2 supports better scaling | Fully autoscaled
+| Cold start latency | 1–2 minutes (GKE startup) | Sub-second
+| Concurrency | High with tuning | High by default
+| Autoscaling | Composer 2 supports better scaling | Fully autoscaled
 
 * * *
 
