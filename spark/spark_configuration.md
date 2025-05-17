@@ -31,21 +31,6 @@ Defines the fraction of memory reserved for storage-related tasks (default is 0.
 --driver-memory 8G
 ```
 
-### Key Settings
-
-```
---executor-memory 8G 
---executor-cores 4 
---num-executors 20
-```
-
-### Yet Another Key Settings
-```
---executor-memory 4G 
---executor-cores 2 
---num-executors 10 -
--driver-memory 4G
-```
 ### Spark Config Tuning
 
 
@@ -54,23 +39,8 @@ spark.conf.set("spark.sql.shuffle.partitions", "200")  # Adjust based on cluster
 spark.conf.set("spark.sql.adaptive.enabled", "true")   # Enable AQE
 spark.conf.set("spark.sql.files.maxPartitionBytes", "134217728")  # 128 MB
 spark.conf.set("spark.sql.broadcastTimeout", "300")    # Increase if needed
-```
-
-### Spark Config Tuning
-
-
-```
-spark.conf.set("spark.sql.shuffle.partitions", "400") 
 spark.conf.set("spark.memory.fraction", "0.8")   # More memory for execution
-```
 
-
-
-
-### Spark Config Tuning
-
-
-```
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "50MB")  # Or larger if memory allows spark.conf.set("spark.sql.adaptive.enabled", "true")            # Adaptive join selection spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")   # Handle data skew
 ```
 
