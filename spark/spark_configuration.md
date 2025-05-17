@@ -318,14 +318,9 @@ and shuffle operations.
 Monitor these metrics to identify bottlenecks and adjust configurations accordingly.
 ```
 
-### Optimizing Big Data Processing in Databricks
 
-_Interviewer:_
-```
-Let's say we're processing a massive dataset of 5 TB in Databricks.
-How would you configure the cluster to achieve optimal performance?
-```
-_Candidate:_ 
+### How to configure Spark to process  5 TB in Databricks?
+
 ```
 To process 5 TB of data efficiently, I'd recommend a cluster configuration 
 with a mix of high-performance nodes and optimized storage.
@@ -363,9 +358,8 @@ Therefore, we'd recommend a cluster configuration with:
 
 This configuration would provide a good balance between processing power and memory capacity.
 ```
-_Interviewer:_ That's a great approach! How would you decide the number of executors and executor cores required?
 
-_Candidate:_ 
+###   How to decide the number of executors and executor cores required?
 
 To decide the number of executors and executor cores, I'd consider the following factors:
 
@@ -379,9 +373,9 @@ Number of executor cores = 50-100 nodes x 5-10 cores/node = 250-1000 cores
 
 Number of executors = Number of executor cores / 5-10 cores/executor = 25-100 executors
 
-_Interviewer:_ What about memory requirements? How would you estimate the total memory required?
+### Memory requirements:  how  estimate the total memory required?
 
-_Candidate:_ To estimate the total memory required, I'd consider the following factors:
+To estimate the total memory required, I'd consider the following factors:
 
 - Number of executors: 25-100 executors
 - Memory per executor: 20-40 GB
@@ -390,10 +384,8 @@ Total memory required = Number of executors x Memory per executor = 500-4000 GB
 
 Therefore, we'd need a cluster with at least 500-4000 GB of memory to process 5 TB of data efficiently.
 
-_Interviewer:_ Finally, can you tell me how you'd handle data skew and optimize data processing performance?
+### How to  handle data skew and optimize data processing performance?
 
-
-To handle data skew, I'd use techniques like:
 
 - Salting: adding a random value to the partition key to reduce skew
 - Bucketing: dividing data into smaller buckets to reduce skew
