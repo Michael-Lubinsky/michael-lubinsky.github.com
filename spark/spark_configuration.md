@@ -1,7 +1,28 @@
 ### Config
 
 
-### Key Settings:
+### Config params
+```
+the number of executor instances to launch.
+--conf spark.executor.instances=10
+
+Sets the number of cores for each executor.
+--conf spark.executor.cores=4
+
+Defines the amount of memory allocated to each executor.
+--conf spark.executor.memory=8g
+
+Specifies the memory allocated to the driver program.
+--conf spark.driver.memory=4g
+
+Controls the fraction of total memory available for execution and storage
+(default is 0.6).
+--conf spark.memory.fraction=0.7
+
+
+Defines the fraction of memory reserved for storage-related tasks (default is 0.5 of the memory fraction).
+```
+### Key Settings
 
 ```
 --executor-memory 16G 
@@ -10,14 +31,49 @@
 --driver-memory 8G
 ```
 
+### Key Settings
 
-### Spark Config Tuning:
+```
+--executor-memory 8G 
+--executor-cores 4 
+--num-executors 20
+```
+
+### Yet Another Key Settings
+```
+--executor-memory 4G 
+--executor-cores 2 
+--num-executors 10 -
+-driver-memory 4G
+```
+### Spark Config Tuning
+
+
+```
+spark.conf.set("spark.sql.shuffle.partitions", "200")  # Adjust based on cluster size
+spark.conf.set("spark.sql.adaptive.enabled", "true")   # Enable AQE
+spark.conf.set("spark.sql.files.maxPartitionBytes", "134217728")  # 128 MB
+spark.conf.set("spark.sql.broadcastTimeout", "300")    # Increase if needed
+```
+
+### Spark Config Tuning
 
 
 ```
 spark.conf.set("spark.sql.shuffle.partitions", "400") 
 spark.conf.set("spark.memory.fraction", "0.8")   # More memory for execution
 ```
+
+
+
+
+### Spark Config Tuning
+
+
+```
+spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "50MB")  # Or larger if memory allows spark.conf.set("spark.sql.adaptive.enabled", "true")            # Adaptive join selection spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")   # Handle data skew
+```
+
 
 
 ```python
@@ -183,27 +239,6 @@ df.explain(True)  # Displays physical/logical plansConclusion
 
 
 
-### Config params
-```
-the number of executor instances to launch.
---conf spark.executor.instances=10
-
-Sets the number of cores for each executor.
---conf spark.executor.cores=4
-
-Defines the amount of memory allocated to each executor.
---conf spark.executor.memory=8g
-
-Specifies the memory allocated to the driver program.
---conf spark.driver.memory=4g
-
-Controls the fraction of total memory available for execution and storage
-(default is 0.6).
---conf spark.memory.fraction=0.7
-
-
-Defines the fraction of memory reserved for storage-related tasks (default is 0.5 of the memory fraction).
-```
 
 ### EXAMPLE
 ```
@@ -860,19 +895,6 @@ https://tech8byte.wordpress.com/2022/07/05/partitioning-vs-bucketing-in-apache-s
 -   Moderate joins
     
 
-### Key Settings:
-
-`--executor-memory 4G --executor-cores 2 --num-executors 10 --driver-memory 4G`
-
-### Spark Config Tuning:
-
-
-```
-spark.conf.set("spark.sql.shuffle.partitions", "200")  # Adjust based on cluster size
-spark.conf.set("spark.sql.adaptive.enabled", "true")   # Enable AQE
-spark.conf.set("spark.sql.files.maxPartitionBytes", "134217728")  # 128 MB
-spark.conf.set("spark.sql.broadcastTimeout", "300")    # Increase if needed
-```
 
 ### Tips:
 
@@ -897,17 +919,6 @@ spark.conf.set("spark.sql.broadcastTimeout", "300")    # Increase if needed
 -   Aggregations and groupBy on joined results
     
 
-### Key Settings:
-
-
-`--executor-memory 8G --executor-cores 4 --num-executors 20`
-
-### Spark Config Tuning:
-
-
-```
-spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "50MB")  # Or larger if memory allows spark.conf.set("spark.sql.adaptive.enabled", "true")            # Adaptive join selection spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")   # Handle data skew
-```
 
 ### Tips:
 
