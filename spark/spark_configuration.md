@@ -1,4 +1,25 @@
 ### Config
+
+
+### Key Settings:
+
+```
+--executor-memory 16G 
+--executor-cores 4 
+--num-executors 15 
+--driver-memory 8G
+```
+
+
+### Spark Config Tuning:
+
+
+```
+spark.conf.set("spark.sql.shuffle.partitions", "400") 
+spark.conf.set("spark.memory.fraction", "0.8")   # More memory for execution
+```
+
+
 ```python
 from pyspark.sql import SparkSession
 spark = SparkSession.builder \
@@ -36,8 +57,7 @@ Repartition to balance data:
 ```
 df = df.repartition("category")  # Or manually: df.repartition(200)
 ```
-### Tuning Spark Configurations
-Adjust Shuffle Partitions & Memory
+###  Adjust Shuffle Partitions & Memory
 ```
 spark.conf.set("spark.sql.shuffle.partitions", "400")  # Default is 200
 spark.conf.set("spark.executor.memory", "32g")         # Increase for heavy workloads
@@ -914,16 +934,6 @@ spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "50MB")  # Or larger if m
 -   Cache-heavy pipelines
     
 
-### Key Settings:
-
-
-`--executor-memory 16G --executor-cores 4 --num-executors 15 --driver-memory 8G`
-
-### Spark Config Tuning:
-
-
-
-`spark.conf.set("spark.sql.shuffle.partitions", "400") spark.conf.set("spark.memory.fraction", "0.8")   # More memory for execution`
 
 ### Tips:
 
