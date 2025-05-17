@@ -43,6 +43,8 @@ https://lptk.github.io/programming/2019/10/15/simple-essence-y-combinator.html
 
 ### Queue
 
+https://blog.danslimmon.com/2016/08/26/the-most-important-thing-to-understand-about-queues/
+
 https://concerningquality.com/queue-simulations/
 
 https://justincartwright.com/2025/02/25/dice-and-queues.html
