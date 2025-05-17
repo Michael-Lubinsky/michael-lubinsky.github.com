@@ -880,7 +880,7 @@ https://tech8byte.wordpress.com/2022/07/05/partitioning-vs-bucketing-in-apache-s
 
 
 
-##  Let's look at **example configurations and tuning tips** for three common Spark workloads:
+##  Example configurations and tuning tips for three common Spark workloads:
 
 * * *
 
