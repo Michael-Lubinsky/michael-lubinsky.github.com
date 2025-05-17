@@ -6,6 +6,12 @@ https://chat-to.dev/post?id=296
 https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
 
 
+
+### ChatGPT Prompt
+
+Please output the Markdown table inside triple backticks, using markdown syntax highlighting, so I can copy and paste it easily into a .md file.
+
+
 ### Jupyter on Jekyll
  
 You don't need to manually convert your Jupyter Notebook to an HTML file to publish it on your GitHub Pages (github.io). Instead, you can use the following methods:
