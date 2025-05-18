@@ -548,11 +548,58 @@ It is useful for organizing and reusing parts of workflows.
 from airflow.operators.subdag import SubDagOperator
 subdag_task = SubDagOperator(task_id='subdag', subdag=subdag, dag=dag)
 ```
-### DAG testing
+###  Task testing
+
+airflow test example_dag my_task 2024-05-17
+
+airflow test does:
+It runs a specific task from a DAG for a given execution_date.
+
+It bypasses the scheduler and all dependencies—upstream or downstream.
+
+It does not trigger the DAG or mark any tasks as successful in the metadata database.
+
+🔍 Behavior:
+It loads the DAG and task definitions from your DAG files.
+
+It runs the task’s logic as if it were executing on that date/time.
+
+It logs output to the console (and optionally to log files).
+
+It does not update task states in the Airflow UI unless you use --save (Airflow 2.6+).
+
+Optional flags (in Airflow 2.6+ and 2.7+):
+--save: Persists the task state in the metadata DB.
+
+--dry-run: Only prints the task's context, without actually running the callable.
+
+--env-vars: Passes environment variables to the test run.
+
+🔧 Use cases:
+Testing a task’s logic during development.
+
+Debugging failures without running the full DAG.
+
+Verifying context values (**kwargs) for a given execution_date.
+
+
+airflow test <dag_id> <task_id> <execution_date>
+
+### DAG  testing
+
 DAGs can be tested using the airflow test command or by running them in the Airflow UI in a safe environment.
 ```bash 
 airflow dags test example_dag 2021-01-01
 ```
+
+Executes the entire DAG in the correct order of dependencies.
+
+Uses the provided execution_date.
+
+Does not persist state in the Airflow metadata DB.
+
+Good for local development or debugging.
+
 {% comment %}
 #### Links
 
