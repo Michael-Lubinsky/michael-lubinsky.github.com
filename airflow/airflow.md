@@ -372,12 +372,13 @@ with DAG(dag_id="sensor_example", start_date=datetime(2025, 1, 1)) as dag:
 ```
 
 ### Backfill
-bash airflow dags backfill -s 2021-01-01 - e 2021-01-07 example_dag
-
+```bash 
+airflow dags backfill -s 2021-01-01 - e 2021-01-07 example_dag
+```
 ### Pools
 Pools are used to limit the execution parallelism on resources like database connections.
-```
-bash airflow pools set my_pool 5 "Description of the pool"
+```bash
+airflow pools set my_pool 5 "Description of the pool"
 ```
 ### SLA
 SLAs are used to set time limits for tasks, with alerts triggered if the time is exceeded.
@@ -389,6 +390,25 @@ task = BashOperator(
     sla=timedelta(minutes=30)
 )
 ```
+### Timeout
+
+```python
+task = BashOperator(
+   task_id='bash_example',
+   bash_command='sleep 300',
+   execution_timeout=timedelta(minutes = 5),
+   dag=dag)
+```
+### SubDagOperator
+The SubDagOperator is used to define a sub-DAG within a DAG.   
+It is useful for organizing and reusing parts of workflows.
+
+```python
+from airflow.operators.subdag import SubDagOperator
+subdag_task = SubDagOperator(task_id='subdag', subdag=subdag, dag=dag)
+```
+
+
 
 {% comment %}
 #### Links
