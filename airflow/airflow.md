@@ -6,6 +6,15 @@ A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 The airflow.cfg file is used to configure the Airflow environment,
 including database connections and executor settings.
 
+### Variables
+```bash 
+airflow variables set key value
+```
+
+```python
+my_var = Variable.get("my_variable")
+```
+
 #### Action Operators: 
 Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call.   
 Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
