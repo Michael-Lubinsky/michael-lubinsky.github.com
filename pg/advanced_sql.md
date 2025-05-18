@@ -13,7 +13,7 @@ https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-the
 
 
 
-###  Interview question
+###  "gaps and islands" problem.
 ```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
 There is another table 'activities' with 3 columns: account_id, dt and type.
@@ -24,7 +24,7 @@ all sequences of 3 or more consecutive (by dt column)   'ERROR'  in type column
 for each  mac column in accounts table.
 Example: if for given mac value the sorted by dt type values are:
 ERROR,ERROR, SUCCESS, ERROR 
-then there is no 3 consecutive  ERRORs here, because of SUCCESS in between.
+then there are no 3 consecutive  ERRORs here, because of SUCCESS in between.
 
 In code below CTE GroupStarts is important:
 As long as the 'ERROR' events are consecutive (meaning no other activity types interrupt them), 
