@@ -55,6 +55,20 @@ class MyTask(SkipMixin, BaseOperator):
           )
 ```
 
+### Task failures
+
+Task failures can be handled by setting up retries, using the _on_failure_callback_, or configuring alerts.
+```python 
+def failure_callback(context):
+   print("Task failed")
+
+task = BashOperator(
+    task_id='bash_example',
+    bash_command='exit 1',
+    on_failure_callback=failure_callback,
+    dag=dag)
+```
+
 
 #### Action Operators: 
 Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call.   
