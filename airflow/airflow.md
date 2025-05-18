@@ -409,7 +409,7 @@ def my_task(**kwargs):
 
 
 
-### provide_context (obsolete)
+### provide_context (obsolete in Airfow 2.x)
 
 The new-style PythonOperator (from airflow.operators.python) does not need provide_context=True.
 
