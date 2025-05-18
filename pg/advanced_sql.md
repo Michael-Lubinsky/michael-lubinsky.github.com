@@ -54,9 +54,6 @@ accounts (id , mac ) as (
     (1, 50) ,
     (2, 20)
 )
--- SELECT accounts.*, activities.* 
--- from activities join accounts on 
--- accounts.id = activities.account_id;
 ,   RankedActivities AS (
     SELECT
         a.mac,
@@ -151,6 +148,42 @@ ORDER BY mac, start_dt;
 
 ```
 
+#### Yet another solution to the same question above
+
+```sql
+WITH error_sequences AS (
+    SELECT 
+        a.mac,
+        act.dt,
+        act.type,
+        SUM(CASE 
+            WHEN act.type != 'ERROR' 
+            OR LAG(act.type) OVER (PARTITION BY a.mac ORDER BY act.dt) != 'ERROR' 
+            OR LAG(a.mac) OVER (ORDER BY a.mac, act.dt) != a.mac 
+            THEN 1 ELSE 0 
+        END) OVER (PARTITION BY a.mac ORDER BY act.dt) AS sequence_group
+    FROM accounts a
+    LEFT JOIN activities act ON a.id = act.account_id
+    WHERE act.type = 'ERROR' OR act.type IS NULL
+),
+valid_sequences AS (
+    SELECT 
+        mac,
+        MIN(dt) AS start_dt,
+        MAX(dt) AS end_dt,
+        COUNT(*) AS error_count
+    FROM error_sequences
+    WHERE type = 'ERROR'
+    GROUP BY mac, sequence_group
+    HAVING COUNT(*) >= 3
+)
+SELECT 
+    mac,
+    start_dt,
+    end_dt
+FROM valid_sequences
+ORDER BY mac, start_dt;
+```
 
 
 ### Interview question 2
