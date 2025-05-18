@@ -112,50 +112,42 @@ SELECT
     cs.activities
 FROM ConsecutiveSequences cs;
 ```
-### Another solution
+### Another solution for gaps and islands problem
 ```sql
 WITH typed_rows AS (
     SELECT 
         a.mac,
-        act.account_id,
         act.dt,
         act.type,
         ROW_NUMBER() OVER (PARTITION BY a.mac ORDER BY act.dt) AS rn_all,
-        ROW_NUMBER() OVER (
-            PARTITION BY a.mac, type
-            ORDER BY act.dt
-        ) AS rn_type
-    FROM 
-        activities act
-    JOIN 
-        accounts a ON a.id = act.account_id
+        ROW_NUMBER() OVER (PARTITION BY a.mac, type ORDER BY act.dt) AS rn_type
+    FROM activities act
+    JOIN accounts a ON a.id = act.account_id
 ),
-error_groups AS (
-    SELECT *,
-           rn_all - rn_type AS grp -- this difference stays same for consecutive same types
+error_sequences AS (
+    SELECT 
+        mac,
+        dt,
+        rn_all - rn_type AS grp
     FROM typed_rows
     WHERE type = 'ERROR'
 ),
 grouped_errors AS (
     SELECT 
         mac,
-        MIN(dt) AS started_at,
-        MAX(dt) AS ended_at,
-        COUNT(*) AS error_count,
-        ARRAY_AGG(dt ORDER BY dt) AS timestamps
-    FROM error_groups
+        MIN(dt) AS start_dt,
+        MAX(dt) AS end_dt,
+        COUNT(*) AS cnt
+    FROM error_sequences
     GROUP BY mac, grp
     HAVING COUNT(*) >= 3
 )
-SELECT
+SELECT 
     mac,
-    started_at,
-    ended_at,
-    error_count,
-    timestamps
+    start_dt,
+    end_dt
 FROM grouped_errors
-ORDER BY mac, started_at;
-
+ORDER BY mac, start_dt;
 
 ```
 
