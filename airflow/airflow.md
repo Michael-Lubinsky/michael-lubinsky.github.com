@@ -236,7 +236,30 @@ python_task = PythonOperator(
    dag=dag
 )
 ```
-### provide_context
+### provide_context (obsolete)
+
+The new-style PythonOperator (from airflow.operators.python) does not need provide_context=True.
+
+You typically use context when you want to:
+
+Access runtime info (e.g., execution_date, dag_run.conf)
+
+Perform logic based on run-specific values
+
+Context is always passed to the function via **kwargs.  
+So this is enough in Airflow 2.x:
+```python
+from airflow.operators.python import PythonOperator
+
+def my_task(**kwargs):
+    print(kwargs['execution_date'])
+
+task = PythonOperator(
+    task_id='my_task',
+    python_callable=my_task
+)
+```
+
 _provide_context_ passes context variables to the task’s callable function,  
 allowing access to metadata and other information.
 ```python 
