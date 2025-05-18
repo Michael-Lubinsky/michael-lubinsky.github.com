@@ -107,7 +107,10 @@ start >> branch >> [task_load, task_alert] >> end
 #### Sensor Operators: 
 Wait for an external condition to be met before proceeding.   
 Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
-
+```python
+python from airflow.sensors.filesystem import FileSensor
+file_sensor_task = FileSensor(task_id='wait_for_file', filepath='/path/to/file', dag=dag)
+```
 ### Hooks
 We use Hooks to define interfaces that manage connections to external systems. 
 They handle authentication, session management, and other connection-related tasks.  
