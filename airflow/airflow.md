@@ -143,8 +143,11 @@ start >> branch >> [task_load, task_alert] >> end
 Wait for an external condition to be met before proceeding.   
 Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
 ```python
-python from airflow.sensors.filesystem import FileSensor
-file_sensor_task = FileSensor(task_id='wait_for_file', filepath='/path/to/file', dag=dag)
+from airflow.sensors.filesystem import FileSensor
+file_sensor_task = FileSensor(
+    task_id='wait_for_file',
+    filepath='/path/to/file',
+    dag=dag)
 ```
 ### Passing parameters to task
 Parameters can be passed using the _op_args_ and _op_kwargs_ arguments in the task definition.
@@ -156,6 +159,19 @@ python_task = PythonOperator(
    dag=dag
 )
 ```
+### provide_context
+_provide_context_ passes context variables to the task’s callable function,  
+allowing access to metadata and other information.
+```python 
+def my_function(**kwargs):
+    execution_date = kwargs['execution_date']
+
+python_task = PythonOperator(
+    task_id='python_example',
+    python_callable=my_function,
+   provide_context=True,
+   dag=dag)
+```
 
 ### Hooks
 We use Hooks to define interfaces that manage connections to external systems. 
@@ -164,14 +180,17 @@ Hooks are often used within Operators to simplify integration with services like
 
 #### Database Hooks:
 PostgresHook, MySqlHook, and MongoHook for interacting with different database systems.
+
 #### Cloud Service Hooks: 
 S3Hook, GCSHook, and AzureBlobStorageHook for connecting to cloud storage.
+
 #### API Hooks: HttpHook: 
 For making HTTP requests or interacting with REST APIs.
 
 ### Executors
  
 Different executors offer varying levels of scalability, concurrency, and complexity 
+
 
 #### SequentialExecutor
 Ideal for testing and development, this executor runs tasks sequentially in a single process. 
