@@ -220,11 +220,19 @@ file_sensor = FileSensor(
 ```
 ### Passing parameters to task
 Parameters can be passed using the _op_args_ and _op_kwargs_ arguments in the task definition.
-```python 
+```python
+
+def my_function(arg1, arg2, kwarg1=None):
+    print(f"arg1: {arg1}")
+    print(f"arg2: {arg2}")
+    print(f"kwarg1: {kwarg1}")
+
 python_task = PythonOperator(
    task_id='python_example',
    python_callable=my_function,
-   op_args=['arg1'],
+   op_args=['hello', 'world'],          # Positional arguments
+   op_kwargs={'kwarg1': 'Airflow'},     # Keyword arguments
+
    dag=dag
 )
 ```
