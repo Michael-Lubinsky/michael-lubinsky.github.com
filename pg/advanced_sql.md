@@ -342,6 +342,104 @@ Max_Streaks AS (
 SELECT * FROM Max_Streaks;
 ```
 
+
+
+
+### Hackerrank
+```
+There is Postgres database with 2 tables:
+Table sales_amount has following 3 columns:
+ sales_date  varchar(30),
+sales_amount int,
+currency varchar(30)
+
+Table exchange_rate has 4 columns:
+source_currency varchar(30),
+target_currency varchar(30),
+exchange_rate numeric(18,2),
+effective_start_date varchar(30)
+
+When the exchange rate changes , a new row is inserted in exchange_rate table with a new effective start date.
+
+Please write SQL to get the total sales amount in USD (round to two decimals and include trailing zeros) for each sales date, ordered by sales_date.
+```
+
+#### Solution 1
+
+```sql
+SELECT
+  s.sales_date,
+  TO_CHAR(ROUND(SUM(s.sales_amount * er.exchange_rate)::numeric, 2), 'FM999999999.00') AS total_usd
+FROM
+  sales_amount s
+JOIN LATERAL (
+  SELECT exchange_rate
+  FROM exchange_rate er
+  WHERE er.source_currency = s.currency
+    AND er.target_currency = 'USD'
+    AND er.effective_start_date <= s.sales_date
+  ORDER BY er.effective_start_date DESC
+  LIMIT 1
+) er ON true
+GROUP BY s.sales_date
+ORDER BY s.sales_date;
+```
+
+#### Solution 2
+```sql
+WITH ConvertedSales AS (
+    SELECT
+        s.sales_date,
+        s.sales_amount,
+        s.currency,
+        (
+            SELECT
+                e.exchange_rate
+            FROM
+                exchange_rate e
+            WHERE
+                e.source_currency = s.currency
+                AND e.target_currency = 'USD'
+                AND e.effective_start_date <= s.sales_date
+            ORDER BY
+                e.effective_start_date DESC
+            LIMIT 1
+        ) AS usd_exchange_rate
+    FROM
+        sales_amount s
+)
+SELECT
+    sales_date,
+    TO_CHAR(ROUND(sales_amount * usd_exchange_rate, 2), 'FM9999999999999999.00') AS total_sales_usd
+FROM
+    ConvertedSales
+WHERE
+    usd_exchange_rate IS NOT NULL
+GROUP BY
+    sales_date
+ORDER BY
+    sales_date;
+```
+#### Solution 3
+
+```sql
+SELECT 
+    s.sales_date,
+    ROUND(SUM(s.sales_amount * COALESCE((
+        SELECT er.exchange_rate
+        FROM exchange_rate er
+        WHERE er.source_currency = s.currency
+        AND er.target_currency = 'USD'
+        AND er.effective_start_date <= s.sales_date
+        ORDER BY er.effective_start_date DESC
+        LIMIT 1
+    ), 1.00))::numeric, 2) as total_usd
+FROM sales_amount s
+GROUP BY s.sales_date
+ORDER BY s.sales_date;
+```
+
+
 ## Top 100 advanced SQL questions and answers 
 
 ### 1. How to retrieve the second-highest salary of an employee?
