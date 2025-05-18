@@ -250,7 +250,7 @@ ORDER BY  user_id;
 ```
 
 
-###  Monthly Percentage Difference.
+###  Monthly Percentage Difference using LAG.
 ```
 Given a table of purchases by date, calculate the month-over-month percentage change in revenue.
 The output should include the year-month date (YYYY-MM) and percentage change, rounded to the 2nd decimal point,
@@ -260,7 +260,9 @@ The percentage change column will be populated from the 2nd month forward and ca
 ```
 
 ```sql
-select ym, round(((revenue-last_month_revenue)/last_month_revenue)*100,2) as 'month-over-month percentage'
+select
+   ym,
+   round(((revenue-last_month_revenue)/last_month_revenue)*100,2) as 'month-over-month percentage'
 from (
      select ym,revenue, lag(revenue) over(order by ym)  as last_month_revenue
      from (
@@ -273,8 +275,8 @@ b
 ```
 
 
-### Given table with 3 columns: emp_id, action, time  
-action can be 'in' or 'out'
+### Given table with 3 columns: emp_id, action, time.  Find the emp_id who are inside.
+The action can be 'in' or 'out'
 Qestion: find the emp_id who are inside 
 
 Solution 1: 
@@ -298,7 +300,7 @@ SELECT * FROM x
 WHERE rnk=1 AND action='in';
 ```
 
-## https://medium.com/@shaantanutripathi/google-advanced-sql-interview-question-walkthrough-7ed81b04ad17
+## HARD SQL:  https://medium.com/@shaantanutripathi/google-advanced-sql-interview-question-walkthrough-7ed81b04ad17
 
 Given a table employee_attendance that records the daily attendance status of employees 
 (whether they are present or absent) over a period of time.  
