@@ -407,9 +407,11 @@ It is useful for organizing and reusing parts of workflows.
 from airflow.operators.subdag import SubDagOperator
 subdag_task = SubDagOperator(task_id='subdag', subdag=subdag, dag=dag)
 ```
-
-
-
+### DAG testing
+DAGs can be tested using the airflow test command or by running them in the Airflow UI in a safe environment.
+```bash 
+airflow dags test example_dag 2021-01-01
+```
 {% comment %}
 #### Links
 
