@@ -92,6 +92,15 @@ airflow dags unpause example_dag
 
 ### Managing tasks dependencies dynamically
 
+| Use Case                                                   | Best Option                                      |
+| ---------------------------------------------------------- | ------------------------------------------------ |
+| Logic based on code at DAG parse time (static)             | Regular Python (`if`, loops)                     |
+| Fan-out/fan-in pattern with predictable structure          | `TaskGroup`, Python loops                        |
+| Condition at runtime that chooses a path                   | ✅ `BranchPythonOperator`                         |
+| Conditional continuation based on upstream success/failure | `TriggerRule`                                    |
+| Bypass certain tasks entirely                              | `ShortCircuitOperator` or `BranchPythonOperator` |
+
+
 1. Use plain Python control flow (e.g., if statements) in DAG definition
 You can build task dependencies dynamically using regular Python logic—this is done at DAG parsing time, not at execution time.
 
