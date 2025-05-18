@@ -53,6 +53,19 @@ HAVING COUNT(*) > (
     ) AS city_counts
 );
 ```
+### Handling NULL in IN close
+
+If the set of data inside the NOT IN subquery contains any values that have a NULL value, then the outer query returns no rows.
+To avoid this issue, add a check for NULL to the inner query:
+```sql
+SELECT * FROM department
+WHERE department_id NOT IN (
+    SELECT department_id
+    FROM employee
+    WHERE department_id IS NOT NULL
+);
+```
+
 ### Handle NULL in aggregation using COALESCE
 ```sql
 SELECT department_id,
