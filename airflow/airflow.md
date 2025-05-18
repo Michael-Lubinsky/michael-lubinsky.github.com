@@ -5,6 +5,8 @@ A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 
 DagBag is a collection of DAGs, typically from a directory on the file system. It parses and loads DAGs for the scheduler to manage.
 
+The scheduler is responsible for scheduling jobs, monitoring DAGs, and triggering tasks.
+
 ### airflow.cfg
 The airflow.cfg file is used to configure the Airflow environment,  
 including database connections and executor settings.
@@ -288,7 +290,7 @@ This mechanism allows tasks to pass data to each other directly without relying 
 Using the TaskFlow API, you can define tasks as Python functions and pass outputs from one task as inputs to another. 
 Airflow handles the passing of data internally, bypassing the need to explicitly push and pull XComs.
 
-Example:
+Example 1:
 ```python
 from airflow.decorators import dag, task
 from datetime import datetime
@@ -309,6 +311,28 @@ def taskflow_direct_communication():
 
 dag_instance = taskflow_direct_communication()
 ```
+Example 2:
+
+```python
+from airflow.decorators import dag, task
+@dag(
+  schedule_interval='@daily',
+  start_date=days_ago(2))
+
+def example_dag():
+  @task
+  def extract(): return 'data'
+
+  @task
+  def process(data):
+    return f'processed {data}'
+
+data = extract()
+process(data)
+```
+
+
+
 #### TriggerDagRunOperator 
 DAG 1
 ```python
