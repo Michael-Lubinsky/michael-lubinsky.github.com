@@ -9,11 +9,11 @@ https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://github.com/EntilZha/PyFunctional
 
-https://github.com/mahmoud/boltons  useful libs
+https://github.com/mahmoud/boltons  Boltons useful lib
 
 https://github.com/jlevy/strif  string, file, and object utilities
 
-https://github.com/Erotemic/ubelt 
+https://github.com/Erotemic/ubelt  Ubelt
 
 https://realpython.com/python-loguru/  Loguru
 
@@ -24,6 +24,9 @@ https://connect.posit.cloud/ A cloud environment to easily showcase your Python 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
 
 https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-for-developers-a5da6f176667
+
+### Decorators  
+https://habr.com/ru/articles/910424/
 
 https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
