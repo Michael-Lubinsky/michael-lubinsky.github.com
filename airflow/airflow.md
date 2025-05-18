@@ -190,7 +190,13 @@ def choose_branch(**kwargs):
     -   This integrates cleanly with the DAG state view and helps avoid confusion about which path was taken.
 
 
+If you return more than one task ID from a BranchPythonOperator, it must be a list of task IDs:
+```python
+return ['task_a', 'task_b']
+```
+And downstream tasks not returned will be skipped unless you use TriggerRule=ALL_DONE or similar.
 
+Example:
 ```python
 from airflow import DAG
 from airflow.operators.python import BranchPythonOperator, PythonOperator
