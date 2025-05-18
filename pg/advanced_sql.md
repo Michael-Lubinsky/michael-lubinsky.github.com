@@ -20,8 +20,9 @@ There is another table 'activities' with 3 columns: account_id, dt and type.
 The column named 'type' can be 'SUCCESS' or 'ERROR'
 The column 'dt' contains timestamp as a  string.
 Please create a SQL which returns 
-all sequences of 3 or more consecutive (by dt column)   'ERROR'  in type column 
-for each  mac column in accounts table.
+all sequences of 3 or more consecutive (by dt column)   'ERROR'  in type column ,
+one sequence per row with mac, start dt, end dt
+for each  mac value in accounts table.
 Example: if for given mac value the sorted by dt type values are:
 ERROR,ERROR, SUCCESS, ERROR 
 then there are no 3 consecutive  ERRORs here, because of SUCCESS in between.
