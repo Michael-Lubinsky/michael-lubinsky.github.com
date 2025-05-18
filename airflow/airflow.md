@@ -1,5 +1,11 @@
 
 ### Airflow
+
+A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
+
+The airflow.cfg file is used to configure the Airflow environment,
+including database connections and executor settings.
+
 #### Action Operators: 
 Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call.   
 Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
@@ -10,6 +16,21 @@ Dependencies are set using bitshift operators (>>, <<) or the set_upstream and s
 
 python start >> task_1 task_1 >> end or  
 task_1.set_upstream(start) task_1.set_downstream(end)
+```bash
+airflow dags list
+
+airflow connections
+add my_conn --conn-type mysql --conn-host localhost --conn-login root --conn-password root
+
+airflow dags pause example_dag
+airflow dags unpause example_dag
+```
+### Dynamic task dependencies
+Task dependencies can be set dynamically within a DAG definition based on runtime conditions.
+
+```python
+if condition: task_1 >> task_2 else: task_1 >> task_3
+```
 
 ### Branch operator
 ```python
