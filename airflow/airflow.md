@@ -9,10 +9,16 @@ DagBag is a collection of DAGs, typically from a directory on the file system. I
 The airflow.cfg file is used to configure the Airflow environment,  
 including database connections and executor settings.
 
-Airflow logs can be configured in the airflow.cfg file, specifying the logging level and log location.
+Airflow logs ang global variables
+can be configured in the airflow.cfg file, specifying the logging level and log location.
 ```
-ini [logging]
-base_log_folder = /path/to/logs remote_logging = True remote_log_conn_id = my_s3_conn
+[logging]
+base_log_folder = /path/to/logs
+remote_logging = True
+remote_log_conn_id = my_s3_conn
+
+[variables]
+key = value
 ```
 ### Variables
 ```bash 
