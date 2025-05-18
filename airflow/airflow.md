@@ -89,14 +89,99 @@ add my_conn --conn-type mysql --conn-host localhost --conn-login root --conn-pas
 airflow dags pause example_dag
 airflow dags unpause example_dag
 ```
-### Dynamic task dependencies
-Task dependencies can be set dynamically within a DAG definition based on runtime conditions.
+
+### Managing tasks dependencies dynamically
+
+1. Use plain Python control flow (e.g., if statements) in DAG definition
+You can build task dependencies dynamically using regular Python logic—this is done at DAG parsing time, not at execution time.
 
 ```python
-if condition: task_1 >> task_2 else: task_1 >> task_3
+from airflow import DAG
+from airflow.operators.dummy import DummyOperator
+from datetime import datetime
+
+dag = DAG('dynamic_deps_example', start_date=datetime(2023, 1, 1), schedule_interval=None)
+
+start = DummyOperator(task_id='start', dag=dag)
+end = DummyOperator(task_id='end', dag=dag)
+
+# Dynamically decide which tasks to run
+some_flag = True  # this is evaluated at DAG parse time!
+
+if some_flag:
+    task_a = DummyOperator(task_id='task_a', dag=dag)
+    start >> task_a >> end
+else:
+    task_b = DummyOperator(task_id='task_b', dag=dag)
+    start >> task_b >> end
 ```
 
-### Branch operator
+ 2. Use TaskGroup or loops for dynamic fan-out/fan-in patterns
+You can dynamically generate tasks and assign dependencies in a loop:
+
+```python
+from airflow.operators.dummy import DummyOperator
+from airflow.utils.task_group import TaskGroup
+
+with DAG('loop_deps_dag', start_date=datetime(2023, 1, 1), schedule_interval=None) as dag:
+    start = DummyOperator(task_id='start')
+    end = DummyOperator(task_id='end')
+
+    with TaskGroup("dynamic_tasks") as dynamic_group:
+        for i in range(3):
+            t = DummyOperator(task_id=f'task_{i}')
+            start >> t >> end
+
+```
+
+3. Use TriggerRule for conditional downstream execution
+If you don't want to branch but want some tasks to run conditionally, you can use TriggerRule:
+```python
+from airflow.operators.dummy import DummyOperator
+from airflow.utils.trigger_rule import TriggerRule
+
+t1 = DummyOperator(task_id='t1', dag=dag)
+t2 = DummyOperator(task_id='t2', dag=dag)
+t3 = DummyOperator(task_id='t3', dag=dag, trigger_rule=TriggerRule.ONE_SUCCESS)
+
+# even if only t1 or t2 succeeds, t3 will run
+[t1, t2] >> t3
+```
+
+
+
+### BranchPythonOperator
+
+Use BranchPythonOperator when you need to dynamically choose the execution path at runtime,   
+based on conditions that are only known during execution (like values from dag_run.conf, external system state, or task output)
+
+When to Prefer BranchPythonOperator:
+1. You need runtime decision-making:
+```python
+def choose_branch(**kwargs):
+    if kwargs['dag_run'].conf.get('use_path_a') == True:
+        return 'task_a'
+    else:
+        return 'task_b'
+```
+2.   **Different branches require different tasks or flows**
+    
+    -   E.g., for conditional workflows like:
+        
+        -   Process full dataset vs. just metadata
+            
+        -   Daily vs. weekly logic
+            
+        -   Run different pipelines based on input type or date
+            
+3.   **You want downstream tasks to be skipped automatically**
+    
+    -   Airflow will **skip non-selected branches** and their downstream tasks.
+        
+    -   This integrates cleanly with the DAG state view and helps avoid confusion about which path was taken.
+
+
+
 ```python
 from airflow import DAG
 from airflow.operators.python import BranchPythonOperator, PythonOperator
