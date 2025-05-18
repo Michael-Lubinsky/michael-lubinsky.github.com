@@ -205,6 +205,18 @@ file_sensor_task = FileSensor(
     task_id='wait_for_file',
     filepath='/path/to/file',
     dag=dag)
+
+
+file_sensor = FileSensor(
+    task_id='wait_for_file',
+    filepath='/path/to/your/file.txt',
+    fs_conn_id='fs_default',  # or another connection ID if needed
+    poke_interval=30,         # check every 30 seconds
+    timeout=600,              # timeout after 10 minutes
+    retries=2,                # retry 2 times if the task fails
+    mode='poke',              # or 'reschedule' for more efficient resource usage
+    dag=dag
+)
 ```
 ### Passing parameters to task
 Parameters can be passed using the _op_args_ and _op_kwargs_ arguments in the task definition.
