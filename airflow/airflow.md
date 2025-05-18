@@ -94,7 +94,7 @@ import random
 default_args = {
     'owner': 'airflow',
     'start_date': datetime(2023, 10, 1),
-    'retries': 1,
+    'retries': 3
 }
 
 dag = DAG(
@@ -127,6 +127,8 @@ task_a = DummyOperator(
 
 task_b = DummyOperator(
     task_id='task_b',
+    retries=3,
+    retry_delay=timedelta(minutes=5),
     dag=dag,
 )
 
