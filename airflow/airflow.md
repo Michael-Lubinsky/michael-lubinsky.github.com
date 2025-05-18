@@ -39,6 +39,20 @@ Task priorities can be set using the priority_weight parameter in the task defin
        dag=dag)
 ```
 
+### How to skip task
+Tasks can be skipped using the SkipMixin class or by setting conditions within a task.
+```python 
+from airflow.models import SkipMixin
+class MyTask(SkipMixin, BaseOperator):
+    def execute(self, context):
+       if condition:
+          self.skip(
+               context['dag_run'],
+               context['ti'].task_id,
+               context['execution_date']
+          )
+```
+
 
 #### Action Operators: 
 Perform specific actions such as running a Python function, executing a Bash command, or triggering an API call.   
