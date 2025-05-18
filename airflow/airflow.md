@@ -3,6 +3,8 @@
 
 A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 
+DagBag is a collection of DAGs, typically from a directory on the file system. It parses and loads DAGs for the scheduler to manage.
+
 ### airflow.cfg
 The airflow.cfg file is used to configure the Airflow environment,  
 including database connections and executor settings.
