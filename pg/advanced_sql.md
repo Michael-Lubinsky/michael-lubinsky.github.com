@@ -111,6 +111,53 @@ SELECT
     cs.activities
 FROM ConsecutiveSequences cs;
 ```
+### Another solution
+```sql
+WITH typed_rows AS (
+    SELECT 
+        a.mac,
+        act.account_id,
+        act.dt,
+        act.type,
+        ROW_NUMBER() OVER (PARTITION BY a.mac ORDER BY act.dt) AS rn_all,
+        ROW_NUMBER() OVER (
+            PARTITION BY a.mac, type
+            ORDER BY act.dt
+        ) AS rn_type
+    FROM 
+        activities act
+    JOIN 
+        accounts a ON a.id = act.account_id
+),
+error_groups AS (
+    SELECT *,
+           rn_all - rn_type AS grp -- this difference stays same for consecutive same types
+    FROM typed_rows
+    WHERE type = 'ERROR'
+),
+grouped_errors AS (
+    SELECT 
+        mac,
+        MIN(dt) AS started_at,
+        MAX(dt) AS ended_at,
+        COUNT(*) AS error_count,
+        ARRAY_AGG(dt ORDER BY dt) AS timestamps
+    FROM error_groups
+    GROUP BY mac, grp
+    HAVING COUNT(*) >= 3
+)
+SELECT
+    mac,
+    started_at,
+    ended_at,
+    error_count,
+    timestamps
+FROM grouped_errors
+ORDER BY mac, started_at;
+
+
+```
+
 
 
 ### Interview question 2
