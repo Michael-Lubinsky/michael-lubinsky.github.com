@@ -3,9 +3,15 @@
 
 A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 
-The airflow.cfg file is used to configure the Airflow environment,
+### airflow.cfg
+The airflow.cfg file is used to configure the Airflow environment,  
 including database connections and executor settings.
 
+Airflow logs can be configured in the airflow.cfg file, specifying the logging level and log location.
+```
+ini [logging]
+base_log_folder = /path/to/logs remote_logging = True remote_log_conn_id = my_s3_conn
+```
 ### Variables
 ```bash 
 airflow variables set key value
