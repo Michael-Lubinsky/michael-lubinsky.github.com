@@ -296,6 +296,29 @@ end = DummyOperator(task_id=’end’, trigger_rule=’none_failed_min_one_succe
 start >> branch >> [task_load, task_alert] >> end
 ```
 
+### TriggerRule
+
+TriggerRule defines how a task decides whether it should run, based on the state of its upstream tasks. This is especially important for tasks with multiple upstream dependencies or tasks that follow conditional branches (like with BranchPythonOperator).
+
+✅ Default Behavior
+By default, tasks in Airflow use:
+
+trigger_rule='all_success'  
+Which means: "Run this task only if all upstream tasks succeeded."
+
+| TriggerRule             | Description                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| `all_success` (default) | Runs if **all upstream** tasks succeeded                                            |
+| `all_failed`            | Runs if **all upstream** tasks failed                                               |
+| `all_done`              | Runs if **all upstream** tasks are in any terminal state (success, failed, skipped) |
+| `one_success`           | Runs if **any one** upstream task succeeded                                         |
+| `one_failed`            | Runs if **any one** upstream task failed                                            |
+| `none_failed`           | Runs if **no upstream tasks failed** (skipped is allowed)                           |
+| `none_skipped`          | Runs if **no upstream tasks were skipped**                                          |
+| `always`                | Always runs, regardless of upstream states                                          |
+
+
+
 #### Sensor Operators: 
 Wait for an external condition to be met before proceeding.   
 Examples: FileSensor (waiting for a file) and ExternalTaskSensor (waiting for another DAG to complete).
