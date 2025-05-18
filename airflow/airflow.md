@@ -72,7 +72,7 @@ task_a >> final_task  # task_a leads to final_task
 task_b >> final_task  # task_b leads to final_task
 
 ```
-one more example of branch operator
+Another example of branch operator
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
@@ -328,6 +328,25 @@ with DAG(dag_id="sensor_example", start_date=datetime(2025, 1, 1)) as dag:
         python_callable=process_data
     )
     check_file >> process_task
+```
+
+### Backfill
+bash airflow dags backfill -s 2021-01-01 - e 2021-01-07 example_dag
+
+### Pools
+Pools are used to limit the execution parallelism on resources like database connections.
+```
+bash airflow pools set my_pool 5 "Description of the pool"
+```
+### SLA
+SLAs are used to set time limits for tasks, with alerts triggered if the time is exceeded.
+```python 
+task = BashOperator(
+    task_id='bash_example',
+    bash_command='echo "Hello World"',
+    dag=dag,
+    sla=timedelta(minutes=30)
+)
 ```
 
 {% comment %}
