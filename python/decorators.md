@@ -357,7 +357,16 @@ def fibonacci(n):
     return fibonacci(n-1) + fibonacci(n-2)
 ```
 
+<!--
 <https://www.kdnuggets.com/custom-python-decorator-patterns-worth-copy-pasting-forever>
- 
 
+https://habr.com/ru/articles/910424/
+
+https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
+
+<https://towardsdatascience.com/python-decorators-for-data-science-6913f717669a>
+
+<https://jacobpadilla.com/articles/Functools-Deep-Dive>
+ 
+-->
 
