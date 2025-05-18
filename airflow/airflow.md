@@ -23,8 +23,7 @@ my_var = Variable.get("my_variable")
 
 ### Task priorities
 Task priorities can be set using the priority_weight parameter in the task definition.
-```
-python 
+```python 
   task = BashOperator(
        task_id='bash_example',
        bash_command='echo "Hello World"',
