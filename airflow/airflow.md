@@ -236,6 +236,56 @@ python_task = PythonOperator(
    dag=dag
 )
 ```
+
+### dug_run.conf
+
+### What is stored in `dag_run.conf`?
+
+It stores **custom user-defined parameters**, like:
+```json
+{
+  "source": "s3://my-bucket/data.csv",
+  "run_mode": "full",
+  "threshold": 0.9
+}
+```
+
+These are **not system-generated**, but values **you specify when triggering the DAG**. They're accessible inside tasks via `kwargs['dag_run'].conf` (in PythonOperators, for example).
+
+* * *
+
+### 🔍 Where it's used:
+
+#### ✅ Trigger DAG with conf (CLI):
+ 
+
+`airflow dags trigger my_dag_id --conf '{"source": "input.csv", "retries": 2}'`
+
+#### ✅ Access in PythonOperator:
+```python
+def my_task(**kwargs):
+    conf = kwargs['dag_run'].conf
+    source = conf.get('source')
+    print(f"Source file: {source}")
+
+```
+#### ✅ Access in templated fields (Jinja):
+
+
+`bash_command="echo {{ dag_run.conf['source'] }}"`
+
+* * *
+
+### 🧠 Use cases:
+
+-   Passing file paths, config flags, or parameters to control task behavior.
+    
+-   Dynamic branching, thresholds, or job metadata.
+    
+-   Triggering parameterized ETL pipelines.
+
+
+
 ### provide_context (obsolete)
 
 The new-style PythonOperator (from airflow.operators.python) does not need provide_context=True.
