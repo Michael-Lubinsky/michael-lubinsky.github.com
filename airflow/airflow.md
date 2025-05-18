@@ -6,6 +6,11 @@ Examples: PythonOperator, BashOperator, and SimpleHttpOperator.
 #### Transfer Operators:
 Facilitate moving data between systems, such as S3ToGCSOperator or MySqlToPostgresOperator.
 
+Dependencies are set using bitshift operators (>>, <<) or the set_upstream and set_downstream methods.
+
+python start >> task_1 task_1 >> end or  
+task_1.set_upstream(start) task_1.set_downstream(end)
+
 ### Branch operator
 ```python
 from airflow import DAG
