@@ -392,11 +392,33 @@ WHERE t2.id IS NULL;
 ## Window functions
 
 ### Running total
-```sql
-SELECT name, salary,
-       SUM(salary)
-       OVER (PARTITION BY department_id ORDER BY salary) AS running_total
 
+For SUM(), AVG(), COUNT() (aggregates), the default frame is:
+
+RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+
+This means:
+
+It will include all rows in the partition up to the current row, based on the ORDER BY clause.
+
+If ORDER BY is missing → the entire partition is used.
+
+✅ So yes: PARTITION BY defines the "window" (grouping), but ORDER BY defines how that group is processed and what the "frame" is by default.
+
+🧠 Example:
+
+SUM(salary) OVER (PARTITION BY emp_id ORDER BY month)
+Means:
+
+Partition: All rows with the same emp_id
+
+Order: By month
+
+Frame (implicitly): From the first month to the current month (RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+
+
+
+```sql
 
 SELECT
   month,
