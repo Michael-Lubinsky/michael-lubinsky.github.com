@@ -583,7 +583,112 @@ VALUES ('e1', JSON '{"user": {"name": "Alice", "age": 30}}');
 | `TO_JSON_STRING()` | Converts STRUCT/ARRAY to JSON string   |
 | `PARSE_JSON()`     | Converts string to JSON data type      |
 
-* * *
+In addition to SQL, BigQuery supports several APIs and interfaces to interact with and manage data.   
+These APIs allow programmatic access for data ingestion, querying, schema management, job control, and more.
+
+Here’s a breakdown of the APIs and interfaces BigQuery supports:
+
+✅ 1. BigQuery REST API
+The primary programmatic interface.
+
+Enables query execution, dataset/table creation, job monitoring, data loading/export, etc.
+
+All client libraries (Python, Java, etc.) are wrappers around this API.
+
+Docs:
+https://cloud.google.com/bigquery/docs/reference/rest
+
+✅ 2. BigQuery Client Libraries (SDKs)
+Language	Library Name	Purpose
+Python	google-cloud-bigquery	Most popular for data science
+Java	com.google.cloud:google-cloud-bigquery	For Java/Scala-based systems
+Node.js	@google-cloud/bigquery	For serverless and web apps
+Go, C#, PHP	Official libraries also available	Broad language support
+
+Example (Python):
+
+python
+
+from google.cloud import bigquery
+
+client = bigquery.Client()
+query_job = client.query("SELECT name FROM `my_dataset.my_table`")
+for row in query_job:
+    print(row.name)
+✅ 3. BigQuery Storage API
+Enables fast parallel reads from BigQuery tables (used by Spark, Dataflow, etc.)
+
+More efficient than the REST API for high-throughput reads.
+
+Supports row-level reads, filtering, and column projections.
+
+Use cases:
+
+Connecting BigQuery to Apache Spark, Pandas, Dask, or TensorFlow
+
+Fast batch data transfer into analytics engines
+
+✅ 4. BigQuery Data Transfer Service
+Automates data ingestion from:
+
+Google Ads, YouTube, Google Analytics
+
+Amazon S3, Teradata, etc.
+
+Runs on a schedule, no manual ETL code needed.
+
+✅ 5. BigQuery ML API
+Allows training and serving ML models directly in BigQuery using SQL.
+
+Models: linear/logistic regression, k-means, XGBoost, deep neural nets, etc.
+
+Example:
+
+sql
+ 
+CREATE MODEL my_dataset.model_name
+OPTIONS(model_type='logistic_reg') AS
+SELECT * FROM my_dataset.training_data;
+
+✅ 6. BigQuery BI Engine API
+Used for accelerating dashboard tools like Looker Studio (formerly Data Studio).
+
+Enables in-memory caching and sub-second performance for dashboards.
+
+Administered via SQL and REST API.
+
+✅ 7. Cloud Console / UI
+Not a formal API, but important:
+
+Web-based SQL editor
+
+Schema browser
+
+Job history and monitoring
+
+Interactive charting and result export
+
+✅ 8. bq Command-Line Tool
+Part of Google Cloud SDK
+
+CLI wrapper around BigQuery REST API
+
+Example:
+
+bash
+
+bq query --use_legacy_sql=false 'SELECT COUNT(*) FROM my_dataset.my_table'
+
+
+| Tool/Platform                   | Integration                                           |
+| ------------------------------- | ----------------------------------------------------- |
+| **Apache Spark**                | Via `spark-bigquery-connector`                        |
+| **Apache Beam/Dataflow**        | Native BigQuery I/O connectors                        |
+| **Pandas / Jupyter**            | `pandas-gbq` or `google-cloud-bigquery`               |
+| **Airflow**                     | `BigQueryOperator`, `BigQueryInsertJobOperator`       |
+| **Looker / Tableau / Power BI** | Native connectors to BigQuery                         |
+| **Federated Query**             | Query external sources (Cloud SQL, GCS, Sheets, etc.) |
+
 
 ### 💲 **Pricing**
 
