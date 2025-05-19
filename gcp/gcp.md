@@ -574,5 +574,52 @@ This query could scan **terabytes of data** in seconds — no tuning, indexing, 
 -   Small, frequent row-level updates
     
 
+###  Configure Hadoop on GCP (Dataproc)
+In GCP Dataproc, Hadoop (HDFS and MapReduce/YARN) configuration is managed through:
+
+Cluster properties during cluster creation:
+--properties flag or via the Console.
+
+Configuration files (e.g., core-site.xml, hdfs-site.xml, yarn-site.xml)
+You can customize these using:
+
+Initialization actions
+
+Override configs in cluster creation
+
+### Key Configuration Parameters for HDFS (hdfs-site.xml)
+
+| Parameter                                         | Description                      | Recommended Setting                           |
+| ------------------------------------------------- | -------------------------------- | --------------------------------------------- |
+| `dfs.replication`                                 | Number of data replicas          | `2` (default is 3; use 2 on GCP to save cost) |
+| `dfs.blocksize`                                   | HDFS block size                  | `128MB` or `256MB` for large files            |
+| `dfs.namenode.handler.count`                      | Threads handling client requests | `20–100` for large clusters                   |
+| `dfs.datanode.max.transfer.threads`               | Controls parallel data transfers | `4096` or more for busy clusters              |
+| `dfs.namenode.name.dir` / `dfs.datanode.data.dir` | Storage paths                    | Use separate local SSDs for performance       |
+
+Set via properties:
+
+
+--properties=hdfs:dfs.replication=2,hdfs:dfs.blocksize=268435456
+
+### YARN & MapReduce Tuning (yarn-site.xml, mapred-site.xml)
+
+
+| Parameter                                                | Description                     | Recommendation                              |
+| -------------------------------------------------------- | ------------------------------- | ------------------------------------------- |
+| `yarn.nodemanager.resource.memory-mb`                    | Max memory for containers       | Typically \~85% of node memory              |
+| `yarn.scheduler.maximum-allocation-mb`                   | Max memory per container        | Same as above                               |
+| `mapreduce.map.memory.mb` / `mapreduce.reduce.memory.mb` | Memory per map/reduce task      | 2048–8192 MB based on job size              |
+| `mapreduce.task.io.sort.mb`                              | Buffer for sorting in map tasks | 256–512 MB                                  |
+| `mapreduce.reduce.shuffle.parallelcopies`                | Parallel fetchers               | 10–50 based on cluster size                 |
+| `yarn.nodemanager.vmem-check-enabled`                    | Disable virtual memory checks   | Often set to `false` to avoid memory errors |
+
+
+### Core Hadoop Configuration (core-site.xml)
+| Parameter             | Description            | Recommended Setting            |
+| --------------------- | ---------------------- | ------------------------------ |
+| `fs.defaultFS`        | Default filesystem URI | `hdfs://<cluster-name>-m:8020` |
+| `io.file.buffer.size` | Buffer size for I/O    | `131072` or higher             |
+| `hadoop.tmp.dir`      | Temp directory path    | Use fast disk (e.g. local SSD) |
 
 
