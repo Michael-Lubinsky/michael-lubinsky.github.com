@@ -53,7 +53,7 @@ HAVING COUNT(*) > (
     ) AS city_counts
 );
 ```
-### Handling NULL in IN close
+### Handling NULL in NOT IN close
 
 If the set of data inside the NOT IN subquery contains any values that have a NULL value, then the outer query returns no rows.
 To avoid this issue, add a check for NULL to the inner query:
@@ -278,6 +278,20 @@ WITH  CTE  AS (
   FROM Sales
 )
 SELECT * FROM CTE WHERE row_num <= 2;
+```
+
+### Find 3 top payed employee per department
+```sql
+SELECT emp_id, dep_id, salary
+FROM (
+  SELECT 
+    emp_id,
+    dep_id,
+    salary,
+    ROW_NUMBER() OVER (PARTITION BY dep_id ORDER BY salary DESC) AS rn
+  FROM employees
+) ranked
+WHERE rn <= 3;
 ```
 
 ### correlated subquery usually slow
