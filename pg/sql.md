@@ -280,7 +280,7 @@ WITH  CTE  AS (
 SELECT * FROM CTE WHERE row_num <= 2;
 ```
 
-### Find 3 top payed employee per department
+### Find 3 top payed employees per department
 ```sql
 SELECT emp_id, dep_id, salary
 FROM (
@@ -293,6 +293,11 @@ FROM (
 ) ranked
 WHERE rn <= 3;
 ```
+RANK() assigns the same rank to employees with equal salary.
+
+If the third-highest salary is shared by multiple employees, all of them will be included.
+
+The outer WHERE rk <= 3 filters by rank, not row count, so ties are respected.
 
 ### correlated subquery usually slow
 Second highest salary per department
