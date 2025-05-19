@@ -394,7 +394,8 @@ WHERE t2.id IS NULL;
 ### Running total
 ```sql
 SELECT name, salary,
-SUM(salary) OVER (PARTITION BY department_id ORDER BY salary) AS running_total
+       SUM(salary)
+       OVER (PARTITION BY department_id ORDER BY salary) AS running_total
 ```
 
 ###  What happens if you omit PARTITION BY in the OVER() clause?
@@ -650,9 +651,10 @@ Table: mountains
 
  
 ```sql
-SELECT "country", "name"
+SELECT country, name
 FROM (
-  SELECT "country", "name", RANK() OVER (PARTITION BY "country" ORDER BY "height" DESC) as "rank"
+  SELECT "country", "name",
+          RANK() OVER (PARTITION BY "country" ORDER BY "height" DESC) as "rank"
   FROM mountains
   ) as m
 WHERE "rank" = 3
