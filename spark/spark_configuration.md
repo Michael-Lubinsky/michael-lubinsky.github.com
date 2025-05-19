@@ -1,3 +1,5 @@
+<https://www.canadiandataguy.com/p/spark-join-strategies>
+
 <https://medium.com/@omkarspatil2611/memory-management-in-apache-spark-3ae1f4db9d2b>
 
 <https://habr.com/ru/companies/beeline_tech/articles/909506/>
