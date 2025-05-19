@@ -396,6 +396,17 @@ WHERE t2.id IS NULL;
 SELECT name, salary,
        SUM(salary)
        OVER (PARTITION BY department_id ORDER BY salary) AS running_total
+
+
+SELECT
+  month,
+  emp_id,
+  SUM(salary) OVER (
+    PARTITION BY emp_id
+    ORDER BY month
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS total_salary
+FROM employees;
 ```
 
 ###  What happens if you omit PARTITION BY in the OVER() clause?
