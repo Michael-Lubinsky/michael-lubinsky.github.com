@@ -405,17 +405,20 @@ If ORDER BY is missing → the entire partition is used.
 
 ✅ So yes: PARTITION BY defines the "window" (grouping), but ORDER BY defines how that group is processed and what the "frame" is by default.
 
-🧠 Example:
+ Example:
 
-SUM(salary) OVER (PARTITION BY emp_id ORDER BY month)
-Means:
-
-Partition: All rows with the same emp_id
-
-Order: By month
+SUM(salary) OVER (PARTITION BY emp_id ORDER BY month)  
+Means: Partition: All rows with the same emp_id
+Order: By month  
 
 Frame (implicitly): From the first month to the current month (RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
 
+```sql
+SELECT id,month
+ , salary
+ , SUM(salary) OVER (ORDER BY id) as running_sum
+FROM bill
+```
 
 
 ```sql
