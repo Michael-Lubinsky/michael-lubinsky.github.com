@@ -1,14 +1,31 @@
 ### GCP
 
+### Google Cloud CLI 
+https://cloud.google.com/sdk/docs/install
+
+ Google Cloud CLI includes the gcloud, gsutil and bq command-line tools
+https://medium.com/@asmitha23052002/uploading-files-to-google-cloud-storage-gcs-using-the-gsutil-command-line-tool-71bca0a2b731
+
+Gsutil is deprecated - you need to move to using gcloud storage instead
+https://cloud.google.com/storage/docs/discover-object-storage-gcloud
+
+```python
+from google.cloud import storage
+
+# Initialize a client
+client = storage.Client()
+
+# List all buckets
+buckets = client.list_buckets()
+for bucket in buckets:
+    print("Bucket name:", bucket)
+```
 
 * * *
 
 ### **GCS (Google Cloud Storage)**
 
-**Purpose:**  
 Object storage for any type of data—files, images, backups, logs, etc.
-
-**Key Features:**
 
 -   **Scalable & Durable:** Stores massive amounts of unstructured data with high durability (11 9's).
     
@@ -107,6 +124,13 @@ but they serve different use cases and are built on different paradigms:
 ## 🔨 **Cloud Dataproc**
 
 **Dataproc** is Google’s **managed Hadoop and Spark** service — ideal if you already use these open-source tools.
+
+<https://cloud.google.com/dataproc>
+
+<https://cloud.google.com/dataproc#documentation>
+
+<https://medium.com/@study7vikas/google-cloud-architect-learning-day-42-642a4658221d>
+
 
 ### ✅ Key Features:
 
@@ -344,8 +368,6 @@ Feature | Cloud Composer |  Workflows
 ## 🏁 **Summary**
 
 
-
-
 | Feature/Focus       | **Cloud Composer**                | **Google Cloud Workflows**        |
 | ------------------- | --------------------------------- | --------------------------------- |
 | Orchestration Type  | Data pipelines & batch            | Microservices, APIs, event-driven |
@@ -372,7 +394,15 @@ Feature | Cloud Composer |  Workflows
 * * *
 
 
-**BigQuery** is **Google Cloud Platform’s (GCP)** **fully-managed, serverless data warehouse** designed for fast SQL analytics on large-scale datasets.
+### Cloud SQL   
+https://cloud.google.com/sql/docs 
+Cloud SQL is a fully-managed database service that helps you set up, maintain, manage, and administer your relational databases on Google Cloud Platform.
+
+You can use Cloud SQL with MySQL, PostgreSQL, or SQL Server.
+
+
+### BigQuery
+fully-managed, serverless data warehouse** designed for fast SQL analytics on large-scale datasets.
 
 * * *
 
