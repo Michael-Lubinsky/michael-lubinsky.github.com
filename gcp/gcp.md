@@ -1,5 +1,63 @@
 ### GCP
 
+
+* * *
+
+### **GCS (Google Cloud Storage)**
+
+**Purpose:**  
+Object storage for any type of data—files, images, backups, logs, etc.
+
+**Key Features:**
+
+-   **Scalable & Durable:** Stores massive amounts of unstructured data with high durability (11 9's).
+    
+-   **Buckets & Objects:** Data is stored in _buckets_ and each file is called an _object_.
+    
+-   **Classes:** Offers different storage classes like Standard, Nearline, Coldline, and Archive based on access frequency and cost.
+    
+-   **Access:** Can be accessed via REST API, SDKs, or `gsutil` CLI.
+    
+-   **Use Cases:** Backup, media storage, Big Data input/output, machine learning datasets, website hosting.
+    
+
+**Example Use:**  
+You can store a `.csv` file in GCS and later read it from a data processing pipeline.
+
+* * *
+
+###   **Pub/Sub (Publish/Subscribe)**
+
+**Purpose:**  
+Real-time messaging service for decoupling systems that produce and consume data.
+
+**Key Features:**
+
+-   **Asynchronous Messaging:** Enables real-time, scalable, event-driven systems.
+    
+-   **Publisher-Subscriber Model:** Publishers send messages to a _topic_, and subscribers receive messages from that topic.
+    
+-   **Durability & Scalability:** Supports millions of messages per second.
+    
+-   **Push & Pull Modes:** Subscribers can either pull messages or have them pushed to a webhook.
+    
+-   **Use Cases:** Event ingestion pipelines, microservices communication, log aggregation, streaming analytics.
+    
+
+**Example Use:**  
+A system logs user clicks, publishes each click event to a Pub/Sub topic, and a downstream analytics service consumes these events for processing.
+
+* * *
+
+### **How They Work Together:**
+
+-   You can **store files in GCS**, and when a new file is uploaded, **trigger a Pub/Sub message** to notify downstream systems to process it.
+    
+-   Example: Uploading a JSON file to GCS triggers a Cloud Function via Pub/Sub to parse and store the data in BigQuery.
+
+
+
+
 ### Dataflow  and Dataproc
 
 **Dataflow** and **Dataproc** are two different Google Cloud services for processing large-scale data — 
