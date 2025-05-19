@@ -537,6 +537,52 @@ GROUP BY   country ORDER BY   num_sales DESC;
 
 This query could scan **terabytes of data** in seconds — no tuning, indexing, or infrastructure setup needed.
 
+
+
+### Querying JSON Fields
+You can use the JSON_VALUE, JSON_QUERY, and JSON_EXTRACT functions.
+
+🔸 Example 1: Extract scalar value
+```sql
+
+SELECT JSON_VALUE(data, '$.user.name') AS user_name
+FROM my_dataset.events;
+```
+🔸 Example 2: Extract nested object or array
+```sql
+
+SELECT JSON_QUERY(data, '$.user.preferences') AS prefs
+FROM my_dataset.events;
+```
+🔸 Example 3: Dot notation (on JSON fields with known structure)
+```sql
+
+SELECT data.user.age FROM my_dataset.events;
+```
+⚠️ Only works if data is parsed to a STRUCT, not plain JSON.
+
+🔄 Loading JSON into BigQuery
+
+A. From GCS JSON file
+Use NEWLINE_DELIMITED_JSON format
+
+Map fields to JSON column type or schema
+
+B. Direct Insert
+```sql
+
+INSERT INTO my_dataset.events (id, data)
+VALUES ('e1', JSON '{"user": {"name": "Alice", "age": 30}}');
+```
+
+| Function           | Description                            |
+| ------------------ | -------------------------------------- |
+| `JSON_VALUE()`     | Extracts scalar (e.g., string, number) |
+| `JSON_QUERY()`     | Extracts JSON object or array          |
+| `JSON_EXTRACT()`   | Legacy version of `JSON_QUERY()`       |
+| `TO_JSON_STRING()` | Converts STRUCT/ARRAY to JSON string   |
+| `PARSE_JSON()`     | Converts string to JSON data type      |
+
 * * *
 
 ### 💲 **Pricing**
