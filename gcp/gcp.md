@@ -145,7 +145,7 @@ gcloud pubsub subscriptions update my-sub \
 ### Cloud Function 
 is a serverless compute service that lets you run single-purpose functions in response to events—without managing servers or infrastructure.
 
-✅ What is a GCP (Google Cloud) Function?
+✅  Google Cloud Function
 GCP Cloud Functions are:
 
 Event-driven: Triggered by events from GCP services like Cloud Storage, Pub/Sub, Firebase, or HTTP requests.
@@ -156,7 +156,7 @@ Auto-scaling: Scales up/down automatically based on incoming requests.
 
 Short-lived: Designed for lightweight, stateless tasks.
 
-🧠 Use Cases
+
 | Use Case                    | Example                                   |
 |---------------------------|--------------------------------------------|
 | **Cloud Storage Trigger**   | Process images when uploaded to a GCS bucket |
@@ -661,7 +661,7 @@ When you create a table in BigQuery, the data is stored in Google's proprietary 
 ### Exceptions: External Tables (Federated Queries)
 You can create external tables in BigQuery that reference data stored outside BigQuery, such as:
 | Source                            | Storage Location | Format                            |
-| --------------------------------- | ---------------- | --------------------------------- |
+|---------------------------------|----------------|---------------------------------|
 | **Google Cloud Storage (GCS)**    | Buckets          | CSV, JSON, Avro, Parquet, ORC     |
 | **Google Drive**                  | Files in Drive   | Google Sheets                     |
 | **Bigtable, Cloud SQL, Spanner**  | Google-managed   | Native tables                     |
@@ -676,7 +676,7 @@ OPTIONS (
 ```
 
 | Table Type          | Where Data Is Stored           | Format                      | Performance          |
-| ------------------- | ------------------------------ | --------------------------- | -------------------- |
+|-------------------|------------------------------|---------------------------|--------------------|
 | **Native Table**    | BigQuery internal storage      | Proprietary columnar format | Fastest (optimized)  |
 | **External Table**  | GCS / Drive / Cloud SQL        | CSV, JSON, Parquet, etc.    | Slower, limited      |
 | **Federated Query** | Other services (via connector) | Source-defined              | Flexible, but slower |
