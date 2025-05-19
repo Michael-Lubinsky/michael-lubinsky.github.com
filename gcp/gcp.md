@@ -4,8 +4,9 @@
 https://cloud.google.com/sdk/docs/install
 
  Google Cloud CLI includes the gcloud, gsutil and bq command-line tools
+ <!--
 https://medium.com/@asmitha23052002/uploading-files-to-google-cloud-storage-gcs-using-the-gsutil-command-line-tool-71bca0a2b731
-
+-->
 Gsutil is deprecated - you need to move to using gcloud storage instead
 https://cloud.google.com/storage/docs/discover-object-storage-gcloud
 
@@ -45,10 +46,8 @@ You can store a `.csv` file in GCS and later read it from a data processing pipe
 
 ###   **Pub/Sub (Publish/Subscribe)**
 
-**Purpose:**  
 Real-time messaging service for decoupling systems that produce and consume data.
 
-**Key Features:**
 
 -   **Asynchronous Messaging:** Enables real-time, scalable, event-driven systems.
     
@@ -158,8 +157,8 @@ Auto-scaling: Scales up/down automatically based on incoming requests.
 Short-lived: Designed for lightweight, stateless tasks.
 
 🧠 Use Cases
-| Use Case                    | Example                                      |
-| --------------------------- | -------------------------------------------- |
+| Use Case                    | Example                                   |
+|---------------------------|--------------------------------------------|
 | **Cloud Storage Trigger**   | Process images when uploaded to a GCS bucket |
 | **Pub/Sub Message Handler** | Process log events or notifications          |
 | **HTTP API Endpoint**       | Build a lightweight RESTful API              |
