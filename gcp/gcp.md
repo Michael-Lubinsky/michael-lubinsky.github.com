@@ -415,7 +415,7 @@ but without the burden of managing the underlying infrastructure.
 
 ## 🔧 Key Features
 
-Feature  | Cloud Composer (GCP Managed Airflow) |
+| Feature  | Cloud Composer (GCP Managed Airflow) |
 |--------|------------| 
 | **Orchestrator** | Apache Airflow (open source) |
 | **Managed by** | Google Cloud (updates, scaling, security)
@@ -505,7 +505,7 @@ It’s perfect if you:
 
 ## 🧠 **High-Level Summary**
 
-Feature | **Cloud Composer (Apache Airflow)** | **Google Cloud Workflows**
+|Feature | **Cloud Composer (Apache Airflow)** | **Google Cloud Workflows**|
 |--------|------------------------------------|---------------------------|
 | **Best For** | Complex, data-oriented workflows | Lightweight, event-driven workflows
 | **Programming** | Python-based DAGs | YAML / JSON-like DSL
@@ -531,7 +531,7 @@ Feature | **Cloud Composer (Apache Airflow)** | **Google Cloud Workflows**
 
 ### 2\. **Programming Model**
 
-Feature | Cloud Composer |  Workflows
+| Feature | Cloud Composer |  Workflows|
 |-------|----------------|----------|
 | Language | Python (Airflow DAGs) | YAML/JSON DSL
 | Ease of Use | Familiar for Python developers | Simpler for event/API chaining
