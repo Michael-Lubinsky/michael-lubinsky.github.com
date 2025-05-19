@@ -572,7 +572,150 @@ This query could scan **terabytes of data** in seconds — no tuning, indexing, 
 -   OLTP (transaction-heavy systems)
     
 -   Small, frequent row-level updates
+
+
+
+### Tuning BigQuery 
+for performance and cost-efficiency involves a combination of table design,   
+query writing best practices, and configuration parameters. Here's a detailed breakdown:
+
+✅ 1. Table Partitioning in BigQuery
+Partitioning helps reduce the amount of data scanned, improving query performance and lowering cost.
+
+Types of Partitioning
+A. Time-based Partitioning
+Partitioned by a DATE, DATETIME, or TIMESTAMP column.
+
+```sql
+
+CREATE TABLE my_dataset.logs
+PARTITION BY DATE(timestamp_column)
+AS SELECT ...
+```
+B. Ingestion-time Partitioning
+Automatically partitions by load time.
+
+```sql
+
+CREATE TABLE my_dataset.logs
+PARTITION BY _PARTITIONTIME
+AS SELECT ...
+```
+
+C. Integer Range Partitioning
+Partitioned by an integer column (e.g. customer ID buckets).
+
+```sql
+
+CREATE TABLE my_dataset.sales
+PARTITION BY RANGE_BUCKET(customer_id, GENERATE_ARRAY(1, 1000, 10))
+AS SELECT ...
+```
+💡 Best Practice: Use time partitioning on large log/event/history tables to prune unneeded data during query.
+
+✅ 2. Table Clustering
+Clustering sorts data within partitions to optimize filter and join operations.
+
+Clustering Columns
+Up to 4 columns
+
+Use columns commonly filtered/joined
+
+```sql
+
+CREATE TABLE my_dataset.sales
+PARTITION BY DATE(order_date)
+CLUSTER BY customer_id, region
+AS SELECT ...
+```
+💡 Best Practice: Use clustering on high-cardinality columns like user_id, email, or device_id.
+
+✅ 3. Query Hints and Optimizations
+A. Table Hints
+Use TABLE_DATE_RANGE or _PARTITIONTIME to restrict partitions manually:
+
+```sql
+
+SELECT * FROM my_table
+WHERE _PARTITIONTIME BETWEEN '2024-01-01' AND '2024-01-31'
+```
+For range partitioned tables:
+
+```sql
+
+WHERE customer_id BETWEEN 100 AND 200
+```
+
+B. JOIN Strategy Hint
+Force the planner to broadcast or shuffle joins:
+
+```sql
+
+SELECT /*+ BROADCAST_JOIN(build_table) */
+FROM large_table
+JOIN build_table ON ...
+```
+
+C. Materialized Views / Temp Tables
+Store intermediate results to avoid recomputation:
+
+```sql
+
+CREATE TEMP TABLE temp_result AS
+SELECT ... FROM big_table WHERE ...
+```
+✅ 4. Cost & Performance Tuning Parameters
+BigQuery is serverless—you don't manage infrastructure—but you can still tune how it behaves:
+
+| Setting                  | Description                         | Example                           |
+| ------------------------ | ----------------------------------- | --------------------------------- |
+| **Maximum bytes billed** | Enforce upper limit on query size   | `1 GB`                            |
+| **Use cached results**   | Use cache for repeated queries      | `true/false`                      |
+| **Destination table**    | Save results to avoid recomputation | Output to permanent or temp table |
+| **Labels**               | Add metadata for tracking usage     | `env:prod`, `team:data`           |
+
     
+
+### B. **Using Slots for Consistent Performance**
+
+-   Default is **on-demand pricing** (pay-per-query)
+    
+-   For consistent performance on large workloads, consider **reservation-based model (flat-rate slots)** with **autoscaling**
+    
+
+* * *
+
+### ✅ 5. **Monitoring and Troubleshooting**
+
+-   Use **Query Execution Details** in UI to:
+    
+    -   Check **slots used**, **shuffle data size**, **partition filter effectiveness**
+        
+    -   Identify long-running or inefficient stages
+        
+-   Use __INFORMATION\_SCHEMA.JOBS\_BY\__ views_\* to programmatically analyze job history and performance
+
+
+### Other tips
+
+| Practice                        | Why it Helps                                  |
+| ------------------------------- | --------------------------------------------- |
+| **Select only needed columns**  | Reduces scanned data                          |
+| **Use `WITH` (CTEs) carefully** | Break complex queries into reusable logic     |
+| **Filter early**                | Apply `WHERE` conditions as early as possible |
+| \*\*Avoid SELECT \*\*\*         | Prevent scanning unused columns               |
+| **Deduplicate input data**      | Avoid large joins/aggregations on duplicates  |
+| **Avoid UDFs if possible**      | UDFs can be slower and less optimized         |
+
+### Example
+```sql
+SELECT customer_id, SUM(amount) AS total
+FROM my_dataset.sales
+WHERE DATE(order_date) BETWEEN '2024-01-01' AND '2024-01-31'
+  AND region = 'US'
+GROUP BY customer_id
+```
+
 
 ###  Configure Hadoop on GCP (Dataproc)
 In GCP Dataproc, Hadoop (HDFS and MapReduce/YARN) configuration is managed through:
