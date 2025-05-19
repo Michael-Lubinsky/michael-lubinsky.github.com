@@ -341,6 +341,103 @@ Partitioning of Input Data: The number and size of input partitions directly aff
 
 Tuning Strategy: Aim for a number of partitions that allows for parallel processing without overwhelming the cluster. Partition sizes of around 100-200MB are often recommended.
 
+
+Apache Spark offers several data partitioning strategies to control how data is distributed across the cluster, which is critical for performance and scalability.
+
+Below are the main data partitioning strategies in Spark, including both built-in mechanisms and user-defined options:
+
+🔹 1. Default Hash Partitioning
+How it works: Spark uses a hash function on the key (for key-value data) to distribute records across partitions.
+
+When used: Automatically applied when using operations like groupByKey, reduceByKey, join, etc.
+
+Example:
+
+```python
+rdd = sc.parallelize([("a", 1), ("b", 2), ("a", 3)])
+rdd.partitionBy(4)  # partitions using hash of keys
+```
+🔹 2. Range Partitioning
+How it works: Records are partitioned based on a range of values, often for ordered data.
+
+When used: Useful for queries involving range filters or sorting.
+
+Example:
+
+```python
+df = spark.range(0, 1000)
+df = df.repartitionByRange(5, "id")
+```
+🔹 3. Custom Partitioning (User-Defined Partitioners)
+How it works: You define your own partitioning logic by extending org.apache.spark.Partitioner.
+
+When used: Rarely needed unless you have highly specific distribution requirements.
+
+Example (Scala):
+
+```scala
+class MyPartitioner(partitions: Int) extends Partitioner {
+  def numPartitions = partitions
+  def getPartition(key: Any): Int = {
+    key.toString.length % partitions
+  }
+}
+```
+🔹 4. Coalescing
+How it works: Reduces the number of partitions (e.g., after filtering large data).
+
+When used: To avoid overhead of too many small partitions before output.
+
+Example:
+
+```python
+df.coalesce(1)  # reduces to 1 partition, no shuffle
+```
+🔹 5. Repartitioning
+How it works: Increases or decreases the number of partitions, with a shuffle.
+
+When used: When data is heavily skewed or improperly partitioned.
+
+Example:
+
+```python
+df.repartition(10)  # redistributes data with full shuffle
+```
+🔹 6. Bucketing (for Spark SQL / DataFrames)
+How it works: In Spark SQL, you can bucket data by column for performance on joins.
+
+When used: Requires writing data using bucketBy, used during table creation.
+
+Example:
+
+```python
+df.write.bucketBy(4, "user_id").sortBy("timestamp").saveAsTable("events")
+```
+🔹 7. Skewed Data Handling (Salting)
+How it works: A manual strategy to avoid skew by adding randomness to keys (salting).
+
+When used: For extreme data skew (e.g., one key has 90% of the data).
+
+Example:
+
+```python
+df = df.withColumn("salted_key", concat(col("key"), lit("_"), rand()))
+```
+⚙️ How to Check Current Partitions
+```python
+rdd.getNumPartitions()
+df.rdd.getNumPartitions()
+```
+🧠 Best Practices
+Use repartitionByRange() for range-based queries.
+
+Avoid unnecessary repartitioning—it triggers a full shuffle.
+
+Use coalesce() over repartition() if you're only reducing partitions.
+
+Monitor skew using Spark UI → Stages → Tasks.
+
+
 #### 3. Memory Management
 spark.memory.fraction: This parameter determines the fraction of JVM heap space used for Spark execution and storage. The rest is reserved for user code and metadata.
 spark.memory.storageFraction: Within the Spark memory fraction, this determines the fraction used for caching (storage). Execution memory can borrow from storage if needed.
