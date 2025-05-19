@@ -77,7 +77,6 @@ Bucketing (or **bucketing with sorting**) divides data into a fixed number of **
 
 **Example**:
 
-
 `df.write.bucketBy(8, "user_id").sortBy("user_id").saveAsTable("bucketed_users")`
 
 **Benefits**:
@@ -164,6 +163,41 @@ Small DataFrame? Go for Broadcast Join.
 Large, Pre-Sorted DataFrames? Sort-Merge Join is your friend.
 Unsorted, Massive Data? Use Shuffle Hash Join, but be mindful of its performance impact.
 ```
+
+### repartition method
+
+#### case 1
+df.repartition(numPartitions)
+Partitions data randomly into the given number of partitions.  
+Triggers a full shuffle.  
+No column used for partitioning.
+
+#### case 2
+df.repartition(col1, col2, ..., colN)
+
+Partitions data based on the values of the given column(s) using hash partitioning.  
+The number of partitions is determined by Spark's default parallelism or by cluster settings.
+
+```python
+df = df.repartition("user_id")  # Partition by user_id values
+```
+#### case 3 
+```python
+df.repartition(numPartitions, col1, col2, ..., colN)
+```
+Explicitly set the number of partitions and partition by the given column(s).
+
+```python
+df = df.repartition(20, "country", "city")  # 20 partitions by country & city
+```
+
+| Use Case                            | Recommended API              |
+| ----------------------------------- | ---------------------------- |
+| Increase partitions evenly          | `repartition(n)`             |
+| Balance skew before join            | `repartition(col)`           |
+| Partition by multiple fields        | `repartition(n, col1, col2)` |
+| Reduce partitions (without shuffle) | `coalesce(n)`                |
+
 
 ### Join: Repartitioning on Join Key
 
