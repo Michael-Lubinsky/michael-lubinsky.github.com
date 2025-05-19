@@ -246,6 +246,40 @@ but they serve different use cases and are built on different paradigms:
 
 * * *
 
+#### Create Spark Cluster
+```bash
+gcloud dataproc clusters create my-cluster \
+    --region=us-central1 \
+    --zone=us-central1-a \
+    --master-machine-type=n1-standard-4 \
+    --worker-machine-type=n1-standard-4 \
+    --num-workers=2 \
+    --image-version=2.1-debian11 \
+    --enable-component-gateway \
+    --optional-components=JUPYTER \
+    --bucket=my-bucket
+
+
+Submit PySpark script stored in Cloud Storage
+#--------------------------------------------
+gcloud dataproc jobs submit pyspark gs://my-bucket/scripts/my_job.py \
+    --cluster=my-cluster \
+    --region=us-central1
+
+
+Submit Spark job using JAR:
+#---------------------
+gcloud dataproc jobs submit spark \
+    --cluster=my-cluster \
+    --region=us-central1 \
+    --class=com.example.MyApp \
+    --jars=gs://my-bucket/jars/my_app.jar
+
+```
+ Use Dataproc Jupyter notebook (if enabled)
+Navigate to Dataproc → Clusters → Web Interfaces → Jupyter, 
+and run your code interactively.
+
 
 The **closest equivalent to Apache Airflow** in **Google Cloud Platform (GCP)** is:
 
