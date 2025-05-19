@@ -661,6 +661,7 @@ When you create a table in BigQuery, the data is stored in Google's proprietary 
 
 ### Exceptions: External Tables (Federated Queries)
 You can create external tables in BigQuery that reference data stored outside BigQuery, such as:
+
 | Source                            | Storage Location | Format                            |
 |---------------------------------|----------------|---------------------------------|
 | **Google Cloud Storage (GCS)**    | Buckets          | CSV, JSON, Avro, Parquet, ORC     |
