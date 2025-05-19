@@ -64,15 +64,83 @@ Real-time messaging service for decoupling systems that produce and consume data
 **Example Use:**  
 A system logs user clicks, publishes each click event to a Pub/Sub topic, and a downstream analytics service consumes these events for processing.
 
-* * *
+### **How to Configure / Tune Google Pub/Sub**
+
+Because Pub/Sub is **serverless and auto-scaled**, there is **very little infrastructure tuning** you need to do compared to Kafka. But you can still optimize it in several ways depending on your use case:
+
+#### **1\. Subscription Type**
+
+-   **Pull**: Clients fetch messages.
+    
+-   **Push**: Google Pub/Sub pushes messages to your endpoint (e.g., Cloud Function, HTTP webhook).
+    
+
+Choose **pull** for more control, and **push** for simpler, event-driven architectures.
+
+#### **2\. Acknowledge Deadline**
+
+-   The default is 10 seconds; can be extended up to 10 minutes.
+    
+-   Tune this if your processing logic takes longer.
+ 
+
+`subscriber.modify_ack_deadline()`
+
+#### **3\. Message Retention**
+
+-   Default: 7 days.
+    
+-   Can be configured per topic.
+
+`gcloud pubsub topics update YOUR_TOPIC \     --message-retention-duration=168h`
+
+#### **4\. Message Ordering**
+
+-   Disabled by default (no guarantee).
+    
+-   Enable **ordering keys** if you need ordering by some logical grouping.
+    
+
+`gcloud pubsub topics create my-topic --enable-message-ordering`
+
+#### **5\. Flow Control (for Pull subscriptions)**
+
+You can set client-side limits to avoid overloading consumers:
+```python
+flow_control = pubsub_v1.types.FlowControl(
+    max_messages=10,
+    max_bytes=1024 * 1024,
+    max_lease_duration=300  # seconds
+)
+```
+
+#### **6\. Batching Settings**
+
+Improve throughput by tuning how messages are batched:
+
+```python
+batch_settings = pubsub_v1.types.BatchSettings(
+    max_bytes=1024*1024,      # 1 MB
+    max_latency=0.01,         # 10 ms
+    max_messages=1000
+)
+```
+
+#### **7\. Dead Letter Topics (DLQ)**
+
+Set up DLQs for failed messages:
+
+```bash
+gcloud pubsub subscriptions update my-sub \
+  --dead-letter-topic=projects/my-project/topics/my-dlq-topic \
+  --max-delivery-attempts=5
+```
 
 ### **How They Work Together:**
 
 -   You can **store files in GCS**, and when a new file is uploaded, **trigger a Pub/Sub message** to notify downstream systems to process it.
     
 -   Example: Uploading a JSON file to GCS triggers a Cloud Function via Pub/Sub to parse and store the data in BigQuery.
-
-
 
 
 ### Dataflow  and Dataproc
