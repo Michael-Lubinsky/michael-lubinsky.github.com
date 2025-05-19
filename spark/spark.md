@@ -108,15 +108,18 @@ Bucketing (or **bucketing with sorting**) divides data into a fixed number of **
 
 #### block size tuning:
 
- Parquet
+Parquet  
+``` 
 df.write.option("parquet.block.size", 256 * 1024 * 1024).parquet("output/")
-
- ORC
+```
+ORC  
+```
 df.write.option("orc.stripe.size", 256 * 1024 * 1024).orc("output/")
-
-CSV/Avro
+```
+CSV/Avro  
+```
 df.repartition(100).write.csv("output/")
-
+```
 ####  for partitioned tables
 df.sortWithinPartitions("user_id").write.partitionBy("date").parquet("partitioned_data/")
 
