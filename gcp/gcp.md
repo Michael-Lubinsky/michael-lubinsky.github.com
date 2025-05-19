@@ -527,7 +527,6 @@ fully-managed, serverless data warehouse** designed for fast SQL analytics on la
 ### 🧪 Example Use Case
 
 
-
 ```sql
 SELECT   country,   COUNT(*) AS num_sales
 FROM   `my_project.sales_data.transactions`
@@ -537,6 +536,33 @@ GROUP BY   country ORDER BY   num_sales DESC;
 
 This query could scan **terabytes of data** in seconds — no tuning, indexing, or infrastructure setup needed.
 
+
+When you create a table in BigQuery, the data is stored in Google's proprietary internal columnar storage format  
+— not in formats like Parquet, CSV, or external storage such as GCS or S3 
+(unless you explicitly configure it that way).
+
+### Exceptions: External Tables (Federated Queries)
+You can create external tables in BigQuery that reference data stored outside BigQuery, such as:
+| Source                            | Storage Location | Format                            |
+| --------------------------------- | ---------------- | --------------------------------- |
+| **Google Cloud Storage (GCS)**    | Buckets          | CSV, JSON, Avro, Parquet, ORC     |
+| **Google Drive**                  | Files in Drive   | Google Sheets                     |
+| **Bigtable, Cloud SQL, Spanner**  | Google-managed   | Native tables                     |
+| **Amazon S3 (via Data Transfer)** | S3 bucket        | Parquet, CSV (via scheduled load) |
+
+```sql
+CREATE EXTERNAL TABLE my_dataset.gcs_table
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://my-bucket/path/*.parquet']
+);
+```
+
+| Table Type          | Where Data Is Stored           | Format                      | Performance          |
+| ------------------- | ------------------------------ | --------------------------- | -------------------- |
+| **Native Table**    | BigQuery internal storage      | Proprietary columnar format | Fastest (optimized)  |
+| **External Table**  | GCS / Drive / Cloud SQL        | CSV, JSON, Parquet, etc.    | Slower, limited      |
+| **Federated Query** | Other services (via connector) | Source-defined              | Flexible, but slower |
 
 
 ### Querying JSON Fields
@@ -599,15 +625,15 @@ Docs:
 https://cloud.google.com/bigquery/docs/reference/rest
 
 ✅ 2. BigQuery Client Libraries (SDKs)
-Language	Library Name	Purpose
-Python	google-cloud-bigquery	Most popular for data science
-Java	com.google.cloud:google-cloud-bigquery	For Java/Scala-based systems
-Node.js	@google-cloud/bigquery	For serverless and web apps
+Language	Library Name	Purpose  
+Python	google-cloud-bigquery	Most popular for data science  
+Java	com.google.cloud:google-cloud-bigquery	For Java/Scala-based systems  
+Node.js	@google-cloud/bigquery	For serverless and web apps  
 Go, C#, PHP	Official libraries also available	Broad language support
 
 Example (Python):
 
-python
+```python
 
 from google.cloud import bigquery
 
@@ -615,6 +641,7 @@ client = bigquery.Client()
 query_job = client.query("SELECT name FROM `my_dataset.my_table`")
 for row in query_job:
     print(row.name)
+```
 ✅ 3. BigQuery Storage API
 Enables fast parallel reads from BigQuery tables (used by Spark, Dataflow, etc.)
 
@@ -644,12 +671,12 @@ Models: linear/logistic regression, k-means, XGBoost, deep neural nets, etc.
 
 Example:
 
-sql
+```sql
  
 CREATE MODEL my_dataset.model_name
 OPTIONS(model_type='logistic_reg') AS
 SELECT * FROM my_dataset.training_data;
-
+```
 ✅ 6. BigQuery BI Engine API
 Used for accelerating dashboard tools like Looker Studio (formerly Data Studio).
 
@@ -675,10 +702,10 @@ CLI wrapper around BigQuery REST API
 
 Example:
 
-bash
+```bash
 
 bq query --use_legacy_sql=false 'SELECT COUNT(*) FROM my_dataset.my_table'
-
+```
 
 | Tool/Platform                   | Integration                                           |
 | ------------------------------- | ----------------------------------------------------- |
