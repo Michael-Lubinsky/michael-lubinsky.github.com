@@ -1,3 +1,27 @@
+```
+df.printSchema()
+df.columns
+df.count()
+df.describe('Name').show()
+df.describe('uniform', 'normal').show()
+df.filter((df.Club=='FC Barcelona') &
+(df.Nationality=='Spain')).orderBy('ID', ascending='False').show(5)
+from pyspark.sql.functions import mean, min, max
+df.select([mean('uniform'), min('uniform'), max('uniform')]).show()
+```
+
+### read json
+```
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+# Read single-line JSON
+df = spark.read.json("path/to/singleline.json")
+df_multiline = spark.read.option("multiLine", True).json("path/to/multiline.json") # Define custom schema for JSON
+StructField("id", IntegerType(), True), StructField("name", StringType(), True), StructField("attributes", StructType([
+StructField("gender", StringType(), True) ]))
+])
+df_custom_schema = spark.read.schema(schema).json("path/to/jsonfile.json")
+```
+
 <!-- https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448 -->
 ### Read from S3
 ```python
