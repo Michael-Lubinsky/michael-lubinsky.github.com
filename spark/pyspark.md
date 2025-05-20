@@ -69,6 +69,49 @@ if invalid_rows.count() > 0:
     raise ValueError("Data Quality Issues Found: Null policy numbers or non-positive premium values")
 ```
 
+
+### left_semi left_anti joins
+
+In PySpark, left_semi and left_anti joins are special join types used to filter data from the left DataFrame based on the existence (or non-existence) of matching rows in the right DataFrame.
+
+They do not return columns from the right DataFrame.
+
+🔹 1. left_semi Join
+Returns rows from the left DataFrame that have a match in the right DataFrame.
+
+✅ Think of it as: left_df WHERE EXISTS (SELECT ... FROM right_df WHERE join condition)
+
+🔸 Example:
+```python
+df1 = spark.createDataFrame([(1, "Alice"), (2, "Bob"), (3, "Charlie")], ["id", "name"])
+df2 = spark.createDataFrame([(2,), (3,)], ["id"])
+
+df1.join(df2, on="id", how="left_semi").show()
+```
++---+-------+
+| id|  name |
++---+-------+
+|  2|   Bob |
+|  3|Charlie|
++---+-------+
+
+🔹 2. left_anti Join
+Returns rows from the left DataFrame that do NOT have a match in the right DataFrame.
+
+✅ Think of it as: left_df WHERE NOT EXISTS (...)
+
+🔸 Example:
+
+df1.join(df2, on="id", how="left_anti").show()
+
+```
++---+-----+
+| id| name|
++---+-----+
+|  1|Alice|
++---+-----+
+```
+
 ### Full join
 ```python
 df1.join(df2, on="id", how="full")
