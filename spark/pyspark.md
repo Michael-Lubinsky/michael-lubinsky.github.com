@@ -18,6 +18,27 @@ df.select(countDistinct("name", "department")).show()
 df.groupBy("department").agg(countDistinct("name").alias("unique_employees")).show()
 ```
 
+### From SQL to PySpark
+
+```sql
+SELECT name, COUNT(*)
+FROM T
+GROUP BY name
+HAVING COUNT(*) > (SELECT AVG(val) FROM T)
+```
+PySpark doesn’t support subqueries directly in having() like SQL does.
+```python
+avg_val = df.selectExpr("avg(val) as avg_val").collect()[0]["avg_val"]
+from pyspark.sql.functions import count
+
+df_grouped = df.groupBy("name").agg(count("*").alias("cnt"))
+df_result = df_grouped.filter(f"cnt > {avg_val}")
+
+or
+
+df_result = df_grouped.filter(df_grouped["cnt"] > avg_val)
+```
+
 ### read json
 ```
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
