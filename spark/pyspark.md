@@ -161,13 +161,18 @@ df_final.show()
 ```
 
 ### explode, explode_outer
+
+explode_outer() - preserves rows where the input column is null or an empty array.
+
+Produces a row with null as the result for null or [].
+
 ```python
 data=[('Paris','Polo, Tennis'),('Matt','Golf, Hockey'),('Sam',None)]
 schema="Person string,Games string"
 df=spark.createDataFrame(data,schema)
 display(df)
 
-from pyspark.sql.functions import col,explode,explode_outer
+from pyspark.sql.functions import col,explode,explode_outer, split
 df_final=df.withColumn("Games",split(col("Games"),','))
 display(df_final)
 df_final.select("Person",explode(col("Games")).alias("Games")).display()
