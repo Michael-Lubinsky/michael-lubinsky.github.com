@@ -118,7 +118,65 @@ from pyspark.sql.functions import col,sum
 df_final=df.agg(sum(col("salary")).alias("total_salary")).first()[0]
 ```
 
+### Pivoting in sql and PySpark
 
+```sql
+SELECT
+  name,
+  SUM(CASE WHEN subject = 'English' THEN score END) AS English,
+  SUM(CASE WHEN subject = 'Math' THEN score END) AS Math
+FROM your_table
+GROUP BY name;
+```
+
+In PySpark, pivot() converts rows into columns, but if more than one value exists for a given combination, Spark needs to know how to combine them.
+
+So you must specify an aggregation function like:
+
+sum() → to total values
+
+avg() → to take the average
+
+max(), min(), count(), etc.
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import sum
+
+spark = SparkSession.builder.getOrCreate()
+
+data = [
+    ("Alice", "Math", 85),
+    ("Alice", "English", 78),
+    ("Bob", "Math", 91),
+    ("Bob", "English", 84),
+    ("Charlie", "Math", 65),
+    ("Charlie", "English", 70)
+]
+
+df = spark.createDataFrame(data, ["name", "subject", "score"])
+df.show()
++-------+--------+-----+
+|  name | subject|score|
++-------+--------+-----+
+| Alice |   Math |   85|
+| Alice | English|   78|
+| Bob   |   Math |   91|
+| Bob   | English|   84|
+|Charlie|   Math |   65|
+|Charlie| English|   70|
++-------+--------+-----+
+df_pivot = df.groupBy("name").pivot("subject").agg(sum("score"))
+df_pivot.show()
+
++-------+--------+-----+
+|  name | English| Math|
++-------+--------+-----+
+| Alice |     78 |   85|
+| Bob   |     84 |   91|
+|Charlie|     70 |   65|
++-------+--------+-----+
+```
 
 ### Calculate the monthly average balance for banking customers.
 ```python
