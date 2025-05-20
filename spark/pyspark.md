@@ -32,7 +32,28 @@ df.select("name", "age", "salary")
 ```
  So *cols unpacks the list cols into individual column arguments for the select() method.
 
+In PySpark, you can call methods like .groupBy() with either:
 
+a list of columns (no splat *), or
+
+multiple column arguments (using * to unpack a list)
+
+✅ Both are valid — but slightly different in behavior behind the scenes.
+🔸 1. With a List (no splat):
+ 
+df.groupBy(['column1', 'column2'])  
+You are passing a single list object as an argument to groupBy().  
+PySpark internally handles this by flattening the list and using its elements as group keys.
+
+
+🔸 2. With a Splat (unpacking):
+
+columns = ['column1', 'column2']  
+df.groupBy(*columns)  
+Here, *columns unpacks the list into multiple positional arguments, equivalent to:
+
+df.groupBy('column1', 'column2')  
+ Also works — and it's more flexible if you're dynamically building the list of columns.
 
 
 ### Data quality check
