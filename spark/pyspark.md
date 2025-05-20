@@ -16,6 +16,25 @@ schema = StructType([
 df = spark.read.schema(schema).json("s3a://ecommerce-bucket/orders/")
 df.show(5)
 ```
+### Splat * operator
+In PySpark, the * symbol (called the "splat" operator) is Python syntax used to unpack a list (or tuple)
+into individual arguments.  
+It's not specific to PySpark—it's pure Python—but is commonly seen in PySpark code when you're passing multiple columns dynamically.
+
+ Example: select(*cols)
+```python
+cols = ["name", "age", "salary"]
+df.select(*cols)
+
+#Is equivalent to:
+
+df.select("name", "age", "salary")
+```
+ So *cols unpacks the list cols into individual column arguments for the select() method.
+
+
+
+
 ### Data quality check
 ```python
 from pyspark.sql.functions import col
