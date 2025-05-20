@@ -47,9 +47,10 @@ PySpark internally handles this by flattening the list and using its elements as
 
 
 🔸 2. With a Splat (unpacking):
-
+```
 columns = ['column1', 'column2']  
 df.groupBy(*columns)  
+```
 Here, *columns unpacks the list into multiple positional arguments, equivalent to:
 
 df.groupBy('column1', 'column2')  
@@ -87,14 +88,14 @@ df1 = spark.createDataFrame([(1, "Alice"), (2, "Bob"), (3, "Charlie")], ["id", "
 df2 = spark.createDataFrame([(2,), (3,)], ["id"])
 
 df1.join(df2, on="id", how="left_semi").show()
-```
+
 +---+-------+
 | id|  name |
 +---+-------+
 |  2|   Bob |
 |  3|Charlie|
 +---+-------+
-
+```
 🔹 2. left_anti Join
 Returns rows from the left DataFrame that do NOT have a match in the right DataFrame.
 
