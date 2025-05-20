@@ -95,6 +95,9 @@ if invalid_rows.count() > 0:
 ```
 
 ### Join
+
+Use "inner", "left", "right", "outer", "left_semi", "left_anti" as the how parameter.
+
 Spark automatically avoids duplicate join columns by keeping just one id column.
 ```
 df_joined = df1.join(df2, on="id", how="inner")
