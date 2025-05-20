@@ -98,6 +98,7 @@ if invalid_rows.count() > 0:
 Spark automatically avoids duplicate join columns by keeping just one id column.
 ```
 df_joined = df1.join(df2, on="id", how="inner")
+df_joined = df1.join(df2, on=["id", "dept"], how="inner")
 df_joined.show()
 ```
 Join using explicit conditions (df1.id == df2.id)
@@ -106,10 +107,16 @@ df_joined = df1.join(df2, df1.id == df2.id, "inner")
 
 It lead to duplicate id columns: one from df1, one from df2.
 Solution:  
+```
 df_joined = df1.join(df2, df1.id == df2.id, "inner") \
                .drop(df2.id)
 
-
+df_joined = df1.join(
+    df2,
+    (df1.emp_id == df2.id) & (df1.department == df2.dept),
+    how="inner"
+).drop(df2.id, df2.dept)  # optional: remove duplicate columns
+```
 
 ### left_semi left_anti joins
 
