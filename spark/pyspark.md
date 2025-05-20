@@ -69,6 +69,26 @@ if invalid_rows.count() > 0:
     raise ValueError("Data Quality Issues Found: Null policy numbers or non-positive premium values")
 ```
 
+### Full join
+```python
+df1.join(df2, on="id", how="full")
+df1.join(df2, on="id", how="outer")
+df1.join(df2, on="id", how="fullouter")
+
+df1 = spark.createDataFrame([(1, "A"), (2, "B")], ["id", "val1"])
+df2 = spark.createDataFrame([(2, "X"), (3, "Y")], ["id", "val2"])
+
+df1.join(df2, on="id", how="fullouter").show()
+
++----+-----+-----+
+| id | val1| val2|
++----+-----+-----+
+|  1 |  A  | null|
+|  2 |  B  |  X  |
+|  3 |null |  Y  |
++----+-----+-----+
+```
+
 ### Find and drop duplicates
 
 dropDuplicates() in PySpark is used to remove duplicate rows from a DataFrame. 
