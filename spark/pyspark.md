@@ -518,10 +518,14 @@ spark.sql(
  customers=df_customers
 )
 ```
-✅ No need to register views
+ ✅ No need to register views
  ✅ Keeps code modular & testable
  ✅ Direct reference to DataFrames in SQL
+
+
 <!--
+  https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448 
+
 https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
 
 <https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
