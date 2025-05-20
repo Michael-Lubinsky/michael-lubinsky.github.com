@@ -8,6 +8,14 @@ df.filter((df.Club=='FC Barcelona') &
 (df.Nationality=='Spain')).orderBy('ID', ascending='False').show(5)
 from pyspark.sql.functions import mean, min, max
 df.select([mean('uniform'), min('uniform'), max('uniform')]).show()
+
+df.select("name").distinct().show()
+
+from pyspark.sql.functions import countDistinct
+
+df.select(countDistinct("name")).show()
+df.select(countDistinct("name", "department")).show()
+df.groupBy("department").agg(countDistinct("name").alias("unique_employees")).show()
 ```
 
 ### read json
