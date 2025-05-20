@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=pdNYw6qwuNc 
+What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
 ### Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
 
