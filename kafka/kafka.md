@@ -110,7 +110,7 @@ except Exception as e:
     print("kafka producer exception . occured outside\n")
     print(e)
 ```
-#### Kafka Cconsumer:
+#### Kafka Consumer:
 ```python
 import kafka
 from kafka import KafkaConsumer
@@ -429,7 +429,7 @@ DLQ topic Enable a separate Kafka topic (dead-letter) for failed events
 
 ## ✅ 1. Sample `flink-conf.yaml`
 
-```
+```yaml
 
 jobmanager.rpc.address: jobmanager
 taskmanager.numberOfTaskSlots: 4
@@ -457,7 +457,7 @@ state.ttl.enabled: true
 
 ```bash
 flink run \
-    -c com.yourcompany.ClickstreamJob \   
+   -c com.yourcompany.ClickstreamJob \   
    -p 200 \   
    -Dexecution.checkpointing.interval=2m \   
    -Dstate.backend=rocksdb \   
@@ -678,7 +678,7 @@ query.awaitTermination()
 
 ## ✅ Kafka Producer Configuration (e.g., app pushing clickstream)
 
-```
+```ini
 bootstrap.servers=kafka1:9092,kafka2:9092
 acks=all
 compression.type=snappy
