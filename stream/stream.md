@@ -11,3 +11,5 @@ https://github.com/quixio/quix-streams Kafta Stream  + Python
 
 
 https://testdriven.io/blog/flask-svelte/ Real Time Dashboard
+
+https://testdriven.io/blog/fastapi-svelte/ FastAPI real time dashoard 
