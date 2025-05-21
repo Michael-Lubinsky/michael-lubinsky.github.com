@@ -172,7 +172,7 @@ This defines how the Kafka server (broker) operates.
     
 -   **Key settings** in `server.properties`:
     
-```    
+```ini    
 broker.id=0
 listeners=PLAINTEXT://:9092
 log.dirs=/tmp/kafka-logs
