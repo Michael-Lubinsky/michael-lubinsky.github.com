@@ -1,6 +1,8 @@
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
 What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
+https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-for-ai-professionals/
+
 ### Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
 
 https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
