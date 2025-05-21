@@ -1,6 +1,9 @@
 pip install confluent-kafka
 
-<!-- https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de -->
+<!-- https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de 
+
+https://habr.com/ru/companies/reksoft/articles/911132/
+-->
 
 #### Kafka Producer:
 Example 1
@@ -705,7 +708,7 @@ retries=3
 
 ## ✅ Kafka Consumer Configuration (for Spark/Flink app)
 
-```
+```ini
 # consumer.properties
 
 bootstrap.servers=kafka1:9092,kafka2:9092
