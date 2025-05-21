@@ -24,6 +24,10 @@ https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
+https://eli.thegreenplace.net/2025/convolutions-polynomials-and-flipped-kernels/
+
+https://news.ycombinator.com/item?id=44048306
+
 https://habr.com/ru/companies/yandex_praktikum/articles/901432/
 
 https://www.kaggle.com/discussions/getting-started/390402
