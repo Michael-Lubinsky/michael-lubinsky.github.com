@@ -8,3 +8,6 @@ https://www.onehouse.ai/blog/apache-spark-structured-streaming-vs-apache-flink-v
 
 
 https://github.com/quixio/quix-streams Kafta Stream  + Python
+
+
+https://testdriven.io/blog/flask-svelte/ Real Time Dashboard
