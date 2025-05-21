@@ -1,5 +1,7 @@
 https://grep.app/ search on github
 
+https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+javascript+learnmachinelearning+programming/
+
 Book:
 https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
 
