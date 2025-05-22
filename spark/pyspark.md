@@ -725,6 +725,9 @@ spark.sql(
 
 
 <!--
+
+https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8
+
   https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448 
 
 https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
