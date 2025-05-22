@@ -54,6 +54,38 @@ FROM ad_events
 ORDER BY ctr_percentage DESC;
 ```
 
+### More CTR
+
+```sql
+CREATE TABLE ad_events (
+    ad_id INT,
+    ad_name VARCHAR(100),
+    ad_type VARCHAR(50),
+    event_date DATE,
+    impressions INT,
+    clicks INT
+);
+
+WITH ad_totals AS (
+    SELECT
+        ad_name,
+        ad_type,
+        SUM(clicks) AS total_clicks,
+        SUM(impressions) AS total_impressions,
+        ROUND(SUM(clicks)::DECIMAL / NULLIF(SUM(impressions), 0) * 100, 2) AS sum_ctr
+    FROM ad_events
+    GROUP BY ad_name, ad_type
+),
+ranked_ads AS (
+    SELECT *,
+           RANK() OVER (PARTITION BY ad_type ORDER BY sum_ctr DESC) AS rnk
+    FROM ad_totals
+)
+SELECT ad_name, ad_type, total_clicks, total_impressions, sum_ctr
+FROM ranked_ads
+WHERE rnk = 1;
+```
+
 
 ###  "gaps and islands" problem.
 ```
