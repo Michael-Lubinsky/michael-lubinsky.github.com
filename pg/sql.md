@@ -455,7 +455,8 @@ ORDER BY transaction_id;
 ```
 
 ### LAG and LEAD
-LAG(): Retrieves data from a previous row  
+LAG(column, skip=1, default_val): Retrieves data from a previous row  
+for very 1st row LAG(col) returns NULL, if we donot want NULL then provide default_val
 
 ```sql
 SELECT 
