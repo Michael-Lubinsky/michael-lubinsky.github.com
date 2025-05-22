@@ -456,6 +456,13 @@ ORDER BY transaction_id;
 
 ### LAG and LEAD
 LAG(): Retrieves data from a previous row  
+
+```sql
+SELECT 
+  user_id,  event_date,
+  LAG(event_date) OVER (PARTITION BY user_id ORDER BY event_date) AS prev_event
+FROM events;
+```
 LEAD(): Retrieves data from a next row  
 
 Example: calculate sales difference between consecutive days
