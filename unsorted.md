@@ -24,7 +24,7 @@ https://github.com/lusingander/stu S3 explorer
 
 ### All sub-reddits together
 
-<https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+javascript+learnmachinelearning+programming/>
+<https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+learnmachinelearning+programming/>
 
 ### ETL 
 https://www.youtube.com/watch?v=OLXkGB7krGo   ETL dbt snowflake, etc
@@ -69,6 +69,9 @@ https://thenumb.at/Sampling/
 
 https://developers.redhat.com/learn/openshift/learn-kubernetes-using-developer-sandbox 
 
+
+### CSV show in HTML
+https://github.com/derekeder/csv-to-html-table
 ## Customer analysis
 
 ### сегментацию и кластеризацию клиентской базы
