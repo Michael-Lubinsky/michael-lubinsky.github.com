@@ -567,7 +567,26 @@ SELECT employee_id, department_id, job_id, salary,
 FROM employees;
 ```
 
-### ROWS and RANGE in window frames
+### (ROWS / RANGE)  BETWEEN in window frames
+
+| Aspect              | `ROWS BETWEEN`                      | `RANGE BETWEEN`                            |
+| ------------------- | ----------------------------------- | ------------------------------------------ |
+| Basis               | Physical row offset                 | Value-based range                          |
+| Handles duplicates? | No special handling                 | Includes all **peer** rows with same value |
+| Common with...      | RANK-like use cases, running totals | Percentiles, cumulative metrics by value   |
+| Requires ordering?  | Yes                                 | Yes                                        |
+
+
+Sums sales from rows where the date is within 2 days of the current row’s date.
+```sql
+SUM(sales) OVER (ORDER BY date RANGE BETWEEN INTERVAL '2' DAY PRECEDING AND CURRENT ROW)
+```
+
+ Includes all rows with salary less than or equal to the current row's salary:
+```sql 
+SUM(sales) OVER (ORDER BY salary RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)
+```
+
 ```sql
 SELECT sale_date, sales,
        AVG(sales) OVER (ORDER BY sale_date ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS avg_rows,
