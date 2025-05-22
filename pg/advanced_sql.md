@@ -13,6 +13,48 @@ https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-the
 
 
 
+### CTR (Click-Through Rate)
+
+```
+CTR (Click-Through Rate) is a metric used primarily in digital marketing and online advertising
+to measure how effective an ad, link, or call-to-action is at generating clicks.
+
+Definition:
+CTR = (Number of Clicks / Number of Impressions) × 100%
+
+Clicks: How many times users actually clicked on the link or ad.
+
+Impressions: How many times the ad or link was shown to users.
+
+casting from INT TO float
+
+CAST(clicks AS DECIMAL)
+CAST(clicks AS FLOAT)
+clicks::DECIMAL   - Postgres
+```
+
+```sql
+CREATE TABLE ad_events (
+    ad_id INT,
+    ad_name VARCHAR(100),
+    impressions INT,
+    clicks INT
+);
+
+SELECT
+    ad_id,
+    ad_name,
+    impressions,
+    clicks,
+    ROUND(CASE 
+        WHEN impressions > 0 THEN (clicks::DECIMAL / impressions) * 100
+        ELSE 0
+    END, 2) AS ctr_percentage
+FROM ad_events
+ORDER BY ctr_percentage DESC;
+```
+
+
 ###  "gaps and islands" problem.
 ```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
