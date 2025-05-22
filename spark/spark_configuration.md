@@ -45,6 +45,8 @@ spark.conf.set("spark.sql.broadcastTimeout", "300")    # Increase if needed
 spark.conf.set("spark.memory.fraction", "0.8")   # More memory for execution
 
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", "50MB")  # Or larger if memory allows spark.conf.set("spark.sql.adaptive.enabled", "true")            # Adaptive join selection spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")   # Handle data skew
+
+spark.sql.optimizer.dynamicPartitionPruning.enabled=true
 ```
 
 
