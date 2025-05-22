@@ -391,7 +391,8 @@ WHERE t2.id IS NULL;
 ```
 ## Window functions
 
-### Running total
+### Running total and avg
+
 
 For SUM(), AVG(), COUNT() (aggregates), the default frame is:
 
@@ -420,6 +421,30 @@ SELECT id,month
 FROM bill
 ```
 
+#### running avg : ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING
+```sql
+SELECT
+  name,
+  salary,
+  AVG(salary) OVER (
+    ORDER BY salary
+    ROWS BETWEEN 2 PRECEDING AND 2 FOLLOWING
+  ) AS running_avg
+FROM employees;
+```
+
+#### running total
+
+```
+SELECT
+  name,
+  salary,
+  SUM(salary) OVER (
+    ORDER BY salary
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+  ) AS running_total
+FROM employees;
+```
 
 ```sql
 
@@ -553,6 +578,27 @@ FROM employees;
 ```
 
 ### PERCENT_RANK() and CUME_DIST()
+
+PERCENT_RANK() Gives the relative rank of a row within its partition as a percentage of the total number of rows.
+
+Output range: 0.0 - 1.0
+
+Formula:
+
+PERCENT_RANK = (RANK() - 1) / (total_rows_in_partition - 1)
+
+
+CUME_DIST (Cumulative Distribution)
+
+Shows the proportion of rows that have a value less than or equal to the current row’s value.
+
+Output range: > 0.0 to 1.0
+
+Formula:
+
+CUME_DIST = number_of_rows_with_value_≤_current / total_rows
+
+
 ```sql
 SELECT employee_id, salary,
        PERCENT_RANK() OVER (ORDER BY salary) AS percent_rank,
