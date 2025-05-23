@@ -152,6 +152,8 @@ https://habr.com/ru/articles/908168/
 ### Mamba
 https://habr.com/ru/articles/786278/
 
+
+https://bernsteinbear.com/blog/simple-search/   Search 
 ### Multimodal LLM
 https://arxiv.org/abs/2306.13549
 
