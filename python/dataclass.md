@@ -4,7 +4,7 @@ In a Python @dataclass, the order=True option means the class will automatically
 
 __lt__ (less than)  
 __le__ (less than or equal)  
-__gt__ (greater than)
+__gt__ (greater than)  
 __ge__ (greater than or equal)
 
 These methods compare objects field by field **in the order they are defined**, just like a tuple comparison.
