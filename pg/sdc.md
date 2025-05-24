@@ -14,6 +14,8 @@ UPDATE SET target.email = source.email;
 ### SCD Type 2 – History Tracking
 In SCD Type 2, a new row is added for each change, maintaining the complete history.  
 <https://habr.com/ru/companies/otus/articles/905844/>
+<https://habr.com/ru/companies/X5Tech/articles/911716/>
+
 Use Case: Tracking customer address changes over time.  
 Example:
 ```sql
