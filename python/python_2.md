@@ -137,3 +137,11 @@ odd_squares = filterfalse(lambda x: x % 2 == 0, (x * x for x in range(10)))
 # Transform values from a generator
 doubled_values = map(lambda x: x * 2, range(10))
 ```
+
+### flush and fsync
+```python
+with open("log.txt", "a") as f:
+    f.write("Hello\n")
+    f.flush()
+    os.fsync(f.fileno())
+```
