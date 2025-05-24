@@ -9,6 +9,9 @@ __ge__ (greater than or equal)
 
 These methods compare objects field by field **in the order they are defined**, just like a tuple comparison.
 
+By default, all fields are used in comparison unless you exclude some using field(compare=False)
+Example: label is excluded from comparison in code below
+
 
 ```python
 from dataclasses import dataclass, field, InitVar
