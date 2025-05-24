@@ -66,6 +66,9 @@ points = [
 sorted_points = sorted(points)
 print(sorted_points)
 
+# Sort by squared distance from origin
+sorted_points = sorted(points, key=lambda p: p.x**2 + p.y**2 + p.z**2)
+
 ### Poligon example:
 poly = Polygon("Triangle")
 poly.add_vertex(p1)
