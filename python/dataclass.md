@@ -55,6 +55,18 @@ print(p1 == p3) # Demonstrates __eq__ (True, because only x, y, z are compared)
 print(p1 < p2)  # Demonstrates ordering (__lt__)
 print(p1.label) # Shows label set in __post_init__
 
+## Sorting array of Point3D objects
+points = [
+    Point3D(3, 2, 1),
+    Point3D(1, 2, 3),
+    Point3D(1, 1, 1)
+]
+
+# Sort in ascending order
+sorted_points = sorted(points)
+print(sorted_points)
+
+### Poligon example:
 poly = Polygon("Triangle")
 poly.add_vertex(p1)
 poly.add_vertex(p2)
