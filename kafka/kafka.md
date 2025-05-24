@@ -4,6 +4,8 @@ pip install confluent-kafka
 
 https://habr.com/ru/articles/910870/
 
+https://habr.com/ru/companies/ozontech/articles/910568/
+
 https://habr.com/ru/companies/reksoft/articles/911132/
 -->
 
