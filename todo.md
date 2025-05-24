@@ -93,6 +93,8 @@ With easy customization, you can also set it up to search for internships or spe
 
 https://github.com/topics/help-wanted
 
+https://habr.com/ru/articles/911996/
+
 https://www.codetriage.com/
 
 https://www.codetriage.com/university/picking_a_repo
