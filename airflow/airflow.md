@@ -1,4 +1,6 @@
-
+<!-- not only Airflow:
+https://habr.com/ru/companies/mws/articles/909790/
+-->
 ### Airflow
 
 A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
