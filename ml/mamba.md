@@ -37,8 +37,10 @@ https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-
 
 https://habr.com/ru/articles/900788/  ML project setup
 
+https://www.stephendiehl.com/posts/post_transformers/  Attention ?
 
-Ads clicks prediction
+
+### Ads clicks prediction
 
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/mlsd-ads-ranking.md
 
