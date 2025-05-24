@@ -1,4 +1,15 @@
 ### Dataclass 
+
+In a Python @dataclass, the order=True option means the class will automatically get comparison methods:
+
+__lt__ (less than)  
+__le__ (less than or equal)  
+__gt__ (greater than)
+__ge__ (greater than or equal)
+
+These methods compare objects field by field **in the order they are defined**, just like a tuple comparison.
+
+
 ```python
 from dataclasses import dataclass, field, InitVar
 from typing import List
