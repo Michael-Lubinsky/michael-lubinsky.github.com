@@ -120,7 +120,9 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 <https://huijzer.xyz/posts/cetz-plot-speed/>
 
-https://habr.com/ru/companies/ru_mts/articles/903142/
+<https://www.reddit.com/r/Python/comments/1kpivim/best_gui_library_with_fast_rendering_times_for/>
+
+<https://habr.com/ru/companies/ru_mts/articles/903142/>
 
 ### HighCharts
 
