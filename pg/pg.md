@@ -6,6 +6,7 @@
 
 
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
+Правило ESR (Equality, Sort, Range) 
 
 <https://postgresql.leopard.in.ua/>
 
