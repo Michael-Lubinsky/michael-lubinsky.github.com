@@ -1,6 +1,9 @@
 https://nostarch.com/linux-memory-manager
 
 https://icl.utk.edu/papi/
+
+https://news.ycombinator.com/item?id=44035125
+
 ```
 The Performance Application Programming Interface (PAPI) offers a universal interface and methodology for gathering performance counter information from diverse hardware and software components.
  This includes major CPUs, GPUs, accelerators, interconnects, I/O systems, power interfaces,
