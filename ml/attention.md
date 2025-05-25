@@ -114,4 +114,40 @@ Head 2 might learn to focus on next words (e.g., context).
 
 Attend to different positions or features in parallel.
 
+## Transformer
 
+Transformer is — it’s a neural network architecture that has become the foundation of modern AI models, including ChatGPT, BERT, and GPT.
+
+🔷 What is a Transformer?
+The Transformer is a deep learning model architecture introduced in the 2017 paper “Attention Is All You Need”. It was originally designed for sequence transduction tasks like language translation, but it now powers a wide range of applications in NLP, vision, and more.
+
+🧠 Core Idea:
+Instead of relying on recurrence (like RNNs or LSTMs), Transformers use a mechanism called self-attention to model dependencies between input tokens, regardless of their position.
+
+🔧 Transformer Architecture Overview
+A Transformer has two main parts:
+
+1. Encoder (left side)
+Processes the input sequence.
+
+Generates a representation of the input.
+
+2. Decoder (right side)
+Generates the output sequence (used in translation, summarization, etc.).
+
+Takes the encoder's output and generates one token at a time.
+
+| Component                     | Description                                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| **Multi-Head Self-Attention** | Allows the model to focus on different parts of the sequence simultaneously. |
+| **Feed-Forward Network**      | A fully connected layer applied to each position.                            |
+| **Layer Normalization**       | Helps stabilize training.                                                    |
+| **Residual Connections**      | Help gradients flow better during training.                                  |
+| **Positional Encoding**       | Since Transformers lack recurrence, this provides a sense of word order.     |
+
+
+A Transformer is:
+
+A stack of layers that use self-attention and feed-forward networks.
+
+Designed to process entire sequences in parallel.
