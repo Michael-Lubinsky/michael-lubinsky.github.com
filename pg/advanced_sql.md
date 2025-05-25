@@ -88,6 +88,9 @@ WHERE rnk = 1;
 
 
 ###  "gaps and islands" problem.
+
+https://blog.jooq.org/how-to-find-the-longest-consecutive-series-of-events-in-sql/
+
 ```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
 There is another table 'activities' with 3 columns: account_id, dt and type.
