@@ -63,4 +63,15 @@ output, attn_weights = self_attention(X, W_q, W_k, W_v)
 
 print("Attention Weights:\n", attn_weights)
 print("\nOutput:\n", output)
-```     
+```
+
+What Does This Code Do?
+Each "word" is a 4D vector (think embedding).
+
+W_q, W_k, and W_v project the inputs to Query, Key, and Value spaces.
+
+Attention weights are computed as dot products between Queries and Keys.
+
+softmax converts these into probabilities.
+
+Output is a weighted sum of Values according to attention scores.  
