@@ -1,9 +1,9 @@
-Self-attention computes how each word in a sequence relates to every other word (including itself) and builds a weighted representation of the input. It's like saying: "To understand this word, how much should I pay attention to every other word?"
+Self-attention computes how each word in a sequence relates to every other word (including itself) and builds a weighted representation of the input. 
 
-Diagram: Self-Attention Process
-I'll generate a simplified version:
+It's like saying: "To understand this word, how much should I pay attention to every other word?"
 
- 
+ Self-Attention Process
+
 Input:  [ The, animal, didn't, cross, the, street, because, it, was, too, tired ]
 
 Step 1: Project input into three vectors:
