@@ -1,6 +1,9 @@
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
+
+<https://algorithmsbook.com/files/dm.pdf> Algo for Decision Making
+
 ## Puzzles
 
 ### Question 
