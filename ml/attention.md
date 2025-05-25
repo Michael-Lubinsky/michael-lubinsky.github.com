@@ -1,8 +1,10 @@
+## Self-attention
+
 Self-attention computes how each word in a sequence relates to every other word (including itself) and builds a weighted representation of the input. 
 
 It's like saying: "To understand this word, how much should I pay attention to every other word?"
 
- Self-Attention Process
+### Self-Attention Process
 
 Input:  [ The, animal, didn't, cross, the, street, because, it, was, too, tired ]
 
@@ -75,3 +77,41 @@ Attention weights are computed as dot products between Queries and Keys.
 softmax converts these into probabilities.
 
 Output is a weighted sum of Values according to attention scores.  
+
+## Multi-Head Attention:
+Instead of using one attention function, we use multiple "heads", each with its own set of learned W_q, W_k, and W_v.
+
+Each head learns different attention patterns—like focusing on syntax in one head and semantics in another.
+
+Outputs of all heads are concatenated and passed to the next layer.
+
+This technique is crucial in Transformers, allowing the model to learn richer representations of language.
+
+In multi-head attention, a "head" refers to an independent attention mechanism.    
+Each head computes its own set of self-attention weights using a separate set of projection matrices:
+
+W_q (for queries)
+
+W_k (for keys)
+
+W_v (for values)
+
+🔁 What Happens in Each Head?
+Each head performs the full attention process:
+ 
+Attention(Q, K, V) = softmax(QKᵀ / √d_k) • V  
+But every head has its own learned linear projections, 
+so it looks at the input from a different "perspective".
+
+🧠 Why Use Multiple Heads?
+Using multiple heads allows the model to:
+
+Capture different relationships between tokens.
+
+Head 1 might learn to focus on previous words (e.g., grammar).
+
+Head 2 might learn to focus on next words (e.g., context).
+
+Attend to different positions or features in parallel.
+
+
