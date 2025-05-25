@@ -110,6 +110,10 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 <https://github.com/nafey/minimalytics>
 
+### Plotting Libs
+
+<https://lets-plot.org/>
+
 <https://pypi.org/project/canvasxpress/>
 
 <https://panel.holoviz.org/>
