@@ -1,3 +1,4 @@
+<https://blog.det.life/stop-using-the-console-how-i-manage-aws-s3-faster-with-just-the-cli-218101c555b5>
 
 ## What is a difference between Amanon SQS queue and Kafka?
 
