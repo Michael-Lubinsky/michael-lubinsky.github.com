@@ -1,5 +1,46 @@
 ## Python notes continued
 
+### operator
+The operator module in Python provides function-based equivalents of many built-in Python operators   
+— like +, -, *, ==, <, and so on.
+
+Makes operators first-class functions, so you can pass them as arguments to higher-order functions like map(), reduce(), or sorted().
+
+Improves readability, especially in functional programming.
+
+Provides efficient versions of itemgetter, attrgetter, and methodcaller for dynamic access.
+```
+import operator
+
+print(operator.add(2, 3))     # 2 + 3 → 5
+print(operator.mul(4, 5))     # 4 * 5 → 20
+print(operator.pow(2, 3))     # 2 ** 3 → 8
+
+print(operator.eq(3, 3))      # 3 == 3 → True
+print(operator.lt(2, 5))      # 2 < 5 → True
+print(operator.ge(7, 4))      # 7 >= 4 → True
+
+print(operator.and_(True, False))  # False
+print(operator.or_(True, False))   # True
+
+from operator import itemgetter, attrgetter
+
+# itemgetter: for lists, dicts, tuples
+data = [('Alice', 30), ('Bob', 25), ('Carol', 35)]
+print(sorted(data, key=itemgetter(1)))  # Sort by age → [('Bob', 25), ...]
+
+# attrgetter: for objects
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+people = [Person("Alice", 30), Person("Bob", 25)]
+sorted_people = sorted(people, key=attrgetter("age"))
+print([p.name for p in sorted_people])  # ['Bob', 'Alice']
+
+```
+
 ### @staticmethod 
 Use @staticmethod when you have a method inside a class 
 that doesn't access the instance (self) or the class (cls) — it’s just logically grouped under the class.
