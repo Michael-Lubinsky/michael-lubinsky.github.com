@@ -4,6 +4,8 @@
 
 <https://algorithmsbook.com/files/dm.pdf> Algo for Decision Making
 
+https://vk.com/mathhedgehog
+
 ## Puzzles
 
 ### Question 
