@@ -55,6 +55,17 @@ df_dx = grad(f)
 print(df_dx(2.0))  # prints 7.0
 ```
 
+| Term                          | Meaning                                                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------- |
+| **Automatic Differentiation** | Technique to compute exact derivatives by code tracing and chain rule              |
+| **autograd**                  | Library/tool that implements automatic differentiation                             |
+| **Reverse mode AD**           | Used for training neural networks: efficient gradient computation from scalar loss |
+| **PyTorch Autograd**          | PyTorch’s system to record and compute gradients of tensor operations              |
+
+
+
+
+
 ### Use in Deep Learning
 In libraries like PyTorch, TensorFlow, and JAX:
 
