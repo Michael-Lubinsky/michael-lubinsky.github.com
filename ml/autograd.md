@@ -170,6 +170,12 @@ print(f"dy/dx2 = {x2.grad}")  # 4.0
 print(f"dy/dx3 = {x3.grad}")  # 5.0
 
 ```
+| Component         | Role                               |
+| ----------------- | ---------------------------------- |
+| Tensor/Value      | Stores data and gradient info      |
+| Computation graph | Tracks operations and dependencies |
+| Backward method   | Applies chain rule using graph     |
+| Gradients         | Propagated from output to inputs   |
 
 
 
