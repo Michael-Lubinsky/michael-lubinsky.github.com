@@ -17,11 +17,44 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 Projecting input strings into Query (Q), Key (K), and Value (V) vectors for each word is a core component of self-attention mechanisms, notably the Transformer architecture.  
 The magic of projecting into Q, K, and V vectors lies in **learnable linear transformations**. For each word embedding, you multiply it by three different weight matrices:
 
-$W^Q$ (Weight Matrix for Queries)
-$W^K$ (Weight Matrix for Keys)
-$W^V$ (Weight Matrix for Values)
+$W^Q$ (Weight Matrix for Queries)  
+$W^K$ (Weight Matrix for Keys)  
+$W^V$ (Weight Matrix for Values)  
 
-Why three distinct vectors (Q, K, V)?
+These weight matrices are parameters of the model that are learned during the training process (e.g., via backpropagation and gradient descent). Each matrix has a specific dimensionality:
+
+If your word embedding has dimension $d_{model}$ (e.g., 512), and you want your Q, K, V vectors to have dimension $d_k$ (often $d_{model} / h$, where $h$ is the number of attention heads), then:
+$W^Q$ will be of shape $(d_{model}, d_k)$
+$W^K$ will be of shape $(d_{model}, d_k)$
+$W^V$ will be of shape $(d_{model}, d_v)$ (where $d_v$ is often equal to $d_k$, but can be different)
+3. The Projection Calculation
+For each word's embedding ($Emb_{word}$), you perform the following matrix multiplications:
+
+Query (Q) for word i: Q_i = Emb_{word_i} \cdot W^Q
+Key (K) for word i: K_i = Emb_{word_i} \cdot W^K
+Value (V) for word i: V_i = Emb_{word_i} \cdot W^V
+Example with "The quick brown fox":
+
+Let's assume our word embeddings ($Emb$) are 512-dimensional vectors, and we want our Q, K, V vectors to be 64-dimensional.
+
+$W^Q$ will be a $512 \times 64$ matrix.
+$W^K$ will be a $512 \times 64$ matrix.
+$W^V$ will be a $512 \times 64$ matrix.
+
+
+For the word "The":
+
+$$Q_{The} = Emb_{The} \cdot W^Q$$
+ 
+$$K_{The} = Emb_{The} \cdot W^K$$
+ 
+$$V_{The} = Emb_{The} \cdot W^V$$
+
+You repeat this process for "quick," "brown," and "fox," generating a Q, K, and V vector for each.
+
+
+
+### Why three distinct vectors (Q, K, V)?
 
 This separation is crucial for the self-attention mechanism:
 
