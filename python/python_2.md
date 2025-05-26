@@ -1,5 +1,35 @@
 ## Python notes continued
 
+
+### Transpose Matrix 
+```python
+m = [[1, 2], [3, 4], [5, 6]]
+for row in m:
+    print(row)
+rez = [[m[j][i] for j in range(len(m))] for i in range(len(m[0]))]
+print("\n")
+for row in rez:
+    print(row)
+
+# output
+[1, 2]
+[3, 4]
+[5, 6]
+[1, 3, 5]
+[2, 4, 6]
+```
+Python Zip returns an iterator of tuples, where the i-th tuple contains the i-th element from each of the argument sequences or iterables. 
+
+```python
+matrix = [(1, 2, 3), (4, 5, 6), 
+                  (7, 8, 9), (10, 11, 12)]
+for row in matrix:
+    print(row)
+print("\n")
+t_matrix = zip(*matrix)
+for row in t_matrix:
+    print(row)
+```
 ### operator
 The operator module in Python provides function-based equivalents of many built-in Python operators   
 — like +, -, *, ==, <, and so on.
