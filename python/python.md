@@ -2,6 +2,28 @@
 check syntax  
 python -m py_compile my_script.py
 
+### None
+```python
+if x is None:
+```
+Checks only whether x is exactly None.
+
+It's type-specific and does not consider falsy values like 0, [], '', etc.
+
+```python
+if not x:
+```
+Checks whether x is "falsy" — meaning any of the following:
+
+- None
+- False
+- 0, 0.0
+- '' (empty string)
+- [] (empty list)
+- {} (empty dict)
+- set() (empty set)
+- etc.
+
 ### *args **kwargs
 ```python
 def greet(*args, **kwargs):  
