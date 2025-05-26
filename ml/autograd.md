@@ -76,9 +76,100 @@ The framework automatically computes gradients via reverse-mode AD.
 These gradients are then used in optimization algorithms like SGD or Adam.
 
 
+### How autograd  is implemented?
+
+ Implementing autograd (automatic differentiation) involves creating a computational graph at runtime   
+ and then applying the chain rule to compute derivatives in reverse (for reverse-mode AD, like in PyTorch).
+
+Core Concepts
+1. Tensor/Variable with Gradient Tracking
+Each number (or tensor) must store:
+
+its value
+
+whether it needs a gradient
+
+its gradient (computed during backward)
+
+a reference to how it was computed (grad_fn)
+
+2. Computational Graph (Dynamic DAG)
+Every operation creates a node in a graph:
+
+nodes represent operations (e.g. add, mul)
+
+edges represent data dependencies (inputs → output)
+
+This graph is built dynamically as operations are executed.
+
+3. Backward Pass (Reverse-mode AD)
+Start from the output node (typically a scalar like loss)
+
+Recursively apply the chain rule:
+
+Two-Phase Execution
 
 
+| Phase        | Description                                            |
+| ------------ | ------------------------------------------------------ |
+| **Forward**  | Build computational graph while performing computation |
+| **Backward** | Traverse graph in reverse to compute gradients         |
 
+### Minimal Example of Autograd in Python
+Here’s a very simplified custom implementation of autograd for scalar values:
+
+```python
+class Value:
+    def __init__(self, data, _children=(), _op=''):
+        self.data = data
+        self.grad = 0.0
+        self._backward = lambda: None
+        self._prev = set(_children)
+        self._op = _op  # for debugging
+
+    def __add__(self, other):
+        out = Value(self.data + other.data, (self, other), '+')
+        def _backward():
+            self.grad += out.grad
+            other.grad += out.grad
+        out._backward = _backward
+        return out
+
+    def __mul__(self, other):
+        out = Value(self.data * other.data, (self, other), '*')
+        def _backward():
+            self.grad += other.data * out.grad
+            other.grad += self.data * out.grad
+        out._backward = _backward
+        return out
+
+    def backward(self):
+        topo = []
+        visited = set()
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+                for child in v._prev:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(self)
+
+        self.grad = 1.0
+        for node in reversed(topo):
+            node._backward()
+
+# Example: y = (x1 + x2) * x3
+x1 = Value(2.0)
+x2 = Value(3.0)
+x3 = Value(4.0)
+y = (x1 + x2) * x3  # y = (2+3)*4 = 20
+y.backward()
+
+print(f"dy/dx1 = {x1.grad}")  # 4.0
+print(f"dy/dx2 = {x2.grad}")  # 4.0
+print(f"dy/dx3 = {x3.grad}")  # 5.0
+
+```
 
 
 
