@@ -85,7 +85,7 @@ print(b2.title, "-", b2.author)  # Output: To Kill a Mockingbird - Harper Lee
 ```
 
 
-### Generators and yeld
+### Generators and yield
 When a normal function returns, its stack frame (containing local variables and execution context) is immediately destroyed.  
 In contrast, a generator’s stack frame is suspended when it yields a value and resumed when next() is called again.   
 This suspension and resumption is managed by the Python interpreter,   
