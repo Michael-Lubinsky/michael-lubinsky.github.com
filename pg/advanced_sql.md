@@ -1,3 +1,5 @@
+https://theanalystsedge.medium.com/10-practical-sql-interview-questions-i-failed-to-answer-during-an-interview-46878603a759
+
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
 https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17  
 https://medium.com/@bigtechinterviews/5-real-amazon-sql-questions-answers-d1733a2a2c4c  
