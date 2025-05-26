@@ -20,6 +20,9 @@ for row in rez:
 ```
 Python Zip returns an iterator of tuples, where the i-th tuple contains the i-th element from each of the argument sequences or iterables. 
 
+In follwing code *m unpacks the list of lists so that it's as if you wrote:  
+t = zip([1, 2], [3, 4], [5, 6])
+
 ```python
 matrix = [(1, 2, 3), (4, 5, 6), 
                   (7, 8, 9), (10, 11, 12)]
