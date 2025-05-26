@@ -78,6 +78,19 @@ print([p.name for p in sorted_people])  # ['Bob', 'Alice']
 Use @staticmethod when you have a method inside a class 
 that doesn't access the instance (self) or the class (cls) — it’s just logically grouped under the class.
 
+Static methods are frequently used in real-world code for tasks like input validation, data formatting,  
+and calculations—especially when that logic naturally belongs with a class but doesn't need its state.
+```python
+class User:
+    @staticmethod
+    def is_valid_email(email):
+        return "@" in email and "." in email
+
+```
+This method doesn't depend on any part of the User instance, but conceptually belongs in the class.   
+It can be used anywhere as `User.is_valid_email(email)`, keeping your code cleaner and more organized.
+
+
 Example: A utility function inside a class
 
 ```python
