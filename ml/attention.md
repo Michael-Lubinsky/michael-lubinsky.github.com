@@ -1,3 +1,6 @@
+Writing an LLM from scratch:
+https://www.gilesthomas.com/python
+
 ## Self-attention
 
 Self-attention computes how each word in a sequence relates to every other word (including itself) and builds a weighted representation of the input. 
