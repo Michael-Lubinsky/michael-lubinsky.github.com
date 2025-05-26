@@ -261,7 +261,7 @@ from pyspark.sql.functions import col,sum
 df_final=df.agg(sum(col("salary")).alias("total_salary")).first()[0]
 ```
 
-### Pivoting in sql and PySpark
+### Pivoting in SQL and PySpark
 
 ```sql
 SELECT
@@ -374,7 +374,7 @@ Here:
 .bucketBy(4, "customer_id") → Create 4 groups inside each partition
 .sortBy("customer_id") → Optional: Helps optimize even further!
 ```
-### rlike
+### rlike - regulal expression 
 ```python
 from pyspark.sql.types import *
 schema = StructType([
@@ -463,6 +463,59 @@ changes_df = source_df.join(target_df, ["customer_id"], "left_anti")
 
 final_df = target_df.unionByName(changes_df)
 ```
+
+### ROWS BETWEEN and RANGE BETWEEN
+
+In PySpark, the equivalents of SQL's ROWS BETWEEN and RANGE BETWEEN are handled using the Window specification API, specifically with:
+
+rowsBetween(...) → equivalent of SQL's ROWS BETWEEN
+
+rangeBetween(...) → equivalent of SQL's RANGE BETWEEN
+
+✅ 1. PySpark Equivalent of ROWS BETWEEN
+
+```sql
+
+SUM(salary) OVER (
+  ORDER BY salary
+  ROWS BETWEEN 2 PRECEDING AND 1 FOLLOWING
+)
+```
+
+
+```python
+
+from pyspark.sql.window import Window
+from pyspark.sql.functions import sum
+
+window_spec = Window.orderBy("salary").rowsBetween(-2, 1)
+
+df.withColumn("running_sum", sum("salary").over(window_spec))
+```
+✅ 2. PySpark Equivalent of RANGE BETWEEN
+rangeBetween is value-based, not row-position-based (like rowsBetween)
+
+
+```sql
+
+SUM(salary) OVER (
+  ORDER BY salary
+  RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+)
+```
+ 
+```python
+window_spec = Window.orderBy("salary").rangeBetween(Window.unboundedPreceding, Window.currentRow)
+
+df.withColumn("cumulative_sum", sum("salary").over(window_spec))
+```
+
+| Feature             | `rowsBetween`                   | `rangeBetween`                     |
+| ------------------- | ------------------------------- | ---------------------------------- |
+| Based on            | Row **position**                | Row **values** in `ORDER BY`       |
+| Includes duplicates | No special treatment            | Includes all rows with equal value |
+| Most common usage   | Running totals, sliding windows | Cumulative values by key           |
+
 
 ### Logging and Exception Handling in PySpark Jobs
 ```python
