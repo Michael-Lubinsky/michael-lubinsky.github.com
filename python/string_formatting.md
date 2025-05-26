@@ -12,6 +12,7 @@ print(f"I want to say {a} ({b})")
 print(f"{a=}")   # a=1
 ```
 ### t-string (Python 3.14)
+<https://snarky.ca/unravelling-t-strings/>
 <!--
 https://habr.com/ru/articles/911196/
 -->
