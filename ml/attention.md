@@ -1,7 +1,7 @@
 Writing an LLM from scratch:
 https://www.gilesthomas.com/python
 
-Projecting input strings into Query (Q), Key (K), and Value (V) vectors for each word is a core component of self-attention mechanisms, notably the Transformer architecture. Here's a breakdown of how it's typically done:
+
 
 ### Input Representation: Word Embeddings
 
@@ -14,6 +14,7 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 
  **2\. Learnable Linear Transformations (Weight Matrices)**
 
+Projecting input strings into Query (Q), Key (K), and Value (V) vectors for each word is a core component of self-attention mechanisms, notably the Transformer architecture.  
 The magic of projecting into Q, K, and V vectors lies in **learnable linear transformations**. For each word embedding, you multiply it by three different weight matrices:
 
 -   **WQ (Weight Matrix for Queries)**
@@ -26,9 +27,13 @@ This separation is crucial for the self-attention mechanism:
 
 Query (Q): Represents "what I'm looking for" or "what information is relevant to me."   
 When a word computes its attention score, it uses its Query vector to compare against other words' Key vectors.
+
 Key (K): Represents "what I contain" or "what information I offer." Each word's Key vector is compared against other words' Query vectors to determine relevance.
+
 Value (V): Represents "the actual information to be passed along." Once attention scores are calculated (based on Q and K), the Value vectors of relevant words are weighted and summed to form the output of the attention mechanism.
-This design allows the model to learn different aspects of each word's role in the attention calculation, leading to a powerful mechanism for capturing contextual relationships.
+
+This design allows the model to learn different aspects of each word's role in the attention calculation, leading to a powerful mechanism for capturing contextual relationships.  
+
 These weight matrices are parameters of the model that are learned during the training process (e.g., via backpropagation and gradient descent). Each matrix has a specific dimensionality:
 
 
