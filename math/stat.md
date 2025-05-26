@@ -1,11 +1,11 @@
 
-To test whether two variables have a monotonic relationship — 
-meaning they tend to increase or decrease together, without necessarily being linearly related — 
+## How to test whether two variables have a monotonic relationship 
+meaning they tend to increase or decrease together, 
+without necessarily being linearly related — 
 the most appropriate statistical test is:
 
 ### Spearman's rank correlation coefficient
-🔍 What is Spearman's rank correlation?
-It measures the strength and direction of a monotonic relationship between two variables.
+ Spearman's rank correlation  measures the strength and direction of a monotonic relationship between two variables.
 
 It’s non-parametric (does not assume a specific distribution).
 
@@ -19,11 +19,9 @@ H₁ (alternative): There is a monotonic relationship.
 ✅ Use Spearman when:
 You want to test for monotonic association, not just linear (like Pearson does).
 
-Your data may have nonlinear but ordered trends.
-
-Your variables are ordinal, or not normally distributed.
-
-📊 Example in Python:
+Your data may have nonlinear but ordered trends.  
+Your variables are ordinal, or not normally distributed.  
+Example in Python:  
 ```python
 
 from scipy.stats import spearmanr
@@ -40,9 +38,8 @@ They are related but distinct.
 ✅ Kendall's Tau:
 A correlation coefficient that measures the strength of monotonic association between two variables.
 
-It gives a value between -1 and 1 like Spearman’s rho or Pearson’s r.
-
-Typically used to assess how well one variable monotonically relates to another.
+It gives a value between -1 and 1 like Spearman’s rho or Pearson’s r.  
+Typically used to assess how well one variable monotonically relates to another.  
 
 ➡️ Example use:
 
