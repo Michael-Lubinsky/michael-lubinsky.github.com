@@ -17,9 +17,9 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 Projecting input strings into Query (Q), Key (K), and Value (V) vectors for each word is a core component of self-attention mechanisms, notably the Transformer architecture.  
 The magic of projecting into Q, K, and V vectors lies in **learnable linear transformations**. For each word embedding, you multiply it by three different weight matrices:
 
--   **WQ (Weight Matrix for Queries)**
--   **WK (Weight Matrix for Keys)**
--   **WV (Weight Matrix for Values)**
+$W^Q$ (Weight Matrix for Queries)
+$W^K$ (Weight Matrix for Keys)
+$W^V$ (Weight Matrix for Values)
 
 Why three distinct vectors (Q, K, V)?
 
