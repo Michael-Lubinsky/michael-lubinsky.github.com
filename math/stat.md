@@ -67,6 +67,44 @@ It also uses a statistic derived from Kendall’s rank correlation, but it is ap
 | Use case | Association strength    | Trend detection             |
 
 
+
+pip install pymannkendall
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import kendalltau
+import pymannkendall as mk
+
+# Create synthetic time series data with a trend
+np.random.seed(42)
+time = np.arange(2000, 2020)
+values = np.linspace(10, 20, len(time)) + np.random.normal(0, 1, len(time))
+
+# 1. Kendall's Tau Correlation
+tau_corr, tau_p = kendalltau(time, values)
+print(f"Kendall's Tau correlation: {tau_corr:.3f}, p-value: {tau_p:.3f}")
+
+# 2. Mann-Kendall Trend Test
+mk_result = mk.original_test(values)
+print(f"\nMann-Kendall Test:")
+print(f"  Trend: {mk_result.trend}")
+print(f"  Tau: {mk_result.Tau:.3f}")
+print(f"  S: {mk_result.S}")
+print(f"  p-value: {mk_result.p:.3f}")
+print(f"  h (significant?): {mk_result.h}")
+
+# Plot
+plt.plot(time, values, marker='o')
+plt.title('Synthetic Time Series with Trend')
+plt.xlabel('Year')
+plt.ylabel('Value')
+plt.grid(True)
+plt.show()
+
+```
+
+
 <https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
 
 Kendall’s Tau is another non-parametric test for monotonicity, 
