@@ -2,7 +2,9 @@
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
 
-<https://algorithmsbook.com/files/dm.pdf> Algo for Decision Making
+<https://algorithmsbook.com/files/dm.pdf> Algos for Decision Making
+
+<https://synset.com/pdf/ito.pdf>
 
 https://vk.com/mathhedgehog
 
