@@ -15,6 +15,11 @@ https://www.youtube.com/watch?v=-HNpim5x-IE  How CPU works
 Awesome
 https://github.com/sindresorhus/awesome
 
+
+### ClickHouse
+
+https://habr.com/ru/articles/912454/
+
 ### S3
 AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40
 S3:  
