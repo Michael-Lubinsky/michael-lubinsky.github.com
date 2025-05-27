@@ -1,13 +1,15 @@
-https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри
-https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C
-https://github.com/codr7/hacktical-c
+https://en.wikipedia.org/wiki/Region-based_memory_management
 
-https://superjamie.github.io/2022/05/24/c-static-analysis-tools
-https://superjamie.github.io/2022/11/04/c-static-analysis-tools-part-2
+https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри  
+https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C  
+https://github.com/codr7/hacktical-c  
+
+https://superjamie.github.io/2022/05/24/c-static-analysis-tools  
+https://superjamie.github.io/2022/11/04/c-static-analysis-tools-part-2  
 
 https://www.amazon.com/dp/0136905692   C++20 for Programmers: An Objects-Natural Approach (Deitel Developer Series) 3
-https://habr.com/ru/companies/pvs-studio/articles/708138/
-https://accu.org/  
+https://habr.com/ru/companies/pvs-studio/articles/708138/  
+https://accu.org/    
 https://www.learncpp.com/  
 https://roadmap2.me/PA74IVSGMe C++ exersizes
 https://www.reddit.com/r/cpp/comments/1isd58i/selfdescribing_compact_binary_serialization_format/ 
