@@ -8,6 +8,8 @@
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
 Правило ESR (Equality, Sort, Range) 
 
+https://habr.com/ru/companies/selectel/articles/912996/
+
 <https://postgresql.leopard.in.ua/>
 
 <https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
