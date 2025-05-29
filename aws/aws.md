@@ -1,5 +1,9 @@
 <https://blog.det.life/stop-using-the-console-how-i-manage-aws-s3-faster-with-just-the-cli-218101c555b5>
 
+<https://docs.getmoto.org/en/latest/index.html>
+
+<https://caylent.com/blog/mocking-aws-calls-using-moto>
+
 ## What is a difference between Amanon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
