@@ -20,6 +20,8 @@ https://github.com/sindresorhus/awesome
 
 https://habr.com/ru/articles/912454/
 
+https://habr.com/ru/companies/avito/articles/913694/
+
 ### S3
 AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40
 S3:  
