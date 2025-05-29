@@ -4,6 +4,7 @@
 <https://sqlfiddle.com/>  
 <https://rextester.com/>  
 
+https://habr.com/ru/companies/selectel/articles/913572/ Как оптимизировать PostgreSQL 
 
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
 Правило ESR (Equality, Sort, Range) 
