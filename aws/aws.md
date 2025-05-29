@@ -4,6 +4,8 @@
 
 <https://caylent.com/blog/mocking-aws-calls-using-moto>
 
+<https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/>
+
 ## What is a difference between Amanon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
