@@ -1,4 +1,42 @@
 
+| Type          | Range            | Description                            |
+| ------------- | ---------------- | -------------------------------------- |
+| **Latitude**  | `-90` to `+90`   | Measures north/south from Equator      |
+| **Longitude** | `-180` to `+180` | Measures east/west from Prime Meridian |
+
+
+### GeoJSON 
+ GeoJSON  is a widely-used format for encoding geographic data structures using JSON. 
+It’s supported by many tools like Mapbox, Leaflet, PostGIS, and others.
+
+####  Common GeoJSON Types:
+"Point": A single GPS coordinate
+"LineString": A path (sequence of points)
+"Polygon": A region enclosed by lines
+"Feature": A geometry + properties (like a labeled point)
+"FeatureCollection": A list of features
+
+####  A single GPS point
+```json
+{
+  "type": "Point",
+  "coordinates": [-122.4194, 37.7749]  // [longitude, latitude]
+}
+```
+
+#### LineString path
+```json
+{
+  "type": "LineString",
+  "coordinates": [
+    [-122.4194, 37.7749],
+    [-122.4294, 37.8049]
+  ]
+}
+```
+
+
+### GPS Data Processing with PySpark
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lag, radians, sin, cos, sqrt, atan2, unix_timestamp
