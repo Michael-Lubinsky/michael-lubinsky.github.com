@@ -1,4 +1,8 @@
 
+<https://en.wikipedia.org/wiki/Spatial_reference_system>
+
+<https://en.wikipedia.org/wiki/Geographic_coordinate_system>
+
 | Type          | Range            | Description                            |
 | ------------- | ---------------- | -------------------------------------- |
 | **Latitude**  | `-90` to `+90`   | Measures north/south from Equator      |
