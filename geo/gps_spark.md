@@ -31,11 +31,11 @@ There’s no actual island — it’s an imaginary point in the Atlantic Ocean.
 It’s supported by many tools like Mapbox, Leaflet, PostGIS, and others.
 
 ####  Common GeoJSON Types:
-"Point": A single GPS coordinate
-"LineString": A path (sequence of points)
-"Polygon": A region enclosed by lines
-"Feature": A geometry + properties (like a labeled point)
-"FeatureCollection": A list of features
+"Point": A single GPS coordinate  
+"LineString": A path (sequence of points)  
+"Polygon": A region enclosed by lines  
+"Feature": A geometry + properties (like a labeled point)  
+"FeatureCollection": A list of features  
 
 ####  A single GPS point
 ```json
