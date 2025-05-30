@@ -56,9 +56,10 @@ result = df_clean.groupBy("user_id").sum("distance_km") \
 result.show(truncate=False)
 ```
 Example output
+
 |--------|-----------------|
 |user_id |total_distance_km|
-|--------|-----------------+
+|--------|-----------------|
 |u1      |5.93             |
 |u2      |2.50             |
 
