@@ -332,3 +332,5 @@ kafka-console-producer.sh --broker-list localhost:9092 --topic gps_input
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gps_aggregates --from-beginning
 ```
 
+## GIS with DuckDB
+<https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/>
