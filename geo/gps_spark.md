@@ -4,6 +4,27 @@
 | **Latitude**  | `-90` to `+90`   | Measures north/south from Equator      |
 | **Longitude** | `-180` to `+180` | Measures east/west from Prime Meridian |
 
+Latitude = 0 → on the Equator  
+Longitude = 0 → on the Prime Meridian (passes through Greenwich, UK)  
+
+What is the latitude and longitude of the North Pole and South Pole?
+
+| Pole      | Latitude | Longitude               |
+| --------- | -------- | ----------------------- |
+| **North** | +90      | Any value (0 is common) |
+| **South** | -90      | Any value (0 is common) |
+
+Longitude is undefined at the poles because all lines converge — but (0, 90) and (0, -90) are conventional.
+
+What is the lat/lon of points on the Equator?  
+Latitude = 0  
+Longitude: anywhere from -180 to +180  
+
+
+#### Where is point (0, 0) on Earth?
+(lat, lon) = (0, 0) is called the Null Island.  
+It lies in the Gulf of Guinea, off the coast of West Africa, where the Equator meets the Prime Meridian.  
+There’s no actual island — it’s an imaginary point in the Atlantic Ocean.  
 
 ### GeoJSON 
  GeoJSON  is a widely-used format for encoding geographic data structures using JSON. 
