@@ -151,3 +151,11 @@ query = agg_df.writeStream \
 
 query.awaitTermination()
 ```
+
+Simulate Data Input via Terminal:
+nc -lk 9999
+Paste JSON lines:
+```
+{"user_id":"u1","timestamp":"2024-01-01T08:00:00","latitude":37.7749,"longitude":-122.4194}
+{"user_id":"u1","timestamp":"2024-01-01T08:10:00","latitude":37.8049,"longitude":-122.4294}
+```
