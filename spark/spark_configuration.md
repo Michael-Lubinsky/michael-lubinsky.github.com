@@ -80,6 +80,8 @@ df_grouped = df_filtered.groupBy("category").sum("sales")
 df_grouped.show()
 ```
 ### Handle Skewed Data
+https://medium.com/@diehardankush/how-to-understanding-data-skewness-in-apache-spark-9e93b9a68f46
+
 Check distribution:
 ```
 df.groupBy("category").count().show()
