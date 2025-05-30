@@ -57,7 +57,6 @@ result.show(truncate=False)
 ```
 Example output
 
-|--------|-----------------|
 |user_id |total_distance_km|
 |--------|-----------------|
 |u1      |5.93             |
