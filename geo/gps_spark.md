@@ -159,3 +159,7 @@ Paste JSON lines:
 {"user_id":"u1","timestamp":"2024-01-01T08:00:00","latitude":37.7749,"longitude":-122.4194}
 {"user_id":"u1","timestamp":"2024-01-01T08:10:00","latitude":37.8049,"longitude":-122.4294}
 ```
+
+For production, replace .format("socket") with .format("kafka").  
+You can write agg_df to Kafka, Delta Lake, PostgreSQL, or GCS.  
+Consider using mapWithState or flatMapGroupsWithState for full control over session-based tracking.
