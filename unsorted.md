@@ -4,6 +4,9 @@ https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamin
 
 https://keenwrite.com/ cross-platform desktop text editor for producing beautifully typeset PDF files.
 
+Chrome extension: Copies HTML tables to the clipboard or exports them to Microsoft Excel, CSV, Google Sheets, Office 365, etc.
+https://chromewebstore.google.com/detail/table-capture/iebpjdmgckacbodjpijphcplhebcmeop
+
 Book: Data Engineering Design Patterns
 https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
 
