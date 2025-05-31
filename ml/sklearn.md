@@ -1,7 +1,10 @@
 ### Decision Trees
-https://miptgirl.medium.com/mining-rules-from-data-4fd9f559c608
+<https://miptgirl.medium.com/mining-rules-from-data-4fd9f559c608>
 
 ### RandomForest
+
+<https://towardsdatascience.com/understanding-random-forest-using-python-scikit-learn/>
+
 Example:
 Программа принимает набор данных с несколькими признаками  
 и определяет наиболее важные признаки для предсказания целевой переменной с помощью модели RandomForest. 
