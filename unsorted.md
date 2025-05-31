@@ -2,7 +2,9 @@ https://grep.app/ search on github
 
 https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+learnmachinelearning+programming/
 
-Book:
+https://keenwrite.com/ cross-platform desktop text editor for producing beautifully typeset PDF files.
+
+Book: Data Engineering Design Patterns
 https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
 
 Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
