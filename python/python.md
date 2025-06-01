@@ -36,7 +36,7 @@ greet("Alice", "Bob", language="Python", level="Intermediate")
 ```
 
 ### zip
-zip tales 2 or more iterables
+zip() takes 2 or more iterables
 ```python
 names = ["James", "Bob", "Kate", "Sarah"]
 ages = [20, 54, 34, 19]
