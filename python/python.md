@@ -86,6 +86,9 @@ print(max(fruits, key=lambda x: len(x)))  # Output: banana
 ```
 
 ### Sorting
+
+sorted_by_len = sorted(list_of_strings, key=len)
+
 Lowecase comes after uppercase in ASCII
 ```python
 names = ['Alice', 'bob', 'Charlie']
@@ -121,6 +124,14 @@ class DatabaseConnection:
 # Usage  
 with DatabaseConnection() as db:  
     db.query("SELECT * FROM users") 
+```
+
+Let's order the names using the number of times the letter 'a' appears in the name. 
+```python
+def get_number_of_a_s(item):
+    return item.lower().count("a")
+
+reordered_names = sorted(some_names, key=get_number_of_a_s)
 ```
 
 ### reverse
