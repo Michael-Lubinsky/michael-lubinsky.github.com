@@ -35,6 +35,32 @@ def greet(*args, **kwargs):
 greet("Alice", "Bob", language="Python", level="Intermediate")
 ```
 
+### zip
+zip tales 2 or more iterables
+```python
+names = ["James", "Bob", "Kate", "Sarah"]
+ages = [20, 54, 34, 19]
+locations = ["London",  "San Francisco", "Sydney", "Vancouver"]
+ 
+team_members = zip(names, ages, locations)
+ 
+next(team_members)   # ('James', 20, 'London')
+next(team_members)   # ('Bob', 54, 'San Francisco')
+next(team_members)   # ('Kate', 34, 'Sydney')
+next(team_members)    # ('Sarah', 19, 'Vancouver')
+ 
+
+sorted_team = sorted(team_members, key=lambda grouping: grouping[1])
+sorted_team
+# [('Sarah', 19, 'Vancouver'), ('James', 20, 'London'),  ('Kate', 34, 'Sydney'), ('Bob', 54, 'San Francisco')]
+
+names, ages, locations = zip(*sorted_team)
+
+names # ('Sarah', 'James', 'Kate', 'Bob')
+ages # (19, 20, 34, 54)
+locations # ('Vancouver', 'London', 'Sydney', 'San Francisco')
+```
+
 ### zip with strict
  zip silently stops at the shortest list, 
  but you can raise  ValueError if lengths don’t match using strict=True
