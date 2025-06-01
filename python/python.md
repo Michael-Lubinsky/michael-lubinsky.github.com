@@ -107,6 +107,31 @@ sales_data = [
 ]
 print(sort_sales_data_by_sales(sales_data))
 ```
+Order the names using the number of times the letter 'a' appears in the name:
+Since sorted() deals with numerical values by ordering them in ascending order,   
+the names with no 'a's appear first since .count("a") returns 0 for these names.  
+You can add a third keyword argument to sorted(), reverse=True,  
+to order the names starting with the one with the most occurrences of the letter 'a'.
+
+```python
+def get_number_of_a_s(item):
+    return item.lower().count("a")
+
+reordered_names = sorted(some_names, key=get_number_of_a_s)
+
+# same as above using lambda: 
+reordered_names = sorted(
+    some_names,
+    key=lambda item: item.lower().count("a"),
+)
+```
+
+The built-in sorted() does not change the object passed to it.  
+Instead, it returns a new list with the output.   
+However, the list method .sort() mutates the list it acts on.  
+Since lists are mutable, list methods such as .sort() modify the original list rather than returning a copy.
+
+<https://www.thepythoncodingstack.com/p/the-key-to-the-key-parameter-in-python>
 
 ### Context manager
 
