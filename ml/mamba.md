@@ -20,6 +20,8 @@ https://udlbook.github.io/udlbook/
 
 https://machine-learning-with-python.readthedocs.io/
 
+https://lux-api.readthedocs.io/en/latest/index.html
+
 https://sebastianraschka.com/notebooks/ml-notebooks/
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
