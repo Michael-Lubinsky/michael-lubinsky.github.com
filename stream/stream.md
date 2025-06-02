@@ -6,6 +6,8 @@ https://github.com/quixio/quix-streams Kafta Stream  + Python
 
 ## Flink
 
+https://habr.com/ru/articles/914836/
+
 https://www.unskewdata.com/blog/stream-flink-4
 
 https://habr.com/ru/articles/908220/
