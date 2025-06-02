@@ -4,6 +4,9 @@
 
 <https://habr.com/ru/companies/beeline_tech/articles/909506/>
 
+Sort merge join
+<https://habr.com/ru/companies/gnivc/articles/914932/>
+
 ### Config params
 ```
 the number of executor instances to launch.
