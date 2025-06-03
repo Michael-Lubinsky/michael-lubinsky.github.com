@@ -187,6 +187,133 @@ FROM raw.movies_json;
 COPY INTO raw.users
 FROM @users_stage
 FILE_FORMAT = (TYPE = 'CSV');
+```
 
+### Data Warehouse Configuration
+❄️ Recommended Snowflake Configuration
+Dedicated Virtual Warehouse: For loading and transformations
+- ETL_WH: X-Large or 2X-Large (scale based on load time SLA)
+- Enable auto-suspend (5 minutes) and auto-resume
+
+###  Warehousing Strategy
+Separate warehouses for:
+ - ETL_WH: Loading and transforms
+- BI_WH: Dashboarding or query use
+- Enables concurrency and cost control
+
+### Schema & Clustering Design
+
+| Table         | Primary Key            | Cluster Key                      |
+| ------------- | ---------------------- | -------------------------------- |
+| `clickstream` | `(timestamp, user_id)` | `movie_id`, `timestamp`          |
+| `movies`      | `movie_id`             | `genre`                          |
+| `users`       | `user_id`              | optional (large dimension table) |
+
+
+- Cluster clickstream on movie_id and timestamp for time-range and movie queries.
+- Optional: Set clustering key on users(user_id) if lookups are frequent and the table is very large.
+```sql
+CREATE TABLE clickstream (
+  timestamp TIMESTAMP,
+  action STRING,
+  user_id STRING,
+  movie_id STRING,
+  ...
+)
+CLUSTER BY (movie_id, timestamp);
+```
+
+### Compute Total Time per Movie per Genre
+
+```sql
+WITH sessions AS (
+  SELECT
+    user_id,
+    movie_id,
+    timestamp,
+    LAG(timestamp) OVER (PARTITION BY user_id, movie_id ORDER BY timestamp) AS prev_ts,
+    LAG(action) OVER (PARTITION BY user_id, movie_id ORDER BY timestamp) AS prev_action,
+    action
+  FROM raw.clickstream
+)
+SELECT
+  s.movie_id,
+  m.genre,
+  SUM(DATEDIFF('second', s.prev_ts, s.timestamp)) AS total_watch_time_seconds
+FROM sessions s
+JOIN raw.movies m ON s.movie_id = m.movie_id
+WHERE s.prev_action = 'START' AND s.action = 'STOP'
+  AND s.timestamp BETWEEN '2025-06-01' AND '2025-06-03'
+GROUP BY s.movie_id, m.genre;
 
 ```
+
+### Compute Total Time per User
+```sql
+WITH sessions AS (...) -- same as above
+SELECT
+  s.user_id,
+  u.user_location,
+  SUM(DATEDIFF('second', s.prev_ts, s.timestamp)) AS total_watch_time
+FROM sessions s
+JOIN raw.users u ON s.user_id = u.user_id
+WHERE s.prev_action = 'START' AND s.action = 'STOP'
+GROUP BY s.user_id, u.user_location;
+```
+
+### Query Monitoring and Cost Management
+
+#### QUERY_HISTORY
+```sql
+SELECT *
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE START_TIME >= DATEADD(day, -1, CURRENT_TIMESTAMP())
+  AND EXECUTION_STATUS = 'SUCCESS'
+ORDER BY TOTAL_ELAPSED_TIME DESC
+LIMIT 10;
+
+
+SELECT QUERY_TEXT,
+       EXECUTION_STATUS,
+       TOTAL_ELAPSED_TIME,
+       BYTES_SCANNED
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE START_TIME > DATEADD(HOUR, -24, CURRENT_TIMESTAMP())
+ORDER BY TOTAL_ELAPSED_TIME DESC
+LIMIT 10;
+
+```
+Find slowest queries  
+Look at BYTES_SCANNED, ROWS_PRODUCED, WAREHOUSE_NAME
+
+
+#### WAREHOUSE_LOAD_HISTORY
+```sql
+SELECT *
+FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
+WHERE START_TIME >= DATEADD(day, -1, CURRENT_TIMESTAMP());
+```
+Shows how loaded the warehouses are  
+Key for tuning size and concurrency scaling
+
+#### METERING_HISTORY
+
+```sql
+SELECT *
+FROM SNOWFLAKE.ACCOUNT_USAGE.METERING_HISTORY
+WHERE START_TIME >= DATEADD(day, -7, CURRENT_TIMESTAMP());
+```
+Monitor credit usage per warehouse
+
+Identify underutilized or costly compute resources
+
+
+| Area               | Best Practice                                                           |
+| ------------------ | ----------------------------------------------------------------------- |
+| **Loading**        | Use `COPY INTO` with external stages; Snowpipe for streaming            |
+| **Partitioning**   | Use clustering on large fact tables (`movie_id`, `timestamp`)           |
+| **Query Tuning**   | Use pruning, materialized views, avoid `SELECT *`                       |
+| **Monitoring**     | Query/warehouse/metering history; set resource monitors                 |
+| **Cost Control**   | Enable auto-suspend, separate compute workloads, use `COST_USAGE` views |
+| **Transformation** | Prefer ELT using SQL/dbt; optimize joins and use CTEs where appropriate |
+
