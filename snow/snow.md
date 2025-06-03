@@ -114,4 +114,13 @@ Log exceptions in an error table and monitor regularly
 Be cost-aware: 
 Snowflake charges per-second compute and per-TB storage—mention how you optimized.
 
- 
+### Project:
+ Please describe how to design and implement in Snowflake the following ETL pipeline:
+Input  dataset 1: 
+Files on AWS S3  the daily clickstream   with following columns:
+timestamp, user_id, show_id, device_type, operating_system.
+File format: AVRO or CSV
+AWS S3 buckets are named as YYYY-MM-DD
+
+Input dataset 2: Shows dataset stored  on S3 in JSONL format, has show_id attribute and many other attributes per show (show_name, genre, date, language, artists) 
+Input Dataset 3:  Users database, has user_id and many other users attributes, line name, location, etc 
