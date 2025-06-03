@@ -523,3 +523,189 @@ Identify underutilized or costly compute resources
 | **Cost Control**   | Enable auto-suspend, separate compute workloads, use `COST_USAGE` views |
 | **Transformation** | Prefer ELT using SQL/dbt; optimize joins and use CTEs where appropriate |
 
+
+### Tips for Efficient Use of CLUSTER BY
+
+| Tip                                             | Explanation                                                                |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| **Use only when table is large**                | Recommended for tables **>100M rows** or growing fast.                     |
+| **Cluster only on frequently filtered columns** | Use `CLUSTER BY (event_time)` only if queries consistently filter on it.   |
+| **Avoid over-clustering**                       | Don't include too many columns; it may increase costs due to reclustering. |
+| **Monitor clustering effectiveness**            | Use `SYSTEM$CLUSTERING_INFORMATION('table_name')`                          |
+| **Avoid frequent inserts in random order**      | Clustered tables work best with **bulk inserts ordered by cluster key**.   |
+
+
+#### Check Clustering Effectiveness
+
+SELECT SYSTEM$CLUSTERING_INFORMATION('clickstream');
+
+This returns a JSON object with:
+- cluster_by_keys
+- total_partition_count
+- average_overlaps (lower is better)
+- average_depth
+
+You can use this to decide whether to manually recluster or optimize insert strategy.
+
+In Snowflake, reclustering is the background process that reorganizes a table's micro-partitions to better align with the defined CLUSTER BY key(s).   
+This improves query performance by maximizing partition pruning and minimizing the amount of data scanned.
+
+very table in Snowflake is internally divided into immutable micro-partitions (16MB–512MB each).
+
+Each micro-partition stores metadata about the min/max values of columns, which Snowflake uses for partition pruning.
+
+Over time, due to inserts, deletes, and updates, the ordering of clustering keys across micro-partitions becomes less optimal.
+
+What Reclustering Does
+Reclustering is Snowflake's way of:
+
+Rewriting micro-partitions so that values of the CLUSTER BY column(s) are more contiguously distributed
+
+Reducing the overlap in clustering key values across micro-partitions
+
+Enabling better query pruning → faster performance and lower cost
+
+🔄 Types of Reclustering in Snowflake
+✅ 1. Automatic Reclustering (Default)
+Snowflake automatically reclusters large tables that use CLUSTER BY, as a background maintenance operation.
+
+It's asynchronous, does not lock the table, and is incremental (operates on a small subset of data).
+
+Triggered based on heuristics like:
+
+Overlap of clustering key values
+
+Number of stale micro-partitions
+
+You don't need to manage it manually in most cases.
+
+🧰 2. Manual Reclustering (Optional)
+If you want to force reclustering (e.g., after a large unordered bulk insert), you can use:
+
+
+ALTER TABLE my_table RECLUSTER;
+
+🔸 This triggers a one-time reclustering process. It still runs asynchronously, but gives you more control.
+
+Monitor Clustering Quality
+
+SELECT SYSTEM$CLUSTERING_INFORMATION('my_table');
+it returns JSON with
+
+| Field                   | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `cluster_by_keys`       | List of clustering columns                 |
+| `total_partition_count` | Number of micro-partitions                 |
+| `average_overlaps`      | **Lower is better** (measures key overlap) |
+| `average_depth`         | Depth of partition tree; lower is better   |
+| `bytes_scanned`         | Useful for tuning queries                  |
+
+
+When to Recluster
+
+| When                                                  | Why                                      |
+| ----------------------------------------------------- | ---------------------------------------- |
+| After large unordered inserts                         | To re-establish good clustering          |
+| If `SYSTEM$CLUSTERING_INFORMATION` shows high overlap | Indicates degraded pruning efficiency    |
+| When queries scan more data than expected             | Bad clustering = more partitions scanned |
+
+
+| Concept          | Explanation                                                   |
+| ---------------- | ------------------------------------------------------------- |
+| **Reclustering** | Reorders micro-partitions to improve clustering key alignment |
+| **Automatic**    | Background Snowflake process for large tables                 |
+| **Manual**       | Use `ALTER TABLE ... RECLUSTER` as needed                     |
+| **Monitoring**   | Use `SYSTEM$CLUSTERING_INFORMATION()`                         |
+| **Goal**         | Better **partition pruning**, faster queries, lower cost      |
+
+
+### SYSTEM$ functions
+
+SYSTEM — it refers to a special class of Snowflake system-defined functions,   
+also known as system functions or metadata functions.
+
+SYSTEM$ functions are built-in functions provided by Snowflake.
+
+They are used to query internal metadata, diagnose performance, and inspect system state.  
+They behave like scalar functions, returning results like strings, JSON objects, or numeric values.
+
+| Function                                    | Purpose                                                                          |
+| ------------------------------------------- | -------------------------------------------------------------------------------- |
+| `SYSTEM$CLUSTERING_INFORMATION('table')`    | Returns JSON with clustering stats for a clustered table                         |
+| `SYSTEM$WAIT(condition)`                    | Used in scripts to wait for a condition (rare use)                               |
+| `SYSTEM$PIPE_STATUS('pipe_name')`           | Returns the status of a Snowpipe                                                 |
+| `SYSTEM$STREAM_HAS_DATA('stream_name')`     | Checks if a stream has new data to process                                       |
+| `SYSTEM$WH_REFRESH_HISTORY('warehouse')`    | Lists warehouse resume/suspend history                                           |
+| `SYSTEM$TYPEOF(expression)`                 | Returns the data type of the expression                                          |
+| `SYSTEM$ESTIMATE_QUERY_ACCELERATION(query)` | Predicts how much faster a query could run with Query Acceleration Service (QAS) |
+
+
+
+Most SYSTEM$ functions are scalar and return a JSON string or value.
+
+You can use PARSE_JSON(...) if you want to extract fields:
+
+
+```sql
+SELECT PARSE_JSON(SYSTEM$CLUSTERING_INFORMATION('clickstream')):average_overlaps;
+
+
+-- 1. Clustering Quality for Target Table
+SELECT
+  'Clustering Info' AS section,
+  table_name,
+  clustering_key,
+  clustering_info:"average_overlaps"::FLOAT AS avg_overlap,
+  clustering_info:"average_depth"::FLOAT AS avg_depth,
+  clustering_info:"total_partition_count"::INT AS partitions
+FROM (
+  SELECT 
+    'your_schema.your_table' AS table_name,
+    'event_time' AS clustering_key,
+    PARSE_JSON(SYSTEM$CLUSTERING_INFORMATION('your_schema.your_table')) AS clustering_info
+);
+
+-- 2. Warehouse Resume/Suspend History (last 24 hours)
+SELECT
+  'Warehouse Activity' AS section,
+  warehouse_name,
+  event_name,
+  event_timestamp,
+  initiator
+FROM TABLE(SYSTEM$WH_REFRESH_HISTORY('your_warehouse'))
+WHERE event_timestamp >= DATEADD(HOUR, -24, CURRENT_TIMESTAMP())
+ORDER BY event_timestamp DESC;
+
+-- 3. Credit Usage by Day for Past 7 Days
+SELECT
+  'Credit Usage' AS section,
+  usage_date,
+  warehouse_name,
+  credits_used
+FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY
+WHERE usage_date >= DATEADD(DAY, -7, CURRENT_DATE())
+ORDER BY usage_date, warehouse_name;
+
+-- 4. Top 5 Longest Queries in Last 24 Hours
+SELECT
+  'Long Queries' AS section,
+  user_name,
+  warehouse_name,
+  query_text,
+  total_elapsed_time / 1000 AS duration_seconds,
+  start_time
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE start_time >= DATEADD(HOUR, -24, CURRENT_TIMESTAMP())
+  AND execution_status = 'SUCCESS'
+ORDER BY total_elapsed_time DESC
+LIMIT 5;
+
+```
+
+Replace:
+
+- 'your_schema.your_table' with your clustered table
+- 'event_time' with your clustering column
+- 'your_warehouse' with your active Snowflake virtual warehouse name
+
+
