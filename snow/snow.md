@@ -122,7 +122,7 @@ Input  dataset 1:  100 millions rows daily.
 Files on AWS S3  the daily clickstream.
 Every row has following columns:
 timestamp, action (can be START or STOP or PAUSE), user_id, movie_id, device_type, operating_system.
-File format: AVRO or CSV
+File format: AVRO or CSV.
 AWS S3 buckets are named as YYYY-MM-DD
 
 Input dataset 2: 50,000 records
@@ -133,7 +133,7 @@ Input Dataset 3:  50 millions records
 This is users dataset, it has user_id and  other users attributes, like user_name, user_location, etc 
 
 QUESTIONS:
-How to load 3 imput datasets into SnowFlake once per day?
+How to load 3 input datasets into SnowFlake once per day?
 Which Datawarehouse configuration to use?
 How to cluster the tables?
 How to join  datasets on columns  show_id and to calculate total time per movie per genre for given time range? 
@@ -143,3 +143,50 @@ How to use QUERY_HISTORY, WAREHOUSE_LOAD_HISTORY, METERING_HISTORY?
 How to Track long-running or costly queries?
 
 
+### Ingestion Method:
+
+Use Snowpipe if you want continuous streaming (optional)  
+For batch ETL: use COPY INTO command from external stage  
+```sql
+#--------
+# clicks
+#--------
+
+CREATE STAGE clickstream_stage 
+  URL = 's3://bucket/'
+  FILE_FORMAT = (TYPE = 'AVRO');  -- or CSV
+
+COPY INTO raw.clickstream
+FROM @clickstream_stage/YYYY-MM-DD/
+FILE_FORMAT = (TYPE = 'AVRO');
+
+#------------------
+#  movies (JSONL)
+#------------------
+CREATE STAGE movies_stage URL = 's3://bucket/movies/';
+CREATE OR REPLACE TABLE raw.movies_json (
+    movie VARIANT
+);
+
+COPY INTO raw.movies_json
+FROM @movies_stage
+FILE_FORMAT = (TYPE = JSON);
+
+-- Normalize JSONL into flat columns
+CREATE OR REPLACE TABLE raw.movies AS
+SELECT 
+  movie:value:id::STRING AS movie_id,
+  movie:value:genre::STRING AS genre,
+  movie:value:movie_name::STRING,
+  ...
+FROM raw.movies_json;
+
+#----------
+#   users
+# ---------
+COPY INTO raw.users
+FROM @users_stage
+FILE_FORMAT = (TYPE = 'CSV');
+
+
+```
