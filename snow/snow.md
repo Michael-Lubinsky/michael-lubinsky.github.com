@@ -33,6 +33,27 @@ They are independent of storage and can be scaled, paused, resumed, and configur
 | `ECONOMY`  | Delays adding clusters to save cost                 |
 
 
+
+###  Real-World Pricing Note
+1 credit ≈ $2–$4 USD, depending on:
+
+- Cloud provider (AWS, Azure, GCP)
+- Region
+- Contract type (on-demand vs reserved capacity)
+
+For example:
+
+- X-Small → ~$2–$4/hour
+- Small → ~$4–$8/hour
+- Medium → ~$8–$16/hour
+- Large → ~$16–$32/hour
+
+Actual rates depend on your Snowflake subscription agreement.
+Always refer to your contract or Snowflake Pricing Calculator for accurate cost estimation.
+
+
+
+
 To track when your warehouse scaled:
 ```sql
 SELECT *
