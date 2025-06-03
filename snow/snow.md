@@ -115,12 +115,31 @@ Be cost-aware:
 Snowflake charges per-second compute and per-TB storage—mention how you optimized.
 
 ### Project:
- Please describe how to design and implement in Snowflake the following ETL pipeline:
-Input  dataset 1: 
-Files on AWS S3  the daily clickstream   with following columns:
-timestamp, user_id, show_id, device_type, operating_system.
+ Please describe how to design and implement in Snowflake the following ETL pipeline.
+There are 3 input datasets as below.
+
+Input  dataset 1:  100 millions rows daily.
+Files on AWS S3  the daily clickstream.
+Every row has following columns:
+timestamp, action (can be START or STOP or PAUSE), user_id, movie_id, device_type, operating_system.
 File format: AVRO or CSV
 AWS S3 buckets are named as YYYY-MM-DD
 
-Input dataset 2: Shows dataset stored  on S3 in JSONL format, has show_id attribute and many other attributes per show (show_name, genre, date, language, artists) 
-Input Dataset 3:  Users database, has user_id and many other users attributes, line name, location, etc 
+Input dataset 2: 50,000 records
+Dataset of movies stored  on S3 in JSONL format, has movie_id attribute and many other attributes per movie (movie_name, genre, date, language, artists) 
+
+
+Input Dataset 3:  50 millions records
+This is users dataset, it has user_id and  other users attributes, like user_name, user_location, etc 
+
+QUESTIONS:
+How to load 3 imput datasets into SnowFlake once per day?
+Which Datawarehouse configuration to use?
+How to cluster the tables?
+How to join  datasets on columns  show_id and to calculate total time per movie per genre for given time range? 
+How to join   datasets on columns user_id  to calculate total time per user? 
+
+How to use QUERY_HISTORY, WAREHOUSE_LOAD_HISTORY, METERING_HISTORY?
+How to Track long-running or costly queries?
+
+
