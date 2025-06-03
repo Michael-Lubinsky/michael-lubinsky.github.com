@@ -48,6 +48,22 @@ The CREDIT_QUOTA specifies how many Snowflake credits a monitor is allowed to co
 - Larger warehouses consume more credits proportionally (e.g., Large = 8 credits/hour)
 
 
+### What is cluster?
+
+In Snowflake, a cluster refers to an independent compute engine within a virtual warehouse. It is a unit of compute that executes queries, loads data, or performs transformations.
+
+🧱 What Is a Cluster in Snowflake?
+A cluster is part of a virtual warehouse and contains:
+- CPU
+- Memory
+- Temp disk/cache
+
+Each cluster runs queries independently and does not share memory or CPU with others.
+
+A multi-cluster warehouse can have multiple clusters running in parallel,   
+enabling horizontal scaling for high-concurrency workloads.
+
+
 ### Use Case for Multi-Cluster Warehouses
 Multi-cluster mode is ideal for:
 
@@ -105,6 +121,13 @@ ALTER WAREHOUSE my_wh SET AUTO_SUSPEND = 60;
 | Dashboards       | `Medium`, multi-cluster (`MAX_CLUSTER_COUNT > 1`)       |
 | High concurrency | `XLarge`, `STANDARD` scaling policy, short suspend time |
 | Cost control     | Always use **resource monitors** and auto-suspend       |
+
+| Term                        | Meaning                                                                              |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| **Cluster**                 | One compute engine within a virtual warehouse                                        |
+| **Virtual Warehouse**       | Logical group of clusters for processing                                             |
+| **Multi-Cluster Warehouse** | A warehouse with multiple clusters for concurrent execution                          |
+| **Scaling**                 | Snowflake adds or removes clusters based on query demand and `MIN/MAX_CLUSTER_COUNT` |
 
 
 ### Micro-partitions:
