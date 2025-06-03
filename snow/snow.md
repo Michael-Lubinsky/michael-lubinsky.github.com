@@ -1,3 +1,5 @@
+SHOW WAREHOUSES;
+
 ### Snowflake Core Concepts & Architecture
 
 Three-layer architecture:
@@ -31,11 +33,45 @@ They are independent of storage and can be scaled, paused, resumed, and configur
 | `ECONOMY`  | Delays adding clusters to save cost                 |
 
 
+To track when your warehouse scaled:
+```sql
+SELECT *
+FROM SNOWFLAKE.ACCOUNT_USAGE.WAREHOUSE_LOAD_HISTORY
+WHERE WAREHOUSE_NAME = 'BI_WH'
+ORDER BY START_TIME DESC;
+```
+
 #### What is CREDIT_QUOTA?
 The CREDIT_QUOTA specifies how many Snowflake credits a monitor is allowed to consume during its interval period (monthly by default).
 
 - 1 credit = 1 hour of X-Small warehouse usage
 - Larger warehouses consume more credits proportionally (e.g., Large = 8 credits/hour)
+
+
+### Use Case for Multi-Cluster Warehouses
+Multi-cluster mode is ideal for:
+
+- High concurrent query workloads
+- BI dashboards (many short queries)
+- Concurrent ELT jobs or streaming workloads
+- Instead of queueing, Snowflake adds new clusters to serve more users simultaneously.
+
+
+When you configure a multi-cluster warehouse, you define:
+
+- MIN_CLUSTER_COUNT — the minimum number of clusters always running
+- MAX_CLUSTER_COUNT (or SCALE_MAX) — the maximum number of clusters that can run concurrently
+
+```sql
+CREATE WAREHOUSE bi_wh
+  WAREHOUSE_SIZE = 'MEDIUM'
+  WAREHOUSE_TYPE = 'MULTI'
+  MIN_CLUSTER_COUNT = 1
+  MAX_CLUSTER_COUNT = 5
+  SCALING_POLICY = 'STANDARD'
+  AUTO_SUSPEND = 300
+  AUTO_RESUME = TRUE;
+```
 
 
 #### Scaling policy
