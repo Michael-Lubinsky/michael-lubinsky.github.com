@@ -12,10 +12,80 @@ Decoupled compute
 Can auto-scale (multi-cluster)  
 Pausable to save costs  
 
+In Snowflake, Virtual Warehouses are the compute layer responsible for executing queries, 
+loading data, and performing transformations.
+They are independent of storage and can be scaled, paused, resumed, and configured per workload.
+
+| Size             | Credits per Hour | Typical Use                                       |
+| ---------------- | ---------------- | ------------------------------------------------- |
+| `X-Small`        | 1                | Small dev/test jobs, occasional queries           |
+| `Small`          | 2                | Light dashboards, routine ETL                     |
+| `Medium`         | 4                | Moderate ELT, daily batch                         |
+| `Large`          | 8                | Large dashboards, joins                           |
+| `XLarge`         | 16               | Complex ETL, concurrent workloads                 |
+| Up to `6X-Large` | Up to 512        | Massive parallelism for real-time/high-throughput |
+
+| Policy     | Behavior                                            |
+| ---------- | --------------------------------------------------- |
+| `STANDARD` | Spins up extra clusters *as needed* for concurrency |
+| `ECONOMY`  | Delays adding clusters to save cost                 |
+
+
+#### What is CREDIT_QUOTA?
+The CREDIT_QUOTA specifies how many Snowflake credits a monitor is allowed to consume during its interval period (monthly by default).
+
+- 1 credit = 1 hour of X-Small warehouse usage
+- Larger warehouses consume more credits proportionally (e.g., Large = 8 credits/hour)
+
+
+#### Scaling policy
+
+SCALE_MIN / SCALE_MAX clusters
+Controls multi-cluster warehouse behavior
+
+If many queries queue up, Snowflake automatically spins up additional clusters to avoid queueing
+```sql
+CREATE WAREHOUSE my_wh
+  WAREHOUSE_SIZE = 'LARGE'
+  MAX_CLUSTER_COUNT = 5
+  MIN_CLUSTER_COUNT = 1
+  SCALING_POLICY = 'ECONOMY'; -- Or 'STANDARD'
+
+AUTO_SUSPEND = 300  -- in seconds
+AUTO_RESUME = TRUE
+
+```
+Changing Warehouse Configs  
+Snowflake allows dynamic resizing and reconfiguration:
+```sql
+ALTER WAREHOUSE my_wh SET WAREHOUSE_SIZE = 'XLARGE';
+ALTER WAREHOUSE my_wh SET AUTO_SUSPEND = 60;
+```
+
+| Scenario         | Suggested Config                                        |
+| ---------------- | ------------------------------------------------------- |
+| Ad-hoc dev       | `X-Small` + auto-suspend 60s                            |
+| Daily ETL        | `Large`, auto-resume, auto-suspend 300s                 |
+| Dashboards       | `Medium`, multi-cluster (`MAX_CLUSTER_COUNT > 1`)       |
+| High concurrency | `XLarge`, `STANDARD` scaling policy, short suspend time |
+| Cost control     | Always use **resource monitors** and auto-suspend       |
+
+
 ### Micro-partitions:
 Immutable 16MB–512MB blocks  
 Automatically created on data ingestion  
 Columnar, sorted, compressed, metadata-rich  
+
+
+During peak reporting times, you might spin up a large warehouse, 
+and then during off-peak hours, you can suspend it
+(stopping compute charges entirely) or resize it to a smaller size.
+
+Multi-Cluster Architecture: Snowflake's architecture allows multiple independent compute clusters
+(virtual warehouses) to operate on the same data concurrently without contention.
+
+While there's a Cloud Services layer that handles things like authentication, query optimization, and metadata management,
+its usage is often free as long as it doesn't exceed 10% of your daily virtual warehouse compute credit usage.
 
 ##  End-to-End ETL / ELT Process
 
@@ -39,6 +109,62 @@ Use Account Usage and Information Schema:
 - QUERY_HISTORY, WAREHOUSE_LOAD_HISTORY, METERING_HISTORY
 - Track long-running or costly queries
 - Visualize with dashboards (e.g., in Power BI or Tableau)
+
+### Resource Monitors (Cost Control)
+You can bind a resource monitor to a warehouse to track/limit credit usage.
+
+```sql
+  CREATE RESOURCE MONITOR etl_monitor
+  WITH CREDIT_QUOTA = 100
+  TRIGGERS ON 80 PERCENT DO NOTIFY
+           ON 100 PERCENT DO SUSPEND;
+
+ALTER WAREHOUSE etl_wh SET RESOURCE_MONITOR = etl_monitor;
+```
+This means: once 80 credits are consumed → send a notification;  
+when 100 credits are consumed → suspend assigned warehouses.
+
+A resource monitor allows you to:
+
+- Track credit usage
+- Define threshold-based triggers (e.g., 80%, 100%)
+- Automatically notify, suspend warehouses, or disable further usage
+
+#### Monitoring Interval Options
+By default, the interval is monthly, but you can change it to:
+
+- DAILY
+- WEEKLY
+- MONTHLY
+- YEARLY
+- NEVER (one-time monitor)
+
+ ```sql
+CREATE RESOURCE MONITOR etl_monitor
+  WITH CREDIT_QUOTA = 100
+  FREQUENCY = DAILY
+  TRIGGERS ON 90 PERCENT DO SUSPEND;
+ ```
+
+### Who Gets Notified by DO NOTIFY?
+Notifications are sent to account administrators (users with ACCOUNTADMIN role).  
+They appear in the Snowflake UI (Notifications tab) and can be queried via metadata views.  
+You can also configure notification integrations with email, Slack, webhooks, or custom logging,  
+but that requires external alerting tools (like PagerDuty or AWS SNS via monitoring dashboards).
+
+Assigning Resource Monitor to a Warehouse:
+ 
+ALTER WAREHOUSE etl_wh SET RESOURCE_MONITOR = etl_monitor;
+
+A resource monitor can be shared across multiple warehouses.
+
+You can check usage and trigger activity with:
+```sql
+SELECT *
+FROM SNOWFLAKE.ACCOUNT_USAGE.RESOURCE_MONITOR_HISTORY
+WHERE MONITOR_NAME = 'ETL_MONITOR'
+ORDER BY USAGE_DATE DESC;
+```
 
 ###  Optimization Tips:
 Use clustering keys on large tables with frequent range scans  
