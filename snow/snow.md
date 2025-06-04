@@ -1130,3 +1130,83 @@ PIVOT(
 | HR         | 100000       | 90000        |
 | IT         | 150000       | 130000       |
 
+
+
+
+
+
+### Process incoming clickstream events in near-real-time
+🔷 Architecture Overview:
+Raw Events are loaded into a staging_events table (e.g., via Kafka, S3, or REST API using Snowpipe).
+
+A stream tracks new inserts in staging_events.
+
+A task runs every minute to process the stream and load into aggregated_metrics.
+
+✅ Step-by-Step Example
+#### Step 1: Create the Raw Staging Table
+```sql
+
+CREATE OR REPLACE TABLE staging_events (
+  event_time TIMESTAMP,
+  user_id STRING,
+  page_id STRING,
+  action STRING
+);
+```
+Assume this table is populated automatically by a Kafka connector or Snowpipe from S3.
+
+#### Step 2: Create a Stream to Track New Rows
+```sql
+
+CREATE OR REPLACE STREAM staging_events_stream
+ON TABLE staging_events
+APPEND_ONLY = TRUE;  -- for performance if you're only inserting
+```
+#### Step 3: Create a Processed/Aggregated Table
+```sql
+
+CREATE OR REPLACE TABLE aggregated_metrics (
+  event_minute TIMESTAMP,
+  page_id STRING,
+  view_count INT
+);
+```
+#### Step 4: Create a Task That Runs Every Minute
+```sql
+
+CREATE OR REPLACE TASK process_events_task
+WAREHOUSE = my_wh
+SCHEDULE = '1 minute'
+WHEN SYSTEM$STREAM_HAS_DATA('staging_events_stream')
+AS
+INSERT INTO aggregated_metrics
+SELECT
+  DATE_TRUNC('minute', event_time) AS event_minute,
+  page_id,
+  COUNT(*) AS view_count
+FROM staging_events_stream
+WHERE action = 'view'
+GROUP BY 1, 2;
+```
+Then activate the task:
+
+```sql
+ALTER TASK process_events_task RESUME;
+```
+🔁 Result
+Events stream into staging_events.
+
+Every minute, the task checks the stream for new data.
+
+It processes and loads aggregates into aggregated_metrics.
+
+You get fresh data with ~1 minute latency.
+
+| Feature                     | Description                                  |
+| --------------------------- | -------------------------------------------- |
+| `AUTO_INGEST` Snowpipe      | Ingest JSON/CSV files into Snowflake from S3 |
+| Kafka → Snowflake Connector | Stream records directly from Kafka topics    |
+| Search Optimization         | Accelerate lookups if needed                 |
+| Materialized Views          | Cache intermediate results if reused often   |
+
