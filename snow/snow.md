@@ -841,11 +841,36 @@ However, Snowflake Tasks are simpler and more limited than full-featured orchest
 | **REST API & plugins**         | ❌               | ✅ (rich ecosystem)                          |
 
 
+### Qualify keyword
+
+Normally, when you use window functions (like ROW_NUMBER(), RANK(), LAG()), you can't directly use them in the WHERE clause because WHERE is processed before window functions.
+
+QUALIFY allows you to filter based on window function results, similar to how HAVING filters aggregates.
+
+```sql
+SELECT *
+FROM sales
+QUALIFY ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY sale_date DESC) = 1;
+```
+the same without qualify:
+```sql
+SELECT *
+FROM (
+  SELECT *,
+         ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY sale_date DESC) AS rn
+  FROM sales
+) t
+WHERE rn = 1;
+```
+
 ### JSON
 
 Load JSON into VARIANT columns (semi-structured type) 
 Use dot notation or colon : notation to extract fields 
 Can use FLATTEN() to explode arrays 
+
+Query JSON
+
 ```sql
 SELECT
   data:movie_id::STRING AS movie_id,
@@ -854,10 +879,47 @@ SELECT
 FROM raw_json_table;
 ```
 
+Load JSON or JSONL
+```sql
+CREATE OR REPLACE TABLE raw_movies (data VARIANT);
+
+COPY INTO raw_movies
+FROM @my_stage/movies/
+FILE_FORMAT = (TYPE = 'JSON');
+```
+
+Extracting arrays with flatten()
+```sql
+{
+  "movie_id": "abc123",
+  "actors": ["Tom Hanks", "Meg Ryan"]
+}
+
+SELECT
+  data:movie_id::STRING AS movie_id,
+  actor.value::STRING AS actor_name
+FROM raw_movies,
+LATERAL FLATTEN(input => data:actors) AS actor;
+
+```
+
+JSON query helpers
+```sql
+| Function                    | Description                                          |
+| --------------------------- | ---------------------------------------------------- |
+| `:field`                    | Extract value from JSON (`data:genre`)               |
+| `::TYPE`                    | Cast JSON value to SQL type (`::STRING`, `::NUMBER`) |
+| `FLATTEN()`                 | Explode arrays in JSON                               |
+| `OBJECT_KEYS()`             | Get keys of JSON object                              |
+| `IS_OBJECT()`, `IS_ARRAY()` | Check JSON structure                                 |
+
+
+```
+
 ### Pivot SQL
 - You must specify the values in the IN (...) clause (no dynamic pivoting).
 - Aggregation function (e.g. SUM, AVG) is required.
-```
+```sql
 SELECT *
 FROM (
   SELECT department, gender, salary
