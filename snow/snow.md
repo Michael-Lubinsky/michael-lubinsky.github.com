@@ -862,6 +862,11 @@ FROM (
 ) t
 WHERE rn = 1;
 ```
+| Clause    | Purpose                            | Can use window functions? |
+| --------- | ---------------------------------- | ------------------------- |
+| `WHERE`   | Filter raw rows                    | ❌                         |
+| `HAVING`  | Filter groups after aggregation    | ❌                         |
+| `QUALIFY` | Filter rows after window functions | ✅ ✔️                      |
 
 ### JSON
 
