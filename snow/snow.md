@@ -1,9 +1,41 @@
+```
 SHOW WAREHOUSES;
-
+SHOW SCHEMAS;
+SHOW TABLES;
 SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
+```
+
+### Search optimization
+
+SHOW TABLES LIKE '%<table_name>%';
+Look at the SEARCH_OPTIMIZATION_PROGRESS column (0-100%).
 
 
-Snowflake provides metadata tables and views through several special schemas such as:
+```
+ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION;
+ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION ON
+  (<search_method>(<column_name_1>),
+   <search_method>(<column_name_2>),
+   ...);
+```
+
+Common <search_method> options:
+```
+EQUALITY: For equality (=) and IN predicates.
+SUBSTRING: For LIKE, ILIKE, RLIKE, REGEXP, and SEARCH functions.
+GEO: For geospatial functions on GEOGRAPHY columns.
+FULL_TEXT: For SEARCH function (allows specifying analyzers).
+ARRAY_CONTAINS: For ARRAY_CONTAINS and ARRAYS_OVERLAP.
+
+Example:
+
+ALTER TABLE sales_data ADD SEARCH OPTIMIZATION ON
+  (EQUALITY(customer_id),
+   SUBSTRING(product_description),
+   EQUALITY(order_details:item_id)); -- For semi-structured data
+```
+
+### Snowflake provides metadata tables and views through several special schemas such as:
 ```
 INFORMATION_SCHEMA (ANSI-compliant)
 ACCOUNT_USAGE (organization-wide usage metadata)
@@ -460,7 +492,75 @@ Bad joins → Use broadcast joins or improve distribution keys.
 Large aggregates → Pre-aggregate or materialize views.
 
 
-Optimizing Table Structures
+#### How to Use Snowflake's Query Profile
+The Query Profile is an invaluable diagnostic tool in Snowsight (or the Classic Console) that provides a detailed, visual breakdown of how Snowflake executed a specific SQL query. It's essential for identifying performance bottlenecks and understanding why a query performs the way it does.
+
+Accessing the Query Profile:
+
+In Snowsight:
+Log in to Snowsight.
+Navigate to Activity » Query History.
+Find the query you want to analyze (you can use filters for user, status, time range, etc.).
+Click on the Query ID of the specific query.
+In the query details pane that opens, click the Query Profile tab.
+Interpreting the Query Profile:
+
+The Query Profile displays the query's execution plan as a Directed Acyclic Graph (DAG) of operators (nodes). Arrows indicate data flow between operators, and each arrow shows the number of rows transferred.
+
+Key Areas to Focus On:
+
+Profile Overview:
+
+Execution Time Summary: Shows the percentage of total query time spent on different phases:
+Processing: CPU-bound work (joins, aggregations, filters, sorts).
+Local Disk I/O: Reading/writing to local SSD (often indicates spilling or local cache hits).
+Remote Disk I/O: Reading/writing to remote storage (S3/Azure Blob) – this is often the slowest part.
+Initialization: Overhead.
+Statistics: Provides global query metrics like:
+Bytes scanned: Total data read from storage.
+Partitions scanned / Partitions total: Crucial for assessing pruning effectiveness. If "scanned" is close to "total," your filters aren't working well.
+Bytes written to Result: Size of the final output.
+Spill to local storage / Spill to remote storage: CRITICAL WARNING! This means your virtual warehouse ran out of memory and had to write temporary data to disk. Remote disk spilling is extremely slow. If you see significant spilling, scale up your virtual warehouse.
+Bytes sent over network: Data transferred between warehouse nodes or to the client.
+Most Expensive Nodes: Highlights the operators that consumed the most execution time, making it easy to identify bottlenecks.
+Execution Plan (Graph View):
+
+Operators: Each box represents an operation (e.g., TableScan, Filter, Join, Aggregate, Sort, Result).
+Percentage of Time: The percentage displayed on each operator indicates how much of the total query execution time was spent on that specific step. This is your primary indicator of where to focus optimization efforts.
+Rows Processed: The numbers on the arrows between operators show how many rows were passed from one step to the next. Look for unexpected spikes or drops in row count.
+TableScan: This is where data is read from the underlying micro-partitions.
+Check Pruning: Examine Partitions scanned vs. Partitions total in the TableScan's details. Good pruning means scanned is much lower than total.
+Pushdown: Snowflake tries to "push down" filters to the TableScan to reduce the data read from storage. If a filter isn't pushed down, it might be applied later, processing more data than necessary.
+Filter: Applies WHERE clause conditions. Ensure filters are applied early in the plan to reduce data volume for subsequent operations.
+Join: Combines data from multiple sources.
+Join Type: Snowflake chooses join types (e.g., hash join, nested loop).
+Exploding Joins: If the number of rows increases significantly after a join, it could indicate a poorly designed join condition (e.g., missing join key, incorrect join type leading to a Cartesian product).
+Probe/Build Side: For hash joins, Snowflake determines a "build" side (smaller table) and a "probe" side (larger table). If the build side is too large, it can lead to spilling.
+Aggregate: Performs aggregations (SUM, COUNT, GROUP BY).
+Sort / SortWithLimit: Sorting is expensive. Look for unnecessary sorts. If you only need TOP N, ensure LIMIT is used with ORDER BY to optimize the sort.
+Common Performance Bottlenecks and How Query Profile Helps:
+
+High Spillage (Local/Remote Disk I/O):
+Profile Indication: High percentage in "Local Disk I/O" or "Remote Disk I/O" in the overview, and "Spill to local/remote storage" in statistics.
+Solution: Your virtual warehouse is too small for the query's memory requirements. Scale up your virtual warehouse (e.g., from XS to S, or S to M).
+Inefficient Scans / Poor Pruning:
+Profile Indication: TableScan operator consumes a high percentage of time, and Partitions scanned is close to Partitions total in its details.
+Solution:
+Ensure effective WHERE clauses that filter data early.
+Consider clustering the table on frequently filtered columns for large tables.
+Consider Search Optimization Service for highly selective point lookups.
+Exploding Joins:
+Profile Indication: The number of rows emitted from a Join operator is disproportionately higher than the rows entering it.
+Solution: Review your join conditions. Ensure they are correct and selective. Add more join keys if needed.
+Unnecessary Sorts:
+Profile Indication: A Sort operator takes a high percentage of time.
+Solution: Avoid ORDER BY if not strictly necessary. If you need TOP N, use LIMIT.
+Repeated Computation:
+Profile Indication: The same subquery or CTE branch appears multiple times in the execution plan, or a complex view is re-computed repeatedly.
+Solution: Use CTEs strategically. If a CTE is used multiple times, Snowflake typically materializes it once. However, for very complex or large CTEs, repeating them might sometimes allow for better parallelization (though this is less common and should be tested). Consider materialized views for frequently queried, complex aggregations on relatively static data.
+By regularly utilizing the Query Profile, you gain deep insights into your query performance, allowing you to make informed decisions about SQL rewrites, table design, and virtual warehouse sizing, ultimately leading to faster queries and lower costs in Snowflake.
+
+#### Optimizing Table Structures
 🏗️ Best Practices:  
 a) Use clustering (on large, partitioned datasets)
 ```sql
@@ -473,7 +573,7 @@ CLUSTER BY (event_time);
 ```
 Snowflake uses automatic reclustering, or you can manually recluster.
 
-b) Use Search Optimization Service for selective filters:  
+####  Use Search Optimization Service for selective filters:  
 
 ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (email, user_id);  
 
@@ -483,7 +583,7 @@ Use flat wide tables for analytics.
 
 Normalize when storage is large and updates frequent.
 
-e) Use appropriate data types: Smaller data types = less storage and better I/O.
+#### Use appropriate data types: Smaller data types = less storage and better I/O.
 ✅ 3. Leveraging Caching in Snowflake
 
 Snowflake caches results at three layers
