@@ -500,6 +500,73 @@ df_h3.select("vehicle_id", "h3_index").show()
 
 
 ```
+## PostGIS
+
+- PostGIS is an open-source extension for PostgreSQL that:
+- Adds support for geometric and geographic types
+- Implements hundreds of spatial functions (e.g. distance, intersection, containment)
+- Supports spatial indexing with GiST and SP-GiST
+- Fully compliant with OpenGIS and OGC standards
+
+#### Example Use Case: Point-in-Polygon Query
+📘 Table: geofences (with polygons)
+```sql
+
+CREATE TABLE geofences (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    geom GEOMETRY(POLYGON, 4326)
+);
+```
+📘 Table: locations (with points)
+```sql
+
+CREATE TABLE locations (
+    id SERIAL PRIMARY KEY,
+    user_id TEXT,
+    location GEOMETRY(POINT, 4326)
+);
+```
+#### Query: Find users inside geofence
+```sql
+
+SELECT l.user_id, g.name
+FROM locations l
+JOIN geofences g
+  ON ST_Contains(g.geom, l.location);
+```  
+📦 Indexing for Performance
+```sql
+
+CREATE INDEX ON geofences USING GIST (geom);
+CREATE INDEX ON locations USING GIST (location);
+This dramatically improves performance for large datasets.
+```
+
+| Feature                      | Description                                             |
+| ---------------------------- | ------------------------------------------------------- |
+| `geometry`, `geography`      | Spatial data types (2D, 3D, etc.)                       |
+| Spatial functions            | `ST_Distance()`, `ST_Intersects()`, `ST_Within()`, etc. |
+| Spatial indexing             | GiST index for fast querying                            |
+| Coordinate reference systems | Full support for **EPSG:4326**, **UTM**, etc.           |
+| Raster + vector support      | Store satellite data, maps, and vector shapes           |
+| GeoJSON support              | Read/write GeoJSON directly                             |
+
+
+| Function          | Purpose                         |
+| ----------------- | ------------------------------- |
+| `ST_Distance()`   | Measure distance between shapes |
+| `ST_Intersects()` | Do shapes overlap?              |
+| `ST_Within()`     | Is point inside polygon?        |
+| `ST_Buffer()`     | Create radius around a point    |
+| `ST_MakePoint()`  | Construct a point from lon/lat  |
+
+
+| Format        | Command Example                                |           |
+| ------------- | ---------------------------------------------- | --------- |
+| **Shapefile** | \`shp2pgsql -I input.shp table\_name           | psql db\` |
+| **GeoJSON**   | `ST_AsGeoJSON(geom)` or `ST_GeomFromGeoJSON()` |           |
+| **WKT/WKB**   | `ST_AsText(geom)` or `ST_GeomFromText()`       |           |
 
 
 ## GIS with DuckDB
