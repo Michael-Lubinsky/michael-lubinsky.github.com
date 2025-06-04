@@ -411,13 +411,13 @@ Use h3_cell_to_boundary, h3_point_to_cell, and h3_cell_area_km2
 SELECT h3_point_to_cell(37.7749, -122.4194, 8) AS h3_cell;
 ```
 #### Integration with External Geospatial Tools
-Tool	 
-Kepler.gl	Visualize spatial data in Databricks
-ArcGIS / QGIS	External tools connected to Spark/Delta
-ESRI	Enterprise GIS integration with Spark/ML
+  
+Kepler.gl - 	Visualize spatial data in Databricks  
+ArcGIS /  - QGIS	External tools connected to Spark/Delta  
+ESRI	- Enterprise GIS integration with Spark/ML  
 
 #### Example Geospatial Pipeline on Databricks
-Scenario: Geofence alerts for delivery vehicles
+Scenario: Geofence alerts for delivery vehicles  
 Ingest GPS data from Kafka into Delta table
 
 Use Sedona to parse points and match with polygon geofences
@@ -567,6 +567,33 @@ This dramatically improves performance for large datasets.
 | **Shapefile** | \`shp2pgsql -I input.shp table\_name           | psql db\` |
 | **GeoJSON**   | `ST_AsGeoJSON(geom)` or `ST_GeomFromGeoJSON()` |           |
 | **WKT/WKB**   | `ST_AsText(geom)` or `ST_GeomFromText()`       |           |
+
+### Sedona vs PostGIS
+
+| Feature           | Sedona                               | PostGIS                                       |
+| ----------------- | ------------------------------------ | --------------------------------------------- |
+| Geometry Types    | Point, LineString, Polygon, etc.     | Full OGC-compliant geometry types             |
+| Spatial Functions | `ST_Contains`, `ST_Intersects`, etc. | Extensive – over 500+ spatial functions       |
+| Distance Measures | Euclidean, Great Circle              | Euclidean, spherical, 3D, raster support      |
+| Indexing          | R-tree, QuadTree                     | GiST, SP-GiST                                 |
+| CRS Support       | EPSG codes supported                 | Full CRS support + transformation             |
+| Raster Support    | ❌ Not yet                            | ✅ Yes (rasters, elevation, satellite imagery) |
+| GeoJSON/WKT/WKB   | ✅ Supported                          | ✅ Supported                                   |
+
+ Integration & Tools
+
+| Feature           | Sedona                                 | PostGIS                                 |
+| ----------------- | -------------------------------------- | --------------------------------------- |
+| External Tools    | Kepler.gl, Databricks, Spark notebooks | QGIS, ArcGIS, pgAdmin, Geoserver        |
+| Web Mapping       | With Spark + APIs                      | Direct integration with GeoServer, QGIS |
+| Visualization     | Requires external tools                | Built-in via pgAdmin + QGIS integration |
+| Streaming Support | ✅ (via Spark Structured Streaming)     | ❌ (only with external pipeline tools)   |
+
+| Use Case              | Sedona                                      | PostGIS                               |
+| --------------------- | ------------------------------------------- | ------------------------------------- |
+| Billions of points    | ✅ Scalable (distributed memory/computation) | ❌ Slower or may require partitioning  |
+| Complex spatial joins | Optimized with spatial partitioning         | Efficient but slower on large data    |
+| Ad hoc queries        | ❌ Higher latency (Spark startup)            | ✅ Very fast for small/medium datasets |
 
 
 ## GIS with DuckDB
