@@ -339,5 +339,168 @@ kafka-console-producer.sh --broker-list localhost:9092 --topic gps_input
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic gps_aggregates --from-beginning
 ```
 
+
+### Apache Spark and Databricks support geospatial data pipelines through a combination of:
+
+✅ 1. Apache Spark – Native + Extended Support
+Apache Spark itself has limited native support for geospatial processing. 
+However, it becomes powerful when extended with open-source libraries like:
+
+#### GeoSpark (now Apache Sedona)
+Apache Sedona is the most popular open-source geospatial extension for Apache Spark.
+
+Adds native support for spatial types: Point, Polygon, LineString, etc.
+
+Supports spatial joins, indexing (R-Tree, QuadTree), and spatial partitioning.
+
+Works with DataFrames, SQL, and RDDs.
+
+✅ Example:
+```python
+
+from sedona.register import SedonaRegistrator
+from sedona.sql.types import GeometryType
+from pyspark.sql.functions import col
+
+# Register geospatial functions
+SedonaRegistrator.registerAll(spark)
+
+df = spark.read.csv("h3_data.csv")
+df.createOrReplaceTempView("geodata")
+
+spark.sql("""
+SELECT ST_Distance(ST_Point(1.0, 2.0), ST_Point(3.0, 4.0)) AS dist
+""").show()
+```
+
+Features:
+ST_Contains, ST_Intersects, ST_Within, ST_Buffer, ST_Distance, etc.
+
+Read/write WKT, WKB, GeoJSON, Shapefile, Parquet with embedded geometries
+
+Indexing and spatial partitioning for efficient processing
+
+#### Databricks – Enhanced Integration & Built-in Tools
+Databricks extends Apache Spark with easier integration for geospatial analytics through:
+
+🔷 a) Built-in Support for Apache Sedona
+Databricks Runtime supports Sedona through:
+
+Databricks Labs geospatial libraries
+
+Pre-installed or installable as a library in a cluster
+
+Integration with SQL, Delta Lake, ML, visualizations
+
+🔷 b) Databricks SQL and Delta Lake with Geospatial
+Delta Lake can store large geospatial datasets in partitioned form
+
+Compatible with GeoParquet, H3 indexes, and Delta Sharing
+
+🔷 c) H3 Index Support
+H3 is a hierarchical hex-based spatial index developed by Uber.
+
+Databricks supports H3 natively (via the H3 SQL extension or Python APIs)
+
+Use h3_cell_to_boundary, h3_point_to_cell, and h3_cell_area_km2
+
+✅ Example:
+```sql
+
+-- In Databricks SQL
+SELECT h3_point_to_cell(37.7749, -122.4194, 8) AS h3_cell;
+```
+#### Integration with External Geospatial Tools
+Tool	 
+Kepler.gl	Visualize spatial data in Databricks
+ArcGIS / QGIS	External tools connected to Spark/Delta
+ESRI	Enterprise GIS integration with Spark/ML
+
+#### Example Geospatial Pipeline on Databricks
+Scenario: Geofence alerts for delivery vehicles
+Ingest GPS data from Kafka into Delta table
+
+Use Sedona to parse points and match with polygon geofences
+
+Filter events with ST_Within(point, geofence_polygon)
+
+Store alerts into Delta + push to notification system
+
+Visualize data with Kepler.gl or Databricks dashboard
+
+| Feature                     | Apache Spark                 | Databricks Enhancements               |
+| --------------------------- | ---------------------------- | ------------------------------------- |
+| Geospatial types            | With Sedona                  | Built-in via Sedona + geospatial SQL  |
+| Spatial joins & indexing    | Supported via Sedona         | Fully integrated, optimized for Delta |
+| Format support              | WKT, WKB, GeoJSON, Shapefile | Same + H3, Delta Lake                 |
+| Visualization               | External tools               | Kepler.gl, built-in notebooks         |
+| Real-time/streaming support | Spark Structured Streaming   | Full Delta Live Tables + Auto Loader  |
+
+ 
+#### Databricks notebook example: Real-time Geofence Alert System using Apache Sedona & H3
+```
+# Step 1: Install Sedona and H3 (in Databricks cluster)
+# %pip install apache-sedona h3
+
+from sedona.register import SedonaRegistrator
+from sedona.utils import SedonaKryoRegistrator, KryoSerializer
+from pyspark.sql.functions import col, expr
+import h3
+
+# Step 2: Initialize Sedona
+spark.conf.set("spark.serializer", KryoSerializer.getName)
+spark.conf.set("spark.kryo.registrator", SedonaKryoRegistrator.getName)
+SedonaRegistrator.registerAll(spark)
+
+# Step 3: Create example geofence (polygon) table
+geofence_data = [
+    ("Zone A", "POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))"),
+    ("Zone B", "POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))")
+]
+
+df_geofence = spark.createDataFrame(geofence_data, ["zone_name", "wkt"])
+df_geofence = df_geofence.withColumn("geom", expr("ST_GeomFromText(wkt)"))
+df_geofence.createOrReplaceTempView("geofences")
+
+# Step 4: Simulate streaming GPS data (as batch for demo)
+gps_data = [
+    ("veh_1", 0.5, 0.5),  # Inside Zone A
+    ("veh_2", 1.5, 1.5),  # Inside Zone B
+    ("veh_3", 2.5, 2.5)   # Outside any zone
+]
+
+df_gps = spark.createDataFrame(gps_data, ["vehicle_id", "lon", "lat"])
+df_gps = df_gps.withColumn("point", expr("ST_Point(cast(lon as decimal(24,20)), cast(lat as decimal(24,20)))"))
+df_gps.createOrReplaceTempView("gps_events")
+
+# Step 5: Spatial join to find matching geofences
+alerts = spark.sql("""
+SELECT g.vehicle_id, z.zone_name
+FROM gps_events g, geofences z
+WHERE ST_Contains(z.geom, g.point)
+""")
+
+alerts.show()
+
+# Step 6: Use H3 to assign spatial index to each point
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+def point_to_h3(lon, lat, res=8):
+    return h3.geo_to_h3(lat, lon, res)
+
+h3_udf = udf(point_to_h3, StringType())
+df_h3 = df_gps.withColumn("h3_index", h3_udf(col("lon"), col("lat")))
+df_h3.select("vehicle_id", "h3_index").show()
+
+# This notebook can be extended with:
+# - Streaming input via Auto Loader or Kafka
+# - Alert outputs to Delta, notification service, or external API
+# - Visualization using Kepler.gl or Databricks dashboards
+
+
+```
+
+
 ## GIS with DuckDB
 <https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/>
