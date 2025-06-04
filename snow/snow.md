@@ -709,6 +709,44 @@ Replace:
 - 'your_warehouse' with your active Snowflake virtual warehouse name
 
 
+### Stored procedures
+
+| Use Case                            | Description                                                                          |
+| ----------------------------------- | ------------------------------------------------------------------------------------ |
+| **ETL/ELT orchestration**           | Control multi-step transformations with SQL logic                                    |
+| **Dynamic SQL execution**           | Build and execute queries programmatically (e.g., pivot, loop, build SQL at runtime) |
+| **Looping and branching logic**     | Use conditional statements and loops for iterative operations                        |
+| **Metadata-driven transformations** | Read from config tables and apply transformations dynamically                        |
+| **Trigger downstream workflows**    | Use with tasks to run multi-step jobs (e.g., `CALL my_daily_etl();`)                 |
+| **Error handling**                  | Capture exceptions and send alerts/logs using `TRY/CATCH` blocks                     |
+
+```sql
+CREATE OR REPLACE PROCEDURE daily_etl()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+BEGIN
+  INSERT INTO staging.cleaned_data
+  SELECT * FROM raw.source_data WHERE is_valid = TRUE;
+
+  CALL update_summary_table();
+  RETURN 'ETL Complete';
+END;
+$$;
+```
+
+### Materialized views
+
+| Use Case                                  | Description                                                 |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| **Accelerate slow, repeated queries**     | Precompute expensive joins, aggregations, or filters        |
+| **Optimize BI dashboards**                | Improve query speed for Power BI, Tableau, Looker           |
+| **Reduce compute cost**                   | Avoid re-running the same transformation logic repeatedly   |
+| **Query performance over large datasets** | Speed up filtered and grouped queries on partitioned tables |
+| **Use with stream processing**            | Combine with **Streams** to track changes efficiently       |
+
+
 ### Snowflake Task
 
 A Snowflake Task is a built-in scheduling and orchestration feature that lets you automate the execution of SQL statements 
