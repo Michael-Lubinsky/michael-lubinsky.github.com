@@ -199,17 +199,17 @@ Interactive analytics or dashboards where performance matters
 
 ⚙️ How to Enable
 
--- Entire table (applies to all columns)
+-- Entire table (applies to all columns)  
 ALTER TABLE my_table SET SEARCH OPTIMIZATION = TRUE;
 
--- Or specific columns  
+-- Or specific columns    
 ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (col1, col2);
 
 You can also disable it:
 
 ALTER TABLE my_table UNSET SEARCH OPTIMIZATION;
 
-💸 Cost Consideration
+💸 Cost Consideration  
 Storage cost increases because of the extra metadata structures.
 
 Maintenance cost increases slightly because Snowflake updates these structures automatically as data changes.
@@ -217,9 +217,9 @@ Maintenance cost increases slightly because Snowflake updates these structures a
 But query cost may decrease, especially if queries avoid full scans.
 
 🔬 Example Performance Gain
-Without optimization:
+Without optimization:  
 
-SELECT * FROM logs WHERE user_id = 'abc123';
+SELECT * FROM logs WHERE user_id = 'abc123';  
 -- Full scan on billions of rows
 
 With search optimization:
@@ -332,9 +332,9 @@ A resource monitor allows you to:
 #### Monitoring Interval Options
 By default, the interval is monthly, but you can change it to:
 
-- DAILY
-- WEEKLY
-- MONTHLY
+- DAILY  
+- WEEKLY  
+- MONTHLY  
 - YEARLY
 - NEVER (one-time monitor)
 
@@ -401,30 +401,31 @@ Large aggregates → Pre-aggregate or materialize views.
 
 
 Optimizing Table Structures
-🏗️ Best Practices:
+🏗️ Best Practices:  
 a) Use clustering (on large, partitioned datasets)
-sql
-Copy
-Edit
+```sql
 CREATE TABLE events (
   event_time TIMESTAMP,
   user_id STRING,
   ...
 )
 CLUSTER BY (event_time);
+```
 Snowflake uses automatic reclustering, or you can manually recluster.
 
-b) Use Search Optimization Service for selective filters:
+b) Use Search Optimization Service for selective filters:  
 
-ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (email, user_id);
-c) Prune columns: Store only what’s needed, avoid SELECT *.
-d) Normalize or Denormalize wisely:
+ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (email, user_id);  
+
+c) Prune columns: Store only what’s needed, avoid SELECT *.  
+d) Normalize or Denormalize wisely:  
 Use flat wide tables for analytics.
 
 Normalize when storage is large and updates frequent.
 
 e) Use appropriate data types: Smaller data types = less storage and better I/O.
 ✅ 3. Leveraging Caching in Snowflake
+
 Snowflake caches results at three layers
 
 | Layer              | Description                                                | Duration               |
@@ -443,16 +444,16 @@ Snowflake caches results at three layers
 
 
 ### Cost Control:
-Suspend warehouses when not in use
-Set resource monitors to cap credit consumption
+Suspend warehouses when not in use  
+Set resource monitors to cap credit consumption  
 Use serverless functions (Tasks, Streams) with care (billed per second)
 
 ##  Internal Workings (Deep Dive)
-How does Snowflake handle concurrent queries?  
+How does Snowflake handle concurrent queries?   
 What happens behind the scenes when you run a query?  
 How does Snowflake achieve scalability?  
 
-Each virtual warehouse handles queries independently → no contention.
+Each virtual warehouse handles queries independently → no contention.  
 Queries use metadata from the cloud services layer to find optimal micro-partitions.
 Automatic query optimization based on metadata (e.g., pruning, caching).
 
@@ -476,8 +477,8 @@ How do you ensure data quality and freshness?
 
 #### dbt (Data Build Tool):
 
-SQL-first transformation layer
-Version-controlled
+SQL-first transformation layer  
+Version-controlled  
 Supports incremental models, tests, and documentation
 
 #### Tasks + Streams:
@@ -513,7 +514,7 @@ Snowflake charges per-second compute and per-TB storage—mention how you optimi
 ### Project:
  Please describe how to design and implement in Snowflake the following ETL pipeline.
 There are 3 input datasets as below.
-
+```
 Input  dataset 1:  100 millions rows daily.
 Files on AWS S3  the daily clickstream.
 Every row has following columns:
@@ -524,11 +525,11 @@ AWS S3 buckets are named as YYYY-MM-DD
 Input dataset 2: 50,000 records
 Dataset of movies stored  on S3 in JSONL format, has movie_id attribute and many other attributes per movie (movie_name, genre, date, language, artists) 
 
-
 Input Dataset 3:  50 millions records
 This is users dataset, it has user_id and  other users attributes, like user_name, user_location, etc 
-
+```
 QUESTIONS:
+```
 How to load 3 input datasets into SnowFlake once per day?
 Which Datawarehouse configuration to use?
 How to cluster the tables?
@@ -537,7 +538,7 @@ How to join   datasets on columns user_id  to calculate total time per user?
 
 How to use QUERY_HISTORY, WAREHOUSE_LOAD_HISTORY, METERING_HISTORY?
 How to Track long-running or costly queries?
-
+```
 
 ### Ingestion Method:
 
