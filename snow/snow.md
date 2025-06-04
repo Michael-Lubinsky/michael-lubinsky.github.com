@@ -709,3 +709,53 @@ Replace:
 - 'your_warehouse' with your active Snowflake virtual warehouse name
 
 
+### Snowflake Task
+
+A Snowflake Task is a built-in scheduling and orchestration feature that lets you automate the execution of SQL statements 
+(or entire stored procedures) at regular intervals or in response to upstream events.
+
+Think of a Task as a lightweight alternative to Airflow or cron for running scheduled ELT jobs inside Snowflake.
+
+| Feature                             | Description                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| **Native Scheduler**                | Runs SQL code or stored procedures on a fixed interval (e.g., every 5 minutes) |
+| **Serverless**                      | No need to manage compute—Snowflake handles it                                 |
+| **Dependency Graph**                | Tasks can be chained into DAGs (Directed Acyclic Graphs)                       |
+| **Uses Snowflake compute**          | Billing is per-second based on actual compute used                             |
+| **Can resume suspended warehouses** | Tasks auto-resume compute if needed                                            |
+
+```sql
+CREATE OR REPLACE TASK daily_summary_task
+  WAREHOUSE = my_wh
+  SCHEDULE = 'USING CRON 0 6 * * * UTC'  -- every day at 6:00 AM UTC
+AS
+  INSERT INTO analytics.daily_summary
+  SELECT DATE_TRUNC('DAY', event_time) AS event_date, COUNT(*) AS views
+  FROM raw.clickstream
+  WHERE event_time >= DATEADD(DAY, -1, CURRENT_DATE());
+```
+
+### Chaining tasks
+
+```sql
+-- Parent task
+CREATE OR REPLACE TASK load_raw_data
+  WAREHOUSE = my_wh
+  SCHEDULE = '1 HOUR'
+AS
+  CALL load_s3_data();
+
+-- Child task that runs after load_raw_data
+CREATE OR REPLACE TASK transform_data
+  WAREHOUSE = my_wh
+  AFTER load_raw_data
+AS
+  CALL run_dbt_transform();
+```
+
+| Action       | Command                                               |
+| ------------ | ----------------------------------------------------- |
+| Start a task | `ALTER TASK my_task RESUME;`                          |
+| Stop a task  | `ALTER TASK my_task SUSPEND;`                         |
+| View status  | `SHOW TASKS;`                                         |
+| View history | `SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.TASK_HISTORY;` |
