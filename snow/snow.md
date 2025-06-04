@@ -1,7 +1,67 @@
 SHOW WAREHOUSES;
 
-SELECT * FROM INFORMATION_SCHEMA.TABLES  
-WHERE TABLE_SCHEMA = 'PUBLIC';
+SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
+
+
+Snowflake provides metadata tables and views through several special schemas such as:
+```
+INFORMATION_SCHEMA (ANSI-compliant)
+ACCOUNT_USAGE (organization-wide usage metadata)
+SNOWFLAKE (Snowflake-managed data, like replication status)
+```
+
+| Schema Location                  | Scope                 | Best For                           |
+| -------------------------------- | --------------------- | ---------------------------------- |
+| `INFORMATION_SCHEMA`             | Per database/schema   | Tables, columns, views, grants     |
+| `SNOWFLAKE.ACCOUNT_USAGE`        | Global (account-wide) | Query logs, costs, warehouse load  |
+| `SNOWFLAKE.INFORMATION_SCHEMA`   | Global                | All object types, databases        |
+| `SNOWFLAKE.READER_ACCOUNT_USAGE` | Reader accounts       | Usage billing from shared accounts |
+
+
+
+### INFORMATION_SCHEMA
+
+| View Name                  | Description                              |
+| -------------------------- | ---------------------------------------- |
+| `TABLES`                   | Lists all tables in the schema           |
+| `COLUMNS`                  | Lists columns and types for each table   |
+| `VIEWS`                    | Metadata about views                     |
+| `SCHEMATA`                 | Lists schemas in the current database    |
+| `ROLES`, `USERS`, `GRANTS` | Role-based access control                |
+| `QUERY_HISTORY`            | Recent queries (in current session only) |
+| `TABLE_STORAGE_METRICS`    | Storage usage per table                  |
+
+#### Account Usage
+
+Global Usage & Audit Metadata
+Available in the Snowflake-provided SNOWFLAKE database, this schema gives account-wide, longer-term metadata.
+
+| View Name                           | Description                              |
+| ----------------------------------- | ---------------------------------------- |
+| `QUERY_HISTORY`                     | Detailed query logs (up to 1 year)       |
+| `LOGIN_HISTORY`                     | Login audit logs                         |
+| `WAREHOUSE_LOAD_HISTORY`            | Compute usage + load metrics             |
+| `STORAGE_USAGE`                     | Storage metrics by database/schema/table |
+| `TABLE_STORAGE_METRICS`             | Compressed storage per table             |
+| `USERS`, `ROLES`, `GRANTS_TO_ROLES` | Security and role grants                 |
+
+ Find the top 10 longest-running queries
+```sql
+SELECT query_text, execution_status, start_time, total_elapsed_time/1000 AS secs
+FROM SNOWFLAKE.ACCOUNT_USAGE.QUERY_HISTORY
+WHERE start_time > DATEADD('day', -7, CURRENT_TIMESTAMP())
+ORDER BY total_elapsed_time DESC
+LIMIT 10;
+```
+
+#### SNOWFLAKE.INFORMATION_SCHEMA — Built-in Object Info
+
+| View Name            | Description                            |
+| -------------------- | -------------------------------------- |
+| `DATABASES`          | Lists all databases in your account    |
+| `SCHEMATA`           | Lists all schemas across all databases |
+| `OBJECTS`            | Lists all objects in your account      |
+| `FILE_FORMATS`, etc. | Lists formats, integrations, etc.      |
 
 ### Snowflake Core Concepts & Architecture
 
