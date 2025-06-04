@@ -776,3 +776,16 @@ However, Snowflake Tasks are simpler and more limited than full-featured orchest
 | **Monitoring UI**           | 🟡         | `SHOW TASKS` and `TASK_HISTORY`; limited visibility                      |
 | **External integration**    | 🟡         | Possible via Snowflake + external functions (e.g., call webhooks, Slack) |
 
+
+### Snowflake Tasks vs Apache Airflow
+
+| Capability                     | Snowflake Tasks | Apache Airflow                              |
+| ------------------------------ | --------------- | ------------------------------------------- |
+| **Native SQL/ELT automation**  | ✅               | ✅                                           |
+| **Python tasks**               | ❌               | ✅                                           |
+| **Branching (IF/ELSE logic)**  | ❌               | ✅                                           |
+| **Dynamic DAGs**               | ❌               | ✅                                           |
+| **Retries and error handling** | ❌               | ✅ (fine-grained control)                    |
+| **Rich UI & visualization**    | ❌ (basic only)  | ✅                                           |
+| **Cross-system orchestration** | ❌               | ✅ (e.g., S3 → Snowflake → BigQuery → Slack) |
+| **REST API & plugins**         | ❌               | ✅ (rich ecosystem)                          |
