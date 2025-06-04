@@ -1,5 +1,8 @@
 SHOW WAREHOUSES;
 
+SELECT * FROM INFORMATION_SCHEMA.TABLES  
+WHERE TABLE_SCHEMA = 'PUBLIC';
+
 ### Snowflake Core Concepts & Architecture
 
 Three-layer architecture:
