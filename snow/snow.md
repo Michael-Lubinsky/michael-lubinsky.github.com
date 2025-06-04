@@ -167,6 +167,67 @@ Multi-Cluster Architecture: Snowflake's architecture allows multiple independent
 While there's a Cloud Services layer that handles things like authentication, query optimization, and metadata management,
 its usage is often free as long as it doesn't exceed 10% of your daily virtual warehouse compute credit usage.
 
+
+### Stream
+
+A Snowflake stream is a change data capture (CDC) mechanism that tracks changes (inserts, updates, deletes)
+to a table in near real time.  
+It allows you to incrementally process only the new or modified data since the last time the stream was read.
+
+To implement efficient ETL/ELT pipelines, you don’t want to reprocess the entire table. Instead, you use a stream to:
+
+Detect new rows inserted
+
+Track which rows were updated or deleted
+
+Process only changed data (e.g., for updating a downstream table or data warehouse)
+
+| Feature        | Description                                                           |
+| -------------- | --------------------------------------------------------------------- |
+| **Stream**     | An object that records changes to a base table (insert/update/delete) |
+| **Offset**     | Snowflake automatically tracks which changes you've already consumed  |
+| **Consumed**   | Once you select from a stream, those changes are marked as consumed   |
+| **Unconsumed** | Only unprocessed changes are returned on the next query               |
+
+```sql
+-- Step 1: Create base table
+CREATE OR REPLACE TABLE orders (
+  order_id INT,
+  status STRING
+);
+
+-- Step 2: Create stream on the table
+CREATE OR REPLACE STREAM orders_stream ON TABLE orders;
+
+-- Step 3: Query changes
+SELECT * FROM orders_stream;
+```
+This returns only new, updated, or deleted rows (with metadata columns like METADATA$ACTION, METADATA$ISUPDATE, etc.).
+
+#### Types of Streams
+Standard Streams: Track changes in standard tables.
+
+Append-Only Streams: More efficient, track only inserts (used on insert-only workloads like logs or events).
+
+Insert/Update/Delete Metadata: Each row includes metadata to show what kind of change occurred.
+
+
+🔹 Use Case Example
+Suppose your table receives new user events. You can:
+
+Create a stream on that table.
+
+Periodically read from the stream to populate a reporting or aggregated table.
+
+Ensure only new/changed rows are processed each time.
+
+🔹 Things to Know
+A stream does not store data, only change tracking metadata.
+
+Streams can be used with tasks to automate data pipelines.
+
+Reading from a stream consumes the tracked changes (like reading from a queue).
+
 ##  End-to-End ETL / ELT Process
 
 When would you use ELT over ETL?
@@ -556,7 +617,7 @@ Each micro-partition stores metadata about the min/max values of columns, which 
 
 Over time, due to inserts, deletes, and updates, the ordering of clustering keys across micro-partitions becomes less optimal.
 
-What Reclustering Does
+### What Reclustering Does
 Reclustering is Snowflake's way of:
 
 Rewriting micro-partitions so that values of the CLUSTER BY column(s) are more contiguously distributed
@@ -587,7 +648,7 @@ ALTER TABLE my_table RECLUSTER;
 
 🔸 This triggers a one-time reclustering process. It still runs asynchronously, but gives you more control.
 
-Monitor Clustering Quality
+### Monitor Clustering Quality
 
 SELECT SYSTEM$CLUSTERING_INFORMATION('my_table');
 it returns JSON with
