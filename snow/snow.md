@@ -759,3 +759,20 @@ AS
 | Stop a task  | `ALTER TASK my_task SUSPEND;`                         |
 | View status  | `SHOW TASKS;`                                         |
 | View history | `SELECT * FROM SNOWFLAKE.ACCOUNT_USAGE.TASK_HISTORY;` |
+
+Snowflake supports creating DAGs (Directed Acyclic Graphs) using its built-in Tasks   
+and the AFTER keyword — enabling you to define task dependencies within Snowflake itself.
+
+However, Snowflake Tasks are simpler and more limited than full-featured orchestrators like Apache Airflow.
+
+| Feature                     | Supported? | Notes                                                                    |
+| --------------------------- | ---------- | ------------------------------------------------------------------------ |
+| **Chaining / Dependencies** | ✅          | Use `AFTER` to define DAGs                                               |
+| **Schedules**               | ✅          | Use `SCHEDULE = 'CRON'` or `AFTER` (not both)                            |
+| **Parallel branches**       | ✅          | Multiple tasks can depend on the same parent                             |
+| **Retry on failure**        | ❌          | No built-in retries; must handle via logic or monitoring                 |
+| **Conditional branching**   | ❌          | Not natively supported                                                   |
+| **Dynamic task generation** | ❌          | Static DAG only — no runtime DAG logic                                   |
+| **Monitoring UI**           | 🟡         | `SHOW TASKS` and `TASK_HISTORY`; limited visibility                      |
+| **External integration**    | 🟡         | Possible via Snowflake + external functions (e.g., call webhooks, Slack) |
+
