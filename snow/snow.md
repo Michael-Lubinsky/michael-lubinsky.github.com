@@ -746,6 +746,18 @@ $$;
 | **Query performance over large datasets** | Speed up filtered and grouped queries on partitioned tables |
 | **Use with stream processing**            | Combine with **Streams** to track changes efficiently       |
 
+```sql
+CREATE MATERIALIZED VIEW mv_daily_views AS
+SELECT
+  movie_id,
+  DATE_TRUNC('DAY', event_time) AS day,
+  COUNT(*) AS views
+FROM clickstream
+WHERE action = 'START'
+GROUP BY movie_id, day;
+
+
+```
 
 ### Snowflake Task
 
