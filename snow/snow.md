@@ -167,6 +167,61 @@ Multi-Cluster Architecture: Snowflake's architecture allows multiple independent
 While there's a Cloud Services layer that handles things like authentication, query optimization, and metadata management,
 its usage is often free as long as it doesn't exceed 10% of your daily virtual warehouse compute credit usage.
 
+### SEARCH OPTIMIZATION = TRUE
+In Snowflake, setting SEARCH OPTIMIZATION = TRUE enables a Search Optimization Service (SOS) on a table or specific columns   
+to dramatically improve query performance for selective point-lookups or range queries without full table scans.
+
+ALTER TABLE my_table SET SEARCH OPTIMIZATION = TRUE;
+
+This creates and maintains secondary metadata structures (similar to an index, but not exactly the same) that:
+
+Accelerate queries with highly selective filters
+
+Optimize performance on WHERE column = value, BETWEEN, IN (...), etc.
+
+Avoid full scans even on very large tables
+
+✅ Best Use Cases
+Columns with high cardinality (many distinct values)
+
+Query patterns that include:
+
+WHERE col = 'some_id'
+
+WHERE timestamp BETWEEN ...
+
+Semi-structured data (e.g. JSON with WHERE data:id = 'abc123')
+
+Interactive analytics or dashboards where performance matters
+
+⚙️ How to Enable
+
+-- Entire table (applies to all columns)
+ALTER TABLE my_table SET SEARCH OPTIMIZATION = TRUE;
+
+-- Or specific columns  
+ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (col1, col2);
+
+You can also disable it:
+
+ALTER TABLE my_table UNSET SEARCH OPTIMIZATION;
+
+💸 Cost Consideration
+Storage cost increases because of the extra metadata structures.
+
+Maintenance cost increases slightly because Snowflake updates these structures automatically as data changes.
+
+But query cost may decrease, especially if queries avoid full scans.
+
+🔬 Example Performance Gain
+Without optimization:
+
+SELECT * FROM logs WHERE user_id = 'abc123';
+-- Full scan on billions of rows
+
+With search optimization:
+
+-- Same query becomes 100x faster due to indexed search
 
 ### Stream
 
