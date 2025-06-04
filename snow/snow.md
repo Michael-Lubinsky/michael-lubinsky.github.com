@@ -839,3 +839,36 @@ However, Snowflake Tasks are simpler and more limited than full-featured orchest
 | **Rich UI & visualization**    | ❌ (basic only)  | ✅                                           |
 | **Cross-system orchestration** | ❌               | ✅ (e.g., S3 → Snowflake → BigQuery → Slack) |
 | **REST API & plugins**         | ❌               | ✅ (rich ecosystem)                          |
+
+
+### JSON
+
+Load JSON into VARIANT columns (semi-structured type) 
+Use dot notation or colon : notation to extract fields 
+Can use FLATTEN() to explode arrays 
+```sql
+SELECT
+  data:movie_id::STRING AS movie_id,
+  data:genre::STRING AS genre,
+  data:attributes:director::STRING AS director
+FROM raw_json_table;
+```
+
+### Pivot SQL
+- You must specify the values in the IN (...) clause (no dynamic pivoting).
+- Aggregation function (e.g. SUM, AVG) is required.
+```
+SELECT *
+FROM (
+  SELECT department, gender, salary
+  FROM employees
+)
+PIVOT(
+  SUM(salary) FOR gender IN ('M', 'F')
+);
+```
+| department | 'M' (salary) | 'F' (salary) |
+| ---------- | ------------ | ------------ |
+| HR         | 100000       | 90000        |
+| IT         | 150000       | 130000       |
+
