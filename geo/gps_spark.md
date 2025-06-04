@@ -30,6 +30,9 @@ Longitude: anywhere from -180 to +180
 It lies in the Gulf of Guinea, off the coast of West Africa, where the Equator meets the Prime Meridian.  
 There’s no actual island — it’s an imaginary point in the Atlantic Ocean.  
 
+### Reverse Geocoding
+<https://austinhenley.com/blog/coord2state.html>
+
 ### GeoJSON 
  GeoJSON  is a widely-used format for encoding geographic data structures using JSON. 
 It’s supported by many tools like Mapbox, Leaflet, PostGIS, and others.
