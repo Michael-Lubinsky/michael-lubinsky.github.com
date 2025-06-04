@@ -368,6 +368,77 @@ Use result caching effectively
 Use materialized views for performance  
 Scale compute vertically or horizontally (multi-cluster warehouses)
 
+
+#### Using Query Profiler (Visual Query Execution Plan)
+🔍 What it is:
+The Query Profiler in Snowflake’s UI (Web UI or Snowsight) provides a visual execution plan, showing step-by-step details of how the query is executed.
+
+🔧 How to use:
+Run a query in Snowsight or the Classic Console.
+
+Click the query in the history panel.
+
+Open the "Query Profile" tab.
+
+Review stages: SCANS → JOINS → AGGREGATES → SORTS → RESULT
+
+🔍 Look for:
+| Symbol         | Meaning                                  |
+| -------------- | ---------------------------------------- |
+| 🧱 Table Scan  | May indicate a full scan (optimize this) |
+| ⛓ Join         | Look at join order and method            |
+| 📦 Caching     | If data came from cache                  |
+| ⏱ Elapsed time | Check where most time is spent           |
+
+High scan time → Use Search Optimization, Clustering, or filter pushdowns.
+
+Bad joins → Use broadcast joins or improve distribution keys.
+
+Large aggregates → Pre-aggregate or materialize views.
+
+
+Optimizing Table Structures
+🏗️ Best Practices:
+a) Use clustering (on large, partitioned datasets)
+sql
+Copy
+Edit
+CREATE TABLE events (
+  event_time TIMESTAMP,
+  user_id STRING,
+  ...
+)
+CLUSTER BY (event_time);
+Snowflake uses automatic reclustering, or you can manually recluster.
+
+b) Use Search Optimization Service for selective filters:
+
+ALTER TABLE my_table ADD SEARCH OPTIMIZATION ON (email, user_id);
+c) Prune columns: Store only what’s needed, avoid SELECT *.
+d) Normalize or Denormalize wisely:
+Use flat wide tables for analytics.
+
+Normalize when storage is large and updates frequent.
+
+e) Use appropriate data types: Smaller data types = less storage and better I/O.
+✅ 3. Leveraging Caching in Snowflake
+Snowflake caches results at three layers
+
+| Layer              | Description                                                | Duration               |
+| ------------------ | ---------------------------------------------------------- | ---------------------- |
+| **Result Cache**   | If the same query runs again, result is returned instantly | 24 hours               |
+| **Metadata Cache** | Used during query compilation                              | Several minutes        |
+| **Data Cache**     | Cached micro-partitions on local SSD of warehouse nodes    | Until warehouse sleeps |
+
+
+| Area                    | Action                                                 |
+| ----------------------- | ------------------------------------------------------ |
+| **Query Profiler**      | Identify bottlenecks: scan, join, aggregate, filter    |
+| **Table Design**        | Use clustering, correct types, flatten for analytics   |
+| **Search Optimization** | Add on high-cardinality or filter columns              |
+| **Caching**             | Leverage result and data cache by writing reusable SQL |
+
+
 ### Cost Control:
 Suspend warehouses when not in use
 Set resource monitors to cap credit consumption
