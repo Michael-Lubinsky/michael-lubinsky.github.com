@@ -30,6 +30,8 @@ https://www.reddit.com/r/cpp/comments/1hwr6bo/learning_c_efficiently_in_2025/
 https://fwsgonzo.medium.com/using-c-as-a-scripting-language-part-14-a2cb380b1998
 https://github.com/taskflow/taskflow
 
+https://habr.com/ru/companies/otus/articles/914262/ Ссылки и указатели в C++
+
 Flame Graph
 https://github.com/ibogosavljevic/fiya
 https://johnnysswlab.com/fiya-flamegraphs-in-your-app
