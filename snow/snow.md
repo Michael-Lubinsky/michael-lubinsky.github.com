@@ -916,8 +916,9 @@ Reducing the overlap in clustering key values across micro-partitions
 
 Enabling better query pruning → faster performance and lower cost
 
-🔄 Types of Reclustering in Snowflake
-✅ 1. Automatic Reclustering (Default)
+Types of Reclustering in Snowflake  
+
+#### 1. Automatic Reclustering (Default)
 Snowflake automatically reclusters large tables that use CLUSTER BY, as a background maintenance operation.
 
 It's asynchronous, does not lock the table, and is incremental (operates on a small subset of data).
@@ -930,7 +931,7 @@ Number of stale micro-partitions
 
 You don't need to manage it manually in most cases.
 
-🧰 2. Manual Reclustering (Optional)
+#### 2. Manual Reclustering (Optional)
 If you want to force reclustering (e.g., after a large unordered bulk insert), you can use:
 
 
