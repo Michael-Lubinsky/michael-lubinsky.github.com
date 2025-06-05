@@ -1371,3 +1371,7 @@ You get fresh data with ~1 minute latency.
 | Search Optimization         | Accelerate lookups if needed                 |
 | Materialized Views          | Cache intermediate results if reused often   |
 
+### Python Snowflake connector
+
+<https://habr.com/ru/companies/otus/articles/843522/>
+
