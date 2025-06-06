@@ -34,6 +34,8 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 https://eshsoft.com/blog/5-lark-features-you-didnt-know  Lark parser
 
+https://habr.com/ru/articles/914650/ Descriptors in Python
+
 <https://medium.com/@abdullah.iu.cse/mastering-python-with-these-code-snippets-part-4-de4441e29260>
 
 <https://pythonhelper.com/python/python-dictionary-methods/>
