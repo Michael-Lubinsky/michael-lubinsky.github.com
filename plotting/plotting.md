@@ -154,3 +154,13 @@ https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html
 
 https://airbnb.io/visx/ VisX
 
+### Apps
+
+https://mathgl.sourceforge.net/
+
+https://labplot.org/
+
+https://alphaplot.sourceforge.io/
+
+
+
