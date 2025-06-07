@@ -162,5 +162,9 @@ https://labplot.org/
 
 https://alphaplot.sourceforge.io/
 
+https://veusz.github.io/
+
+gnuplot
+
 
 
