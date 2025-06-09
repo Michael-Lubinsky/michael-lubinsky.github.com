@@ -5,7 +5,7 @@ https://habr.com/ru/companies/dockhost/articles/891544/
 
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
-https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
+
 
 https://github.com/EntilZha/PyFunctional
 
@@ -32,7 +32,7 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
 
-https://eshsoft.com/blog/5-lark-features-you-didnt-know  Lark parser
+
 
 https://habr.com/ru/articles/914650/ Descriptors in Python
 
@@ -57,6 +57,9 @@ https://riverml.xyz/latest/ Online machine learning in Python
 https://habr.com/ru/companies/otus/articles/888974/ Type Annotations 
 
 ### Parsing
+
+  https://eshsoft.com/blog/5-lark-features-you-didnt-know  Lark parser
+
  https://habr.com/ru/articles/905582/
 
  https://habr.com/ru/articles/901324/
@@ -64,6 +67,8 @@ https://habr.com/ru/companies/otus/articles/888974/ Type Annotations
  https://habr.com/ru/articles/883390/
 
 ### Pipelines
+
+https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://hamilton.dagworks.io/en/latest/
 
