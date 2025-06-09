@@ -98,3 +98,5 @@ msgspec as a faster version of pydantic
 rich for pretty terminal output
 
 deptry for finding issues with project dependencies
+
+https://medium.com/@manikolbe/streamlit-gradio-nicegui-and-mesop-building-data-apps-without-web-devs-4474106778f5
