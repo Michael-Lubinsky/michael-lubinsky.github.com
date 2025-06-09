@@ -232,3 +232,9 @@ Churn = 1 - Retention (обычно в процентах).
 Когортные таблицы и графики визуализируют % оставшихся активных по периодам (Month 0, 1, 2... или Day 1, 7, 30...).
 ```
 https://habr.com/ru/articles/342108/
+
+
+
+### Health
+
+https://kalashnikovdm.livejournal.com/91332.html
