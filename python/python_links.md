@@ -102,6 +102,9 @@ msgspec as a faster version of pydantic
 
 rich for pretty terminal output
 
+https://deptry.com/
 deptry for finding issues with project dependencies
 
+
+### Web GUI with Python
 https://medium.com/@manikolbe/streamlit-gradio-nicegui-and-mesop-building-data-apps-without-web-devs-4474106778f5
