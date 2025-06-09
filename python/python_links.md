@@ -82,4 +82,19 @@ How python manage memory: https://habr.com/ru/companies/ibs/articles/905376/
 <https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
 <https://github.com/salabim/salabim>
 
- 
+
+Equinox: neural networks for JAX (2.4k stars, 1.1k used-by)
+
+jaxtyping: type annotations for shape and dtypes (1.4k stars, 4k used-by)   
+Also despite the now-historical name this supports pytorch+numpy+tensorflow+mlx so it's seen traction in all kinds of array-based computing.
+
+
+
+https://github.com/patrick-kidger
+
+
+msgspec as a faster version of pydantic
+
+rich for pretty terminal output
+
+deptry for finding issues with project dependencies
