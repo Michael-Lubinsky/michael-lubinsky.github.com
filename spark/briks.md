@@ -26,6 +26,58 @@ Data Compaction (OPTIMIZE): Merges small files into larger ones to improve perfo
 
 Streaming + Batch: Supports both in the same pipeline using the same Delta table.
 
+### Liquid clustering
+
+Liquid Clustering in Databricks is a data layout optimization feature for Delta Lake tables, designed to improve query performance and simplify maintenance compared to traditional Z-Ordering. As of 2025, liquid clustering is not obsolete—in fact, it’s the preferred and modern method recommended by Databricks for clustering large Delta tables.
+
+🔍 What is Liquid Clustering?
+Liquid Clustering automatically maintains clustering of data files on one or more columns (like customer_id, event_date, etc.) without requiring static Z-Ordering. It uses lightweight background operations to organize data incrementally, making it suitable for large and frequently updated tables.
+
+| Feature                                 | Description                                                          |
+| --------------------------------------- | -------------------------------------------------------------------- |
+| **Incremental optimization**            | Files are re-clustered automatically in the background during writes |
+| **No full rewrites**                    | Unlike Z-Order, it avoids full rewrites or expensive compactions     |
+| **Adaptive to changes**                 | Adjusts clustering as new data arrives                               |
+| **Simpler maintenance**                 | No need for regular OPTIMIZE ZORDER BY jobs                          |
+| **Better for streaming/near real-time** | Works well with continuous data ingestion scenarios                  |
+
+Use Liquid Clustering when:
+
+You have large tables with frequent updates/inserts
+
+Query performance suffers due to data skew or file fragmentation
+
+You need a less maintenance-heavy alternative to Z-Ordering
+
+```sql
+ALTER TABLE my_table
+SET TBLPROPERTIES (
+  'delta.liquidClustered.columns' = 'event_date, user_id'
+);
+
+or
+
+CREATE TABLE my_table (
+  event_date DATE,
+  user_id STRING,
+  ...
+)
+USING DELTA
+TBLPROPERTIES (
+  'delta.liquidClustered.columns' = 'event_date, user_id'
+);
+```
+Databricks is moving away from recommending Z-Ordering for many use cases.
+
+Liquid Clustering is better aligned with streaming + batch hybrid pipelines.
+
+| Feature     | Z-Ordering                      | Liquid Clustering              |
+| ----------- | ------------------------------- | ------------------------------ |
+| Maintenance | Manual `OPTIMIZE ZORDER BY`     | Automatic                      |
+| Performance | High, but expensive to maintain | Comparable, and auto-adjusting |
+| Best For    | Static/batch workloads          | Streaming + frequent updates   |
+| Obsolete?   | No, but becoming less preferred | No, recommended for modern use |
+
 
 ### Clustering (Z-Ordering)
 Clustering in Delta Lake is done using Z-Ordering, a technique to optimize data layout on disk for faster query performance.
