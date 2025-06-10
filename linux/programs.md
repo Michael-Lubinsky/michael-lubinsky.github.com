@@ -6,18 +6,23 @@ https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
 
+### Docker
+
+<https://habr.com/ru/articles/917226/>
+
 ### PDF to text
 brew install poppler  
 pdftotext -layout your_file.pdf output.txt
 
 ### MELD for diff
-https://meldmerge.org/
+<https://meldmerge.org/>
 
-https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/
+### Others
+<https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
 
 https://github.com/navig-me/telert sends notifications when your terminal commands or Python code completes
 
-https://habr.com/ru/companies/timeweb/articles/916040/
+<https://habr.com/ru/companies/timeweb/articles/916040/>
 
 ### https://devtoys.app/
 
