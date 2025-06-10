@@ -4,6 +4,8 @@ pip install confluent-kafka
 
 https://www.architecture-weekly.com/p/how-a-kafka-like-producer-writes
 
+https://cefboud.com/posts/kafka-producer-client-internals/
+
 https://cefboud.com/posts/exploring-kafka-internals/
 
 https://habr.com/ru/articles/910870/
