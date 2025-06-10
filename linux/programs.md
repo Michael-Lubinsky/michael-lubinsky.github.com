@@ -22,6 +22,7 @@ pdftotext -layout your_file.pdf output.txt
 
 https://github.com/navig-me/telert sends notifications when your terminal commands or Python code completes
 
+гайд по настройке рабочего окружения: Linux, VScode, Python  
 <https://habr.com/ru/companies/timeweb/articles/916040/>
 
 ### https://devtoys.app/
