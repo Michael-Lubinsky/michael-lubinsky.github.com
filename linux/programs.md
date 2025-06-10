@@ -13,6 +13,8 @@ https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/
 
 https://github.com/navig-me/telert sends notifications when your terminal commands or Python code completes
 
+https://habr.com/ru/companies/timeweb/articles/916040/
+
 ### https://devtoys.app/
 
 30 tools by default, and many more to be downloaded
@@ -68,4 +70,3 @@ https://github.com/navig-me/telert sends notifications when your terminal comman
  ULID Generator
  XSD Generator
  
- And many more on NuGet.org!
