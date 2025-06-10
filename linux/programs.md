@@ -6,6 +6,7 @@ https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
 
+### PDF to text
 brew install poppler  
 pdftotext -layout your_file.pdf output.txt
 
