@@ -10,6 +10,9 @@ https://miller.readthedocs.io/  CSV, JSON processing
 brew install poppler  
 pdftotext -layout your_file.pdf output.txt
 
+### MELD for diff
+https://meldmerge.org/
+
 https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/
 
 https://github.com/navig-me/telert sends notifications when your terminal commands or Python code completes
