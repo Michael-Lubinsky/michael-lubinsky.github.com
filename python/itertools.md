@@ -76,35 +76,36 @@ It’s probably better to visualize these functions in terms of the kind of oper
 |                          | pad_none, ncycles                                                                                   |
 | Combining                | collapse, sort_together, interleave, interleave_longest, interleave_evenly, zip_offset, zip_equal,  |
 |                          | zip_broadcast, flatten, roundrobin, prepend, value_chain, partial_product                           |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Summarizing              | ilen, unique_to_each, sample, consecutive_groups, run_length, map_reduce, join_mappings, exactly_n, |
 |                          | is_sorted, all_equal, all_unique, minmax, first_true, quantify, iequals                             |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Selecting                | islice_extended, first, last, one, only, strictly_n, strip, lstrip, rstrip, filter_except,          |
 |                          | map_except, filter_map, iter_suppress, nth_or_last, unique_in_window, before_and_after, nth, take,  |
 |                          | tail, unique_everseen, unique_justseen, unique, duplicates_everseen, duplicates_justseen,           |
 |                          | classify_unique, longest_common_prefix, takewhile_inclusive                                         |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Math                     | dft, idft, convolve, dotproduct, factor, matmul, polynomial_from_roots, polynomial_derivative,      |
 |                          | polynomial_eval, sieve, sum_of_squares, totient                                                     |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Combinatorics            | distinct_permutations, distinct_combinations, circular_shifts, partitions, set_partitions,          |
 |                          | product_index, combination_index, permutation_index, combination_with_replacement_index,            |
 |                          | gray_product, outer_product, powerset, powerset_of_sets, random_product, random_permutation,        |
 |                          | random_combination, random_combination_with_replacement, nth_product, nth_permutation,              |
 |                          | nth_combination, nth_combination_with_replacement                                                   |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Wrapping                 | always_iterable, always_reversible, countable, consumer, with_iter, iter_except                     |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Others                   | locate, rlocate, replace, numeric_range, side_effect, iterate, difference, make_decorator,          |
 |                          | SequenceView, time_limited, map_if, iter_index, consume, tabulate, repeatfunc, reshape,             |
 |                          | doublestarmap                                                                                       |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 
 https://more-itertools.readthedocs.io  
 https://medium.com/@thomas_reid/introducing-the-more-itertools-python-library-e5a24a901979  
 https://python.plainenglish.io/real-world-more-itertools-gideons-blog-a3901c607550  
 
 https://toolz.readthedocs.io/en/latest/api.html
+
 
 https://python-lenses.readthedocs.io/en/latest/tutorial/intro.html
