@@ -1,9 +1,10 @@
+### more-itertools
 
 The total list of functions in more-itertools is huge. Here’s the full list.
 
 
 | Function Name               | Function Name               | Function Name                      |
-|-----------------------------|-----------------------------+------------------------------------|
+|-----------------------------|-----------------------------|------------------------------------|
 | ichunked                    | collapse                    | distinct_permutations              |
 | chunked_even                | interleave                  | distinct_combinations              |
 | sliced                      | interleave_longest          | nth_combination_with_replacement   |
@@ -50,7 +51,7 @@ The total list of functions in more-itertools is huge. Here’s the full list.
 | unique_justseen             | classify_unique             | numeric_range                      |
 | unique                      | longest_common_prefix       | side_effect                        |
 | distinct_permutations       | takewhile_inclusive         | iterate                            |
-+----------------------------+----------------------------+--------------------------------------+
+
 It’s probably better to visualize these functions in terms of the kind of operations they’re linked to. Here’s that table.
 
 
@@ -59,7 +60,7 @@ It’s probably better to visualize these functions in terms of the kind of oper
 | Grouping                 | chunked, ichunked, chunked_even, sliced, constrained_batches, distribute, divide, split_at,          |
 |                          | split_before, split_after, split_into, split_when, bucket, unzip, batched, grouper, partition,       |
 |                          | transpose                                                                                           |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+|--------------------------|-----------------------------------------------------------------------------------------------------|
 | Lookahead and lookback   | spy, peekable, seekable                                                                             |
 +--------------------------+-----------------------------------------------------------------------------------------------------+
 | Windowing                | windowed, substrings, substrings_indexes, stagger, windowed_complete, pairwise, triplewise,         |
