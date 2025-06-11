@@ -1,4 +1,4 @@
-### Versions 
+### Databricks Versions 
 | Version            | Spark Version | Release Date   | Support Ends                                                     |
 | ------------------ | ------------- | -------------- | ---------------------------------------------------------------- |
 | **16.4 LTS**       | 3.5.2         | May 9, 2025    | May 9, 2028                                                      |
@@ -7,9 +7,6 @@
 | … Other LTS        | Older Sparks  | Various        | See release notes ([docs.databricks.com][1], [docs.azure.cn][2]) |
 | **17.0 (Beta)**    | 4.0.0         | May 20, 2025   | Nov 20, 2025                                                     |
 | 16.3 / 16.2 / 16.1 | 3.5.x         | Early–mid 2025 | Mid–late 2025                                                    |
-
-[1]: https://docs.databricks.com/aws/en/release-notes/runtime/?utm_source=chatgpt.com "Databricks Runtime release notes versions and compatibility"
-[2]: https://docs.azure.cn/en-us/databricks/release-notes/runtime/16.0?utm_source=chatgpt.com "Databricks Runtime 16.0"
 
 
 ### Delta Lake
@@ -28,10 +25,13 @@ Streaming + Batch: Supports both in the same pipeline using the same Delta table
 
 ### Liquid clustering
 
-Liquid Clustering in Databricks is a data layout optimization feature for Delta Lake tables, designed to improve query performance and simplify maintenance compared to traditional Z-Ordering. As of 2025, liquid clustering is not obsolete—in fact, it’s the preferred and modern method recommended by Databricks for clustering large Delta tables.
+Liquid Clustering in Databricks is a data layout optimization feature for Delta Lake tables,   
+designed to improve query performance and simplify maintenance compared to traditional Z-Ordering.   
+As of 2025, liquid clustering is not obsolete—in fact, it’s the preferred and modern method recommended by Databricks for clustering large Delta tables.
 
-🔍 What is Liquid Clustering?
-Liquid Clustering automatically maintains clustering of data files on one or more columns (like customer_id, event_date, etc.) without requiring static Z-Ordering. It uses lightweight background operations to organize data incrementally, making it suitable for large and frequently updated tables.
+Liquid Clustering automatically maintains clustering of data files on one or more columns   
+(like customer_id, event_date, etc.) without requiring static Z-Ordering.   
+It uses lightweight background operations to organize data incrementally, making it suitable for large and frequently updated tables.
 
 | Feature                                 | Description                                                          |
 | --------------------------------------- | -------------------------------------------------------------------- |
