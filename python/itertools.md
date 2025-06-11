@@ -10,10 +10,10 @@ itertools is best viewed as a collection of building blocks that can be combined
 
 #### zip_longest
 ```python
- import itertools as it
- x = [1, 2, 3, 4, 5]
- y = ['a', 'b', 'c']
- list(zip(x, y))
+import itertools as it
+x = [1, 2, 3, 4, 5]
+y = ['a', 'b', 'c']
+list(zip(x, y))
 [(1, 'a'), (2, 'b'), (3, 'c')]
 list(it.zip_longest(x, y))
 [(1, 'a'), (2, 'b'), (3, 'c'), (4, None), (5, None)]
