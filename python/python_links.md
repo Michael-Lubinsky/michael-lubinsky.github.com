@@ -15,7 +15,7 @@ https://github.com/jlevy/strif  string, file, and object utilities
 
 https://github.com/Erotemic/ubelt  Ubelt
 
-https://realpython.com/python-loguru/  Loguru
+https://realpython.com/python-loguru/  Loguru , also look into structlog
 
 https://connect.posit.cloud/ A cloud environment to easily showcase your Python and R content.
  
@@ -32,7 +32,7 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
 
-
+https://pypi.org/project/sqlxport/ read from Postgres and Redshift and save as parquet (optionally on S3)
 
 https://habr.com/ru/articles/914650/ Descriptors in Python
 
