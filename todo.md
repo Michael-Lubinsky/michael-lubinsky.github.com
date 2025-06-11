@@ -91,6 +91,8 @@ With easy customization, you can also set it up to search for internships or spe
 ```
 ### Ask HN: What open source projects need help?
 
+https://habr.com/ru/companies/flant/articles/773072/
+
 https://github.com/topics/help-wanted
 
 https://habr.com/ru/articles/911996/
