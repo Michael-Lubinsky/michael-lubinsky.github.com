@@ -7,6 +7,8 @@ https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/
 
 https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
 
+https://www.reddit.com/r/Python/comments/1l43i8z/what_are_your_favorite_modern_libraries_or/
+
 https://github.com/EntilZha/PyFunctional
 
 https://github.com/mahmoud/boltons  Boltons useful lib
