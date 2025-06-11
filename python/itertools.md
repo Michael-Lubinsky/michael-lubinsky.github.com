@@ -7,6 +7,8 @@ https://mathspp.com/books/the-little-book-of-itertools
 
 ### more-itertools
 
+https://medium.com/@thomas_reid/introducing-the-more-itertools-python-library-e5a24a901979
+
 The total list of functions in more-itertools is huge. Here’s the full list.
 
 
@@ -67,12 +69,12 @@ It’s probably better to visualize these functions in terms of the kind of oper
 | Grouping                 | chunked, ichunked, chunked_even, sliced, constrained_batches, distribute, divide, split_at,          |
 |                          | split_before, split_after, split_into, split_when, bucket, unzip, batched, grouper, partition,       |
 |                          | transpose                                                                                           |
-|--------------------------|-----------------------------------------------------------------------------------------------------|
+
 | Lookahead and lookback   | spy, peekable, seekable                                                                             |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+
 | Windowing                | windowed, substrings, substrings_indexes, stagger, windowed_complete, pairwise, triplewise,         |
 |                          | sliding_window, subslices                                                                           |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
+|--------------------------|-----------------------------------------------------------------------------------------------------|
 | Augmenting               | count_cycle, intersperse, padded, repeat_each, mark_ends, repeat_last, adjacent, groupby_transform, |
 |                          | pad_none, ncycles                                                                                   |
 +--------------------------+-----------------------------------------------------------------------------------------------------+
