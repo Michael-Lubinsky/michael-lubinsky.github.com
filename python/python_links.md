@@ -5,7 +5,7 @@ https://habr.com/ru/companies/dockhost/articles/891544/
 
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
-
+https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
 
 https://github.com/EntilZha/PyFunctional
 
