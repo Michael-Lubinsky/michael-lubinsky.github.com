@@ -165,20 +165,20 @@ DLT is a declarative ETL framework built into Databricks that:
 
 📊 Types of Datasets in DLT
 
-DLT supports three main dataset types, each designed for specific pipeline needs:
- • 🔄 Streaming Table:
+DLT supports three main dataset types, each designed for specific pipeline needs:  
+ • 🔄 Streaming Table:  
 Processes data in real-time (append-only). Ideal for low-latency ingestion and continuous data flow.
- • 💾 Materialized View:
+ • 💾 Materialized View:  
 Stores precomputed results in a Delta table. Great for aggregations, CDC, or frequently accessed data.
- • 👓 View:
+ • 👓 View:  
 Logical, on-demand computation used for intermediate transformations and data quality validation.
 
 🔁 Simplified CDC with APPLY CHANGES
 
-DLT removes the pain of handling Change Data Capture:
- • Automatically handles late-arriving records
- • Eliminates complex merge/update logic
- • Ensures accuracy and consistency in target tables
+DLT removes the pain of handling Change Data Capture:  
+ • Automatically handles late-arriving records  
+ • Eliminates complex merge/update logic  
+ • Ensures accuracy and consistency in target tables  
 
 
 📥 Streamlined Data Ingestion
