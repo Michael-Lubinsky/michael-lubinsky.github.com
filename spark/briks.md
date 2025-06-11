@@ -303,6 +303,8 @@ Or using SQL directly:
 
 ### DLT - Delta Live Tables
 
+<https://medium.com/towards-data-engineering/migrating-a-real-time-aws-system-to-delta-live-tables-on-databricks-299ea44d6c18>
+
 DLT is a declarative ETL framework built into Databricks that:
  • Automates task orchestration 
  • Manages clusters and errors 
