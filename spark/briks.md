@@ -152,6 +152,62 @@ SHOW TBLPROPERTIES sales_data;
 | `comment` | Adds a description to the table. Useful for catalog browsing. |
 
 
+
+
+### DLT Delta Live Tables
+
+DLT is a declarative ETL framework built into Databricks that:
+ • Automates task orchestration
+ • Manages clusters and errors
+ • Integrates data quality checks
+ • Supports streaming + batch workloads
+
+
+📊 Types of Datasets in DLT
+
+DLT supports three main dataset types, each designed for specific pipeline needs:
+ • 🔄 Streaming Table:
+Processes data in real-time (append-only). Ideal for low-latency ingestion and continuous data flow.
+ • 💾 Materialized View:
+Stores precomputed results in a Delta table. Great for aggregations, CDC, or frequently accessed data.
+ • 👓 View:
+Logical, on-demand computation used for intermediate transformations and data quality validation.
+
+🔁 Simplified CDC with APPLY CHANGES
+
+DLT removes the pain of handling Change Data Capture:
+ • Automatically handles late-arriving records
+ • Eliminates complex merge/update logic
+ • Ensures accuracy and consistency in target tables
+
+
+📥 Streamlined Data Ingestion
+
+DLT supports ingestion from:
+ • Cloud storage (S3, ADLS, GCS)
+ • Kafka/message queues
+ • Databases like PostgreSQL
+
+💡 Pro Tip: Use Auto Loader + Streaming Tables for optimized performance!
+
+✅ Built-in Data Quality with Expectations
+
+Define rules to validate data as it flows:
+ • EXPECT <condition> – log and continue
+ • EXPECT ... ON VIOLATION DROP – discard bad records
+ • EXPECT ... ON VIOLATION FAIL – halt pipeline on error
+
+These expectations give you robust data governance with real-time metrics.
+
+
+💡 Why It Matters:
+ • 🔹 Declarative + testable pipelines
+ • 🔹 Fully managed orchestration
+ • 🔹 Native support for streaming, CDC, batch
+ • 🔹 Built-in quality checks and lineage tracking
+
+
+
 ### Unity Catalog
 Unity Catalog is Databricks’ unified governance layer for data, ML models, and notebooks across all workspaces and cloud providers.
 
