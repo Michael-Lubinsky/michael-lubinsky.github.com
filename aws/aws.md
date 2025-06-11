@@ -6,6 +6,8 @@
 
 <https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/>
 
+<https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
+
 ## What is a difference between Amanon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
