@@ -106,6 +106,8 @@ plt.show()
 
 <https://www.statology.org/understanding-the-difference-between-parametric-and-nonparametric-tests/>
 
+<https://medium.com/data-science-collective/how-to-find-the-right-distribution-for-your-data-a-practical-guide-for-non-statistician-with-two-dc2aa0ed707f>
+
 Kendall’s Tau is another non-parametric test for monotonicity, 
 often more robust in small datasets or with many tied ranks.
 
