@@ -69,15 +69,11 @@ It’s probably better to visualize these functions in terms of the kind of oper
 | Grouping                 | chunked, ichunked, chunked_even, sliced, constrained_batches, distribute, divide, split_at,          |
 |                          | split_before, split_after, split_into, split_when, bucket, unzip, batched, grouper, partition,       |
 |                          | transpose                                                                                           |
-
 | Lookahead and lookback   | spy, peekable, seekable                                                                             |
-
 | Windowing                | windowed, substrings, substrings_indexes, stagger, windowed_complete, pairwise, triplewise,         |
 |                          | sliding_window, subslices                                                                           |
-|--------------------------|-----------------------------------------------------------------------------------------------------|
 | Augmenting               | count_cycle, intersperse, padded, repeat_each, mark_ends, repeat_last, adjacent, groupby_transform, |
 |                          | pad_none, ncycles                                                                                   |
-+--------------------------+-----------------------------------------------------------------------------------------------------+
 | Combining                | collapse, sort_together, interleave, interleave_longest, interleave_evenly, zip_offset, zip_equal,  |
 |                          | zip_broadcast, flatten, roundrobin, prepend, value_chain, partial_product                           |
 +--------------------------+-----------------------------------------------------------------------------------------------------+
