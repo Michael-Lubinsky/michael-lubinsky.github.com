@@ -8,6 +8,17 @@ Since iterators are iterable, you can compose zip() and map() to produce an iter
 This is what is meant by the functions in itertools forming an “iterator algebra.”   
 itertools is best viewed as a collection of building blocks that can be combined to form specialized “data pipelines” 
 
+#### zip_longest
+```python
+ import itertools as it
+ x = [1, 2, 3, 4, 5]
+ y = ['a', 'b', 'c']
+ list(zip(x, y))
+[(1, 'a'), (2, 'b'), (3, 'c')]
+list(it.zip_longest(x, y))
+[(1, 'a'), (2, 'b'), (3, 'c'), (4, None), (5, None)]
+```
+
 https://docs.python.org/3/library/itertools.html  
 https://realpython.com/python-itertools/  
 https://mathspp.com/blog/module-itertools-overview  
