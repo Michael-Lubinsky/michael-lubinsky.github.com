@@ -10,7 +10,7 @@ https://miller.readthedocs.io/  CSV, JSON processing
 
 <https://habr.com/ru/articles/917226/>
 
-<https://martynassubonis.substack.com/p/optimizing-docker-images-for-python#%C2%A7optimizing-dockerfiles-for-python-services>
+<https://martynassubonis.substack.com/p/optimizing-docker-images-for-python>
 
 ### PDF to text
 brew install poppler  
