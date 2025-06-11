@@ -17,6 +17,65 @@ for record in records:
 conn.close()
 ```
 
+### This script extracts data from a CSV file, transforms it, and loads it into a SQLite database.
+
+```python
+import csv
+import sqlite3
+import logging
+from functools import wraps
+
+# Decorator for error handling
+def error_handler(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logging.error(f"Error in {func.__name__}: {e}")
+            raise
+    return wrapper
+
+@error_handler
+def extract(file_path):
+    with open(file_path, mode='r') as file:
+        reader = csv.DictReader(file)
+        data = [row for row in reader]
+    return data
+
+@error_handler
+def transform(data):
+    for row in data:
+        row['age'] = int(row['age'])
+    return data
+
+@error_handler
+def load(data, db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            age INTEGER
+        )
+    ''')
+    for row in data:
+        cursor.execute('''
+            INSERT INTO users (id, name, age) VALUES (?, ?, ?)
+        ''', (row['id'], row['name'], row['age']))
+    conn.commit()
+    conn.close()
+
+def main():
+    data = extract('sample.csv')
+    transformed_data = transform(data)
+    load(transformed_data, 'database.db')
+
+if __name__ == "__main__":
+    main()
+```
+
 ### CTE as lookup table
 
 ```sql
