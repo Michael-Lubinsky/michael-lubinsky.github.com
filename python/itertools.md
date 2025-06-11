@@ -1,5 +1,13 @@
 ###  itertools
 
+Since iterators are iterable, you can compose zip() and map() to produce an iterator over combinations of elements in more than one iterable. For example, the following sums corresponding elements of two lists:
+```python
+ list(map(sum, zip([1, 2, 3], [4, 5, 6])))
+[5, 7, 9]
+```
+This is what is meant by the functions in itertools forming an “iterator algebra.”   
+itertools is best viewed as a collection of building blocks that can be combined to form specialized “data pipelines” 
+
 https://docs.python.org/3/library/itertools.html  
 https://realpython.com/python-itertools/  
 https://mathspp.com/blog/module-itertools-overview  
