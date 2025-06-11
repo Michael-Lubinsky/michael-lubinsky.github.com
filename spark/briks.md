@@ -1,11 +1,11 @@
 ### Databricks Versions 
+
 | Version            | Spark Version | Release Date   | Support Ends                                                     |
 | ------------------ | ------------- | -------------- | ---------------------------------------------------------------- |
-| **16.4 LTS**       | 3.5.2         | May 9, 2025    | May 9, 2028                                                      |
+|  16.4 LTS       | 3.5.2         | May 9, 2025    | May 9, 2028                                                      |
 | 15.4 LTS           | 3.5.0         | Aug 19, 2024   | Aug 19, 2027                                                     |
 | 14.3 LTS           | 3.5.0         | Feb 1, 2024    | Feb 1, 2027                                                      |
-| … Other LTS        | Older Sparks  | Various        | See release notes ([docs.databricks.com][1], [docs.azure.cn][2]) |
-| **17.0 (Beta)**    | 4.0.0         | May 20, 2025   | Nov 20, 2025                                                     |
+|  17.0 (Beta)     | 4.0.0         | May 20, 2025   | Nov 20, 2025                                                     |
 | 16.3 / 16.2 / 16.1 | 3.5.x         | Early–mid 2025 | Mid–late 2025                                                    |
 
 
