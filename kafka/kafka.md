@@ -2,6 +2,8 @@ pip install confluent-kafka
 
 <!-- https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de 
 
+https://habr.com/ru/companies/kuper/articles/738634/
+
 https://www.architecture-weekly.com/p/how-a-kafka-like-producer-writes
 
 https://cefboud.com/posts/kafka-producer-client-internals/
@@ -11,6 +13,8 @@ https://cefboud.com/posts/exploring-kafka-internals/
 https://habr.com/ru/articles/910870/
 
 https://habr.com/ru/companies/ozontech/articles/910568/
+
+https://habr.com/ru/companies/ruvds/articles/912502/
 
 https://habr.com/ru/companies/reksoft/articles/911132/
 -->
