@@ -1371,7 +1371,14 @@ You get fresh data with ~1 minute latency.
 | Search Optimization         | Accelerate lookups if needed                 |
 | Materialized Views          | Cache intermediate results if reused often   |
 
+
+
+<https://asrathore08.medium.com/snowflake-tables-decluttered-71cda9b38b75>
+
 ### Python Snowflake connector
 
 <https://habr.com/ru/companies/otus/articles/843522/>
+
+
+
 
