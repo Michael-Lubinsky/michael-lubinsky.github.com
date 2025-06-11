@@ -1,3 +1,10 @@
+###  itertools
+
+https://docs.python.org/3/library/itertools.html  
+https://realpython.com/python-itertools/  
+https://mathspp.com/blog/module-itertools-overview  
+https://mathspp.com/books/the-little-book-of-itertools  
+
 ### more-itertools
 
 The total list of functions in more-itertools is huge. Here’s the full list.
@@ -96,17 +103,10 @@ It’s probably better to visualize these functions in terms of the kind of oper
 |                          | doublestarmap                                                                                       |
 +--------------------------+-----------------------------------------------------------------------------------------------------+
 
-
-
-https://docs.python.org/3/library/itertools.html  
-https://realpython.com/python-itertools/  
-https://mathspp.com/blog/module-itertools-overview  
-https://mathspp.com/books/the-little-book-of-itertools  
+https://more-itertools.readthedocs.io  
+https://medium.com/@thomas_reid/introducing-the-more-itertools-python-library-e5a24a901979  
+https://python.plainenglish.io/real-world-more-itertools-gideons-blog-a3901c607550  
 
 https://toolz.readthedocs.io/en/latest/api.html
-
-https://python.plainenglish.io/real-world-more-itertools-gideons-blog-a3901c607550
-
-https://more-itertools.readthedocs.io
 
 https://python-lenses.readthedocs.io/en/latest/tutorial/intro.html
