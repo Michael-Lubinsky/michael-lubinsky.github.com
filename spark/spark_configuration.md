@@ -7,6 +7,8 @@
 Sort merge join
 <https://habr.com/ru/companies/gnivc/articles/914932/>
 
+https://medium.com/@saurabh22suman/a-practical-guide-to-understanding-sparks-query-engine-from-submission-to-execution-ba2e2d771f81
+
 ### Config params
 ```
 the number of executor instances to launch.
