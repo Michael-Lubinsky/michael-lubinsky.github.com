@@ -36,7 +36,10 @@ https://habr.com/ru/companies/yandex_praktikum/articles/901432/
 
 https://www.kaggle.com/discussions/getting-started/390402
 
-ML System design 
+### ML System design 
+
+https://www.youtube.com/watch?v=iqbsHiSnZQE System Design с Валерием Бабушкиным 
+
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
 
 https://habr.com/ru/articles/900788/  ML project setup
