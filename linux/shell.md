@@ -1,5 +1,9 @@
 ## Linux shell scripting
 
+echo $?
+
+nohup python3 app.py > output.log 2>&1 &
+
 ### SIGTERM and trap
 ```bash
 #!/bin/sh
