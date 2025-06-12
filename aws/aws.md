@@ -8,6 +8,8 @@
 
 <https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
 
+<https://medium.com/@data.dev.backyard/data-ingestion-patterns-in-aws-a-practical-guide-234897e9de57>
+
 ## What is a difference between Amanon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
