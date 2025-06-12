@@ -24,8 +24,12 @@ data.sort(key=lambda x: x['day'])
 
 for key, group in groupby(data, key=lambda x: x['day']):
     print(f"{key}: {[item['tide'] for item in group]}")
-```    
-
+```
+Output
+```
+Monday: ['high', 'low']
+Tuesday: ['high', 'high']
+```
 #### zip_longest
 ```python
 import itertools as it
