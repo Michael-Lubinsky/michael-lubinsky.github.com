@@ -8,6 +8,24 @@ Since iterators are iterable, you can compose zip() and map() to produce an iter
 This is what is meant by the functions in itertools forming an “iterator algebra.”   
 itertools is best viewed as a collection of building blocks that can be combined to form specialized “data pipelines” 
 
+#### groupby
+```python
+from itertools import groupby
+
+data = [
+    {'day': 'Monday', 'tide': 'high'},
+    {'day': 'Monday', 'tide': 'low'},
+    {'day': 'Tuesday', 'tide': 'high'},
+    {'day': 'Tuesday', 'tide': 'high'},
+]
+
+# Sort before using groupby
+data.sort(key=lambda x: x['day'])
+
+for key, group in groupby(data, key=lambda x: x['day']):
+    print(f"{key}: {[item['tide'] for item in group]}")
+```    
+
 #### zip_longest
 ```python
 import itertools as it
