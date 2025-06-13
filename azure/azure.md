@@ -235,6 +235,14 @@ and AI from a unified interface without managing infrastructure.
 | **Lakehouse (Delta-like)**            | Lake Formation + S3 + Athena/Glue + Iceberg | Dataplex + Cloud Storage + BigQuery + Iceberg | Lake + warehouse hybrid using open formats     |
 
 
+| Feature               | **Microsoft Fabric**         | **AWS**                      | **GCP**                     |
+| --------------------- | ---------------------------- | ---------------------------- | --------------------------- |
+| Type                  | Unified SaaS (Lakehouse)     | Modular cloud services       | Modular cloud services      |
+| Primary Lake          | OneLake                      | S3 (with Lake Formation)     | Cloud Storage + Dataplex    |
+| Data Warehouse        | Fabric Warehouse             | Amazon Redshift              | BigQuery                    |
+| Real-time Analytics   | Fabric Real-Time Analytics   | Kinesis, MSK, Lambda, Athena | Pub/Sub, Dataflow, BigQuery |
+| Integrated Dashboards | Power BI                     | QuickSight                   | Looker Studio               |
+| ML & AI               | Fabric Data Science, Copilot | SageMaker                    | Vertex AI                   |
 
 
 <https://github.com/Azure/azure-cli/releases>
