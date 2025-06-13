@@ -404,7 +404,7 @@ based on core features, performance, pricing, and use cases:
 
 ### 💾 **2\. Performance & Speed**
 
-Aspect | **BigQuery**| **Redshift**
+| Aspect | **BigQuery**| **Redshift**
 |--------|------------|---------------|
 | **Query Engine** | Dremel-based, columnar | PostgreSQL-based MPP, columnar 
 | **Concurrency** | High, auto-managed | Limited; concurrency scaling helps
@@ -421,7 +421,7 @@ Aspect | **BigQuery**| **Redshift**
 
 ### 💲 **3\. Pricing Model**
 
-Category | **BigQuery** | **Redshift**
+| Category | **BigQuery** | **Redshift**
 |--------|------------|---------------|
 | **Query** | Pay-per-query ($5/TB scanned) | Pay-per-hour (on-demand), or reserved instance
 | **Storage** | ~$0.02/GB/month | ~$0.024/GB/month (RA3 managed storage)
@@ -439,7 +439,7 @@ Category | **BigQuery** | **Redshift**
 
 ### 🔌 **4\. Ecosystem & Integrations**
 
-Feature | **BigQuery** | **Redshift**|
+| Feature | **BigQuery** | **Redshift**|
 |--------|------------|---------------|
 | **Best with**| GCP services (Dataflow, Pub/Sub, Looker, Vertex AI) | AWS ecosystem (S3, Glue, QuickSight, SageMaker)
 | **External Sources** | Federated queries (GCS, Sheets, Cloud SQL)| Federated queries (S3, Aurora, RDS)
@@ -451,7 +451,7 @@ Feature | **BigQuery** | **Redshift**|
 
 ### 🤖 **5\. ML & AI Integration**
 
-Feature | **BigQuery** | **Redshift**
+| Feature | **BigQuery** | **Redshift**
 |--------|------------|---------------|
 | **Built-in ML** | Yes (BigQuery ML — SQL-based ML) | Limited (integrates with SageMaker)
 | **AI Features** | Native model training in SQL | External via Redshift ML (calls SageMaker)
@@ -475,12 +475,12 @@ Feature | **BigQuery** | **Redshift**
 
 ### 🏁 Summary
 
-Feature | **BigQuery** | **Amazon Redshift** |
+| Feature | **BigQuery** | **Amazon Redshift** |
 |--------|------------|---------------|
-| **Architecture** | Serverless |  Managed cluster-based 
-| **Cost Efficiency** | Best for bursty / sporadic usage | Best for steady-state usage
-| **ML Integration** | Built-in (BigQuery ML) | External (SageMaker) |**Performance Optimization** | Automatic | Manual (keys, distribution)
-| **User Experience** | Simple & fast | More control, more complexity
+| **Architecture** | Serverless |  Managed cluster-based |
+| **Cost Efficiency** | Best for bursty / sporadic usage | Best for steady-state usage |
+| **ML Integration** | Built-in (BigQuery ML) | External (SageMaker) |**Performance Optimization** | Automatic | Manual (keys, distribution) |
+| **User Experience** | Simple & fast | More control, more complexity |
 
 
 ### AWS Links
