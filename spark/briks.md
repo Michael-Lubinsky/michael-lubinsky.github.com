@@ -23,6 +23,53 @@ Data Compaction (OPTIMIZE): Merges small files into larger ones to improve perfo
 
 Streaming + Batch: Supports both in the same pipeline using the same Delta table.
 
+
+# 🔷 Delta Lake vs Delta Table in Databricks
+
+## 🔷 **Delta Lake**
+- **Definition**: Delta Lake is the **storage layer technology** that brings **ACID transactions**, **schema enforcement**, **time travel**, and **efficient metadata handling** to **Apache Spark** and **big data platforms**.
+- **Scope**: It's a **general-purpose storage format** and **engine** that can be used in **Databricks**, **Apache Spark**, **EMR**, or other platforms.
+- **File Format**: Internally, it stores data as **Parquet files** plus a **transaction log** (in `_delta_log/`) that records all changes to the table.
+- **Main Features**:
+  - ACID transactions
+  - Time travel
+  - Schema evolution and enforcement
+  - Scalable metadata (no need for Hive metastore)
+  - Unified batch and streaming processing
+
+---
+
+## 📘 **Delta Table**
+- **Definition**: A **table stored in Delta Lake format**. It's a **specific instance** of data using the Delta Lake capabilities.
+- **Scope**: A **Delta Table** is the **user-facing abstraction** — it’s how you **interact with data** using SQL or PySpark in Databricks.
+- **Types**:
+  - **Managed Delta Table**: Stored fully inside the Databricks-managed metastore and filesystem.
+  - **External Delta Table**: Data is stored in external storage (e.g., S3, ADLS) but registered in the metastore.
+- **Usage Examples**:
+  ```sql
+  CREATE TABLE my_table USING DELTA LOCATION '/mnt/data/my_table';
+  SELECT * FROM my_table VERSION AS OF 5;
+  ```
+
+---
+
+## 🧠 Summary
+
+| Feature             | Delta Lake                              | Delta Table                              |
+|---------------------|------------------------------------------|-------------------------------------------|
+| What is it?         | Storage format and engine                | A table that uses Delta Lake format       |
+| Scope               | System-level (enables features)          | Table-level (stores actual data)          |
+| Core Feature        | ACID, schema, time travel, etc.          | Logical/physical dataset using Delta Lake |
+| Usage               | Underpins table functionality            | Interacted with via SQL/DataFrame API     |
+
+---
+
+> **In short**:  
+> **Delta Lake** is the technology, and **Delta Table** is how you use that technology to store and query data.
+
+
+
+
 ### Liquid clustering
 
 Liquid Clustering in Databricks is a data layout optimization feature for Delta Lake tables,   
