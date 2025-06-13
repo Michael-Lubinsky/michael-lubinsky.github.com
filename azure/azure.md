@@ -245,6 +245,107 @@ and AI from a unified interface without managing infrastructure.
 | ML & AI               | Fabric Data Science, Copilot | SageMaker                    | Vertex AI                   |
 
 
+
+### Microsoft Fabric Services and Their Equivalents
+#### 1. Unified Data Lake & Storage (OneLake)
+Microsoft Fabric: OneLake acts as a single, logical, multi-cloud data lake for your entire organization, built on top of Azure Data Lake Storage Gen2. It provides a unified namespace and avoids data duplication.
+
+AWS:
+Amazon S3: The primary object storage service, foundational for building data lakes.
+AWS Lake Formation: A service that helps you build, secure, and manage your data lake on Amazon S3. It provides centralized access controls and simplifies the process of setting up a secure data lake.
+
+GCP:
+Cloud Storage: GCP's highly scalable and durable object storage service, often used as the foundation for data lakes.
+Dataplex: A data fabric service that helps you manage, monitor, and govern data across data lakes, data warehouses, and data marts, providing a unified view of your data assets.
+
+#### 2. Data Engineering
+Microsoft Fabric: Data Engineering provides a Spark platform for building, managing, and optimizing infrastructures for data collection, storage, processing, and analysis. It integrates with Data Factory for orchestration.
+
+AWS:  
+Amazon EMR: A managed cluster platform for running big data frameworks like Apache Spark, Hadoop, Presto, and Flink.
+AWS Glue: A serverless data integration service for ETL (Extract, Transform, Load) operations, including data discovery, cataloging, and generating ETL code. It also has a visual data preparation tool (Glue DataBrew).
+AWS Data Pipeline: A web service that helps you reliably process and move data between different AWS compute and storage services, as well as on-premises data sources, at specified intervals.
+
+GCP:  
+Dataproc: A fully managed service for running Apache Spark, Hadoop, Presto, and other open-source tools.
+Dataflow: A fully managed service for executing Apache Beam pipelines for both batch and stream data processing.
+Cloud Data Fusion: A fully managed, cloud-native data integration service built on open-source CDAP, offering a graphical interface for building ETL/ELT pipelines.
+Cloud Composer: A managed Apache Airflow service for orchestrating complex data workflows.
+
+#### 3. Data Warehousing
+Microsoft Fabric: Data Warehouse provides a high-performance SQL data warehouse experience (similar to Azure Synapse Analytics SQL Pool) for analyzing structured and semi-structured data.
+
+AWS:  
+Amazon Redshift: A fully managed, petabyte-scale data warehouse service designed for analytics, using columnar storage and parallel processing. Redshift Serverless is also available.
+
+GCP:  
+BigQuery: A highly scalable, serverless, and cost-effective enterprise data warehouse designed for analytics. It's known for its ability to run SQL queries on terabytes and petabytes of data in seconds.
+
+#### 4. Data Science
+Microsoft Fabric: Data Science enables building, deploying, and operationalizing machine learning models.  
+It integrates with Azure Machine Learning for experiment tracking and model registry.
+
+AWS:  
+Amazon SageMaker: A fully managed service that provides every developer and data scientist with the ability to build, train, and deploy machine learning models quickly. It includes tools for data preparation, model training, tuning, deployment, and monitoring.
+Amazon Rekognition, Amazon Comprehend, Amazon Forecast, etc.: Various pre-trained AI services for specific tasks.
+
+GCP:  
+Vertex AI: A unified machine learning platform that combines all of Google Cloud's ML products into a single environment for building, deploying, and scaling ML models. It includes features for data labeling, feature engineering, model training (AutoML and custom), and deployment.
+BigQuery ML: Allows users to create and execute machine learning models in BigQuery using standard SQL queries.
+
+#### 5. Real-Time Intelligence / Streaming Analytics
+Microsoft Fabric: Real-Time Intelligence (formerly Real-Time Analytics and Kusto Engine) focuses on ingesting, processing, and analyzing streaming data in near real-time, enabling actions and insights from data in motion. The Real-Time hub provides a unified location for streaming data.
+
+AWS:  
+Amazon Kinesis: A family of services for real-time streaming data, including:
+Kinesis Data Streams: For real-time processing of large streams of data.
+Kinesis Data Firehose: For loading streaming data into data stores and analytics services.
+Kinesis Data Analytics (now Amazon Managed Service for Apache Flink): For real-time analytics on streaming data using SQL or Apache Flink.
+Amazon MSK (Managed Streaming for Apache Kafka): A fully managed service for Apache Kafka.
+
+GCP:  
+Cloud Pub/Sub: A real-time messaging service for ingesting and delivering high volumes of events.
+Dataflow: (Mentioned under Data Engineering as well) Can be used for stream processing using Apache Beam.
+Dataproc: Can run Apache Flink and Spark Streaming for real-time processing.
+
+#### 6. Business Intelligence (BI)
+Microsoft Fabric: Power BI is natively integrated into Fabric for data visualization, reporting, and interactive dashboards. Fabric also includes Copilot for Power BI for AI-enhanced insights.
+
+AWS:  
+Amazon QuickSight: A cloud-native business intelligence service that allows you to create interactive dashboards, perform ad-hoc analysis, and embed visuals into applications.
+
+GCP:  
+Looker: A unified platform for BI, data applications, and embedded analytics (acquired by Google Cloud).
+Google Data Studio (Looker Studio): A free, web-based tool for creating customizable reports and dashboards.
+
+#### 7. Data Governance & Cataloging
+Microsoft Fabric: Built-in governance powered by Purview for centralized data discovery, administration, and governance.
+
+AWS:  
+AWS Glue Data Catalog: A centralized metadata repository for data in your data lake and other data sources.
+Amazon DataZone: A data management service to make data discoverable and available to business users.
+
+GCP:  
+Data Catalog: A fully managed metadata management service that helps organizations discover, manage, and understand all their data assets.
+Dataplex: (Also mentioned under Unified Data Lake) Provides governance and metadata capabilities.
+
+#### 8. Data Integration / Orchestration
+Microsoft Fabric: Data Factory provides data integration capabilities, including over 180 connectors, mirroring for continuous replication, and dataflows for data preparation.
+
+AWS:  
+AWS Glue: (Mentioned under Data Engineering) Its primary function is ETL and data integration.
+AWS Step Functions: A serverless workflow service for orchestrating complex distributed applications and data processing pipelines.
+Amazon Managed Workflows for Apache Airflow (MWAA): A managed service for Apache Airflow, used for orchestrating workflows.
+AWS Database Migration Service (DMS): For migrating databases to AWS.
+
+GCP:  
+Cloud Data Fusion: (Mentioned under Data Engineering) For visual ETL/ELT pipeline building.
+Cloud Composer: (Mentioned under Data Engineering) For workflow orchestration using Apache Airflow.
+Database Migration Service: For migrating databases to Google Cloud.
+Microsoft Fabric's key differentiator is the high degree of integration and unified experience across these traditionally disparate services, all centered around OneLake.   
+While AWS and GCP offer similar functionalities, they typically do so as separate, purpose-built services that you integrate yourself, providing more granular control but potentially higher complexity.
+
+
 <https://github.com/Azure/azure-cli/releases>
 
 <https://skphd.medium.com/top-100-azure-data-engineering-interview-questions-and-answers-24a65e8e6866>
