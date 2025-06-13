@@ -15,7 +15,6 @@ Identity – Azure AD (now Microsoft Entra ID)
 📌 Azure is a foundational platform for building and running any kind of application or data system in the cloud.
 
 
-
 ### 1. Azure Blob Storage
 What it is:
 A scalable object storage service for storing unstructured data like images, videos, CSV files, Parquet files, backups, and logs.
@@ -218,6 +217,25 @@ and AI from a unified interface without managing infrastructure.
 | Storage             | Azure Data Lake, Blob, Files, etc.           | OneLake (unified lake for all workloads)    |
 | Infrastructure Mgmt | Requires user setup                          | Fully managed SaaS                          |
 | Comparable To       | AWS/GCP                                      | Snowflake, Databricks, Google BigQuery      |
+
+
+### Fabric vs AWS & GCP – Service-by-Service
+
+| **Microsoft Fabric Service**          | **AWS Equivalent**                          | **GCP Equivalent**                            | **Purpose**                                    |
+| ------------------------------------- | ------------------------------------------- | --------------------------------------------- | ---------------------------------------------- |
+| **OneLake**                           | Amazon S3 (w/ Lake Formation)               | Cloud Storage (w/ Dataplex)                   | Centralized data lake for all Fabric workloads |
+| **Data Engineering**                  | AWS Glue Studio / EMR / SageMaker Studio    | Cloud Dataproc / Dataflow / Notebooks         | Author Spark notebooks, transform large data   |
+| **Data Factory (in Fabric)**          | AWS Glue / Step Functions                   | Cloud Dataflow / Cloud Composer               | No-code/low-code data integration pipelines    |
+| **Data Science**                      | SageMaker Studio                            | Vertex AI Workbench                           | Train, experiment, and deploy ML models        |
+| **Data Warehouse (Warehouse)**        | Amazon Redshift                             | BigQuery                                      | Petabyte-scale analytics SQL engine            |
+| **Data Activator** *(event triggers)* | EventBridge + Lambda + Step Functions       | Eventarc + Cloud Functions                    | Event-based orchestration and alerting         |
+| **Real-Time Analytics (KQL Engine)**  | Amazon Kinesis Data Analytics + MSK         | Cloud Pub/Sub + Dataflow + BigQuery           | Streaming analytics with low latency           |
+| **Power BI (Embedded in Fabric)**     | QuickSight / Amazon Managed Grafana         | Looker / Data Studio (Looker Studio)          | Dashboards, reporting, visualizations          |
+| **Fabric Notebooks (Spark-based)**    | EMR Notebooks / SageMaker Studio Notebooks  | Vertex AI Workbench / Dataproc Notebooks      | Python/Spark notebooks for data processing     |
+| **Lakehouse (Delta-like)**            | Lake Formation + S3 + Athena/Glue + Iceberg | Dataplex + Cloud Storage + BigQuery + Iceberg | Lake + warehouse hybrid using open formats     |
+
+
+
 
 <https://github.com/Azure/azure-cli/releases>
 
