@@ -127,6 +127,64 @@ Logic Apps: Sends alerts when data fails or completes loading.
 Purview: Scans the entire system to catalog and tag sensitive data.
 
 
+## 📦 1. **Blob Storage (Azure)** – Object Storage
+
+| Azure              | AWS                   | GCP                        |
+|--------------------|------------------------|----------------------------|
+| **Azure Blob Storage** | **Amazon S3**             | **Google Cloud Storage (GCS)** |
+| Use Case           | Unstructured data storage (files, logs, backups, lake) |
+
+---
+
+## 🔄 2. **Logic Apps (Azure)** – Workflow Automation
+
+| Azure              | AWS                     | GCP                             |
+|--------------------|--------------------------|----------------------------------|
+| **Azure Logic Apps** | **AWS Step Functions** / **EventBridge** | **Cloud Workflows** / **Cloud Functions + Eventarc** |
+| Use Case           | Low-code orchestration of events, APIs, and services |
+
+---
+
+## 🏗 3. **Data Factory (Azure)** – Data Integration & ETL/ELT
+
+| Azure                  | AWS                            | GCP                            |
+|------------------------|--------------------------------|--------------------------------|
+| **Azure Data Factory** | **AWS Glue** / **Data Pipeline** | **Cloud Dataflow** / **Cloud Composer** |
+| Use Case               | Data ingestion, transformation, orchestration |
+
+> 💡 Note: ADF is a visual ETL tool; AWS Glue is more code-heavy; GCP Composer is based on Apache Airflow.
+
+---
+
+## 📊 4. **Synapse Analytics (Azure)** – Data Warehouse + Analytics Engine
+
+| Azure                    | AWS                      | GCP                          |
+|--------------------------|--------------------------|------------------------------|
+| **Azure Synapse**        | **Amazon Redshift**      | **BigQuery**                 |
+| Use Case                 | Analytical queries on structured/unstructured data (lakehouse) |
+
+> 💡 Synapse offers SQL + Spark in one UI. BigQuery is serverless; Redshift is cluster-based.
+
+---
+
+## 🔍 5. **Azure Purview (Microsoft Purview)** – Data Catalog & Governance
+
+| Azure                   | AWS                         | GCP                            |
+|-------------------------|------------------------------|---------------------------------|
+| **Microsoft Purview**   | **AWS Glue Data Catalog** / **AWS Lake Formation** | **Data Catalog** (now part of **Dataplex**) |
+| Use Case                | Metadata management, data lineage, classification |
+
+---
+
+## 🔁 Summary Table
+
+| Capability               | Azure                    | AWS                            | GCP                           |
+|--------------------------|--------------------------|--------------------------------|-------------------------------|
+| Object Storage           | Blob Storage             | S3                             | Cloud Storage                 |
+| Workflow Automation      | Logic Apps               | Step Functions / EventBridge   | Workflows / Eventarc          |
+| Data Orchestration/ETL   | Data Factory             | AWS Glue / Data Pipeline       | Dataflow / Composer           |
+| Analytics/Warehouse      | Synapse Analytics        | Redshift                       | BigQuery                      |
+| Data Governance          | Microsoft Purview        | Glue Catalog / Lake Formation  | Dataplex (w/ Data Catalog)    |
 
 
 ## Microsoft Fabric – Unified Data Analytics Platform
