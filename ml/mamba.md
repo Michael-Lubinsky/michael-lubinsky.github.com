@@ -3,8 +3,8 @@ What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
 https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-for-ai-professionals/
 
-https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-for-ai-professionals/
-
+https://habr.com/ru/articles/918188/
+ 
 https://datasecrets.ru/articles
 
 https://franknielsen.github.io/Books/CuratedBookLists.html
