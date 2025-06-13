@@ -144,7 +144,7 @@ Here's a concise comparison:
 
 
 
-
+<!--
 ```
 I’m happy to share that I’ve obtained a new certification: AWS Certified Data Engineer – Associate from Amazon Web Services (AWS)!
 
@@ -177,10 +177,11 @@ Compute & Containers:
 
 ```
 
+-->
 
 
-
-**comparison of AWS (Amazon Web Services) vs GCP (Google Cloud Platform)** across key dimensions, from pricing and services to ease of use and ecosystem:
+**Comparison of AWS (Amazon Web Services) vs GCP (Google Cloud Platform)** 
+across key dimensions, from pricing and services to ease of use and ecosystem:
 
 * * *
 
@@ -302,7 +303,8 @@ Both meet high security standards. GCP’s **BeyondCorp** is notable for built-i
 **GCP (especially BigQuery)**
 
  
-**BigQuery** is **Google Cloud Platform’s (GCP)** **fully-managed, serverless data warehouse** designed for fast SQL analytics on large-scale datasets.
+**BigQuery** is **Google Cloud Platform’s (GCP)** **fully-managed, serverless data warehouse**   
+designed for fast SQL analytics on large-scale datasets.
 
 * * *
 
