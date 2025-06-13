@@ -1,3 +1,5 @@
+
+<!--
 <https://blog.det.life/stop-using-the-console-how-i-manage-aws-s3-faster-with-just-the-cli-218101c555b5>
 
 <https://docs.getmoto.org/en/latest/index.html>
@@ -9,6 +11,8 @@
 <https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
 
 <https://medium.com/@data.dev.backyard/data-ingestion-patterns-in-aws-a-practical-guide-234897e9de57>
+
+-->
 
 ## What is a difference between Amanon SQS queue and Kafka?
 
