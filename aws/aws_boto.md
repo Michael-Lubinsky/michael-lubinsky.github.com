@@ -21,7 +21,7 @@ Boto3 offers two ways to interact with AWS services:
 Client: A low-level service client that maps directly to the S3 API operations. This is generally preferred for granular control.
 Resource: A higher-level, object-oriented interface that abstracts away some of the complexities. Useful for simpler operations.
 
-```Python
+```python
 
 import boto3
 import os
@@ -57,7 +57,7 @@ print("S3 client and resource initialized.")
 BUCKET_NAME = "my-unique-test-bucket-12345abcdefg"
 ```
 #### 2. Create a Bucket
-```Python
+```python
 
 try:
     # Client method
@@ -70,7 +70,7 @@ except Exception as e:
         print(f"Error creating bucket: {e}")
 ```
 #### 3. List Buckets
-```Python
+```python
 
 print("\n--- Listing Buckets ---")
 response = s3_client.list_buckets()
@@ -81,7 +81,7 @@ for bucket in response['Buckets']:
 #### 4. Upload a File
 You can upload a file from your local system. Let's create a dummy file first.
 
-```Python
+```python
 
 # Create a dummy file
 dummy_file_name = "hello_s3.txt"
@@ -107,9 +107,10 @@ except Exception as e:
 
 # Clean up dummy file
 os.remove(dummy_file_name)
+```
 Uploading content directly (not from a file):
 
-Python
+```python
 
 print("\n--- Uploading string content directly ---")
 content_to_upload = "This content was uploaded directly as a string."
@@ -122,7 +123,7 @@ except Exception as e:
     print(f"Error uploading string content: {e}")
 ```
 #### 5. List Objects in a Bucket
-```Python
+```python
 
 print(f"\n--- Listing Objects in '{BUCKET_NAME}' ---")
 try:
