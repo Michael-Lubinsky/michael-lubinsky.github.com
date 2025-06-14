@@ -344,6 +344,9 @@ Or using SQL directly:
 -   Use **Unity Catalog's fine-grained access controls** for secure data governance.
 
 
+### Autoloader
+
+https://fernandodenitto.medium.com/dont-confuse-autoloader-with-spark-structured-streaming-37186b88311e
 
 ### DLT - Delta Live Tables
 
