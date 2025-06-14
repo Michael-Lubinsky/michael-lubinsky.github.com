@@ -1,19 +1,4 @@
 
-<!--
-<https://blog.det.life/stop-using-the-console-how-i-manage-aws-s3-faster-with-just-the-cli-218101c555b5>
-
-<https://docs.getmoto.org/en/latest/index.html>
-
-<https://caylent.com/blog/mocking-aws-calls-using-moto>
-
-<https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/>
-
-<https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
-
-<https://medium.com/@data.dev.backyard/data-ingestion-patterns-in-aws-a-practical-guide-234897e9de57>
-
--->
-
 ## What is a difference between Amanon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
@@ -489,16 +474,22 @@ based on core features, performance, pricing, and use cases:
 
 ### AWS Links
 
-https://www.vldb.org/pvldb/vol16/p3557-saxena.pdf  Amazon Glue paper
+AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40 S3:
+<https://habr.com/ru/companies/runity/articles/898710/>
+
+<https://github.com/lusingander/stu> S3 explorer
 
 
-https://www.pluralsight.com/resources/blog/cloud/which-aws-certification-should-i-take
+<https://www.vldb.org/pvldb/vol16/p3557-saxena.pdf>  Amazon Glue paper
 
-AWS S3 explained: https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40
 
-https://habr.com/ru/companies/runity/articles/898710/
+<https://www.pluralsight.com/resources/blog/cloud/which-aws-certification-should-i-take>
 
-https://github.com/lusingander/stu S3 explorer
+AWS S3 explained: <https://medium.com/@joudwawad/aws-s3-deep-dive-1c19ad58af40>
+
+<https://habr.com/ru/companies/runity/articles/898710/>
+
+
 
 
 1. Create a Static Website Using Amazon S3 
@@ -531,7 +522,21 @@ https://lnkd.in/gY8dZMbi
 10. Set Up a Simple Serverless Application 
 https://lnkd.in/ggqBu-Vj 
  
-*Some resources will incur costs so make sure you manage that and terminate when you conclude your work. 
+
+ 
+<https://blog.det.life/stop-using-the-console-how-i-manage-aws-s3-faster-with-just-the-cli-218101c555b5>
+
+<https://docs.getmoto.org/en/latest/index.html>
+
+<https://caylent.com/blog/mocking-aws-calls-using-moto>
+
+<https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/>
+
+<https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
+
+<https://medium.com/@data.dev.backyard/data-ingestion-patterns-in-aws-a-practical-guide-234897e9de57>
+
+ 
  
   AWS Cloud & Tech Journey: https://lnkd.in/gVKek9iG
 
