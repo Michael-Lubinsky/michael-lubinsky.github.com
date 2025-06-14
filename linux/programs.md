@@ -6,11 +6,6 @@ https://bioinf.shenwei.me/csvtk/
 
 https://miller.readthedocs.io/  CSV, JSON processing
 
-### Docker
-
-<https://habr.com/ru/articles/917226/>
-
-<https://martynassubonis.substack.com/p/optimizing-docker-images-for-python>
 
 ### PDF to text
 brew install poppler  
