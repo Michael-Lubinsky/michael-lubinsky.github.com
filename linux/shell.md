@@ -4,6 +4,8 @@ echo $?
 
 nohup python3 app.py > output.log 2>&1 &
 
+sort myfile.log | uniq -c | sort -n -r
+
 comm file1.txt file2.txt
 
 ### SIGTERM and trap
