@@ -129,6 +129,8 @@ https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
+https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
+
 ### Automatic differentiation
 
 https://huggingface.co/blog/andmholm/what-is-automatic-differentiation
