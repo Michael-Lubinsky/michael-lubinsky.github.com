@@ -9,6 +9,11 @@ sort myfile.log | uniq -c | sort -n -r
 comm file1.txt file2.txt
 
 
+### kill
+
+
+`kill -NUMBER PID` or `kill -SIGNAME PID` will send the signal to the process
+
 ```bash
 kill -l
 
