@@ -1,6 +1,13 @@
+
+
+<https://github.com/quixio/quix-streams>  Python Streaming DataFrames for Kafka
+
+
 pip install confluent-kafka
 
-<!-- https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de 
+<!-- 
+
+https://medium.com/@yunusgurguz11/building-a-real-time-flight-data-pipeline-with-kafka-spark-and-airflow-a657d4e2e3de 
 
 https://habr.com/ru/companies/kuper/articles/738634/
 
