@@ -2,6 +2,8 @@
 
 <https://github.com/quixio/quix-streams>  Python Streaming DataFrames for Kafka
 
+<https://github.com/twmb/franz-go?tab=readme-ov-file> Go library for interacting with Kafka: Producing, consuming, transacting, administrating, etc.
+
 
 pip install confluent-kafka
 
