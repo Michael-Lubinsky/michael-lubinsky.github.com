@@ -1,12 +1,14 @@
 ### Docker
 
- The Bitnami image packs Hadoop and Spark in a ready-to-go cluster:
+<https://bitnami.com/stacks?stack=containers>
+
+ The Bitnami image packs Hadoop and Spark in a cluster:
 ```
 docker pull bitnami/spark:3
 docker run -it bitnami/spark spark-shell
 ```
 
-Confluent’s CP-Kafka image comes battle-tested:  
+Confluent’s CP-Kafka image.  
 Wire up the Schema Registry image (confluentinc/cp-schema-registry)  
 to enforce Avro schemas in your pipelines.
  
