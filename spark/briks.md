@@ -50,7 +50,7 @@ Streaming + Batch: Supports both in the same pipeline using the same Delta table
 
 ---
 
-## 🧠 Summary
+###  Summary
 
 | Feature             | Delta Lake                               | Delta Table                               |
 |---------------------|------------------------------------------|-------------------------------------------|
@@ -401,6 +401,8 @@ def raw_events():
 ```
 
 ### DLT - Delta Live Tables
+
+<https://medium.com/@mariusz_kujawski/why-i-liked-delta-live-tables-in-databricks-b55b5a97c55c>
 
 <https://medium.com/towards-data-engineering/migrating-a-real-time-aws-system-to-delta-live-tables-on-databricks-299ea44d6c18>
 
