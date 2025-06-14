@@ -1,6 +1,8 @@
 ## Microsoft Azure – Cloud Platform
 
 <https://learn.microsoft.com/en-us/azure>
+
+<https://learn.microsoft.com/en-us/training/browse/>
  
 A broad, general-purpose cloud computing platform offering hundreds of services for infrastructure, application development, data, AI, networking, and more.
 
