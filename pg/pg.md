@@ -360,14 +360,19 @@ ORDER BY t1.fivethous;
 
 ### Full text search
 
-https://blog.vectorchord.ai/postgresql-full-text-search-fast-when-done-right-debunking-the-slow-myth
+<https://blog.vectorchord.ai/postgresql-full-text-search-fast-when-done-right-debunking-the-slow-myth>
 
-https://news.ycombinator.com/item?id=43627646
+<https://news.ycombinator.com/item?id=43627646>
 
 ### Logging every change in your database
 
 <https://medium.com/@ihcnemed/postgresql-record-every-change-in-your-database-a98a6586527c>
 
+
+### Find slow queries
+
+<https://www.peterbe.com/plog/3-queries-with-pg_stat_statements>
+
 ### DB diagrams
 
-https://news.ycombinator.com/item?id=43808803
+<https://news.ycombinator.com/item?id=43808803>
