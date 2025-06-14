@@ -53,7 +53,10 @@ docker pull grafana/grafana
 ```
 
 ### Links
-https://habr.com/ru/articles/917226/
 
-https://martynassubonis.substack.com/p/optimizing-docker-images-for-python
+<https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers>
+
+<https://habr.com/ru/articles/917226/>
+
+<https://martynassubonis.substack.com/p/optimizing-docker-images-for-python>
 
