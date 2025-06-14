@@ -52,7 +52,7 @@ Streaming + Batch: Supports both in the same pipeline using the same Delta table
 
 ## 🧠 Summary
 
-| Feature             | Delta Lake                              | Delta Table                              |
+| Feature             | Delta Lake                               | Delta Table                               |
 |---------------------|------------------------------------------|-------------------------------------------|
 | What is it?         | Storage format and engine                | A table that uses Delta Lake format       |
 | Scope               | System-level (enables features)          | Table-level (stores actual data)          |
@@ -346,7 +346,59 @@ Or using SQL directly:
 
 ### Autoloader
 
-https://fernandodenitto.medium.com/dont-confuse-autoloader-with-spark-structured-streaming-37186b88311e
+Autoloader is a utility in Databricks optimized for incrementally ingesting new files from cloud storage into Delta Lake.
+
+Efficiently detects new files using file listings or notification services.
+
+Scales well with millions of files.
+
+Supports schema inference and evolution.
+
+```python
+df = (spark.readStream
+         .format("cloudFiles")
+         .option("cloudFiles.format", "json")
+         .load("/mnt/raw_data/"))
+```
+
+<https://fernandodenitto.medium.com/dont-confuse-autoloader-with-spark-structured-streaming-37186b88311e>
+
+| Feature                  | **Autoloader**                                    | **Delta Live Tables (DLT)**                                     |
+| ------------------------ | ------------------------------------------------- | --------------------------------------------------------------- |
+| **Purpose**              | Ingest streaming or batch data from cloud storage | Define end-to-end declarative data pipelines                    |
+| **Core Use Case**        | File ingestion at scale with schema evolution     | Managed, reliable ETL pipelines with quality and lineage        |
+| **Input Sources**        | Cloud storage (e.g., S3, ADLS, GCS)               | Can use Autoloader, existing tables, or streaming sources       |
+| **Output Format**        | Delta Lake tables                                 | Delta Lake tables (managed by DLT)                              |
+| **Processing Type**      | Micro-batch or continuous streaming               | Batch or streaming                                              |
+| **Transformations**      | You write PySpark/SQL code manually               | SQL or Python with declarative semantics                        |
+| **Schema Evolution**     | Supported                                         | Supported with `expectations` and automated data quality checks |
+| **Data Quality Rules**   | Not built-in                                      | Yes (`expect`, `drop`, `fail` rows on conditions)               |
+| **Lineage & Monitoring** | Manual                                            | Built-in lineage, DAG visualization, alerts, and versioning     |
+| **Deployment**           | You manage jobs                                   | Managed by DLT (simple configuration)                           |
+
+
+
+| Scenario                                   | Recommendation                       |
+| ------------------------------------------ | ------------------------------------ |
+| Ingesting raw files from S3/GCS/ADLS       | Use **Autoloader**                   |
+| Building a production ETL pipeline         | Use **DLT** (can include Autoloader) |
+| Need streaming ingestion + transformations | **Autoloader inside DLT**            |
+| Need data quality checks or auditing       | Use **DLT**                          |
+
+
+You can use Autoloader inside DLT to get best of both:
+
+```python
+@dlt.table
+def raw_events():
+    return (
+        spark.readStream
+            .format("cloudFiles")
+            .option("cloudFiles.format", "json")
+            .load("/mnt/raw_data/")
+    )
+
+```
 
 ### DLT - Delta Live Tables
 
