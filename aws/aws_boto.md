@@ -1,3 +1,20 @@
+#### Bash Script to Find Orphaned S3 Buckets
+
+Prerequisites:
+
+AWS CLI v2 installed and configured with proper IAM permissions (s3:ListBuckets & s3:ListObjects).  
+jq (optional, for JSON parsing).
+
+
+```bash
+#!/usr/bin/env bash
+aws s3api list-buckets --query "Buckets[].Name" --output text \
+  | tr ' ' '\n' \
+  | while read bucket; do aws s3api list-objects \
+      --bucket "$bucket" --max-items 1 --query "length(Contents)" --output text \
+      | grep -q '^0$' && echo "$bucket"; done
+```      
+
 ### Boto3
 
 Boto3 library, which is the AWS SDK for Python. Boto3 allows you to interact with all AWS services, including S3.
