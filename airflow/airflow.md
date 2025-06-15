@@ -146,7 +146,9 @@ with DAG('loop_deps_dag', start_date=datetime(2023, 1, 1), schedule_interval=Non
 ```
 
 3. Use TriggerRule for conditional downstream execution
-If you don't want to branch but want some tasks to run conditionally, you can use TriggerRule:
+   
+If you don't want to branch but want some tasks to run conditionally, use TriggerRule:
+
 ```python
 from airflow.operators.dummy import DummyOperator
 from airflow.utils.trigger_rule import TriggerRule
@@ -157,6 +159,7 @@ t3 = DummyOperator(task_id='t3', dag=dag, trigger_rule=TriggerRule.ONE_SUCCESS)
 
 # even if only t1 or t2 succeeds, t3 will run
 [t1, t2] >> t3
+
 ```
 
 
@@ -164,10 +167,12 @@ t3 = DummyOperator(task_id='t3', dag=dag, trigger_rule=TriggerRule.ONE_SUCCESS)
 ### BranchPythonOperator
 
 Use BranchPythonOperator when you need to dynamically choose the execution path at runtime,   
-based on conditions that are only known during execution (like values from dag_run.conf, external system state, or task output)
+based on conditions that are only known during execution  
+(like values from dag_run.conf, external system state, or task output)
 
 When to Prefer BranchPythonOperator:
 1. You need runtime decision-making:
+   
 ```python
 def choose_branch(**kwargs):
     if kwargs['dag_run'].conf.get('use_path_a') == True:
@@ -193,12 +198,14 @@ def choose_branch(**kwargs):
 
 
 If you return more than one task ID from a BranchPythonOperator, it must be a list of task IDs:
+
 ```python
 return ['task_a', 'task_b']
 ```
 And downstream tasks not returned will be skipped unless you use TriggerRule=ALL_DONE or similar.
 
 Example:
+
 ```python
 from airflow import DAG
 from airflow.operators.python import BranchPythonOperator, PythonOperator
@@ -262,6 +269,7 @@ task_b >> final_task  # task_b leads to final_task
 
 ```
 Another example of branch operator
+
 ```python
 from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
@@ -423,6 +431,7 @@ Perform logic based on run-specific values
 
 Context is always passed to the function via **kwargs.  
 So this is enough in Airflow 2.x:
+
 ```python
 from airflow.operators.python import PythonOperator
 
@@ -437,6 +446,7 @@ task = PythonOperator(
 
 _provide_context_ passes context variables to the task’s callable function,  
 allowing access to metadata and other information.
+
 ```python 
 def my_function(**kwargs):
     execution_date = kwargs['execution_date']
@@ -486,6 +496,7 @@ simplifying troubleshooting during DAG development.
 
 
 #### Generate similar tasks using expand()
+
 ```python
 from airflow import DAG
 from airflow.decorators import task
