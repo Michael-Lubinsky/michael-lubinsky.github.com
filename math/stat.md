@@ -108,6 +108,30 @@ plt.show()
 
 <https://medium.com/data-science-collective/how-to-find-the-right-distribution-for-your-data-a-practical-guide-for-non-statistician-with-two-dc2aa0ed707f>
 
-Kendall’s Tau is another non-parametric test for monotonicity, 
-often more robust in small datasets or with many tied ranks.
+### Stat rethinking
+https://xcelab.net/rm/statistical-rethinking/  
+https://www.goodreads.com/book/show/26619686-statistical-rethinking  
+https://github.com/rmcelreath/stat_rethinking_2024
 
+### T-test, Welch test
+https://habr.com/ru/companies/X5Tech/articles/896182/
+
+### What is desriptive measure of association
+
+https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
+
+
+### Stat distributions in python
+https://medium.com/data-bistrot/log-normal-distribution-with-python-7b8e384e939e
+https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752 
+https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
+https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811
+https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-python-6d07fd5fc552
+
+### EDA
+
+https://github.com/ydataai/ydata-profiling
+
+https://realpython.com/python-for-data-analysis/
+
+https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
