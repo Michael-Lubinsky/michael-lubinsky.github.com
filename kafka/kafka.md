@@ -4,6 +4,9 @@
 
 <https://github.com/twmb/franz-go?tab=readme-ov-file> Go library for interacting with Kafka: Producing, consuming, transacting, administrating, etc.
 
+<https://habr.com/ru/articles/918520/> Kafka + NAT
+
+### Python client for Kafka
 
 pip install confluent-kafka
 
