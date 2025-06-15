@@ -106,7 +106,21 @@ plt.show()
 
 <https://www.statology.org/understanding-the-difference-between-parametric-and-nonparametric-tests/>
 
+
+### how to find the right distribution for your data
+
 <https://medium.com/data-science-collective/how-to-find-the-right-distribution-for-your-data-a-practical-guide-for-non-statistician-with-two-dc2aa0ed707f>
+
+https://habr.com/ru/companies/tbank/articles/911900/ к какому классу распределения отнести нашу выборку?
+
+
+
+#### Gini index 
+https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
+
+
+#### Monte Carlo 
+https://thenumb.at/Sampling/
 
 ### Stat rethinking
 https://xcelab.net/rm/statistical-rethinking/  
@@ -122,11 +136,19 @@ https://tracyrenee61.medium.com/statistics-interview-question-what-are-descripti
 
 
 ### Stat distributions in python
-https://medium.com/data-bistrot/log-normal-distribution-with-python-7b8e384e939e
-https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752 
-https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
-https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811
+https://medium.com/data-bistrot/log-normal-distribution-with-python-7b8e384e939e  
+https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752  
+
+https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811  
 https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-python-6d07fd5fc552
+
+
+#### Poisson distrib   
+
+https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
+
+https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
+
 
 ### EDA
 
