@@ -11,7 +11,7 @@ https://datasecrets.ru/articles
 
 https://franknielsen.github.io/Books/CuratedBookLists.html
 
-https://habr.com/ru/articles/917664/
+https://habr.com/ru/articles/917664/ основополагающих статей мира ML
 
 ### Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
 
@@ -94,10 +94,7 @@ https://habr.com/ru/companies/yadro/articles/896362/  Свертка
 https://eli.thegreenplace.net/2024/ml-in-go-with-a-python-sidecar/
 
 
-### Stat rethinking
-https://xcelab.net/rm/statistical-rethinking/  
-https://www.goodreads.com/book/show/26619686-statistical-rethinking  
-https://github.com/rmcelreath/stat_rethinking_2024
+
  
 
 ### Probabilistic programming with NumPy powered by JAX for autograd and JIT compilation to GPU/TPU/CPU.
@@ -105,28 +102,8 @@ https://news.ycombinator.com/item?id=42156126
 https://num.pyro.ai/en/stable/ 
 https://github.com/pyro-ppl/numpyro  
 
-### T-test, Welch test
-https://habr.com/ru/companies/X5Tech/articles/896182/
-
-### What is desriptive measure of association
-
-https://tracyrenee61.medium.com/statistics-interview-question-what-are-descriptive-measures-of-association-23ee9c7612b5
 
 
-### Stat distributions in python
-https://medium.com/data-bistrot/log-normal-distribution-with-python-7b8e384e939e
-https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752 
-https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
-https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811
-https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-python-6d07fd5fc552
-
-### EDA
-
-https://github.com/ydataai/ydata-profiling
-
-https://realpython.com/python-for-data-analysis/
-
-https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 ### Self-attention implementation
 
@@ -170,6 +147,7 @@ https://habr.com/ru/articles/786278/
 
 
 https://bernsteinbear.com/blog/simple-search/   Search 
+
 ### Multimodal LLM
 https://arxiv.org/abs/2306.13549
 
