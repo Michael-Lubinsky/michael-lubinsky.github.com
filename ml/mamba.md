@@ -3,7 +3,9 @@ What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
 https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-for-ai-professionals/
 
-https://habr.com/ru/articles/918188/
+https://habr.com/ru/articles/918188/ Как устроено глубокое обучение нейросетей
+
+https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL,
  
 https://datasecrets.ru/articles
 
@@ -82,6 +84,7 @@ https://habr.com/ru/articles/795251/ Типичные задачи аналит�
 https://habr.com/ru/articles/795785/ 
 
 https://habr.com/ru/articles/897946/ Error backpropagation
+
 https://eli.thegreenplace.net/2025/reproducing-word2vec-with-jax/
 
 https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
