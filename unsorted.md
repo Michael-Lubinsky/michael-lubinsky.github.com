@@ -69,18 +69,7 @@ https://news.ycombinator.com/item?id=43640115
 
 https://luminousmen.com/post/change-data-capture  Change Data Capture
 
-### Stat
 
-https://habr.com/ru/companies/tbank/articles/911900/ к какому классу распределения отнести нашу выборку?
-
-Gini index
-https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
-
-Poisson distrib
-https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
-
-Monte Carlo
-https://thenumb.at/Sampling/
 
 ### Kubernetes
 
@@ -89,9 +78,11 @@ https://developers.redhat.com/learn/openshift/learn-kubernetes-using-developer-s
 
 ### CSV show in HTML
 https://github.com/derekeder/csv-to-html-table
+
+
 ## Customer analysis
 
-### сегментацию и кластеризацию клиентской базы
+### сегментация и кластеризация клиентской базы
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
 https://habr.com/ru/articles/668186/ ищем тренд и прогнозируем спрос с помощью временных рядов, SARIMA 
