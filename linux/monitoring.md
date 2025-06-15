@@ -105,7 +105,7 @@ This gives you detailed panels for:
 
 ---
 
-## 📚 Useful Ports
+### 📚 Useful Ports
 
 | Service         | Port  |
 |------------------|--------|
@@ -114,7 +114,64 @@ This gives you detailed panels for:
 | Grafana          | 3000   |
 
 
+By default, Prometheus **stores time-series data for 15 days**.
 
+
+
+### ⚙️ How to Configure Retention
+
+You can change the retention period using command-line flags when starting Prometheus:
+
+```bash
+./prometheus \
+  --config.file=prometheus.yml \
+  --storage.tsdb.retention.time=30d
+```
+
+### 🛠 Other Related Flags
+
+| Flag                                  | Description                                      | Default   |
+|---------------------------------------|--------------------------------------------------|-----------|
+| `--storage.tsdb.retention.time`       | How long to retain data                         | `15d`     |
+| `--storage.tsdb.retention.size`       | Max storage size before old data is deleted     | `0` (disabled) |
+| `--storage.tsdb.path`                 | Directory for TSDB storage                      | `data/`   |
+| `--storage.tsdb.wal-compression`      | Enable write-ahead log compression              | `false`   |
+
+> Note: Prometheus deletes **whole blocks of data**, not individual series, so retention may appear slightly off by ±1-2h.
+
+---
+
+### 🧹 Manual Cleanup
+
+To manually remove old data (not recommended unless necessary), you can:
+1. Stop Prometheus
+2. Delete older TSDB blocks from the `data/` directory
+3. Restart Prometheus
+
+---
+
+### 🗃 Long-Term Retention Solution
+
+If you need metrics for **months or years**, Prometheus alone isn't ideal.
+
+**Solution**:
+- Use **remote storage backends** like:
+  - **VictoriaMetrics**
+  - **Thanos**
+  - **Cortex**
+  - **InfluxDB**
+
+These systems support **horizontal scaling** and **long-term data retention**.
+
+---
+
+### ✅ Summary
+
+| Setting                  | Default | Description                        |
+|--------------------------|---------|------------------------------------|
+| Retention time           | 15d     | How long metrics are stored        |
+| Changeable via flag      | ✅       | `--storage.tsdb.retention.time`    |
+| Long-term storage option | ✅       | Use Thanos, VictoriaMetrics, etc.  |
 
 ## Prometheus and VictoriaMetrics
 
