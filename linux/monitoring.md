@@ -1,4 +1,121 @@
 
+# How to Scrape Linux CPU and Memory Metrics into Prometheus and Visualize in Grafana
+
+---
+
+## 1. 🧰 Install Node Exporter (Linux Metrics Exporter)
+
+Node Exporter is a Prometheus exporter for hardware and OS metrics exposed by *nix kernels.
+
+### 📦 Installation (Linux)
+
+```bash
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.0/node_exporter-1.8.0.linux-amd64.tar.gz
+tar xvfz node_exporter-1.8.0.linux-amd64.tar.gz
+cd node_exporter-1.8.0.linux-amd64
+./node_exporter
+```
+
+This starts the exporter on default port `9100`.
+
+---
+
+## 2. 📥 Configure Prometheus to Scrape Node Exporter
+
+### 🛠 Edit `prometheus.yml`
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+```
+
+> Make sure Prometheus is installed: [https://prometheus.io/download/](https://prometheus.io/download/)
+
+### 🚀 Start Prometheus
+
+```bash
+./prometheus --config.file=prometheus.yml
+```
+
+Prometheus now scrapes metrics from Node Exporter every 15 seconds.
+
+---
+
+## 3. 📊 Install and Connect Grafana
+
+### 🔧 Install Grafana (on Linux)
+
+```bash
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository "deb https://packages.grafana.com/oss/deb stable main"
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install grafana
+sudo systemctl start grafana-server
+sudo systemctl enable grafana-server
+```
+
+### 🔗 Access Grafana UI
+
+- Open: `http://localhost:3000`
+- Default credentials: `admin` / `admin`
+
+---
+
+## 4. ➕ Add Prometheus Data Source to Grafana
+
+1. Go to **Grafana UI** → ⚙️ **Settings** → **Data Sources**
+2. Click **"Add data source"**
+3. Choose **Prometheus**
+4. URL: `http://localhost:9090`
+5. Click **Save & Test**
+
+---
+
+## 5. 📈 Import Dashboard for CPU and Memory
+
+Grafana has community dashboards for Node Exporter.
+
+1. Go to ➕ → **Import**
+2. Use Dashboard ID: **1860** (Node Exporter Full)
+3. Select Prometheus as the data source
+4. Click **Import**
+
+This gives you detailed panels for:
+- CPU usage
+- Memory usage
+- Disk I/O
+- Network usage
+- And more...
+
+---
+
+## ✅ Summary
+
+| Component      | Role                                       |
+|----------------|--------------------------------------------|
+| `node_exporter`| Exposes Linux metrics (CPU, memory, etc.) |
+| `prometheus`   | Scrapes metrics from `node_exporter`       |
+| `grafana`      | Visualizes metrics via dashboards          |
+
+---
+
+## 📚 Useful Ports
+
+| Service         | Port  |
+|------------------|--------|
+| Node Exporter    | 9100   |
+| Prometheus       | 9090   |
+| Grafana          | 3000   |
+
+
+
+
 ## Prometheus and VictoriaMetrics
 
 - **VictoriaMetrics is designed to be a drop-in replacement or long-term storage backend for Prometheus.**
