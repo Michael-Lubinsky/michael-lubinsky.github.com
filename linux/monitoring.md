@@ -1,4 +1,50 @@
 
+### Publish-Subscribe vs Client-Server
+
+| Feature                 | Publish-Subscribe Model                        | Client-Server Model                            |
+|------------------------|------------------------------------------------|------------------------------------------------|
+| Communication Flow     | Indirect: via a broker                         | Direct: between client and server              |
+| Roles                  | Publishers, Subscribers, Broker                | Client and Server                              |
+| Connection Pattern     | Many-to-many                                   | One-to-one                                     |
+| Message Routing        | Broker receives and routes messages based on topic | Client sends request; server replies directly |
+| Decoupling             | High (publisher and subscriber don't know each other) | Low (client must know server address)      |
+| Examples               | MQTT, Kafka, Redis Pub/Sub                     | HTTP, FTP, gRPC, CoAP                          |
+| Typical Use Cases      | Event streaming, IoT telemetry, notifications  | Web browsing, REST APIs, remote procedure calls|
+
+---
+
+
+
+#### Client-Server:
+- Client sends a request.
+- Server processes and sends back a response.
+- Communication is synchronous or request-driven.
+
+Example:
+Client → [GET /status] → Server  
+Server → [200 OK] → Client
+
+---
+
+#### Publish-Subscribe:
+- Publisher sends a message to a topic.
+- Broker delivers it to all subscribers of that topic.
+- Communication is event-driven and asynchronous.
+
+Example:
+Publisher → Broker (topic: temperature, msg: 22.5°C)  
+Broker → Sends to all subscribers of "temperature"
+
+---
+
+### Summary
+
+- Client-Server: tightly coupled, request/response model.
+- Publish-Subscribe: loosely coupled, event-driven messaging with a broker in the middle.
+
+
+
+
 # How to Scrape Linux CPU and Memory Metrics into Prometheus and Visualize in Grafana
 
 ---
