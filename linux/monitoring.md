@@ -425,6 +425,39 @@ This allows you to:
 - MQTT is a protocol, and it needs an MQTT broker.
 - Kafka is not an MQTT broker, but the two can be integrated for hybrid use cases (e.g., MQTT at the edge, Kafka in the backend).
 
+### Does MQTT Broker Have Replicas Like Kafka?
+
+Typically, **MQTT brokers do not have built-in replication like Kafka** does. However, some advanced MQTT broker implementations **support high availability and clustering**, but not with the same level of partitioned replication and distributed durability as Kafka.
+
+#### MQTT Broker Redundancy Options:
+- **Mosquitto**: No built-in clustering or replication. Can use external load balancer or HA proxy.
+- **EMQX, HiveMQ, VerneMQ**: Support clustering and failover, but replication is often eventual and not as strict as Kafka's guarantees.
+
+---
+
+### Main Differences Between Kafka and MQTT Broker
+
+| Feature                     | Kafka                                      | MQTT Broker                                 |
+|----------------------------|--------------------------------------------|---------------------------------------------|
+| Protocol Type              | High-throughput distributed log system     | Lightweight publish-subscribe protocol      |
+| Transport                  | TCP                                        | TCP (or WebSockets)                         |
+| Broker Replication         | Yes, built-in replication of partitions    | Usually no; some brokers support HA         |
+| Persistence                | Strong durability with disk-based storage  | Optional; many MQTT messages are transient  |
+| Message Retention          | Configurable by time or size (logs)        | Short-lived unless retained flag is set     |
+| Ordering Guarantees        | Per partition                              | No strict ordering                          |
+| Throughput                 | High (optimized for large-scale pipelines) | Low to moderate (optimized for IoT/edge)    |
+| Use Case                   | Event streaming, analytics, pipelines      | IoT telemetry, mobile messaging             |
+| Client Requirements        | Generally more heavyweight                 | Very lightweight (suitable for microcontrollers) |
+| QoS (Quality of Service)   | Not natively (uses ack + retries in client)| Yes (QoS 0, 1, 2)                            |
+
+---
+
+### Summary
+
+- **Kafka** is a distributed, persistent, high-throughput log platform with strong replication and fault-tolerance guarantees. It’s optimized for data pipelines and analytics.
+- **MQTT brokers** are optimized for lightweight, low-latency communication in IoT and mobile scenarios. While some support clustering, they lack Kafka’s log-based replication model.
+
+Kafka is best for **back-end systems**, while MQTT is best for **edge and device communication**.
 
 
 ### What is CoAP Protocol?
