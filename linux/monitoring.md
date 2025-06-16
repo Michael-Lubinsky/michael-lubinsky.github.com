@@ -558,7 +558,95 @@ Choosing between **CoAP** and **MQTT** depends on your application requirements,
 | Built-in Persistence     | No (stateless)                       | Yes (retain, persistent sessions)     |
 | Ideal Use                | Device control, direct access        | Asynchronous messaging, telemetry     |
 
+### MQTT and CoAP Message Formats
+
+Both **MQTT** and **CoAP** are designed for IoT, but they use very different message formats optimized for different goals.
+
 ---
+
+### MQTT Message Format
+
+MQTT messages are **binary encoded** and have a simple fixed header with optional variable headers and payload.
+
+#### General Structure:
++------------+--------------------+------------------+  
+| Fixed Header | Variable Header | Payload |  
++------------+--------------------+------------------+  
+
+ 
+
+#### 1. Fixed Header (2+ bytes)
+- Message type (e.g., CONNECT, PUBLISH, SUBSCRIBE)
+- Flags (DUP, QoS, RETAIN)
+- Remaining length (length of variable header + payload)
+
+#### 2. Variable Header (varies by message type)
+- Topic name (for PUBLISH)
+- Packet Identifier (for QoS > 0)
+- Additional fields (Client ID, Will, etc.)
+
+#### 3. Payload
+- Message body (optional, e.g., JSON, string, binary)
+
+#### Example: PUBLISH packet (QoS 1)
+Fixed Header: PUBLISH, QoS 1, DUP=0, RETAIN=0
+Variable Header: Topic="sensor/temp", Packet ID=0x1234
+Payload: "22.4"
+
+ 
+
+ 
+
+### CoAP Message Format
+
+CoAP messages are also **binary encoded**, and follow a compact header-payload model over **UDP**.
+
+#### General Structure:
++------------------------+----------------+-------------------+  
+| Header (4 bytes)       | Options (0-N) | Payload (optional)|  
++------------------------+----------------+-------------------+  
+
+ 
+
+#### 1. Fixed Header (4 bytes)
+- Version (2 bits)
+- Type (2 bits): CON, NON, ACK, RST
+- Token length (4 bits)
+- Code (8 bits): Method (GET/POST/PUT/DELETE) or response code (e.g., 2.05 OK)
+- Message ID (16 bits)
+
+#### 2. Token (0–8 bytes)
+- Matches response to request
+
+#### 3. Options (compressed TLV format)
+- URI path, content format, accept type, etc.
+
+#### 4. Payload (optional)
+- Starts with a special marker `0xFF` (if present)
+- Contains the actual content (e.g., JSON)
+
+#### Example: GET /sensor/temp
+Header: CON, Code=GET, MID=0x1234, Token=0xAA
+Options: Uri-Path = "sensor", "temp"
+Payload: (none for GET)
+
+ 
+
+---
+
+### Summary Comparison
+
+| Field                  | MQTT                                   | CoAP                                 |
+|------------------------|-----------------------------------------|--------------------------------------|
+| Transport              | TCP                                     | UDP                                  |
+| Encoding               | Binary                                  | Binary                               |
+| Header Size            | 2+ bytes                                | 4 bytes fixed + variable options     |
+| Method Representation  | Message Type field                      | Code field (GET, POST, etc.)         |
+| Payload Format         | Application-defined (e.g., JSON)        | Application-defined (e.g., JSON)     |
+| Optional Fields        | Topic, Packet ID, QoS flags             | Options (Uri-Path, Content-Format)   |
+| Message ID             | Optional (QoS > 0)                      | Mandatory                            |
+| Token-based Matching   | No                                      | Yes (Token field)                    |
+
 
 ### Final Guidance:
 
