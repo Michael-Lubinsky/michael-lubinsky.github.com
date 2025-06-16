@@ -381,6 +381,62 @@ This allows you to:
 
 
 
+### What is CoAP Protocol?
+
+CoAP (Constrained Application Protocol) is a lightweight, web-based protocol designed for resource-constrained devices in IoT environments. It is standardized by the IETF as RFC 7252.
+
+---
+
+### Key Features:
+
+| Feature                | Description                                                                 |
+|------------------------|-----------------------------------------------------------------------------|
+| Protocol Type          | Client-server (like HTTP)                                                   |
+| Runs Over              | UDP (instead of TCP, for efficiency)                                        |
+| Designed For           | Low-power devices with limited CPU, memory, and bandwidth                   |
+| Message Types          | Confirmable (CON), Non-confirmable (NON), Acknowledgement (ACK), Reset (RST)|
+| RESTful Semantics      | Supports GET, POST, PUT, DELETE like HTTP                                   |
+| Supports Multicast     | Yes — useful for broadcasting to multiple devices                           |
+| Compact Binary Format  | Smaller message size compared to HTTP                                       |
+| Security               | Typically DTLS (Datagram Transport Layer Security)                          |
+
+---
+
+### CoAP vs MQTT:
+
+| Feature             | CoAP                            | MQTT                            |
+|---------------------|----------------------------------|----------------------------------|
+| Protocol Model      | Request/Response (like HTTP)     | Publish/Subscribe                |
+| Transport           | UDP                              | TCP                              |
+| Message Reliability | Optional (confirmable messages)  | Built-in QoS                     |
+| Use Case            | Direct device access (e.g., REST APIs on sensors) | Event streaming, telemetry     |
+| Security            | DTLS                             | TLS                              |
+| Multicast Support   | Yes                              | No                               |
+
+---
+
+### Use Cases:
+- Smart home: Accessing sensors or actuators (e.g., smart bulbs, thermostats).
+- Industrial IoT: Communicating with edge devices on unreliable or lossy networks.
+- Remote monitoring: Sending commands or reading sensor values.
+
+---
+
+### Example CoAP Interaction:
+Client: GET coap://sensor.local/temperature  
+Server: 2.05 Content "22.4°C"
+
+---
+
+### Summary
+
+- CoAP is like a mini-HTTP for IoT, optimized for low-resource devices.
+- It uses UDP, supports RESTful interactions, and enables efficient communication over lossy or constrained networks.
+- Common in smart homes, industrial IoT, and wireless sensor networks.
+
+
+
+
 https://sre.google/sre-book/monitoring-distributed-systems/
 
 https://habr.com/ru/articles/917658/
