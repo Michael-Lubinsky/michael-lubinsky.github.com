@@ -13,6 +13,8 @@ https://habr.com/ru/articles/899408/  Gaps in TS
 
 ### Outlier detections
 
+https://habr.com/ru/companies/otus/articles/918832/
+
 https://medium.com/top-python-libraries/how-to-identify-outliers-of-your-data-with-python-codes-e9e53e912f8c
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
