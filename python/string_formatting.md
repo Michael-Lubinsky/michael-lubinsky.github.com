@@ -36,3 +36,35 @@ print(f"{a=}")   # a=1
 <!--
 https://habr.com/ru/articles/911196/
 -->
+
+### Small puzzles
+
+There are 2 python integer arrays A and B of the same size N.
+The goal is to check whether there is a swap operation which can be performed on these arrays  
+in such a way that the sum of elements in array A equals the sum of elements in array B after the swap.
+By swap operation we mean picking one element from array A and  
+one element from array B and exchanging them.
+```python
+def can_swap_to_equal_sum(A, B):
+    sum_a = sum(A)
+    sum_b = sum(B)
+    diff = sum_a - sum_b
+
+    # For the swap to equalize sums, the difference must be even
+    if diff % 2 != 0:
+        return False
+
+    # We want to find two elements a ∈ A and b ∈ B such that:
+    # sum_a - a + b == sum_b - b + a
+    # Simplifying gives: a - b == (sum_a - sum_b) / 2
+    target = diff // 2
+
+    set_b = set(B)
+    for a in A:
+        b = a - target
+        if b in set_b:
+            return True  # such a pair exists
+
+    return False  # no such pair found
+```
+
