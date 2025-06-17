@@ -113,3 +113,24 @@ def find_majority_element(arr):
         return candidate
     return None
 ```
+
+### Most frequent element in Array
+```python
+from collections import Counter
+
+def most_frequent_element(arr):
+    if not arr:
+        return None
+    counter = Counter(arr)
+    return counter.most_common(1)[0][0]
+```
+
+### Top 10 Most frequent elements in Array
+
+```python
+from collections import Counter
+
+def top_10_frequent_elements(arr):
+    counter = Counter(arr)
+    return counter.most_common(10)
+```
