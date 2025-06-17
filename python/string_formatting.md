@@ -78,8 +78,9 @@ then the array used for counting should be of size k + 1.
 ```python
 def countingSort(A, k):
   n = len(A)
-  count=[0]*(k+1) for i in range(n):
-  count[A[i]] += 1
+  count=[0]*(k+1)  # initalize with 0
+  for i in range(n):
+    count[A[i]] += 1
 
   p=0
   for i in range(k + 1):
