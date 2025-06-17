@@ -166,3 +166,32 @@ def top_10_frequent_elements(arr):
     sorted_items = sorted(freq_map.items(), key=lambda x: x[1], reverse=True)
     return sorted_items[:10]
 ```
+
+
+### Given n sticks as array count the number of triangles that can be constructed using these sticks. 
+More precisely, we have to count the number of triplets at indices x < y < z, such that ax +ay > az.
+
+Solution O(n2):
+For every pair x,y we can find the largest stick z that can be used to construct the triangle.  
+Every stick k, such that y < k <= z, can also be used, because the condition ax + ay > ak 
+will still be true. 
+We can add up all these triangles at once.  
+We can instead use the caterpillar method. 
+When increasing the value of y, we can increase (as far as possible) the value of z.
+
+```python
+def triangles(A):
+  n = len(A)
+  result = 0
+  for x in xrange(n):
+    z=x+2
+
+  for y in xrange(x + 1, n):
+    while (z < n and A[x] + A[y] > A[z]):
+      z += 1
+    result += z - y - 1
+
+return result
+```
+The time complexity of the above algorithm is O(n2), because for every stick x the values of y and z increase O(n) number of times.
+
