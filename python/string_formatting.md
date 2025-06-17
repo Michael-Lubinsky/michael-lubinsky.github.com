@@ -134,3 +134,16 @@ def top_10_frequent_elements(arr):
     counter = Counter(arr)
     return counter.most_common(10)
 ```
+### MAX sum subarray with O(n) time complexity
+For each position, we compute the largest sum that ends in that position. 
+If we assume that the maximum sum of a slice ending in position i equals max_ending,  
+then the maximum slice ending in position i+1 equals max(0, max_ending+ ai+1).
+```python
+def  max_slice(A):
+  max_ending = max_slice = 0
+  for a in A:
+    max_ending = max(0, max_ending + a)
+    max_slice = max(max_slice, max_ending)
+
+return max_slice
+```
