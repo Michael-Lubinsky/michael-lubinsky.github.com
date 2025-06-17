@@ -147,3 +147,22 @@ def  max_slice(A):
 
 return max_slice
 ```
+
+
+### Python Function to Find Top 10 Most Frequent Elements without Using collections.Counter
+
+You can use a dictionary to count frequencies manually and then sort the result:
+
+```python
+def top_10_frequent_elements(arr):
+    freq_map = {}
+    for item in arr:
+        if item in freq_map:
+            freq_map[item] += 1
+        else:
+            freq_map[item] = 1
+
+    # Sort by frequency in descending order and take top 10
+    sorted_items = sorted(freq_map.items(), key=lambda x: x[1], reverse=True)
+    return sorted_items[:10]
+```
