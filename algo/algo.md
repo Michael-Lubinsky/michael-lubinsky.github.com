@@ -34,7 +34,7 @@ https://habr.com/ru/articles/843376/
 
 https://habr.com/ru/companies/ruvds/articles/864354/
 
-#### Алгоритмы поиска путей - 
+#### Алгоритмы поиска путей
 
 
 https://habr.com/ru/articles/856138/ Поиск в ширину Bread First Search
@@ -95,7 +95,7 @@ def max_area_of_zeros(grid):
 
     return max_area
 ```
-### pGiven the list of integers find the smallest positive interval between them.
+###  Given the list of integers find the smallest positive interval between them.
 
 ```python
 def smallest_positive_interval(nums):
@@ -115,8 +115,7 @@ def smallest_positive_interval(nums):
     return min_diff if min_diff != float('inf') else 0
 
 ```
-### Given list of integers representing monthly profit of company.
-function should return list of consecutive  months that had the most profit.
+### Given list of integers representing monthly profit of company return list of consecutive  months that had the most profit.
 
 ```python
 from typing import List
@@ -151,7 +150,7 @@ print(most_profitable_months(profits))  # Output: [5, -1, 6, -3, 2, 7]
 This output shows the sublist of consecutive months that gave the highest total profit.
 
 
-### Python Function: Minimum Number of Coins for Given Amount (dynamic programming)
+### Minimum Number of Coins for Given Amount (dynamic programming)
 
 The goal is to find the minimum number of coins needed to make up a given amount.
 
