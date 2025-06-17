@@ -36,6 +36,8 @@ Flame Graph
 https://github.com/ibogosavljevic/fiya
 https://johnnysswlab.com/fiya-flamegraphs-in-your-app
 
+https://www.reddit.com/r/programming/comments/1lb5zzb/cc_headeronly_fast_arena_allocator_works_with_stl/ Arena Allocator
+
 ### C
 
 https://www.youtube.com/@olgapavlova/videos
