@@ -68,3 +68,25 @@ def can_swap_to_equal_sum(A, B):
     return False  # no such pair found
 ```
 
+### Counting sort O(n + k)
+
+First, count the elements in the array of counters.   
+Next, just iterate through the array of counters in increasing order.
+Notice that we have to know the range of the sorted values. 
+If all the elements are in the set {0, 1, . . . , k},   
+then the array used for counting should be of size k + 1.  
+```python
+def countingSort(A, k):
+  n = len(A)
+  count=[0]*(k+1) for i in range(n):
+  count[A[i]] += 1
+
+  p=0
+  for i in range(k + 1):
+    for j in range(count[i]):
+      A[p] = i
+      p += 1
+  return A
+```
+
+
