@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/otus/articles/918832/
+
 https://habr.com/ru/companies/otus/articles/894754/  TSFresh
 
 Monte Carlo
