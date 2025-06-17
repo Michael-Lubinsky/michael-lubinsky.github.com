@@ -95,7 +95,7 @@ def max_area_of_zeros(grid):
 
     return max_area
 ```
-### python function which accept as argument the list of integers and returns the smallest positive interval between them.
+### pGiven the list of integers find the smallest positive interval between them.
 
 ```python
 def smallest_positive_interval(nums):
@@ -115,7 +115,7 @@ def smallest_positive_interval(nums):
     return min_diff if min_diff != float('inf') else 0
 
 ```
-### Python fuction. Argument: list of integers representing monthly profit of company.
+### Given list of integers representing monthly profit of company.
 function should return list of consecutive  months that had the most profit.
 
 ```python
@@ -150,3 +150,20 @@ print(most_profitable_months(profits))  # Output: [5, -1, 6, -3, 2, 7]
 ```
 This output shows the sublist of consecutive months that gave the highest total profit.
 
+
+### Python Function: Minimum Number of Coins for Given Amount (dynamic programming)
+
+The goal is to find the minimum number of coins needed to make up a given amount.
+
+```python
+def min_coins(denominations, amount):
+    # Initialize DP array with a large number; dp[0] = 0 (base case)
+    dp = [float('inf')] * (amount + 1)
+    dp[0] = 0
+
+    for coin in denominations:
+        for x in range(coin, amount + 1):
+            dp[x] = min(dp[x], dp[x - coin] + 1)
+
+    return dp[amount] if dp[amount] != float('inf') else -1
+```
