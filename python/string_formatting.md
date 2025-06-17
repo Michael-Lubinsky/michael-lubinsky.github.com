@@ -112,4 +112,4 @@ def find_majority_element(arr):
     if arr.count(candidate) > len(arr) // 2:
         return candidate
     return None
-``
+```
