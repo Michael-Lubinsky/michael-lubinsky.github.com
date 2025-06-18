@@ -1,3 +1,26 @@
+
+def merge_intervals(intervals):
+    if not intervals:
+        return []
+
+    # Step 1: Sort intervals by start time
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+
+    # Step 2: Iterate and merge
+    for current in intervals[1:]:
+        last = merged[-1]
+
+        if current[0] <= last[1]:
+            # Overlapping intervals → merge them
+            last[1] = max(last[1], current[1])
+        else:
+            # No overlap → add to result
+            merged.append(current)
+
+    return merged
+
+
 def find_max_intersections(intervals):
     if not intervals:
         return None
