@@ -323,6 +323,7 @@ How It Works (Avro Example)
 | `GET /subjects`                           | List all registered subjects (topics) |
   
 Example: Python Producer and Consumer with Schema Registry
+
 ▶️ Producer (Avro)
 ```python
 
