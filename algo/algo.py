@@ -118,8 +118,10 @@ def top_10_frequent_elements(arr):
     # Sort by frequency in descending order and take top 10
     sorted_items = sorted(freq_map.items(), key=lambda x: x[1], reverse=True)
     return sorted_items[:10]
-Given n sticks as array count the number of triangles that can be constructed using these sticks.
 
+
+Given n sticks as array count the number of triangles that can be constructed using these sticks.
+--------------------------------------------------------------------------------------------------
 More precisely, we have to count the number of triplets at indices x < y < z, such that a[x] +a[y] > a[z].
 
 Solution O(n^2): For every pair x,y we can find the largest stick z that can be used to construct the triangle.
