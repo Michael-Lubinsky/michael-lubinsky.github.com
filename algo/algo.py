@@ -1,3 +1,112 @@
+Brackets matching
+class Solution:
+    def isValid(self, s: str) -> bool:     
+        stack = []
+        brackets = {
+            ')': '(',
+            ']': '[',
+            '}': '{'
+        }
+
+        for char in s:
+            if char in '([{':  #  if char in brackets.keys()
+                stack.append(char)
+            elif char in ')]}': #  if char in brackets.values()
+                if len(stack) == 0 or brackets[char] != stack.pop():
+                    return False
+
+        return len(stack) == 0
+def longest_increasing_subsequence(nums):
+    """
+    Finds the longest strictly increasing subsequence in a list of numbers.
+
+    Args:
+        nums (list): A list of integers or floats.
+
+    Returns:
+        list: The longest strictly increasing subsequence.
+    """
+    if not nums:
+        return []
+
+    # Initialize variables to track sequences
+    longest_seq = []
+    current_seq = [nums[0]]
+
+    for i in range(1, len(nums)):
+        if nums[i] > nums[i - 1]:
+            current_seq.append(nums[i])  # Continue the increasing sequence
+        else:
+            if len(current_seq) > len(longest_seq):
+                longest_seq = current_seq  # Update the longest sequence
+            current_seq = [nums[i]]  # Start a new sequence
+
+    # Final check after the loop
+    if len(current_seq) > len(longest_seq):
+        longest_seq = current_seq
+
+    return longest_seq
+Longest increasing subsequence
+https://llego.dev/posts/python-solving-longest-increasing-subsequence/
+
+def findLISLength(arr):
+
+  LIS = [1 for _ in range(len(arr))]
+
+  for i in range(1, len(arr)):
+    for j in range(i):
+      if arr[i] > arr[j]:
+        LIS[i] = max(LIS[i], LIS[j] + 1)
+
+  return max(LIS)
+
+O(n**2)
+Better solution:
+Initialize with stack containing first array element
+For each subsequent element, try to append to existing stacks if order is maintained
+If no stack append is possible, make new stack with that element
+Track longest stack found to get LIS length
+This leverages Python’s deque to simulate the stacks in an efficient way.
+By greedily extending stacks that maintain order, we build up the LIS with just one array pass.
+
+The time complexity is O(n log n) due to the stack manipulations, making this a fast optimization over the dynamic programming approach.
+
+from collections import deque
+
+def findLISLength(arr):
+
+  stacks = [deque([arr[0]])]
+  longest = 1
+
+  for i in range(1, len(arr)):
+    item = arr[i]
+
+    for stack in stacks:
+      if stack[-1] < item:
+        stack.append(item)
+        longest = max(longest, len(stack))
+    else:
+      stacks.append(deque([item]))
+
+  return longest
+Length_of_longest_increasing_subsequence
+import bisect
+
+def length_of_longest_increasing_subsequence(nums):
+    increasing_lst = []
+    for n in nums:
+        pos = bisect.bisect_left(increasing_lst, n)
+        if pos < len(increasing_lst):
+            increasing_lst[pos] = n
+        else:
+            increasing_lst.append(n)
+
+    return len(increasing_lst)
+
+# Test:
+nums = [11, 5, 2, 5, 3, 7, 101, 18]
+print(length_of_longest_increasing_subsequence(nums))  # Answer: 4
+
 
 There are 2 python integer arrays A and B of the same size N.
 The goal is to check whether there is a swap operation which can be performed on these arrays
