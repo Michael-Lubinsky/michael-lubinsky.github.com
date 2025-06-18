@@ -169,7 +169,7 @@ def top_10_frequent_elements(arr):
 
 
 ### Given n sticks as array count the number of triangles that can be constructed using these sticks. 
-More precisely, we have to count the number of triplets at indices x < y < z, such that ax +ay > az.
+More precisely, we have to count the number of triplets at indices x < y < z, such that a[x] +a[y] > a[z].
 
 Solution O(n2):
 For every pair x,y we can find the largest stick z that can be used to construct the triangle.  
