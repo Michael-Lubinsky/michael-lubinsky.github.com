@@ -6,7 +6,7 @@ def move_zeros_to_front(arr):
     return result
 
 
-def merge_intervals(intervals):
+def merge_overlapping_intervals(intervals):
     if not intervals:
         return []
 
