@@ -291,3 +291,125 @@ Self-documenting: creates browsable data quality reports
 Integrates into CI/CD and orchestration tools
 
 
+### Kafka Schema Registry (typically the Confluent Schema Registry)
+works with data serialization formats like:
+
+Avro (most common)
+Protobuf
+JSON Schema
+
+It stores the schemas separately from the data, allowing you to enforce schema contracts and track schema evolution over time.
+
+🧩 Why Use Schema Registry?
+| Problem                          | Solution with Schema Registry                         |
+| -------------------------------- | ----------------------------------------------------- |
+| Changing data format over time   | Supports **schema versioning and evolution**          |
+| Consumers breaking on new fields | Enforces **backward/forward compatibility**           |
+| No visibility into data format   | Provides **API access to versioned schemas**          |
+| Data size inefficiency           | Serializes data efficiently with **Avro + schema ID** |
+
+
+How It Works (Avro Example)
+1. Producer writes Avro data with a schema ID (not the whole schema).
+2. Kafka stores just the schema ID + binary data.
+3. Consumer fetches the schema using the ID from the registry and deserializes the message correctly.
+
+ API operations:
+| API                                       | Purpose                               |
+| ----------------------------------------- | ------------------------------------- |
+| `POST /subjects/{subject}/versions`       | Register new schema version           |
+| `GET /subjects/{subject}/versions/latest` | Get latest version of a schema        |
+| `GET /schemas/ids/{id}`                   | Retrieve schema by ID                 |
+| `GET /subjects`                           | List all registered subjects (topics) |
+  
+Example: Python Producer and Consumer with Schema Registry
+▶️ Producer (Avro)
+```python
+
+from confluent_kafka.avro import AvroProducer
+
+value_schema_str = """
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"}
+  ]
+}
+"""
+
+producer = AvroProducer({
+    'bootstrap.servers': 'localhost:9092',
+    'schema.registry.url': 'http://localhost:8081'
+}, default_value_schema=value_schema_str)
+
+producer.produce(topic='users', value={"name": "Alice", "age": 30})
+producer.flush()
+```
+▶️ Consumer (Avro)
+```python
+
+from confluent_kafka.avro import AvroConsumer
+
+consumer = AvroConsumer({
+    'bootstrap.servers': 'localhost:9092',
+    'schema.registry.url': 'http://localhost:8081',
+    'group.id': 'user-consumer',
+    'auto.offset.reset': 'earliest'
+})
+
+consumer.subscribe(['users'])
+
+while True:
+    msg = consumer.poll(1)
+    if msg:
+        print("Received:", msg.value())
+```
+Schema Compatibility Modes
+
+| Mode       | Meaning                                                |
+| ---------- | ------------------------------------------------------ |
+| `BACKWARD` | New schema can read data produced with previous schema |
+| `FORWARD`  | Previous schema can read data produced with new schema |
+| `FULL`     | Both forward and backward compatible                   |
+| `NONE`     | No compatibility enforced                              |
+
+You can set this per subject using:
+
+```bash
+
+PUT /config/<subject>
+{
+  "compatibility": "BACKWARD"
+}
+```
+
+#### Deployment Options
+Standalone Schema Registry (Confluent open source)
+Managed (Confluent Cloud Schema Registry)
+Dockerized for local testing
+```yaml
+services:
+  schema-registry:
+    image: confluentinc/cp-schema-registry
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka:9092
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+```
+
+#### Benefits Recap
+Ensures data integrity across Kafka producers and consumers
+
+Supports safe schema evolution
+
+Enables schema reuse and sharing
+
+Reduces payload size (schema ID instead of inline schema)
+
+
+
+
+
+
