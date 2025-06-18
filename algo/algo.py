@@ -1,4 +1,5 @@
 Brackets matching
+----------------
 class Solution:
     def isValid(self, s: str) -> bool:     
         stack = []
@@ -16,15 +17,13 @@ class Solution:
                     return False
 
         return len(stack) == 0
+
+
 def longest_increasing_subsequence(nums):
     """
     Finds the longest strictly increasing subsequence in a list of numbers.
-
-    Args:
-        nums (list): A list of integers or floats.
-
-    Returns:
-        list: The longest strictly increasing subsequence.
+    Args:nums (list): A list of integers or floats.
+    Returns: list: The longest strictly increasing subsequence.
     """
     if not nums:
         return []
@@ -46,7 +45,9 @@ def longest_increasing_subsequence(nums):
         longest_seq = current_seq
 
     return longest_seq
+    
 Longest increasing subsequence
+--------------------------------
 https://llego.dev/posts/python-solving-longest-increasing-subsequence/
 
 def findLISLength(arr):
@@ -89,7 +90,9 @@ def findLISLength(arr):
       stacks.append(deque([item]))
 
   return longest
+    
 Length_of_longest_increasing_subsequence
+----------------------------------------
 import bisect
 
 def length_of_longest_increasing_subsequence(nums):
@@ -108,7 +111,320 @@ nums = [11, 5, 2, 5, 3, 7, 101, 18]
 print(length_of_longest_increasing_subsequence(nums))  # Answer: 4
 
 
+3 sum problem
+---------------
+Given an integer array nums of length n and an integer target, find three integers in nums such that the sum is closest to target.
+
+Return the sum of the three integers
+
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        diff = float("inf")
+        nums.sort()
+        for i in range(len(nums)):
+            lo, hi = i + 1, len(nums) - 1
+            while lo < hi:
+                sum = nums[i] + nums[lo] + nums[hi]
+                if abs(target - sum) < abs(diff):
+                    diff = target - sum
+                if sum < target:
+                    lo += 1
+                else:
+                    hi -= 1
+            if diff == 0:
+                break
+        return target - diff
+        
+Given an integer array nums and an integer k, return the number of pairs (i, j) where i < j 
+such that |nums[i] - nums[j]| == k.
+https://www.pankajtanwar.in/code/count-number-of-pairs-with-absolute-difference-k
+
+class Solution {
+public:
+    int countKDifference(vector<int>& nums, int k) {
+        int list[201] = {0};
+        int res = 0;
+        
+        for(auto val: nums) {
+            res += (val-k >= 0 ? list[val-k] : 0) + list[val+k];
+            list[val]++;
+        }
+        return res;
+    }
+}
+Path from root to given node
+https://www.devglan.com/datastructure/print-path-from-root-to-node-binary-tree
+
+https://www.techiedelight.com/print-all-paths-from-root-to-leaf-nodes-binary-tree/
+
+For binary tree find max depth and max wide
+----------------------------------------
+the breadth-first search algorithm would work best to find the max-width of the tree, and the depth-first search algorithm would work best to find the max-depth.
+
+class TreeNode(object):
+
+      def __init__(self, val=0, left=None, right=None):
+         self.val = val
+         self.left = left
+         self.right = right
+
+      def maxDepth(self, root):
+          return 0 if root is None else 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
+https://github.com/GEEGABYTE1/Width-Depth-Tree-Problems
+
+2 Heaps pattern Find ( Median from Data Stream)
+--------------------------------------------
+https://emre.me/coding-patterns/two-heaps/
+
+ we want to know the smallest element in one part and the biggest element in the other part.
+ Two Heaps pattern uses two Heap data structure to solve these problems;
+ 
+ a Min Heap to find the smallest element and a Max Heap to find the biggest element.
+ 
+ Design a data structure that supports the following two operations:
+
+void addNum(int num) - Add a integer number from the data stream to the data structure.
+double findMedian() - Return the median of all elements so far.
+    
+Topological sort
+-----------------
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0, 1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+The aim of topological sort is to provide a partial ordering among the vertices of the graph such that if there is an edge from U to V then U <= V, which means, U comes before V in the ordering.
+
+Source: Any node that has no incoming edge and has only outgoing edges is called a source.
+Sink: Any node that has only incoming edges and no outgoing edge is called a sink.
+Topological ordering starts with one of the sources and ends at one of the sinks.
+A topological ordering is possible only when the graph has no directed cycles, i.e. if the graph is a Directed Acyclic Graph (DAG). If the graph has a cycle, some vertices will have cyclic dependencies which makes it impossible to find a linear ordering among vertices.
+To find the topological sort of a graph we can traverse the graph in a Breadth First Search (BFS) way.
+
+a. Initialization
+
+We will store the graph in Adjacency Lists, which means each parent vertex will have a list containing all of its children. We will do this using a Hash Table where the key will be the parent vertex number and the value will be a List containing children vertices.
+
+To find the sources, we will keep a Hash Table to count the in-degrees (count of incoming edges of each vertex). Any vertex with 0 in-degree will be a source.
+
+b. Build the graph and find in-degrees of all vertices
+
+We will build the graph from the input and populate the in-degrees Hash Table.
+
+c. Find all sources
+
+All vertices with 0 in-degrees will be our sources and we will store them in a Queue.
+
+d. Sort
+
+For each source:
+
+Add it to the sorted list.
+Get all of its children from the graph.
+Decrement the in-degree of each child by 1.
+If a child’s in-degree becomes 0, add it to the sources Queue.
+Repeat these steps, until the source Queue is empty.
+
+from collections import deque
+from typing import List
+
+
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        sorted_list = []
+
+        if numCourses <= 0:
+            return False
+
+        # a. Initialization
+        graph = {i: [] for i in range(numCourses)}  # adjacency list graph
+        in_degree = {i: 0 for i in range(numCourses)}  # count of incoming edges
+
+        # b. Build the graph
+        for prerequisite in prerequisites:
+            parent, child = prerequisite[0], prerequisite[1]
+            graph[parent].append(child)  # put the child into it's parent's list
+            in_degree[child] += 1
+
+        # c. Find all sources
+        sources = deque()
+        for key in in_degree:
+            if in_degree[key] == 0:
+                sources.append(key)
+
+        # d. Sort
+        while sources:
+            vertex = sources.popleft()
+            sorted_list.append(vertex)
+            for child in graph[vertex]:  # get the node's children to decrement their in-degrees
+                in_degree[child] -= 1
+                if in_degree[child] == 0:
+                    sources.append(child)
+
+        # if sorted_list does not contain all the courses, there is a cyclic dependency between courses
+        # scheduling is not possible if there is a cyclic dependency
+        return len(sorted_list) == numCourses
+Time Complexity: O(V + E) where V is the total number of courses and E is the total number of prerequisites.
+
+Space Complexity: O(V + E) since we are storing all of the prerequisites for each course in an adjacency list.
+
+    Top K numbers
+------------------
+To have top k largest numbers in the heap. We will use a min-heap for this; Time Complexity: O(N log K).
+
+from heapq import *
+
+class Solution:
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        min_heap = []
+        
+        for i in range(k):
+            heappush(min_heap, nums[i])
+        
+        for i in range(k, len(nums)):
+            if nums[i] > min_heap[0]:
+                heappop(min_heap)
+                heappush(min_heap, nums[i])
+            
+        return min_heap[0]
+        
+Given a string s, find the longest palindromic subsequence’s length in s.
+------------------------------------------------------------------------
+https://emre.me/coding-patterns/palindromes/
+
+Top-down Dynamic Programming with Memoization
+-------------------------------------------------
+start and end are two changing values of our recursive function in the Brute Force Solution.
+So, we can store the results of all subsequences in a two-dimensional array to memoize them.
+
+class Solution:
+    def longestPalindromeSubseq(self, s: str) -> int:
+        memo = [[-1 for _ in range(len(s))] for _ in range(len(s))]
+        return self.longestPalindromeSubseq_recursive(memo, s, 0, len(s) - 1)
+
+    def longestPalindromeSubseq_recursive(self, memo, s, start, end):
+        if start > end:
+            return 0
+
+        # every sequence with one element is a palindrome of length 1
+        if start == end:
+            return 1
+
+        if memo[start][end] == -1:
+            # case 1: elements at the beginning and the end are the same
+            if s[start] == s[end]:
+                memo[start][end] = 2 + self.longestPalindromeSubseq_recursive(memo, s, start + 1, end - 1)
+            else:
+                # case 2: skip one element either from the beginning or the end
+                subseq1 = self.longestPalindromeSubseq_recursive(memo, s, start + 1, end)
+                subseq2 = self.longestPalindromeSubseq_recursive(memo, s, start, end - 1)
+                memo[start][end] = max(subseq1, subseq2)
+
+        return memo[start][end]
+
+Time Complexity: O(N2) because memoization array, memo[len(s)][len(s)].
+ We will not have more than N*N subsequences.
+
+Space Complexity: O(N2 + N) == O(N2) because we used N2 for memoization array and N for recursive stack.
+
+Bottom-up Dynamic Programming with Tabulation
+---------------------------------------------
+We can build our two-dimensional memoization array in a bottom-up fashion, adding one element at a time.
+
+if the element at the start and the end is matching,
+the length of Longest Palindromic Substring (LPS) is 2 plus the length of LPS till start+1 and end-1.
+if the element at the start does not match the element at the end,
+ we will take the max of LPS by either skipping the element at start or end
+So the overall algorith will be;
+
+if s[start] == s[end]:
+    memo[start][end] = 2 + memo[start + 1][end - 1]
+else:
+    memo[start][end] = max(memo[start + 1][end], memo[start][end - 1])
+and the solution;
+
+class Solution:
+    def longestPalindromeSubseq(self, s: str) -> int:
+        memo = [[0 for _ in range(len(s))] for _ in range(len(s))]
+
+        # every sequence with one element is a palindrome of length 1
+        for i in range(len(s)):
+            memo[i][i] = 1
+
+        for start in range(len(s) - 1, -1, -1):
+            for end in range(start + 1, len(s)):
+                # case 1: elements at the beginning and the end are the same
+                if s[start] == s[end]:
+                    memo[start][end] = 2 + memo[start + 1][end - 1]
+                else:  # case 2: skip one element either from the beginning or the end
+                    memo[start][end] = max(memo[start + 1][end], memo[start][end - 1])
+
+        return memo[0][len(s) - 1]
+
+Time Complexity: O(N2)
+Space Complexity: O(N2) where N is the input sequence.
+    
+Longest common substr
+https://emre.me/coding-patterns/longest-common-substring-subsequence/
+
+Top-down Dynamic Programming with Memoization
+-------------------------------------------
+class Solution:
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        memo = [[-1 for _ in range(len(text2))] for _ in range(len(text1))]
+        return self.longestCommonSubsequence_recursive(memo, text1, text2, 0, 0)
+
+    def longestCommonSubsequence_recursive(self, memo, text1, text2, i, j):
+        if i == len(text1) or j == len(text2):
+            return 0
+        if memo[i][j] == -1:
+            if text1[i] == text2[j]:
+                memo[i][j] = 1 + self.longestCommonSubsequence_recursive(memo, text1, text2, i + 1, j + 1)
+            else:
+                memo[i][j] = max(self.longestCommonSubsequence_recursive(memo, text1, text2, i + 1, j),
+                                 self.longestCommonSubsequence_recursive(memo, text1, text2, i, j + 1))
+        return memo[i][j]
+
+
+Bottom-up Dynamic Programming with Tabulation
+---------------------------------------------
+Lets create our two dimensional array in a bottom-up fashion.
+
+if the characters text1[i] matches text2[j], the length of the common subsequence would be one plus the length of the common subsequence until the i-1 and j-1 indexes.
+if the characters text1[i] and text2[j] does not match, we take the longest sequence by skipping one character either from ith string or jth character from respective strings.
+Our overall algorithm is;
+
+if text1[i] == text2[j]:
+    memo[i][j] = 1 + memo[i - 1][j - 1]
+else:
+    memo[i][j] = max(memo[i - 1][j], memo[i][j - 1])
+and the solution is;
+
+class Solution:
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        memo = [[0 for _ in range(len(text2) + 1)] for _ in range(len(text1) + 1)]
+        max_length = 0
+        for i in range(1, len(text1) + 1):
+            for j in range(1, len(text2) + 1):
+                if text1[i - 1] == text2[j - 1]:
+                    memo[i][j] = 1 + memo[i - 1][j - 1]
+                else:
+                    memo[i][j] = max(memo[i - 1][j], memo[i][j - 1])
+
+                max_length = max(max_length, memo[i][j])
+        return max_length
+Time Complexity: O(N * M) where N and M are the lengths of two input strings.
+
+Space Complexity: O(N * M)
+
+
+
+
+
+
+
 There are 2 python integer arrays A and B of the same size N.
+-----------------------
 The goal is to check whether there is a swap operation which can be performed on these arrays
 in such a way that the sum of elements in array A equals the sum of elements in array B after the swap.
 By swap operation we mean picking one element from array A and
