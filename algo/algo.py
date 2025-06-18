@@ -1,3 +1,10 @@
+def move_zeros_to_front(arr):
+    result = [0] * arr.count(0)  # Add all zeros first
+    for num in arr:
+        if num != 0:
+            result.append(num)
+    return result
+
 
 def merge_intervals(intervals):
     if not intervals:
