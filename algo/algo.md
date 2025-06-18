@@ -182,3 +182,7 @@ def greedyCanoeistB(W, k):
     i -= 1
 return canoes
 ```
+
+### list comprehension to generate a list of odd numbers and then print the list.
+ 
+odd_numbers = [x for x in range(101) if x % 2 != 0]
