@@ -157,4 +157,55 @@ producer = AvroProducer({
 
 producer.produce(topic='users', value={"name": "Alice", "age": 30})
 ```
+🔹 Schema Compatibility Rules in Registry:
+Backward / Forward / Full
+
+Prevent incompatible changes (e.g., removing required fields)
+
+🔹 Detecting Drift:
+Use schema evolution policies + monitoring
+
+Add automated schema validation (e.g., Kafka Connect SMT or MirrorMaker2)
+
+✅ 3. Airflow: Schema Drift Handling with Data Validation and Alerts
+Airflow doesn’t manage schema directly but orchestrates validation and alerting tasks.
+
+🔹 Example: Use Great Expectations in an Airflow DAG
+```python
+
+from airflow import DAG
+from airflow.operators.python import PythonOperator
+from great_expectations.dataset import SparkDFDataset
+
+def validate_data(**kwargs):
+    from pyspark.sql import SparkSession
+    spark = SparkSession.builder.getOrCreate()
+    df = spark.read.parquet("s3://your-bucket/input-data")
+
+    ge_df = SparkDFDataset(df)
+    ge_df.expect_column_to_exist("user_id")
+    ge_df.expect_column_values_to_be_of_type("age", "IntegerType")
+
+    results = ge_df.validate()
+    if not results["success"]:
+        raise ValueError("Schema drift detected!")
+
+with DAG("schema_drift_detection", start_date=datetime(2024, 1, 1), schedule_interval="@daily") as dag:
+    validate = PythonOperator(
+        task_id="validate_schema",
+        python_callable=validate_data
+    )
+```
+🔹 What this does:
+Validates input schema
+
+Raises exception if unexpected schema drift is found
+
+Can trigger email/Slack alerts or branch execution paths
+
+| Tool           | Role in Drift Handling                | Technique                                  |
+| -------------- | ------------------------------------- | ------------------------------------------ |
+| **Databricks** | Ingestion + Storage                   | `mergeSchema`, `Auto Loader`, Delta format |
+| **Kafka**      | Transport + Contract Enforcement      | Avro/Protobuf with Schema Registry         |
+| **Airflow**    | Orchestration + Validation + Alerting | Great Expectations, custom checks          |
 
