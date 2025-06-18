@@ -207,5 +207,87 @@ Can trigger email/Slack alerts or branch execution paths
 | -------------- | ------------------------------------- | ------------------------------------------ |
 | **Databricks** | Ingestion + Storage                   | `mergeSchema`, `Auto Loader`, Delta format |
 | **Kafka**      | Transport + Contract Enforcement      | Avro/Protobuf with Schema Registry         |
-| **Airflow**    | Orchestration + Validation + Alerting | Great Expectations, custom checks          |
+| **Airflow**    | Orchestration + Validation + Alerting | Great Expectations, custom checks   |
+
+
+### Great Expectations
+
+Great Expectations lets you define "expectations"—assertions about your data—that can be automatically tested in your pipelines. 
+
+It also creates human-readable documentation and provides tools to integrate with data stores, orchestration frameworks, and data catalogs.
+
+| Feature                         | Description                                                            |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| **Expectations**                | Declarative rules about data (e.g., column `age` must be ≥ 0)          |
+| **Data profiling**              | Auto-generates expectations from sample data                           |
+| **Data validation**             | Run checks and return pass/fail results with metrics                   |
+| **Rich reporting**              | Generates HTML validation reports and data docs                        |
+| **Integration-ready**           | Works with Airflow, dbt, Prefect, Databricks, Snowflake, S3, GCS, etc. |
+| **Versioned and Parameterized** | Expectation suites can be versioned and reused across datasets         |
+
+Supported Data Sources
+Local files (CSV, Parquet, JSON)  
+Databases: Postgres, Snowflake, Redshift, BigQuery, etc.  
+DataFrames: Pandas and PySpark  
+Cloud storage: S3, GCS, Azure Blob (via Pandas/Spark readers)  
+```python
+import great_expectations as ge
+import pandas as pd
+
+df = pd.DataFrame({"age": [25, 40, 31, -5]})
+ge_df = ge.from_pandas(df)
+
+# Add expectations
+ge_df.expect_column_values_to_be_between("age", min_value=0, max_value=100)
+
+# Validate
+result = ge_df.validate()
+print(result["success"])  # False due to -5
+```
+When you run great_expectations init, it sets up a directory like this:
+```bash
+great_expectations/
+├── expectations/            # Expectation suites
+├── checkpoints/             # Validation configs
+├── great_expectations.yml   # Config file
+├── plugins/                 # Custom expectations
+├── uncommitted/             # Secrets and run-time files
+```
+
+
+Types of Expectations
+| Category           | Examples                                                                   |
+| ------------------ | -------------------------------------------------------------------------- |
+| **Table-level**    | `expect_table_row_count_to_be_between`                                     |
+| **Column-level**   | `expect_column_values_to_be_unique`, `expect_column_to_exist`              |
+| **Statistical**    | `expect_column_mean_to_be_between`, `expect_column_median_to_be`           |
+| **Regex/Format**   | `expect_column_values_to_match_regex`                                      |
+| **Datetime/Nulls** | `expect_column_values_to_not_be_null`, `expect_column_values_to_be_in_set` |
+
+Airflow DAG Task with great expectations:
+```python
+from great_expectations_provider.operators.great_expectations import GreatExpectationsOperator
+
+GreatExpectationsOperator(
+    task_id='validate_data',
+    checkpoint_name='my_checkpoint',
+    data_context_root_dir='/opt/airflow/great_expectations',
+)
+```
+
+Databricks Notebook
+```python
+from great_expectations.dataset import SparkDFDataset
+
+df = spark.read.json("/mnt/input.json")
+ge_df = SparkDFDataset(df)
+ge_df.expect_column_values_to_not_be_null("user_id")
+ge_df.validate()
+```
+Benefits
+Catches data drift and quality issues early  
+Improves trust in data and pipelines  
+Self-documenting: creates browsable data quality reports  
+Integrates into CI/CD and orchestration tools
+
 
