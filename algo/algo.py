@@ -122,13 +122,28 @@ def top_10_frequent_elements(arr):
 
 Given n sticks as array count the number of triangles that can be constructed using these sticks.
 --------------------------------------------------------------------------------------------------
-More precisely, we have to count the number of triplets at indices x < y < z, such that a[x] +a[y] > a[z].
+we'll sort the array first, we only need to check:
 
-Solution O(n^2): For every pair x,y we can find the largest stick z that can be used to construct the triangle.
-Every stick k, such that y < k <= z, can also be used, because the condition ax + ay > ak will still be true. We can add up all these triangles at once.
-We can instead use the caterpillar method. 
-When increasing the value of y, we can increase (as far as possible) the value of z.
+For sorted sides a ≤ b ≤ c, check if a + b > c
 
+def count_possible_triangles(arr):
+    arr.sort()
+    n = len(arr)
+    count = 0
+
+    # Fix the third side (largest) and use two pointers for the rest
+    for k in range(n - 1, 1, -1):
+        i, j = 0, k - 1
+        while i < j:
+            if arr[i] + arr[j] > arr[k]:
+                count += j - i
+                j -= 1
+            else:
+                i += 1
+
+    return count
+
+    
 def triangles(A):
   n = len(A)
   result = 0
