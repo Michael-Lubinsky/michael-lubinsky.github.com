@@ -104,4 +104,57 @@ Hive Metastore
 | Version your schema                     | Manage changes without downtime      |
 
 
+#### Databricks: Schema Drift Handling in Auto Loader / Delta Lake
+Databricks’ Auto Loader with Delta Lake supports automatic schema evolution when ingesting files (e.g., JSON, CSV, Parquet).
+
+Example: Auto Loader with mergeSchema
+```python
+df = (
+    spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaEvolutionMode", "addNewColumns")  # Auto handle new fields
+    .load("s3://your-bucket/input-data")
+)
+
+df.writeStream \
+    .format("delta") \
+    .option("mergeSchema", "true") \  # Enable schema evolution
+    .option("checkpointLocation", "s3://your-bucket/checkpoint") \
+    .start("s3://your-bucket/output-delta-table")
+```
+Notes:
+mergeSchema=true: Delta Lake automatically merges new columns into the table.
+
+cloudFiles.schemaEvolutionMode=addNewColumns: Handles schema drift in streaming.
+
+### Kafka: Schema Drift Handling with Confluent Schema Registry
+Kafka itself doesn’t handle schema drift; instead, it relies on a Schema Registry when using Avro, JSON Schema, or Protobuf.
+
+🔹 Example: Avro + Schema Registry
+Producer serializes data with Avro:
+
+```python
+from confluent_kafka.avro import AvroProducer
+
+value_schema_str = """
+{
+  "namespace": "example",
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"}
+  ]
+}
+"""
+
+# Producer sends data that conforms to versioned schema
+producer = AvroProducer({
+    'bootstrap.servers': 'broker:9092',
+    'schema.registry.url': 'http://schema-registry:8081'
+}, default_value_schema=value_schema_str)
+
+producer.produce(topic='users', value={"name": "Alice", "age": 30})
+```
 
