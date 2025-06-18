@@ -409,6 +409,54 @@ Enables schema reuse and sharing
 
 Reduces payload size (schema ID instead of inline schema)
 
+###  Avro
+Apache Avro is a row-based binary serialization format designed for efficient, compact data transmission and schema evolution.
+
+🔹 Key Features:
+Schema-first: Requires a schema (usually JSON format) to read/write data  
+Compact and fast: Optimized for streaming and message-based systems like Kafka  
+Supports schema evolution: Fields can be added/removed with compatibility rules  
+Works well with row-based access (e.g., event processing)  
+
+🔹 Example Avro Schema:
+```
+json
+
+{
+  "type": "record",
+  "name": "User",
+  "fields": [
+    {"name": "name", "type": "string"},
+    {"name": "age", "type": "int"}
+  ]
+}
+```
+✅ What is Parquet?
+Apache Parquet is a columnar storage format optimized for analytics workloads on large-scale datasets (e.g., in Hive, Spark, Snowflake).
+
+🔹 Key Features:
+Columnar: Stores data by columns instead of rows
+
+Efficient for filtering & aggregation: Reads only needed columns
+
+Compression-friendly: Better compression ratios per column
+
+Supports complex nested structures
+
+### AVRO vs Parquet
+
+| Feature                 | **Avro**                           | **Parquet**                         |
+| ----------------------- | ---------------------------------- | ----------------------------------- |
+| Format Type             | Row-based                          | Columnar                            |
+| Use Case                | Streaming, Kafka, RPC              | Analytics, OLAP, Data Lakes         |
+| Schema Support          | Yes (inline + registry compatible) | Yes (embedded in metadata)          |
+| Compression             | Supported                          | Highly efficient (column-level)     |
+| Speed (Write)           | Fast for row insert                | Slower than Avro for row-wise write |
+| Speed (Read for subset) | Full row needed                    | Efficient for partial column reads  |
+| Nested Data             | Good                               | Excellent                           |
+| Schema Evolution        | Strong with registry support       | Basic support (e.g., new columns)   |
+| Integration             | Kafka, Confluent, Hive, Spark      | Hive, Spark, Impala, Snowflake      |
+| File Size               | Smaller for messages               | Smaller for large tabular datasets  |
 
 
 
