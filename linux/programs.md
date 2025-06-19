@@ -14,6 +14,16 @@ pdftotext -layout your_file.pdf output.txt
 ### MELD for diff
 <https://meldmerge.org/>
 
+### Folders navigation / file manager
+
+https://github.com/sxyazi/yazi
+
+https://crates.io/crates/lstr
+
+https://github.com/solidiquis/erdtree
+
+https://github.com/Canop/broot
+
 ### Others
 <https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
 
