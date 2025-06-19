@@ -486,3 +486,96 @@ Centralized control of who can see and edit specific data.
 Secure data sharing across teams or business units.
 
 <https://mayursurani.medium.com/end-to-end-etl-pipeline-for-insurance-domain-a-complete-guide-with-aws-pyspark-and-databricks-8bcea86e55fd>
+
+
+
+# Delta Table Schema Evolution in Databricks
+
+Databricks **Delta Tables** support **schema evolution** by allowing your table’s schema to **automatically adapt to changes** in your data, such as **adding new columns**. This is particularly useful in **streaming or incremental batch pipelines** where the incoming data structure might change over time.
+
+---
+
+## ✅ Key Features of Delta Table Schema Evolution
+
+| Capability                         | Supported? | Notes                                                                 |
+|------------------------------------|------------|-----------------------------------------------------------------------|
+| Add new columns                    | ✅         | Automatically with `mergeSchema = true`                              |
+| Change column types                | ❌ (limited) | Requires manual DDL or full overwrite                                |
+| Drop columns                       | ❌         | Not allowed directly via schema evolution                            |
+| Nested column evolution            | ✅         | With support for complex types (Struct, Array)                       |
+| Schema evolution in streaming      | ✅         | Via **Auto Loader** or structured streaming + `mergeSchema`          |
+| Schema enforcement (validation)    | ✅         | Rejects writes with incompatible schema unless `mergeSchema=true`    |
+
+---
+
+## 🧪 Example: Schema Evolution in Batch Write
+
+```python
+df = spark.read.json("s3://bucket/new_data/")  # Assume new data has additional column 'new_col'
+
+df.write \
+  .format("delta") \
+  .option("mergeSchema", "true") \
+  .mode("append") \
+  .save("/mnt/delta/events")
+```
+
+> Delta Lake will **merge the schema** of `df` with the existing table, adding `new_col` automatically.
+
+---
+
+## 🔁 Schema Evolution in Streaming with Auto Loader
+
+```python
+df = spark.readStream \
+  .format("cloudFiles") \
+  .option("cloudFiles.format", "json") \
+  .option("cloudFiles.schemaEvolutionMode", "addNewColumns") \
+  .load("s3://incoming-json/")
+
+df.writeStream \
+  .format("delta") \
+  .option("mergeSchema", "true") \
+  .option("checkpointLocation", "/mnt/checkpoints/schema-evolve") \
+  .start("/mnt/delta/evolving_table")
+```
+
+> ✅ New fields are **added** to the schema dynamically without breaking the stream.
+
+---
+
+## ⚠️ Important Notes
+
+- `mergeSchema` must be explicitly set to `true` to allow evolution.
+- Schema evolution **does not allow removing columns** — you must use a table rewrite or `ALTER TABLE`.
+- Changing data types (e.g., from `int` to `string`) is **not allowed** implicitly; use explicit DDL if needed.
+
+---
+
+## 🛠 Enforcing or Disabling Schema Changes
+
+Delta tables support schema **enforcement** as well. You can control it via:
+
+```sql
+ALTER TABLE my_table SET TBLPROPERTIES (
+  'delta.columnMapping.mode' = 'name',
+  'delta.minReaderVersion' = '2',
+  'delta.minWriterVersion' = '5'
+);
+```
+
+Or, to **disable automatic evolution**, omit `mergeSchema` or set:
+
+```python
+.option("mergeSchema", "false")
+```
+
+---
+
+## 📚 Summary
+
+| Operation                    | Supported in Delta Lake? | Requires `mergeSchema=true`? |
+|-----------------------------|---------------------------|-------------------------------|
+| Adding columns              | ✅                        | ✅                            |
+| Changing column types       | ❌ (manually via DDL)     | N/A                           |
+| Dropping columns            | ❌ (DDL only)
