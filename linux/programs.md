@@ -16,6 +16,8 @@ pdftotext -layout your_file.pdf output.txt
 
 ### Folders navigation / file manager
 
+https://github.com/jarun/nnn
+
 https://github.com/sxyazi/yazi
 
 https://crates.io/crates/lstr
