@@ -518,6 +518,65 @@ Then the failed rows go to a **default `_expectations_failed_record` table**.
 
 
 
+
+### ✅ Example: Delta Live Tables (DLT) Pipeline in Databricks
+
+This example defines a **DLT pipeline** with 2 stages:
+1. **Raw input** from JSON files in a mounted path (Bronze)
+2. **Cleaned data** with basic transformations (Silver)
+
+### 🔸 Python Notebook Example (for DLT)
+
+```python
+import dlt
+from pyspark.sql.functions import col
+
+# Ingest raw JSON data into Bronze table
+@dlt.table(
+    name="raw_orders",
+    comment="Raw order data ingested from JSON files"
+)
+def raw_orders():
+    return (
+        spark.read.json("/mnt/raw/orders/")
+    )
+
+# Transform and clean raw data into Silver table
+@dlt.table(
+    name="clean_orders",
+    comment="Cleaned order data with proper schema"
+)
+def clean_orders():
+    df = dlt.read("raw_orders")
+    return (
+        df
+        .filter(col("order_id").isNotNull())
+        .withColumnRenamed("orderAmount", "amount")
+    )
+```
+
+---
+
+### 🔸 How to Use:
+
+1. Save the code in a Databricks **DLT notebook**.
+2. Create a **Delta Live Table pipeline** in the UI:
+   - Click **Workflows → Delta Live Tables → Create Pipeline**
+   - Select your notebook and storage location.
+   - Set mode to **Triggered** (for batch) or **Continuous** (for streaming).
+3. Run the pipeline.
+
+---
+
+### 🧠 Notes:
+- `@dlt.table` registers the function output as a managed Delta Live Table.
+- You can also use `@dlt.view` for intermediate views.
+- Input can be JSON, CSV, Kafka, Auto Loader, etc.
+
+Let me know if you want an example with Kafka input or full Bronze → Silver → Gold DLT structure.
+
+
+
 ### Unity Catalog
 Unity Catalog is Databricks’ unified governance layer for data, ML models, and notebooks across all workspaces and cloud providers.
 
