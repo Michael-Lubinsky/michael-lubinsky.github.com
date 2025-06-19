@@ -791,4 +791,62 @@ def sales_mv():
 | Delta Live Table (DLT)       | Auto-managed refresh   | ✅ (recommended)|
 | Traditional materialized view| Not supported          | ❌              |
 
+###  Read from **Kafka** in Databricks (Structured Streaming)
+
+Databricks provides native support for **Apache Kafka** using `spark.readStream` with the Kafka source.
+
+### 🔸 Kafka Configuration Example:
+```python
+df_kafka = (
+    spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "your_kafka_broker:9092")
+    .option("subscribe", "your_topic_name")
+    .option("startingOffsets", "earliest")  # or "latest"
+    .load()
+)
+
+# Optional: Convert value (binary) to string
+df_kafka_parsed = df_kafka.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+```
+
+### 🔸 Kafka Notes:
+- You may need a **cluster-scoped init script** or install the **Kafka connector** from the **Maven coordinate**:  
+  Example:
+  ```python
+  --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.4.1
+  ```
+
+---
+
+## ✅ 2. Read from **PostgreSQL** in Databricks
+
+Use **JDBC** to connect to PostgreSQL using `spark.read.format("jdbc")`.
+
+### 🔸 PostgreSQL Read Example:
+```python
+jdbc_url = "jdbc:postgresql://<host>:<port>/<database>"
+connection_props = {
+    "user": "your_username",
+    "password": "your_password",
+    "driver": "org.postgresql.Driver"
+}
+
+df_postgres = spark.read.format("jdbc") \
+    .option("url", jdbc_url) \
+    .option("dbtable", "your_table_name") \
+    .options(**connection_props) \
+    .load()
+```
+
+### 🔸 You may need to install the JDBC driver:
+- Maven coordinate:  
+  `org.postgresql:postgresql:42.6.0`
+
+---
+
+## 🧠 Recommendations:
+- Use **Auto Loader** or **Delta Live Tables** if your sources are ingested to a landing zone (e.g., Kafka -> Bronze → Silver).
+- For **CDC** or **incremental load** from Postgres, use a `WHERE` clause with a timestamp column and/or use **Z-Ordering** for performance.
+
  
