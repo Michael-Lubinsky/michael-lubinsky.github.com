@@ -449,6 +449,66 @@ Define rules to validate data as it flows:
 
 These expectations give you robust data governance with real-time metrics.
 
+```python
+from pyspark.sql.functions import col
+from dlt import table, expect
+
+@table(
+    comment="Cleaned user events with expectations enforced",
+    spark_conf={"spark.databricks.delta.schema.autoMerge.enabled": "true"}
+)
+@expect("valid_user_id", "user_id IS NOT NULL")
+@expect("valid_event_type", "event_type IN ('click', 'view', 'purchase')")
+def user_events_cleaned():
+    return (
+        spark.readStream.format("cloudFiles")
+        .option("cloudFiles.format", "json")
+        .option("cloudFiles.inferColumnTypes", "true")
+        .load("/mnt/raw/user_events")
+    )
+```
+
+
+### Explanation
+
+#### 1. `@expect(...)` decorators:
+- `valid_user_id`: Ensures rows have non-null `user_id`
+- `valid_event_type`: Restricts to expected `event_type` values  
+  ➤ Rows that fail are **recorded but not included** in the resulting table.
+
+#### 2. Schema evolution:
+- Enabled via:  
+  ```python
+  spark_conf={"spark.databricks.delta.schema.autoMerge.enabled": "true"}
+  ```
+- If new columns appear in the source (e.g., `device_type`), DLT will **automatically update** the schema of the target Delta table.
+
+#### 3. Autoloader (`cloudFiles`):
+- Automatically ingests files incrementally from the specified path.
+
+#### Optional: Route bad records
+
+To store failed rows, use:
+
+```python
+@dlt.expect_or_drop("valid_user_id", "user_id IS NOT NULL")
+```
+
+or  
+
+```python
+@dlt.expect_all({"valid_user_id": "user_id IS NOT NULL", ...})
+```
+
+To **store** failed rows in a separate table:
+
+```python
+@dlt.expect("valid_user_id", "user_id IS NOT NULL", on_failure="redirect")
+@dlt.expect("valid_event_type", "event_type IN ('click', 'view', 'purchase')", on_failure="redirect")
+```
+
+Then the failed rows go to a **default `_expectations_failed_record` table**.
+
 
 💡 Why It Matters:  
  • 🔹 Declarative + testable pipelines  
