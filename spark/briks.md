@@ -639,3 +639,55 @@ Or, to **disable automatic evolution**, omit `mergeSchema` or set:
 | Adding columns              | ✅                        | ✅                            |
 | Changing column types       | ❌ (manually via DDL)     | N/A                           |
 | Dropping columns            | ❌ (DDL only)
+
+
+### Databricks SQL `MERGE`  
+
+The **`MERGE`** command in **Databricks SQL** (also known as **`MERGE INTO`**) is used to **perform upserts**—a combination of **update**, **insert**, and **delete** operations—on a **Delta Lake table**, based on matching records from a source table or query.
+
+---
+
+### ✅ Syntax: Databricks SQL `MERGE INTO`
+
+```sql
+MERGE INTO target_table AS target
+USING source_table AS source
+ON <matching_condition>
+WHEN MATCHED THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *
+```
+
+You can also:
+- Customize `UPDATE` with column mappings
+- Add conditional logic (e.g., `WHEN MATCHED AND ...`)
+- Perform `DELETE` when matched
+
+---
+
+## 🔹 Example: UPSERT into Delta Table
+
+```sql
+MERGE INTO customers AS target
+USING updates AS source
+ON target.customer_id = source.customer_id
+
+WHEN MATCHED THEN
+  UPDATE SET
+    target.name = source.name,
+    target.email = source.email
+
+WHEN NOT MATCHED THEN
+  INSERT (customer_id, name, email)
+  VALUES (source.customer_id, source.name, source.email)
+```
+
+---
+
+## 🔧 Real-World Use Cases
+
+| Use Case                    | How `MERGE` Helps                            |
+|-----------------------------|----------------------------------------------|
+| Upserting CDC (change data) | Inserts new rows, updates existing ones      |
+| Slowly Changing Dimensions  | Implement SCD Type 1 / 2 transformations     |
+| Deduplicating data          | Merge only when a newer version is present   |
+| Merg
