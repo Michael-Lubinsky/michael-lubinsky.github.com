@@ -791,6 +791,4 @@ def sales_mv():
 | Delta Live Table (DLT)       | Auto-managed refresh   | ✅ (recommended)|
 | Traditional materialized view| Not supported          | ❌              |
 
----
-
-Let me know if you want the DLT version in SQL format, or want to schedule it using a Python notebook.
+ 
