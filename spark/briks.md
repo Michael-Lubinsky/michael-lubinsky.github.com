@@ -691,3 +691,106 @@ WHEN NOT MATCHED THEN
 | Slowly Changing Dimensions  | Implement SCD Type 1 / 2 transformations     |
 | Deduplicating data          | Merge only when a newer version is present   |
 | Merg
+
+
+
+### How to Create and Periodically Update a Materialized View in Databricks
+
+Databricks **does not natively support "materialized views"** like traditional databases (e.g., Postgres, Snowflake), but you can **simulate** materialized views using **Delta tables** along with **scheduled jobs** or **Delta Live Tables (DLT)**.
+
+---
+
+#### ✅ Option 1: Materialized View using Delta Table + Scheduled SQL Query
+
+### Step 1: Create a Delta Table to Act as Materialized View
+
+```sql
+CREATE TABLE sales_mv
+USING DELTA
+AS
+SELECT
+  customer_id,
+  SUM(amount) AS total_spent,
+  COUNT(*) AS transaction_count
+FROM sales
+GROUP BY customer_id;
+```
+
+### Step 2: Schedule SQL Job to Refresh It Periodically
+
+- Go to **Databricks Jobs UI**
+- Create a new **SQL Job**
+- Use a query like:
+
+```sql
+MERGE INTO sales_mv AS target
+USING (
+  SELECT
+    customer_id,
+    SUM(amount) AS total_spent,
+    COUNT(*) AS transaction_count
+  FROM sales
+  GROUP BY customer_id
+) AS source
+ON target.customer_id = source.customer_id
+
+WHEN MATCHED THEN UPDATE SET
+  target.total_spent = source.total_spent,
+  target.transaction_count = source.transaction_count
+
+WHEN NOT MATCHED THEN
+  INSERT (customer_id, total_spent, transaction_count)
+  VALUES (source.customer_id, source.total_spent, source.transaction_count);
+```
+
+- Set the schedule (e.g., every hour)
+
+---
+
+## ✅ Option 2: Materialized View with Delta Live Tables (DLT)
+
+DLT lets you define streaming or batch pipelines with auto-managed tables.
+
+### Step 1: Define a DLT Pipeline
+
+```python
+import dlt
+from pyspark.sql.functions import sum, count
+
+@dlt.table(name="sales_mv_dlt")
+def sales_mv():
+    df = dlt.read("sales")
+    return df.groupBy("customer_id").agg(
+        sum("amount").alias("total_spent"),
+        count("*").alias("transaction_count")
+    )
+```
+
+### Step 2: Configure Pipeline Settings
+
+- Set **trigger interval** (e.g., every 15 minutes)
+- Define pipeline in Databricks DLT UI
+- Optionally enable **auto-refresh** and **schema evolution**
+
+---
+
+## 🛠 Notes and Best Practices
+
+- Use **Delta** format for fast reads/writes
+- Use **Z-Ordering** on `customer_id` if queries are filter-heavy
+- For slowly changing data, consider **MERGE** logic or **SCD** patterns
+- Store metadata (e.g., last refresh timestamp) in a helper table if needed
+
+---
+
+## 🧪 Summary Table
+
+| Technique                     | Refresh Method         | Native Support |
+|------------------------------|------------------------|----------------|
+| Delta table + SQL Job        | Via Databricks Jobs UI | ✅ (manual)     |
+| Delta Live Table (DLT)       | Auto-managed refresh   | ✅ (recommended)|
+| Traditional materialized view| Not supported          | ❌              |
+
+---
+
+Let me know if you want the DLT version in SQL format, or want to schedule it using a Python notebook.
