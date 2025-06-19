@@ -292,6 +292,8 @@ VictoriaMetrics is **not a fork** of Prometheus but rather a **complementary tim
   - Query **traces** from backends like **Jaeger** or **Tempo** (also exported by OpenTelemetry).
   - Display **logs** if exported to systems like **Loki**.
 
+<https://www.youtube.com/@Grafana>
+
 <https://grafana.com/events/grafanacon/2025/loki-at-dropbox-logging-at-petabyte-scale>
 
 ### 🧩 Typical Pipeline
