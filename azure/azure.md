@@ -1,4 +1,4 @@
-## Microsoft Azure – Cloud Platform
+## Microsoft Azure Cloud Platform
 
 <https://learn.microsoft.com/en-us/azure>
 
@@ -296,56 +296,106 @@ Vertex AI: A unified machine learning platform that combines all of Google Cloud
 BigQuery ML: Allows users to create and execute machine learning models in BigQuery using standard SQL queries.
 
 #### 5. Real-Time Intelligence / Streaming Analytics
-Microsoft Fabric: Real-Time Intelligence (formerly Real-Time Analytics and Kusto Engine) focuses on ingesting, processing, and analyzing streaming data in near real-time, enabling actions and insights from data in motion. The Real-Time hub provides a unified location for streaming data.
+- Microsoft Fabric: Real-Time Intelligence (formerly Real-Time Analytics and Kusto Engine) focuses on ingesting, processing, and analyzing streaming data in near real-time, enabling actions and insights from data in motion. The Real-Time hub provides a unified location for streaming data.
 
-AWS:  
+- AWS:  
 Amazon Kinesis: A family of services for real-time streaming data, including:
 Kinesis Data Streams: For real-time processing of large streams of data.
 Kinesis Data Firehose: For loading streaming data into data stores and analytics services.
 Kinesis Data Analytics (now Amazon Managed Service for Apache Flink): For real-time analytics on streaming data using SQL or Apache Flink.
 Amazon MSK (Managed Streaming for Apache Kafka): A fully managed service for Apache Kafka.
 
-GCP:  
+- GCP:  
 Cloud Pub/Sub: A real-time messaging service for ingesting and delivering high volumes of events.
 Dataflow: (Mentioned under Data Engineering as well) Can be used for stream processing using Apache Beam.
 Dataproc: Can run Apache Flink and Spark Streaming for real-time processing.
 
 #### 6. Business Intelligence (BI)
-Microsoft Fabric: Power BI is natively integrated into Fabric for data visualization, reporting, and interactive dashboards. Fabric also includes Copilot for Power BI for AI-enhanced insights.
+- Microsoft Fabric: Power BI is natively integrated into Fabric for data visualization, reporting, and interactive dashboards. Fabric also includes Copilot for Power BI for AI-enhanced insights.
 
-AWS:  
+- AWS:  
 Amazon QuickSight: A cloud-native business intelligence service that allows you to create interactive dashboards, perform ad-hoc analysis, and embed visuals into applications.
 
-GCP:  
+- GCP:  
 Looker: A unified platform for BI, data applications, and embedded analytics (acquired by Google Cloud).
 Google Data Studio (Looker Studio): A free, web-based tool for creating customizable reports and dashboards.
 
 #### 7. Data Governance & Cataloging
-Microsoft Fabric: Built-in governance powered by Purview for centralized data discovery, administration, and governance.
+- Microsoft Fabric: Built-in governance powered by Purview for centralized data discovery, administration, and governance.
 
-AWS:  
+- AWS:  
 AWS Glue Data Catalog: A centralized metadata repository for data in your data lake and other data sources.
 Amazon DataZone: A data management service to make data discoverable and available to business users.
 
-GCP:  
+- GCP:  
 Data Catalog: A fully managed metadata management service that helps organizations discover, manage, and understand all their data assets.
 Dataplex: (Also mentioned under Unified Data Lake) Provides governance and metadata capabilities.
 
 #### 8. Data Integration / Orchestration
-Microsoft Fabric: Data Factory provides data integration capabilities, including over 180 connectors, mirroring for continuous replication, and dataflows for data preparation.
+- Microsoft Fabric: Data Factory provides data integration capabilities, including over 180 connectors, mirroring for continuous replication, and dataflows for data preparation.
 
-AWS:  
+- AWS:  
 AWS Glue: (Mentioned under Data Engineering) Its primary function is ETL and data integration.
 AWS Step Functions: A serverless workflow service for orchestrating complex distributed applications and data processing pipelines.
-Amazon Managed Workflows for Apache Airflow (MWAA): A managed service for Apache Airflow, used for orchestrating workflows.
+Amazon Managed Workflows for Apache Airflow (MWAA):  
+A managed service for Apache Airflow, used for orchestrating workflows.
 AWS Database Migration Service (DMS): For migrating databases to AWS.
 
-GCP:  
+- GCP:  
 Cloud Data Fusion: (Mentioned under Data Engineering) For visual ETL/ELT pipeline building.
 Cloud Composer: (Mentioned under Data Engineering) For workflow orchestration using Apache Airflow.
 Database Migration Service: For migrating databases to Google Cloud.
-Microsoft Fabric's key differentiator is the high degree of integration and unified experience across these traditionally disparate services, all centered around OneLake.   
-While AWS and GCP offer similar functionalities, they typically do so as separate, purpose-built services that you integrate yourself, providing more granular control but potentially higher complexity.
+Microsoft Fabric's key differentiator is the high degree of integration   
+and unified experience across these traditionally disparate services, all centered around OneLake.   
+While AWS and GCP offer similar functionalities, they typically do so as separate,   
+purpose-built services that you integrate yourself,  
+providing more granular control but potentially higher complexity.
+
+
+### Azure Equivalent of Apache Airflow Closest Equivalent:
+
+### 1. **Azure Data Factory (ADF)**
+- ADF provides **Pipelines** that orchestrate ETL/ELT workflows.
+- Similar to Airflow DAGs for defining sequences of data tasks.
+- GUI-based interface instead of code-first.
+- Supports scheduling, monitoring, retries, dependencies.
+
+---
+
+## 🔧 Other Alternatives:
+
+### 2. **Azure Synapse Pipelines**
+- Built into **Azure Synapse Analytics**.
+- Similar to ADF but tightly integrated with Synapse SQL and Spark.
+
+### 3. **Azure Functions + Durable Functions**
+- For serverless, code-driven orchestration.
+- Durable Functions allow for stateful workflows like Airflow DAGs.
+- Best for complex, event-driven control flows.
+
+### 4. **Self-hosted Apache Airflow on Azure**
+- Deploy on:
+  - **Azure Kubernetes Service (AKS)**
+  - **Azure Virtual Machines**
+  - **Azure Container Instances** (with Docker)
+- Gives you full Airflow flexibility on Azure infrastructure.
+
+---
+
+## 🟦 Managed Airflow on Azure?
+
+Azure **does not** have a native managed Airflow service (unlike GCP's Cloud Composer).  
+You can consider third-party managed services like:
+- **Astronomer on Azure**
+- **Cloud 9 Airflow deployments**
+
+---
+
+## Summary Table
+
+| Feature                  | Apache Airflow        | Azure Equivalent                 |
+|--------------------------|------------------------|----------------------------------|
+| Workflow orchestration   | Apache Airflow         | Azure Data Fa
 
 
 <https://github.com/Azure/azure-cli/releases>
