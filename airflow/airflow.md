@@ -1,5 +1,7 @@
 <!-- not only Airflow:
 https://habr.com/ru/companies/mws/articles/909790/
+
+https://habr.com/ru/articles/918580/  Apache Airflow на практике 
 -->
 ### Airflow
 
