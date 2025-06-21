@@ -872,3 +872,9 @@ https://mayursurani.medium.com/advanced-pyspark-interview-questions-a-deep-dive-
 
 Databricks Photon Spark engine
 https://blog.det.life/why-did-databricks-build-the-photon-engine-90546429a31c
+
+https://habr.com/ru/companies/ru_mts/articles/919490/ batch loading from databases
+
+
+onetl Provide unified classes to extract data from (E) & load data to (L) various stores.
+https://onetl.readthedocs.io/en/0.13.5/  Python ETL/ELT library powered by Apache Spark & other open-source tools.
