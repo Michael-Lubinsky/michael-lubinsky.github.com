@@ -1,3 +1,4 @@
+https://habr.com/ru/articles/920030/
 
 https://www.youtube.com/watch?v=iqbsHiSnZQE System Design с Валерием Бабушкиным
 
