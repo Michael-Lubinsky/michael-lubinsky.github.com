@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/garage8/articles/920226/ Aomaly detection, Z-score with SQL
+
 https://habr.com/ru/companies/otus/articles/919156/
 
 https://habr.com/ru/companies/otus/articles/918832/
