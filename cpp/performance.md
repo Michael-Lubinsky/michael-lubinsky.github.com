@@ -1,3 +1,8 @@
+https://github.com/dendibakh/perf-book
+
+https://www.youtube.com/watch?v=-HNpim5x-IE How CPU works
+
+
 https://nostarch.com/linux-memory-manager
 
 https://icl.utk.edu/papi/
