@@ -1,5 +1,7 @@
 https://en.wikipedia.org/wiki/Region-based_memory_management
 
+https://habr.com/ru/articles/920790/  Supervisor on C++
+
 https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри  
 https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C  
 https://github.com/codr7/hacktical-c  
