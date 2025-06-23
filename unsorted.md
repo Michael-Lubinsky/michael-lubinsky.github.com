@@ -15,12 +15,10 @@ https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
 
 Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
 
-### Performance book
-https://github.com/dendibakh/perf-book
-
-https://www.youtube.com/watch?v=-HNpim5x-IE  How CPU works
-
-Awesome
+### GPU
+ https://enccs.github.io/gpu-programming/2-gpu-ecosystem/
+ 
+### Awesome
 https://github.com/sindresorhus/awesome
 
 
