@@ -1,3 +1,5 @@
+<https://habr.com/ru/companies/yadro/articles/921236/>
+
 ## 📡 Wireless KPI Metrics and Events
 
 Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance Indicators (KPIs)** and **event logs** to assess and optimize performance. These metrics span **radio access**, **core network**, and **user experience** layers.
