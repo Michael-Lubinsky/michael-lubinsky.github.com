@@ -177,3 +177,24 @@ Scikit-learn Pipelines for reproducibility
 You're building deep recommendations
 You have many sparse IDs (users, movies, devices)
 You need sequence modeling (e.g., RNN for session behavior)
+
+#### Code example
+```puython
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.compose import ColumnTransformer
+
+num_features = ['watch_duration', 'hour_of_day']
+cat_features = ['user_id', 'movie_id']
+
+preprocessor = ColumnTransformer([
+    ('num', StandardScaler(), num_features),
+    ('cat', OneHotEncoder(handle_unknown='ignore'), cat_features)
+])
+
+pipeline = Pipeline([
+    ('preprocess', preprocessor),
+    ('model', RandomForestRegressor())
+])
+```
