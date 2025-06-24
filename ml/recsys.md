@@ -22,7 +22,7 @@
 
 ```bash
 pip install lightfm
-``
+```
 
 
 ## 🔄 Comparison: LightFM vs TensorFlow Recommenders vs PyTorch Recommender Systems
