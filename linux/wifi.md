@@ -71,4 +71,54 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 - **Quality of Experience (QoE) scoring**
 - **Automated anomaly detection using ML**
 
-Let me know if you want a breakdown of 4G vs 5G KPIs or KPI mapping to network layers.
+## 📶 Breakdown of Wireless KPIs: 4G (LTE) vs 5G (NR)
+
+Wireless networks evolve from **4G LTE** to **5G NR (New Radio)**, and while many KPI concepts are shared, 5G introduces new layers, interfaces, and service types (e.g., URLLC, mMTC, eMBB).
+
+---
+
+## 📊 1. Radio Quality & Signal Metrics
+
+| KPI          | 4G LTE                            | 5G NR                             |
+|--------------|-----------------------------------|-----------------------------------|
+| **RSRP**     | Yes (primary signal strength)     | Yes (per SS/PBCH beam)            |
+| **RSRQ**     | Yes                               | Yes                               |
+| **SINR**     | Yes                               | Yes                               |
+| **CQI**      | Yes (0–15 range)                  | Yes (higher resolution)           |
+| **RSSI**     | Yes                               | Less commonly used in 5G          |
+| **SS-RSRP**  | No                                | Yes (Sync Signal Block RSRP)      |
+| **SS-RSRQ**  | No                                | Yes                               |
+| **SS-SINR**  | No                                | Yes                               |
+
+---
+
+## 🚦 2. Connectivity & Mobility
+
+| KPI / Event               | 4G LTE                               | 5G NR                                |
+|---------------------------|--------------------------------------|--------------------------------------|
+| **Call Setup Success Rate** | VoLTE, CSFB setup                   | Voice over NR (VoNR), IMS setup      |
+| **Handover Success Rate**   | X2 handover, intra-eNodeB          | Xn interface, intra/inter-gNodeB     |
+| **RRC Connection Setup**    | RRC setup over S1                   | RRC setup via NG-RAN                 |
+| **Radio Link Failure (RLF)**| Tracked per eNodeB                  | Includes Beam Failure Recovery       |
+| **TA (Timing Advance)**     | Based on signal timing              | Optional, less used in dense 5G      |
+
+---
+
+## 🌐 3. Throughput & Resource Utilization
+
+| KPI                    | 4G LTE                            | 5G NR                               |
+|------------------------|-----------------------------------|-------------------------------------|
+| **DL/UL Throughput**   | Per UE, per cell                  | Per UE, per beam, per slice         |
+| **PRB Utilization**    | Physical Resource Blocks          | RB usage per BWP (Bandwidth Part)   |
+| **MCS Index**          | Indicates modulation efficiency   | Same, with higher-order MCS values  |
+| **Latency**            | ~30–50 ms for VoLTE               | <10 ms for eMBB, <1 ms for URLLC    |
+
+---
+
+## 🎯 4. User Experience & QoS
+
+| KPI / Event                | 4G LTE                                  | 5G NR                                      |
+|----------------------------|-----------------------------------------|-------------------------------------------|
+| **QoS Bearer Setup**       | EPS Bearer via QCI                      | QoS Flow via 5QI (QoS Identifier)         |
+| **Packet Loss / Jitt**
+
