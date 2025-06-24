@@ -32,7 +32,6 @@ Perfect for situations where:
 
 📌 Example Code
 ```python
-Copy code
 from lightfm import LightFM
 from lightfm.data import Dataset
 
