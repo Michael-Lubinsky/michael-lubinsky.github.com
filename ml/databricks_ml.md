@@ -165,6 +165,7 @@ Executes train.py
 
 Logs run to MLflow Tracking
 
+
 🧰 What Gets Logged
 params: n_estimators, max_depth
 
@@ -176,6 +177,33 @@ model: saved and versioned in MLflow model format
 
 UI: view at http://localhost:5000 (if using local MLflow UI)
 
+
+
+# ✅ Enhancing MLflow Project: Model Registry, REST Serving, CI/CD Integration
+
+This guide extends the previous MLflow project by adding:
+
+1. Model Registry integration  
+2. REST-based model serving  
+3. CI/CD workflow using GitHub Actions  
+
+---
+
+## 📌 1. Register Model in MLflow Model Registry
+
+### 🔁 Modify `train.py` to register the model:
+
+```python
+import mlflow
+import mlflow.sklearn
+from mlflow.models.signature import infer_signature
+
+...
+
+with mlflow.start_run():
+    ...
+    signature = infer_signature(X_train, clf.predict(X_train))
+    mlflow.sklearn.log_model(clf, "model", signature=signature, registered_model_name="IrisClassifier")
 
 
 # 📊 Data Visualization Tools in Databricks
