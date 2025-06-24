@@ -25,6 +25,54 @@ pip install lightfm
 ```
 
 
+Perfect for situations where:
+- You have implicit feedback (e.g., clicks, watches, likes)
+- You want to leverage metadata (e.g., genres, age group, device type)
+- You want ranking-focused recommendations
+
+📌 Example Code
+```python
+Copy code
+from lightfm import LightFM
+from lightfm.data import Dataset
+
+# Create dataset
+dataset = Dataset()
+dataset.fit(users, items)
+dataset.fit_partial(users, items, user_features=user_features, item_features=item_features)
+
+# Build interaction matrix (sparse)
+(interactions, weights) = dataset.build_interactions(train_data)
+
+# Build feature matrices (optional)
+user_features_matrix = dataset.build_user_features(user_features)
+item_features_matrix = dataset.build_item_features(item_features)
+
+# Train model
+model = LightFM(loss='warp')  # 'warp' = Weighted Approximate-Rank Pairwise loss
+model.fit(interactions, user_features=user_features_matrix,
+          item_features=item_features_matrix, epochs=10, num_threads=4)
+```
+🔬 Loss Function Options
+| Loss         | Purpose                                               |
+| ------------ | ----------------------------------------------------- |
+| `'logistic'` | For binary classification                             |
+| `'bpr'`      | Bayesian Personalized Ranking                         |
+| `'warp'`     | Weighted Approximate-Rank Pairwise (best for ranking) |
+| `'warp-kos'` | Variant of WARP that reduces sampling bias            |
+
+🤔 When to Use LightFM
+Use it if you:
+- Want to combine collaborative filtering and content-based filtering
+- Have sparse implicit data (e.g., movie watches, clicks)
+- Need fast prototyping for recommender systems
+
+Avoid it for:
+
+Large-scale production systems (>10M users/items): prefer TensorFlow Recommenders or PyTorch
+Complex sequential or context-aware models
+
+
 ## 🔄 Comparison: LightFM vs TensorFlow Recommenders vs PyTorch Recommender Systems
 
 | Feature                         | LightFM                            | TensorFlow Recommenders (TFRS)        | PyTorch-based Recommenders (e.g., RecBole, TorchRec)     |
