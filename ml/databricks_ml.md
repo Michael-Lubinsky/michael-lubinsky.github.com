@@ -10,13 +10,12 @@
 - **Hyperparameter Tuning**: Distributed tuning with Hyperopt or custom frameworks.
 - **MLflow Integration**: Works with AWS SageMaker, Azure ML, and other MLOps platforms.
 
-# 🧠 MLflow – A Detailed Overview
+### MLflow  
 
-MLflow is an **open-source platform** for managing the end-to-end machine learning lifecycle. It was developed by Databricks and integrates tightly with the Databricks environment but is also standalone and cloud-agnostic.
+MLflow is an **open-source platform** for managing the end-to-end machine learning lifecycle.   
+It was developed by Databricks and integrates tightly with the Databricks environment but is also standalone and cloud-agnostic.
 
----
-
-## 🧱 MLflow Core Components
+### MLflow Core Components
 
 ### 1. **MLflow Tracking**
 Tracks experiments to log and compare parameters, metrics, tags, and artifacts.
