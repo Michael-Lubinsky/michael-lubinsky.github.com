@@ -90,28 +90,95 @@ Complex sequential or context-aware models
 
 ---
 
-## ✅ When to Use
+ 
 
-### LightFM:
+### When to Use LightFM:
 - You want quick hybrid recommendations with minimal setup.
 - Data fits in memory and you prefer simple pipelines.
 - No need for complex model customization.
 
-### TensorFlow Recommenders:
+### When to Use TensorFlow Recommenders:
 - You already use TensorFlow.
 - You want end-to-end pipelines (data → training → serving).
 - You need GPU acceleration or scalable deployment.
 
-### PyTorch Recommenders:
+### When to Use Recommenders:
 - You prefer PyTorch ecosystem.
 - You're doing research or experimenting with cutting-edge models (GNNs, attention).
 - You need full flexibility in architecture.
 
-### Clickstream analysis
-To analyze clickstream data like:
-```(user_id, movie_id, start_watch_time, end_watch_time)```
+## Clickstream analysis
 
-you can build a machine learning pipeline for several goals:
+Clickstream data (e.g., `user_id`, `item_id`, `timestamp`, `event_type`) offers rich insights into user behavior. Here are the key types of analysis:
+
+---
+
+### 1. 🎬 Content Engagement Analysis
+- **Watch duration vs. content length** → Are users completing content?
+- **Drop-off time** → When do users stop watching or interacting?
+- **Skimming behavior** → Multiple short sessions on the same content.
+
+
+### 2. 🧭 Navigation Patterns
+- **Page path sequences** → What path users take through a product or site.
+- **Session flow modeling** → Sequence modeling using Markov Chains, LSTMs.
+- **Backtracking** → Clicking back and forth might indicate confusion.
+
+---
+
+### 3. 🔁 Repetition and Rewatching
+- Rewatch frequency → Users repeating the same video/article.
+- Re-engagement windows → How often users return to the platform.
+- Binge-watching detection → Sessions with many back-to-back views.
+
+---
+
+### 4. ⏱ Temporal Behavior
+- **Time-of-day usage** → Morning vs. evening behavior.
+- **Day-of-week effects** → Weekday vs. weekend habits.
+- **Session duration and frequency** → Correlated with engagement or churn.
+
+---
+
+### 5. 📊 Segment-Based Analysis
+- **User cohorts** → Group users by signup date, behavior type, or features.
+- **Behavioral clusters** → Using clustering (e.g., KMeans) to group users:
+  - Explorers vs. loyalists
+  - Skimmers vs. deep readers
+  - Short vs. long session users
+
+---
+
+### 6. 💥 Anomaly Detection
+- **Bot detection** → Rapid fire clicks, impossible navigation paths.
+- **Shared accounts** → Multiple geographic locations within short intervals.
+- **Content misuse** → Users skipping too fast or scraping.
+
+---
+
+### 7. 🧠 Predictive Modeling
+- **Churn prediction** → Will a user stop using the service soon?
+- **Next-item prediction** → Recommender systems.
+- **Session success prediction** → Will a session lead to a conversion?
+
+---
+
+### 8. 🧩 User Intent Inference
+- **Exploration vs. goal-directed** behavior
+- **Search abandonment** → Sessions where no meaningful action followed a search
+- **Intent drift** → Changing interests during a session
+
+---
+
+### Tools and Techniques:
+- Sequence models (e.g., RNN, Transformers)
+- Clustering (e.g., DBSCAN, HDBSCAN)
+- Time series analysis
+- Anomaly detection (e.g., Isolation Forest)
+- Recommendation systems (e.g., LightFM, deep models)
+
+
+### It is possible build a machine learning pipeline for several goals:
  -  behavior modeling, 
  -  recommendation, 
  -  anomaly detection, or 
