@@ -108,5 +108,72 @@ Complex sequential or context-aware models
 - You're doing research or experimenting with cutting-edge models (GNNs, attention).
 - You need full flexibility in architecture.
 
+### Clickstream analysis
+To analyze clickstream data like:
+```(user_id, movie_id, start_watch_time, end_watch_time)```
 
+you can build a machine learning pipeline for several goals:
+ -  behavior modeling, 
+ -  recommendation, 
+ -  anomaly detection, or 
+ -  churn prediction.
 
+###  ML Pipeline Components
+#### 1. Data Preprocessing
+Feature engineering:
+
+watch_duration = end_watch_time - start_watch_time
+
+hour_of_day, day_of_week (from start_watch_time)
+
+Session-based features (e.g., # movies watched per day/user)
+
+User/movie-level aggregations:
+
+Average watch time per user
+
+Popularity of movies (views/movie)
+
+Completion rate: watch_duration / movie_duration
+
+#### 2. Possible Labels / Targets (for supervised ML)
+Depending on your goal:
+
+Binary label: Did the user finish >80% of movie? (yes/no)
+
+Regression: Predict expected watch time
+
+Clustering/unsupervised: Group similar watch patterns
+
+Anomaly detection: Detect bots or abnormal viewing behavior
+
+#### ML Models Based on Task
+
+| Task                        | Model                                                                      | Notes                                                 |
+| --------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 🎯 **Recommendation**       | Matrix factorization, SVD, LightFM, **Deep learning (e.g., Two-Tower NN)** | PyTorch or TensorFlow recommended if using embeddings |
+| ⏳ **Watch time prediction** | RandomForest, XGBoost, LightGBM                                            | Fast and interpretable                                |
+| 🚨 **Anomaly detection**    | Isolation Forest, One-Class SVM, Autoencoders                              | Isolation Forest easiest to deploy                    |
+| 📊 **User segmentation**    | K-Means, DBSCAN, PCA → K-Means                                             | For marketing or personalization                      |
+| 🎬 **Churn prediction**     | Logistic Regression, XGBoost                                               | Based on recent activity trends                       |
+
+#### Deep learning vs Classical ML
+
+| Approach                                       | When to Use                                                                      |
+| ---------------------------------------------- | -------------------------------------------------------------------------------- |
+| **Deep Neural Networks** (e.g., PyTorch)       | Large-scale data, many categorical variables (user/movie IDs), embeddings needed |
+| **Classic ML** (XGBoost, RF, Isolation Forest) | Tabular data, faster iterations, better interpretability                         |
+
+If you're starting and have tabular data + moderate scale, prefer:
+
+XGBoost / LightGBM for prediction tasks
+
+Isolation Forest for anomalies
+
+Scikit-learn Pipelines for reproducibility
+
+#### Use PyTorch or TensorFlow if:
+
+You're building deep recommendations
+You have many sparse IDs (users, movies, devices)
+You need sequence modeling (e.g., RNN for session behavior)
