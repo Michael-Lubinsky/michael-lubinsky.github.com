@@ -1,3 +1,5 @@
+https://pydevtools.com/handbook/
+
 https://afabundle.pro/product/competitive-programming-in-python/ Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
