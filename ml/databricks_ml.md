@@ -54,6 +54,130 @@ Defines a **standard format** for packaging machine learning models for diverse 
 - **Load model**: `mlflow.pyfunc.load
 
 
+
+# 🧪 Full Example of a Machine Learning Project with MLflow
+
+This is a complete, reproducible machine learning project using **MLflow** with **Scikit-learn** on a classification task.   
+The project structure, code, and logging features are fully integrated.
+
+---
+
+## 📁 Project Structure
+```
+mlflow_project_example/
+├── MLproject
+├── conda.yaml
+├── train.py
+├── data/
+│ └── iris.csv
+```
+
+---
+
+## 🧾 MLproject File
+
+```yaml
+name: iris-classifier
+
+conda_env: conda.yaml
+
+entry_points:
+  main:
+    parameters:
+      n_estimators: {type: int, default: 100}
+      max_depth: {type: int, default: 5}
+    command: >
+      python train.py
+        --n_estimators {n_estimators}
+        --max_depth {max_depth}
+```
+conda.yaml
+```yaml
+name: iris-env
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - scikit-learn
+  - pandas
+  - mlflow
+```
+train.py
+```python
+import argparse
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import mlflow
+import mlflow.sklearn
+
+# Argument parsing
+parser = argparse.ArgumentParser()
+parser.add_argument("--n_estimators", type=int, default=100)
+parser.add_argument("--max_depth", type=int, default=5)
+args = parser.parse_args()
+
+# Load data
+df = pd.read_csv("data/iris.csv")
+X = df.drop("species", axis=1)
+y = df["species"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Enable MLflow autologging
+mlflow.sklearn.autolog()
+
+with mlflow.start_run():
+    clf = RandomForestClassifier(
+        n_estimators=args.n_estimators, max_depth=args.max_depth
+    )
+    clf.fit(X_train, y_train)
+    preds = clf.predict(X_test)
+    acc = accuracy_score(y_test, preds)
+
+    mlflow.log_param("n_estimators", args.n_estimators)
+    mlflow.log_param("max_depth", args.max_depth)
+    mlflow.log_metric("accuracy", acc)
+    mlflow.sklearn.log_model(clf, "model")
+```
+
+Generate input
+```python
+from sklearn.datasets import load_iris
+import pandas as pd
+iris = load_iris(as_frame=True)
+df = iris.frame
+df.to_csv("data/iris.csv", index=False)
+```
+Running:
+```bash
+mlflow run . -P n_estimators=150 -P max_depth=3
+```
+
+This command:
+
+Sets parameters (n_estimators, max_depth)
+
+Creates an isolated Conda environment
+
+Executes train.py
+
+Logs run to MLflow Tracking
+
+🧰 What Gets Logged
+params: n_estimators, max_depth
+
+metrics: accuracy
+
+artifacts: sklearn model, conda.yaml, source code
+
+model: saved and versioned in MLflow model format
+
+UI: view at http://localhost:5000 (if using local MLflow UI)
+
+
+
 # 📊 Data Visualization Tools in Databricks
 
 ## Built-in Tools
