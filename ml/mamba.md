@@ -1,3 +1,6 @@
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
+
+
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
 What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
