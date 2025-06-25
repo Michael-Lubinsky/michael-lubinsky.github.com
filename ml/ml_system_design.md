@@ -1,5 +1,7 @@
 https://habr.com/ru/articles/920030/
 
+https://mlip-cmu.github.io/book/
+
 https://www.youtube.com/watch?v=iqbsHiSnZQE System Design с Валерием Бабушкиным
 
 https://habr.com/ru/articles/919774/
