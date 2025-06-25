@@ -1,5 +1,7 @@
 ### Algorithms
 
+https://ru.algorithmica.org/
+
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
 https://cartesian.app/
