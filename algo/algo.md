@@ -2,6 +2,8 @@
 
 https://ru.algorithmica.org/
 
+https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/main
+
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
 https://cartesian.app/
