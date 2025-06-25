@@ -2,6 +2,7 @@
 
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
+https://cartesian.app/
 
 https://github.com/tayllan/awesome-algorithms
 
