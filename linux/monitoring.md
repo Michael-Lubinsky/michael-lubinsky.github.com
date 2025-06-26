@@ -1,3 +1,4 @@
+<https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
 ### Publish-Subscribe vs Client-Server
 
@@ -45,9 +46,8 @@ Broker → Sends to all subscribers of "temperature"
 
 
 
-# How to Scrape Linux CPU and Memory Metrics into Prometheus and Visualize in Grafana
+## How to Scrape Linux CPU and Memory Metrics into Prometheus and Visualize in Grafana
 
----
 
 ## 1. 🧰 Install Node Exporter (Linux Metrics Exporter)
 
@@ -113,7 +113,7 @@ sudo systemctl enable grafana-server
 
 ---
 
-## 4. ➕ Add Prometheus Data Source to Grafana
+## 4.  Add Prometheus Data Source to Grafana
 
 1. Go to **Grafana UI** → ⚙️ **Settings** → **Data Sources**
 2. Click **"Add data source"**
