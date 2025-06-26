@@ -102,7 +102,7 @@ You can also use:
 - Group **churn risk** customers by pattern similarity
 - Power **recommendation engines** (e.g., similar users)
 
- ## 🧩 How to Cluster Customers Using pgvector in PostgreSQL
+ #  How to Cluster Customers Using pgvector in PostgreSQL
 
 pgvector itself is designed for **similarity search**, not clustering. However, you can still use its tools—especially **IVFFlat indexing**—to support clustering-like workflows. Here are several approaches:
 
@@ -127,7 +127,7 @@ This gets you an approximate cluster assignment on insert. But pgvector doesn't 
 ### 2. True Clustering with PL/Python + scikit-learn
 
 Use PL/Python inside PostgreSQL to run real clustering:
-
+```sql
 CREATE EXTENSION IF NOT EXISTS plpython3u;
 
 CREATE OR REPLACE FUNCTION cluster_customers(k INT)
@@ -142,10 +142,9 @@ RETURNS TABLE(customer_id INT, cluster INT) AS $$
     plpy.execute(f"UPDATE customers SET cluster = {lbl} WHERE customer_id = {cid}")
   return plpy.execute("SELECT customer_id, cluster FROM customers")
 $$ LANGUAGE plpython3u;
-
+```
 This stores cluster labels directly in the table.
 
----
 
 ### 3. Extract Embeddings and Cluster Externally
 
@@ -155,9 +154,8 @@ This stores cluster labels directly in the table.
 
 This is often the most flexible and scalable route.
 
----
 
-### ✅ Summary Table
+###  Summary Table
 
 | Approach                         | Pros                                   | Cons                                        |
 |----------------------------------|----------------------------------------|---------------------------------------------|
@@ -167,11 +165,11 @@ This is often the most flexible and scalable route.
 
 ---
 
-### 🔎 Use Case Guide
+###   Use Case Guide
 
-- Fast approximate segmentation? → Use IVFFlat index & store partition IDs.
-- Need reliable cluster assignments? → Use PL/Python or external clustering.
-- Advanced clustering (e.g., DBSCAN/PT us)? → Do external scripts and update DB.
+- Fast approximate segmentation? → Use IVFFlat index & store partition IDs.  
+- Need reliable cluster assignments? → Use PL/Python or external clustering.  
+- Advanced clustering (e.g., DBSCAN/PT us)? → Do external scripts and update DB.  
 
  
 
