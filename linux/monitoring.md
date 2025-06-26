@@ -1,5 +1,7 @@
 <https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
+<https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
+
 ### Publish-Subscribe vs Client-Server
 
 | Feature                 | Publish-Subscribe Model                        | Client-Server Model                            |
