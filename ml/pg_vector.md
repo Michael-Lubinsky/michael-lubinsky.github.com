@@ -63,14 +63,18 @@ Use `pgvector`'s distance functions:
 
 ```sql
 -- Find top 5 most similar customers to customer #123
-SELECT customer_id, embedding <-> (SELECT embedding FROM customers WHERE customer_id = 123) AS distance
+SELECT customer_id,
+embedding <->
+(SELECT embedding FROM customers WHERE customer_id = 123) AS distance
 FROM customers
 WHERE customer_id != 123
 ORDER BY distance
 LIMIT 5;
 ```
 
-`<->` computes **Euclidean distance**. You can also use:
+In PostgreSQL with the `pgvector` extension,   
+the `<->` operator is used to compute the **Euclidean distance** between two vectors.  
+You can also use:
 
 | Operator | Distance Function                        |
 |----------|------------------------------------------|
