@@ -1,5 +1,7 @@
 https://habr.com/ru/articles/920030/
 
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
+
 https://mlip-cmu.github.io/book/
 
 https://www.youtube.com/watch?v=iqbsHiSnZQE System Design с Валерием Бабушкиным
