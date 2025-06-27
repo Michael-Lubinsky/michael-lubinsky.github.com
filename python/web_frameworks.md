@@ -1,6 +1,9 @@
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
 
-These frameworks—**NiceGUI**, **Reflex**, **Sonara**, and **Panel**—enable you to build web UIs in Python without touching JavaScript. Here's how they compare in architecture, use-case fit, and developer experience.
+<https://github.com/sfermigier/awesome-python-web-frameworks>
+
+These frameworks—**NiceGUI**, **Reflex**, **Sonara**, and **Panel**  
+enable you to build web UIs in Python without touching JavaScript.  
 
 ---
 
