@@ -1,4 +1,7 @@
 ### Compilers
+
+https://habr.com/ru/companies/postgrespro/articles/922260/
+
 https://github.com/IUCompilerCourse/Essentials-of-Compilation
 
 https://www3.nd.edu/~dthain/compilerbook/
