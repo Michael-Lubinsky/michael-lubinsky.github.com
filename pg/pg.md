@@ -11,6 +11,7 @@ postgresql@17
 
 brew install postgresql@17
 brew services start postgresql@17
+brew services restart postgresql@17
 brew services list
 ```
 
