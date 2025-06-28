@@ -26,7 +26,13 @@ psql -U postgres
 If you want to set a password:
 ```sql
 ALTER USER postgres WITH PASSWORD 'your_password';
+```
 
+Config file:
+ /opt/homebrew/var/postgresql@17/pg_hba.conf
+ 
+Example of tablw with constraints
+```
 
 CREATE TABLE michael.T (
     id SERIAL PRIMARY KEY,
