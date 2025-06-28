@@ -26,6 +26,27 @@ psql -U postgres
 If you want to set a password:
 ```sql
 ALTER USER postgres WITH PASSWORD 'your_password';
+
+
+CREATE TABLE michael.T (
+    id SERIAL PRIMARY KEY,
+    device_name TEXT,
+    device_type TEXT,
+    ts TIMESTAMP,
+    action TEXT CHECK (action IN ('ON', 'OFF')),
+    value FLOAT,
+    UNIQUE (device_name, device_type)
+);
+
+-- Generate 100 records with realistic constraints
+INSERT INTO michael.T (device_name, device_type, ts, action, value)
+SELECT 
+    chr(65 + (i % 26)) AS device_name, -- A-Z
+    CASE WHEN (i % 2) = 0 THEN 'phone' ELSE 'computer' END AS device_type,
+    timestamp '2025-01-01' + (i || ' hours')::interval AS ts,
+    CASE WHEN (i % 2) = 0 THEN 'ON' ELSE 'OFF' END AS action,
+    round(1.0 + random() * 9, 2) AS value
+FROM generate_series(1, 100) AS s(i);
 ```
 
 <!--
