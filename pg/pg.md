@@ -13,6 +13,15 @@ brew services list
 lsof -i tcp:5432
 
 tail -100 /opt/homebrew/var/log/postgresql\@17.log
+
+/opt/homebrew/Cellar/postgresql@17/17.5/bin/createuser
+
+createuser -s postgres
+```
+This creates a superuser `postgres` role without a password.  
+ Now you can connect:
+```bash
+psql -U postgres
 ```
 
 <!--
