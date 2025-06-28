@@ -16,7 +16,9 @@ pip uninstall marshmallow
 Install a Superset compatible marshmallow version   
 pip install 'marshmallow>=3.13,<4.0'
 
+### Reset the password for the existing `admin` user**:
 
+superset fab reset-password --username admin
 
 
 ```bash
