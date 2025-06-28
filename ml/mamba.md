@@ -1,3 +1,6 @@
+Reinforcement learning: https://www.understandingai.org/p/reinforcement-learning-explained
+
+
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
 
 https://github.com/Dyakonov/DL
