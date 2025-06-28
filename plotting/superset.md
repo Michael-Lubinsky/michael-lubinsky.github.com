@@ -52,6 +52,38 @@ or using the Superset CLI with
 - **Dashboards = organized collection of charts and filters for comprehensive analysis.**
 
 
+### Examples superset/examples
+pwd  
+/Users/mlubinsky/CODE/SUPERSET/superset-venv/lib/python3.10/site-packages/superset/examples
+```
+ls -1 | sort
+__init__.py
+__pycache__
+bart_lines.py
+big_data.py
+birth_names.py
+configs
+countries.md
+countries.py
+country_map.py
+css_templates.py
+data_loading.py
+deck.py
+energy.py
+flights.py
+helpers.py
+long_lat.py
+misc_dashboard.py
+multiformat_time_series.py
+paris.py
+random_time_series.py
+sf_population_polygons.py
+supported_charts_dashboard.py
+tabbed_dashboard.py
+utils.py
+world_bank.py
+```
+
 
 ### superset_config.py
 Superset only loads `superset_config.py` if it is in the Superset home directory  
