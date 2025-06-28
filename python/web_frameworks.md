@@ -1,6 +1,8 @@
 ### Where to host python WebApp
 https://www.reddit.com/r/Python/comments/1llwhzr/where_are_people_hosting_their_python_web_apps/
 
+https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS
+
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
 
 <https://github.com/sfermigier/awesome-python-web-frameworks>
