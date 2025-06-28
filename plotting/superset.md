@@ -43,7 +43,7 @@ superset init
 superset run -p 8088 --with-threads --reload --debugger
 ```
 
-http://localhost:8088
+http://localhost:8088  admin/admin
 
 ## Superset Local Development (build from source)
 - Pre-requisites: Python 3.9 or 3.10  
