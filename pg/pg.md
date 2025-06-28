@@ -45,7 +45,7 @@ SELECT
     CASE WHEN (i % 2) = 0 THEN 'phone' ELSE 'computer' END AS device_type,
     timestamp '2025-01-01' + (i || ' hours')::interval AS ts,
     CASE WHEN (i % 2) = 0 THEN 'ON' ELSE 'OFF' END AS action,
-    round(1.0 + random() * 9, 2) AS value
+    ROUND((1 + random() * 9)::NUMERIC, 2)::NUMERIC(10,2) AS value
 FROM generate_series(1, 100) AS s(i);
 ```
 
