@@ -40,11 +40,12 @@ npm ci
 npm run build
 cd ..
 
+export FLASK_APP=superset
 # Initialize the database
 superset db upgrade
 
 # Create an admin user
-export FLASK_APP=superset
+
 superset fab create-admin
 
 # Load examples (optional)
