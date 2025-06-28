@@ -1,5 +1,58 @@
 https://superset.apache.org/
 
+
+
+When you install Superset and load examples using:
+```bash
+superset load_examples
+```
+Superset creates **example datasets, charts, and dashboards** and stores them in **Superset’s metadata database** (typically SQLite, Postgres, or MySQL, depending on your configuration).
+
+The **example datasets themselves** are stored as **table metadata in Superset** pointing to underlying SQL tables (often created in a bundled SQLite file or memory database).   
+They are **not stored as CSV or raw files on disk**, but inside the database Superset uses for metadata and example data storage.
+
+
+## Where is the source code for dashboards and charts located?
+
+- **Dashboards and charts are not stored as static files in the Superset installation folder.**
+- They are stored in Superset’s metadata database as JSON configurations describing:
+  - Chart SQL queries  
+  - Chart visualization types and configurations  
+  - Dashboard layouts and components  
+- Example charts and dashboards are initially created using Python scripts in Superset’s source under:
+  ```
+  superset/examples/ 
+  ```
+  and are executed when `superset load_examples` is run.
+
+If you want to extract dashboard or chart definitions for version control,   
+you can export them via the Superset UI   
+or using the Superset CLI with   
+`superset export-dashboards` and `superset export-charts`.
+
+
+## What is the difference between dashboards and charts?
+
+✅ **Charts:**
+- A **chart** in Superset is a **single visualization** based on a dataset or SQL query (e.g., bar chart, line chart, pie chart).
+- Charts have:
+  - A visualization type.
+  - A dataset or SQL query.
+  - Filters and visualization configurations.
+
+✅ **Dashboards:**
+- A **dashboard** is a **collection of charts** arranged in a grid layout for interactive exploration.
+- Dashboards can include:
+  - Multiple charts.
+  - Filters and controls that affect all charts.
+  - Markdown and headers for annotations.
+
+**Summary:**
+- **Charts = single visual analysis on data.**
+- **Dashboards = organized collection of charts and filters for comprehensive analysis.**
+
+
+
 ### superset_config.py
 Superset only loads `superset_config.py` if it is in the Superset home directory  
 or the directory set in the `SUPERSET_CONFIG_PATH` environment variable. 
