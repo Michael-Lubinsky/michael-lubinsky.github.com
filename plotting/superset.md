@@ -1,4 +1,18 @@
 https://superset.apache.org/
+```bash
+python3 -m venv superset-venv
+source superset-venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install apache-superset
+superset db upgrade
+export FLASK_APP=superset
+superset fab create-admin
+superset load_examples
+superset init
+superset run -p 8088 --with-threads --reload --debugger
+```
+
+http://localhost:8088
 
 ## Superset Local Development (build from source)
 - Pre-requisites: Python 3.9 or 3.10  
