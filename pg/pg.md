@@ -1,10 +1,7 @@
 ## Postgres
 ```
 brew formulae | grep postgresql@
-postgresql@11
-postgresql@12
-postgresql@13
-postgresql@14
+
 postgresql@15
 postgresql@16
 postgresql@17
@@ -13,6 +10,7 @@ brew install postgresql@17
 brew services start postgresql@17
 brew services restart postgresql@17
 brew services list
+lsof -i tcp:5432
 
 tail -100 /opt/homebrew/var/log/postgresql\@17.log
 ```
