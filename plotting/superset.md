@@ -85,6 +85,50 @@ world_bank.py
 ```
 
 
+## ✅ 2️⃣ Add your Postgres database in Superset
+1. Go to **Data > Databases**.
+2. Click **+ Database**.
+3. Set:
+   - **Display Name:** `Local Postgres` (or any name).
+   - **SQLAlchemy URI:**
+     ```
+     postgresql://<username>:<password>@localhost:5432/<database_name>
+     ```
+     Example:
+     ```
+     postgresql://mlubinsky:yourpassword@localhost:5432/postgres
+     ```
+4. Click **Test Connection**.
+5. If successful, click **Connect**.
+
+---
+
+## ✅ 3️⃣ Add your table `T` as a dataset
+1. Go to **Data > Datasets**.
+2. Click **+ Dataset**.
+3. Select the **Database** you just created.
+4. Select the **Schema** (often `public` unless changed).
+5. Select the **Table** `T`.
+6. Click **Add**.
+
+---
+
+## ✅ 4️⃣ Create your first chart
+1. Go to **Charts**.
+2. Click **+ Chart**.
+3. Select your **dataset `T`**.
+4. Choose a **chart type** (e.g., **Bar Chart** or **Time-series Line Chart**).
+5. Click **Create New Chart**.
+6. Configure:
+   - **X-axis:** `ts` (timestamp).
+   - **Y-axis:** `value` (float).
+   - Optionally, add **group by** `device_name` or `device_type`.
+7. Click **Run** to visualize.
+8. Click **Save** and give it a name like "Device Value Over Time".
+
+
+
+
 ### superset_config.py
 Superset only loads `superset_config.py` if it is in the Superset home directory  
 or the directory set in the `SUPERSET_CONFIG_PATH` environment variable. 
