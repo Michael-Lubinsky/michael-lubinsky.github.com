@@ -8,6 +8,10 @@ postgresql@14
 postgresql@15
 postgresql@16
 postgresql@17
+
+brew install postgresql@17
+brew services start postgresql@17
+brew services list
 ```
 
 <!--
