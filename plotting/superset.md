@@ -10,6 +10,14 @@ Alternatively, explicitly set:
 export SUPERSET_CONFIG_PATH=/path/to/your/superset_config.py
 ```
 
+  Uninstall marshmallow 4.x:**  
+pip uninstall marshmallow
+
+ Install a Superset compatible marshmallow version   
+pip install 'marshmallow>=3.13,<4.0'
+
+
+
 
 ```bash
 python3 -m venv superset-venv
@@ -23,6 +31,11 @@ superset db upgrade
 # Refusing to start due to insecure SECRET_KEY
 
 superset fab create-admin
+# User first name [admin]:
+# User last name [user]:
+# Email [admin@fab.org]:
+# Password
+
 superset load_examples
 superset init
 superset run -p 8088 --with-threads --reload --debugger
