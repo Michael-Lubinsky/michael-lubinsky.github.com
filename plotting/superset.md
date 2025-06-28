@@ -1,6 +1,6 @@
 https://superset.apache.org/
 
-
+### superset_config.py
 Superset only loads `superset_config.py` if it is in the Superset home directory  
 or the directory set in the `SUPERSET_CONFIG_PATH` environment variable. 
 Creating it in the current directory alone will not be picked up by Superset.
@@ -9,11 +9,11 @@ Alternatively, explicitly set:
 ```bash
 export SUPERSET_CONFIG_PATH=/path/to/your/superset_config.py
 ```
-
-  Uninstall marshmallow 4.x:**  
-pip uninstall marshmallow
-
- Install a Superset compatible marshmallow version   
+### marshmallow version
+pip show marshmallow  
+Uninstall marshmallow 4.x:**  
+pip uninstall marshmallow  
+Install a Superset compatible marshmallow version   
 pip install 'marshmallow>=3.13,<4.0'
 
 
