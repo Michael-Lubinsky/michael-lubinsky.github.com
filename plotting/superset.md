@@ -7,6 +7,8 @@ pip install apache-superset
 
 export FLASK_APP=superset 
 superset db upgrade
+# A Default SECRET_KEY was detected, please use superset_config.py to override it.
+# Refusing to start due to insecure SECRET_KEY
 
 superset fab create-admin
 superset load_examples
