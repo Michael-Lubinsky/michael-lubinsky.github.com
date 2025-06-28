@@ -55,9 +55,7 @@ Provision Redis.
 
 b. Configuration
 Create a superset_config.py:
-```
-python
-
+```python
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://user:password@host/dbname'
 SECRET_KEY = 'your_random_secret_key'
 REDIS_HOST = 'localhost'
