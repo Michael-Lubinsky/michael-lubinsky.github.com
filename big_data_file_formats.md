@@ -1,3 +1,4 @@
+https://lancedb.github.io/lance/  Lance format
 
 https://www.vladsiv.com/big-data-file-formats/
 
