@@ -1,4 +1,16 @@
 https://superset.apache.org/
+
+
+Superset only loads `superset_config.py` if it is in the Superset home directory  
+or the directory set in the `SUPERSET_CONFIG_PATH` environment variable. 
+Creating it in the current directory alone will not be picked up by Superset.
+
+Alternatively, explicitly set:
+```bash
+export SUPERSET_CONFIG_PATH=/path/to/your/superset_config.py
+```
+
+
 ```bash
 python3 -m venv superset-venv
 source superset-venv/bin/activate
