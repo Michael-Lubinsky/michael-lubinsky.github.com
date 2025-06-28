@@ -1,5 +1,8 @@
 ### XAN is a command line tool to process CSV files   from the shell.
 https://github.com/medialab/xan
+visidata
+
+https://jless.io/ command line json viewer
 
 ### CSV toolkit
 https://bioinf.shenwei.me/csvtk/
