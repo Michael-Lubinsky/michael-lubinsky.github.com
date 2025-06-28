@@ -130,6 +130,23 @@ pip install psycopg2-binary
 8. Click **Save** and give it a name like "Device Value Over Time".
 
 
+### Using a SQL-based Virtual Dataset
+
+1. Go to **Data > Datasets**.
+2. Click **+ Dataset**.
+3. Select your Postgres database.
+4. Choose **"Write a SQL query that defines the dataset"** instead of selecting a single table.
+5. Write your SQL join, for example:
+    ```sql
+    SELECT a.id, a.device_name, b.status, a.ts, a.value
+    FROM T a
+    JOIN device_status b ON a.device_name = b.device_name
+    WHERE a.ts >= '2025-01-01'
+    ```
+6. Click **Preview** to confirm it works.
+7. Save the virtual dataset with a descriptive name (e.g., `T joined with device_status`).
+
+Now you can create charts using this virtual dataset as if it were a physical table.
 
 
 ### superset_config.py
