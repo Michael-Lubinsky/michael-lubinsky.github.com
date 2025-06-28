@@ -23,6 +23,10 @@ This creates a superuser `postgres` role without a password.
 ```bash
 psql -U postgres
 ```
+If you want to set a password:
+```sql
+ALTER USER postgres WITH PASSWORD 'your_password';
+```
 
 <!--
 <https://dbfiddle.uk/>  
