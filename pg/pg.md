@@ -13,6 +13,8 @@ brew install postgresql@17
 brew services start postgresql@17
 brew services restart postgresql@17
 brew services list
+
+tail -100 /opt/homebrew/var/log/postgresql\@17.log
 ```
 
 <!--
