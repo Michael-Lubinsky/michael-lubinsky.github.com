@@ -85,7 +85,10 @@ world_bank.py
 ```
 
 
-## ✅ 2️⃣ Add your Postgres database in Superset
+##  Add your Postgres database in Superset
+
+pip install psycopg2-binary
+
 1. Go to **Data > Databases**.
 2. Click **+ Database**.
 3. Set:
