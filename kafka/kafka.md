@@ -4,7 +4,8 @@
 
 <https://github.com/twmb/franz-go?tab=readme-ov-file> Go library for interacting with Kafka: Producing, consuming, transacting, administrating, etc.
 
-<https://habr.com/ru/articles/918520/> Kafka + NAT
+<https://habr.com/ru/articles/918520/> Kafka / NATS   
+<https://habr.com/ru/articles/923046/>  Kafka / NATS / RabbitMQ
 
 ### Python client for Kafka
 
