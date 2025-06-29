@@ -53,7 +53,7 @@ Example: using array_agg
 
 SELECT array_agg(i) FROM generate_series(1, 3) tbl(i);
 ```
-3️⃣ Checking installed functions and types
+3️⃣ Checking installed functions and types  
 After loading the extension, you can explore:
 
 ```sql
@@ -61,7 +61,8 @@ SELECT * FROM duckdb_functions() WHERE name LIKE '%generate_series%';
 ```
 or list available functions/types documented here:
 
-DuckDB pg extension GitHub
+<https://github.com/duckdb/duckdb/blob/master/extension/pg/README.md>
+
 
 4️⃣ Use Cases
 ✅ Practical benefits of using pg extension:
