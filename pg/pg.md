@@ -1,6 +1,5 @@
 ## Postgres
 
-
 ### Extensions
 <https://pgxn.org/>
 You need superuser privileges to create extensions.
@@ -412,9 +411,9 @@ ORDER BY t1.fivethous;
 <https://news.ycombinator.com/item?id=43808803>
 
 
-#### Installing Postgres om Mac
+#### Installing Postgres on Mac
 
-```
+```bash
 brew formulae | grep postgresql@
 
 postgresql@15
@@ -446,3 +445,70 @@ ALTER USER postgres WITH PASSWORD 'your_password';
 Config file:
  /opt/homebrew/var/postgresql@17/pg_hba.conf
  
+### How to enforce constraint that every city can be associated with a single state  only?
+There is Postgres table with columns:   
+first_name, last_name, city, state.
+
+How to enforce constraint that every city can be associated with a single state  only?
+Example:  
+if there is record with city='Los Angeles' and state='CA'  
+then it is not possible to have record with   city='Los Angeles' and state='Oregon' 
+
+You can use a partial functional unique index or a unique index on an expression.  
+
+However, since PostgreSQL does not support directly enforcing “for a given city, allow only one state”   
+(while allowing multiple rows with the same city and state), the cleanest and standard way is:
+
+1️⃣ Create a unique index on (city, state)  
+This ensures that you cannot have the *same (city, state) pair multiple times,   
+but it does not enforce your desired constraint alone.
+
+2️⃣ Enforce city → state functional dependency using a UNIQUE constraint on city plus a trigger:  
+PostgreSQL does not support functional dependencies directly,   
+so use a BEFORE INSERT OR UPDATE trigger to enforce it.
+
+Example:
+
+```sql
+
+CREATE OR REPLACE FUNCTION enforce_city_state_consistency()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM your_table
+        WHERE city = NEW.city AND state <> NEW.state
+    ) THEN
+        RAISE EXCEPTION 'City "%" is already associated with a different state', NEW.city;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_enforce_city_state
+BEFORE INSERT OR UPDATE ON your_table
+FOR EACH ROW
+EXECUTE FUNCTION enforce_city_state_consistency();
+```
+✅ What this does:
+
+Allows multiple rows with the same (city, state).
+
+Prevents inserting/updating a row with a (city, different_state) if that city already exists with another state.
+
+Example demonstrating it:
+```sql
+
+INSERT INTO your_table (first_name, last_name, city, state)
+VALUES ('John', 'Doe', 'Los Angeles', 'CA'); -- ✅ succeeds
+
+INSERT INTO your_table (first_name, last_name, city, state)
+VALUES ('Jane', 'Smith', 'Los Angeles', 'CA'); -- ✅ succeeds
+
+INSERT INTO your_table (first_name, last_name, city, state)
+VALUES ('Alice', 'Walker', 'Los Angeles', 'OR'); -- ❌ raises exception
+```
+
+PostgreSQL does not support this constraint natively, so the recommended method is:  
+Add a trigger that raises an exception if an insert or update would create a (city, state) inconsistency.
+
