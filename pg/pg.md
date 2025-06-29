@@ -2,6 +2,7 @@
 
 
 ### Extensions
+<https://pgxn.org/>
 You need superuser privileges to create extensions.
 ```sql
 SELECT * FROM pg_available_extensions; -- List of postgres extensions:
