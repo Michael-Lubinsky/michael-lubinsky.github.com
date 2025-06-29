@@ -1,5 +1,32 @@
 ## Postgres
 
+### FILTER
+FILTER is a SQL keyword supported by PostgreSQL that allows you  
+to apply a WHERE-like filter inside an aggregate function, making it easy to compute conditional aggregates.
+```sql
+aggregate_function(args) FILTER (WHERE condition)
+```
+Example:
+```sql
+SELECT
+    SUM(amount) AS total_sales,
+    SUM(amount) FILTER (WHERE region = 'West') AS west_sales
+FROM sales;
+```
+The same as above without filter:
+```sql
+SELECT
+    SUM(amount) AS total_sales,
+    SUM(CASE WHEN region = 'West' THEN amount ELSE 0 END) AS west_sales
+FROM sales;
+```
+| Feature                  | `FILTER` syntax                           | Equivalent without `FILTER`                        |
+| ------------------------ | ----------------------------------------- | -------------------------------------------------- |
+| Aggregate with condition | `SUM(col) FILTER (WHERE condition)`       | `SUM(CASE WHEN condition THEN col ELSE 0 END)`     |
+| Example                  | `COUNT(*) FILTER (WHERE col IS NOT NULL)` | `SUM(CASE WHEN col IS NOT NULL THEN 1 ELSE 0 END)` |
+| Readability              | High                                      | Moderate                                           |
+
+
 ### Extensions
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://pgxn.org/>  
