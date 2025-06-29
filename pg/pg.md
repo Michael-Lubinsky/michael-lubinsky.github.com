@@ -1,7 +1,8 @@
 ## Postgres
 
 ### Extensions
-<https://pgxn.org/>
+<https://www.postgresql.org/docs/current/contrib.html>  
+<https://pgxn.org/>  
 You need superuser privileges to create extensions.
 ```sql
 SELECT * FROM pg_available_extensions; -- List of postgres extensions:
