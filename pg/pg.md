@@ -1,39 +1,16 @@
 ## Postgres
-```
-brew formulae | grep postgresql@
 
-postgresql@15
-postgresql@16
-postgresql@17
 
-brew install postgresql@17
-brew services start postgresql@17
-brew services restart postgresql@17
-brew services list
-lsof -i tcp:5432
-
-tail -100 /opt/homebrew/var/log/postgresql\@17.log
-
-/opt/homebrew/Cellar/postgresql@17/17.5/bin/createuser
-
-createuser -s postgres
-```
-This creates a superuser `postgres` role without a password.  
- Now you can connect:
-```bash
-psql -U postgres
-```
-If you want to set a password:
+### Extensions
+You need superuser privileges to create extensions.
 ```sql
-ALTER USER postgres WITH PASSWORD 'your_password';
+SELECT * FROM pg_available_extensions; -- List of postgres extensions:
+CREATE EXTENSION hstore;
+SELECT * FROM pg_extension;
 ```
 
-Config file:
- /opt/homebrew/var/postgresql@17/pg_hba.conf
- 
-Example of tablw with constraints
-```
-
+#### Example of table with constraints
+```sql
 CREATE TABLE michael.T (
     id SERIAL PRIMARY KEY,
     device_name TEXT,
@@ -432,3 +409,39 @@ ORDER BY t1.fivethous;
 ### DB diagrams
 
 <https://news.ycombinator.com/item?id=43808803>
+
+
+#### Installing Postgres om Mac
+
+```
+brew formulae | grep postgresql@
+
+postgresql@15
+postgresql@16
+postgresql@17
+
+brew install postgresql@17
+brew services start postgresql@17
+brew services restart postgresql@17
+brew services list
+lsof -i tcp:5432
+
+tail -100 /opt/homebrew/var/log/postgresql\@17.log
+
+/opt/homebrew/Cellar/postgresql@17/17.5/bin/createuser
+
+createuser -s postgres
+```
+This creates a superuser `postgres` role without a password.  
+ Now you can connect:
+```bash
+psql -U postgres
+```
+If you want to set a password:
+```sql
+ALTER USER postgres WITH PASSWORD 'your_password';
+```
+
+Config file:
+ /opt/homebrew/var/postgresql@17/pg_hba.conf
+ 
