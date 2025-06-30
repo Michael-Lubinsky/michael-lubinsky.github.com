@@ -32,12 +32,23 @@ FROM sales;
 <https://pgxn.org/>  
 <https://www.tigerdata.com/blog/top-8-postgresql-extensions>
 
+pg_stat_statements tracks statistics on the queries executed by a Postgres database.
+```CREATE EXTENSION pg_stat_statements;```
+
 You need superuser privileges to create extensions.
 ```sql
 SELECT * FROM pg_available_extensions; -- List of postgres extensions:
 CREATE EXTENSION hstore;
 SELECT * FROM pg_extension;
 ```
+
+
+#### pg_partman 
+pg_partman is an extension that simplifies creating and maintaining partitions of your PostgreSQL tables.  
+
+With pg_partman, PostgreSQL can manage partitions based on a variety of criteria such as time, serial IDs, or custom values. 
+It eases the maintenance tasks associated with partitioning, such as creating new partitions in advance and purging old ones.
+This automation is particularly useful for large, time-series datasets that can grow rapidly.
 
 #### Example of table with constraints
 ```sql
