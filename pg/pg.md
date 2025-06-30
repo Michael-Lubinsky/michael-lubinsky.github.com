@@ -30,6 +30,8 @@ FROM sales;
 ### Extensions
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://pgxn.org/>  
+<https://www.tigerdata.com/blog/top-8-postgresql-extensions>
+
 You need superuser privileges to create extensions.
 ```sql
 SELECT * FROM pg_available_extensions; -- List of postgres extensions:
