@@ -50,6 +50,8 @@ With pg_partman, PostgreSQL can manage partitions based on a variety of criteria
 It eases the maintenance tasks associated with partitioning, such as creating new partitions in advance and purging old ones.
 This automation is particularly useful for large, time-series datasets that can grow rapidly.
 
+https://www.tigerdata.com/learn/pg_partman-vs-hypertables-for-postgres-partitioning 
+
 #### Example of table with constraints
 ```sql
 CREATE TABLE michael.T (
