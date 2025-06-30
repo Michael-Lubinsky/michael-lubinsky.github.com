@@ -4,6 +4,8 @@ https://habr.com/ru/articles/913652/
 
 https://github.com/quixio/quix-streams Kafta Stream  + Python
 
+https://blog.picnic.nl/using-change-data-capture-for-warehouse-analytics-a1b23c074781 CDC change dta capture
+
 ## Flink
 
 https://habr.com/ru/articles/914836/
