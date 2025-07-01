@@ -148,6 +148,45 @@ pip install psycopg2-binary
 
 Now you can create charts using this virtual dataset as if it were a physical table.
 
+### Is it possible to pass SQL to a Superset chart?
+Yes.
+Superset supports SQL-based charts using SQL Lab + Explore workflow:
+
+1️⃣ Write SQL in SQL Lab:
+
+Navigate to SQL Lab > SQL Editor.
+
+Write your SQL query that prepares the dataset exactly as needed for your chart.
+
+Example:
+
+```sql
+SELECT    device_name, AVG(value) AS avg_value
+FROM    T
+WHERE    ts BETWEEN '2025-01-01' AND '2025-06-30'
+GROUP BY    device_name
+```
+2️⃣ Save the SQL as a Virtual Dataset:
+
+Click "Explore" on the top-right.  
+This will create a virtual dataset using the result of your SQL.  
+Alternatively, you can save it as a Dataset under Datasets for reusability.  
+
+3️⃣ Create your chart on this dataset:
+
+Now you can use this virtual dataset to create bar, line, pie, or other charts.  
+Superset’s chart UI will treat the SQL result columns as available dimensions/metrics.  
+
+🚩 Notes:
+✅ You cannot pass ad-hoc raw SQL directly inside the Chart Builder;
+✅ Instead, you pass SQL via the SQL Lab to create the dataset.
+✅ If your chart logic changes, you update the SQL in SQL Lab, and the chart will reflect it.
+
+✅ Benefits:
+✅ Full control over joins, aggregations, window functions, and advanced SQL logic.
+✅ Allows you to join multiple tables or apply pre-aggregation before charting.
+✅ Keeps charts clean while heavy lifting is done in SQL.
+
 
 ### superset_config.py
 Superset only loads `superset_config.py` if it is in the Superset home directory  
