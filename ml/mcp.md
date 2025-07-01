@@ -4,6 +4,8 @@ https://github.com/punkpeye/awesome-mcp-clients
 
 https://mcp.so/
 
+https://habr.com/ru/articles/890740/
+
 https://habr.com/ru/articles/862312/
 
 https://habr.com/ru/articles/910524/
