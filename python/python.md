@@ -437,6 +437,47 @@ class DeviceDict(TypedDict):
     value: float
 ```
 
+## When to use `TypedDict`:
+`TypedDict` is useful when:
+- You are working with **JSON-like dictionaries** from APIs, configuration files, or data ingestion.
+- You want **static type checking** (with `mypy`, `pyright`, etc.) while continuing to use plain dictionaries for lightweight data.
+- You need to ensure keys and value types are consistent without converting dictionaries into classes.
+
+---
+
+## Example scenario:
+You are parsing JSON data from an API that returns user data:
+
+```python
+from typing import TypedDict
+import json
+
+class UserResponse(TypedDict):
+    id: int
+    name: str
+    email: str
+
+raw_json = '{"id": 123, "name": "Alice", "email": "alice@example.com"}'
+data = json.loads(raw_json)
+```
+
+Using `TypedDict`, you can type hint the parsed data:
+
+```python
+def process_user(user: UserResponse) -> None:
+    print(f"User {user['id']} - {user['name']} - {user['email']}")
+
+process_user(data)
+```
+
+### Benefits:
+✅ **Code completion:** Your IDE will suggest keys like `id`, `name`, `email`.
+✅ **Static type checking:** Tools will warn if you miss a required key or use the wrong type.
+✅ **Zero runtime overhead:** Since `TypedDict` does not wrap the data, you can use plain dictionaries while benefiting from type safety.
+
+---
+
+✅ Use `TypedDict` when working with structured JSON/dict data you want to type-check while keeping your code clean and performant.
 
 ### Summary:
 | Feature | `dataclass` | `TypedDict` |
