@@ -8,6 +8,8 @@ https://habr.com/ru/articles/910524/
 
 https://habr.com/ru/articles/899088/
 
+https://habr.com/ru/articles/893822/
+
 ### MCP Host: 
 Это приложение, где живет LLM (например, Claude Desktop или Cursor IDE). Хост хочет получить доступ к внешним возможностям/данным
 
