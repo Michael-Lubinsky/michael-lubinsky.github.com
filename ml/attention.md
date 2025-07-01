@@ -1,7 +1,7 @@
 Writing an LLM from scratch:
 https://www.gilesthomas.com/python
 
-
+https://habr.com/ru/companies/bothub/articles/922938/
 
 ### Input Representation: Word Embeddings
 
