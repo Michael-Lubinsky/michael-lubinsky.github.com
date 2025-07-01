@@ -1,7 +1,14 @@
 ### Where to host python WebApp
 https://www.reddit.com/r/Python/comments/1llwhzr/where_are_people_hosting_their_python_web_apps/
 
+https://connect.posit.cloud/
+
 https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (Virtual Private Server)
+
+
+### Taipy
+<https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
+
 
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
 
