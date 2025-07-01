@@ -19,6 +19,7 @@ the answer can vary depending on the use of Abstract Base Classes (ABCs) and Pro
 <https://levelup.gitconnected.com/abstract-base-classes-abcs-and-protocols-in-python-f9c791ad84cd>
 
 ### String formatting
+<https://mkaz.blog/working-with-python/string-formatting>
 ```python
 a = 1
 b = "hello"
