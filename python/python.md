@@ -397,6 +397,60 @@ print(f"Total Price: ${order.total_price / 100:.2f}")
 ```
 
 
+### Difference between `dataclass` and `TypedDict` in Python
+
+#### `dataclass`:
+- Introduced in Python 3.7.
+- Used to create classes with automatic `__init__`, `__repr__`, and comparison methods.
+- Represents structured data with **runtime behavior and methods**.
+- Supports type hints but **does not enforce types at runtime**.
+- Instances are mutable by default.
+- Useful for creating lightweight classes with behavior.
+
+**Example:**
+```python
+from dataclasses import dataclass
+
+@dataclass
+class Device:
+    name: str
+    type: str
+    value: float
+```
+
+---
+
+### `TypedDict`:
+- Introduced in `typing` (Python 3.8+) for **static type checking**.
+- Represents the expected shape of a dictionary with specific key names and types.
+- Provides **no runtime type enforcement** or methods.
+- Instances are plain dictionaries, not objects.
+- Useful for defining the structure of JSON or dict data for type checkers.
+
+**Example:**
+```python
+from typing import TypedDict
+
+class DeviceDict(TypedDict):
+    name: str
+    type: str
+    value: float
+```
+
+
+### Summary:
+| Feature | `dataclass` | `TypedDict` |
+|---------|-------------|-------------|
+| Structure | Class with fields | Dictionary with typed keys |
+| Runtime behavior | Has methods | Plain dict |
+| Type enforcement | No runtime enforcement | No runtime enforcement |
+| Use case | Lightweight objects with behavior | Typed JSON/dict structures |
+
+✅ Use **`dataclass`** when you need structured, behavior-enabled objects.
+✅ Use **`TypedDict`** when you need static type checking for dictionary-shaped data.
+
+
+
 ### any and all
 ```python
 
