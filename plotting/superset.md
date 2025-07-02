@@ -52,6 +52,73 @@ or using the Superset CLI with
 - **Dashboards = organized collection of charts and filters for comprehensive analysis.**
 
 
+### How to apply the same filter to all charts in a Superset dashboard
+To apply the same filter (e.g., date range, dropdown selector) across all charts   
+use Superset’s native filter components.
+
+1️⃣ Add a filter component to your dashboard
+Open your dashboard.
+
+Click Edit Dashboard.
+
+Click + Add → Add Filter Box (or Add Native Filter if using the newer interface).
+
+Choose the filter type:  
+- Time range filter  
+- Dropdown filter (select field values)  
+- Numeric range filter, etc.  
+
+#### Configure the filter:
+
+Select the dataset you want to filter.  
+Select the column you wish to filter on (e.g., state, city, date).  
+Set display options if needed (multi-select, search).  
+
+2️⃣ Configure filter scope to apply to all charts
+After creating the filter:  
+Click the three-dot menu (⋮) on the filter component.  
+Select Set filter scope.  
+A modal will appear showing all charts in the dashboard.  
+Click “All” or manually select all charts you wish the filter to apply to.  
+Click Apply.
+
+✅ This ensures that the filter will apply to all charts in the dashboard using the same dataset or compatible columns.
+
+3️⃣ Verify filter propagation
+Save and refresh your dashboard.
+
+Change the filter (e.g., select a different state).
+
+All charts should automatically update to reflect the filtered values.
+
+🚩 Important considerations
+✅ Datasets must align: For the filter to apply across charts, the charts should:
+-- Use the same dataset, or
+-  Use datasets with columns of the same name and type.
+
+✅ For time filters:
+
+-- Use the Time Range filter for consistency.
+-- Ensure all charts use the appropriate time column configured in your dataset.
+
+✅ Native filters vs legacy Filter Box:
+
+Native filters are the recommended, modern approach in Superset and provide clearer scoping and UI.
+
+The legacy Filter Box is older and less flexible.
+
+✅ Summary
+✅ To apply the same filter to all charts in Superset:
+
+Create a Native Filter on your dashboard.
+
+Set its scope to “All charts” (or desired charts).
+
+Save and test by changing filter values.
+
+
+
+
 ### Examples superset/examples
 pwd  
 /Users/mlubinsky/CODE/SUPERSET/superset-venv/lib/python3.10/site-packages/superset/examples
