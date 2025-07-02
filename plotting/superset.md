@@ -107,14 +107,11 @@ Native filters are the recommended, modern approach in Superset and provide clea
 
 The legacy Filter Box is older and less flexible.
 
-✅ Summary
-✅ To apply the same filter to all charts in Superset:
+✅ Summary: To apply the same filter to all charts in Superset:
 
-Create a Native Filter on your dashboard.
-
-Set its scope to “All charts” (or desired charts).
-
-Save and test by changing filter values.
+- Create a Native Filter on your dashboard.  
+- Set its scope to “All charts” (or desired charts).  
+- Save and test by changing filter values.
 
 
 
