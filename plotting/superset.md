@@ -113,6 +113,89 @@ The legacy Filter Box is older and less flexible.
 - Set its scope to “All charts” (or desired charts).  
 - Save and test by changing filter values.
 
+### Guide to multi-filter interactions in Superset**:
+
+- **Filter 1:** US State (populated from `States` table).
+- **Filter 2:** City (populated from `Cities` table, dynamically filtered based on the selected state).
+
+---
+
+## ✅ Goal
+User selects a **state** from Filter 1 → Filter 2 dynamically populates with **cities from that state** using `Cities` table in Postgres → All charts in the dashboard filter accordingly.
+
+---
+
+## 1️⃣ Prepare your datasets
+
+- In Superset, **create a dataset from your `States` table**:
+  - Table: `States`
+  - Columns: `state`
+
+- Create another **dataset from your `Cities` table**:
+  - Table: `Cities`
+  - Columns: `state`, `city`
+
+✅ Ensure these datasets are published in Superset.
+
+---
+
+## 2️⃣ Create the dashboard and add Native Filters
+
+### Add **Filter 1: State**
+
+1. Open your dashboard, click **Edit Dashboard**.
+2. Click **+ Add** → **Add Filter**.
+3. In the **Filter Configuration**:
+   - **Dataset:** `States`
+   - **Filter Type:** Dropdown
+   - **Filter Column:** `state`
+   - Optionally enable multi-select and search.
+
+Save and place this filter on your dashboard.
+
+---
+
+### Add **Filter 2: City (dependent filter)**
+
+1. Click **+ Add** → **Add Filter** again.
+2. In the **Filter Configuration**:
+   - **Dataset:** `Cities`
+   - **Filter Type:** Dropdown
+   - **Filter Column:** `city`
+
+3. Click **“Add filter dependency”** (shown as “Add parent filter” in the UI).
+4. Select **Filter 1 (state)** as the parent filter.
+5. Configure the dependency:
+   - **Parent column:** `state` in `States` dataset.
+   - **Child column:** `state` in `Cities` dataset.
+
+✅ Now, **Filter 2 will only show cities based on the selected state in Filter 1.**
+
+---
+
+## 3️⃣ Scope filters to charts
+
+- For each filter:
+  - Click the **three-dot menu (⋮)** on the filter → **Set filter scope**.
+  - Select all charts you want these filters to apply to.
+  - Click **Apply**.
+
+✅ Both filters will now apply to charts using datasets that include `state` and/or `city` columns, filtering them accordingly.
+
+---
+
+## 🚩 Important Considerations
+
+✅ **Dependencies only work if:**
+- The `state` columns are aligned in name and type across datasets.
+- Datasets are properly published in Superset.
+
+✅ **Recommended:**
+- Enable **search** for filters for a better UX.
+- Add **default values** if needed for dashboard initialization.
+
+✅ If your charts are based on another dataset (e.g., `Sales`), ensure that dataset also has `state` and `city` columns so filters can apply.
+
 
 
 
