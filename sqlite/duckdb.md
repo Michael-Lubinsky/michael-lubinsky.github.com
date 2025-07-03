@@ -1,4 +1,15 @@
 ### DuckDB
+```python
+# No need to load CSV file explicitely!
+max_q2 = duckdb.execute(
+    f"""
+    SELECT max(Q2) FROM "{csv_file}";
+    """
+).fetchone()[0]
+
+print(f"{max_q2} max quantity in csv file")
+```
+
 https://realpython.com/python-duckdb
 
 https://realpython.com/courses/starting-duckdb-python/
