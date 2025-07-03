@@ -101,13 +101,78 @@ plt.show()
 
 ```
 
+Here is a clear technical explanation:
 
-<https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
+---
 
-<https://www.statology.org/understanding-the-difference-between-parametric-and-nonparametric-tests/>
+### Find the sum of 2 uniform distributions
+- Two independent uniform distributions X ~ U[a,b], Y ~ U[c,d].
+- They have the same mean and same standard deviation.
 
 
-### how to find the right distribution for your data
+### 1) Determining the ranges:
+For a uniform U[p,q]:
+- Mean: mu = (p+q)/2
+- Standard deviation: sigma = (q-p)/sqrt(12)
+
+Having same mean and standard deviation implies:
+b - a = d - c
+and
+(a + b)/2 = (c + d)/2
+which means:
+a = c, b = d
+
+Thus: X and Y are identically distributed on the same interval [a,b].
+
+---
+
+### 2) Distribution of Z = X + Y
+
+If X and Y are independent and uniform on the same interval [a,b], then:
+- The distribution of Z = X + Y will be the Irwin-Hall distribution of order 2 (the convolution of two uniform distributions).
+
+Specifically:
+
+- The support will be:
+[2a, 2b]
+
+- The probability density function (PDF) of Z will be:
+
+f_Z(z) =
+    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b
+    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b
+    0 ,                         otherwise
+
+---
+
+### 3) Properties of Z
+- Shape: Triangular distribution (tent shape).
+- Mean:
+E[Z] = E[X] + E[Y] = 2 * E[X] = 2 * mu
+- Variance:
+Var[Z] = Var[X] + Var[Y] = 2 * sigma^2
+- Standard deviation:
+sigma_Z = sqrt(2) * sigma
+
+---
+
+### Summary
+
+The distribution of X + Y where X, Y are independent uniform distributions with the same mean and standard deviation is a triangular distribution on [2a, 2b] with a peak at a + b.
+
+The PDF is explicitly:
+f_Z(z) =
+    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b
+    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b
+    0 ,                         otherwise
+
+If you want, I can generate a plot to visualize this clearly, illustrating the triangular shape explicitly for your intuition. Let me know if needed.
+
+
+
+
+
+### How to find the right distribution for your data
 
 <https://medium.com/data-science-collective/how-to-find-the-right-distribution-for-your-data-a-practical-guide-for-non-statistician-with-two-dc2aa0ed707f>
 
@@ -141,6 +206,11 @@ https://medium.com/data-bistrot/bernoulli-distribution-with-python-0416e196e752
 
 https://medium.com/data-bistrot/bionomial-distribution-with-python-05d4a1725811  
 https://medium.com/data-bistrot/uniform-and-normal-statistical-distribution-in-python-6d07fd5fc552
+
+
+<https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
+
+<https://www.statology.org/understanding-the-difference-between-parametric-and-nonparametric-tests/>
 
 
 #### Poisson distrib   
