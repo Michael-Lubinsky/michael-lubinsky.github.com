@@ -22,6 +22,7 @@ https://github.com/turbolytics/sql-flow
 
 https://medium.com/@egzonbaruti/getting-started-with-duckdb-and-dbt-a-simple-guide-to-modern-data-transformation-f7c6093a3693
 
+https://habr.com/ru/companies/cinimex/articles/913878/
 
 ###   DuckDB pg extension?
 The pg extension in DuckDB provides PostgreSQL compatibility functions and types inside DuckDB, allowing:
