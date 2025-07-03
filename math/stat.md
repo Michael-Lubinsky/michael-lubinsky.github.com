@@ -101,10 +101,7 @@ plt.show()
 
 ```
 
-Here is a clear technical explanation:
-
----
-
+ 
 ### Find the sum of 2 uniform distributions
 - Two independent uniform distributions X ~ U[a,b], Y ~ U[c,d].
 - They have the same mean and same standard deviation.
@@ -118,30 +115,28 @@ For a uniform U[p,q]:
 Having same mean and standard deviation implies:
 b - a = d - c
 and
-(a + b)/2 = (c + d)/2
-which means:
+(a + b)/2 = (c + d)/2  
+which means:  
 a = c, b = d
 
 Thus: X and Y are identically distributed on the same interval [a,b].
 
----
+ 
 
 ### 2) Distribution of Z = X + Y
 
-If X and Y are independent and uniform on the same interval [a,b], then:
-- The distribution of Z = X + Y will be the Irwin-Hall distribution of order 2 (the convolution of two uniform distributions).
+If X and Y are independent and uniform on the same interval [a,b], then:  
+- The distribution of Z = X + Y will be the Irwin-Hall distribution of order 2  
+  (the convolution of two uniform distributions).
 
 Specifically:
-
-- The support will be:
-[2a, 2b]
-
+- The support will be: [2a, 2b]  
 - The probability density function (PDF) of Z will be:
 
 f_Z(z) =
-    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b
-    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b
-    0 ,                         otherwise
+    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b  
+    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b  
+    0 ,                         otherwise  
 
 ---
 
@@ -154,11 +149,11 @@ Var[Z] = Var[X] + Var[Y] = 2 * sigma^2
 - Standard deviation:
 sigma_Z = sqrt(2) * sigma
 
----
 
 ### Summary
 
-The distribution of X + Y where X, Y are independent uniform distributions with the same mean and standard deviation is a triangular distribution on [2a, 2b] with a peak at a + b.
+The distribution of X + Y where X, Y are independent uniform distributions   
+with the same mean and standard deviation is a triangular distribution on [2a, 2b] with a peak at a + b.  
 
 The PDF is explicitly:
 f_Z(z) =
@@ -168,7 +163,7 @@ f_Z(z) =
 
 
 
-
+<https://habr.com/ru/articles/924770/>
 
 
 ### How to find the right distribution for your data
