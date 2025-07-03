@@ -2,7 +2,7 @@
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
-<https://github.com/grafana/alloy>
+<https://github.com/grafana/alloy>  <https://grafana.com/docs/alloy/latest/>
 
 ### Publish-Subscribe vs Client-Server
 
