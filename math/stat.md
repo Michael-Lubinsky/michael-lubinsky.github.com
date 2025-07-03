@@ -162,11 +162,10 @@ The distribution of X + Y where X, Y are independent uniform distributions with 
 
 The PDF is explicitly:
 f_Z(z) =
-    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b
-    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b
-    0 ,                         otherwise
+    (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b  
+    (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b  
+    0 ,                         otherwise  
 
-If you want, I can generate a plot to visualize this clearly, illustrating the triangular shape explicitly for your intuition. Let me know if needed.
 
 
 
