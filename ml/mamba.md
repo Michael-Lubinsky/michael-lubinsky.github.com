@@ -1,5 +1,7 @@
 Reinforcement learning: https://www.understandingai.org/p/reinforcement-learning-explained
 
+Book:
+https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
 
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
 
