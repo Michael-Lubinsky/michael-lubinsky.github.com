@@ -1,3 +1,5 @@
+https://openai.com/index/introducing-codex/
+
 https://grep.app/ search on github
 
 Book: how to build API
