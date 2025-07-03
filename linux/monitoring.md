@@ -3,9 +3,9 @@
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
-### Grafana
+### Grafana Automation
 <https://github.com/grafana/grafanactl>  
-
+<https://grafana.github.io/grafana-foundation-sdk/>
 
 #### Grafonnet
 <https://grafana.github.io/grafonnet/>  
