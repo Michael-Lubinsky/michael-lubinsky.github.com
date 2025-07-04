@@ -246,7 +246,8 @@ if service nginx status | grep -q "dead"; then
     systemctl restart nginx
 fi
 ```
-### monitoring file change
+### monitoring files change in folder
+It does not monitor subfolders inside folder by default.
 ```bash
 sudo apt install inotify-tools  # for Debian/Ubuntu
 
