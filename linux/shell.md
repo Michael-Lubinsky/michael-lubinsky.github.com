@@ -276,6 +276,38 @@ The script prints:
 
 nginx.conf was modified
 ```
+#### Extended script:
+```bash
+#!/usr/bin/env bash
+
+# Ensure inotify-tools is installed
+command -v inotifywait >/dev/null 2>&1 || {
+    echo "inotifywait not found, installing inotify-tools..."
+    sudo apt update
+    sudo apt install -y inotify-tools
+}
+
+LOG_FILE="/var/log/nginx_watch.log"
+
+echo "Monitoring /etc/nginx recursively for modifications..."
+echo "Logging to $LOG_FILE"
+
+inotifywait -m -r /etc/nginx -e modify |
+while read path action file; do
+    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+    FULL_PATH="${path}${file}"
+    echo "$TIMESTAMP: $FULL_PATH was modified" | tee -a "$LOG_FILE"
+
+    # Check nginx configuration before reload
+    if nginx -t >/dev/null 2>&1; then
+        echo "$TIMESTAMP: Reloading nginx..." | tee -a "$LOG_FILE"
+        sudo systemctl reload nginx
+    else
+        echo "$TIMESTAMP: nginx config test failed. Skipping reload." | tee -a "$LOG_FILE"
+    fi
+done
+
+```
 
 ### exec
 
