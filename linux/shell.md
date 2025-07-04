@@ -246,6 +246,16 @@ if service nginx status | grep -q "dead"; then
     systemctl restart nginx
 fi
 ```
+### monitoring file change
+```bash
+sudo apt install inotify-tools  # for Debian/Ubuntu
+
+inotifywait -m /etc/nginx -e modify |
+while read path action file; do
+    echo "$file was modified"
+done
+```
+
 ### exec
 
 ```bash
