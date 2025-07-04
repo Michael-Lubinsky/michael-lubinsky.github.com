@@ -249,6 +249,7 @@ done
 ```
 
 ### Folder watcher using inotifywait
+To monitor all files recursively including subfolders, you need to add the -r flag to inotifywait.
 ```bash
 #!/bin/bash
 directory="/path/to/watch"
