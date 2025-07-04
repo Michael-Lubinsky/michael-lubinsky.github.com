@@ -348,6 +348,7 @@ However, it becomes powerful when extended with open-source libraries like:
 
 #### GeoSpark (now Apache Sedona)
 Apache Sedona is the most popular open-source geospatial extension for Apache Spark.
+<https://www.youtube.com/watch?v=V__Lq72ge5A>
 
 Adds native support for spatial types: Point, Polygon, LineString, etc.
 
