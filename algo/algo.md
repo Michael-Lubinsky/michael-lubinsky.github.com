@@ -16,6 +16,7 @@ https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 
 https://neetcode.io/roadmap
 
+https://habr.com/ru/articles/924828/
 
 ### компактных структур данных  succinct data structure
 
