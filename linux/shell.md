@@ -247,7 +247,8 @@ if service nginx status | grep -q "dead"; then
 fi
 ```
 ### monitoring files change in folder
-It does not monitor subfolders inside folder by default.
+It does not monitor subfolders inside folder by default.  
+To monitor all files recursively including subfolders, you need to add the -r flag to inotifywait.
 ```bash
 sudo apt install inotify-tools  # for Debian/Ubuntu
 
