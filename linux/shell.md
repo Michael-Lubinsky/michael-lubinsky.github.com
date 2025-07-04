@@ -254,7 +254,7 @@ sudo apt install inotify-tools  # for Debian/Ubuntu
 
 inotifywait -m /etc/nginx -e modify |
 while read path action file; do
-    echo "$file was modified"
+    echo "$path$file was modified"
 done
 ```
 Explanation of script above:
