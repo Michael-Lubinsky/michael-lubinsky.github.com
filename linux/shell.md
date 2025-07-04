@@ -240,6 +240,12 @@ if [ $attempt -gt $TRIES ]; then
 fi
 ```
 
+### restart service
+```bash
+if service nginx status | grep -q "dead"; then
+    systemctl restart nginx
+fi
+```
 ### exec
 
 ```bash
