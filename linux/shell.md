@@ -255,6 +255,25 @@ while read path action file; do
     echo "$file was modified"
 done
 ```
+Explanation of script above:
+```
+inotifywait -m /etc/nginx -e modify:
+-m means monitor continuously (do not exit after the first event).
+/etc/nginx is the directory being monitored.
+-e modify watches for modification events.
+| while read path action file; do ... done:
+
+For each modify event, inotifywait outputs:
+/etc/nginx MODIFY nginx.conf
+which is parsed as:
+path = /etc/nginx
+action = MODIFY
+file = nginx.conf
+
+The script prints:
+
+nginx.conf was modified
+```
 
 ### exec
 
