@@ -62,16 +62,6 @@ while True:
 ```
 
 
-### File watcher
-```bash
-#!/bin/bash
-directory="/path/to/watch"
-inotifywait -m -r -e create,modify,delete "$directory" |
-while read path action file; do
-    echo "File $file was $action."
-done
-```
-
 #### Processing ever growing text file
 
 To safely tail a growing file in real-time, line by line, and ensure only fully written lines  
@@ -246,7 +236,30 @@ if service nginx status | grep -q "dead"; then
     systemctl restart nginx
 fi
 ```
-### monitoring files change in folder
+
+
+
+### File watcher using inotifywait
+To monitor a single file only using inotifywait,  specify the full path to the file instead of the directory.
+```bash
+inotifywait -m /etc/nginx/nginx.conf -e modify |
+while read path action file; do
+    echo "$file in $path was modified"
+done
+```
+
+### Folder watcher using inotifywait
+```bash
+#!/bin/bash
+directory="/path/to/watch"
+inotifywait -m -r -e create,modify,delete "$directory" |
+while read path action file; do
+    echo "File $file was $action."
+done
+```
+
+
+### Monitoring files change in folder using inotifywait
 It does not monitor subfolders inside folder by default.  
 To monitor all files recursively including subfolders, you need to add the -r flag to inotifywait.
 ```bash
