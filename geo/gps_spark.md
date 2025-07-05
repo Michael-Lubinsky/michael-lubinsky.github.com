@@ -597,5 +597,8 @@ This dramatically improves performance for large datasets.
 | Ad hoc queries        | ❌ Higher latency (Spark startup)            | ✅ Very fast for small/medium datasets |
 
 
+https://kepler.gl/   open source geospatial analysis tool for large-scale data sets.
+https://deck.gl/   GPU-powered framework for visual exploratory data analysis of large datasets.
+
 ## GIS with DuckDB
 <https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/>
