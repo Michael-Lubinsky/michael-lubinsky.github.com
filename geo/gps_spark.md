@@ -132,7 +132,13 @@ Example output
 ###  Real-Time GPS Data Processing with PySpark Streaming
 Input:
 ```json
-{"user_id": "u1", "timestamp": "2024-01-01T08:00:00", "latitude": 37.7749, "longitude": -122.4194}
+{
+"user_id": "u1",
+"timestamp":
+"2024-01-01T08:00:00",
+"latitude": 37.7749,
+"longitude": -122.4194
+}
 ```
 #### Stream Pipeline Steps
 1. Read JSON records from socket or Kafka
