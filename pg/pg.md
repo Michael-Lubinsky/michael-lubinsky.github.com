@@ -1,5 +1,5 @@
 ## Postgres
-
+<https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 ### FILTER
 FILTER is a SQL keyword supported by PostgreSQL that allows you  
 to apply a WHERE-like filter inside an aggregate function, making it easy to compute conditional aggregates.
