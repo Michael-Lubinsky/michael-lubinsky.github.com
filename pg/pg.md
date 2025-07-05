@@ -49,7 +49,7 @@ CREATE INDEX idx_products_name ON products USING GIN ((data->'name'));
 -- Index for containment operations (extremely fast)
 CREATE INDEX idx_products_specs ON products USING GIN (data jsonb_path_ops);
 ```
-PostgreSQL offers four different index types for JSONB data (B-tree, GIN, GiST, and hash), each optimized for different query patterns. MongoDB offers fewer options and with less flexibility.
+PostgreSQL offers four different index types for JSONB data (B-tree, GIN, GiST, and hash), each optimized for different query patterns. 
 
  
 ```sql
@@ -74,8 +74,7 @@ WHERE jsonb_path_query_first(data, '$.price ? (@ > 500)') IS NOT NULL;
 -- Extract value with path expression
 SELECT jsonb_path_query(data, '$.specs.ram') FROM products;
 ```
-These expressions offer incredible flexibility and power for querying complex nested JSON structures, often outperforming MongoDB’s query syntax in both readability and performance.
-
+These expressions offer  flexibility and power for querying complex nested JSON structures.
 Schema Flexibility:
 ```sql
 CREATE TABLE users (
@@ -91,6 +90,16 @@ Schema enforcement for critical fields (ID, email, timestamps)
 Validation through check constraints  
 Complete flexibility for the profile data that can evolve as your application changes
 <https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
+
+```sql
+-- Find price percentiles across product categories
+SELECT 
+    data->>'category' AS category,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY (data->>'price')::numeric) AS median_price,
+    percentile_cont(0.9) WITHIN GROUP (ORDER BY (data->>'price')::numeric) AS p90_price
+FROM products
+GROUP BY data->>'category';
+```
 
 ### Extensions
 <https://www.postgresql.org/docs/current/contrib.html>  
