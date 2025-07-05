@@ -134,8 +134,7 @@ Input:
 ```json
 {
 "user_id": "u1",
-"timestamp":
-"2024-01-01T08:00:00",
+"timestamp": "2024-01-01T08:00:00",
 "latitude": 37.7749,
 "longitude": -122.4194
 }
