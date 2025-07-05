@@ -1,10 +1,12 @@
 https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
 
+https://habr.com/ru/companies/amvera/articles/925206/
+
 https://blog.det.life/vector-databases-2025-everything-you-really-need-to-know-9c2a68b367ec
 
 https://arxiv.org/pdf/2401.09350.pdf
 
-https://habr.com/ru/companies/ruvds/articles/863704/
+https://habr.com/ru/companies/ruvds/articles/863704/ Всё про Qdrant. Обзор векторной базы данных
 
 https://getdeploying.com/guides/vector-databases
 
