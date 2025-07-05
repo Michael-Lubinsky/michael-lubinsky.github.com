@@ -1,8 +1,8 @@
 ### Docker
 
-<https://github.com/jesseduffield/lazydocker> LazyDocker
-<https://github.com/anilrajrimal1/dockedup> DockedUp
-
+<https://github.com/jesseduffield/lazydocker> LazyDocker  
+<https://github.com/anilrajrimal1/dockedup> DockedUp 
+<https://codingplainenglish.medium.com/docker-is-dead-and-its-about-time-b457d14b0a72> 
 <https://bitnami.com/stacks?stack=containers>
 
  The Bitnami image packs Hadoop and Spark in a cluster:
