@@ -232,7 +232,7 @@ Consider using mapWithState or flatMapGroupsWithState for full control over sess
 
 
 ### Kafka Example:
-```
+```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, col, lag, radians, sin, cos, sqrt, atan2, unix_timestamp, to_json, struct
 from pyspark.sql.types import StructType, StringType, DoubleType, TimestampType
@@ -596,9 +596,8 @@ This dramatically improves performance for large datasets.
 | Ad hoc queries        | ❌ Higher latency (Spark startup)            | ✅ Very fast for small/medium datasets |
 
 
-<https://kepler.gl/>   open source geospatial analysis tool for large-scale data sets.
-<https://deck.gl/>   GPU-powered framework for visual exploratory data analysis of large datasets.
-<https://habr.com/ru/companies/ruvds/articles/917898/> GPS accuracy in city (urban canyon)
+<https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/> GIS with DuckDB  
+<https://kepler.gl/>  geospatial analysis tool for large-scale data sets.  
+<https://deck.gl/>   GPU-powered framework for visual exploratory data analysis of large datasets.  
+<https://habr.com/ru/companies/ruvds/articles/917898/> GPS accuracy in city (urban canyon)  
 
-## GIS with DuckDB
-<https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/>
