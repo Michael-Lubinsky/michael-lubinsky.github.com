@@ -41,6 +41,9 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 <https://habr.com/ru/articles/914650/> Descriptors in Python
 
+
+<https://python.plainenglish.io/mastering-the-hidden-layers-of-python-building-a-modular-file-processing-system-from-scratch-4871e5541553>
+
 <https://medium.com/@CodeWithHannan/10-python-workflows-for-high-volume-etl-pipelines-54d57728b773>
 
 <https://medium.com/@abdullah.iu.cse/mastering-python-with-these-code-snippets-part-4-de4441e29260>
