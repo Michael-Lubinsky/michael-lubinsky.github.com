@@ -97,6 +97,9 @@ Complete flexibility for the profile data that can evolve as your application ch
 
 ### WITHIN GROUP
 
+WITHIN GROUP is used with ordered-set aggregate functions to perform aggregations  
+that require order over the input data, like percentile_cont, percentile_disc, and mode.
+
 ```sql
 -- Find price percentiles across product categories
 SELECT 
