@@ -95,6 +95,19 @@ while True:
 
 ```
 
+```python
+from confluent_kafka import Consumer
+c = Consumer({
+    'bootstrap.servers': 'localhost:9092',
+    'group.id': 'etl-group',
+    'auto.offset.reset': 'earliest'
+})
+c.subscribe(['events'])
+while True:
+    msg = c.poll(1.0)
+    if msg:
+        process_event(msg.value())
+```
 
 <https://kafka-python.readthedocs.io/en/master/>
 #### Kafka Producer:
