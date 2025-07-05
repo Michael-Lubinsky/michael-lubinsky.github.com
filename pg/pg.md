@@ -26,7 +26,7 @@ FROM sales;
 | Example                  | `COUNT(*) FILTER (WHERE col IS NOT NULL)` | `SUM(CASE WHEN col IS NOT NULL THEN 1 ELSE 0 END)` |
 | Readability              | High                                      | Moderate                                           |
 
-### JSONDB
+### JSONB
 
 ```sql
 -- Creating a table with a JSONB column
@@ -90,6 +90,9 @@ Schema enforcement for critical fields (ID, email, timestamps)
 Validation through check constraints  
 Complete flexibility for the profile data that can evolve as your application changes
 <https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
+
+
+<https://habr.com/ru/companies/sigma/articles/890668/>
 
 ```sql
 -- Find price percentiles across product categories
@@ -507,9 +510,37 @@ FROM tenk1 t1, tenk2 t2
 WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
 ORDER BY t1.fivethous;
 ```
-### JSONB
 
-<https://habr.com/ru/companies/sigma/articles/890668/>
+
+
+### Backup
+
+```bash
+#!/bin/bash
+
+DB_NAME=${1:-mydatabase}
+BACKUP_DIR=${2:-/backups}
+USER_NAME=${3:-postgres}
+
+TIMESTAMP=$(date +"%F_%T")
+FILENAME="$BACKUP_DIR/${DB_NAME}_backup_$TIMESTAMP.sql"
+
+mkdir -p "$BACKUP_DIR"
+
+echo "💾 Backing up database '$DB_NAME' to $FILENAME"
+pg_dump -U "$USER_NAME" "$DB_NAME" > "$FILENAME"
+
+if [ $? -eq 0 ]; then
+  echo "✅ Backup successful!"
+else
+  echo "❌ Backup failed!"
+fi
+```
+Usage:
+```bash
+chmod +x pg_backup.sh
+./pg_backup.sh yourdb /your/backup/folder your_pg_user
+```
 
 ### Full text search
 
