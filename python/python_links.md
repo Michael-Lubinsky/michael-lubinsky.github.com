@@ -37,9 +37,11 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
 
-https://pypi.org/project/sqlxport/ read from Postgres and Redshift and save as parquet (optionally on S3)
+<https://pypi.org/project/sqlxport/> read from Postgres and Redshift and save as parquet (optionally on S3)
 
-https://habr.com/ru/articles/914650/ Descriptors in Python
+<https://habr.com/ru/articles/914650/> Descriptors in Python
+
+<https://medium.com/@CodeWithHannan/10-python-workflows-for-high-volume-etl-pipelines-54d57728b773>
 
 <https://medium.com/@abdullah.iu.cse/mastering-python-with-these-code-snippets-part-4-de4441e29260>
 
