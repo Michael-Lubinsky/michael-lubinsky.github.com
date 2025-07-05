@@ -76,8 +76,7 @@ SELECT jsonb_path_query(data, '$.specs.ram') FROM products;
 ```
 These expressions offer incredible flexibility and power for querying complex nested JSON structures, often outperforming MongoDB’s query syntax in both readability and performance.
 
-Schema Flexibility Without the Downsides
-With PostgreSQL, you can have:
+Schema Flexibility:
 ```sql
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -88,8 +87,8 @@ CREATE TABLE users (
 ```
 This gives you:
 
-Schema enforcement for critical fields (ID, email, timestamps)
-Validation through check constraints
+Schema enforcement for critical fields (ID, email, timestamps)  
+Validation through check constraints  
 Complete flexibility for the profile data that can evolve as your application changes
 <https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
 
