@@ -26,7 +26,20 @@ FROM sales;
 | Example                  | `COUNT(*) FILTER (WHERE col IS NOT NULL)` | `SUM(CASE WHEN col IS NOT NULL THEN 1 ELSE 0 END)` |
 | Readability              | High                                      | Moderate                                           |
 
+### JSONDB
 
+```sql
+-- Creating a table with a JSONB column
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    data JSONB
+);
+
+-- Inserting a document
+INSERT INTO products (data) VALUES (
+    '{"name": "Smartphone", "price": 699.99, "specs": {"ram": "8GB", "storage": "256GB"}, "colors": ["black", "silver", "blue"]}'
+);
+```
 ### Extensions
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://pgxn.org/>  
