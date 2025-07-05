@@ -92,7 +92,10 @@ Complete flexibility for the profile data that can evolve as your application ch
 <https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
 
 
-<https://habr.com/ru/companies/sigma/articles/890668/>
+<https://habr.com/ru/companies/sigma/articles/890668/> Использование JSONB-полей вместо EAV в PostgreSQL
+
+
+### WITHIN GROUP
 
 ```sql
 -- Find price percentiles across product categories
