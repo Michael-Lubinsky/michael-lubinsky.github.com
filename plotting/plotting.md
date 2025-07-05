@@ -112,6 +112,10 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 ### Plotting Libs
 
+https://github.com/d3blocks/d3blocks
+
+https://medium.com/data-science-collective/d3blocks-the-python-library-to-create-interactive-standalone-and-beautiful-d3-js-charts-ef8c65286e86
+
 <https://lets-plot.org/>
 
 <https://pypi.org/project/canvasxpress/>
