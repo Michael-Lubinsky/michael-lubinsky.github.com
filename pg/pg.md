@@ -39,7 +39,60 @@ CREATE TABLE products (
 INSERT INTO products (data) VALUES (
     '{"name": "Smartphone", "price": 699.99, "specs": {"ram": "8GB", "storage": "256GB"}, "colors": ["black", "silver", "blue"]}'
 );
+ 
+-- Create a GIN index for general JSONB queries
+CREATE INDEX idx_products_data ON products USING GIN (data);
+
+-- Create a targeted index for a specific property
+CREATE INDEX idx_products_name ON products USING GIN ((data->'name'));
+
+-- Index for containment operations (extremely fast)
+CREATE INDEX idx_products_specs ON products USING GIN (data jsonb_path_ops);
 ```
+PostgreSQL offers four different index types for JSONB data (B-tree, GIN, GiST, and hash), each optimized for different query patterns. MongoDB offers fewer options and with less flexibility.
+
+ 
+```sql
+-- Find products with 8GB RAM
+SELECT * FROM products WHERE data->'specs'->>'ram' = '8GB';
+
+-- Find products available in blue color
+SELECT * FROM products WHERE data->'colors' ? 'blue';
+
+-- Find smartphones with at least 128GB storage (using containment)
+SELECT * FROM products WHERE data @> '{"specs": {"storage": "256GB"}}';
+```
+The @> containment operator is particularly powerful and   especially when combined with GIN indexes.
+
+JSON Path Expressions
+PostgreSQL’s implementation of SQL/JSON path expressions 
+```sql
+-- Find products with prices over 500
+SELECT * FROM products 
+WHERE jsonb_path_query_first(data, '$.price ? (@ > 500)') IS NOT NULL;
+
+-- Extract value with path expression
+SELECT jsonb_path_query(data, '$.specs.ram') FROM products;
+```
+These expressions offer incredible flexibility and power for querying complex nested JSON structures, often outperforming MongoDB’s query syntax in both readability and performance.
+
+Schema Flexibility Without the Downsides
+With PostgreSQL, you can have:
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    profile JSONB
+);
+```
+This gives you:
+
+Schema enforcement for critical fields (ID, email, timestamps)
+Validation through check constraints
+Complete flexibility for the profile data that can evolve as your application changes
+<https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
+
 ### Extensions
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://pgxn.org/>  
