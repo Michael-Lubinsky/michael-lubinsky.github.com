@@ -3,6 +3,221 @@
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
+
+### Monitiring Postgres with Grafana
+
+Configure PostgreSQL
+Modify the authentication method in the pg_hba.conf file to use scram-sha-256   
+instead of peer for local connections. 
+This will allow you to use password-based authentication to the server.
+```
+Local all all scram-sha-256
+```
+Restart the server:
+
+```sudo systemctl restart postgresql```
+
+Create a database user for monitoring and set a password for this user:
+
+```CREATE USER monitoring_user WITH PASSWORD test@1234 SUPERUSER;```
+
+Install the postgres_exporter <https://github.com/prometheus-community/postgres_exporter>
+Download the latest release of the postgres_exporter binary:
+
+```wget https://github.com/prometheus-community/postgres_exporter/releases/download/v0.14.0/postgres_exporter-0.14.0.linux-amd64.tar.gz```
+Unzip the binary:
+
+tar xzf postgres_exporter-0.14.0.linux-amd64.tar.gz
+
+Move postgres_exporter binary to /usr/local/bin:
+
+```sudo cp postgres_exporter /usr/local/bin```
+
+#### Configure the postgres_exporter
+Create a new directory under /opt to store connection information for the PostgreSQL server:
+```
+mkdir /opt/postgres_exporter
+echo DATA_SOURCE_NAME="postgresql://monitoring_user:test@1234@localhost:5432/?sslmode=disable" > /opt/postgres_exporter/postgres_exporter.env
+```
+Create a service file for the postgres_exporter:
+```ini
+echo '[Unit]
+Description=Postgres exporter for Prometheus
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=postgres
+Group=postgres
+WorkingDirectory=/opt/postgres_exporter
+EnvironmentFile=/opt/postgres_exporter/postgres_exporter.env
+ExecStart=/usr/local/bin/postgres_exporter --web.listen-address=localhost:9100 --web.telemetry-path=/metrics
+Restart=always
+[Install]|
+WantedBy=multi-user.target' >> /etc/systemd/system/postgres_exporter.service
+```
+Since we created a new service file, it is better to reload the demon once so it recognizes the new file:
+
+```sudo systemctl daemon-reload```
+
+Start and enable the postgres_exporter service:
+
+```sudo systemctl start postgres_exporter sudo systemctl enable postgres_exporter```
+
+Check the service status:
+```
+sudo systemctl status postgres_exporter
+  postgres_exporter.service - Prometheus exporter for Postgresql
+     Loaded: loaded (/etc/systemd/system/postgres_exporter.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2024-03-05 13:52:56 UTC; 2h 15min ago
+   Main PID: 9438 (postgres_export)
+      Tasks: 6 (limit: 9498)
+```
+Verify the postgres_exporter setup from the browser: 
+```localhost:9100/metrics```
+
+
+#### Set up the Prometheus and Grafana server
+Install Prometheus
+Create a system group named Prometheus:
+
+sudo groupadd --system prometheus
+
+Create a system user named Prometheus in a Prometheus group without an interactive login:
+
+sudo useradd -s /sbin/nologin --system -g prometheus prometheus
+
+Creating the required directory structure:
+
+sudo mkdir /etc/prometheus sudo mkdir /var/lib/prometheus
+
+Download the Prometheus source:
+
+wget https://github.com/prometheus/prometheus/releases/download/v2.43.0/prometheus-2.43.0.linux-amd64.tar.gz
+
+Decompress the source code:
+
+tar vxf prometheus*.tar.gz
+
+Set up proper permissions for the installation files:
+```bash
+cd prometheus*/
+sudo mv prometheus /usr/local/bin
+sudo mv promtool /usr/local/bin
+sudo chown prometheus:prometheus /usr/local/bin/prometheus
+sudo chown prometheus:prometheus /usr/local/bin/promtool
+sudo mv consoles /etc/prometheus
+sudo mv console_libraries /etc/prometheus
+sudo mv prometheus.yml /etc/prometheus
+sudo chown prometheus:prometheus /etc/prometheus
+sudo chown -R prometheus:prometheus /etc/prometheus/consoles
+sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries
+sudo chown -R prometheus:prometheus /var/lib/prometheus
+```
+#### Configure Prometheus
+Add the PostgreSQL Exporter configurations inside the prometheus.yml file at the following location:
+```
+ /etc/prometheus/prometheus.yml
+scrape_configs:
+  - job_name: "Postgres exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: [localhost:9100]
+```
+Create a new service file for Prometheus at the following location:
+
+/etc/systemd/system/prometheus.service
+```ini
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+```
+
+```
+ExecStart=/usr/local/bin/prometheus \
+    --config.file /etc/prometheus/prometheus.yml \
+    --storage.tsdb.path /var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries
+```
+
+```ini
+[Install]
+WantedBy=multi-user.target
+```
+
+Reload systemd manager:
+
+sudo systemctl daemon-reload
+
+Start the Prometheus service:
+
+sudo systemctl enable prometheus sudo systemctl start prometheus
+
+Verify the Prometheus service:
+```
+sudo systemctl status prometheus
+  prometheus.service - Prometheus
+     Loaded: loaded (/etc/systemd/system/prometheus.service; enabled; vendor preset: enabled)
+```
+
+```
+     Active: active (running) since Tue 2024-03-05 13:53:51 UTC; 2h 27min ago
+   Main PID: 9470 (prometheus)
+      Tasks: 8 (limit: 9498)
+```
+
+Verify the Prometheus setup from the browser: localhost:9090/graph
+
+#### Install Grafana
+Install the pre-required packages:
+
+sudo apt install -y apt-transport-https software-properties-common
+
+Add the Grafana GPG key:
+```
+sudo mkdir -p /etc/apt/keyrings/
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+```
+Add Grafana’s APT repository:
+```
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+sudo apt update
+```
+Install the Grafana package:
+
+sudo apt install grafana
+
+Start the Grafana service:
+
+sudo systemctl start grafana-server sudo systemctl enable grafana-server
+
+Verify the Grafana service:
+```
+sudo systemctl status grafana-server
+● grafana-server.service - Grafana instance
+    Loaded: loaded (/lib/systemd/system/grafana-server.service; enabled; vendor preset: enabled)
+     Active: active (running) since Tue 2024-03-12 05:45:23 UTC; 1h 29min ago
+       Docs: http://docs.grafana.org
+   Main PID: 719 (grafana)
+```
+Verify your Grafana setup from the browser: localhost:3000
+
+
+#### Integrate Prometheus server with Grafana
+Add new data source for Prometheus: localhost:3000/connections/datasources
+
+Create a new dashboard
+Find a PostgreSQL Grafana dashboard online and copy the URL of the dashboard that suits your preferences. 
+<localhost:3000/dashboard/import>
+Paste the URL and select Load.
+
+<https://medium.com/timescale/how-to-monitor-postgresql-like-a-pro-5-techniques-every-developer-should-know-68581c49a4a4>
+
 ### Grafana Automation
 <https://github.com/grafana/grafanactl>  
 <https://grafana.github.io/grafana-foundation-sdk/>
