@@ -1,4 +1,6 @@
-https://habr.com/ru/companies/garage8/articles/920226/ Aomaly detection, Z-score with SQL
+https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
+
+https://autognosi.medium.com/advanced-techniques-and-practical-aspects-in-anomaly-detection-for-time-series-f9b30e4e8760
 
 https://habr.com/ru/companies/otus/articles/919156/
 
