@@ -767,10 +767,16 @@ https://habr.com/ru/companies/selectel/articles/913572/ Как оптимизи�
 
 https://www.youtube.com/@ScalingPostgres/videos Scaling Postgres
 
+https://dataegret.com/2025/05/data-archiving-and-retention-in-postgresql-best-practices-for-large-datasets/
+
+https://dataegret.com/2025/07/operating-postgresql-as-a-data-source-for-analytics-pipelines-recap-from-the-stuttgart-meetup/
+
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
 Правило ESR (Equality, Sort, Range) 
 
-https://habr.com/ru/companies/selectel/articles/912996/
+https://pgmodeler.io/
+
+https://habr.com/ru/companies/selectel/articles/912996/ Все, что нужно PostgreSQL: быстрые диски, дорогой процессор и терабайты RAM
 
 <https://postgresql.leopard.in.ua/>
 
