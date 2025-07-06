@@ -600,7 +600,7 @@ This dramatically improves performance for large datasets.
 | Complex spatial joins | Optimized with spatial partitioning         | Efficient but slower on large data    |
 | Ad hoc queries        | ❌ Higher latency (Spark startup)            | ✅ Very fast for small/medium datasets |
 
-
+<https://freegisdata.rtwilson.com/> freely available geographic datasets
 <https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/> GIS with DuckDB  
 <https://scottsexton.co/post/overthinking_gis/> 
 <https://kepler.gl/>  geospatial analysis tool for large-scale data sets.  
