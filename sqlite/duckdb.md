@@ -26,7 +26,10 @@ https://medium.com/@egzonbaruti/getting-started-with-duckdb-and-dbt-a-simple-gui
 
 https://habr.com/ru/companies/cinimex/articles/913878/
 
-###   DuckDB pg extension?
+###   DuckDB pg extension
+
+<https://motherduck.com/blog/postgres-duckdb-options/>
+
 The pg extension in DuckDB provides PostgreSQL compatibility functions and types inside DuckDB, allowing:
 
 Using PostgreSQL-compatible functions (e.g., unnest, array_agg, generate_series).
