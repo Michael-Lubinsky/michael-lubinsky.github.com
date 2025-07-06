@@ -781,6 +781,8 @@ https://clickhouse.com/blog/postgres-to-clickhouse-data-modeling-tips-v2  Postgr
 
 https://habr.com/ru/companies/selectel/articles/912996/ Все, что нужно PostgreSQL: быстрые диски, дорогой процессор и терабайты RAM
 
+https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
+
 <https://postgresql.leopard.in.ua/>
 
 <https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
