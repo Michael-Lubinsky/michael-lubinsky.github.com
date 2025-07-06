@@ -161,22 +161,7 @@ SELECT
 FROM generate_series(1, 100) AS s(i);
 ```
 
-<!--
-<https://dbfiddle.uk/>  
-<https://sqlfiddle.com/>  
-<https://rextester.com/>  
 
-https://habr.com/ru/companies/selectel/articles/913572/ Как оптимизировать PostgreSQL 
-
-https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
-Правило ESR (Equality, Sort, Range) 
-
-https://habr.com/ru/companies/selectel/articles/912996/
-
-<https://postgresql.leopard.in.ua/>
-
-<https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
--->
 
 ### Information schema
 ```sql
@@ -772,3 +757,22 @@ VALUES ('Alice', 'Walker', 'Los Angeles', 'OR'); -- ❌ raises exception
 PostgreSQL does not support this constraint natively, so the recommended method is:  
 Add a trigger that raises an exception if an insert or update would create a (city, state) inconsistency.
 
+
+<!--
+<https://dbfiddle.uk/>  
+<https://sqlfiddle.com/>  
+<https://rextester.com/>  
+
+https://habr.com/ru/companies/selectel/articles/913572/ Как оптимизировать PostgreSQL 
+
+https://www.youtube.com/@ScalingPostgres/videos Scaling Postgres
+
+https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
+Правило ESR (Equality, Sort, Range) 
+
+https://habr.com/ru/companies/selectel/articles/912996/
+
+<https://postgresql.leopard.in.ua/>
+
+<https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
+-->
