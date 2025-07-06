@@ -554,7 +554,7 @@ https://stormatics.tech/blogs/which-postgresql-ha-solution-fits-your-needs-pgpoo
 
 
 ### Backup
-
+<https://news.ycombinator.com/item?id=44473888>  
 <https://pgmoneta.github.io/>  
 <https://ossc-db.github.io/pg_bulkload/pg_bulkload.html>
 
