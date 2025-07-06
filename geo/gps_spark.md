@@ -602,6 +602,7 @@ This dramatically improves performance for large datasets.
 
 
 <https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/> GIS with DuckDB  
+<https://scottsexton.co/post/overthinking_gis/> 
 <https://kepler.gl/>  geospatial analysis tool for large-scale data sets.  
 <https://deck.gl/>   GPU-powered framework for visual exploratory data analysis of large datasets.  
 <https://habr.com/ru/companies/ruvds/articles/917898/> GPS accuracy in city (urban canyon)  
