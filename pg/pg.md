@@ -509,7 +509,7 @@ Data Warehouse: Implement TimescaleDB on top of Postgres for data warehousing ne
 ### Partition Pruning
 SET enable_partition_pruning = on; 
 
-#### Explain
+#### Explain analyze
 ```sql
 EXPLAIN ANALYZE SELECT *
 FROM tenk1 t1, tenk2 t2
@@ -520,7 +520,7 @@ ORDER BY t1.fivethous;
 ### Postgres 18
 <https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
-### pg_repack 
+### extension: pg_repack 
 pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
 and optionally restore the physical order of clustered indexes. 
 Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing. 
@@ -554,6 +554,16 @@ The table is unavailable for writes and reads while clustering.
 PostgreSQL remembers which index was used for clustering (pg_index.indisclustered = true).
 
 However, future inserts/updates do not maintain physical order; you must re-run CLUSTER periodically to maintain clustering benefits.
+
+
+### Postgres HA
+
+https://stormatics.tech/blogs/checklist-is-your-postgresql-deployment-production-grade
+
+Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
+
+https://stormatics.tech/blogs/which-postgresql-ha-solution-fits-your-needs-pgpool-or-patroni
+
 
 ### Backup
 
