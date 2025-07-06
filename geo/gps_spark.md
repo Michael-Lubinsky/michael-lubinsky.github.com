@@ -61,6 +61,29 @@ location = geolocator.geocode("Pune, India")
 
 print("Latitude:", location.latitude)
 print("Longitude:", location.longitude)
+
+
+from geopy.distance import geodesic
+
+# Coordinates of two locations
+location1 = (18.521428, 73.8544541)  # Pune
+location2 = (19.0785451, 72.878176)  # Mumbai
+
+# Calculate distance between locations
+distance = geodesic(location1, location2).kilometers
+
+print("Distance betwen City :", distance, "km")
+
+
+from geopy.geocoders import Nominatim
+
+# Initialize Nominatim geocoder
+geolocator = Nominatim(user_agent="my_geocoder")
+
+# Reverse geocode coordinates
+location = geolocator.reverse((26.4219999, 71.0840575))
+
+print("Address:", location.address)
 ```
 
 
