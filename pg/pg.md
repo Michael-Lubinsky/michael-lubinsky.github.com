@@ -471,6 +471,8 @@ CREATE TABLE products (
 
 <https://www.binwang.me/2024-12-02-PostgreSQL-High-Availability-Solutions-Part-1.html>
 
+<https://github.com/hapostgres/pg_auto_failover>
+
 <https://proxysql.com/>
 
 <https://news.ycombinator.com/item?id=42293937>
@@ -772,6 +774,8 @@ https://dataegret.com/2025/05/data-archiving-and-retention-in-postgresql-best-pr
 
 https://dataegret.com/2025/07/operating-postgresql-as-a-data-source-for-analytics-pipelines-recap-from-the-stuttgart-meetup/
 
+https://github.com/BemiHQ/BemiDB Single-binary Postgres read replica optimized for analytics
+
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
 Правило ESR (Equality, Sort, Range) 
 
@@ -786,4 +790,6 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 <https://postgresql.leopard.in.ua/>
 
 <https://www.shayon.dev/post/2025/40/scaling-with-postgresql-without-boiling-the-ocean/>
+
+<https://mccue.dev/pages/3-11-25-life-altering-postgresql-patterns>
 -->
