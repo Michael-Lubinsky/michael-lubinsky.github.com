@@ -30,6 +30,27 @@ Longitude: anywhere from -180 to +180
 It lies in the Gulf of Guinea, off the coast of West Africa, where the Equator meets the Prime Meridian.  
 There’s no actual island — it’s an imaginary point in the Atlantic Ocean.  
 
+### GeoPy , Folium
+```python
+import folium
+from geopy.geocoders import Nominatim
+from IPython.display import display, HTML
+location_name = input("Enter a location: ")
+geolocator = Nominatim(user_agent="geoapi")
+location = geolocator.geocode(location_name)
+if location:
+    # Create a map centered on the user's location
+    latitude = location.latitude
+    longitude = location.longitude
+    clcoding = folium.Map(location=[latitude, longitude], zoom_start=12)
+    marker = folium.Marker([latitude, longitude], popup=location_name)
+    marker.add_to(clcoding)
+    display(HTML(clcoding._repr_html_()))
+else:
+    print("Location not found. Please try again.")
+```
+
+
 ### Reverse Geocoding
 <https://austinhenley.com/blog/coord2state.html>
 
