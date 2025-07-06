@@ -91,6 +91,7 @@ Validation through check constraints
 Complete flexibility for the profile data that can evolve as your application changes
 <https://medium.com/@sohail_saifi/postgres-hidden-features-that-make-mongodb-completely-obsolete-from-an-ex-nosql-evangelist-1a390233c264>
 
+<https://www.postgresonline.com/journal/index.php?/archives/420-Converting-JSON-documents-to-relational-tables.html#jsontorelational> Converting JSON documents to relational tables
 
 <https://habr.com/ru/companies/sigma/articles/890668/> Использование JSONB-полей вместо EAV в PostgreSQL
 
@@ -775,6 +776,8 @@ https://habr.com/ru/articles/911688/ Правильный порядок кол�
 Правило ESR (Equality, Sort, Range) 
 
 https://pgmodeler.io/
+
+https://clickhouse.com/blog/postgres-to-clickhouse-data-modeling-tips-v2  Postgres - Clickhouse
 
 https://habr.com/ru/companies/selectel/articles/912996/ Все, что нужно PostgreSQL: быстрые диски, дорогой процессор и терабайты RAM
 
