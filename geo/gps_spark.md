@@ -48,6 +48,19 @@ if location:
     display(HTML(clcoding._repr_html_()))
 else:
     print("Location not found. Please try again.")
+
+
+
+from geopy.geocoders import ArcGIS
+
+# Initialize ArcGIS geocoder
+geolocator = ArcGIS()
+
+# Geocode an address using ArcGIS
+location = geolocator.geocode("Pune, India")
+
+print("Latitude:", location.latitude)
+print("Longitude:", location.longitude)
 ```
 
 
