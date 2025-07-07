@@ -42,7 +42,6 @@ https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 <https://habr.com/ru/articles/914650/> Descriptors in Python
 
 
-<https://python.plainenglish.io/mastering-the-hidden-layers-of-python-building-a-modular-file-processing-system-from-scratch-4871e5541553>
 
 <https://medium.com/@CodeWithHannan/10-python-workflows-for-high-volume-etl-pipelines-54d57728b773>
 
@@ -79,6 +78,11 @@ https://habr.com/ru/companies/otus/articles/888974/ Type Annotations
 ### Pipelines
 
 https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
+
+https://python.plainenglish.io/how-i-built-a-python-automation-system-that-runs-my-entire-workflow-while-i-sleep-07c98494f0f6
+
+<https://python.plainenglish.io/mastering-the-hidden-layers-of-python-building-a-modular-file-processing-system-from-scratch-4871e5541553>
+
 
 https://hamilton.dagworks.io/en/latest/
 
