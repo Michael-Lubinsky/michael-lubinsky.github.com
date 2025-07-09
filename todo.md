@@ -6,6 +6,9 @@ https://chat-to.dev/post?id=296
 https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax
 
 
+### ChatGPT codex
+
+https://openai.com/index/introducing-codex/
 
 ### ChatGPT Prompt
 
