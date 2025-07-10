@@ -1,5 +1,7 @@
 #### Bash Script to Find Orphaned S3 Buckets
 
+<https://awstip.com/10-best-python-scripts-to-automate-your-daily-tasks-in-aws-85f847c66247>
+
 Prerequisites:
 
 AWS CLI v2 installed and configured with proper IAM permissions (s3:ListBuckets & s3:ListObjects).  
