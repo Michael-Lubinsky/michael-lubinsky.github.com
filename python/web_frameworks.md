@@ -10,7 +10,11 @@ https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (
 <https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
 
 
+
+
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
+
+<https://medium.com/@manikolbe/streamlit-gradio-nicegui-and-mesop-building-data-apps-without-web-devs-4474106778f5>
 
 <https://github.com/sfermigier/awesome-python-web-frameworks>
 
