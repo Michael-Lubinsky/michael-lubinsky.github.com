@@ -1,5 +1,5 @@
 
-## What is a difference between Amanon SQS queue and Kafka?
+## What is a difference between Amazon SQS queue and Kafka?
 
 Amazon SQS (Simple Queue Service) and **Apache Kafka** are both messaging systems,  
 but they serve different purposes and have different architectures.   
