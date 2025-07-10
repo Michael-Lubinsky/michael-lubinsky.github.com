@@ -794,4 +794,6 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 <https://mccue.dev/pages/3-11-25-life-altering-postgresql-patterns>
 
 <https://medium.com/@pesarakex/how-we-migrated-a-100m-row-postgresql-table-with-zero-downtime-and-survived-5b908de243e0>
+
+https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49
 -->
