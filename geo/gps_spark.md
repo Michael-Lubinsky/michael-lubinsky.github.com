@@ -663,4 +663,6 @@ This dramatically improves performance for large datasets.
 <https://kepler.gl/>  geospatial analysis tool for large-scale data sets.  
 <https://deck.gl/>   GPU-powered framework for visual exploratory data analysis of large datasets.  
 <https://habr.com/ru/companies/ruvds/articles/917898/> GPS accuracy in city (urban canyon)  
+MongoDB for GIS
+<https://www.mongodb.com/docs/manual/geospatial-queries/#:~:text=MongoDB%20supports%20query%20operations%20on%20geospatial%20data.>
 
