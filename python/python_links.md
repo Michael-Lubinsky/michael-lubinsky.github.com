@@ -81,6 +81,8 @@ https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://python.plainenglish.io/how-i-built-a-python-automation-system-that-runs-my-entire-workflow-while-i-sleep-07c98494f0f6
 
+<https://medium.com/python-in-plain-english/i-built-a-python-devops-toolkit-that-deploys-monitors-and-recovers-itself-5061f484ff39>
+
 <https://python.plainenglish.io/mastering-the-hidden-layers-of-python-building-a-modular-file-processing-system-from-scratch-4871e5541553>
 
 
