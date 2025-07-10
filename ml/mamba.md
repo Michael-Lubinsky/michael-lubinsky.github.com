@@ -148,6 +148,8 @@ https://medium.com/pythoneers/hidden-gems-in-outlier-detection-3-powerful-lesser
 
 https://www.datasciencecentral.com/11-articles-and-tutorials-about-outliers/
 
+### Feature store
+https://asrathore08.medium.com/feature-store-architecture-1324eff5a573
 
 https://github.com/alteryx/featuretools Feature Engineering
 
