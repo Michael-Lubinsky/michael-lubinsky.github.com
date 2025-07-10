@@ -126,7 +126,7 @@ https://datashader.org/
 
 https://www.pyqtgraph.org/
 
-<https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
+
 
 <https://gnuplot.sourceforge.net/>
 
