@@ -24,6 +24,8 @@ https://github.com/turbolytics/sql-flow
 
 https://medium.com/@egzonbaruti/getting-started-with-duckdb-and-dbt-a-simple-guide-to-modern-data-transformation-f7c6093a3693
 
+https://towardsdev.com/python-meets-arrow-and-duckdb-for-high-performance-dataframes-21cadff7a62b
+
 https://habr.com/ru/companies/cinimex/articles/913878/
 
 ###   DuckDB pg extension
