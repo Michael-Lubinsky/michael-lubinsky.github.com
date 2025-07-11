@@ -40,6 +40,8 @@ plt.show()
 
 <https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91>
 
+<https://medium.com/top-python-libraries/7-stunning-scientific-charts-i-created-with-matplotlib-that-you-shouldnt-miss-2de2ed91b164>
+
 ### Heatmap (Seaborn)
 ```python
 import matplotlib.pyplot as plt
