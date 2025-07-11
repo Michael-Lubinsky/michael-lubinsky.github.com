@@ -604,8 +604,6 @@ Centralized control of who can see and edit specific data.
 
 Secure data sharing across teams or business units.
 
-<https://mayursurani.medium.com/end-to-end-etl-pipeline-for-insurance-domain-a-complete-guide-with-aws-pyspark-and-databricks-8bcea86e55fd>
-
 
 
 # Delta Table Schema Evolution in Databricks
@@ -920,3 +918,7 @@ df_postgres = spark.read.format("jdbc") \
 <https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5>
 
 <https://medium.com/towards-data-engineering/databricks-apps-builder-ecosystem-9d825a9666f8>
+
+<https://mayursurani.medium.com/end-to-end-etl-pipeline-for-insurance-domain-a-complete-guide-with-aws-pyspark-and-databricks-8bcea86e55fd>
+
+<https://medium.com/towards-data-engineering/real-world-retail-data-pipeline-using-databricks-declarative-pipelines-8b80ea7bc34c>
