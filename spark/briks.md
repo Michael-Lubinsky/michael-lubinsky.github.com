@@ -917,5 +917,6 @@ df_postgres = spark.read.format("jdbc") \
 
 <https://medium.com/towards-data-engineering/when-dbfs-is-not-an-option-how-databricks-volumes-saved-the-day-for-file-based-learning-on-free-a0e0e92579ce>
 
+<https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5>
 
 <https://medium.com/towards-data-engineering/databricks-apps-builder-ecosystem-9d825a9666f8>
