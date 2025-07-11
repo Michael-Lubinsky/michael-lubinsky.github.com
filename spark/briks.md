@@ -909,6 +909,8 @@ df_postgres = spark.read.format("jdbc") \
 - For **CDC** or **incremental load** from Postgres, use a `WHERE` clause with a timestamp column and/or use **Z-Ordering** for performance.
 
 
+<https://blog.devgenius.io/databricks-platform-basics-de00317bbf2c>
+
 <https://medium.com/dev-genius/databricks-platform-advanced-18c2dcfe31a5>
 
  <https://medium.com/towards-data-engineering/building-the-right-data-for-ai-deep-dive-into-databricks-job-etl-pipeline-and-ingestion-pipeline-351532b569df>
