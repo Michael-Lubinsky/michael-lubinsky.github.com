@@ -5,35 +5,6 @@ SHOW TABLES;
 SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
 ```
 
-### Search optimization
-
-SHOW TABLES LIKE '%<table_name>%';
-Look at the SEARCH_OPTIMIZATION_PROGRESS column (0-100%).
-
-
-```
-ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION;
-ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION ON
-  (<search_method>(<column_name_1>),
-   <search_method>(<column_name_2>),
-   ...);
-```
-
-Common <search_method> options:
-```
-EQUALITY: For equality (=) and IN predicates.
-SUBSTRING: For LIKE, ILIKE, RLIKE, REGEXP, and SEARCH functions.
-GEO: For geospatial functions on GEOGRAPHY columns.
-FULL_TEXT: For SEARCH function (allows specifying analyzers).
-ARRAY_CONTAINS: For ARRAY_CONTAINS and ARRAYS_OVERLAP.
-
-Example:
-
-ALTER TABLE sales_data ADD SEARCH OPTIMIZATION ON
-  (EQUALITY(customer_id),
-   SUBSTRING(product_description),
-   EQUALITY(order_details:item_id)); -- For semi-structured data
-```
 
 ### Snowflake provides metadata tables and views through several special schemas such as:
 ```
@@ -270,26 +241,19 @@ ALTER TABLE my_table SET SEARCH OPTIMIZATION = TRUE;
 
 This creates and maintains secondary metadata structures (similar to an index, but not exactly the same) that:
 
-Accelerate queries with highly selective filters
+- Accelerate queries with highly selective filters  
+- Optimize performance on WHERE column = value, BETWEEN, IN (...), etc.  
+- Avoid full scans even on very large tables  
 
-Optimize performance on WHERE column = value, BETWEEN, IN (...), etc.
+✅ Best Use Cases for SEARCH OPTIMIZATION
+Columns with high cardinality (many distinct values)  
+Query patterns that include:  
+WHERE col = 'some_id'  
+WHERE timestamp BETWEEN ...  
+Semi-structured data (e.g. JSON with WHERE data:id = 'abc123')  
+Interactive analytics or dashboards where performance matters  
 
-Avoid full scans even on very large tables
-
-✅ Best Use Cases
-Columns with high cardinality (many distinct values)
-
-Query patterns that include:
-
-WHERE col = 'some_id'
-
-WHERE timestamp BETWEEN ...
-
-Semi-structured data (e.g. JSON with WHERE data:id = 'abc123')
-
-Interactive analytics or dashboards where performance matters
-
-⚙️ How to Enable
+⚙️ How to Enable SEARCH OPTIMIZATION
 
 -- Entire table (applies to all columns)  
 ALTER TABLE my_table SET SEARCH OPTIMIZATION = TRUE;
@@ -301,7 +265,7 @@ You can also disable it:
 
 ALTER TABLE my_table UNSET SEARCH OPTIMIZATION;
 
-💸 Cost Consideration  
+💸 Cost Consideration   for SEARCH OPTIMIZATION
 Storage cost increases because of the extra metadata structures.
 
 Maintenance cost increases slightly because Snowflake updates these structures automatically as data changes.
@@ -317,6 +281,38 @@ SELECT * FROM logs WHERE user_id = 'abc123';
 With search optimization:
 
 -- Same query becomes 100x faster due to indexed search
+
+
+
+### Search optimization
+
+SHOW TABLES LIKE '%table_name%';
+Look at the SEARCH_OPTIMIZATION_PROGRESS column (0-100%).
+
+
+```sql
+ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION;
+ALTER TABLE <table_name> ADD SEARCH OPTIMIZATION ON
+  (<search_method>(<column_name_1>),
+   <search_method>(<column_name_2>),
+   ...);
+```
+
+Common <search_method> options:
+```
+EQUALITY: For equality (=) and IN predicates.
+SUBSTRING: For LIKE, ILIKE, RLIKE, REGEXP, and SEARCH functions.
+GEO: For geospatial functions on GEOGRAPHY columns.
+FULL_TEXT: For SEARCH function (allows specifying analyzers).
+ARRAY_CONTAINS: For ARRAY_CONTAINS and ARRAYS_OVERLAP.
+```
+Example:
+```sql
+ALTER TABLE sales_data ADD SEARCH OPTIMIZATION ON
+  (EQUALITY(customer_id),
+   SUBSTRING(product_description),
+   EQUALITY(order_details:item_id)); -- For semi-structured data
+```
 
 ### Stream
 
