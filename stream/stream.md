@@ -6,6 +6,9 @@ https://github.com/quixio/quix-streams Kafta Stream  + Python
 
 https://blog.picnic.nl/using-change-data-capture-for-warehouse-analytics-a1b23c074781 CDC change dta capture
 
+
+https://medium.com/@seanfalconer/a-data-scientists-guide-to-data-streaming-2b2b78dd8486 
+
 Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
 https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f
 
