@@ -908,4 +908,5 @@ df_postgres = spark.read.format("jdbc") \
 - Use **Auto Loader** or **Delta Live Tables** if your sources are ingested to a landing zone (e.g., Kafka -> Bronze → Silver).
 - For **CDC** or **incremental load** from Postgres, use a `WHERE` clause with a timestamp column and/or use **Z-Ordering** for performance.
 
- 
+
+ <https://medium.com/towards-data-engineering/building-the-right-data-for-ai-deep-dive-into-databricks-job-etl-pipeline-and-ingestion-pipeline-351532b569df>
