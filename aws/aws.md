@@ -339,7 +339,7 @@ This query could scan **terabytes of data** in seconds — no tuning, indexing, 
 -   **Flat-rate pricing**: Available for large, predictable workloads
     
 
-🔸 **Pro tip**: Use **partitioned** and **clustered tables** to reduce costs by limiting the amount of data scanned.
+🔸   Use **partitioned** and **clustered tables** to reduce costs by limiting the amount of data scanned.
 
 * * *
 
@@ -534,6 +534,7 @@ https://lnkd.in/ggqBu-Vj
 
 <https://medium.com/@data.dev.backyard/data-ingestion-patterns-in-aws-a-practical-guide-234897e9de57>
 
+<https://medium.com/@mayursurani/mastering-aws-data-engineering-the-ultimate-technical-interview-guide-that-will-land-you-your-3365b6947352> 
  
  
   AWS Cloud & Tech Journey: https://lnkd.in/gVKek9iG
