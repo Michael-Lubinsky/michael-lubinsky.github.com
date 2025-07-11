@@ -9,6 +9,8 @@ https://github.com/Dyakonov/DL
 
 https://habr.com/ru/companies/pgk/articles/921596/ Прокачаться в data science: блоги и каналы
 
+https://habr.com/ru/articles/926398/  ML interview preparation
+
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
 What Are Neural Networks Even Doing? (Manifold Hypothesis)
 
