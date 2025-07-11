@@ -489,36 +489,43 @@ Large aggregates → Pre-aggregate or materialize views.
 
 
 #### How to Use Snowflake's Query Profile
-The Query Profile is an invaluable diagnostic tool in Snowsight (or the Classic Console) that provides a detailed, visual breakdown of how Snowflake executed a specific SQL query. It's essential for identifying performance bottlenecks and understanding why a query performs the way it does.
+The Query Profile is an invaluable diagnostic tool in Snowsight (or the Classic Console)  
+that provides a detailed, visual breakdown of how Snowflake executed a specific SQL query.  
+It's essential for identifying performance bottlenecks and understanding why a query performs the way it does.
 
 Accessing the Query Profile:
 
-In Snowsight:
-Log in to Snowsight.
-Navigate to Activity » Query History.
-Find the query you want to analyze (you can use filters for user, status, time range, etc.).
-Click on the Query ID of the specific query.
-In the query details pane that opens, click the Query Profile tab.
-Interpreting the Query Profile:
+In Snowsight: Log in to Snowsight.  
+Navigate to Activity » Query History.  
+Find the query you want to analyze (you can use filters for user, status, time range, etc.).  
+Click on the Query ID of the specific query.  
+In the query details pane that opens, click the Query Profile tab.  
 
-The Query Profile displays the query's execution plan as a Directed Acyclic Graph (DAG) of operators (nodes). Arrows indicate data flow between operators, and each arrow shows the number of rows transferred.
+Interpreting the Query Profile:  
+
+The Query Profile displays the query's execution plan as a Directed Acyclic Graph (DAG) of operators (nodes).   
+Arrows indicate data flow between operators, and each arrow shows the number of rows transferred.  
 
 Key Areas to Focus On:
 
-Profile Overview:
-
-Execution Time Summary: Shows the percentage of total query time spent on different phases:
-Processing: CPU-bound work (joins, aggregations, filters, sorts).
-Local Disk I/O: Reading/writing to local SSD (often indicates spilling or local cache hits).
-Remote Disk I/O: Reading/writing to remote storage (S3/Azure Blob) – this is often the slowest part.
-Initialization: Overhead.
-Statistics: Provides global query metrics like:
-Bytes scanned: Total data read from storage.
-Partitions scanned / Partitions total: Crucial for assessing pruning effectiveness. If "scanned" is close to "total," your filters aren't working well.
-Bytes written to Result: Size of the final output.
-Spill to local storage / Spill to remote storage: CRITICAL WARNING! This means your virtual warehouse ran out of memory and had to write temporary data to disk. Remote disk spilling is extremely slow. If you see significant spilling, scale up your virtual warehouse.
-Bytes sent over network: Data transferred between warehouse nodes or to the client.
+Profile Overview:  
+```
+Execution Time Summary: Shows the percentage of total query time spent on different phases:  
+Processing: CPU-bound work (joins, aggregations, filters, sorts).  
+Local Disk I/O: Reading/writing to local SSD (often indicates spilling or local cache hits).  
+Remote Disk I/O: Reading/writing to remote storage (S3/Azure Blob) – this is often the slowest part.  
+Initialization: Overhead.  
+Statistics: Provides global query metrics like:  
+Bytes scanned: Total data read from storage.   
+Partitions scanned / Partitions total: Crucial for assessing pruning effectiveness.   
+If "scanned" is close to "total," your filters aren't working well.  
+Bytes written to Result: Size of the final output.  
+Spill to local storage / Spill to remote storage: CRITICAL WARNING! 
+This means your virtual warehouse ran out of memory and had to write temporary data to disk. Remote disk spilling is extremely slow. 
+If you see significant spilling, scale up your virtual warehouse.  
+Bytes sent over network: Data transferred between warehouse nodes or to the client.  
 Most Expensive Nodes: Highlights the operators that consumed the most execution time, making it easy to identify bottlenecks.
+
 Execution Plan (Graph View):
 
 Operators: Each box represents an operation (e.g., TableScan, Filter, Join, Aggregate, Sort, Result).
@@ -555,7 +562,7 @@ Repeated Computation:
 Profile Indication: The same subquery or CTE branch appears multiple times in the execution plan, or a complex view is re-computed repeatedly.
 Solution: Use CTEs strategically. If a CTE is used multiple times, Snowflake typically materializes it once. However, for very complex or large CTEs, repeating them might sometimes allow for better parallelization (though this is less common and should be tested). Consider materialized views for frequently queried, complex aggregations on relatively static data.
 By regularly utilizing the Query Profile, you gain deep insights into your query performance, allowing you to make informed decisions about SQL rewrites, table design, and virtual warehouse sizing, ultimately leading to faster queries and lower costs in Snowflake.
-
+```
 #### Optimizing Table Structures
 🏗️ Best Practices:  
 a) Use clustering (on large, partitioned datasets)
