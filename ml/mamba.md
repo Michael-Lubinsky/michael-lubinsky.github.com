@@ -7,7 +7,9 @@ https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
 
 https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
 
-https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
+https://habr.com/ru/companies/netologyru/articles/926776/
+
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md  ML System Drsign
 
 https://github.com/Dyakonov/DL
 
