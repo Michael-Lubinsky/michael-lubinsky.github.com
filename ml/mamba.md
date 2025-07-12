@@ -3,6 +3,10 @@ Reinforcement learning: https://www.understandingai.org/p/reinforcement-learning
 Book:
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
 
+https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
+
+https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
+
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
 
 https://github.com/Dyakonov/DL
@@ -18,7 +22,9 @@ https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-fo
 
 https://habr.com/ru/articles/918188/ Как устроено глубокое обучение нейросетей
 
-https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL,
+https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL
+
+https://habr.com/ru/articles/926160/
  
 https://datasecrets.ru/articles
 
