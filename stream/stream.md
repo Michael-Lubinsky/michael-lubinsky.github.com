@@ -28,12 +28,12 @@ https://testdriven.io/blog/flask-svelte/ Real Time Dashboard
 
 https://testdriven.io/blog/fastapi-svelte/ FastAPI real time dashoard 
 
-
-Apache Pinot is a real-time distributed OLAP datastore optimized for low-latency analytics on large-scale, streaming data. Its main competitors typically fall into the same category of **real-time analytics databases** or **OLAP engines**.
+### Apache Pinot
+Apache Pinot is a real-time distributed OLAP datastore optimized for low-latency analytics on large-scale, streaming data. 
+Its main competitors typically fall into the same category of **real-time analytics databases** or **OLAP engines**.
 
 Here are the main competitors of Apache Pinot, with brief comparisons:
 
----
 
 ### 🔹 ClickHouse
 - **Strengths**: Extremely fast for analytical queries, efficient columnar storage, mature ecosystem.
