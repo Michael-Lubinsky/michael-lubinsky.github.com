@@ -183,4 +183,6 @@ Here are the main competitors of Apache Pinot, with brief comparisons:
 | ClickHouse     | ⚠️ Limited | ❌ Indirect       | ✅                  | ✅          | High-performance batch analytics       |
 | Apache Druid   | ✅        | ✅               | ⚠️ Approximate       | ⚠️ Partial   | Real-time + time-series analytics      |
 | Rockset        | ✅        | ✅               | ✅                  | ✅          | SaaS search and analytics              |
-| TimescaleDB    | ⚠️        |
+| TimescaleDB    | ⚠️        | ⚠️               | ✅                  | ✅          | Time-series with relational schema     |
+| Materialize    | ✅        | ✅               | ✅                  | ✅          | Streaming materialized views           |
+| Pinot          | ✅        | ✅               | ✅                  | ✅          | Real-time OLAP on fresh data           |
