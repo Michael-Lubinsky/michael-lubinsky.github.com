@@ -666,3 +666,5 @@ This dramatically improves performance for large datasets.
 MongoDB for GIS
 <https://www.mongodb.com/docs/manual/geospatial-queries/#:~:text=MongoDB%20supports%20query%20operations%20on%20geospatial%20data.>
 
+<https://www.matecdev.com/posts/geospatial-python-tutorial.html>
+
