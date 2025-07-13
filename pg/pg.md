@@ -1,5 +1,22 @@
 ## Postgres
 
+### USING
+```sql
+SELECT * FROM employees
+JOIN departments USING (department_id);
+```
+This is shorthand for:
+
+```sql
+SELECT * FROM employees
+JOIN departments ON employees.department_id = departments.department_id;
+```
+| Context            | Purpose                 | Notes                                 |
+| ------------------ | ----------------------- | ------------------------------------- |
+| `JOIN USING (...)` | Simplify join condition | Column must exist in both tables      |
+| `DELETE USING ...` | Delete with join        | Equivalent to `DELETE FROM ... USING` |
+| `MERGE USING ...`  | Define source for merge | PostgreSQL 15+                        |
+
 ### FILTER
 FILTER is a SQL keyword supported by PostgreSQL that allows you  
 to apply a WHERE-like filter inside an aggregate function, making it easy to compute conditional aggregates.
