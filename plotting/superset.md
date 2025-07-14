@@ -1,6 +1,11 @@
+### Superset
+
 https://superset.apache.org/
 
-
+Jinja templating  
+CSS templates/customizations   
+Hyperlink between dashboards   
+Interactivity within dashboards   
 
 When you install Superset and load examples using:
 ```bash
