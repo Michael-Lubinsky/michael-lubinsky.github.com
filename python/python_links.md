@@ -8,7 +8,12 @@ https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week
 
 https://uproger.com/optimizciyaiuskoreniecodanapython/ Python performance
 
-https://marketplace.visualstudio.com/items?itemName=astral-sh.ty   Visual Studio Code extension
+
+### Python Type checker
+
+https://pyrefly.org/
+
+https://marketplace.visualstudio.com/items?itemName=astral-sh.ty   ty Visual Studio Code extension
 
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
