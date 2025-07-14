@@ -30,6 +30,8 @@ https://habr.com/ru/companies/cinimex/articles/913878/
 
 https://medium.com/@hadiyolworld007/7-duckdb-tricks-that-make-pandas-feel-outdated-02d427eb6e66
 
+https://medium.com/@hadiyolworld007/why-i-run-sql-in-python-now-7-duckdb-queries-that-changed-my-workflow-dea9393ca005
+
 ###   DuckDB pg extension
 
 <https://motherduck.com/blog/postgres-duckdb-options/>
