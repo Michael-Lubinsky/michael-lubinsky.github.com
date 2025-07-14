@@ -186,3 +186,42 @@ Here are the main competitors of Apache Pinot, with brief comparisons:
 | TimescaleDB    | ⚠️        | ⚠️               | ✅                  | ✅          | Time-series with relational schema     |
 | Materialize    | ✅        | ✅               | ✅                  | ✅          | Streaming materialized views           |
 | Pinot          | ✅        | ✅               | ✅                  | ✅          | Real-time OLAP on fresh data           |
+
+
+### Flink and Fluss
+
+Flink and Fluss are related but distinct technologies in the realm of stream processing. 
+Apache Flink is a powerful, open-source stream processing framework,  
+while Fluss is a streaming storage system designed to work with Flink for real-time analytics. 
+Think of Flink as the engine that processes data streams, and Fluss as the storage layer   
+that efficiently manages and stores the data for those streams. 
+
+Here's a breakdown: 
+
+#### Apache Flink: 
+Core Function: A distributed processing engine for stateful computations over data streams and batch data. 
+Key Features: Handles unbounded (streams) and bounded (batches) data sets, provides low-latency processing,   
+supports various programming languages, and offers different levels of abstraction for development. 
+Use Cases: Real-time analytics, fraud detection, recommendation engines, and more. 
+#### Fluss:
+Core Function:
+A streaming storage system built to complement Flink, optimized for real-time analytics. 
+Key Features:
+Columnar storage format for efficient reads, sub-second latency for streaming reads and writes, real-time updates, and support for Delta Join operations in Flink. 
+Use Cases:
+Powering real-time data layers in Lakehouse architectures, enabling efficient streaming data warehouses. 
+
+Relationship with Flink:
+Fluss seamlessly integrates with Flink, providing a unified platform for building real-time analytics applications. 
+
+#### Key Differences and Synergies:
+Focus:
+Flink is a processing engine, while Fluss is a storage system. 
+Integration:
+Fluss is designed to work with Flink, enhancing its capabilities for real-time analytics. 
+Problem Solving:
+Fluss addresses some of the challenges associated with using Kafka for real-time analytics within a Flink ecosystem, particularly in areas like state management for complex joins. 
+Example:
+One of the core benefits of using Fluss with Flink is its support for Delta Join, which simplifies and optimizes stream-stream joins, a common operation in real-time analytics. 
+In essence, Fluss is a purpose-built storage layer that enhances Flink's capabilities for real-time analytics,   
+enabling more efficient and cost-effective solutions. 
