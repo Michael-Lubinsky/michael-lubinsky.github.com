@@ -28,6 +28,8 @@ https://towardsdev.com/python-meets-arrow-and-duckdb-for-high-performance-datafr
 
 https://habr.com/ru/companies/cinimex/articles/913878/
 
+https://medium.com/@hadiyolworld007/7-duckdb-tricks-that-make-pandas-feel-outdated-02d427eb6e66
+
 ###   DuckDB pg extension
 
 <https://motherduck.com/blog/postgres-duckdb-options/>
