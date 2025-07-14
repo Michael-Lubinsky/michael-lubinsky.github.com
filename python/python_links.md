@@ -85,6 +85,8 @@ https://python.plainenglish.io/how-i-built-a-python-automation-system-that-runs-
 
 <https://python.plainenglish.io/mastering-the-hidden-layers-of-python-building-a-modular-file-processing-system-from-scratch-4871e5541553>
 
+<https://medium.com/data-science-collective/how-i-rebuilt-my-entire-coding-workflow-with-python-scripts-7ac3d3b6d2d9>
+
 
 https://hamilton.dagworks.io/en/latest/
 
