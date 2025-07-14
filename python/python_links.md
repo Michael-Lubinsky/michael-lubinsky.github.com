@@ -27,8 +27,11 @@ https://realpython.com/python-loguru/  Loguru , also look into structlog
 https://github.com/surister/queryzen SQL over HTTP
 
 https://connect.posit.cloud/ A cloud environment to easily showcase your Python and R content.
+
+
+https://github.com/savioxavier/dbglib  DEBUG util
  
-### Decorators and other code snippets
+### Code snippets
 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
 
