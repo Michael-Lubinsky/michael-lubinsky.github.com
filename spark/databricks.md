@@ -3,6 +3,8 @@ https://github.com/bartosz25/data-engineering-design-patterns-book
 
 https://login.databricks.com/
 
+https://medium.com/@hugolu87/databricks-vs-snowflake-the-final-chapter-long-read-371cf3d7e572
+
 I passed the Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻!
 
 Honestly, this was one of the most brain-cracking certifications I've taken — it covers a wider range of concepts like Delta Live Tables (DLT), Unity Catalog, Apache Spark, Delta Lake, MLflow, Databricks CLI, and a lot more. It took me around 4 weeks to prepare.
