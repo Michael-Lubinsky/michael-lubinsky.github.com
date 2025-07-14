@@ -24,6 +24,8 @@ https://github.com/Erotemic/ubelt  Ubelt
 
 https://realpython.com/python-loguru/  Loguru , also look into structlog
 
+https://github.com/surister/queryzen SQL over HTTP
+
 https://connect.posit.cloud/ A cloud environment to easily showcase your Python and R content.
  
 ### Decorators and other code snippets
