@@ -4,6 +4,8 @@ https://afabundle.pro/product/competitive-programming-in-python/ Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
 
+https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week-6459a06f6c03
+
 https://uproger.com/optimizciyaiuskoreniecodanapython/ Python performance
 
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
