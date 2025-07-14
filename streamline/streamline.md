@@ -1,3 +1,6 @@
+### Streamlit
+
+https://www.squadbase.dev/en/ebooks/streamlit-bi-overview
 
 streamlit run myapp.py
 
