@@ -8,6 +8,8 @@ https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week
 
 https://uproger.com/optimizciyaiuskoreniecodanapython/ Python performance
 
+https://marketplace.visualstudio.com/items?itemName=astral-sh.ty   Visual Studio Code extension
+
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
 
 https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
