@@ -1,6 +1,5 @@
 #### Bash Script to Find Orphaned S3 Buckets
 
-<https://awstip.com/10-best-python-scripts-to-automate-your-daily-tasks-in-aws-85f847c66247>
 
 Prerequisites:
 
@@ -277,3 +276,10 @@ Least Privilege: Grant only the necessary IAM permissions to your S3 users/roles
 Access Keys: Avoid hardcoding access keys directly in your code. Use environment variables, IAM roles, or the ~/.aws/credentials file.
 
 Encryption: Consider enabling server-side encryption (SSE-S3, SSE-KMS, SSE-C) for your objects.
+
+
+
+<https://awstip.com/10-best-python-scripts-to-automate-your-daily-tasks-in-aws-85f847c66247>
+
+<https://github.com/michaelthomasletts/boto3-refresh-session>
+
