@@ -1,7 +1,11 @@
 ## Helix 
 https://helix-editor.com/
 
+https://helix-editor.com/news/release-25-07-highlights/
+
 https://herecomesthemoon.net/2025/06/i-like-helix/
+
+### Zed vs Helix
 
 | Feature / Criteria                  | **Zed**                                                 | **Helix**                                                           |
 | ----------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
