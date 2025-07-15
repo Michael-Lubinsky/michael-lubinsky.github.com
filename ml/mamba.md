@@ -9,7 +9,7 @@ https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.co
 
 https://habr.com/ru/companies/netologyru/articles/926776/
 
-https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md  ML System Drsign
+https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md  ML System Design
 
 https://github.com/Dyakonov/DL
 
@@ -23,6 +23,8 @@ What Are Neural Networks Even Doing? (Manifold Hypothesis)
 https://dongou.tech/ai/dongou/ai-by-hand-%E2%9C%8D%EF%B8%8F-with-prof-tom-yeh-for-ai-professionals/
 
 https://habr.com/ru/articles/918188/ Как устроено глубокое обучение нейросетей
+
+https://github.com/gavinkhung/machine-learning-visualized   ML visualized
 
 https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL
 
