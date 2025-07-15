@@ -42,6 +42,8 @@ plt.show()
 
 <https://medium.com/top-python-libraries/7-stunning-scientific-charts-i-created-with-matplotlib-that-you-shouldnt-miss-2de2ed91b164>
 
+<https://posit-dev.github.io/gt-extras/articles/intro.html>
+
 ### Heatmap (Seaborn)
 ```python
 import matplotlib.pyplot as plt
@@ -104,6 +106,10 @@ plt.show()
 <https://medium.datadriveninvestor.com/python-pygwalker-simplifying-data-exploration-and-visualization-for-everyone-ed84cc7b7db4>
 
 <https://towardsdatascience.com/the-most-advanced-libraries-for-data-visualization-and-analysis-on-the-web-e823535e0eb1>
+
+
+
+https://github.com/rilldata/rill
 
 ### minimalytics
 GO standalone minimalist analytics tool built on SQLite.  
