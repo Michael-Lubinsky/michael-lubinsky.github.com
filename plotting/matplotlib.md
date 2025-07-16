@@ -9,6 +9,9 @@
 
 <https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91>
 
+
+https://github.com/garrettj403/SciencePlots
+
 ### Seaborn
 <https://seaborn.pydata.org/>
 
