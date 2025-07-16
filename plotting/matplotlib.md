@@ -1,6 +1,13 @@
-https://josephbarbierdarnal.github.io/dayplot
+<https://josephbarbierdarnal.github.io/dayplot>
+
+<https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577/>
+
+<https://medium.com/top-python-libraries/7-stunning-scientific-charts-i-created-with-matplotlib-that-you-shouldnt-miss-2de2ed91b164>
 
 
+<https://medium.com/dev-genius/data-profiling-in-python-common-ways-to-explore-your-data-part-1-0efd0dedff75>
+
+<https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91>
 
 ### Seaborn
 <https://seaborn.pydata.org/>
