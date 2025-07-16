@@ -37,6 +37,8 @@ https://connect.posit.cloud/ A cloud environment to easily showcase your Python 
 
 
 https://github.com/savioxavier/dbglib  DEBUG util
+
+https://blog.edward-li.com/tech/advanced-python-features
  
 ### Code snippets
 
