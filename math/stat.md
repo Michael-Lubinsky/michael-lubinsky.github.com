@@ -228,4 +228,5 @@ https://habr.com/ru/articles/922454/ кросс-энтропия позволя�
 
 ### Secretary_problem
 https://en.wikipedia.org/wiki/Secretary_problem  
+https://www.mccme.ru/free-books/mmmf-lectures/book.25.pdf  
 https://habr.com/ru/articles/928338/ Разборчивая невеста 1/e
