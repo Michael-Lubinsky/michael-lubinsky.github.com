@@ -4,6 +4,7 @@
 
 <https://medium.com/top-python-libraries/7-stunning-scientific-charts-i-created-with-matplotlib-that-you-shouldnt-miss-2de2ed91b164>
 
+<https://towardsdatascience.com/from-default-python-line-chart-to-journal-quality-infographics-80e3949eacc3/>
 
 <https://medium.com/dev-genius/data-profiling-in-python-common-ways-to-explore-your-data-part-1-0efd0dedff75>
 
