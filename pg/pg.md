@@ -785,6 +785,8 @@ Add a trigger that raises an exception if an insert or update would create a (ci
 <https://sqlfiddle.com/>  
 <https://rextester.com/>  
 
+https://mathesar.org/ spreadsheet-like tool for Postgres data
+
 https://habr.com/ru/companies/selectel/articles/913572/ Как оптимизировать PostgreSQL 
 
 https://www.youtube.com/@ScalingPostgres/videos Scaling Postgres
