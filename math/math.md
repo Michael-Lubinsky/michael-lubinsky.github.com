@@ -4,6 +4,8 @@
 
 <https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
 
+<https://www2.math.upenn.edu/~ghrist/preprints/LAEF.pdf>  Linear Algebra
+
 <https://algorithmsbook.com/files/dm.pdf> Algos for Decision Making
 
 <https://synset.com/pdf/ito.pdf>
