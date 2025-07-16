@@ -1,4 +1,4 @@
-<https://josephbarbierdarnal.github.io/dayplot>
+<https://josephbarbierdarnal.github.io/dayplot> calendar heatmaps; built on matplotlib
 
 <https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577/>
 
