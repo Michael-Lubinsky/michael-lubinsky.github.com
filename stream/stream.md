@@ -12,6 +12,8 @@ https://medium.com/@seanfalconer/a-data-scientists-guide-to-data-streaming-2b2b7
 Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
 https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f
 
+https://habr.com/ru/articles/927862/
+
 ## Flink
 
 https://habr.com/ru/articles/914836/
