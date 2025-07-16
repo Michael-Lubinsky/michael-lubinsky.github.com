@@ -4,7 +4,8 @@ https://habr.com/ru/companies/raiffeisenbank/articles/885792/ архитекту
 
 https://pattern-kit.readthedocs.io/en/latest/ implementations of common software design patterns
 
-
+Working with large files: 
+https://blog.devgenius.io/10-ways-to-work-with-large-files-in-python-effortlessly-handle-gigabytes-of-data-aeef19bc0429
 
 https://afabundle.pro/product/competitive-programming-in-python/ Book
 
