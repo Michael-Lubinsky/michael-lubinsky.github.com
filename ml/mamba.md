@@ -3,6 +3,9 @@ Reinforcement learning: https://www.understandingai.org/p/reinforcement-learning
 Book:
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
 
+Book: Information Theory, Inference, and Learning Algorithms
+https://www.inference.org.uk/itprnn/book.pdf
+
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
 
 https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
