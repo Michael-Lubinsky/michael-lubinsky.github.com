@@ -177,6 +177,8 @@ https://habr.com/ru/companies/tbank/articles/911900/ к какому класс�
 #### Gini index 
 https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
 
+### reservoir sampling
+https://samwho.dev/reservoir-sampling/
 
 #### Monte Carlo 
 https://thenumb.at/Sampling/
