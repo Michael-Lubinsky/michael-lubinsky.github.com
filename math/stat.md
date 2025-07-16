@@ -226,4 +226,6 @@ https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 https://habr.com/ru/articles/922454/ кросс-энтропия позволяет оценить разницу между двумя распределениями
 
+### Secretary_problem
+https://en.wikipedia.org/wiki/Secretary_problem  
 https://habr.com/ru/articles/928338/ Разборчивая невеста 1/e
