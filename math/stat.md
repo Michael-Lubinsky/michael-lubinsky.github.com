@@ -225,3 +225,5 @@ https://realpython.com/python-for-data-analysis/
 https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 https://habr.com/ru/articles/922454/ кросс-энтропия позволяет оценить разницу между двумя распределениями
+
+https://habr.com/ru/articles/928338/ Разборчивая невеста 1/e
