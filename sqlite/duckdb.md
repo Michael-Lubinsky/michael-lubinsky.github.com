@@ -14,6 +14,8 @@ https://realpython.com/python-duckdb
 
 https://realpython.com/courses/starting-duckdb-python/
 
+https://codecut.ai/deep-dive-into-duckdb-data-scientists/
+
 https://sqlrooms.org/ Build data-centric apps with DuckDB
 
 https://medium.com/@shouke.wei/duckdb-tutorial-the-fast-embedded-analytics-database-7d5d742bb251
