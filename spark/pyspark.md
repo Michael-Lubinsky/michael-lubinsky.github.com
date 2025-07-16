@@ -1,4 +1,4 @@
-```
+```python
 df.printSchema()
 df.columns
 df.count()
@@ -40,7 +40,7 @@ df_result = df_grouped.filter(df_grouped["cnt"] > avg_val)
 ```
 
 ### read json
-```
+```python
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 # Read single-line JSON
 df = spark.read.json("path/to/singleline.json")
@@ -128,7 +128,7 @@ if invalid_rows.count() > 0:
 Use "inner", "left", "right", "outer", "left_semi", "left_anti" as the how parameter.
 
 Spark automatically avoids duplicate join columns by keeping just one id column.
-```
+```python
 df_joined = df1.join(df2, on="id", how="inner")
 df_joined = df1.join(df2, on=["id", "dept"], how="inner")
 df_joined.show()
@@ -139,7 +139,7 @@ df_joined = df1.join(df2, df1.id == df2.id, "inner")
 
 It lead to duplicate id columns: one from df1, one from df2.
 Solution:  
-```
+```python
 df_joined = df1.join(df2, df1.id == df2.id, "inner") \
                .drop(df2.id)
 
@@ -777,6 +777,39 @@ spark.sql(
  ✅ Direct reference to DataFrames in SQL
 
 
+```python
+parametrized_query = """SELECT * FROM {item_price}
+WHERE transaction_date > {transaction_date}
+"""
+
+spark.sql(
+    parametrized_query, item_price=item_price, transaction_date=transaction_date_str
+).show()
+
+
+query_with_markers = """SELECT * FROM {item_price}
+WHERE transaction_date > :transaction_date
+"""
+
+transaction_date = date(2025, 2, 15)
+
+spark.sql(
+    query_with_markers,
+    item_price=item_price,
+    args={"transaction_date": transaction_date},
+).show()
+
+
+def filter_by_price_threshold(df, amount):
+    return spark.sql(
+        "SELECT * from {df} where price > :amount", df=df, args={"amount": amount}
+    )
+
+#Execute query with parameters
+assert filter_by_price_threshold(df, 10).count() == 1
+assert filter_by_price_threshold(df, 8).count() == 2
+```
+
 <!--
 
 https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8
@@ -805,4 +838,5 @@ https://medium.com/@rames1000/50-pyspark-problems-solutions-part-3-4b8472b068fb
 https://medium.com/@rames1000/pyspark-transformation-solutions-part-1-7a879d5dcec7
 https://medium.com/@rames1000/pyspark-transformation-solutions-part-2-200d2bf82398
 
+https://codecut.ai/pyspark-sql-enhancing-reusability-with-parameterized-queries/
  -->
