@@ -1,5 +1,11 @@
 https://pydevtools.com/handbook/
 
+https://habr.com/ru/companies/raiffeisenbank/articles/885792/ архитектурный подход к Python приложениям
+
+https://pattern-kit.readthedocs.io/en/latest/ implementations of common software design patterns
+
+
+
 https://afabundle.pro/product/competitive-programming-in-python/ Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
