@@ -132,6 +132,23 @@ with set_environ(SCRAPY_CHECK='true'):
         spidercls = spider_loader.load(spidername)
 ```
 
+```python
+from contextlib import contextmanager
+import time
+
+@contextmanager
+def timer(label='Operation'):
+    start = time.time()
+    yield
+    end = time.time()
+    print(f"[{label}] took {end - start:.4f} seconds")
+
+# How to use it:
+
+with timer("Data Processing"):
+    process_data()
+```
+
 ### Printing the inputs and outputs of each function
 ```python
 def debug(func):
