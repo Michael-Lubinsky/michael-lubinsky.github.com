@@ -4,6 +4,9 @@ https://habr.com/ru/companies/mws/articles/909790/
 https://habr.com/ru/articles/918580/  Apache Airflow на практике 
 
 https://medium.com/@lorenzouriel/airflow-docker-setup-step-by-step-f7f682b21197
+
+Airflow 3 in Docker
+https://medium.com/apache-airflow/how-to-install-apache-airflow-3-0-using-docker-a-complete-guide-febf1bb3204d
 -->
 ### Airflow
 
@@ -19,7 +22,7 @@ including database connections and executor settings.
 
 Airflow logs ang global variables
 can be configured in the airflow.cfg file, specifying the logging level and log location.
-```
+```ini
 [logging]
 base_log_folder = /path/to/logs
 remote_logging = True
