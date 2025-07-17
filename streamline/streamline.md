@@ -8,6 +8,7 @@ https://pybit.es/articles/from-backend-to-frontend-connecting-fastapi-and-stream
 
 https://drlee.io/a-comprehensive-guide-to-streamlit-cloud-building-interactive-and-beautiful-data-apps-af747bbac3e0
 
+https://pub.towardsai.net/having-streamlit-superpowers-the-best-gpt-4-prompts-for-guaranteed-data-visuals-8e8b96b0036b
 
 ### Multi-page support:
 
