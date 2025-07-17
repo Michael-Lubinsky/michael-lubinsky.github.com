@@ -588,6 +588,7 @@ ORDER BY t1.fivethous;
 ### Postgres 18
 <https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
+<https://medium.com/@dev_tips/scaling-broke-my-stack-but-postgresql-18-showed-me-how-to-fix-it-c91cb02f4f6f>
 
 <https://medium.com/@kanishks772/how-we-designed-a-1-billion-row-system-on-postgresql-18-and-why-its-blazing-fast-6c97aec9271b>
 
