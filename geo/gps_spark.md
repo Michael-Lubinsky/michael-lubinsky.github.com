@@ -670,3 +670,5 @@ MongoDB for GIS
 
 <https://opengeoai.org/>
 
+<https://github.com/marceloprates/prettymaps>
+
