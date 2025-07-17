@@ -3,6 +3,9 @@
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
+### Grafana Dashboards
+
+https://medium.com/data-engineer-things/the-data-engineers-toolkit-12-free-monitoring-dashboards-you-didn-t-know-existed-c0e2fee806f4
 
 ### Monitiring Postgres with Grafana
 
