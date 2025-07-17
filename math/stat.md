@@ -217,6 +217,8 @@ https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distributio
 
 
 ### EDA
+Tools for assessing normality of distribution: Shapiro-Wilk test
+ https://medium.com/@data-overload/the-shapiro-wilk-test-a-guide-to-normality-testing-d730e820d1a8 
 
 https://github.com/ydataai/ydata-profiling
 
