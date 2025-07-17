@@ -149,6 +149,24 @@ with timer("Data Processing"):
     process_data()
 ```
 
+Class-based context manager
+```
+class Timer:
+    def __init__(self, label='Block'):
+        self.label = label
+
+    def __enter__(self):
+        self.start = time.time()
+ 
+    def __exit__(self, *args):
+        end = time.time()
+        print(f"[{self.label}] took {end - self.start:.4f} seconds")
+# Usage:
+
+with Timer("Heavy Computation"):
+    crunch_numbers()
+```
+
 ### Printing the inputs and outputs of each function
 ```python
 def debug(func):
