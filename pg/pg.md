@@ -589,7 +589,7 @@ FILENAME="$BACKUP_DIR/${DB_NAME}_backup_$TIMESTAMP.sql"
 
 mkdir -p "$BACKUP_DIR"
 
-echo "💾 Backing up database '$DB_NAME' to $FILENAME"
+echo "Backing up database '$DB_NAME' to $FILENAME"
 pg_dump -U "$USER_NAME" "$DB_NAME" > "$FILENAME"
 
 if [ $? -eq 0 ]; then
@@ -815,6 +815,9 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 <https://mccue.dev/pages/3-11-25-life-altering-postgresql-patterns>
 
 <https://medium.com/@pesarakex/how-we-migrated-a-100m-row-postgresql-table-with-zero-downtime-and-survived-5b908de243e0>
+
+PG 18
+<https://medium.com/@kanishks772/how-we-designed-a-1-billion-row-system-on-postgresql-18-and-why-its-blazing-fast-6c97aec9271b>
 
 https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49
 -->
