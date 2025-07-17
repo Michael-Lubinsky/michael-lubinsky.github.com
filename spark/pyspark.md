@@ -328,7 +328,7 @@ df_pivot.show()
 
 Recursively flattens a DataFrame with complex nested fields (Arrays and Structs)   
 by converting them into individual columns.
-```
+```python
 from pyspark.sql.functions import col, explode_outer
 from pyspark.sql.types import StructType, ArrayType
 
