@@ -3,6 +3,8 @@
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
+<https://levelup.gitconnected.com/how-i-built-a-real-time-python-monitoring-dashboard-for-my-entire-system-without-grafana-beca3a17777f>
+
 ### Grafana Dashboards
 
 https://medium.com/data-engineer-things/the-data-engineers-toolkit-12-free-monitoring-dashboards-you-didn-t-know-existed-c0e2fee806f4
