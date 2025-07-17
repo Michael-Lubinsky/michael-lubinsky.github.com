@@ -148,6 +148,24 @@ deptry for finding issues with project dependencies
 
 
 ## Scheduling
+```python
+import sched
+import time
+
+scheduler = sched.scheduler(time.time, time.sleep)
+
+def job():
+    print("Running task at", time.ctime())
+
+    # Reschedule the job to run again in 2 hours (7200 seconds)
+    scheduler.enter(7200, 1, job)
+
+# Schedule the first run in 0 seconds (immediate start)
+scheduler.enter(0, 1, job)
+
+print("Scheduler started at", time.ctime())
+scheduler.run()
+```
 
 | Feature                         | `sched` (Standard Library)             | `APScheduler` (Third-Party)                                  |
 | ------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
