@@ -52,6 +52,7 @@ df_custom_schema = spark.read.schema(schema).json("path/to/jsonfile.json")
 ```
 
 <!-- https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448 -->
+
 ### Read from S3
 ```python
 from pyspark.sql import SparkSession
@@ -320,6 +321,46 @@ df_pivot.show()
 |Charlie|     70 |   65|
 +-------+--------+-----+
 ```
+
+
+###  Flatten Any JSON in PySpark
+<https://nidhig631.medium.com/how-to-effortlessly-flatten-any-json-in-pyspark-no-more-nested-headaches-60a30bd36bb1>
+
+Recursively flattens a DataFrame with complex nested fields (Arrays and Structs)   
+by converting them into individual columns.
+```
+from pyspark.sql.functions import col, explode_outer
+from pyspark.sql.types import StructType, ArrayType
+
+def flatten_json(df):
+
+    def get_complex_fields(df):
+        # Returns a dictionary of complex (Array or Struct) fields in the DataFrame schema.
+        return {field.name: field.dataType for field in df.schema.fields if isinstance(field.dataType, (ArrayType, StructType))}
+
+    #Retrieves all Structs & Arrays in the DataFrame.
+    #If no complex fields exist, the function simply returns the original DataFrame.
+    complex_fields = get_complex_fields(df) 
+
+    while complex_fields:
+        col_name, col_type = next(iter(complex_fields.items()))  # Get first complex column
+        print(f"Processing: {col_name}, Type: {type(col_type)}")
+
+        if isinstance(col_type, StructType):
+            # Expand Struct fields into separate columns
+            expanded_cols = [col(f"{col_name}.{sub_field.name}").alias(f"{col_name}_{sub_field.name}") 
+                             for sub_field in col_type]
+            df = df.select("*", *expanded_cols).drop(col_name)
+
+        elif isinstance(col_type, ArrayType):
+            # Explode Array fields into separate rows
+            df = df.withColumn(col_name, explode_outer(col_name))
+
+        # Recompute remaining complex fields
+        complex_fields = get_complex_fields(df)
+
+    return df
+    ```
 
 ### Calculate the monthly average balance for banking customers.
 ```python
