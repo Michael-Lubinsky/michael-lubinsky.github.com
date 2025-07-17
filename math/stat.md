@@ -217,8 +217,26 @@ https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distributio
 
 
 ### EDA
-Tools for assessing normality of distribution: Shapiro-Wilk test
+Tools for assessing normality of distribution: 
+Shapiro-Wilk test   
+Kolmogorov-Smirnov test  
+Anderson-Darling test  
+Lilliefors test  
+Jarque-Bera test  
+ 
  https://medium.com/@data-overload/the-shapiro-wilk-test-a-guide-to-normality-testing-d730e820d1a8 
+```python
+from scipy.stats import shapiro
+
+data = [12.4, 14.6, 15.2, 14.9, 13.8, 13.7, 14.0]
+stat, p = shapiro(data)
+print('W-statistic=%.3f, p=%.3f' % (stat, p))
+if p > 0.05:
+    print("Data looks normal (fail to reject H₀)")
+else:
+    print("Data does not look normal (reject H₀)")
+```
+ 
 
 https://github.com/ydataai/ydata-profiling
 
