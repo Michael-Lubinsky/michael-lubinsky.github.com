@@ -18,6 +18,8 @@ https://codecut.ai/deep-dive-into-duckdb-data-scientists/
 
 https://sqlrooms.org/ Build data-centric apps with DuckDB
 
+https://medium.com/@shouke.wei/introducing-duckdb-local-ui-a-fast-private-and-interactive-sql-experience-53ce977fe8a9
+
 https://medium.com/@shouke.wei/duckdb-tutorial-the-fast-embedded-analytics-database-7d5d742bb251
 
 https://www.dbreunig.com/2025/05/03/duckdb-is-the-most-impactful-geospatial-software-in-a-decade.html
