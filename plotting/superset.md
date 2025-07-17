@@ -7,6 +7,55 @@ CSS templates/customizations
 Hyperlink between dashboards   
 Interactivity within dashboards   
 
+### Snowflake connector
+
+To connect Superset to Snowflake, you need:
+
+1. Python Snowflake SQLAlchemy connector
+Install both of the following packages in the Python environment where Superset runs:
+
+```bash
+pip install snowflake-sqlalchemy
+pip install 'apache-superset[all]'
+```
+Ensure you have:
+```
+snowflake-connector-python
+snowflake-sqlalchemy
+```
+They are required for SQLAlchemy to speak to Snowflake.
+
+#### SQLAlchemy Connection String Format:
+```
+snowflake://<user>:<password>@<account_identifier>/<database>/<schema>?warehouse=<warehouse>&role=<role>
+```
+Example:
+```
+snowflake://JOHNDOE:mypassword@xy12345.us-east-1/sales_db/public?warehouse=COMPUTE_WH&role=ANALYST
+```
+Where:
+```
+xy12345.us-east-1 is your Snowflake account locator + region.
+sales_db is the database, public is the schema.
+COMPUTE_WH is the virtual warehouse.
+ANALYST is the role (optional but recommended).
+```
+
+⚙️ Adding Snowflake in Superset
+```
+Open Superset UI.
+Go to Data → Databases → + Database.
+Choose "Connect a database".
+Paste the SQLAlchemy URI (see above).
+Click "Connect".
+Optionally click "Test Connection".
+Save.
+```
+
+SSL and OAuth are also supported for enhanced security.
+
+### Superset examples
+
 When you install Superset and load examples using:
 ```bash
 superset load_examples
