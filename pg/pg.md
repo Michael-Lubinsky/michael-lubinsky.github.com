@@ -120,10 +120,10 @@ CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);
 PostgreSQL provides two operator classes for JSONB GIN indexes, each optimized for different query patterns:
 
 ### jsonb_ops (Default)
-CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);
+CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);  
 -- Equivalent to:
 
-CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data jsonb_ops);
+CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data jsonb_ops);  
 
 This creates index entries for every key and value, supporting all JSONB operators but creating larger indexes.
 
@@ -148,7 +148,7 @@ SELECT COUNT(*)
 FROM user_events 
 WHERE event_data ? 'promotion_code';  -- Key existence check
 ```
--- With jsonb_ops: 150ms
+-- With jsonb_ops: 150ms  
 -- With jsonb_path_ops: Sequential scan (doesn't use index)
 
 #### Partial GIN Indexes
@@ -588,6 +588,9 @@ ORDER BY t1.fivethous;
 ### Postgres 18
 <https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
+
+<https://medium.com/@kanishks772/how-we-designed-a-1-billion-row-system-on-postgresql-18-and-why-its-blazing-fast-6c97aec9271b>
+
 ### extension: pg_repack 
 pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
 and optionally restore the physical order of clustered indexes. 
@@ -877,8 +880,7 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 
 <https://medium.com/@pesarakex/how-we-migrated-a-100m-row-postgresql-table-with-zero-downtime-and-survived-5b908de243e0>
 
-PG 18
-<https://medium.com/@kanishks772/how-we-designed-a-1-billion-row-system-on-postgresql-18-and-why-its-blazing-fast-6c97aec9271b>
+
 
 https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49
 -->
