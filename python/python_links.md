@@ -147,5 +147,24 @@ https://deptry.com/
 deptry for finding issues with project dependencies
 
 
+## Scheduling
+
+| Feature                         | `sched` (Standard Library)             | `APScheduler` (Third-Party)                                  |
+| ------------------------------- | -------------------------------------- | ------------------------------------------------------------ |
+| 📦 Included in Standard Library | ✅ Yes                                  | ❌ No (install via `pip install apscheduler`)                 |
+| 🧠 Complexity                   | Simple                                 | More powerful and configurable                               |
+| ⏱ Task Types                    | Only one-shot (delayed) tasks          | Interval, cron, date-based, and more                         |
+| 🔁 Repeating Tasks              | ❌ No built-in support                  | ✅ Yes (interval or cron-style)                               |
+| 🧵 Thread Safety                | No (single-threaded use)               | Yes (with options for threading, asyncio, etc.)              |
+| ⚙ Backends                      | Manual loop (`scheduler.run()`)        | Multiple backends: in-memory, database, etc.                 |
+| 🧪 Persistent Jobs              | ❌ No                                   | ✅ Yes (with DB/job store)                                    |
+| 🧰 Built-in Job Management      | ❌ No                                   | ✅ Yes (pause, resume, remove, view jobs)                     |
+| 🕒 Time Sources                 | You provide `timefunc` and `delayfunc` | Built-in support for multiple time zones, `datetime` objects |
+| 🐍 Python Versions              | Python 3+                              | Python 3.6+ (actively maintained)                            |
+
+
+
+
+
 ### Web GUI with Python
 https://medium.com/@manikolbe/streamlit-gradio-nicegui-and-mesop-building-data-apps-without-web-devs-4474106778f5
