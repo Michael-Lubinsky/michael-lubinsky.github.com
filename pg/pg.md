@@ -113,7 +113,68 @@ Complete flexibility for the profile data that can evolve as your application ch
 <https://www.postgresonline.com/journal/index.php?/archives/420-Converting-JSON-documents-to-relational-tables.html#jsontorelational> Converting JSON documents to relational tables
 
 <https://habr.com/ru/companies/sigma/articles/890668/> Использование JSONB-полей вместо EAV в PostgreSQL
+<https://medium.com/@sohail_saifi/the-postgresql-index-type-that-makes-complex-queries-100x-faster-8fdd4e0474cc>
+```sql
+CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);
+```
+PostgreSQL provides two operator classes for JSONB GIN indexes, each optimized for different query patterns:
 
+### jsonb_ops (Default)
+CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);
+-- Equivalent to:
+
+CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data jsonb_ops);
+
+This creates index entries for every key and value, supporting all JSONB operators but creating larger indexes.
+
+#### jsonb_path_ops (Optimized for Containment)
+
+CREATE INDEX idx_event_data_gin_path ON user_events USING GIN (event_data jsonb_path_ops);
+
+This creates smaller indexes (20–30% of table size vs 60–80%) but only supports the @> containment operator.
+
+Test  the difference:
+```sql
+-- This query works with both operator classes
+SELECT COUNT(*) 
+FROM user_events 
+WHERE event_data @> '{"type": "purchase", "amount": 99.99}';
+
+-- With jsonb_ops: 280ms, index size: 850MB
+-- With jsonb_path_ops: 180ms, index size: 290MB
+
+-- This query only works with jsonb_ops
+SELECT COUNT(*) 
+FROM user_events 
+WHERE event_data ? 'promotion_code';  -- Key existence check
+```
+-- With jsonb_ops: 150ms
+-- With jsonb_path_ops: Sequential scan (doesn't use index)
+
+#### Partial GIN Indexes
+Even more powerful pattern: partial GIN indexes.
+
+Since most of our queries filtered by event type first, I created type-specific indexes:
+```sql
+-- Index only purchase events
+CREATE INDEX idx_purchase_events_gin ON user_events 
+USING GIN (event_data) 
+WHERE event_data->>'type' = 'purchase';
+
+-- Index only recent events (last 90 days)
+CREATE INDEX idx_recent_events_gin ON user_events 
+USING GIN (event_data) 
+WHERE timestamp > NOW() - INTERVAL '90 days';
+The purchase events index was tiny (5MB instead of 850MB) but blazingly fast for purchase-specific queries:
+
+-- Find users who bought specific products
+SELECT user_id, event_data->>'product_id' as product_id
+FROM user_events 
+WHERE event_data @> '{"type": "purchase"}'
+  AND event_data @> '{"category": "electronics"}';
+```
+-- With full GIN index: 340ms  
+-- With partial GIN index: 45ms
 
 ### WITHIN GROUP
 
