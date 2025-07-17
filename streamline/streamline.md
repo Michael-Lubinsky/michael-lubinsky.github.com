@@ -1,5 +1,7 @@
 ### Streamlit
 
+<https://johnloewen.substack.com/p/the-best-python-dashboard-tools-a>
+
 https://www.squadbase.dev/en/ebooks/streamlit-bi-overview
 
 streamlit run myapp.py
