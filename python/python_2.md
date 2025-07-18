@@ -232,3 +232,36 @@ with open("log.txt", "a") as f:
     f.flush()
     os.fsync(f.fileno())
 ```
+### Send e-mail
+
+```python
+import smtplib
+import socket
+from email.mime.text import MIMEText
+from shutil import disk_usage
+
+def send_alert(usage):
+    host = socket.gethostname()
+    msg = MIMEText(f"Disk usage on {host}: {usage}%")
+    msg['Subject'] = 'Disk Alert'
+    msg['From'] = 'monitoring@example.com'
+    msg['To'] = 'admin@example.com'
+    
+    with smtplib.SMTP('smtp.example.com') as server:
+        server.send_message(msg)
+
+def main():
+    threshold = 90
+    partition = '/'
+    
+    total, used, _ = disk_usage(partition)
+    usage_percent = (used / total) * 100
+    
+    if usage_percent >= threshold:
+        send_alert(round(usage_percent, 1))
+
+
+if __name__ == '__main__':
+    main()
+
+```
