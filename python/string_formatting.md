@@ -44,6 +44,60 @@ print(f"{a=}")   # a=1
 https://habr.com/ru/articles/911196/
 -->
 
+###  Monitor and restart
+```python
+import subprocess
+import sys
+import time
+import os
+from fastapi import FastAPI
+import uvicorn
+
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "API работает"}
+
+@app.get("/shutdown")
+async def shutdown():
+    """Останавливаем сервис для теста"""
+    os._exit(1)
+
+@app.get("/status")
+async def status():
+    return {"is_running": True}
+
+def run_server():
+    """Запуск FastAPI сервера"""
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+def monitor_and_restart():
+    """Мониторинг с автоперезапуском"""
+    while True:
+        try:
+            print("[Monitor] Запускаем сервис...")
+            process = subprocess.Popen([sys.executable, __file__, "--server"])
+            process.wait()  # Ждем завершения
+            print("[Monitor] Сервис упал, перезапуск через 3 сек...")
+            time.sleep(3)
+        except KeyboardInterrupt:
+            print("[Monitor] Остановка")
+            break
+
+def main():
+    monitor_and_restart()
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "--server":
+        # Режим сервера
+        run_server()
+    else:
+        # Режим монитора
+        main()
+```
+
+
 ### Small puzzles
 
 There are 2 python integer arrays A and B of the same size N.
