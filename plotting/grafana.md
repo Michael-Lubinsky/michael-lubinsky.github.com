@@ -1,5 +1,23 @@
 ## Grafana
 
+### Panel Links  
+You can add **panel links** or **dashboard links** that pass variables (like `device_name`, `region`, or `error_code`) to simulate drilldown behavior.
+
+**Example**
+
+```sql
+SELECT COUNT(*) AS errors, error_code
+FROM logs
+WHERE ts BETWEEN $__timeFrom() AND $__timeTo()
+GROUP BY error_code
+```
+
+- Clicking a bar representing an `error_code` can link to another dashboard showing detailed rows for that code.
+
+<https://grafana.com/docs/grafana/latest/panels/links/>
+
+
+
 ### Drilldown
 In Grafana 12 (released around May 7, 2025) the old “Explore” suite has been renamed and upgraded to Grafana Drilldown,   
 introducing a powerful Drilldown menu entry in the main sidebar 
