@@ -10,7 +10,7 @@
 https://medium.com/data-engineer-things/the-data-engineers-toolkit-12-free-monitoring-dashboards-you-didn-t-know-existed-c0e2fee806f4
 
 ### Monitiring Postgres with Grafana
-
+<https://habr.com/ru/companies/selectel/articles/928854/>
 Configure PostgreSQL
 Modify the authentication method in the pg_hba.conf file to use scram-sha-256   
 instead of peer for local connections. 
