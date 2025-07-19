@@ -4,6 +4,10 @@
 
 <https://learn.microsoft.com/en-us/training/browse/>
 
+<https://learn.microsoft.com/en-us/collections/7ppetn16mm3r3e>
+
+<https://learn.microsoft.com/en-us/training/support/faq?pivots=sandbox>
+
 <https://topmate.io/asheesh/921914>
  
 A broad, general-purpose cloud computing platform offering hundreds of services for infrastructure, application development, data, AI, networking, and more.
