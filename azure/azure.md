@@ -405,3 +405,5 @@ You can consider third-party managed services like:
 <https://skphd.medium.com/top-100-azure-data-engineering-interview-questions-and-answers-24a65e8e6866>
 
 <https://www.reddit.com/r/AZURE/comments/1lo4rc9/cloudnetdraw_is_now_a_hosted_tool_automatically/>
+
+<https://artempichugin.com/2025/07/07/a-simple-workbook-to-keep-your-azure-healthy/>
