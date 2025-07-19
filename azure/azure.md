@@ -404,7 +404,12 @@ You can consider third-party managed services like:
 | Workflow orchestration   | Apache Airflow         | Azure Data Fa
 
 
+### Azure CLI
 <https://github.com/Azure/azure-cli/releases>
+<https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest>
+
+ https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-macos?view=azure-cli-latest
+ 
 
 <https://skphd.medium.com/top-100-azure-data-engineering-interview-questions-and-answers-24a65e8e6866>
 
