@@ -1,5 +1,7 @@
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
 
+<https://habr.com/ru/articles/928948/> High Load Systems
+
 <https://habr.com/ru/companies/yandex_praktikum/articles/812139/> git
 
 Visidata <https://www.visidata.org/>
