@@ -1,5 +1,6 @@
 ## Grafana
 
+### Drilldown
 In Grafana 12 (released around May 7, 2025) the old “Explore” suite has been renamed and upgraded to Grafana Drilldown,   
 introducing a powerful Drilldown menu entry in the main sidebar 
 (e.g. Drilldown → Metrics, Logs, Traces, Profiles) 
@@ -12,7 +13,7 @@ Source: [grafana.com - Drilldown Apps Overview](https://grafana.com/blog/2025/02
 
 ---
 
-## 🛠️ Key Features of Drilldown
+### Drilldown Key Features of Drilldown
 
 ### 1. Unified, Queryless Exploration
 Explore telemetry data (metrics, logs, traces, profiles) visually—no need to write PromQL, LogQL, etc.
