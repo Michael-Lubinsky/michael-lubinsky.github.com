@@ -22,6 +22,8 @@ Python provides the built-in issubclass() function to check, at runtime, whether
 Now, whether issubclass() checks only nominal subtyping or only structural subtyping or both —  
 the answer can vary depending on the use of Abstract Base Classes (ABCs) and Protocols.
 
+<https://realpython.com/courses/exploring-protocols-python/>
+
 <https://levelup.gitconnected.com/abstract-base-classes-abcs-and-protocols-in-python-f9c791ad84cd>
 
 ### String formatting
