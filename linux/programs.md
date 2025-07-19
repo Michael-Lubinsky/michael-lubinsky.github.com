@@ -9,16 +9,14 @@ Visidata <https://www.visidata.org/>
 command-line json viewer <https://jless.io/> 
 
 ### CSV toolkits
-https://github.com/medialab/xan   XAN is a command line tool to process CSV files 
+https://github.com/medialab/xan   XAN is a command line tool to process CSV files  
 https://bioinf.shenwei.me/csvtk/  
 https://qsv.dathere.com/  
 https://miller.readthedocs.io/  CSV, JSON processing
 
 ### GUI for CSV files
 https://superintendent.app/  
-
 https://www.tadviewer.com/
-
 
 ### PDF to text
 brew install poppler  
@@ -47,8 +45,8 @@ https://github.com/navig-me/telert sends notifications when your terminal comman
 гайд по настройке рабочего окружения: Linux, VScode, Python  
 <https://habr.com/ru/companies/timeweb/articles/916040/>
 
-### https://devtoys.app/
-
+### <https://devtoys.app/>
+```
 30 tools by default, and many more to be downloaded
 #### Converters
  Cron Parser
@@ -101,4 +99,4 @@ https://github.com/navig-me/telert sends notifications when your terminal comman
  Text Delimiter
  ULID Generator
  XSD Generator
- 
+ ```
