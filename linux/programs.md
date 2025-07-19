@@ -1,6 +1,10 @@
-visidata https://www.visidata.org/
+<https://github.com/crescentpartha/CheatSheets-for-Developers>
 
-https://jless.io/ command-line json viewer
+<https://habr.com/ru/companies/yandex_praktikum/articles/812139/> git
+
+Visidata <https://www.visidata.org/>
+
+command-line json viewer <https://jless.io/> 
 
 ### CSV toolkits
 https://github.com/medialab/xan   XAN is a command line tool to process CSV files 
