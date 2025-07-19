@@ -922,3 +922,7 @@ df_postgres = spark.read.format("jdbc") \
 <https://mayursurani.medium.com/end-to-end-etl-pipeline-for-insurance-domain-a-complete-guide-with-aws-pyspark-and-databricks-8bcea86e55fd>
 
 <https://medium.com/towards-data-engineering/real-world-retail-data-pipeline-using-databricks-declarative-pipelines-8b80ea7bc34c>
+
+### Iceberg
+
+https://habr.com/ru/companies/ru_mts/articles/926618/
