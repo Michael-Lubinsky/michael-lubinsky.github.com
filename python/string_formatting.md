@@ -46,7 +46,22 @@ print(f"{a=}")   # a=1
 https://habr.com/ru/articles/911196/
 -->
 
-###  Monitor and restart
+### glom jmespath pydash
+
+| Feature / Library      | `glom`                              | `jmespath`                   | `pydash`                                 |               |                         |
+| ---------------------- | ----------------------------------- | ---------------------------- | ---------------------------------------- | ------------- | ----------------------- |
+| Type                   | Data transformation and access tool | Query language for JSON      | Functional utility library (lodash-like) |               |                         |
+| Ideal Use Case         | Structured nested data manipulation | Read/query JSON              | General-purpose data manipulation        |               |                         |
+| Syntax Style           | Pythonic, declarative DSL           | Custom query language string | Functional chaining and helpers          |               |                         |
+| Transformations        | ✅ Yes (complex pipelines)           | ❌ Read-only                  | ✅ Some basic transformations             |               |                         |
+| JSON Compatibility     | ✅ Good                              | ✅ Excellent                  | ✅ Good                                   |               |                         |
+| Custom Functions       | ✅ Callable and DSL                  | ❌ Not directly               | ✅ Python functions                       |               |                         |
+| Default Value Handling | ✅ Built-in                          | ✅ With \`                    |                                          | \` (fallback) | ❌ Manual fallback logic |
+| Performance            | Moderate                            | Fast (C implementation)      | Fast (pure Python)                       |               |                         |
+
+
+
+###  Monitor and restart 
 ```python
 import subprocess
 import sys
