@@ -1,7 +1,12 @@
-## Monitoring
+### High Load Systems
+
 <https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
+<https://habr.com/ru/articles/928948/> 
+
 <https://theremoteengineer.substack.com/p/availability-in-system-design>
+
+## Monitoring
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
