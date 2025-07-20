@@ -1,6 +1,8 @@
 ## Monitoring
 <https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
+<https://theremoteengineer.substack.com/p/availability-in-system-design>
+
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
 <https://levelup.gitconnected.com/how-i-built-a-real-time-python-monitoring-dashboard-for-my-entire-system-without-grafana-beca3a17777f>
