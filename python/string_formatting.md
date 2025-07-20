@@ -48,17 +48,98 @@ https://habr.com/ru/articles/911196/
 
 ### glom jmespath pydash
 
-| Feature / Library      | `glom`                              | `jmespath`                   | `pydash`                                 |               |                         |
-| ---------------------- | ----------------------------------- | ---------------------------- | ---------------------------------------- | ------------- | ----------------------- |
-| Type                   | Data transformation and access tool | Query language for JSON      | Functional utility library (lodash-like) |               |                         |
-| Ideal Use Case         | Structured nested data manipulation | Read/query JSON              | General-purpose data manipulation        |               |                         |
-| Syntax Style           | Pythonic, declarative DSL           | Custom query language string | Functional chaining and helpers          |               |                         |
-| Transformations        | ✅ Yes (complex pipelines)           | ❌ Read-only                  | ✅ Some basic transformations             |               |                         |
-| JSON Compatibility     | ✅ Good                              | ✅ Excellent                  | ✅ Good                                   |               |                         |
-| Custom Functions       | ✅ Callable and DSL                  | ❌ Not directly               | ✅ Python functions                       |               |                         |
-| Default Value Handling | ✅ Built-in                          | ✅ With \`                    |                                          | \` (fallback) | ❌ Manual fallback logic |
-| Performance            | Moderate                            | Fast (C implementation)      | Fast (pure Python)                       |               |                         |
+# Comparison: glom vs jmespath vs pydash
 
+## 🔍 High-Level Comparison
+
+| Feature / Library       | `glom`                                | `jmespath`                          | `pydash`                              |
+|-------------------------|----------------------------------------|-------------------------------------|----------------------------------------|
+| Type                    | Data transformation and access tool   | Query language for JSON             | Functional utility library (lodash-like) |
+| Ideal Use Case          | Structured nested data manipulation   | Read/query JSON                     | General-purpose data manipulation       |
+| Syntax Style            | Pythonic, declarative DSL             | Custom query language string        | Functional chaining and helpers        |
+| Transformations         | ✅ Yes (complex pipelines)             | ❌ Read-only                         | ✅ Some basic transformations           |
+| JSON Compatibility      | ✅ Good                                | ✅ Excellent                         | ✅ Good                                 |
+| Custom Functions        | ✅ Callable and DSL                    | ❌ Not directly                      | ✅ Python functions                     |
+| Default Value Handling  | ✅ Built-in                            | ✅ With `||` (fallback)              | ❌ Manual fallback logic                |
+| Performance             | Moderate                              | Fast (C implementation)             | Fast (pure Python)                     |
+
+---
+
+## 🧪 Example Comparison
+
+Given:
+
+```python
+data = {
+    "person": {
+        "name": "Alice",
+        "info": {
+            "age": 30,
+            "email": "alice@example.com"
+        }
+    },
+    "friends": [
+        {"name": "Bob", "age": 25},
+        {"name": "Carol", "age": 27}
+    ]
+}
+```
+
+### 🔸 `glom`
+
+```python
+from glom import glom
+
+glom(data, 'person.info.email')             # 'alice@example.com'
+glom(data, ('friends', ['name']))           # ['Bob', 'Carol']
+```
+
+### 🔸 `jmespath`
+
+```python
+import jmespath
+
+jmespath.search('person.info.email', data)  # 'alice@example.com'
+jmespath.search('friends[*].name', data)    # ['Bob', 'Carol']
+```
+
+### 🔸 `pydash`
+
+```python
+import pydash
+
+pydash.get(data, 'person.info.email')       # 'alice@example.com'
+pydash.map_(data['friends'], 'name')        # ['Bob', 'Carol']
+```
+
+---
+
+## 🧠 When to Use Each
+
+### ✅ `glom`
+- You want **Python-native syntax** for data access and transformations.
+- Need **default handling**, **deep traversal**, or **custom logic**.
+- Useful for **pipeline-like transformations**.
+
+### ✅ `jmespath`
+- You want a **compact and powerful query language**.
+- Mostly **read/query only** operations on JSON.
+- You work with APIs, AWS, or structured JSON responses.
+
+### ✅ `pydash`
+- You need **lodash-like utilities** in Python.
+- Want a broad set of functions (deep get, clone, filter, etc.).
+- Prefer **functional programming** utilities.
+
+---
+
+## 🔚 Summary
+
+| Use Case                         | Best Tool     |
+|----------------------------------|---------------|
+| Query deeply nested JSON         | `jmespath`    |
+| Pythonic access + transformation | `glom`        |
+| Functional utilities + JSON get  | `pydash`      |
 
 
 ###  Monitor and restart 
