@@ -630,7 +630,9 @@ However, future inserts/updates do not maintain physical order; you must re-run 
 
 ### Postgres HA
 
-https://stormatics.tech/blogs/checklist-is-your-postgresql-deployment-production-grade
+<https://stormatics.tech/blogs/checklist-is-your-postgresql-deployment-production-grade>
+
+<https://medium.com/@rongalinaidu/postgresql-replication-wal-wal-decoding-and-the-journey-toward-zero-etl-8c14ec566a7d>
 
 Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
 
