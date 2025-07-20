@@ -60,6 +60,8 @@ https://habr.com/ru/articles/911196/
 | Transformations         | ✅ Yes (complex pipelines)             | ❌ Read-only                         | ✅ Some basic transformations           |
 | JSON Compatibility      | ✅ Good                                | ✅ Excellent                         | ✅ Good                                 |
 | Custom Functions        | ✅ Callable and DSL                    | ❌ Not directly                      | ✅ Python functions                     |
+| Default Value Handling  | ✅ Built-in with `default=` or `Coalesce` | ✅ With `||` fallback syntax         | ❌ No built-in, must handle manually   |
+
 | Default Value Handling  | ✅ Built-in                            | ✅ With `||` (fallback)              | ❌ Manual fallback logic                |
 | Performance             | Moderate                              | Fast (C implementation)             | Fast (pure Python)                     |
 
