@@ -444,6 +444,9 @@ Read/write WKT, WKB, GeoJSON, Shapefile, Parquet with embedded geometries
 Indexing and spatial partitioning for efficient processing
 
 #### Databricks – Enhanced Integration & Built-in Tools
+
+<https://medium.com/towards-data-engineering/databricks-spatial-sql-is-here-a-game-changer-for-geospatial-intelligence-on-the-lakehouse-e7b1e5eb50ba>
+
 Databricks extends Apache Spark with easier integration for geospatial analytics through:
 
 🔷 a) Built-in Support for Apache Sedona
