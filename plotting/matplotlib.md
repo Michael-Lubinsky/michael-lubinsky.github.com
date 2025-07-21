@@ -1,5 +1,7 @@
 <https://josephbarbierdarnal.github.io/dayplot> calendar heatmaps; built on matplotlib
 
+<https://medium.com/top-python-libraries/multi-dimension-visualization-in-python-part-i-59beffd22f55>
+
 <https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577/>
 
 <https://medium.com/top-python-libraries/7-stunning-scientific-charts-i-created-with-matplotlib-that-you-shouldnt-miss-2de2ed91b164>
