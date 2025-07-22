@@ -103,6 +103,10 @@ https://habr.com/ru/companies/otus/articles/888974/ Type Annotations
 
 ### Pipelines
 
+https://medium.com/@connect.hashblock/i-built-a-fastapi-system-that-handled-1-billion-events-per-day-heres-the-architecture-c73fb7dd7eb1
+
+https://medium.com/@kazarmax/from-api-to-dashboard-building-an-end-to-end-etl-pipeline-with-azure-9b498daa2ef6
+
 https://pybit.es/articles/a-practical-example-of-the-pipeline-pattern-in-python/
 
 https://python.plainenglish.io/how-i-built-a-python-automation-system-that-runs-my-entire-workflow-while-i-sleep-07c98494f0f6
