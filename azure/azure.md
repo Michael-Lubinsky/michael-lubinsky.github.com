@@ -11,6 +11,8 @@
 <https://topmate.io/asheesh/921914>
 
 <https://medium.com/@kazarmax/from-api-to-dashboard-building-an-end-to-end-etl-pipeline-with-azure-9b498daa2ef6>
+
+<https://medium.com/@connect.hashblock/i-built-a-fastapi-system-that-handled-1-billion-events-per-day-heres-the-architecture-c73fb7dd7eb1>
  
 Azure is cloud computing platform offering hundreds of services for infrastructure, application development, data, AI, networking, and more.
 
