@@ -9,8 +9,10 @@
 <https://learn.microsoft.com/en-us/training/support/faq?pivots=sandbox>
 
 <https://topmate.io/asheesh/921914>
+
+<https://medium.com/@kazarmax/from-api-to-dashboard-building-an-end-to-end-etl-pipeline-with-azure-9b498daa2ef6>
  
-A broad, general-purpose cloud computing platform offering hundreds of services for infrastructure, application development, data, AI, networking, and more.
+Azure is cloud computing platform offering hundreds of services for infrastructure, application development, data, AI, networking, and more.
 
 🔧 Key Features:
 Infrastructure as a Service (IaaS) – Virtual Machines, networking  
