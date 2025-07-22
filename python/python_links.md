@@ -7,6 +7,9 @@ https://pattern-kit.readthedocs.io/en/latest/ implementations of common software
 Working with large files: 
 https://blog.devgenius.io/10-ways-to-work-with-large-files-in-python-effortlessly-handle-gigabytes-of-data-aeef19bc0429
 
+asyncio
+https://github.com/anordin95/a-conceptual-overview-of-asyncio/blob/main/readme.md
+
 https://afabundle.pro/product/competitive-programming-in-python/ Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
