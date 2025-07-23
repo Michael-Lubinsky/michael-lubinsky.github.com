@@ -277,7 +277,21 @@ You need superuser privileges to create extensions.
 ```sql
 SELECT * FROM pg_available_extensions; -- List of postgres extensions:
 CREATE EXTENSION hstore;
+
 SELECT * FROM pg_extension;
+
+
+SELECT 
+    extname AS extension_name,
+    extversion AS version,
+    extrelocatable AS relocatable,
+    nspname AS schema_name,
+    pg_catalog.obj_description(e.oid, 'pg_extension') AS description
+FROM  pg_extension e
+JOIN 
+    pg_namespace n ON e.extnamespace = n.oid
+ORDER BY  extname;
+
 ```
 
 ### Table partitioning
