@@ -477,6 +477,8 @@ based on core features, performance, pricing, and use cases:
 
 <https://github.com/lusingander/stu> S3 explorer
 
+<https://habr.com/ru/companies/k2tech/articles/929906/> S3 explained
+
 
 <https://www.vldb.org/pvldb/vol16/p3557-saxena.pdf>  Amazon Glue paper
 
