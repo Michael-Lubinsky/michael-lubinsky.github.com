@@ -88,10 +88,10 @@ SELECT * FROM employees
 JOIN departments ON employees.department_id = departments.department_id;
 ```
 | Context            | Purpose                 | Notes                                 |
-| ------------------ | ----------------------- | ------------------------------------- |
-| `JOIN USING (...)` | Simplify join condition | Column must exist in both tables      |
-| `DELETE USING ...` | Delete with join        | Equivalent to `DELETE FROM ... USING` |
-| `MERGE USING ...`  | Define source for merge | PostgreSQL 15+                        |
+|------------------|-----------------------|-------------------------------------|
+|  JOIN USING        | Simplify join condition | Column must exist in both tables      |
+|  DELETE USING      | Delete with join        | Equivalent to  DELETE FROM ... USING  |
+|  MERGE USING    | Define source for merge | PostgreSQL 15+                        |
 
 ### FILTER
 FILTER is a SQL keyword supported by PostgreSQL that allows you  
@@ -113,11 +113,11 @@ SELECT
     SUM(CASE WHEN region = 'West' THEN amount ELSE 0 END) AS west_sales
 FROM sales;
 ```
-| Feature                  | `FILTER` syntax                           | Equivalent without `FILTER`                        |
-| ------------------------ | ----------------------------------------- | -------------------------------------------------- |
-| Aggregate with condition | `SUM(col) FILTER (WHERE condition)`       | `SUM(CASE WHEN condition THEN col ELSE 0 END)`     |
-| Example                  | `COUNT(*) FILTER (WHERE col IS NOT NULL)` | `SUM(CASE WHEN col IS NOT NULL THEN 1 ELSE 0 END)` |
-| Readability              | High                                      | Moderate                                           |
+| Feature                  | FILTER syntax                           | Equivalent without FILTER                      |
+| ------------------------ |-----------------------------------------|--------------------------------------------------|
+| Aggregate with condition | SUM(col) FILTER (WHERE condition)       | SUM(CASE WHEN condition THEN col ELSE 0 END)     |
+| Example                  | COUNT(*) FILTER (WHERE col IS NOT NULL) | SUM(CASE WHEN col IS NOT NULL THEN 1 ELSE 0 END) |
+| Readability              | High                                    | Moderate                                         |
 
 ### JSONB
 
