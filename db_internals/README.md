@@ -16,6 +16,9 @@ https://www.microsoft.com/en-us/research/publication/extensible-query-optimizers
 https://build-your-own.org/blog/20251015_db_in_3000/
 
 
+https://habr.com/ru/companies/tantor/articles/929980/
+
+
 ### Change Data Capture
 
 https://www.change-data-capture.com/
