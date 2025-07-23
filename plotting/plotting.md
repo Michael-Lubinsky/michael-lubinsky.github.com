@@ -32,7 +32,9 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 ### Plotting Libs
 
-https://github.com/d3blocks/d3blocks
+<https://habr.com/ru/companies/otus/articles/929938/>
+
+<https://github.com/d3blocks/d3blocks>
 
 https://medium.com/data-science-collective/d3blocks-the-python-library-to-create-interactive-standalone-and-beautiful-d3-js-charts-ef8c65286e86
 
@@ -42,9 +44,9 @@ https://medium.com/data-science-collective/d3blocks-the-python-library-to-create
 
 <https://panel.holoviz.org/>
 
-https://datashader.org/
+<https://datashader.org/>
 
-https://www.pyqtgraph.org/
+<https://www.pyqtgraph.org/>
 
 
 
