@@ -87,6 +87,7 @@ This is shorthand for:
 SELECT * FROM employees
 JOIN departments ON employees.department_id = departments.department_id;
 ```
+
 | Context            | Purpose                 | Notes                                 |
 |------------------|-----------------------|-------------------------------------|
 |  JOIN USING        | Simplify join condition | Column must exist in both tables      |
@@ -113,6 +114,7 @@ SELECT
     SUM(CASE WHEN region = 'West' THEN amount ELSE 0 END) AS west_sales
 FROM sales;
 ```
+
 | Feature                  | FILTER syntax                           | Equivalent without FILTER                      |
 | ------------------------ |-----------------------------------------|--------------------------------------------------|
 | Aggregate with condition | SUM(col) FILTER (WHERE condition)       | SUM(CASE WHEN condition THEN col ELSE 0 END)     |
