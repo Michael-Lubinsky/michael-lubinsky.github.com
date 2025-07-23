@@ -1,6 +1,12 @@
 ## Postgres
-
+Book
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
+
+### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
+<https://explain.tensor.ru/>  
+<https://explain.depesz.com/>  
+<https://explain-postgresql.com/>  
+<https://explain.dalibo.com/>  
 
 ### USING
 ```sql
