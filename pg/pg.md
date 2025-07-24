@@ -1,6 +1,7 @@
 ## Postgres
-<https://postgres.ai/docs/postgres-howtos>
-<https://planet.postgresql.org/>
+<https://postgres.ai/docs/postgres-howtos>  
+<https://planet.postgresql.org/>  
+<https://www.amazon.com/PostgreSQL-Mistakes-How-Avoid-Them/dp/163343687X>
 
 ### MATERIALIZED VIEW
 ```sql
