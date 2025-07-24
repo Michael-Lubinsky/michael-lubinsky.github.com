@@ -1,5 +1,34 @@
 ## Postgres
 
+### MATERIALIZED VIEW
+```sql
+CREATE MATERIALIZED VIEW city_events_per_day AS
+SELECT
+  city,
+  date_trunc('day', timestamp) AS day,
+  COUNT(*) AS event_count
+FROM T
+GROUP BY city, date_trunc('day', timestamp)
+ORDER BY city, day;
+```
+Run it via cron
+```
+crontab -e
+0 1 * * * psql -U your_user -d your_database -c "REFRESH MATERIALIZED VIEW city_events_per_day;"
+```
+If your PostgreSQL has pg_cron installed:
+
+```sql
+-- Enable extension (once per DB)
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+-- Schedule daily refresh at 1:00 AM
+SELECT cron.schedule(
+  'refresh_city_events_view',
+  '0 1 * * *',
+  'REFRESH MATERIALIZED VIEW city_events_per_day'
+);
+
 ### Parameters
 
 ```sql
