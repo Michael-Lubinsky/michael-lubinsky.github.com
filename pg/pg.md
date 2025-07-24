@@ -76,6 +76,29 @@ Book
 <https://explain-postgresql.com/>  
 <https://explain.dalibo.com/>  
 
+
+### ON CONFLICT 
+```sql
+INSERT INTO products (name, price)
+VALUES ('Laptop', 1000)
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO products (name, price)
+VALUES ('Laptop', 1200)
+ON CONFLICT (name) DO UPDATE
+SET price = EXCLUDED.price;
+
+WITH upsert AS (
+    UPDATE products
+    SET price = 1500
+    WHERE name = 'Laptop'
+    RETURNING *
+)
+INSERT INTO products (name, price)
+SELECT 'Laptop', 1500
+WHERE NOT EXISTS (SELECT 1 FROM upsert);
+```
+
 ### USING
 ```sql
 SELECT * FROM employees
