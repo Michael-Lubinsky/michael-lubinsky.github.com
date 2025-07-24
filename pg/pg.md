@@ -1,4 +1,6 @@
 ## Postgres
+<https://postgres.ai/docs/postgres-howtos>
+<https://planet.postgresql.org/>
 
 ### MATERIALIZED VIEW
 ```sql
