@@ -6,17 +6,23 @@ https://pattern-kit.readthedocs.io/en/latest/ implementations of common software
 
 https://habr.com/ru/articles/930094/
 
-Working with large files: 
+https://adamgrant.micro.blog/2025/07/24/123050.html
+
+
+https://news.ycombinator.com/item?id=44675119
+
+
+### Working with large files: 
 https://blog.devgenius.io/10-ways-to-work-with-large-files-in-python-effortlessly-handle-gigabytes-of-data-aeef19bc0429
 
-asyncio
+### asyncio
 https://github.com/anordin95/a-conceptual-overview-of-asyncio/blob/main/readme.md
 
-https://afabundle.pro/product/competitive-programming-in-python/ Book
+https://afabundle.pro/product/competitive-programming-in-python/ Competitive Programming Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
 
-https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week-6459a06f6c03
+https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week-6459a06f6c03 12 Python Script
 
 https://uproger.com/optimizciyaiuskoreniecodanapython/ Python performance
 
