@@ -28,6 +28,45 @@ SELECT cron.schedule(
   '0 1 * * *',
   'REFRESH MATERIALIZED VIEW city_events_per_day'
 );
+```
+
+### Incremental MATERIALIZED VIEW
+```
+To make the materialized view incremental
+(i.e., only update data for yesterday, not re-aggregate the full table), you’ll need to:
+
+1. Use a real table instead of a materialized view
+Because materialized views in PostgreSQL do not support partial refresh,
+ we'll simulate it with a regular table and manage it manually.
+```
+2. Create the target table
+```sql
+CREATE TABLE city_events_per_day (
+  city TEXT,
+  day DATE,
+  event_count INTEGER,
+  PRIMARY KEY (city, day)
+);
+```
+ 3. Create a SQL to insert/update only yesterday’s data
+```sql
+INSERT INTO city_events_per_day (city, day, event_count)
+SELECT
+  city,
+  date_trunc('day', timestamp)::date AS day,
+  COUNT(*) AS event_count
+FROM T
+WHERE timestamp >= current_date - INTERVAL '1 day'
+  AND timestamp < current_date
+GROUP BY city, date_trunc('day', timestamp)
+ON CONFLICT (city, day)
+DO UPDATE SET event_count = EXCLUDED.event_count;
+```
+This query aggregates events for yesterday only, and either inserts or updates the table.
+
+It uses ON CONFLICT to handle upserts.
+
+
 
 ### Parameters
 
