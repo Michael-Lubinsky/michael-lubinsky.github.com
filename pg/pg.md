@@ -4,6 +4,36 @@
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
 <https://www.amazon.com/PostgreSQL-Mistakes-How-Avoid-Them/dp/163343687X>
 
+
+
+### ON CONFLICT 
+
+ in PostgreSQL, a conflict in INSERT ... ON CONFLICT is triggered when:  
+ The INSERT tries to add a row that violates a UNIQUE constraint or a PRIMARY KEY constraint.
+ 
+```sql
+INSERT INTO products (name, price)
+VALUES ('Laptop', 1000)
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO products (name, price)
+VALUES ('Laptop', 1200)
+ON CONFLICT (name) DO UPDATE
+SET price = EXCLUDED.price;
+
+WITH upsert AS (
+    UPDATE products
+    SET price = 1500
+    WHERE name = 'Laptop'
+    RETURNING *
+)
+INSERT INTO products (name, price)
+SELECT 'Laptop', 1500
+WHERE NOT EXISTS (SELECT 1 FROM upsert);
+```
+
+
+
 ### MATERIALIZED VIEW
 ```sql
 CREATE MATERIALIZED VIEW city_events_per_day AS
@@ -149,27 +179,6 @@ Book
 <https://explain.dalibo.com/>  
 
 
-### ON CONFLICT 
-```sql
-INSERT INTO products (name, price)
-VALUES ('Laptop', 1000)
-ON CONFLICT (name) DO NOTHING;
-
-INSERT INTO products (name, price)
-VALUES ('Laptop', 1200)
-ON CONFLICT (name) DO UPDATE
-SET price = EXCLUDED.price;
-
-WITH upsert AS (
-    UPDATE products
-    SET price = 1500
-    WHERE name = 'Laptop'
-    RETURNING *
-)
-INSERT INTO products (name, price)
-SELECT 'Laptop', 1500
-WHERE NOT EXISTS (SELECT 1 FROM upsert);
-```
 
 ### USING
 ```sql
