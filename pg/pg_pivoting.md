@@ -1,8 +1,8 @@
 ### Pivoting in Postgres
 
-There is Postgres table with columns: metric, dimension, val 
-the dimension column can have values A, B and C.  
-Write query which returns the dimensions A, B and C as columns 
+There is Postgres table with columns: (metric, dimension, val).  
+The dimension column can have values A, B and C.  
+Below is a query which returns the dimensions A, B and C as columns:
  
 You can pivot the dimension values (A, B, C) into columns using FILTER with SUM() or CASE WHEN.
 
