@@ -1,7 +1,7 @@
 ### Pivoting in Postgres
 
 There is Postgres table with columns: metric, dimension, val 
-the dimension column can have values A, B and C.
+the dimension column can have values A, B and C.  
 Write query which returns the dimensions A, B and C as columns 
  
 You can pivot the dimension values (A, B, C) into columns using FILTER with SUM() or CASE WHEN.
@@ -85,7 +85,8 @@ BEGIN
     EXECUTE sql;
 END $$;
 ```
-This prints the result to the console but to return results to a client, you'd need to wrap it in a function that returns TABLE(...).
+This prints the result to the console but to return results to a client,   
+you'd need to wrap it in a function that returns TABLE(...).
 
 🟡 Note:
 If you need to consume the dynamic result in Python, pandas, etc.,   
@@ -94,16 +95,19 @@ then running the dynamic SQL and reading the result as a DataFrame is usually mo
 
 
 When using dynamic SQL inside a DO $$ ... $$; block or a PL/pgSQL function,  
-you can't directly return query results to the client unless you define a function that returns a TABLE (or SETOF RECORD).
+you can't directly return query results to the client   
+unless you define a function that returns a TABLE (or SETOF RECORD).
 
 Here’s how to do it properly:
 
 ✅ 1. Create a function that returns TABLE(...)
 If you want to return the result of a dynamic pivot query as a regular result set,   
 you can use   
+```sql
 RETURN QUERY EXECUTE ... inside a RETURNS TABLE(...) function.
+```
 
- Example: Pivot dimension values into columns dynamically
+Example: Pivot dimension values into columns dynamically
  
 ```sql
 CREATE OR REPLACE FUNCTION get_pivoted_metrics()
@@ -134,14 +138,13 @@ Now you can query it like this:
 ```sql
 SELECT * FROM get_pivoted_metrics();
 ```
+
 ✅ To make it truly dynamic (dimensions unknown at design time):
 You'd need to:
 
-Discover dimension values with SELECT DISTINCT dimension.
-
-Dynamically construct the column list and return type.
-
-Use RETURNS SETOF RECORD and cast it when calling.
+- Discover dimension values with SELECT DISTINCT dimension.  
+- Dynamically construct the column list and return type.  
+- Use RETURNS SETOF RECORD and cast it when calling.
 
 That looks like:
 ```sql
@@ -170,10 +173,12 @@ But now you must explicitly specify the expected columns and types when calling 
 
 ```sql
 SELECT * FROM get_dynamic_pivot()
-AS t(metric TEXT, A INT, B INT, C INT, D INT);  -- You must provide a type signature
+AS t(metric TEXT, A INT, B INT, C INT, D INT);
+-- You must provide a type signature
 ```
 
 🔄 Summary
+
 
 | Approach                 | Returns result to client | Columns known at compile time? | Can be called like regular table?  |
 | ------------------------ | ------------------------ | ------------------------------ | ---------------------------------- |
