@@ -62,6 +62,77 @@ SELECT cron.schedule(
 );
 ```
 
+### REFRESH MATERIALIZED VIEW CONCURRENTLY
+
+The PostgreSQL command `REFRESH MATERIALIZED VIEW CONCURRENTLY` updates a **materialized view**   
+with the latest data **without locking out reads** from the view during the refresh process.
+
+---
+
+### 🔍 Syntax
+```sql
+REFRESH MATERIALIZED VIEW CONCURRENTLY view_name;
+```
+
+---
+
+### 🧠 What It Does
+
+- Recomputes the contents of the materialized view (`view_name`) using the underlying tables.
+- **`CONCURRENTLY`** allows other sessions to **continue querying** the materialized view while it's being refreshed.
+- It **avoids downtime** or blocking, which is useful in production environments.
+
+---
+
+### ⚠️ Requirements
+
+- The materialized view **must have a unique index** on at least one column (typically a primary key or unique constraint).
+  ```sql
+  CREATE UNIQUE INDEX ON my_materialized_view (id);
+  ```
+
+- If this unique index is missing, you’ll get:
+  ```
+  ERROR:  cannot refresh materialized view concurrently without a unique index
+  ```
+
+---
+
+### 🔁 Without `CONCURRENTLY`
+```sql
+REFRESH MATERIALIZED VIEW my_view;
+```
+- **Locks the view for reads and writes** during refresh.
+- Quicker but **blocks all access** during the operation.
+
+---
+
+### ✅ Use Case Example
+
+Suppose you have a materialized view:
+```sql
+CREATE MATERIALIZED VIEW sales_summary AS
+SELECT date_trunc('day', created_at) AS day, sum(amount) AS total
+FROM sales
+GROUP BY 1;
+```
+
+You should first create a unique index:
+```sql
+CREATE UNIQUE INDEX ON sales_summary(day);
+```
+
+Then, refresh it without locking:
+```sql
+REFRESH MATERIALIZED VIEW CONCURRENTLY sales_summary;
+```
+
+---
+
+Let me know if you'd like help setting up automatic or incremental refreshes too.
+
+
+
 ### Incremental MATERIALIZED VIEW
 ```
 To make the materialized view incremental
@@ -100,7 +171,7 @@ It uses ON CONFLICT to handle upserts.
 
 
 
-### Parameters
+### Postgres Parameters
 
 ```sql
 SELECT 
