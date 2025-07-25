@@ -96,6 +96,7 @@ Here’s how to do it properly:
 If you want to return the result of a dynamic pivot query as a regular result set, you can use RETURN QUERY EXECUTE ... inside a RETURNS TABLE(...) function.
 
 🧩 Example: Pivot dimension values into columns dynamically
+```sql
 CREATE OR REPLACE FUNCTION get_pivoted_metrics()
 RETURNS TABLE(metric TEXT, A INT, B INT, C INT)
 LANGUAGE plpgsql AS
@@ -119,9 +120,11 @@ BEGIN
     RETURN QUERY EXECUTE sql;
 END
 $$;
+```
 Now you can query it like this:
-
+```sql
 SELECT * FROM get_pivoted_metrics();
+```
 ✅ To make it truly dynamic (dimensions unknown at design time):
 You'd need to:
 
@@ -132,7 +135,7 @@ Dynamically construct the column list and return type.
 Use RETURNS SETOF RECORD and cast it when calling.
 
 That looks like:
-
+```sql
 CREATE OR REPLACE FUNCTION get_dynamic_pivot()
 RETURNS SETOF RECORD
 LANGUAGE plpgsql AS
@@ -153,10 +156,14 @@ BEGIN
     RETURN QUERY EXECUTE sql;
 END
 $$;
+```
 But now you must explicitly specify the expected columns and types when calling it:
 
+```sql
 SELECT * FROM get_dynamic_pivot()
 AS t(metric TEXT, A INT, B INT, C INT, D INT);  -- You must provide a type signature
+```
+
 🔄 Summary
 Approach	Returns result to client	Columns known at compile time?	Can be called like regular table?
 RETURNS TABLE(...)	✅	✅	✅
