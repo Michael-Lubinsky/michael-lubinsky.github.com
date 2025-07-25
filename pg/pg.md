@@ -43,7 +43,13 @@ FROM T
 GROUP BY city, date_trunc('day', timestamp)
 ORDER BY city, day;
 ```
-Run it via cron
+
+To update it once
+```
+REFRESH MATERIALIZED VIEW my_view;
+```
+
+Run it via cron to update it periodically:
 ```
 crontab -e
 0 1 * * * psql -U your_user -d your_database -c "REFRESH MATERIALIZED VIEW city_events_per_day;"
@@ -60,6 +66,10 @@ SELECT cron.schedule(
   '0 1 * * *',
   'REFRESH MATERIALIZED VIEW city_events_per_day'
 );
+
+-- or --
+SELECT cron.schedule('daily_refresh', '0 1 * * *', 
+  $$REFRESH MATERIALIZED VIEW CONCURRENTLY my_view$$);
 ```
 
 ### REFRESH MATERIALIZED VIEW CONCURRENTLY
