@@ -2,8 +2,6 @@
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
-<https://www.amazon.com/PostgreSQL-Mistakes-How-Avoid-Them/dp/163343687X>
-
 
 
 ### ON CONFLICT 
