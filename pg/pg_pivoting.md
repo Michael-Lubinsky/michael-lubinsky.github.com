@@ -36,13 +36,16 @@ PostgreSQL provides two common methods for this:
 
 This is the most efficient way to pivot dynamically known values.
 
-1. Enable the extension (once per database):
+ Enable the extension (once per database):
+```   
 CREATE EXTENSION IF NOT EXISTS tablefunc;
-
-3. Use crosstab():
+```
+ Use crosstab():
+```sql   
 SELECT * FROM crosstab(
   $$SELECT metric, dimension, val FROM your_table ORDER BY metric, dimension$$
 ) AS ct(metric TEXT, A INT, B INT, C INT);
+```
 Replace A INT, B INT, C INT with the list of expected dimensions.
 
 This still requires you to know the dimensions in advance, so it’s semi-dynamic.
@@ -59,6 +62,7 @@ Build a pivot SQL dynamically.
 Execute it.
 
 Example: dynamic SQL in psql or PL/pgSQL
+
 ```sql
 DO $$
 DECLARE
@@ -84,18 +88,23 @@ END $$;
 This prints the result to the console but to return results to a client, you'd need to wrap it in a function that returns TABLE(...).
 
 🟡 Note:
-If you need to consume the dynamic result in Python, pandas, etc., then running the dynamic SQL and reading the result as a DataFrame is usually more practical.
+If you need to consume the dynamic result in Python, pandas, etc.,   
+then running the dynamic SQL and reading the result as a DataFrame is usually more practical.
 
 
 
-When using dynamic SQL inside a DO $$ ... $$; block or a PL/pgSQL function, you can't directly return query results to the client unless you define a function that returns a TABLE (or SETOF RECORD).
+When using dynamic SQL inside a DO $$ ... $$; block or a PL/pgSQL function,  
+you can't directly return query results to the client unless you define a function that returns a TABLE (or SETOF RECORD).
 
 Here’s how to do it properly:
 
 ✅ 1. Create a function that returns TABLE(...)
-If you want to return the result of a dynamic pivot query as a regular result set, you can use RETURN QUERY EXECUTE ... inside a RETURNS TABLE(...) function.
+If you want to return the result of a dynamic pivot query as a regular result set,   
+you can use   
+RETURN QUERY EXECUTE ... inside a RETURNS TABLE(...) function.
 
-🧩 Example: Pivot dimension values into columns dynamically
+ Example: Pivot dimension values into columns dynamically
+ 
 ```sql
 CREATE OR REPLACE FUNCTION get_pivoted_metrics()
 RETURNS TABLE(metric TEXT, A INT, B INT, C INT)
@@ -165,14 +174,10 @@ AS t(metric TEXT, A INT, B INT, C INT, D INT);  -- You must provide a type signa
 ```
 
 🔄 Summary
-Approach	Returns result to client	Columns known at compile time?	Can be called like regular table?
-RETURNS TABLE(...)	✅	✅	✅
-RETURNS SETOF RECORD	✅ (with AS t(...))	❌	❌ (manual type declaration needed)
-DO $$ BEGIN ... END $$	❌	❌	❌
-Let me know if you want a version that automatically infers column names and types without needing to specify them manually at query time — it requires procedural workaround or client-side postprocessing.
 
+| Approach                 | Returns result to client | Columns known at compile time? | Can be called like regular table?  |
+| ------------------------ | ------------------------ | ------------------------------ | ---------------------------------- |
+| `RETURNS TABLE(...)`     | ✅                        | ✅                              | ✅                                  |
+| `RETURNS SETOF RECORD`   | ✅ (with `AS t(...)`)     | ❌                              | ❌ (manual type declaration needed) |
+| `DO $$ BEGIN ... END $$` | ❌                        | ❌                              | ❌                                  |
 
-
-
-No file chosenNo file chosen
-ChatGPT can make mistakes. Check important info.
