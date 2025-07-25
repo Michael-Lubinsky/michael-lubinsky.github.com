@@ -40,6 +40,20 @@ WHERE next_date IS NOT NULL
 ORDER BY gap_days DESC
 LIMIT 1;
 ```
+
+### Detect Consecutive Events
+
+```sql
+SELECT customer_id, COUNT(*) as streak
+FROM (
+    SELECT customer_id, event_date,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY event_date) -
+    DENSE_RANK() OVER (PARTITION BY customer_id, event_date ORDER BY event_date) as grp
+    FROM events
+) t
+GROUP BY customer_id, grp;
+```
+
 ### all cities with more customers than the average number of customers per city
 ```sql
 Copy code
