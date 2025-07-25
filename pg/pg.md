@@ -137,9 +137,6 @@ Then, refresh it without locking:
 REFRESH MATERIALIZED VIEW CONCURRENTLY sales_summary;
 ```
 
----
-
-Let me know if you'd like help setting up automatic or incremental refreshes too.
 
 
 
@@ -179,6 +176,29 @@ This query aggregates events for yesterday only, and either inserts or updates t
 
 It uses ON CONFLICT to handle upserts.
 
+Example of monthly update:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+
+SELECT cron.schedule(
+  'monthly_city_event_update', -- job name
+  '0 0 1 * *',                 -- cron expression: midnight on the 1st
+  $$                                          
+  INSERT INTO city_events_per_day (city, day, event_count)
+  SELECT
+    city,
+    date_trunc('day', timestamp)::date AS day,
+    COUNT(*) AS event_count
+  FROM T
+  WHERE timestamp >= date_trunc('month', current_date - INTERVAL '1 month')
+    AND timestamp < date_trunc('month', current_date)
+  GROUP BY city, date_trunc('day', timestamp)
+  ON CONFLICT (city, day)
+  DO UPDATE SET event_count = EXCLUDED.event_count;
+  $$
+);
+```
 
 
 ### Postgres Parameters
