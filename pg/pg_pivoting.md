@@ -7,6 +7,7 @@ Write query which returns the dimensions A, B and C as columns
 You can pivot the dimension values (A, B, C) into columns using FILTER with SUM() or CASE WHEN.
 
 ✅ Option 1: Using FILTER (PostgreSQL-specific, cleaner)
+```sql
 SELECT
   metric,
   SUM(val) FILTER (WHERE dimension = 'A') AS A,
@@ -15,7 +16,9 @@ SELECT
 FROM your_table
 GROUP BY metric
 ORDER BY metric;
+```
 ✅ Option 2: Using CASE WHEN (portable)
+```sql
 SELECT
   metric,
   SUM(CASE WHEN dimension = 'A' THEN val ELSE 0 END) AS A,
@@ -24,15 +27,19 @@ SELECT
 FROM your_table
 GROUP BY metric
 ORDER BY metric;
- 
-To include unknown or dynamic dimension values as columns, you need to dynamically pivot the data. PostgreSQL provides two common methods for this:
+```
+
+To include unknown or dynamic dimension values as columns, you need to dynamically pivot the data.   
+PostgreSQL provides two common methods for this:
 
 ✅ Option 1: crosstab() (from tablefunc extension)
+
 This is the most efficient way to pivot dynamically known values.
 
 1. Enable the extension (once per database):
 CREATE EXTENSION IF NOT EXISTS tablefunc;
-2. Use crosstab():
+
+3. Use crosstab():
 SELECT * FROM crosstab(
   $$SELECT metric, dimension, val FROM your_table ORDER BY metric, dimension$$
 ) AS ct(metric TEXT, A INT, B INT, C INT);
@@ -52,6 +59,7 @@ Build a pivot SQL dynamically.
 Execute it.
 
 Example: dynamic SQL in psql or PL/pgSQL
+```sql
 DO $$
 DECLARE
     col_list TEXT;
@@ -72,6 +80,7 @@ BEGIN
     RAISE NOTICE 'Query: %', sql; -- for debugging
     EXECUTE sql;
 END $$;
+```
 This prints the result to the console but to return results to a client, you'd need to wrap it in a function that returns TABLE(...).
 
 🟡 Note:
