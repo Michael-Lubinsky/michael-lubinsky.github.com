@@ -26,6 +26,8 @@ https://blog.stackademic.com/12-python-scripts-that-saved-me-10-hours-every-week
 
 https://uproger.com/optimizciyaiuskoreniecodanapython/ Python performance
 
+PDF 2 markdown: https://medium.com/recreational-maths/how-i-use-markdown-pdf-to-create-pdf-documents-with-python-32feb4372867
+
 
 ### Python Type checker
 
