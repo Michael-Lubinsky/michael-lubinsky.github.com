@@ -315,12 +315,6 @@ ORDER BY name;
 Book
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
 
-### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
-<https://explain.tensor.ru/>  
-<https://explain.depesz.com/>  
-<https://explain-postgresql.com/>  
-<https://explain.dalibo.com/>  
-
 
 
 ### USING
@@ -1164,5 +1158,4 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 
 
 
-https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49
 -->
