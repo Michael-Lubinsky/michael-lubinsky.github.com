@@ -888,6 +888,18 @@ CREATE TABLE products (
 
 <https://news.ycombinator.com/item?id=42293937>
 
+
+
+<https://stormatics.tech/blogs/checklist-is-your-postgresql-deployment-production-grade>
+
+<https://medium.com/@rongalinaidu/postgresql-replication-wal-wal-decoding-and-the-journey-toward-zero-etl-8c14ec566a7d>
+
+Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
+
+<https://stormatics.tech/blogs/which-postgresql-ha-solution-fits-your-needs-pgpool-or-patroni>
+
+
+
 ### Features
 ```
 ✅ Caching: Use UNLOGGED tables and TEXT as a JSON data type in Postgres instead of Redis.
@@ -958,16 +970,6 @@ PostgreSQL remembers which index was used for clustering (pg_index.indisclustere
 
 However, future inserts/updates do not maintain physical order; you must re-run CLUSTER periodically to maintain clustering benefits.
 
-
-### Postgres HA
-
-<https://stormatics.tech/blogs/checklist-is-your-postgresql-deployment-production-grade>
-
-<https://medium.com/@rongalinaidu/postgresql-replication-wal-wal-decoding-and-the-journey-toward-zero-etl-8c14ec566a7d>
-
-Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
-
-https://stormatics.tech/blogs/which-postgresql-ha-solution-fits-your-needs-pgpool-or-patroni
 
 
 ### Backup
