@@ -201,6 +201,20 @@ SELECT cron.schedule(
 ```
 
 
+### pg_cron extension
+
+ You cannot use pg_cron in 2 databases. 
+ pg_cron runs a single background worker.  
+
+That worker reads jobs only from the database you configure in postgresql.conf as:
+
+```ini
+shared_preload_libraries = 'pg_cron'
+cron.database_name = 'weavix'
+```
+cron.database_name setting is not present by default in postgresql.conf.   
+You need to manually add it if you want to use pg_cron with a database other than postgres
+
 ### Postgres Parameters
 
 ```sql
