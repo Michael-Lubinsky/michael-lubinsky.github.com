@@ -25,15 +25,15 @@ WHERE  query LIKE '%big_table%'
 ORDER  BY total_exec_time DESC
 LIMIT 5;
 ```
-Run EXPLAIN (ANALYZE, BUFFERS) on the slowest query.
+Run EXPLAIN (ANALYZE, BUFFERS) on the slowest query.  
 Look for:
 
-Seq Scan with a filter → add normal / partial index
-Bitmap Heap Scan removing many rows → covering index
-Joins lacking Index Scan on FK side → index the FK column
-Need help reading plans? See EXPLAIN ANALYZE Demystified.
+- Seq Scan with a filter → add normal / partial index  
+- Bitmap Heap Scan removing many rows → covering index  
+- Joins lacking Index Scan on FK side → index the FK column  
+- Need help reading plans? See EXPLAIN ANALYZE Demystified.  
 
-3 · Automatic Foreign‑Key Audit (3 min)
+### 3 · Automatic Foreign‑Key Audit (3 min)
 
 Find FK columns missing indexes:
 ```sql
@@ -93,8 +93,9 @@ Use pg_size_pretty(pg_relation_size('index_name')) to verify size savings.
 
 ### 6 · Validate Impact (1 min)
 
-EXPLAIN (ANALYZE, BUFFERS)
-<your query again>;
+EXPLAIN (ANALYZE, BUFFERS) <your query again>;
+
+
 Seq Scan should disappear and time should drop. Monitor:
 ```sql
 SELECT idx_scan, seq_scan
