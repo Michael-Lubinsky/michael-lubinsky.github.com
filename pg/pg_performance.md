@@ -63,7 +63,7 @@ ORDER BY
 
 
 
-### 1 · Spot Sequential Scans at Scale (1 min)
+### 1 · Spot Sequential Scans at Scale  
 ```sql
 SELECT relname              AS table,
        seq_scan             AS seq_scans,
@@ -78,7 +78,7 @@ LIMIT 15;
 seq_pct > 10 % on tables > 10 k rows → likely missing or unused indexes.  
 Small tables can live with seq scans; indexes add overhead.
 
-### 2 · Pinpoint Offending Columns with EXPLAIN (2 min)
+### 2 · Pinpoint Offending Columns with EXPLAIN 
 
 Get top queries for the table:
 ```sql
@@ -96,7 +96,7 @@ Look for:
 - Joins lacking Index Scan on FK side → index the FK column  
 - Need help reading plans? See EXPLAIN ANALYZE Demystified.  
 
-### 3 · Automatic Foreign‑Key Audit (3 min)
+### 3 · Automatic Foreign‑Key Audit 
 
 Find FK columns missing indexes:
 ```sql
@@ -129,7 +129,7 @@ ORDER BY table;
 
 Result lists FK constraints that need indexes.
 
-### 4 · Generate Index DDL (1 min)
+### 4 · Generate Index DDL 
 Auto‑craft index statements:
 ```sql
 SELECT format(
@@ -144,7 +144,7 @@ GROUP  BY relid, relname;
 ```
 Run the generated CREATE INDEX CONCURRENTLY outside a transaction block.
 
-### 5 · Partial & Covering Index Patterns (2 min)
+### 5 · Partial & Covering Index Patterns 
 
 Scenario                                   | Index Recipe                                    | Why
 -------------------------------------------|--------------------------------------------------|-----------------------------------------
@@ -154,7 +154,7 @@ Filter + sort (status='paid' ORDER BY date)| CREATE INDEX … (status, created_a
 Covering lookup (select few cols)          | CREATE INDEX … (id) INCLUDE (col1, col2)        | Enables index‑only scan
 Use pg_size_pretty(pg_relation_size('index_name')) to verify size savings.
 
-### 6 · Validate Impact (1 min)
+### 6 · Validate Impact 
 
 EXPLAIN (ANALYZE, BUFFERS) <your query again>;
 
