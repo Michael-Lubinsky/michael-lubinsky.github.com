@@ -4,6 +4,22 @@
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
 
 
+### Roles
+```sql
+SELECT *
+FROM pg_roles
+WHERE rolname = 'weavix_owner';
+
+
+SELECT 
+  pg1.rolname AS role,
+  pg2.rolname AS member_of
+FROM pg_auth_members m
+JOIN pg_roles pg1 ON pg1.oid = m.roleid
+JOIN pg_roles pg2 ON pg2.oid = m.member
+WHERE pg2.rolname = 'weavix_admin';
+```
+
 ### ON CONFLICT 
 
  in PostgreSQL, a conflict in INSERT ... ON CONFLICT is triggered when:  
