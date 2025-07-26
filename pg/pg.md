@@ -1017,65 +1017,7 @@ chmod +x pg_backup.sh
 ### Logging every change in your database
 
 <https://medium.com/@ihcnemed/postgresql-record-every-change-in-your-database-a98a6586527c>
-
-
-### Find slow queries
-
-```sql
-SELECT
-  userid :: regrole,
-  dbid,
-  mean_exec_time / 1000 as mean_exec_time_secs,
-  max_exec_time / 1000 as max_exec_time_secs,
-  min_exec_time / 1000 as min_exec_time_secs,
-  stddev_exec_time,
-  calls,
-  query
-from
-  pg_stat_statements
-order by
-  mean_exec_time DESC limit 10;
-
--- currently running (active) database sessions in PostgreSQL
--- that have been executing for longer than one minute.
-SELECT 
-  datname AS database_name, 
-  usename AS user_name, 
-  application_name, 
-  client_addr AS client_address, 
-  client_hostname, 
-  query AS current_query, 
-  state, 
-  query_start, 
-  now() - query_start AS query_duration 
-FROM 
-  pg_stat_activity 
-WHERE 
-  state = 'active' AND now() - query_start > INTERVAL '10 sec' 
-ORDER BY 
-  query_start DESC;
-
---  identify I/O-intensive queries
-SELECT 
-  mean_exec_time / 1000 as mean_exec_time_secs, 
-  calls, 
-  rows, 
-  shared_blks_hit, 
-  shared_blks_read, 
-  shared_blks_hit /(shared_blks_hit + shared_blks_read):: NUMERIC * 100 as hit_ratio, 
-  (blk_read_time + blk_write_time)/calls as average_io_time_ms, 
-  query 
-FROM 
-  pg_stat_statements 
-where 
-  shared_blks_hit > 0 
-ORDER BY 
-  (blk_read_time + blk_write_time)/calls DESC;
-```
-
-<https://www.peterbe.com/plog/3-queries-with-pg_stat_statements>
-
-<https://medium.com/timescale/how-to-monitor-postgresql-like-a-pro-5-techniques-every-developer-should-know-68581c49a4a4>
+ 
 
 ### DB diagrams
 
