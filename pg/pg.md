@@ -3,6 +3,13 @@
 <https://planet.postgresql.org/>  
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
 
+### 
+
+```sql
+select current_schema() 
+select current_database()
+show  search_path
+```
 
 ### Roles
 ```sql
