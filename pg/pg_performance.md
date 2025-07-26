@@ -180,3 +180,25 @@ WHERE  idx_scan = 0
 Avoid duplicates (compare pg_index.indkey).
 
 Use fillfactor for hot rows (ALTER INDEX … SET (fillfactor=90)).
+
+
+### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
+<https://explain.tensor.ru/>  
+<https://explain.depesz.com/>  
+<https://explain-postgresql.com/>  
+<https://explain.dalibo.com/>  
+
+### Links
+
+
+<https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49>
+
+<https://habr.com/ru/companies/selectel/articles/913572/> Как оптимизировать PostgreSQL 
+
+<https://www.youtube.com/@ScalingPostgres/videos> Scaling Postgres
+
+<https://dataegret.com/2025/05/data-archiving-and-retention-in-postgresql-best-practices-for-large-datasets/>
+
+<https://dataegret.com/2025/07/operating-postgresql-as-a-data-source-for-analytics-pipelines-recap-from-the-stuttgart-meetup/>
+
+
