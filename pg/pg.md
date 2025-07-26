@@ -240,11 +240,10 @@ SELECT cron.schedule(
 ```
 ⚠️ But this requires:
 
-weavix allows TCP connections from localhost
+- weavix allows TCP connections from localhost  
+- Authentication is correctly set up in .pgpass or via pg_hba.conf
 
-Authentication is correctly set up in .pgpass or via pg_hba.conf
 
-```
 
 ### Postgres Parameters
 
