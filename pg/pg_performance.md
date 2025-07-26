@@ -146,12 +146,13 @@ Run the generated CREATE INDEX CONCURRENTLY outside a transaction block.
 
 ### 5 · Partial & Covering Index Patterns 
 
-Scenario                                   | Index Recipe                                    | Why
--------------------------------------------|--------------------------------------------------|-----------------------------------------
-Soft deletes (WHERE deleted_at IS NULL)    | CREATE INDEX … WHERE deleted_at IS NULL         | Smaller, faster scans
-Recent rows (created_at > NOW()-30d)       | CREATE INDEX … ON … (created_at) WHERE created_at > … | Keeps old data out of index
-Filter + sort (status='paid' ORDER BY date)| CREATE INDEX … (status, created_at DESC)        | Supports filter *and* order by
-Covering lookup (select few cols)          | CREATE INDEX … (id) INCLUDE (col1, col2)        | Enables index‑only scan
+| Scenario                                   | Index Recipe                                    | Why
+|-------------------------------------------|--------------------------------------------------|-----------------------------------------
+|Soft deletes (WHERE deleted_at IS NULL)    | CREATE INDEX … WHERE deleted_at IS NULL         | Smaller, faster scans
+|Recent rows (created_at > NOW()-30d)       | CREATE INDEX … ON … (created_at) WHERE created_at > … | Keeps old data out of index
+|Filter + sort (status='paid' ORDER BY date)| CREATE INDEX … (status, created_at DESC)        | Supports filter *and* order by
+|Covering lookup (select few cols)          | CREATE INDEX … (id) INCLUDE (col1, col2)        | Enables index‑only scan
+
 Use pg_size_pretty(pg_relation_size('index_name')) to verify size savings.
 
 ### 6 · Validate Impact 
