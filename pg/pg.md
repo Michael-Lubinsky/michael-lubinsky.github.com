@@ -215,6 +215,37 @@ cron.database_name = 'weavix'
 cron.database_name setting is not present by default in postgresql.conf.   
 You need to manually add it if you want to use pg_cron with a database other than postgres
 
+you cannot run a query from one database that references another.
+
+If you must keep pg_cron in the postgres DB but want to run queries in weavix, 
+use the dblink extension.
+
+1. Enable dblink:
+In postgres database:
+
+```sql
+CREATE EXTENSION dblink;
+```
+2. Use it inside pg_cron jobs:
+```sql
+SELECT cron.schedule(
+  'daily_weavix_job',
+  '0 1 * * *',
+  $$
+  SELECT * FROM dblink('dbname=weavix',
+    'INSERT INTO silver.daily_counts SELECT ... FROM bronze.events ...'
+  ) AS t(dummy int);
+  $$
+);
+```
+⚠️ But this requires:
+
+weavix allows TCP connections from localhost
+
+Authentication is correctly set up in .pgpass or via pg_hba.conf
+
+```
+
 ### Postgres Parameters
 
 ```sql
