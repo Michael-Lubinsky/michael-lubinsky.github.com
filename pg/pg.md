@@ -353,6 +353,98 @@ SELECT cron.schedule(
 
 
 
+
+
+### pg_cron.schedule_in_database()
+Modern versions of pg_cron (v1.4 and above, which is highly likely for PostgreSQL 16)  
+include a function specifically for this: cron.schedule_in_database().   
+This function is designed to handle scheduling jobs in databases other than the one where pg_cron itself is installed.   
+It simplifies the process significantly because pg_cron handles the internal connection to the target database.
+
+```sql
+SELECT cron.schedule_in_database(
+    job_name TEXT,
+    schedule TEXT,
+    command TEXT,
+    database_name TEXT,
+    username TEXT DEFAULT NULL,
+    active BOOLEAN DEFAULT TRUE
+);
+```
+Example:
+
+If pg_cron is in Database A and you want to run CALL my_procedure_in_db_b() in Database B:  
+Run this from Database A (where pg_cron is installed)
+
+```SQL
+
+SELECT cron.schedule_in_database(
+    'daily_procedure_b',
+    '0 3 * * *', -- Run daily at 3:00 AM
+    'CALL my_procedure_in_db_b();',
+    'DatabaseB', -- The name of the target database
+    'your_user_for_db_b' -- User with permissions in DatabaseB
+);
+```
+Why pg_cron.schedule_in_database() is preferred (if available):
+
+Native Integration:   
+It's the most direct and intended way to schedule jobs across databases using pg_cron.
+
+Simplicity:   
+You don't need to manually manage foreign servers or dblink connections within your cron job command. pg_cron handles the connection internally.
+
+Security:   
+pg_cron typically re-establishes a new connection for each job execution. 
+You specify the username directly in schedule_in_database(), which can be more secure than hardcoding dblink connection strings everywhere.
+
+Performance:   
+While pg_cron still makes a new connection, it's optimized for this use case and avoids the overhead of FDW table scanning or potentially inefficient dblink query parsing.
+
+**Alternatives if pg_cron.schedule_in_database() is Not Available**  
+
+If your pg_cron version is older than 1.4 or you have a very specific scenario that isn't covered by schedule_in_database(), you could consider these options:
+
+##### Alternative 1:  dblink (More likely for ad-hoc SQL/procedures)
+   
+You would create a cron.schedule() entry that uses dblink() to connect to Database B and execute the SQL or stored procedure.
+ This means your pg_cron job command would look something like this:
+
+```SQL
+
+SELECT cron.schedule(
+    'my_db_b_job',
+    '0 3 * * *',
+    $$SELECT dblink('host=localhost user=your_user dbname=DatabaseB password=your_password', 'CALL my_procedure_in_db_b()');$$
+);
+```
+
+Caveats:
+
+Security Risk: Hardcoding passwords in the cron.schedule command is a major security risk. Ideally, you'd rely on .pgpass files or other secure credential management for the user pg_cron runs as.
+
+Performance: dblink can be less performant for complex operations than postgres_fdw if you were trying to join tables between databases. However, for simply calling a stored procedure or executing a single SQL statement, it's often sufficient.
+
+##### Alternative 2: postgres_fdw (Less direct for calling a procedure, but possible for table access)
+
+You would need to set up postgres_fdw in Database A, creating a foreign server definition pointing to Database B (on localhost or 127.0.0.1), and user mappings.   
+Then, you'd create foreign tables in Database A that represent the tables in Database B.
+
+If you needed to run a stored procedure, you might have to create a wrapper function in Database A that calls a dblink_exec to run the procedure on the foreign server, or rethink the design if direct table access via FDW is sufficient.
+
+Complexity: Setting up FDWs just to call a stored procedure in another database on the same instance is generally overkill compared to pg_cron.schedule_in_database() or even dblink().   
+FDW shines when you need to query and join foreign tables directly from your local database.
+
+### Conclusion
+Always check if your pg_cron version supports cron.schedule_in_database(). If it does, that's the clearest and most robust solution.
+
+If you are on an older pg_cron version that lacks schedule_in_database(),   
+then dblink is the more straightforward choice for executing ad-hoc SQL or calling stored procedures in another database directly from a pg_cron job, with the important caveat of secure credential management.   
+postgres_fdw is typically not the primary choice for simply executing code in another database, but rather for accessing data as if it were local.
+
+
+
+
 ### Postgres Parameters
 
 ```sql
