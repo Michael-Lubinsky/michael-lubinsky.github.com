@@ -55,6 +55,25 @@ It’s designed for efficient aggregation of time-series data, like:
 | Use `time_bucket()`         | Optional           | ✅ Required              |
 
 
+```sql
+CREATE MATERIALIZED VIEW monthly_counts
+WITH (timescaledb.continuous) AS
+SELECT
+  time_bucket('1 month', c) AS bucket,
+  COUNT(*) AS record_count
+FROM A
+GROUP BY bucket
+WITH NO DATA; --  means it won't populate until you run REFRESH
+
+
+CALL refresh_continuous_aggregate('monthly_counts', NULL, NULL);
+
+
+SELECT add_continuous_aggregate_policy('monthly_counts',
+  start_offset => INTERVAL '1 month', -- refreshes up to 1 month ago
+  end_offset   => INTERVAL '1 day', --  skips the most recent day (in case data is still arriving)
+  schedule_interval => INTERVAL '1 hour'); checks every hour
+```
 
 ### Enable compression
 
