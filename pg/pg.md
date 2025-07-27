@@ -34,7 +34,6 @@ WHERE pg2.rolname = 'weavix_admin';
 **postgres_fdw**
 
 
-postgres_fdw:
 ```sql
 
 CREATE EXTENSION postgres_fdw;
