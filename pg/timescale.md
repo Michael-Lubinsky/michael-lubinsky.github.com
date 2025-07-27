@@ -24,7 +24,37 @@ SELECT time_bucket('1 hour', time) AS hour, avg(temperature)
 FROM sensor_data
 GROUP BY hour
 ORDER BY hour;
+
+
+SELECT 
+  to_char(time_bucket('1 month', c), 'YYYY-MM') AS year_month,
+  COUNT(*) AS record_count
+FROM A
+WHERE c >= CURRENT_DATE - INTERVAL '1 year'
+GROUP BY time_bucket('1 month', c)
+ORDER BY year_month;
+
 ```
+
+
+###  Continuous Aggregate in TimescaleDB 
+A Continuous Aggregate (CAGG) in TimescaleDB is a materialized view   
+that is automatically and incrementally refreshed as new data is added to the underlying hypertable.
+
+It’s designed for efficient aggregation of time-series data, like:
+
+- per-day, per-month counts
+- rolling averages
+- time-bucketed stats
+
+| Feature                     | Regular Aggregates | Continuous Aggregates ✅ |
+| --------------------------- | ------------------ | ----------------------- |
+| Precomputed aggregation     | ❌ Every time       | ✅ Stored and reused     |
+| Fast for large data volumes | ❌ Slow             | ✅ Very fast             |
+| Incremental refresh         | ❌ Recalculate all  | ✅ Recompute only recent |
+| Use `time_bucket()`         | Optional           | ✅ Required              |
+
+
 
 ### Enable compression
 
@@ -133,6 +163,28 @@ Useful for aggregating data over time intervals.
 Example:
 
 ```sql
+
+SELECT 
+  to_char(time_bucket('1 month', c), 'YYYY-MM') AS year_month,
+  COUNT(*) AS record_count
+FROM A
+GROUP BY time_bucket('1 month', c)
+ORDER BY year_month;
+
+```
+The SQL above has standard SQL equivalent, which runs slow:
+
+```
+SELECT 
+  to_char(date_trunc('month', c), 'YYYY-MM') AS year_month,
+  COUNT(*) AS record_count
+FROM A
+GROUP BY date_trunc('month', c)
+ORDER BY year_month;
+```
+
+
+```
 
 SELECT time_bucket('1 hour', time_column) AS bucket, COUNT(*)
 FROM your_hypertable_name
