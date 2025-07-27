@@ -67,8 +67,8 @@ Filters rows by time_column and groups them into hourly buckets.
 time_bucket_gapfill(bucket_width, ts_column, start, end):
 
 Similar to time_bucket, but fills in missing buckets with NULL or interpolated values within the specified start and end timestamp range.
-```
-sql
+
+```sql
 
 SELECT time_bucket_gapfill('1 day', time_column, '2025-01-01', '2025-01-07') AS bucket, 
        COALESCE(AVG(value), 0) AS avg_value
@@ -88,12 +88,12 @@ WHERE time_column BETWEEN '2025-01-01' AND '2025-01-02';
 ```
 
 
-Filters rows by time_column and returns the earliest value_column in the range.
-histogram(ts_column, min_value, max_value, num_bins):
-Creates a histogram of values within a timestamp range (though typically used for numeric columns, can be paired with timestamp filtering).
+Filters rows by time_column and returns the earliest value_column in the range.  
+histogram(ts_column, min_value, max_value, num_bins):  
+Creates a histogram of values within a timestamp range (though typically used for numeric columns,  
+can be paired with timestamp filtering).
 
-```
-sql
+```sql
 
 SELECT time_bucket('1 hour', time_column) AS bucket, 
        histogram(value_column, 0, 100, 10)
@@ -105,9 +105,8 @@ GROUP BY bucket;
 Filters by timestamp and generates histograms for each time bucket.
 locf(value_column):
 Last Observation Carried Forward: Fills missing values with the last non-null value, often used with timestamp filtering.
+
 ```sql
-
-
 
 SELECT time_bucket_gapfill('1 hour', time_column) AS bucket, 
        locf(AVG(value_column)) AS filled_value
@@ -115,6 +114,7 @@ FROM your_hypertable_name
 WHERE time_column >= '2025-01-01' AND time_column < '2025-01-02'
 GROUP BY bucket;
 ```
+
 Filters by timestamp and fills gaps in data.
 Standard SQL with Hypertable Optimization:
 TimescaleDB optimizes standard PostgreSQL WHERE clauses on timestamp columns  
@@ -126,18 +126,18 @@ Notes:
 Replace time_column with your hypertable’s timestamp column and your_hypertable_name with your table name.
 These functions are most effective when used with hypertables, as TimescaleDB optimizes them for time-series data.
 Always ensure the timestamp column is indexed (automatically done for the time dimension in hypertables).
-Additional Notes
-Compression and Filtering: If your hypertable is compressed, you can still use these functions. TimescaleDB transparently decompresses chunks as needed for queries.
+
+### Additional Notes
+Compression and Filtering: If your hypertable is compressed, you can still use these functions. 
+TimescaleDB transparently decompresses chunks as needed for queries.  
+
 Performance: For large datasets, ensure your timestamp column is used in WHERE clauses to leverage chunk exclusion, and consider adding secondary indexes if filtering on other columns.
-Version Check: Since you’re on PostgreSQL 16 with TimescaleDB, ensure your TimescaleDB version is up-to-date (e.g., 2.11 or later) to access the latest features. Check with:
-sql
 
-Collapse
+Version Check: Since you’re on PostgreSQL 16 with TimescaleDB, ensure your TimescaleDB version is up-to-date 
+(e.g., 2.11 or later) to access the latest features. Check with:
 
-Wrap
-
-Copy
+```sql
 SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
-
+```
 
 <https://medium.com/timescale/handling-billions-of-rows-in-postgresql-80d3bd24dabb>
