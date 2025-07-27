@@ -21,10 +21,12 @@ WHERE ht.table_name = 'your_hypertable_name';
 Explanation:
 timescaledb_information.hypertables: Lists all hypertables.
 timescaledb_information.compression_settings: Contains compression settings for hypertables.
-compression_enabled: Indicates if compression is enabled (true or false).
-If compression_enabled is true, the hypertable has compression enabled. If false or NULL, compression is not enabled.
+compression_enabled: Indicates if compression is enabled (true or false).  
+If compression_enabled is true, the hypertable has compression enabled.   
+If false or NULL, compression is not enabled.
 
-Alternative: To check if any data is actually compressed, query the timescaledb_information.compressed_chunk_stats view:
+Alternative: To check if any data is actually compressed,   
+query the timescaledb_information.compressed_chunk_stats view:
 
 ```sql
 
@@ -38,14 +40,20 @@ FROM timescaledb_information.compressed_chunk_stats
 WHERE hypertable_name = 'your_hypertable_name';
 ```
 Explanation:
-compression_status: Shows whether the chunk is compressed (Compressed) or not.
-compressed_total_bytes: Indicates the size of compressed data, confirming compression is active.
+compression_status: Shows whether the chunk is compressed (Compressed) or not.  
+compressed_total_bytes: Indicates the size of compressed data, confirming compression is active.  
 If no rows are returned or compression_status is not Compressed, no chunks are compressed.
 Notes:
 
 Replace 'your_hypertable_name' with your actual hypertable name.
-Compression must be explicitly enabled using ALTER TABLE your_hypertable_name SET (timescaledb.compress = true) and chunks compressed with SELECT compress_chunk(chunk_name).
-
+Compression must be explicitly enabled using 
+```sql
+ALTER TABLE your_hypertable_name SET (timescaledb.compress = true)
+```
+and chunks compressed with 
+```sql
+SELECT compress_chunk(chunk_name).
+```
 ###  TimescaleDB-Specific SQL Functions to Filter Columns by Timestamp
 TimescaleDB provides several functions to efficiently filter or manipulate timestamp-based data in hypertables. These functions are optimized for time-series data and work well with timestamp columns. 
 Below are the key TimescaleDB-specific SQL functions for filtering by timestamp:  
