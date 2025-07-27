@@ -27,6 +27,92 @@ JOIN pg_roles pg2 ON pg2.oid = m.member
 WHERE pg2.rolname = 'weavix_admin';
 ```
 
+
+### postgres_fdw and dblink
+
+
+**postgres_fdw**
+
+
+postgres_fdw:
+```sql
+
+CREATE EXTENSION postgres_fdw;
+
+CREATE SERVER weavix_remote
+  FOREIGN DATA WRAPPER postgres_fdw
+  OPTIONS (host 'localhost', dbname 'weavix', port '5432');
+
+
+CREATE USER MAPPING FOR current_user
+  SERVER weavix_remote
+  OPTIONS (user 'weavix_user', password 'secret');
+
+
+IMPORT FOREIGN SCHEMA public
+  FROM SERVER weavix_remote
+  INTO foreign_schema;
+
+-- or
+
+CREATE FOREIGN TABLE foreign_schema.events (
+  id INT,
+  name TEXT,
+  created_at TIMESTAMP
+)
+SERVER weavix_remote
+OPTIONS (schema_name 'public', table_name 'events');
+
+
+SELECT * FROM foreign_schema.customers WHERE city = 'London';
+```
+
+| Feature      | Description                                                              |
+| ------------ | ------------------------------------------------------------------------ |
+| Type         | **Foreign Data Wrapper** (SQL standard extension)                        |
+| Setup        | Create foreign server + user mapping + foreign tables                    |
+| Usage        | You can `SELECT`, `INSERT`, `UPDATE`, `DELETE` foreign tables like local |
+| Integration  | Native with PostgreSQL query planner                                     |
+| Performance  | Supports **pushdown** of filters, joins, aggregates to the remote server |
+| Use in joins | ✅ Yes, join foreign + local tables in one query                          |
+| Syntax       | Normal SQL: `SELECT * FROM foreign_table`                                |
+| Extension    | `CREATE EXTENSION postgres_fdw;`                                         |
+
+
+**db_link**
+
+| Feature      | Description                                                  |
+| ------------ | ------------------------------------------------------------ |
+| Type         | Legacy PostgreSQL extension                                  |
+| Setup        | Connect manually with connection strings in each query       |
+| Usage        | You write queries **as strings** to be sent to the remote DB |
+| Integration  | No query planner integration — pure function call            |
+| Performance  | ❌ No pushdown — fetches all rows as text                     |
+| Use in joins | ❌ Hard to join with local tables                             |
+| Syntax       | Verbose: `SELECT * FROM dblink('conn_str', 'SELECT ...')`    |
+| Extension    | `CREATE EXTENSION dblink;`                                   |
+
+
+
+
+
+dblink:
+```sql
+SELECT *
+FROM dblink('dbname=remote_db user=remote_user password=secret',
+            'SELECT id, name FROM customers WHERE city = ''London''')
+  AS t(id INT, name TEXT);
+```
+
+
+  | Scenario                               | Use                                           |
+| -------------------------------------- | --------------------------------------------- |
+| Clean, seamless cross-db integration   | `postgres_fdw` ✅                              |
+| Frequent cross-db joins                | `postgres_fdw` ✅                              |
+| Legacy setups or quick one-off queries | `dblink`                                      |
+| Need full SQL access in remote DB      | `dblink` or `postgres_fdw` with function call |
+
+
 ### ON CONFLICT 
 
  in PostgreSQL, a conflict in INSERT ... ON CONFLICT is triggered when:  
