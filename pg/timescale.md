@@ -1,11 +1,38 @@
 ### Timescaldb Postgres extension
 
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+
 Version Check:  
 ```sql
 SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
 ```
 
 
+
+```sql
+
+
+CREATE TABLE sensor_data (
+  time        TIMESTAMPTZ       NOT NULL,
+  sensor_id   INTEGER           NOT NULL,
+  temperature DOUBLE PRECISION  NULL
+);
+
+SELECT create_hypertable('sensor_data', 'time');
+
+SELECT time_bucket('1 hour', time) AS hour, avg(temperature)
+FROM sensor_data
+GROUP BY hour
+ORDER BY hour;
+```
+
+### Enable compression
+
+
+```sql
+ALTER TABLE sensor_data SET (timescaledb.compress);
+SELECT add_compression_policy('sensor_data', INTERVAL '7 days');
+```
 
 ### How to Check if a Hypertable is Compressed
 To determine if a hypertable is compressed in TimescaleDB, you can query the timescaledb_information.compression_settings view, which provides details about compression configuration for hypertables.
@@ -51,17 +78,50 @@ Explanation:
 compression_status: Shows whether the chunk is compressed (Compressed) or not.  
 compressed_total_bytes: Indicates the size of compressed data, confirming compression is active.  
 If no rows are returned or compression_status is not Compressed, no chunks are compressed.
+
+
 Notes:
 
-Replace 'your_hypertable_name' with your actual hypertable name.
+
 Compression must be explicitly enabled using 
 ```sql
 ALTER TABLE your_hypertable_name SET (timescaledb.compress = true)
 ```
-and chunks compressed with 
+It allow chunks of this hypertable to be compressed manually or by policy.
+
+This does not compress any chunks yet — it only enables compression.
+
+You must still:
+
+- Define which columns to segment and order by (optional but recommended)
+
+- Manually compress chunks with SELECT compress_chunk(...)
+  or
+- Schedule auto compression with:
+
+```sql
+
+SELECT add_compression_policy('your_hypertable_name', INTERVAL '7 days');
+```
+
+✅ Example full setup:
+```sql
+
+-- Enable compression on the hypertable
+ALTER TABLE sensor_data SET (timescaledb.compress = true);
+
+-- Define how data is organized inside compressed chunks
+SELECT add_compression_policy('sensor_data', INTERVAL '7 days');
+SELECT set_chunk_compression('sensor_data', 'sensor_id', 'time');
+```
+
+
+
+Manually compress a specific chunk of a hypertable:
 ```sql
 SELECT compress_chunk(chunk_name).
 ```
+
 ###  TimescaleDB-Specific SQL Functions to Filter Columns by Timestamp
 TimescaleDB provides several functions to efficiently filter or manipulate timestamp-based data in hypertables. These functions are optimized for time-series data and work well with timestamp columns. 
 Below are the key TimescaleDB-specific SQL functions for filtering by timestamp:  
