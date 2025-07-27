@@ -55,6 +55,65 @@ It’s designed for efficient aggregation of time-series data, like:
 | Use `time_bucket()`         | Optional           | ✅ Required              |
 
 
+
+TimescaleDB does not use cron-like scheduling for add_continuous_aggregate_policy.   
+It relies on a background job that wakes up every schedule_interval and checks whether the data range needs refreshing.
+
+So:
+
+⛔️ You cannot directly say "run only on the 1st of the month" in add_continuous_aggregate_policy.
+
+✅ Practical solution (match your goal)
+To approximate “once per month on the 1st”, use:
+
+```sql
+
+SELECT add_continuous_aggregate_policy('monthly_counts',
+  start_offset => INTERVAL '2 months',
+  end_offset   => INTERVAL '1 month',
+  schedule_interval => INTERVAL '1 day');
+```
+🔍 What this does:
+schedule_interval => '1 day': check once per day (low load)
+
+start_offset => '2 months': refresh two months back
+
+end_offset => '1 month': excludes the most recent month (assumed to be still collecting)
+
+On the 1st day of the new month, the system will:
+
+Recompute data for the just-completed month
+
+Skip the current (in-progress) month
+
+This pattern ensures monthly refresh behavior, even if it's not cron-based.
+
+⏱ Optional: Manual control instead
+If you want absolute control, disable the automatic policy and just run this manually via pg_cron:
+
+```sql
+
+CALL refresh_continuous_aggregate('monthly_counts',
+  date_trunc('month', now() - interval '1 month'),
+  date_trunc('month', now()));
+```
+Then schedule this in pg_cron:
+
+```sql
+
+SELECT cron.schedule(
+  'refresh_monthly_counts',
+  '0 0 1 * *',
+  $$CALL refresh_continuous_aggregate('monthly_counts',
+    date_trunc('month', now() - interval '1 month'),
+    date_trunc('month', now()));$$
+);
+```
+This gives you cron-like exact timing.
+
+
+
+
 ```sql
 CREATE MATERIALIZED VIEW monthly_counts
 WITH (timescaledb.continuous) AS
