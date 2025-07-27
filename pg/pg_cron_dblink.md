@@ -99,6 +99,65 @@ cron.database_name = 'weavix'
 cron.database_name setting is not present by default in postgresql.conf.   
 You need to manually add it if you want to use pg_cron with a database other than postgres
 
+Show all scheduled cron jobs
+```sql
+SELECT * FROM cron.job;
+```
+
+Show only currently running jobs:
+```sql
+SELECT * FROM cron.job_run_details
+WHERE end_time IS NULL
+ORDER BY start_time DESC;
+```
+
+Show completed jobs (history:
+```sql
+SELECT * FROM cron.job_run_details
+WHERE end_time IS NOT NULL
+ORDER BY end_time DESC
+LIMIT 10;
+```
+
+Show jobs and their schedule with next run:
+``sql
+SELECT jobid, schedule, command, nodename, nodeport, database, username, active
+FROM cron.job
+ORDER BY jobid;
+```
+
+
+
+Show failed jobs:
+```sql
+SELECT
+  j.jobid,
+  j.schedule,
+  j.command,
+  d.start_time,
+  d.end_time,
+  d.status,
+  d.return_code,
+  d.stdout,
+  d.stderr
+FROM cron.job j
+JOIN cron.job_run_details d ON j.jobid = d.jobid
+WHERE d.status != 'succeeded'
+ORDER BY d.start_time DESC
+LIMIT 20;
+```
+
+
+
+Tables used by pg_cron:
+
+| Table                  | Description                    |
+| ---------------------- | ------------------------------ |
+| `cron.job`             | All configured cron jobs       |
+| `cron.job_run_details` | Execution history for all jobs |
+
+
+
 you cannot run a query from one database that references another.
 
 If you must keep pg_cron in the postgres DB but want to run queries in weavix, 
