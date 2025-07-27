@@ -120,7 +120,7 @@ LIMIT 10;
 ```
 
 Show jobs and their schedule with next run:
-``sql
+```sql
 SELECT jobid, schedule, command, nodename, nodeport, database, username, active
 FROM cron.job
 ORDER BY jobid;
