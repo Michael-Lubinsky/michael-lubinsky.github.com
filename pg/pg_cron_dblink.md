@@ -150,7 +150,7 @@ Example:
 If pg_cron is in Database A and you want to run CALL my_procedure_in_db_b() in Database B:  
 Run this from Database A (where pg_cron is installed)
 
-```SQL
+```sql
 
 SELECT cron.schedule_in_database(
     'daily_procedure_b',
@@ -184,7 +184,7 @@ If your pg_cron version is older than 1.4 or you have a very specific scenario t
 You would create a cron.schedule() entry that uses dblink() to connect to Database B and execute the SQL or stored procedure.
  This means your pg_cron job command would look something like this:
 
-```SQL
+```sql
 
 SELECT cron.schedule(
     'my_db_b_job',
