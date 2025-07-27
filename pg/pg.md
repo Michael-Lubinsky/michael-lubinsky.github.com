@@ -64,6 +64,12 @@ OPTIONS (schema_name 'public', table_name 'events');
 
 
 SELECT * FROM foreign_schema.customers WHERE city = 'London';
+
+SELECT cron.schedule(
+    'cross_db_job',
+    '0 * * * *', -- Every hour
+    $$SELECT * FROM foreign_table_name WHERE condition$$
+);
 ```
 
 | Feature      | Description                                                              |
@@ -415,11 +421,35 @@ You would create a cron.schedule() entry that uses dblink() to connect to Databa
 SELECT cron.schedule(
     'my_db_b_job',
     '0 3 * * *',
-    $$SELECT dblink('host=localhost user=your_user dbname=DatabaseB password=your_password', 'CALL my_procedure_in_db_b()');$$
+    $$SELECT dblink('host=localhost user=your_user dbname=DatabaseB password=your_password',
+    'CALL my_procedure_in_db_b()');$$
+);
+
+
+SELECT cron.schedule(
+    'call_procedure',
+    '0 * * * *', -- Every hour
+    $$SELECT dblink_exec(
+        'dbname=target_db host=localhost port=5432 user=your_user password=your_password',
+        'CALL procedure_name()'
+    )$$
+);
+
+
+SELECT cron.schedule(
+    'cross_db_job',
+    '0 * * * *', -- Every hour
+    $$SELECT * FROM dblink(
+        'dbname=target_db host=localhost port=5432 user=your_user password=your_password',
+        'SELECT * FROM table_name WHERE condition'
+    ) AS t(column1 datatype, column2 datatype)$$
 );
 ```
 
 Caveats:
+
+Less intuitive for complex queries (results are returned as text or record sets).  
+No direct table integration (cannot join with local tables easily).
 
 Security Risk: Hardcoding passwords in the cron.schedule command is a major security risk. Ideally, you'd rely on .pgpass files or other secure credential management for the user pg_cron runs as.
 
