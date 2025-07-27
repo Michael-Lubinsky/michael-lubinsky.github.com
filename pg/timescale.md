@@ -1,3 +1,11 @@
+### Timescaldb Postgres extension
+
+Version Check:  
+```sql
+SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
+```
+
+
 
 ### How to Check if a Hypertable is Compressed
 To determine if a hypertable is compressed in TimescaleDB, you can query the timescaledb_information.compression_settings view, which provides details about compression configuration for hypertables.
@@ -58,7 +66,7 @@ SELECT compress_chunk(chunk_name).
 TimescaleDB provides several functions to efficiently filter or manipulate timestamp-based data in hypertables. These functions are optimized for time-series data and work well with timestamp columns. 
 Below are the key TimescaleDB-specific SQL functions for filtering by timestamp:  
 
-time_bucket(bucket_width, ts_column):
+#### time_bucket(bucket_width, ts_column):
 
 Groups timestamps into fixed-size buckets (e.g., 1 hour, 1 day).  
 Useful for aggregating data over time intervals.
@@ -72,7 +80,9 @@ WHERE time_column >= '2025-01-01' AND time_column < '2025-01-02'
 GROUP BY bucket;
 ```
 Filters rows by time_column and groups them into hourly buckets.
-time_bucket_gapfill(bucket_width, ts_column, start, end):
+
+
+#### time_bucket_gapfill(bucket_width, ts_column, start, end):
 
 Similar to time_bucket, but fills in missing buckets with NULL or interpolated values within the specified start and end timestamp range.
 
@@ -84,8 +94,13 @@ FROM your_hypertable_name
 WHERE time_column >= '2025-01-01' AND time_column < '2025-01-07'
 GROUP BY bucket;
 ```
+
+
 Filters rows and ensures all daily buckets are returned, even if no data exists.
-first(value_column, ts_column) and last(value_column, ts_column):
+
+
+
+### first(value_column, ts_column) and last(value_column, ts_column):
 Retrieves the first or last value of a column within a time range, ordered by the timestamp column.
 
 
@@ -97,7 +112,8 @@ WHERE time_column BETWEEN '2025-01-01' AND '2025-01-02';
 
 
 Filters rows by time_column and returns the earliest value_column in the range.  
-histogram(ts_column, min_value, max_value, num_bins):  
+
+#### histogram(ts_column, min_value, max_value, num_bins):  
 Creates a histogram of values within a timestamp range (though typically used for numeric columns,  
 can be paired with timestamp filtering).
 
@@ -111,7 +127,8 @@ GROUP BY bucket;
 ```
 
 Filters by timestamp and generates histograms for each time bucket.
-locf(value_column):
+
+#### locf(value_column):
 Last Observation Carried Forward: Fills missing values with the last non-null value, often used with timestamp filtering.
 
 ```sql
@@ -123,8 +140,8 @@ WHERE time_column >= '2025-01-01' AND time_column < '2025-01-02'
 GROUP BY bucket;
 ```
 
-Filters by timestamp and fills gaps in data.
-Standard SQL with Hypertable Optimization:
+Filters by timestamp and fills gaps in data.  
+Standard SQL with Hypertable Optimization:  
 TimescaleDB optimizes standard PostgreSQL WHERE clauses on timestamp columns  
 (e.g., WHERE time_column BETWEEN '2025-01-01' AND '2025-01-02').
 
@@ -140,12 +157,5 @@ Compression and Filtering: If your hypertable is compressed, you can still use t
 TimescaleDB transparently decompresses chunks as needed for queries.  
 
 Performance: For large datasets, ensure your timestamp column is used in WHERE clauses to leverage chunk exclusion, and consider adding secondary indexes if filtering on other columns.
-
-Version Check: Since you’re on PostgreSQL 16 with TimescaleDB, ensure your TimescaleDB version is up-to-date 
-(e.g., 2.11 or later) to access the latest features. Check with:
-
-```sql
-SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
-```
 
 <https://medium.com/timescale/handling-billions-of-rows-in-postgresql-80d3bd24dabb>
