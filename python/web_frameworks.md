@@ -20,6 +20,9 @@ https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (
 
 <https://github.com/sfermigier/awesome-python-web-frameworks>
 
+<https://medium.com/@hadiyolworld007/ditch-jupyter-this-python-dashboard-stack-is-the-future-of-data-analysis-db8849ce2a4e>
+
+
 These frameworks—**NiceGUI**, **Reflex**, **Sonara**, and **Panel**  
 enable you to build web UIs in Python without touching JavaScript.  
 
