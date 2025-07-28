@@ -1,5 +1,10 @@
 https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4
 
+https://medium.com/@gilles.philippart/build-a-streaming-data-lakehouse-with-apache-flink-kafka-iceberg-and-polaris-473c47e04525
+
+https://medium.com/pythoneers/unlocking-pythons-hidden-power-how-i-built-a-lightning-fast-real-time-data-pipeline-in-just-7-98051ca1eb20
+
+
 
 ## Kafka Streams
 
