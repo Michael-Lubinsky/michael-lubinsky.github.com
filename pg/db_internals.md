@@ -1,3 +1,6 @@
+
+https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b
+
 https://habr.com/ru/companies/ydb/articles/907024/
 
 https://habr.com/ru/companies/arenadata/articles/899846/
