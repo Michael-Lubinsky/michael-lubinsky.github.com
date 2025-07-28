@@ -14,6 +14,8 @@ https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (
 
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
 
+<https://pub.towardsai.net/which-python-dashboard-is-better-dash-panel-and-streamlit-showdown-8d4f8bf744f9>
+
 <https://medium.com/@manikolbe/streamlit-gradio-nicegui-and-mesop-building-data-apps-without-web-devs-4474106778f5>
 
 <https://github.com/sfermigier/awesome-python-web-frameworks>
