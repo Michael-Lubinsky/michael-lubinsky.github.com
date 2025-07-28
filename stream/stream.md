@@ -1,3 +1,6 @@
+https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4
+
+
 ## Kafka Streams
 
 https://habr.com/ru/articles/913652/
