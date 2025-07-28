@@ -194,6 +194,8 @@ Use fillfactor for hot rows (ALTER INDEX … SET (fillfactor=90)).
 
 <https://medium.com/dev-genius/sql-optimization-beyond-commons-81b37d224a49>
 
+<https://medium.com/@rizqimulkisrc/postgres-performance-tuning-like-a-pro-2dd7f58d82d2>
+
 <https://habr.com/ru/companies/selectel/articles/913572/> Как оптимизировать PostgreSQL 
 
 <https://www.youtube.com/@ScalingPostgres/videos> Scaling Postgres
