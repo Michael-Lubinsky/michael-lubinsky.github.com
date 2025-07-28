@@ -36,6 +36,23 @@ ORDER BY year_month;
 
 ```
 
+### time_bucket() vs date_trunc() in TimescaleDB context
+
+| Feature                   | `date_trunc()` | `time_bucket()` (✅ TimescaleDB)     |
+| ------------------------- | -------------- | ----------------------------------- |
+| Standard SQL              | ✅ Yes          | ❌ Extension-specific                |
+| Works with TimescaleDB    | ✅ Partially    | ✅ Fully optimized                   |
+| Required for CAGGs        | ❌ No           | ✅ **Yes** (must use `time_bucket`)  |
+| Chunk-aware optimizations | ❌ No           | ✅ Yes                               |
+| Continuous Aggregates use | ❌ Invalid      | ✅ **Required** in `GROUP BY` clause |
+
+
+
+
+#### When to use time_bucket()?
+- Always use time_bucket() in SELECT/aggregation queries over hypertables  
+- Use it in GROUP BY for continuous aggregates — it's required  
+- Use it in filtering (WHERE) only if matching bucket-aligned boundaries  
 
 ###  Continuous Aggregate in TimescaleDB 
 A Continuous Aggregate (CAGG) in TimescaleDB is a materialized view   
@@ -88,6 +105,11 @@ Skip the current (in-progress) month
 
 This pattern ensures monthly refresh behavior, even if it's not cron-based.
 
+
+
+
+
+
 ⏱ Optional: Manual control instead
 If you want absolute control, disable the automatic policy and just run this manually via pg_cron:
 
@@ -112,6 +134,28 @@ SELECT cron.schedule(
 This gives you cron-like exact timing.
 
 
+
+You should use date_trunc() in refresh_continuous_aggregate() time boundaries:
+
+```sql
+
+CALL refresh_continuous_aggregate('monthly_counts',
+  date_trunc('month', now() - interval '1 month'),
+  date_trunc('month', now()));
+```
+Why?
+refresh_continuous_aggregate() requires exact timestamps
+
+It defines the raw time range to refresh, not how it's grouped
+
+time_bucket() is not appropriate here — it's for grouping inside the materialized view
+
+
+| Use case                           | Recommended Function |
+| ---------------------------------- | -------------------- |
+| Creating continuous aggregate view | `time_bucket()` ✅    |
+| Querying time-series buckets       | `time_bucket()` ✅    |
+| Specifying refresh time range      | `date_trunc()` ✅     |
 
 
 ```sql
