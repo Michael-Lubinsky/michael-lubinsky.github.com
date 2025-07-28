@@ -296,7 +296,7 @@ ORDER BY year_month;
 ```
 The SQL above has standard SQL equivalent, which runs slow:
 
-```
+```sql
 SELECT 
   to_char(date_trunc('month', c), 'YYYY-MM') AS year_month,
   COUNT(*) AS record_count
@@ -306,8 +306,7 @@ ORDER BY year_month;
 ```
 
 
-```
-
+```sql
 SELECT time_bucket('1 hour', time_column) AS bucket, COUNT(*)
 FROM your_hypertable_name
 WHERE time_column >= '2025-01-01' AND time_column < '2025-01-02'
