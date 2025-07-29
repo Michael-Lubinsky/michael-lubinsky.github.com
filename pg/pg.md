@@ -1125,6 +1125,8 @@ https://github.com/BemiHQ/BemiDB Single-binary Postgres read replica optimized f
 https://habr.com/ru/articles/911688/ Правильный порядок колонок в B-tree индексах PostgreSQL
 Правило ESR (Equality, Sort, Range) 
 
+https://medium.com/@rizqimulkisrc/postgresql-for-real-time-apps-performance-techniques-c37a14ec2046
+
 https://pgmodeler.io/
 
 https://clickhouse.com/blog/postgres-to-clickhouse-data-modeling-tips-v2  Postgres - Clickhouse
