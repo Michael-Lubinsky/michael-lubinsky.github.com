@@ -2,15 +2,57 @@
 
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 
-Version Check:  
+Version Check - Make sure it's version 2.0 or higher fo compression support:  
 ```sql
 SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
 ```
 
 
 
+If you are using Azure Database for PostgreSQL - Flexible Server, and TimescaleDB is enabled,
+
+Then compression is supported if 
+- You're using TimescaleDB 2.x+  
+- And you are using community edition features (not enterprise-only)
+
+✅ Columnar compression (introduced in TimescaleDB 2.7+) is enterprise-only and not available by default on Azure unless you bring your own license.
+
+ Azure PostgreSQL **Single Server**: TimescaleDB may be available, but:
+
+Compression is generally not supported or is outdated, depending on the version Azure provides.
+
+
+Then test this:
+
+```sql
+SELECT * FROM timescaledb_information.hypertables;
+```
+If you see a column named compression_enabled, you're good to go.
+
+🛠️ Enable Compression (if supported), for example:
+
 ```sql
 
+-- Enable compression on a hypertable
+ALTER TABLE your_table SET (
+  timescaledb.compress,
+  timescaledb.compress_orderby = 'time DESC',
+  timescaledb.compress_segmentby = 'device_id'
+);
+
+-- Add a compression policy
+SELECT add_compression_policy('your_table', INTERVAL '30 days');
+```
+
+⚠️ Notes
+Compression in TimescaleDB is only available on hypertables, not regular tables.
+
+On Azure, compression is subject to Timescale license (Apache 2.0 for core features, Timescale License for some advanced ones).
+
+
+
+
+```sql
 
 CREATE TABLE sensor_data (
   time        TIMESTAMPTZ       NOT NULL,
