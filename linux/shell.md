@@ -333,3 +333,5 @@ echo "This line goes to script.log!"
 ```
 
 <https://medium.com/@obaff/7-bash-scripts-for-quick-troubleshooting-in-production-environments-5b8cb6d129e4>
+
+<https://askubuntu.com/questions/349262/run-a-nohup-command-over-ssh-then-disconnect/1543824#1543824>
