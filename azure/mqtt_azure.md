@@ -1,5 +1,8 @@
 # Azure event hubs
 
+
+https://learn.microsoft.com/en-us/azure/event-hubs/
+
 https://azure.microsoft.com/en-us/products/event-hubs
 
 
