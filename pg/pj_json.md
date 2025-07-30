@@ -1,5 +1,5 @@
 
-### JSONB
+## Postgres JSONB
 
 ```sql
 -- Creating a table with a JSONB column
