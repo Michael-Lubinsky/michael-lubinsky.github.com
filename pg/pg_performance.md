@@ -2,6 +2,8 @@
 
 ### Find unused indexes
 
+idx_tup_read = 0 — meaning no index entries were read (i.e., no index scans read any heap tuples via this index)
+
 
 
 ```sql
@@ -9,6 +11,28 @@ SELECT schemaname, tablename, indexname, idx_tup_read, idx_tup_fetch
 FROM pg_stat_user_indexes 
 WHERE idx_tup_read = 0;
 ```
+
+idx_scan = 0: means PostgreSQL hasn’t used the index for query plans since the last pg_stat_reset().
+
+```sql
+SELECT 
+    schemaname,
+    relname AS table_name,
+    indexrelname AS index_name,
+    idx_scan,
+    pg_size_pretty(pg_relation_size(i.indexrelid)) AS index_size
+FROM 
+    pg_stat_user_indexes ui
+JOIN 
+    pg_index i ON ui.indexrelid = i.indexrelid
+WHERE 
+    idx_scan <50    -- = 0   -- Never used since last stats reset
+    AND NOT i.indisunique
+    AND NOT i.indisprimary
+ORDER BY 
+    pg_relation_size(i.indexrelid) DESC;
+```
+
 
 
 ### Find slow queries
