@@ -74,17 +74,20 @@ CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);
 PostgreSQL provides two operator classes for JSONB GIN indexes, each optimized for different query patterns:
 
 ### jsonb_ops (Default)
+```sql
 CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data);  
--- Equivalent to:
-
+```
+ Equivalent to:
+```sql
 CREATE INDEX idx_event_data_gin ON user_events USING GIN (event_data jsonb_ops);  
+```
 
 This creates index entries for every key and value, supporting all JSONB operators but creating larger indexes.
 
 #### jsonb_path_ops (Optimized for Containment)
-
+```sql
 CREATE INDEX idx_event_data_gin_path ON user_events USING GIN (event_data jsonb_path_ops);
-
+```
 This creates smaller indexes (20–30% of table size vs 60–80%) but only supports the @> containment operator.
 
 Test  the difference:
