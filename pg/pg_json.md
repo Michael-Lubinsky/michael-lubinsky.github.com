@@ -150,5 +150,95 @@ GROUP BY data->>'category';
 
 
 
+
+### pg_read_file
+ pg_read_file is a server side function that allows you to read all of the file or a portion of the file. There are a couple of caveats for it's use.
+
+Requires super user or being member of pg_read_server_files group role
+The file you are reading must be readable by the postgres server process  
+There is a limitation on read size and you are also restricted on how big of a file you can stuff in a column.   
+For most files this has not been an issue.
+There is a companion function called pg_read_binary_file for reading data in binary format or for reading text in a specific encoding.
+
+To demonstrate, download: Boston Public Schools json format and put it in C:/temp folder. If you are on Linux would be a path such as /tmp and path references in this doc change C:/Temp to /tmp
+
+Note that this is a GeoJSON file, which means if you had PostGIS installed you could do interesting things with this. But for this exercise, I'm going to treat it like any JSON file.  
+This approach doesn't work for big files that can't fit into a single column.
+
+```sql
+INSERT INTO data_json(data)
+SELECT pg_read_file('C:/temp/public_schools.geojson.json')::jsonb;
+```
+
+Using jsonb_array_elements to expand rows
+
+You can combine this with the ->> and -> json operators to select properties. 
+Here is how we do it with the sample dataset that is of geojson structure
+```sql
+CREATE TABLE boston_public_schools AS 
+SELECT (je->'id')::bigint AS id, 
+	(je->'geometry'->'coordinates'->>0)::float AS longitude,
+	(je->'geometry'->'coordinates'->>1)::float AS latitude,
+	je->'properties'->>'SCH_NAME' AS sch_name,
+	je->'properties'->>'ADDRESS' AS address,
+	je->'properties'->>'CITY' AS city,
+	je->'properties'->>'ZIPCODE' AS zipcode
+FROM data_json 
+	CROSS JOIN jsonb_array_elements(data_json.data->'features') AS je;
+```
+There are 3 features being used in this example, first we are using the -> operator. This operator when applied to a jsonb or json returns back the property as a jsonb or json element. Note that you can burrow into a document by nesting these operator calls as we do with je->'geometry'->'coordinates'->>1
+
+The companion to -> is the ->> operator which returns text instead of a json. You use this when you are done with your burrowing.
+
+Both -> and ->> can take a text or an integer. The integer version is used only for json arrays and returns the nth element of the array. Counting of arrays in JavaScript and by extension JSON starts at 0.
+
+So with these operators you pick out pieces of a json document, but before we do that, we'll want to expand a json document into it's separate rows. For geojson documents, there is always a features property which is an array with each element being a data row.
+
+To break up these rows, you can use jsonb_array_elements, which is a set returning element that only works with jsonb formatted arrays and returns each element of the array as a jsonb object.
+
+Your table should end up looking like this
+```
+
+SELECT * FROM boston_public_schools LIMIT 3;
+id |     longitude      |     latitude      |       sch_name       |       address       |    city     | zipcode
+----+--------------------+-------------------+----------------------+---------------------+-------------+---------
+  1 | -71.00412000099993 | 42.38879000000003 | Guild Elementary     | 195 Leyden Street   | East Boston | 02128
+  2 | -71.03047970999995 | 42.37853662100008 | Kennedy Patrick Elem | 343 Saratoga Street | East Boston | 02128
+  3 | -71.03389000099997 | 42.37527000000006 | Otis Elementary      | 218 Marion Street   | East Boston | 02128
+```
+Using JSON_TABLE to expand rows and columns
+Introduced in PostgreSQL 17 is the ISO-SQL standard JSON_TABLE function, which if you are familar with XML follows more or less the same pattern as XMLTABLE.   
+It utilizes json path syntax to parse out elements.
+Here is a repeat of the earlier exercise using JSON_TABLE.  
+
+```sql
+DROP TABLE IF EXISTS boston_public_schools;
+CREATE TABLE boston_public_schools AS
+SELECT
+    je.*
+FROM
+    data_json
+CROSS JOIN
+    JSON_TABLE (
+        data_json.data,
+        '$.features[*]' COLUMNS (
+            id integer PATH '$.id',
+            longitude float PATH '$.geometry.coordinates[0]',
+            latitude float PATH '$.geometry.coordinates[1]',
+            NESTED PATH '$.properties' COLUMNS (
+                sch_name text PATH '$.SCH_NAME',
+                address text PATH '$.ADDRESS',
+                city text PATH '$.CITY',
+                zipcode text PATH '$.ZIPCODE'
+            )
+        )
+    ) AS je;
+```
+This is a pretty rich function, so you should read the docs to appreciate it's full breath.   
+The fact it's an ISO/SQL standard function means you are more likely to find it in other relational databases. 
+If you have a heavily nested document, the NESTED PATH subclause comes in handy for saving some typing.
+
+
+
 <https://medium.com/@richardhightower/jsonb-postgresqls-secret-weapon-for-flexible-data-modeling-cf2f5087168f>
 
