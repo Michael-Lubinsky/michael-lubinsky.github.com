@@ -170,6 +170,9 @@ INSERT INTO data_json(data)
 SELECT pg_read_file('C:/temp/public_schools.geojson.json')::jsonb;
 ```
 
+
+### jsonb_array_elements 
+
 Using jsonb_array_elements to expand rows
 
 You can combine this with the ->> and -> json operators to select properties. 
