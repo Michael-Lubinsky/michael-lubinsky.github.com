@@ -52,6 +52,9 @@ Databricks' Structured Streaming allows you to process real-time data streams fr
 
 # MQTT Azure Snowflake
 
+https://www.snowflake.com/en/fundamentals/extracting-insights-from-ioT-data/
+
+
 https://www.striim.com/integrations/mqtt-azure-sql-database/
 
 https://quickstarts.snowflake.com/guide/getting_started_with_snowpipe_streaming_azure_eventhubs/index.html
