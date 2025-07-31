@@ -1,6 +1,8 @@
 ### Superset
 
-https://superset.apache.org/
+<https://superset.apache.org/>
+
+<https://habr.com/ru/articles/932938/>
 
 Jinja templating  
 CSS templates/customizations   
