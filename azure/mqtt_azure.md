@@ -54,6 +54,8 @@ Databricks' Structured Streaming allows you to process real-time data streams fr
 
 https://www.snowflake.com/en/fundamentals/extracting-insights-from-ioT-data/
 
+https://medium.com/@chris.waters/snowflake-iiot-common-model-overview-2a79b45951c0
+
 
 https://www.striim.com/integrations/mqtt-azure-sql-database/
 
