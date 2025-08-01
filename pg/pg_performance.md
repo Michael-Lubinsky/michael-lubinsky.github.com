@@ -586,7 +586,181 @@ WHERE c.relkind = 'm' AND n.nspname = :schema_name
 ORDER BY pg_total_relation_size(c.oid) DESC;
 ```
 
+# Here are some essential SQL queries to help you understand the PostgreSQL 16 database schema and relationships:
 
+## 1. Get Overview of All Tables
+
+```sql
+-- List all tables with row counts and basic info
+SELECT 
+    schemaname,
+    tablename,
+    n_tup_ins as total_inserts,
+    n_tup_upd as total_updates,
+    n_tup_del as total_deletes,
+    n_live_tup as live_rows,
+    n_dead_tup as dead_rows
+FROM pg_stat_user_tables 
+ORDER BY n_live_tup DESC;
+```
+
+## 2. Understand Table Structure
+
+```sql
+-- Get detailed column information for all tables
+SELECT 
+    t.table_schema,
+    t.table_name,
+    c.column_name,
+    c.data_type,
+    c.character_maximum_length,
+    c.is_nullable,
+    c.column_default,
+    CASE WHEN pk.column_name IS NOT NULL THEN 'PRIMARY KEY' ELSE '' END as key_type
+FROM information_schema.tables t
+JOIN information_schema.columns c ON t.table_name = c.table_name 
+    AND t.table_schema = c.table_schema
+LEFT JOIN (
+    SELECT ku.table_name, ku.column_name
+    FROM information_schema.table_constraints tc
+    JOIN information_schema.key_column_usage ku 
+        ON tc.constraint_name = ku.constraint_name
+    WHERE tc.constraint_type = 'PRIMARY KEY'
+) pk ON c.table_name = pk.table_name AND c.column_name = pk.column_name
+WHERE t.table_type = 'BASE TABLE' 
+    AND t.table_schema NOT IN ('information_schema', 'pg_catalog')
+ORDER BY t.table_name, c.ordinal_position;
+```
+
+## 3. Find Existing Foreign Key Relationships
+
+```sql
+-- List all existing foreign key constraints
+SELECT
+    tc.table_schema, 
+    tc.constraint_name, 
+    tc.table_name, 
+    kcu.column_name, 
+    ccu.table_schema AS foreign_table_schema,
+    ccu.table_name AS foreign_table_name,
+    ccu.column_name AS foreign_column_name 
+FROM information_schema.table_constraints AS tc 
+JOIN information_schema.key_column_usage AS kcu
+    ON tc.constraint_name = kcu.constraint_name
+    AND tc.table_schema = kcu.table_schema
+JOIN information_schema.constraint_column_usage AS ccu
+    ON ccu.constraint_name = tc.constraint_name
+    AND ccu.table_schema = tc.table_schema
+WHERE tc.constraint_type = 'FOREIGN KEY'
+ORDER BY tc.table_name, kcu.column_name;
+```
+
+## 4. Identify Potential Relationships (Missing Foreign Keys)
+
+```sql
+-- Find columns that might be foreign keys based on naming patterns
+SELECT 
+    t1.table_name,
+    t1.column_name,
+    t1.data_type,
+    t2.table_name as potential_referenced_table,
+    t2.column_name as potential_referenced_column
+FROM information_schema.columns t1
+JOIN information_schema.columns t2 ON (
+    -- Look for id patterns
+    (t1.column_name LIKE '%_id' AND t2.column_name = 'id' 
+     AND REPLACE(t1.column_name, '_id', '') = t2.table_name)
+    OR
+    -- Look for exact matches between non-id columns
+    (t1.column_name = t2.column_name AND t1.table_name != t2.table_name
+     AND t2.column_name IN ('user_id', 'customer_id', 'product_id', 'order_id'))
+)
+WHERE t1.table_schema = 'public' 
+    AND t2.table_schema = 'public'
+    AND t1.data_type = t2.data_type
+ORDER BY t1.table_name, t1.column_name;
+```
+
+## 5. Analyze Table Sizes and Importance
+
+```sql
+-- Get table sizes to understand which tables are most important
+SELECT 
+    schemaname,
+    tablename,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as total_size,
+    pg_size_pretty(pg_relation_size(schemaname||'.'||tablename)) as table_size,
+    n_live_tup as row_count
+FROM pg_stat_user_tables 
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
+LIMIT 20;
+```
+
+## 6. Find Tables with Similar Column Patterns
+
+```sql
+-- Group tables by similar column patterns to identify related entities
+WITH table_columns AS (
+    SELECT 
+        table_name,
+        string_agg(column_name, ', ' ORDER BY ordinal_position) as columns
+    FROM information_schema.columns 
+    WHERE table_schema = 'public'
+    GROUP BY table_name
+)
+SELECT 
+    t1.table_name,
+    t2.table_name as similar_table,
+    t1.columns
+FROM table_columns t1
+JOIN table_columns t2 ON t1.columns = t2.columns 
+    AND t1.table_name < t2.table_name
+ORDER BY t1.table_name;
+```
+
+## 7. Check for Common Audit/Timestamp Patterns
+
+```sql
+-- Find tables with common audit columns
+SELECT 
+    table_name,
+    COUNT(*) as matching_columns,
+    string_agg(column_name, ', ') as audit_columns
+FROM information_schema.columns 
+WHERE table_schema = 'public'
+    AND column_name IN ('created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by')
+GROUP BY table_name
+HAVING COUNT(*) >= 2
+ORDER BY matching_columns DESC;
+```
+
+## 8. Sample Data from Key Tables
+
+```sql
+-- Generate sample queries for the largest tables
+SELECT 
+    'SELECT * FROM ' || tablename || ' LIMIT 5;' as sample_query
+FROM pg_stat_user_tables 
+ORDER BY n_live_tup DESC
+LIMIT 10;
+```
+
+## Recommended Analysis Workflow:
+
+1. **Start with query #1 and #5** to understand which tables have the most data
+2. **Run query #2** on your top 10-15 tables to understand their structure
+3. **Use query #3** to see existing relationships
+4. **Apply query #4** to find potential missing foreign keys
+5. **Run the sample queries** generated by query #8 to see actual data patterns
+
+## Additional Tips:
+
+- Look for tables with names like `users`, `customers`, `orders`, `products` - these are often central entities
+- Tables ending in `_log`, `_history`, or `_audit` are usually related to main tables
+- Junction tables (for many-to-many relationships) often have names combining two entity names
+- Check for tables with only 2-3 columns - these might be lookup/reference tables
+
+Would you like me to help you analyze the results of any of these queries or create more specific queries based on what you discover?
 
 ### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
 <https://explain.tensor.ru/>  
