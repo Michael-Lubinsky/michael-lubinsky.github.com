@@ -1370,6 +1370,23 @@ You get fresh data with ~1 minute latency.
 
 
 
+
+
+### Why Snowflake is not suited for OLTP:
+OLTP systems require:
+
+- High transaction throughput
+- Low latency reads and writes
+- Real-time updates
+- Row-level operations
+
+Snowflake is not optimized for:
+
+- Frequent small inserts, updates, and deletes
+- High-concurrency row-level transactions
+- Complex ACID transactional logic typical of OLTP systems (e.g., banking systems)
+
+
 <https://asrathore08.medium.com/snowflake-tables-decluttered-71cda9b38b75>
 
 ### Python Snowflake connector
