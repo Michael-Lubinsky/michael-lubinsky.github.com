@@ -216,6 +216,126 @@ Avoid duplicates (compare pg_index.indkey).
 Use fillfactor for hot rows (ALTER INDEX … SET (fillfactor=90)).
 
 
+
+
+# PostgreSQL 16 – Schema Metadata Queries
+
+Notes:
+- Replace `:schema_name` (and `:root_table` where applicable) with your values, or define them as psql variables, e.g. `\set schema_name your_schema`.
+- All queries read from `pg_catalog` and are compatible with PostgreSQL 16.
+
+---
+
+## 1) Table-level overview (size, stats, vacuum/analyze, constraints, partitioning)
+
+```sql
+WITH rels AS (
+  SELECT
+    n.nspname AS schema,
+    c.relname AS rel,
+    c.oid      AS relid,
+    c.relkind,
+    c.relpersistence,
+    c.relnamespace,
+    c.relowner,
+    c.reltuples,
+    c.relpages,
+    c.relfrozenxid,
+    c.relminmxid,
+    c.reloptions,
+    c.reltablespace,
+    pg_catalog.pg_get_userbyid(c.relowner) AS owner,
+    obj_description(c.oid, 'pg_class')     AS comment
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE n.nspname = :schema_name
+    AND c.relkind IN ('r','p','m','v','f')
+),
+sizes AS (
+  SELECT r.relid,
+         pg_total_relation_size(r.relid) AS total_bytes,
+         pg_relation_size(r.relid)       AS table_bytes,
+         pg_indexes_size(r.relid)        AS index_bytes,
+         pg_total_relation_size(r.relid) - pg_relation_size(r.relid) - pg_indexes_size(r.relid) AS toast_bytes
+  FROM rels r
+),
+stats AS (
+  SELECT s.relid,
+         s.n_live_tup, s.n_dead_tup,
+         s.last_vacuum, s.last_autovacuum, s.last_analyze, s.last_autoanalyze,
+         s.vacuum_count, s.autovacuum_count, s.analyze_count, s.autoanalyze_count,
+         s.seq_scan, s.seq_tup_read, s.idx_scan, s.idx_tup_fetch,
+         s.n_tup_ins, s.n_tup_upd, s.n_tup_del, s.n_tup_hot_upd
+  FROM pg_stat_all_tables s
+),
+io AS (
+  SELECT st.relid,
+         st.heap_blks_read, st.heap_blks_hit,
+         st.idx_blks_read,  st.idx_blks_hit,
+         st.toast_blks_read,st.toast_blks_hit,
+         st.tidx_blks_read, st.tidx_blks_hit
+  FROM pg_statio_all_tables st
+),
+constraints AS (
+  SELECT r.relid,
+         COUNT(*) FILTER (WHERE con.contype = 'p') AS pk_cnt,
+         COUNT(*) FILTER (WHERE con.contype = 'u') AS uq_cnt,
+         COUNT(*) FILTER (WHERE con.contype = 'f') AS fk_cnt,
+         COUNT(*) FILTER (WHERE con.contype = 'c') AS ck_cnt
+  FROM rels r
+  LEFT JOIN pg_constraint con ON con.conrelid = r.relid
+  GROUP BY r.relid
+),
+partitioning AS (
+  SELECT r.relid,
+         EXISTS (SELECT 1 FROM pg_inherits i WHERE i.inhparent = r.relid) AS is_parent,
+         EXISTS (SELECT 1 FROM pg_inherits i WHERE i.inhrelid = r.relid)   AS is_child,
+         (SELECT COUNT(*) FROM pg_inherits i WHERE i.inhparent = r.relid)  AS child_count,
+         pg_get_partkeydef(r.relid) AS partkeydef
+  FROM rels r
+)
+SELECT
+  r.schema,
+  r.rel AS table,
+  CASE r.relkind
+    WHEN 'r' THEN 'table'
+    WHEN 'p' THEN 'partitioned table'
+    WHEN 'm' THEN 'materialized view'
+    WHEN 'v' THEN 'view'
+    WHEN 'f' THEN 'foreign table'
+  END AS kind,
+  r.owner,
+  r.relpersistence AS persistence,
+  ts.spcname       AS tablespace,
+  r.reltuples      AS row_estimate,
+  s.n_live_tup, s.n_dead_tup,
+  pg_size_pretty(sz.total_bytes) AS total_size,
+  pg_size_pretty(sz.table_bytes) AS table_size,
+  pg_size_pretty(sz.index_bytes) AS index_size,
+  pg_size_pretty(sz.toast_bytes) AS toast_size,
+  s.seq_scan, s.idx_scan,
+  s.n_tup_ins, s.n_tup_upd, s.n_tup_del, s.n_tup_hot_upd,
+  s.last_vacuum, s.last_autovacuum, s.last_analyze, s.last_autoanalyze,
+  s.vacuum_count, s.autovacuum_count, s.analyze_count, s.autoanalyze_count,
+  io.heap_blks_read, io.heap_blks_hit,
+  io.idx_blks_read,  io.idx_blks_hit,
+  r.relfrozenxid, age(r.relfrozenxid) AS frozenxid_age,
+  r.relminmxid,   mxid_age(r.relminmxid) AS minmxid_age,
+  r.reloptions,
+  c.pk_cnt, c.uq_cnt, c.fk_cnt, c.ck_cnt,
+  p.is_parent, p.child_count, p.is_child, p.partkeydef,
+  r.comment
+FROM rels r
+LEFT JOIN sizes sz          ON sz.relid = r.relid
+LEFT JOIN stats s           ON s.relid = r.relid
+LEFT JOIN io                ON io.relid = r.relid
+LEFT JOIN constraints c     ON c.relid = r.relid
+LEFT JOIN partitioning p    ON p.relid = r.relid
+LEFT JOIN pg_tablespace ts  ON ts.oid = r.reltablespace
+ORDER BY sz.total_bytes DESC NULLS LAST, r.schema, r.rel;
+```
+
+
 ### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
 <https://explain.tensor.ru/>  
 <https://explain.depesz.com/>  
