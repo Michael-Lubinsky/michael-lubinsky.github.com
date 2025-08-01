@@ -336,6 +336,258 @@ ORDER BY sz.total_bytes DESC NULLS LAST, r.schema, r.rel;
 ```
 
 
+### 2) Column-level details & stats (types, defaults, compression, null_frac, ndistinct)
+```sql
+
+SELECT
+  n.nspname              AS schema,
+  c.relname              AS table,
+  a.attnum,
+  a.attname              AS column,
+  pg_catalog.format_type(a.atttypid, a.atttypmod) AS data_type,
+  a.attnotnull           AS not_null,
+  pg_get_expr(ad.adbin, ad.adrelid) AS default_expr,
+  co.collname            AS collation,
+  a.attstattarget        AS stats_target,
+  a.attstorage           AS storage,              -- p/e/m/x
+  a.attcompression       AS compression_method,   -- pg16+
+  ps.null_frac, ps.n_distinct, ps.avg_width,
+  col_description(c.oid, a.attnum) AS comment
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+LEFT JOIN pg_attrdef ad ON ad.adrelid = a.attrelid AND ad.adnum = a.attnum
+LEFT JOIN pg_collation co ON co.oid = a.attcollation
+LEFT JOIN pg_stats ps ON ps.schemaname = n.nspname AND ps.tablename = c.relname AND ps.attname = a.attname
+WHERE n.nspname = :schema_name
+  AND c.relkind IN ('r','p','m','f')
+ORDER BY n.nspname, c.relname, a.attnum;
+```
+### 3) Index inventory, usage, and health
+```sql
+
+SELECT
+  n.nspname           AS schema,
+  t.relname           AS table,
+  i.relname           AS index,
+  am.amname           AS access_method,
+  pg_get_indexdef(ix.indexrelid) AS indexdef,
+  ix.indisunique, ix.indisprimary, ix.indisexclusion, ix.indisvalid, ix.indisready, ix.indisclustered,
+  pg_size_pretty(pg_relation_size(i.oid)) AS index_size,
+  COALESCE(s.idx_scan,0) AS idx_scan,
+  COALESCE(s.idx_tup_read,0) AS idx_tup_read,
+  COALESCE(s.idx_tup_fetch,0) AS idx_tup_fetch,
+  obj_description(i.oid, 'pg_class') AS comment
+FROM pg_index ix
+JOIN pg_class i   ON i.oid = ix.indexrelid
+JOIN pg_class t   ON t.oid = ix.indrelid
+JOIN pg_namespace n ON n.oid = t.relnamespace
+JOIN pg_am am     ON am.oid = i.relam
+LEFT JOIN pg_stat_all_indexes s ON s.indexrelid = i.oid
+WHERE n.nspname = :schema_name
+ORDER BY pg_relation_size(i.oid) DESC;
+```
+### 4) Unused index candidates (zero scans during stats window)
+```sql
+
+SELECT
+  n.nspname AS schema,
+  t.relname AS table,
+  i.relname AS index,
+  pg_size_pretty(pg_relation_size(i.oid)) AS index_size,
+  COALESCE(s.idx_scan,0) AS idx_scan
+FROM pg_index x
+JOIN pg_class i ON i.oid = x.indexrelid
+JOIN pg_class t ON t.oid = x.indrelid
+JOIN pg_namespace n ON n.oid = t.relnamespace
+LEFT JOIN pg_stat_all_indexes s ON s.indexrelid = i.oid
+WHERE n.nspname = :schema_name
+  AND COALESCE(s.idx_scan,0) = 0
+ORDER BY pg_relation_size(i.oid) DESC;
+```
+### 5) Duplicate indexes (same definition on the same table)
+   
+```sql
+
+WITH idx AS (
+  SELECT
+    n.nspname AS schema,
+    t.relname AS table,
+    i.relname AS index,
+    pg_get_indexdef(x.indexrelid) AS def,
+    x.indrelid,
+    x.indexrelid,
+    ROW_NUMBER() OVER (PARTITION BY x.indrelid, pg_get_indexdef(x.indexrelid) ORDER BY x.indexrelid) AS rn
+  FROM pg_index x
+  JOIN pg_class i ON i.oid = x.indexrelid
+  JOIN pg_class t ON t.oid = x.indrelid
+  JOIN pg_namespace n ON n.oid = t.relnamespace
+  WHERE n.nspname = :schema_name
+)
+SELECT * FROM idx WHERE rn > 1 ORDER BY schema, table, def;
+```
+### 6) Constraints – details (PK, FK, UNIQUE, CHECK)
+   
+```sql
+
+SELECT
+  n.nspname AS schema,
+  c.relname AS table,
+  con.conname,
+  con.contype,
+  pg_get_constraintdef(con.oid, true) AS definition,
+  con.confmatchtype,
+  con.confupdtype,
+  con.confdeltype,
+  con.condeferrable,
+  con.condeferred
+FROM pg_constraint con
+JOIN pg_class c ON c.oid = con.conrelid
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = :schema_name
+ORDER BY schema, table, con.contype, con.conname;
+```
+### 7) Foreign-key dependencies (who references whom)
+ ```sql
+
+SELECT
+  src_n.nspname AS src_schema,
+  src.relname   AS src_table,
+  tgt_n.nspname AS tgt_schema,
+  tgt.relname   AS tgt_table,
+  con.conname,
+  pg_get_constraintdef(con.oid, true) AS fk_def
+FROM pg_constraint con
+JOIN pg_class src ON src.oid = con.conrelid
+JOIN pg_namespace src_n ON src_n.oid = src.relnamespace
+JOIN pg_class tgt ON tgt.oid = con.confrelid
+JOIN pg_namespace tgt_n ON tgt_n.oid = tgt.relnamespace
+WHERE con.contype = 'f'
+  AND src_n.nspname = :schema_name
+ORDER BY src_schema, src_table, con.conname;
+```
+### 8) Security & governance (GRANTs, RLS, publications, replication identity)
+```sql
+
+SELECT
+  n.nspname AS schema,
+  c.relname AS table,
+  c.relrowsecurity AS rls_enabled,
+  c.relforcerowsecurity AS rls_force,
+  pg_catalog.array_to_string(c.relacl, E'\n') AS grants,
+  obj_description(c.oid, 'pg_class') AS comment,
+  CASE c.relreplident
+    WHEN 'd' THEN 'default'
+    WHEN 'n' THEN 'nothing'
+    WHEN 'f' THEN 'full'
+    WHEN 'i' THEN 'index'
+  END AS replication_identity,
+  (SELECT string_agg(pub.pubname, ', ')
+     FROM pg_publication_rel pr
+     JOIN pg_publication pub ON pub.oid = pr.prpubid
+     WHERE pr.prrelid = c.oid) AS in_publications
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = :schema_name
+  AND c.relkind IN ('r','p','m','f')
+ORDER BY schema, table;
+```
+
+### 9) Row-Level Security policies (definitions)
+```sql
+
+SELECT
+  n.nspname AS schema,
+  c.relname AS table,
+  pol.polname,
+  pol.polcmd,
+  pol.polroles,
+  pg_get_expr(pol.polqual, pol.polrelid) AS using_expr,
+  pg_get_expr(pol.polwithcheck, pol.polrelid) AS check_expr
+FROM pg_policy pol
+JOIN pg_class c ON c.oid = pol.polrelid
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = :schema_name
+ORDER BY schema, table, pol.polname;
+```
+
+### 11) Maintenance health – bloat/dead space (pgstattuple)
+```sql
+
+/* Requires: CREATE EXTENSION IF NOT EXISTS pgstattuple; */
+SELECT
+  n.nspname AS schema,
+  c.relname AS table,
+  (pgstattuple(c.oid)).approximate,
+  (pgstattuple(c.oid)).table_len,
+  (pgstattuple(c.oid)).tuple_len,
+  (pgstattuple(c.oid)).tuple_percent,
+  (pgstattuple(c.oid)).dead_tuple_len,
+  (pgstattuple(c.oid)).dead_tuple_percent,
+  (pgstattuple(c.oid)).free_space,
+  (pgstattuple(c.oid)).free_percent
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = :schema_name
+  AND c.relkind IN ('r','p')
+ORDER BY (pgstattuple(c.oid)).dead_tuple_percent DESC;
+```
+### 12) Partitioning map for a given root table
+
+```sql
+
+SELECT
+  root_n.nspname  AS root_schema,
+  root.relname    AS root_table,
+  child_n.nspname AS child_schema,
+  child.relname   AS child_table,
+  pg_get_expr(pg_get_partbounddef(child.oid), child.oid, true) AS partition_bound
+FROM pg_partition_tree((quote_ident(:schema_name) || '.' || quote_ident(:root_table))::regclass) t
+JOIN pg_class child       ON child.oid = t.relid
+JOIN pg_namespace child_n ON child_n.oid = child.relnamespace
+JOIN pg_class root        ON root.oid = t.rootrelid
+JOIN pg_namespace root_n  ON root_n.oid = root.relnamespace
+ORDER BY child_n.nspname, child.relname;
+```
+
+### 12) TOAST & compression details (which columns toast/compress and toast sizes)
+```sql
+
+SELECT
+  n.nspname AS schema,
+  c.relname AS table,
+  t.relname AS toast_table,
+  pg_size_pretty(pg_total_relation_size(t.oid)) AS toast_total,
+  a.attname AS column,
+  a.attstorage,
+  a.attcompression,
+  obj_description(t.oid, 'pg_class') AS toast_comment
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+JOIN pg_class t ON t.oid = c.reltoastrelid AND c.reltoastrelid <> 0
+JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
+WHERE n.nspname = :schema_name
+ORDER BY pg_total_relation_size(t.oid) DESC, schema, table;
+13) Materialized views – size and last refresh timestamp
+sql
+Copy
+Edit
+SELECT
+  n.nspname AS schema,
+  c.relname AS matview,
+  pg_size_pretty(pg_total_relation_size(c.oid)) AS size,
+  pg_catalog.pg_get_userbyid(c.relowner) AS owner,
+  obj_description(c.oid, 'pg_class') AS comment,
+  mv.last_refresh
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+JOIN pg_matviews mv ON (mv.schemaname = n.nspname AND mv.matviewname = c.relname)
+WHERE c.relkind = 'm' AND n.nspname = :schema_name
+ORDER BY pg_total_relation_size(c.oid) DESC;
+```
+
+
+
 ### EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) helpers
 <https://explain.tensor.ru/>  
 <https://explain.depesz.com/>  
