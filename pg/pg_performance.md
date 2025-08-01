@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/931410/>
 
+<https://github.com/danolivo/conf/blob/main/2024-Postgres-Analytics/postgres-analytics.pdf>
+
 ### Find unused indexes
 
 idx_tup_read = 0 — meaning no index entries were read (i.e., no index scans read any heap tuples via this index)
