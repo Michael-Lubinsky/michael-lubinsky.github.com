@@ -511,7 +511,7 @@ WHERE n.nspname = :schema_name
 ORDER BY schema, table, pol.polname;
 ```
 
-### 11) Maintenance health – bloat/dead space (pgstattuple)
+### 10) Maintenance health – bloat/dead space (pgstattuple)
 ```sql
 
 /* Requires: CREATE EXTENSION IF NOT EXISTS pgstattuple; */
@@ -532,7 +532,7 @@ WHERE n.nspname = :schema_name
   AND c.relkind IN ('r','p')
 ORDER BY (pgstattuple(c.oid)).dead_tuple_percent DESC;
 ```
-### 12) Partitioning map for a given root table
+### 11) Partitioning map for a given root table
 
 ```sql
 
@@ -568,10 +568,10 @@ JOIN pg_class t ON t.oid = c.reltoastrelid AND c.reltoastrelid <> 0
 JOIN pg_attribute a ON a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped
 WHERE n.nspname = :schema_name
 ORDER BY pg_total_relation_size(t.oid) DESC, schema, table;
-13) Materialized views – size and last refresh timestamp
-sql
-Copy
-Edit
+```
+### 13) Materialized views – size and last refresh timestamp
+```sql
+
 SELECT
   n.nspname AS schema,
   c.relname AS matview,
