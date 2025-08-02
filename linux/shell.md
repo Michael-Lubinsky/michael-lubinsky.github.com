@@ -337,3 +337,12 @@ echo "This line goes to script.log!"
 <https://askubuntu.com/questions/349262/run-a-nohup-command-over-ssh-then-disconnect/1543824#1543824>
 
 <http://www.faqs.org/faqs/unix-faq/programmer/faq/>
+
+### make Sublime Text and Visual Studio Code accessible from the terminal 
+
+```bash
+sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr/local/bin/subl
+subl --version
+sudo ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
+code --version
+```
