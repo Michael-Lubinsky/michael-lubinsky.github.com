@@ -345,4 +345,8 @@ sudo ln -s "/Applications/Sublime Text.app/Contents/SharedSupport/bin/subl" /usr
 subl --version
 sudo ln -s "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" /usr/local/bin/code
 code --version
+
+# another way:
+export PATH="$PATH:/Applications/Sublime Text.app/Contents/SharedSupport/bin"
+export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 ```
