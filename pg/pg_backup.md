@@ -1,6 +1,7 @@
 
 ## Postgres pg_dump
 <https://habr.com/ru/companies/ruvds/articles/900148/>
+<https://habr.com/ru/articles/855912/>
 
 ### Schema-only dump
 ```bash
