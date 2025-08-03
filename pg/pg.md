@@ -360,14 +360,7 @@ GROUP BY data->>'category';
 ```
 
 ### Extensions
-<https://www.postgresql.org/docs/current/contrib.html>  
-<https://pgxn.org/>  
-<https://www.tigerdata.com/blog/top-8-postgresql-extensions>
 
-<https://habr.com/ru/companies/tantor/articles/913196/>   pg_anon
-
-pg_stat_statements tracks statistics on the queries executed by a Postgres database.
-```CREATE EXTENSION pg_stat_statements;```
 
 You need superuser privileges to create extensions.
 ```sql
@@ -375,7 +368,6 @@ SELECT * FROM pg_available_extensions; -- List of postgres extensions:
 CREATE EXTENSION hstore;
 
 SELECT * FROM pg_extension;
-
 
 SELECT 
     extname AS extension_name,
@@ -387,8 +379,19 @@ FROM  pg_extension e
 JOIN 
     pg_namespace n ON e.extnamespace = n.oid
 ORDER BY  extname;
-
 ```
+
+<https://www.postgresql.org/docs/current/contrib.html>  
+<https://pgxn.org/>  
+<https://www.tigerdata.com/blog/top-8-postgresql-extensions>
+
+#### pg_anon
+<https://habr.com/ru/companies/tantor/articles/913196/>    
+<https://habr.com/ru/companies/rostelecom/articles/876124/>
+
+#### pg_stat_statements 
+tracks statistics on the queries executed by a Postgres database.
+```CREATE EXTENSION pg_stat_statements;```
 
 ### Table partitioning
 
