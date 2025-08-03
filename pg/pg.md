@@ -28,8 +28,6 @@ WHERE pg2.rolname = 'weavix_admin';
 ```
 
 
-
-
 ### ON CONFLICT 
 
  in PostgreSQL, a conflict in INSERT ... ON CONFLICT is triggered when:  
@@ -365,6 +363,8 @@ GROUP BY data->>'category';
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://pgxn.org/>  
 <https://www.tigerdata.com/blog/top-8-postgresql-extensions>
+
+<https://habr.com/ru/companies/tantor/articles/913196/>   pg_anon
 
 pg_stat_statements tracks statistics on the queries executed by a Postgres database.
 ```CREATE EXTENSION pg_stat_statements;```
