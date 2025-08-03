@@ -2,24 +2,31 @@
 
 I was in a design review meeting last week when I noticed something that made me completely rethink what “senior” actually means.
 
-Jake, our lead architect, was presenting a complex microservices migration plan. As expected, the room erupted with questions, concerns, and suggestions. But something interesting happened that I’d never paid attention to before.
+Jake, our lead architect, was presenting a complex microservices migration plan. 
+As expected, the room erupted with questions, concerns, and suggestions.
+But something interesting happened that I’d never paid attention to before.
+
 
 The mid-level engineers immediately jumped in with solutions: “We should use Kubernetes,” “What about implementing a message queue?” “Have you considered using GraphQL instead?”
 
 The junior engineers mostly stayed quiet, occasionally asking clarification questions about terms they didn’t understand.
 
-But Sarah, our principal engineer — the person everyone considered the technical authority — did something completely different. She listened. Really listened. For the first fifteen minutes, she said almost nothing. When she finally spoke, it wasn’t with a solution. It was with a question:
+But Sarah, our principal engineer — the person everyone considered the technical authority — did something completely different. She listened. Really listened. 
+For the first fifteen minutes, she said almost nothing. When she finally spoke, it wasn’t with a solution. It was with a question:
 
-“Jake, help me understand what problem we’re actually trying to solve here. What’s driving this migration — is it performance, maintainability, or something else?”
+“Jake, help me understand what problem we’re actually trying to solve here. 
+What’s driving this migration — is it performance, maintainability, or something else?”
 
 That one question changed everything. Jake paused, thought for a moment, and said, “You know what? I think I’ve been solving the wrong problem.”
 
 That’s when it hit me: the behavior that truly separates senior engineers from everyone else isn’t technical knowledge. It’s how they listen.
 
 ### The Listening Paradox in Tech
-Here’s something counterintuitive about our industry: the higher you go in technical leadership, the less you should be talking in meetings. Yet most engineers get this backwards.
+Here’s something counterintuitive about our industry: the higher you go in technical leadership,
+the less you should be talking in meetings. Yet most engineers get this backwards.
 
-Research from the Center for Creative Leadership shows that good listeners aren’t just passive absorbers — they’re like trampolines. They amplify, energize, and clarify your thinking rather than just soaking up information. This is exactly what I observed with Sarah.
+Research from the Center for Creative Leadership shows that good listeners aren’t just passive absorbers — they’re like trampolines.  
+They amplify, energize, and clarify your thinking rather than just soaking up information. This is exactly what I observed with Sarah.
 
 The 2025 Engineering Leadership Report found that communication skills have become increasingly critical for engineering leaders, with “communicating change effectively” and “motivating engineers” ranking as the most important leadership capabilities. But here’s the catch: effective communication in engineering leadership is more about listening than talking.
 
@@ -61,19 +68,19 @@ This is exactly what Sarah did in our meeting. She didn’t just listen to Jake�
 ### What Senior Engineers Actually Do in Meetings
 After observing dozens of meetings with senior engineers, I’ve noticed consistent patterns:
 
-1. They Listen for What’s Not Being Said
+ #### 1. They Listen for What’s Not Being Said
 
 Junior engineers listen to the words. Senior engineers listen to the gaps. They notice when someone’s solution doesn’t address the root cause, when important stakeholders aren’t represented, or when unstated assumptions are driving decisions.
 
-2. They Ask Questions That Change Perspectives
+#### 2. They Ask Questions That Change Perspectives
 
 Instead of “Have you considered Redis for caching?” they ask “What’s the real performance bottleneck we’re trying to solve?” The first question offers a solution; the second helps uncover the actual problem.
 
-3. They’re Comfortable with Silence
+#### 3. They’re Comfortable with Silence
 
 When junior engineers rush to fill silence with ideas, senior engineers let silence do its work. Research from INSEAD shows that silence in groups often has “emotional coloring” — sometimes reflective, sometimes confused. Senior engineers read this and respond appropriately.
 
-4. They Admit What They Don’t Know
+#### 4. They Admit What They Don’t Know
 
 A Hacker News discussion about senior engineer skills highlighted this: 
 “As a junior engineer I found that I respected senior engineers more when they asked me to teach them something they didn’t know.” 
