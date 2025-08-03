@@ -1,5 +1,30 @@
 
-https://medium.com/@heinancabouly/the-day-my-bash-script-saved-the-company-2-million-and-other-war-stories-cfa962d71030
+## Postgres pg_dump
+
+### Schema-only dump
+```bash
+pg_dump -U your_username -h source_host -p source_port -d weavix \
+  --schema=bronze --schema=silver --schema=gold --schema=events \
+  --schema-only --no-owner --no-privileges \
+  -f weavix_schema_dump.sql
+
+
+pg_dump -U your_source_username -h your_source_host -p your_source_port -d weavix \
+--schema-only --file=weavix_schema.sql
+
+
+pg_dump -h <source_host> -U <source_user> -p <source_port> --schema-only -d weavix -f weavix_schema.sql
+```
+On target Postgres instance:
+```bash
+createdb -U target_user -h target_host -p target_port weavix
+psql -U target_user -h target_host -p target_port -c "CREATE DATABASE weavix;"
+
+psql -U target_user -h target_host -p target_port -d weavix -f weavix_schema_dump.sql
+
+```
+
+<https://medium.com/@heinancabouly/the-day-my-bash-script-saved-the-company-2-million-and-other-war-stories-cfa962d71030>
 
 ```bash
 create_redundant_backups() {
