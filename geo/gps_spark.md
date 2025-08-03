@@ -677,3 +677,5 @@ MongoDB for GIS
 
 <https://github.com/marceloprates/prettymaps>
 
+<https://habr.com/ru/articles/933582/> Django-Leaflet-Admin-List
+
