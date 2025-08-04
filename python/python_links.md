@@ -2,6 +2,8 @@ https://pydevtools.com/handbook/
 
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
+https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8
+
 https://habr.com/ru/companies/raiffeisenbank/articles/885792/ архитектурный подход к Python приложениям
 
 https://pattern-kit.readthedocs.io/en/latest/ implementations of common software design patterns
