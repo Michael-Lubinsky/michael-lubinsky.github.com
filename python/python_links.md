@@ -1,4 +1,6 @@
-https://pydevtools.com/handbook/
+<https://pydevtools.com/handbook/>
+
+<https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
 
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
