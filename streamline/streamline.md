@@ -23,7 +23,7 @@ https://arshren.medium.com/building-interactive-predictive-machine-learning-work
 
 https://medium.com/codefile/streamlit-navigating-multi-page-apps-with-v1-30-0-87146f997f51
 
-```
+```python
 import streamlit as st
 
 st.header("Multipage navigation")
