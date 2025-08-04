@@ -2,10 +2,12 @@
 
 <https://johnloewen.substack.com/p/the-best-python-dashboard-tools-a>
 
-https://medium.com/data-storytelling-corner/build-a-beautiful-streamlit-app-with-mongodb-that-will-make-you-smile-7f441bee10fa
+<https://medium.com/data-science-collective/building-a-data-dashboard-9441db646697>
+
+<https://medium.com/data-storytelling-corner/build-a-beautiful-streamlit-app-with-mongodb-that-will-make-you-smile-7f441bee10fa>
 
 
-https://www.squadbase.dev/en/ebooks/streamlit-bi-overview
+<https://www.squadbase.dev/en/ebooks/streamlit-bi-overview>
 
 streamlit run myapp.py
 
