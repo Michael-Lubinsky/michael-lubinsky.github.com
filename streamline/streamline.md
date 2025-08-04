@@ -6,6 +6,7 @@
 
 <https://medium.com/data-storytelling-corner/build-a-beautiful-streamlit-app-with-mongodb-that-will-make-you-smile-7f441bee10fa>
 
+<https://medium.com/data-science-collective/how-to-build-an-interactive-dashboard-with-streamlit-and-python-fcd03cb63ad0>
 
 <https://www.squadbase.dev/en/ebooks/streamlit-bi-overview>
 
