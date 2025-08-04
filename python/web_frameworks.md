@@ -10,7 +10,7 @@ https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (
 <https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
 
 
-
+https://medium.com/data-science-collective/building-a-data-dashboard-with-python-and-taipy-8e4288713d33
 
 # Comparison of Python Web Frameworks: NiceGUI, Reflex, Sonara, and Panel
 
