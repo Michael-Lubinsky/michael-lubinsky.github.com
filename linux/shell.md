@@ -230,7 +230,7 @@ if [ $attempt -gt $TRIES ]; then
 fi
 ```
 
-### restart service
+### Restart service
 ```bash
 if service nginx status | grep -q "dead"; then
     systemctl restart nginx
@@ -290,7 +290,9 @@ The script prints:
 
 nginx.conf was modified
 ```
-#### Extended script:
+
+#### Extended inotify script:
+
 ```bash
 #!/usr/bin/env bash
 
@@ -322,6 +324,41 @@ while read path action file; do
 done
 
 ```
+
+
+### Self-Healing Service Monitor
+Automatically restart a critical service if it goes down and log the event for future auditing.
+
+```bash
+#!/bin/bash
+
+SERVICE="$1"
+
+if [[ -z "$SERVICE" ]]; then
+    echo "Usage: $0 <service-name>"
+    exit 1
+fi
+
+if ! systemctl list-units --type=service | grep -q "$SERVICE"; then
+    echo "$(date): $SERVICE is not a valid service." | logger -t service_watchdog
+    exit 1
+fi
+
+if ! systemctl is-active --quiet "$SERVICE"; then
+    logger -t service_watchdog "$SERVICE is down. Attempting restart..."
+    if systemctl restart "$SERVICE"; then
+        logger -t service_watchdog "$SERVICE restarted successfully."
+    else
+        logger -t service_watchdog "ERROR: Failed to restart $SERVICE!"
+    fi
+else
+    logger -t service_watchdog "$SERVICE is running normally."
+fi
+```
+ Run this via cron every 5 minutes for important services like Nginx, Docker, or PostgreSQL.
+
+
+
 
 ### exec
 
