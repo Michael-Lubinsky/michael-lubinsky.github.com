@@ -309,3 +309,21 @@ def flatten_json(d, parent_key='', sep='.'):
 nested = {'user': {'id': 1, 'info': {'name': 'Alice'}}}
 print(flatten_json(nested))
 ```
+
+
+### Directory Monitor with os and time
+Objective: Monitor a directory for file changes.
+
+```python
+import os
+import time
+directory = '.'
+prev_files = set(os.listdir(directory))
+while True:
+    time.sleep(5)
+    current_files = set(os.listdir(directory))
+    new_files = current_files - prev_files
+    if new_files:
+        print(f"New files: {new_files}")
+    prev_files = current_files
+```
