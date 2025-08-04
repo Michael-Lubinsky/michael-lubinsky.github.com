@@ -265,3 +265,47 @@ if __name__ == '__main__':
     main()
 
 ```
+
+
+
+### Monitor Folder Changes in Real-Time 
+
+```python
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import time
+
+class Watcher(FileSystemEventHandler):
+    def on_modified(self, event):
+        print(f'Modified: {event.src_path}')
+
+observer = Observer()
+observer.schedule(Watcher(), path='.', recursive=True)
+observer.start()
+
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    observer.stop()
+observer.join()
+
+```
+
+### Flatten JSON
+
+```python
+
+def flatten_json(d, parent_key='', sep='.'):
+    items = {}
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.update(flatten_json(v, new_key, sep=sep))
+        else:
+            items[new_key] = v
+    return items
+
+nested = {'user': {'id': 1, 'info': {'name': 'Alice'}}}
+print(flatten_json(nested))
+```
