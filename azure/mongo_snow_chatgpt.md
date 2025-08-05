@@ -181,7 +181,7 @@ SELECT /*+ HASH_JOIN(users orders) */
 ---
 
 ## 1. Azure-Based Architecture Overview
-
+```
 MongoDB (hosted anywhere)
 |
 | [1. Azure Function / Data Factory - discover collections]
@@ -196,7 +196,7 @@ Azure Data Lake / Blob Storage (Parquet files)
 | [3. Load to Snowflake Staging via COPY INTO]
 v
 Snowflake (Flattened, Normalized Tables)
-
+```
  
 
 ## 2. Core Components and Their Responsibilities
