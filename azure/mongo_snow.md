@@ -1280,6 +1280,99 @@ ALTER TABLE orders ADD CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY (customer_id) REFER
 By following these steps, you can create a robust and efficient data pipeline that moves your MongoDB data into a format optimized for analytics in Snowflake.
 
 
+
+
+Moving data from a schemaless NoSQL database like MongoDB to a structured data warehouse like Snowflake, especially with a dynamic environment of new and updated collections, requires a robust and flexible pipeline. Here's a design for an efficient, scalable, and automated pipeline using Azure Cloud services.
+
+### Core Principles of the Pipeline
+
+The design is based on these key principles:
+
+1.  **Automation:** The pipeline must automatically detect new collections and changes in existing collections without manual intervention.
+2.  **Scalability:** It should be able to handle a high volume of data and a large number of collections efficiently.
+3.  **Efficiency:** The process should minimize data movement and processing costs by using a staged approach and only processing changed data where possible.
+4.  **Resilience:** The pipeline should be fault-tolerant and able to resume from failures.
+5.  **Schema Handling:** A critical component is the ability to handle the "schemaless" nature of MongoDB documents and flatten them into a relational format suitable for Snowflake.
+
+### High-Level Architecture
+
+The recommended pipeline architecture involves these main stages:
+
+**1. Data Ingestion (Extract)**
+* **Source:** MongoDB Database.
+* **Method:** Change Data Capture (CDC) is the most efficient method for capturing new and updated data. MongoDB's Change Streams feature is ideal for this.
+* **Tools:**
+    * **Azure Databricks:** A powerful and flexible option. You can use a Spark-based application in Databricks to connect to MongoDB, read change streams, and process the data. This provides a high degree of control over the transformation logic.
+    * **Azure Data Factory (ADF):** ADF offers a native MongoDB connector. You can use a Copy Activity to extract data. While a full refresh is an option, it may not be efficient for frequent updates.
+
+**2. Data Staging (Transform)**
+* **Purpose:** To temporarily store the extracted data in a cost-effective, scalable location before loading it into Snowflake. This also serves as a crucial step for data normalization and transformation.
+* **Tool:** **Azure Data Lake Storage Gen2 (ADLS Gen2)**.
+* **Process:**
+    * The raw data from MongoDB (in JSON or BSON format) is written to ADLS Gen2.
+    * The file path or folder structure should be organized to reflect the source database and collection, for example, `adl://{container}/{database_name}/{collection_name}/{YYYY}/{MM}/{DD}/...`.
+    * This creates a "Bronze" layer, holding the raw, unstructured data.
+
+**3. Data Transformation and Loading (Load)**
+* **Purpose:** To transform the semi-structured JSON data into a relational schema and load it into Snowflake.
+* **Tool:**
+    * **Azure Databricks:** Using Spark, you can read the JSON files from ADLS Gen2, flatten the nested documents, infer the schema, and write the transformed data directly to Snowflake. Databricks has a native connector for Snowflake.
+    * **Snowflake's `COPY INTO` command:** Snowflake is highly optimized for loading semi-structured data from cloud storage. It can infer the schema from JSON files and load them into a table with a `VARIANT` column, or it can be used with schema-on-read capabilities to directly flatten the data during the load process. This is often the most performant and cost-effective method for the final load.
+
+### Detailed Pipeline Design using Azure Databricks and Azure Data Factory
+
+This approach combines the strengths of both services.
+
+**Step 1: MongoDB Change Stream and Staging with Azure Databricks**
+
+1.  **Databricks Notebook:** Create a Databricks notebook that uses the MongoDB Spark Connector.
+2.  **Change Streams:** The notebook will connect to MongoDB and read from the change stream for a given database.
+3.  **Dynamic Collection Discovery:** The notebook can be designed to dynamically discover new collections. When a new collection is identified, a full initial load is triggered, followed by the start of a new change stream process for that collection.
+4.  **Processing Logic:**
+    * Read the change stream documents.
+    * Filter for `insert`, `update`, and `delete` operations.
+    * For `insert` and `update` operations, extract the full document.
+    * Write the documents to ADLS Gen2 as JSON files. Use a directory structure that facilitates partitioning (e.g., based on the collection name and the date of the change).
+
+**Step 2: Orchestration and Transformation with Azure Data Factory**
+
+1.  **Triggering:** Use a **Tumbling Window Trigger** or **Event Trigger** in ADF.
+    * A Tumbling Window Trigger can run the pipeline on a scheduled basis (e.g., hourly).
+    * An Event Trigger can be set up to run the pipeline whenever a new file is added to a specific folder in ADLS Gen2. This makes the pipeline more "real-time."
+2.  **ADF Pipeline:** The pipeline will have two main activities:
+    * **Databricks Notebook Activity:** This activity will execute the Databricks notebook from Step 1. The notebook will run the change stream process for a defined time window.
+    * **Copy Activity:** This activity will read the JSON files from the ADLS Gen2 staging location and load them into Snowflake.
+3.  **Data Loading into Snowflake:**
+    * The Copy Activity's source will be the ADLS Gen2 JSON files.
+    * The sink will be a Snowflake table.
+    * **Schema Handling:**
+        * **Option A (Best for Flexibility):** Load the JSON data into a Snowflake table with a single `VARIANT` column. This preserves the original document structure.
+        * **Option B (Pre-defined Schema):** If the target Snowflake schema is known, you can use the Copy Activity's mapping to flatten the JSON fields into specific columns. However, this is less flexible for frequently changing schemas.
+    * **Merging Logic:** For `update` and `delete` operations, you need a way to merge the changes into the Snowflake table.
+        * **Snowflake `MERGE` command:** After loading the raw JSON into a staging table, you can execute a `MERGE` statement in Snowflake to apply the `insert`, `update`, and `delete` operations to the final target table. This can be done via a Stored Procedure or by using an ADF Stored Procedure Activity.
+
+**Step 3: Post-Processing in Snowflake**
+
+1.  **Data Normalization:** Once the data is in Snowflake, a final transformation step is often necessary to flatten the `VARIANT` data into a more relational structure (columns and rows).
+2.  **Snowflake Tasks:** Create Snowflake tasks that run on a schedule to:
+    * Read the new data from the staging table (with the `VARIANT` column).
+    * Use the `FLATTEN` and `PARSE_JSON` functions to extract specific fields into new columns.
+    * Perform any necessary data type conversions.
+    * Insert the transformed data into the final, normalized Snowflake table.
+
+### Summary of the Pipeline Flow
+
+1.  **MongoDB** -> (Databricks Change Stream) -> **Azure Data Lake Storage Gen2 (ADLS Gen2)**
+    * *Purpose:* Efficiently capture changes and store raw data.
+2.  **ADLS Gen2** -> (ADF Copy Activity) -> **Snowflake Staging Table (`VARIANT` column)**
+    * *Purpose:* High-performance bulk loading of semi-structured data into Snowflake.
+3.  **Snowflake Staging Table** -> (Snowflake `MERGE` or Tasks) -> **Snowflake Final Tables**
+    * *Purpose:* Apply changes and transform the data into a final, query-ready format.
+
+This design provides a robust, automated, and scalable solution that leverages the strengths of Azure's and Snowflake's cloud-native capabilities. It separates the concerns of data extraction, staging, and transformation, allowing for better monitoring and error handling at each stage.
+
+
+
 ##############
 # CLAUDE ####
 #############
