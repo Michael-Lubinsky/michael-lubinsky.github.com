@@ -117,3 +117,204 @@ In this pipeline, data flows from the MQTT Broker to Azure Event Hub, then to Mo
 **Memory Integration**: Based on your prior question about transferring data from MQTT to Snowflake on Azure (July 29, 2025), Pipeline #4 aligns with a sequential approach you may have considered, but Pipeline #3 was likely recommended for its direct streaming efficiency. If you’re leaning toward Pipeline #4 due to familiarity with your current ETL setup, I can provide detailed guidance on adapting it for Snowflake.
 
 Let me know if you need specific implementation details (e.g., ETL setup with Azure Data Factory, Snowflake schema design, or cost estimates) or if you want to explore Pipeline #3’s streaming setup further.
+
+
+
+
+```python
+import pymongo
+from snowflake.connector import connect
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+import pandas as pd
+import json
+import uuid
+from datetime import datetime
+from typing import List, Dict, Any
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# MongoDB and Snowflake connection configurations
+MONGO_URI = "mongodb://<user>:<password>@<host>:<port>/<database>"
+MONGO_DB = "<mongo_database>"
+MONGO_COLLECTION = "<mongo_collection>"
+
+SNOWFLAKE_ACCOUNT = "<snowflake_account>"
+SNOWFLAKE_USER = "<snowflake_user>"
+SNOWFLAKE_PASSWORD = "<snowflake_password>"
+SNOWFLAKE_DATABASE = "<snowflake_database>"
+SNOWFLAKE_SCHEMA = "<snowflake_schema>"
+SNOWFLAKE_WAREHOUSE = "<snowflake_warehouse>"
+SNOWFLAKE_ROLE = "<snowflake_role>"
+
+# Snowflake connection using snowflake-connector-python
+def get_snowflake_connection():
+    try:
+        conn = connect(
+            account=SNOWFLAKE_ACCOUNT,
+            user=SNOWFLAKE_USER,
+            password=SNOWFLAKE_PASSWORD,
+            database=SNOWFLAKE_DATABASE,
+            schema=SNOWFLAKE_SCHEMA,
+            warehouse=SNOWFLAKE_WAREHOUSE,
+            role=SNOWFLAKE_ROLE
+        )
+        logger.info("Connected to Snowflake")
+        return conn
+    except Exception as e:
+        logger.error(f"Failed to connect to Snowflake: {e}")
+        raise
+
+# Snowflake SQLAlchemy engine for pandas
+def get_snowflake_engine():
+    try:
+        engine = create_engine(URL(
+            account=SNOWFLAKE_ACCOUNT,
+            user=SNOWFLAKE_USER,
+            password=SNOWFLAKE_PASSWORD,
+            database=SNOWFLAKE_DATABASE,
+            schema=SNOWFLAKE_SCHEMA,
+            warehouse=SNOWFLAKE_WAREHOUSE,
+            role=SNOWFLAKE_ROLE
+        ))
+        logger.info("Snowflake SQLAlchemy engine created")
+        return engine
+    except Exception as e:
+        logger.error(f"Failed to create Snowflake engine: {e}")
+        raise
+
+# Connect to MongoDB
+def get_mongo_collection():
+    try:
+        client = pymongo.MongoClient(MONGO_URI)
+        db = client[MONGO_DB]
+        collection = db[MONGO_COLLECTION]
+        logger.info(f"Connected to MongoDB collection: {MONGO_COLLECTION}")
+        return collection
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise
+
+# Transform MongoDB document by unrolling nested JSON
+def transform_document(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Unroll nested JSON from MongoDB into a flat structure for Snowflake.
+    Example MongoDB document:
+    {
+        "_id": "123",
+        "device_id": "sensor_001",
+        "timestamp": ISODate("2025-08-04T12:00:00Z"),
+        "readings": {
+            "temperature": 25.5,
+            "humidity": 60,
+            "metadata": {
+                "location": "room_1",
+                "unit": "C"
+            }
+        }
+    }
+    Transformed to:
+    {
+        "id": "123",
+        "device_id": "sensor_001",
+        "timestamp": "2025-08-04 12:00:00",
+        "temperature": 25.5,
+        "humidity": 60,
+        "location": "room_1",
+        "unit": "C"
+    }
+    """
+    try:
+        flat_doc = {}
+        flat_doc["id"] = str(doc.get("_id", uuid.uuid4()))
+        flat_doc["device_id"] = doc.get("device_id")
+        flat_doc["timestamp"] = doc.get("timestamp", datetime.utcnow()).strftime('%Y-%m-%d %H:%M:%S')
+
+        # Unroll nested 'readings' field
+        readings = doc.get("readings", {})
+        flat_doc["temperature"] = readings.get("temperature")
+        flat_doc["humidity"] = readings.get("humidity")
+
+        # Unroll nested 'metadata' within 'readings'
+        metadata = readings.get("metadata", {})
+        flat_doc["location"] = metadata.get("location")
+        flat_doc["unit"] = metadata.get("unit")
+
+        # Remove None values to avoid issues in Snowflake
+        return {k: v for k, v in flat_doc.items() if v is not None}
+    except Exception as e:
+        logger.error(f"Error transforming document {doc.get('_id')}: {e}")
+        return None
+
+# Create Snowflake table with optimized schema
+def create_snowflake_table(conn):
+    try:
+        cursor = conn.cursor()
+        create_table_query = """
+        CREATE OR REPLACE TABLE sensor_data (
+            id VARCHAR(50) PRIMARY KEY,
+            device_id VARCHAR(50),
+            timestamp TIMESTAMP_NTZ,
+            temperature FLOAT,
+            humidity FLOAT,
+            location VARCHAR(100),
+            unit VARCHAR(10),
+            ingestion_time TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+        )
+        CLUSTER BY (device_id, timestamp);
+        """
+        cursor.execute(create_table_query)
+        logger.info("Snowflake table 'sensor_data' created with clustering")
+        cursor.close()
+    except Exception as e:
+        logger.error(f"Failed to create Snowflake table: {e}")
+        raise
+
+# Load data into Snowflake
+def load_to_snowflake(data: List[Dict], engine):
+    try:
+        df = pd.DataFrame(data)
+        df.to_sql('sensor_data', engine, schema=SNOWFLAKE_SCHEMA, if_exists='append', index=False)
+        logger.info(f"Loaded {len(data)} records to Snowflake")
+    except Exception as e:
+        logger.error(f"Failed to load data to Snowflake: {e}")
+        raise
+
+# Main ETL function
+def mongo_to_snowflake_etl(batch_size: int = 1000):
+    try:
+        # Connect to MongoDB and Snowflake
+        mongo_collection = get_mongo_collection()
+        snowflake_conn = get_snowflake_connection()
+        snowflake_engine = get_snowflake_engine()
+
+        # Create Snowflake table
+        create_snowflake_table(snowflake_conn)
+
+        # Fetch and process MongoDB documents in batches
+        cursor = mongo_collection.find()
+        batch = []
+        for doc in cursor:
+            transformed_doc = transform_document(doc)
+            if transformed_doc:
+                batch.append(transformed_doc)
+            if len(batch) >= batch_size:
+                load_to_snowflake(batch, snowflake_engine)
+                batch = []
+        
+        # Load remaining documents
+        if batch:
+            load_to_snowflake(batch, snowflake_engine)
+
+        logger.info("ETL process completed successfully")
+        snowflake_conn.close()
+    except Exception as e:
+        logger.error(f"ETL process failed: {e}")
+        raise
+
+if __name__ == "__main__":
+    mongo_to_snowflake_etl()
+```
