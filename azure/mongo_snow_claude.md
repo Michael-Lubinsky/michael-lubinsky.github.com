@@ -1,14 +1,5 @@
 # MONGO SNOW CLAUDE
 
-
-
-
-##############
-# CLAUDE ####
-#############
-
-# MongoDB to Snowflake Analytics Pipeline on Azure
-
 ## Architecture Overview
 
 ```
