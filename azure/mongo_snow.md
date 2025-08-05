@@ -114,9 +114,485 @@ In this pipeline, data flows from the MQTT Broker to Azure Event Hub, then to Mo
 - If you want to minimize complexity by eliminating ETL processes.
 - If you can invest in configuring streaming ingestion to Snowflake.
 
-**Memory Integration**: Based on your prior question about transferring data from MQTT to Snowflake on Azure (July 29, 2025), Pipeline #4 aligns with a sequential approach you may have considered, but Pipeline #3 was likely recommended for its direct streaming efficiency. If you’re leaning toward Pipeline #4 due to familiarity with your current ETL setup, I can provide detailed guidance on adapting it for Snowflake.
+**Memory Integration**: Based on your prior question about transferring data from MQTT to Snowflake on Azure (July 29, 2025), Pipeline #4 aligns with a sequential approach you may have considered, but Pipeline #3 was likely recommended for its direct streaming efficiency.
+
+If you’re leaning toward Pipeline #4 due to familiarity with your current ETL setup, I can provide detailed guidance on adapting it for Snowflake.
 
 Let me know if you need specific implementation details (e.g., ETL setup with Azure Data Factory, Snowflake schema design, or cost estimates) or if you want to explore Pipeline #3’s streaming setup further.
+
+
+
+
+To efficiently move MongoDB collections to Snowflake, transform them into schema-optimized tables for analytics, and perform joins on large tables in Snowflake, I'll provide a comprehensive solution using Python, Azure services, and Snowflake.
+
+The approach will leverage Azure Event Hub for data ingestion, Azure Data Factory (ADF) or Python for ETL, and Snowflake for analytics. I'll also address unrolling MongoDB’s JSON-like documents into a relational schema suitable for Snowflake and optimizing joins for large tables.
+
+### **Solution Overview**
+1. **Data Movement**: Extract data from MongoDB and load it into Snowflake, using Azure Data Factory for orchestration or Python for a custom ETL pipeline.
+2. **Transformation**: Unroll MongoDB’s nested JSON documents into a flattened, relational schema optimized for Snowflake’s columnar storage and analytical queries.
+3. **Joins in Snowflake**: Optimize Snowflake queries for joining large tables, leveraging Snowflake’s scalability and best practices.
+4. **Assumptions**:
+   - MongoDB collections contain IoT data (e.g., sensor readings with nested JSON structures).
+   - Data is ingested via Azure Event Hub, stored in MongoDB, and needs to be moved to Snowflake.
+   - Snowflake is configured in your Azure environment with appropriate credentials.
+   - The goal is to enable efficient analytics queries (e.g., aggregations, time-series analysis).
+
+Below is the detailed implementation, including Python code for ETL, schema transformation, and Snowflake query optimization.
+
+---
+
+```python
+
+import pymongo
+from snowflake.connector import connect
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine
+import pandas as pd
+import json
+import uuid
+from datetime import datetime
+from typing import List, Dict, Any
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# MongoDB and Snowflake connection configurations
+MONGO_URI = "mongodb://<user>:<password>@<host>:<port>/<database>"
+MONGO_DB = "<mongo_database>"
+MONGO_COLLECTION = "<mongo_collection>"
+
+SNOWFLAKE_ACCOUNT = "<snowflake_account>"
+SNOWFLAKE_USER = "<snowflake_user>"
+SNOWFLAKE_PASSWORD = "<snowflake_password>"
+SNOWFLAKE_DATABASE = "<snowflake_database>"
+SNOWFLAKE_SCHEMA = "<snowflake_schema>"
+SNOWFLAKE_WAREHOUSE = "<snowflake_warehouse>"
+SNOWFLAKE_ROLE = "<snowflake_role>"
+
+# Snowflake connection using snowflake-connector-python
+def get_snowflake_connection():
+    try:
+        conn = connect(
+            account=SNOWFLAKE_ACCOUNT,
+            user=SNOWFLAKE_USER,
+            password=SNOWFLAKE_PASSWORD,
+            database=SNOWFLAKE_DATABASE,
+            schema=SNOWFLAKE_SCHEMA,
+            warehouse=SNOWFLAKE_WAREHOUSE,
+            role=SNOWFLAKE_ROLE
+        )
+        logger.info("Connected to Snowflake")
+        return conn
+    except Exception as e:
+        logger.error(f"Failed to connect to Snowflake: {e}")
+        raise
+
+# Snowflake SQLAlchemy engine for pandas
+def get_snowflake_engine():
+    try:
+        engine = create_engine(URL(
+            account=SNOWFLAKE_ACCOUNT,
+            user=SNOWFLAKE_USER,
+            password=SNOWFLAKE_PASSWORD,
+            database=SNOWFLAKE_DATABASE,
+            schema=SNOWFLAKE_SCHEMA,
+            warehouse=SNOWFLAKE_WAREHOUSE,
+            role=SNOWFLAKE_ROLE
+        ))
+        logger.info("Snowflake SQLAlchemy engine created")
+        return engine
+    except Exception as e:
+        logger.error(f"Failed to create Snowflake engine: {e}")
+        raise
+
+# Connect to MongoDB
+def get_mongo_collection():
+    try:
+        client = pymongo.MongoClient(MONGO_URI)
+        db = client[MONGO_DB]
+        collection = db[MONGO_COLLECTION]
+        logger.info(f"Connected to MongoDB collection: {MONGO_COLLECTION}")
+        return collection
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise
+
+# Transform MongoDB document by unrolling nested JSON
+def transform_document(doc: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Unroll nested JSON from MongoDB into a flat structure for Snowflake.
+    Example MongoDB document:
+    {
+        "_id": "123",
+        "device_id": "sensor_001",
+        "timestamp": ISODate("2025-08-04T12:00:00Z"),
+        "readings": {
+            "temperature": 25.5,
+            "humidity": 60,
+            "metadata": {
+                "location": "room_1",
+                "unit": "C"
+            }
+        }
+    }
+    Transformed to:
+    {
+        "id": "123",
+        "device_id": "sensor_001",
+        "timestamp": "2025-08-04 12:00:00",
+        "temperature": 25.5,
+        "humidity": 60,
+        "location": "room_1",
+        "unit": "C"
+    }
+    """
+    try:
+        flat_doc = {}
+        flat_doc["id"] = str(doc.get("_id", uuid.uuid4()))
+        flat_doc["device_id"] = doc.get("device_id")
+        flat_doc["timestamp"] = doc.get("timestamp", datetime.utcnow()).strftime('%Y-%m-%d %H:%M:%S')
+
+        # Unroll nested 'readings' field
+        readings = doc.get("readings", {})
+        flat_doc["temperature"] = readings.get("temperature")
+        flat_doc["humidity"] = readings.get("humidity")
+
+        # Unroll nested 'metadata' within 'readings'
+        metadata = readings.get("metadata", {})
+        flat_doc["location"] = metadata.get("location")
+        flat_doc["unit"] = metadata.get("unit")
+
+        # Remove None values to avoid issues in Snowflake
+        return {k: v for k, v in flat_doc.items() if v is not None}
+    except Exception as e:
+        logger.error(f"Error transforming document {doc.get('_id')}: {e}")
+        return None
+
+# Create Snowflake table with optimized schema
+def create_snowflake_table(conn):
+    try:
+        cursor = conn.cursor()
+        create_table_query = """
+        CREATE OR REPLACE TABLE sensor_data (
+            id VARCHAR(50) PRIMARY KEY,
+            device_id VARCHAR(50),
+            timestamp TIMESTAMP_NTZ,
+            temperature FLOAT,
+            humidity FLOAT,
+            location VARCHAR(100),
+            unit VARCHAR(10),
+            ingestion_time TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+        )
+        CLUSTER BY (device_id, timestamp);
+        """
+        cursor.execute(create_table_query)
+        logger.info("Snowflake table 'sensor_data' created with clustering")
+        cursor.close()
+    except Exception as e:
+        logger.error(f"Failed to create Snowflake table: {e}")
+        raise
+
+# Load data into Snowflake
+def load_to_snowflake(data: List[Dict], engine):
+    try:
+        df = pd.DataFrame(data)
+        df.to_sql('sensor_data', engine, schema=SNOWFLAKE_SCHEMA, if_exists='append', index=False)
+        logger.info(f"Loaded {len(data)} records to Snowflake")
+    except Exception as e:
+        logger.error(f"Failed to load data to Snowflake: {e}")
+        raise
+
+# Main ETL function
+def mongo_to_snowflake_etl(batch_size: int = 1000):
+    try:
+        # Connect to MongoDB and Snowflake
+        mongo_collection = get_mongo_collection()
+        snowflake_conn = get_snowflake_connection()
+        snowflake_engine = get_snowflake_engine()
+
+        # Create Snowflake table
+        create_snowflake_table(snowflake_conn)
+
+        # Fetch and process MongoDB documents in batches
+        cursor = mongo_collection.find()
+        batch = []
+        for doc in cursor:
+            transformed_doc = transform_document(doc)
+            if transformed_doc:
+                batch.append(transformed_doc)
+            if len(batch) >= batch_size:
+                load_to_snowflake(batch, snowflake_engine)
+                batch = []
+        
+        # Load remaining documents
+        if batch:
+            load_to_snowflake(batch, snowflake_engine)
+
+        logger.info("ETL process completed successfully")
+        snowflake_conn.close()
+    except Exception as e:
+        logger.error(f"ETL process failed: {e}")
+        raise
+
+if __name__ == "__main__":
+    mongo_to_snowflake_etl()
+
+```
+
+---
+
+### **Explanation of the Code and Process**
+
+#### **1. Data Movement from MongoDB to Snowflake**
+- **Tooling**: The Python script uses `pymongo` to connect to MongoDB, `snowflake-connector-python` and `snowflake-sqlalchemy` to interact with Snowflake, and `pandas` for data transformation and loading.
+- **Process**:
+  - **Extract**: Connect to MongoDB and fetch documents from the specified collection using `find()`.
+  - **Transform**: Unroll nested JSON documents into a flat structure (see below).
+  - **Load**: Use pandas to load transformed data into Snowflake via SQLAlchemy, which supports efficient bulk inserts.
+  - **Batch Processing**: Process data in batches (default: 1000 documents) to optimize memory usage and performance.
+- **Alternative with Azure Data Factory**:
+  - Configure an ADF pipeline with a **MongoDB connector** to extract data and a **Snowflake connector** to load it.
+  - Use ADF’s **Copy Activity** to move data, with a staging area (e.g., Azure Blob Storage) for large datasets.
+  - Transformations can be handled in ADF’s **Data Flow** or a separate Python script (as above).
+  - Example ADF pipeline configuration (JSON):
+
+```json
+
+{
+    "name": "MongoToSnowflakePipeline",
+    "properties": {
+        "activities": [
+            {
+                "name": "CopyMongoToSnowflake",
+                "type": "Copy",
+                "inputs": [
+                    {
+                        "referenceName": "MongoDBDataset",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "referenceName": "SnowflakeDataset",
+                        "type": "DatasetReference"
+                    }
+                ],
+                "typeProperties": {
+                    "source": {
+                        "type": "MongoDbSource",
+                        "query": "db.<mongo_collection>.find()"
+                    },
+                    "sink": {
+                        "type": "SnowflakeSink",
+                        "writeBatchSize": 10000
+                    },
+                    "enableStaging": true,
+                    "stagingSettings": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureBlobStorage",
+                            "type": "LinkedServiceReference"
+                        },
+                        "path": "staging/container"
+                    }
+                }
+            }
+        ]
+    }
+}
+
+```
+
+- **Efficiency Tips**:
+  - Use Snowflake’s **Snowpipe** for near-real-time ingestion if data is streamed from Event Hub to MongoDB.
+  - Compress data (e.g., Parquet format) when staging in Blob Storage to reduce transfer times.
+  - Tune batch size (`batch_size` in the script) based on memory and network constraints.
+
+#### **2. Transforming MongoDB Collections**
+- **MongoDB Data Structure**: IoT data in MongoDB is typically nested JSON (e.g., sensor readings with embedded metadata). Example:
+  ```json
+  {
+      "_id": "123",
+      "device_id": "sensor_001",
+      "timestamp": ISODate("2025-08-04T12:00:00Z"),
+      "readings": {
+          "temperature": 25.5,
+          "humidity": 60,
+          "metadata": {
+              "location": "room_1",
+              "unit": "C"
+          }
+      }
+  }
+  ```
+- **Transformation Approach**:
+  - **Unroll Nested JSON**: Flatten the structure to a relational format suitable for Snowflake’s columnar storage. The `transform_document` function in the script converts the nested JSON into a flat dictionary:
+    ```python
+    {
+        "id": "123",
+        "device_id": "sensor_001",
+        "timestamp": "2025-08-04 12:00:00",
+        "temperature": 25.5,
+        "humidity": 60,
+        "location": "room_1",
+        "unit": "C"
+    }
+    ```
+  - **Schema Optimization for Analytics**:
+    - Use **VARCHAR** for identifiers (`id`, `device_id`, `location`, `unit`) to handle variable-length strings.
+    - Use **TIMESTAMP_NTZ** for `timestamp` to store time-series data without timezone (IoT data typically uses UTC).
+    - Use **FLOAT** for numerical values (`temperature`, `humidity`) to support aggregations and analytics.
+    - Add an `ingestion_time` column (default: `CURRENT_TIMESTAMP()`) for auditing and tracking ETL runs.
+    - Define a **PRIMARY KEY** on `id` for uniqueness and query optimization.
+    - Use **CLUSTER BY (device_id, timestamp)** to optimize time-series queries and joins, as IoT data is often queried by device and time range.
+- **Handling Variability**:
+  - If MongoDB documents have varying schemas (e.g., missing fields), the script filters out `None` values to avoid null-related errors in Snowflake.
+  - For complex nested arrays (e.g., multiple readings per document), consider creating separate tables (e.g., `sensor_readings`) and joining them with the main table using foreign keys.
+  - Example for arrays:
+    ```json
+    {
+        "_id": "123",
+        "device_id": "sensor_001",
+        "readings": [
+            {"type": "temperature", "value": 25.5, "unit": "C"},
+            {"type": "humidity", "value": 60, "unit": "%"}
+        ]
+    }
+    ```
+    Transform into a separate table:
+    ```sql
+    CREATE TABLE sensor_readings (
+        id VARCHAR(50),
+        device_id VARCHAR(50),
+        reading_type VARCHAR(50),
+        value FLOAT,
+        unit VARCHAR(10),
+        FOREIGN KEY (id) REFERENCES sensor_data(id)
+    );
+    ```
+    The script can be extended to handle arrays by creating multiple records per document.
+
+#### **3. Joining Large Tables in Snowflake**
+- **Scenario**: Assume two large tables in Snowflake:
+  - `sensor_data`: Contains device readings (as above).
+  - `device_info`: Contains device metadata (e.g., `device_id`, `model`, `installation_date`).
+  - Example `device_info` table:
+
+```sql
+
+CREATE OR REPLACE TABLE device_info (
+    device_id VARCHAR(50) PRIMARY KEY,
+    model VARCHAR(100),
+    installation_date DATE,
+    location VARCHAR(100)
+)
+CLUSTER BY (device_id);
+
+```
+
+- **Join Optimization**:
+  - **Clustering Keys**: Both tables are clustered by `device_id` (and `timestamp` for `sensor_data`) to co-locate related data, reducing data scanning during joins.
+  - **Join Query Example**:
+    ```sql
+    SELECT 
+        s.device_id,
+        s.timestamp,
+        s.temperature,
+        s.humidity,
+        d.model,
+        d.installation_date
+    FROM sensor_data s
+    INNER JOIN device_info d
+        ON s.device_id = d.device_id
+    WHERE s.timestamp BETWEEN '2025-08-01' AND '2025-08-04'
+    AND s.device_id IN ('sensor_001', 'sensor_002');
+    ```
+  - **Best Practices**:
+    - **Filter Early**: Apply `WHERE` clauses before joins to reduce the dataset (e.g., filter by `timestamp` or `device_id`).
+    - **Use Appropriate Join Types**: Use `INNER JOIN` for strict matches, as it’s more efficient than `LEFT` or `FULL` joins.
+    - **Leverage Snowflake’s Scalability**: Use a larger warehouse (e.g., `MEDIUM` or `LARGE`) for joins on massive tables to parallelize compute.
+    - **Partition Pruning**: The `CLUSTER BY` on `device_id` and `timestamp` ensures Snowflake prunes irrelevant partitions during queries.
+    - **Materialized Views**: For frequently joined datasets, consider creating a materialized view to pre-compute joins:
+      ```sql
+      CREATE MATERIALIZED VIEW sensor_device_mv AS
+      SELECT 
+          s.device_id,
+          s.timestamp,
+          s.temperature,
+          s.humidity,
+          d.model,
+          d.installation_date
+      FROM sensor_data s
+      INNER JOIN device_info d
+          ON s.device_id = d.device_id;
+      ```
+    - **Query Profiling**: Use Snowflake’s Query Profile to identify bottlenecks (e.g., data skew, excessive scanning) and adjust clustering or warehouse size.
+    - **Avoid Over-Joining**: Limit joins to necessary tables and columns to reduce compute costs.
+
+#### **4. Deployment and Automation**
+- **Azure Data Factory**:
+  - Schedule the ADF pipeline (`adf_pipeline.json`) to run periodically (e.g., hourly or daily) using ADF triggers.
+  - Monitor pipeline runs for errors and performance using ADF’s monitoring dashboard.
+- **Python Script**:
+  - Deploy the Python script (`mongo_to_snowflake_etl.py`) on an Azure Function or Azure Batch for serverless or batch execution.
+  - Use Azure Event Hub triggers to process new MongoDB data in near real-time, updating the script to listen for inserts via MongoDB change streams:
+    ```python
+    change_stream = mongo_collection.watch()
+    for change in change_stream:
+        transformed_doc = transform_document(change['fullDocument'])
+        if transformed_doc:
+            load_to_snowflake([transformed_doc], get_snowflake_engine())
+    ```
+- **Error Handling**:
+  - Log errors (as implemented in the script) and set up alerts in Azure Monitor or Snowflake.
+  - Handle schema evolution (e.g., new fields in MongoDB) by dynamically updating Snowflake tables or using `VARIANT` columns temporarily.
+
+#### **5. Cost and Performance Optimization**
+- **Snowflake**:
+  - Use **auto-suspend** and **auto-resume** to minimize compute costs.
+  - Choose an appropriate warehouse size based on data volume (e.g., `XSMALL` for testing, `MEDIUM` for production).
+  - Compress data before loading (e.g., Parquet) to reduce storage costs.
+- **MongoDB**: Use indexes on frequently queried fields (e.g., `device_id`, `timestamp`) to speed up extraction.
+- **ETL**: Optimize batch size and frequency to balance latency and cost. For near-real-time, use Snowpipe or MongoDB change streams.
+- **Joins**: Monitor Snowflake credit usage for large joins and scale the warehouse dynamically.
+
+---
+
+### **Additional Notes**
+- **Security**:
+  - Secure MongoDB and Snowflake credentials using Azure Key Vault.
+  - Use Azure Private Link for Snowflake to ensure secure data transfer.
+  - Encrypt data in transit and at rest (Snowflake and Azure Blob Storage provide this by default).
+- **Schema Evolution**:
+  - If MongoDB documents change frequently, consider using Snowflake’s `VARIANT` column to store semi-structured data temporarily, then transform it into relational tables via Snowflake SQL:
+    ```sql
+    CREATE TABLE raw_sensor_data (
+        id VARCHAR(50),
+        raw_json VARIANT
+    );
+    SELECT 
+        raw_json:device_id::VARCHAR AS device_id,
+        raw_json:timestamp::TIMESTAMP_NTZ AS timestamp,
+        raw_json:readings.temperature::FLOAT AS temperature
+    FROM raw_sensor_data;
+    ```
+- **Testing**:
+  - Test the ETL pipeline with a small dataset to validate schema and performance.
+  - Use Snowflake’s `EXPLAIN` plan to optimize queries and joins.
+
+---
+
+### **Memory Integration**
+Based on our prior conversation (August 4, 2025), you requested a comparison of pipelines, with **Pipeline #4 (MQTT -> Event Hub -> Mongo -> Snowflake)** being the closest to this implementation. The provided code aligns with that architecture, offering a sequential ETL process from MongoDB to Snowflake. If you prefer **Pipeline #3 (Mongo & Snowflake)** for near-real-time ingestion, I can modify the script to use MongoDB change streams and Snowflake Snowpipe for direct streaming.
+
+Let me know if you need:
+- Modifications for real-time ingestion (e.g., Snowpipe or Kafka connector).
+- Detailed Azure Data Factory configuration steps.
+- Additional Snowflake query examples for specific analytics use cases.
+- Cost estimation based on your data volume and query patterns.
+
+
 
 
 
