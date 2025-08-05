@@ -1046,3 +1046,479 @@ This enhanced pipeline design provides:
 7. **Cost Optimization**: Uses auto-scaling and intelligent resource management
 
 The pipeline can handle your dynamic environment where new collections are frequently created and existing ones are updated, providing efficient and automated data movement from MongoDB to Snowflake.
+
+# Pipeline without Apache Spark
+
+# Streamlined MongoDB to Snowflake Pipeline (No Spark)
+
+## Simplified Architecture
+
+```
+MongoDB Collections → Azure Functions/Logic Apps → ADLS Gen2 → Snowflake → Analytics Tables
+        ↓                      ↓                    ↓          ↓
+   Change Streams         Direct Processing      Staging    Native Loading
+```
+
+## Why No Spark/Databricks?
+
+**Cost Issues with Spark:**
+- Additional compute layer ($200-500+ per month for clusters)
+- Complex cluster management and tuning
+- Over-engineering for JSON processing
+- Longer startup times (2-5 minutes per job)
+
+**Simpler Alternatives:**
+- Azure Functions: Pay-per-execution ($0.20 per million executions)
+- MongoDB native connectors in ADF
+- Snowflake's native JSON processing capabilities
+
+## Core Pipeline Components
+
+### 1. Collection Discovery with Azure Functions
+
+#### Function App for MongoDB Discovery
+```python
+# discovery_function.py
+import azure.functions as func
+import pymongo
+import json
+import logging
+from azure.storage.filedatalake import DataLakeServiceClient
+import snowflake.connector
+
+def main(timer: func.TimerTrigger) -> None:
+    """Runs every hour to discover new collections"""
+    
+    # MongoDB connection
+    mongo_client = pymongo.MongoClient(os.environ['MONGODB_CONNECTION_STRING'])
+    
+    # Snowflake connection
+    snowflake_conn = snowflake.connector.connect(
+        user=os.environ['SNOWFLAKE_USER'],
+        password=os.environ['SNOWFLAKE_PASSWORD'],
+        account=os.environ['SNOWFLAKE_ACCOUNT'],
+        warehouse=os.environ['SNOWFLAKE_WAREHOUSE'],
+        database=os.environ['SNOWFLAKE_DATABASE'],
+        schema=os.environ['SNOWFLAKE_SCHEMA']
+    )
+    
+    discovered_collections = []
+    
+    # Discover all collections
+    for db_name in mongo_client.list_database_names():
+        if db_name not in ['admin', 'config', 'local']:
+            db = mongo_client[db_name]
+            for collection_name in db.list_collection_names():
+                # Get basic stats
+                stats = db.command("collStats", collection_name)
+                
+                collection_info = {
+                    'database_name': db_name,
+                    'collection_name': collection_name,
+                    'document_count': stats.get('count', 0),
+                    'size_bytes': stats.get('size', 0),
+                    'avg_obj_size': stats.get('avgObjSize', 0)
+                }
+                discovered_collections.append(collection_info)
+    
+    # Update Snowflake registry
+    cursor = snowflake_conn.cursor()
+    
+    for collection in discovered_collections:
+        cursor.execute("""
+            MERGE INTO mongodb_collection_registry AS target
+            USING (SELECT %s as database_name, %s as collection_name, %s as document_count) AS source
+            ON target.database_name = source.database_name 
+            AND target.collection_name = source.collection_name
+            WHEN MATCHED THEN UPDATE SET 
+                document_count = source.document_count,
+                updated_at = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN INSERT 
+                (database_name, collection_name, document_count, processing_status, created_at, updated_at)
+            VALUES 
+                (source.database_name, source.collection_name, source.document_count, 'ACTIVE', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
+        """, (collection['database_name'], collection['collection_name'], collection['document_count']))
+    
+    snowflake_conn.commit()
+    cursor.close()
+    snowflake_conn.close()
+    
+    logging.info(f"Discovered {len(discovered_collections)} collections")
+```
+
+### 2. Change Data Capture with Azure Functions
+
+#### MongoDB Change Stream Function
+```python
+# change_stream_function.py
+import azure.functions as func
+import pymongo
+import json
+import logging
+from azure.storage.filedatalake import DataLakeServiceClient
+from datetime import datetime
+import os
+
+def main(timer: func.TimerTrigger) -> None:
+    """Process change streams for all active collections"""
+    
+    # Get active collections from environment or Azure Key Vault
+    active_collections = get_active_collections()
+    
+    mongo_client = pymongo.MongoClient(os.environ['MONGODB_CONNECTION_STRING'])
+    adls_client = DataLakeServiceClient.from_connection_string(
+        os.environ['ADLS_CONNECTION_STRING']
+    )
+    
+    for db_name, collection_name in active_collections:
+        process_collection_changes(mongo_client, adls_client, db_name, collection_name)
+
+def process_collection_changes(mongo_client, adls_client, db_name, collection_name):
+    """Process changes for a single collection"""
+    
+    collection = mongo_client[db_name][collection_name]
+    
+    # Get last processed timestamp (stored in Azure Table Storage or Snowflake)
+    last_processed = get_last_processed_timestamp(db_name, collection_name)
+    
+    # Create resume token filter
+    pipeline = [
+        {'$match': {
+            'operationType': {'$in': ['insert', 'update', 'delete', 'replace']},
+            'clusterTime': {'$gt': last_processed} if last_processed else {}
+        }}
+    ]
+    
+    changes_batch = []
+    batch_size = 1000
+    
+    try:
+        # Use change stream with time limit
+        with collection.watch(pipeline, full_document='updateLookup', max_await_time_ms=30000) as stream:
+            
+            for change in stream:
+                if len(changes_batch) >= batch_size:
+                    write_batch_to_adls(adls_client, changes_batch, db_name, collection_name)
+                    changes_batch = []
+                
+                # Process change document
+                processed_change = {
+                    'operation_type': change['operationType'],
+                    'database_name': db_name,
+                    'collection_name': collection_name,
+                    'timestamp': change['clusterTime'].as_datetime().isoformat(),
+                    'document_id': str(change.get('documentKey', {}).get('_id', '')),
+                    'full_document': change.get('fullDocument'),
+                    'update_description': change.get('updateDescription'),
+                    'processing_timestamp': datetime.utcnow().isoformat()
+                }
+                
+                changes_batch.append(processed_change)
+            
+            # Write remaining changes
+            if changes_batch:
+                write_batch_to_adls(adls_client, changes_batch, db_name, collection_name)
+                
+    except Exception as e:
+        logging.error(f"Error processing changes for {db_name}.{collection_name}: {e}")
+
+def write_batch_to_adls(adls_client, changes_batch, db_name, collection_name):
+    """Write batch of changes to ADLS Gen2"""
+    
+    now = datetime.utcnow()
+    file_path = (f"raw/mongodb/{db_name}/{collection_name}/"
+                f"year={now.year}/month={now.month:02d}/day={now.day:02d}/"
+                f"batch_{now.timestamp()}.json")
+    
+    # Write as JSONL format for efficient Snowflake loading
+    jsonl_content = '\n'.join([json.dumps(change, default=str) for change in changes_batch])
+    
+    try:
+        file_system_client = adls_client.get_file_system_client("datalake")
+        file_client = file_system_client.get_file_client(file_path)
+        file_client.upload_data(jsonl_content, overwrite=True)
+        
+        logging.info(f"Written {len(changes_batch)} changes to {file_path}")
+        
+    except Exception as e:
+        logging.error(f"Error writing to ADLS: {e}")
+```
+
+### 3. Azure Data Factory - Simplified Pipeline
+
+#### Master Pipeline (No Databricks)
+```json
+{
+  "name": "MongoDB-to-Snowflake-Direct-Pipeline",
+  "activities": [
+    {
+      "name": "Get-New-Files",
+      "type": "GetMetadata",
+      "typeProperties": {
+        "dataset": {
+          "referenceName": "ADLS_MongoDB_Files"
+        },
+        "fieldList": ["childItems"],
+        "storeSettings": {
+          "type": "AzureBlobFSReadSettings",
+          "recursive": true,
+          "modifiedDatetimeStart": "@addHours(utcnow(), -1)",
+          "modifiedDatetimeEnd": "@utcnow()"
+        }
+      }
+    },
+    {
+      "name": "Process-New-Files",
+      "type": "ForEach",
+      "dependsOn": [{"activity": "Get-New-Files", "dependencyConditions": ["Succeeded"]}],
+      "typeProperties": {
+        "items": "@activity('Get-New-Files').output.childItems",
+        "isSequential": false,
+        "batchCount": 10,
+        "activities": [
+          {
+            "name": "Copy-to-Snowflake",
+            "type": "Copy",
+            "typeProperties": {
+              "source": {
+                "type": "JsonSource",
+                "storeSettings": {
+                  "type": "AzureBlobFSReadSettings"
+                },
+                "formatSettings": {
+                  "type": "JsonReadSettings"
+                }
+              },
+              "sink": {
+                "type": "SnowflakeSink",
+                "importSettings": {
+                  "type": "SnowflakeImportCopyCommand",
+                  "copyOptions": {
+                    "FILE_FORMAT": "(TYPE = 'JSON', STRIP_OUTER_ARRAY = FALSE)"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "name": "HourlyProcessing",
+      "type": "ScheduleTrigger",
+      "typeProperties": {
+        "recurrence": {
+          "frequency": "Hour",
+          "interval": 1
+        }
+      }
+    }
+  ]
+}
+```
+
+### 4. Snowflake Native Processing
+
+#### Direct JSON Processing in Snowflake
+```sql
+-- Create staging table for raw JSON
+CREATE TABLE IF NOT EXISTS mongodb_raw_staging (
+    file_name STRING,
+    raw_data VARIANT,
+    load_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- Create file format for JSON loading
+CREATE OR REPLACE FILE FORMAT json_format
+    TYPE = 'JSON'
+    STRIP_OUTER_ARRAY = FALSE
+    COMMENT = 'JSON format for MongoDB data';
+
+-- Load data directly from ADLS Gen2
+COPY INTO mongodb_raw_staging (file_name, raw_data)
+FROM (
+    SELECT 
+        METADATA$FILENAME,
+        $1
+    FROM @adls_mongodb_stage/raw/mongodb/
+)
+FILE_FORMAT = json_format
+PATTERN = '.*\.json'
+ON_ERROR = CONTINUE;
+
+-- Process the raw data into structured tables
+CREATE OR REPLACE PROCEDURE sp_process_mongodb_raw_data()
+RETURNS STRING
+LANGUAGE SQL
+AS $$
+BEGIN
+    -- Dynamic processing based on database and collection
+    LET cursor_sql := 'SELECT DISTINCT 
+                        raw_data:database_name::STRING as db_name,
+                        raw_data:collection_name::STRING as coll_name
+                      FROM mongodb_raw_staging 
+                      WHERE load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())';
+    
+    LET cursor_result CURSOR FOR IDENTIFIER(:cursor_sql);
+    
+    FOR record IN cursor_result DO
+        LET table_name := LOWER(record.db_name) || '_' || LOWER(record.coll_name);
+        
+        -- Create target table if not exists
+        EXECUTE IMMEDIATE 'CREATE TABLE IF NOT EXISTS ' || :table_name || ' (
+            _id STRING PRIMARY KEY,
+            document_data VARIANT,
+            operation_type STRING,
+            source_timestamp TIMESTAMP,
+            etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+            is_current BOOLEAN DEFAULT TRUE
+        ) CLUSTER BY (_id)';
+        
+        -- Process the changes
+        EXECUTE IMMEDIATE '
+            MERGE INTO ' || :table_name || ' AS target
+            USING (
+                SELECT 
+                    raw_data:document_id::STRING as _id,
+                    raw_data:full_document as document_data,
+                    raw_data:operation_type::STRING as operation_type,
+                    raw_data:timestamp::TIMESTAMP as source_timestamp
+                FROM mongodb_raw_staging 
+                WHERE raw_data:database_name = ''' || record.db_name || '''
+                AND raw_data:collection_name = ''' || record.coll_name || '''
+                AND load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+            ) AS source
+            ON target._id = source._id
+            WHEN MATCHED THEN UPDATE SET
+                document_data = source.document_data,
+                operation_type = source.operation_type,
+                source_timestamp = source.source_timestamp,
+                etl_timestamp = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN INSERT VALUES (
+                source._id, source.document_data, source.operation_type, 
+                source.source_timestamp, CURRENT_TIMESTAMP(), TRUE
+            )';
+            
+        -- Handle deletes
+        EXECUTE IMMEDIATE '
+            UPDATE ' || :table_name || '
+            SET is_current = FALSE, 
+                etl_timestamp = CURRENT_TIMESTAMP()
+            WHERE _id IN (
+                SELECT raw_data:document_id::STRING
+                FROM mongodb_raw_staging 
+                WHERE raw_data:database_name = ''' || record.db_name || '''
+                AND raw_data:collection_name = ''' || record.coll_name || '''
+                AND raw_data:operation_type = ''delete''
+                AND load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+            )';
+    END FOR;
+    
+    -- Clean up processed staging data
+    DELETE FROM mongodb_raw_staging 
+    WHERE load_timestamp < DATEADD(hour, -1, CURRENT_TIMESTAMP());
+    
+    RETURN 'Processing completed';
+END;
+$$;
+```
+
+### 5. Analytics Views with Native Snowflake
+
+#### Automatic View Generation
+```sql
+-- Create analytics views using Snowflake's JSON functions
+CREATE OR REPLACE PROCEDURE sp_create_analytics_view(
+    table_name STRING
+)
+RETURNS STRING
+LANGUAGE JAVASCRIPT
+AS $$
+    // Sample the data to understand structure
+    var sample_sql = `
+        SELECT document_data
+        FROM ${TABLE_NAME}
+        WHERE is_current = TRUE
+        SAMPLE (100 ROWS)
+    `;
+    
+    var stmt = snowflake.createStatement({sqlText: sample_sql});
+    var result = stmt.execute();
+    
+    var common_fields = {};
+    var row_count = 0;
+    
+    // Analyze document structure
+    while (result.next() && row_count < 100) {
+        var doc = JSON.parse(result.getColumnValue(1));
+        analyzeFields(doc, "", common_fields);
+        row_count++;
+    }
+    
+    // Generate view SQL
+    var field_selects = ['_id', 'source_timestamp', 'etl_timestamp'];
+    
+    for (var field in common_fields) {
+        if (common_fields[field] > row_count * 0.1) { // Field appears in >10% of docs
+            var clean_name = field.replace(/[^a-zA-Z0-9_]/g, '_');
+            field_selects.push(`document_data:${field} as ${clean_name}`);
+        }
+    }
+    
+    var view_sql = `
+        CREATE OR REPLACE VIEW ${TABLE_NAME}_analytics AS
+        SELECT ${field_selects.join(',\n               ')}
+        FROM ${TABLE_NAME}
+        WHERE is_current = TRUE
+    `;
+    
+    var create_stmt = snowflake.createStatement({sqlText: view_sql});
+    create_stmt.execute();
+    
+    return `Analytics view created for ${TABLE_NAME}`;
+    
+    function analyzeFields(obj, prefix, fields) {
+        for (var key in obj) {
+            var fullKey = prefix ? prefix + '.' + key : key;
+            fields[fullKey] = (fields[fullKey] || 0) + 1;
+            
+            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                analyzeFields(obj[key], fullKey, fields);
+            }
+        }
+    }
+$$;
+```
+
+## Cost Comparison
+
+### Original (with Databricks):
+- **Databricks Cluster:** $300-800/month
+- **Azure Functions:** $20/month  
+- **ADF:** $50/month
+- **ADLS Gen2:** $30/month
+- **Snowflake:** $200/month
+- **Total:** $600-1,100/month
+
+### Streamlined (no Databricks):
+- **Azure Functions:** $20/month
+- **ADF:** $50/month  
+- **ADLS Gen2:** $30/month
+- **Snowflake:** $200/month
+- **Total:** $300/month
+
+## Benefits of Simplified Approach:
+
+1. **60-70% Cost Reduction:** Eliminates expensive Databricks clusters
+2. **Faster Processing:** No cluster startup time (2-5 minutes saved per job)
+3. **Native Integration:** Direct MongoDB → ADF → Snowflake flow
+4. **Lower Complexity:** Fewer moving parts, easier to maintain
+5. **Auto-scaling:** Functions scale automatically with workload
+6. **Better Error Handling:** Native ADF retry and monitoring
+
+This streamlined pipeline achieves the same functionality without the Spark overhead, making it much more cost-effective for your MongoDB to Snowflake migration needs.
+
+
+
