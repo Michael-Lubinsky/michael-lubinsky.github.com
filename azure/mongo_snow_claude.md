@@ -1522,3 +1522,663 @@ This streamlined pipeline achieves the same functionality without the Spark over
 
 
 
+----- version 9
+
+# Streamlined MongoDB to Snowflake Pipeline (No Spark)
+
+## Recommended Architecture: ADF-Centric
+
+```
+MongoDB Collections → Azure Data Factory → ADLS Gen2 → Snowflake → Analytics Tables
+        ↓                      ↓             ↓          ↓
+   Native Connector      Orchestration    Staging    Native Loading
+```
+
+**Optional for Real-time CDC:**
+```
+MongoDB Change Streams → Azure Functions → Event Hub → ADF Trigger
+```
+
+## Data Flow: MongoDB → ADLS Gen2 → Snowflake
+
+### **Step 1: MongoDB → ADLS Gen2 (Staging)**
+
+#### **How: Azure Data Factory Copy Activity**
+```json
+{
+  "name": "MongoDB-to-ADLS-Copy",
+  "type": "Copy",
+  "typeProperties": {
+    "source": {
+      "type": "MongoDbV2Source",
+      "filter": "{\"_id\": {\"$exists\": true}}",
+      "batchSize": 10000
+    },
+    "sink": {
+      "type": "ParquetSink",
+      "storeSettings": {
+        "type": "AzureBlobFSWriteSettings",
+        "maxConcurrentConnections": 4,
+        "copyBehavior": "FlattenHierarchy"
+      },
+      "formatSettings": {
+        "type": "ParquetWriteSettings",
+        "compressionCodec": "snappy"
+      }
+    },
+    "enableStaging": false,
+    "dataIntegrationUnits": 8
+  },
+  "inputs": [{
+    "referenceName": "MongoDB_Dataset",
+    "parameters": {
+      "database": "production_db",
+      "collection": "users"
+    }
+  }],
+  "outputs": [{
+    "referenceName": "ADLS_Parquet_Dataset", 
+    "parameters": {
+      "folderPath": "raw/mongodb/production_db/users/2024/01/15/10"
+    }
+  }]
+}
+```
+
+#### **What Gets Created in ADLS Gen2:**
+```
+datalake/
+└── raw/
+    └── mongodb/
+        └── production_db/
+            └── users/
+                └── 2024/01/15/10/
+                    ├── part-00000.parquet  (500MB - first batch)
+                    ├── part-00001.parquet  (500MB - second batch)
+                    └── part-00002.parquet  (300MB - final batch)
+```
+
+#### **File Format Options:**
+1. **Parquet (Recommended)** - Compressed, columnar, fast Snowflake loading
+2. **JSON** - Native MongoDB format, larger files
+3. **CSV** - Flattened, requires pre-processing
+
+### **Step 2: ADLS Gen2 → Snowflake (Loading)**
+
+#### **Method 1: Direct COPY INTO (Recommended)**
+```sql
+-- Snowflake SQL executed by ADF
+COPY INTO production_db_users (
+    _id,
+    document_data,
+    etl_timestamp
+)
+FROM (
+    SELECT 
+        $1:_id::STRING as _id,
+        $1 as document_data,
+        CURRENT_TIMESTAMP() as etl_timestamp
+    FROM @adls_mongodb_stage/raw/mongodb/production_db/users/2024/01/15/10/
+)
+FILE_FORMAT = (TYPE = 'PARQUET')
+ON_ERROR = CONTINUE;
+```
+
+#### **Method 2: ADF Copy Activity (Alternative)**
+```json
+{
+  "name": "ADLS-to-Snowflake-Copy",
+  "type": "Copy", 
+  "typeProperties": {
+    "source": {
+      "type": "ParquetSource",
+      "storeSettings": {
+        "type": "AzureBlobFSReadSettings",
+        "recursive": true,
+        "wildcardFileName": "*.parquet"
+      }
+    },
+    "sink": {
+      "type": "SnowflakeSink",
+      "importSettings": {
+        "type": "SnowflakeImportCopyCommand",
+        "additionalCopyOptions": {
+          "ON_ERROR": "CONTINUE",
+          "FORCE": "FALSE"
+        }
+      }
+    },
+    "enableStaging": true,
+    "stagingSettings": {
+      "linkedServiceName": "ADLS_LinkedService",
+      "path": "staging/snowflake-temp"
+    }
+  }
+}
+```
+
+## Core Pipeline Components
+
+## Why Use ADLS Gen2 as Staging?
+
+### **Benefits of Staging Approach:**
+
+#### **1. Performance Optimization**
+- **Parallel Processing**: Multiple collections processed simultaneously
+- **Batch Optimization**: Large batches reduce network overhead
+- **Compression**: Parquet files 70-80% smaller than JSON
+- **Resume Capability**: Failed loads can restart from staging
+
+#### **2. Cost Optimization**
+- **Cheaper Storage**: ADLS Gen2 costs ~$0.02/GB vs Snowflake storage ~$0.023/GB
+- **Data Transfer**: Single large transfer vs many small ones
+- **Compute Savings**: Snowflake warehouse runs shorter times
+
+#### **3. Data Management**
+- **Backup**: Staging files serve as backup/audit trail
+- **Reprocessing**: Can reload Snowflake without re-extracting from MongoDB
+- **Schema Evolution**: Can handle structure changes gracefully
+- **Time Travel**: Keep historical snapshots
+
+### **Alternative: Direct MongoDB → Snowflake (NOT Recommended)**
+
+#### **Why NOT Direct:**
+```json
+{
+  "name": "Direct-MongoDB-to-Snowflake",
+  "type": "Copy",
+  "typeProperties": {
+    "source": {
+      "type": "MongoDbV2Source"
+    },
+    "sink": {
+      "type": "SnowflakeSink"
+    }
+  }
+}
+```
+
+**Problems with Direct Approach:**
+- ❌ **No Resume**: If pipeline fails, must restart from beginning
+- ❌ **No Backup**: Data lost if Snowflake load fails
+- ❌ **Poor Performance**: Small batches, network bottlenecks
+- ❌ **Higher Costs**: Snowflake warehouse runs longer
+- ❌ **Limited Flexibility**: Can't reprocess or transform data
+
+## Step-by-Step Process Flow
+
+### **Full Process Example:**
+
+#### **1. MongoDB Collection (Source)**
+```javascript
+// MongoDB Collection: production_db.users
+{
+  "_id": ObjectId("507f1f77bcf86cd799439011"),
+  "name": "John Doe",
+  "email": "john@example.com", 
+  "address": {
+    "street": "123 Main St",
+    "city": "Seattle",
+    "country": "USA"
+  },
+  "orders": [
+    {"id": "ord1", "amount": 100},
+    {"id": "ord2", "amount": 200}
+  ],
+  "created_at": ISODate("2024-01-15T10:30:00Z")
+}
+```
+
+#### **2. ADF Extracts to ADLS Gen2 (Parquet)**
+```
+File: datalake/raw/mongodb/production_db/users/2024/01/15/10/part-00000.parquet
+
+Parquet Schema:
+- _id: string
+- name: string  
+- email: string
+- address: struct<street:string, city:string, country:string>
+- orders: array<struct<id:string, amount:int>>
+- created_at: timestamp
+```
+
+#### **3. Snowflake External Stage Setup**
+```sql
+-- Create external stage pointing to ADLS Gen2
+CREATE OR REPLACE STAGE adls_mongodb_stage
+URL = 'azure://yourdatalake.dfs.core.windows.net/raw/mongodb/'
+CREDENTIALS = (
+  AZURE_SAS_TOKEN = 'your_sas_token'
+);
+
+-- Create file format
+CREATE OR REPLACE FILE FORMAT parquet_format
+TYPE = 'PARQUET'
+COMPRESSION = 'SNAPPY';
+```
+
+#### **4. Snowflake Table Creation**
+```sql
+-- Target table in Snowflake
+CREATE OR REPLACE TABLE production_db_users (
+    _id STRING PRIMARY KEY,
+    document_data VARIANT,
+    name STRING,
+    email STRING,
+    address_city STRING,
+    address_country STRING,
+    order_count INT,
+    total_order_amount DECIMAL(10,2),
+    created_at TIMESTAMP,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+) CLUSTER BY (_id, created_at);
+```
+
+#### **5. Data Loading with Transformation**
+```sql
+-- Load and transform in single operation
+COPY INTO production_db_users (
+    _id,
+    document_data,
+    name,
+    email,
+    address_city,
+    address_country,
+    order_count,
+    total_order_amount,
+    created_at,
+    etl_timestamp
+)
+FROM (
+    SELECT 
+        $1:_id::STRING,
+        $1 as document_data,
+        $1:name::STRING,
+        $1:email::STRING,
+        $1:address.city::STRING,
+        $1:address.country::STRING,
+        ARRAY_SIZE($1:orders),
+        ARRAY_SUM(TRANSFORM($1:orders, x -> x:amount::NUMBER)),
+        $1:created_at::TIMESTAMP,
+        CURRENT_TIMESTAMP()
+    FROM @adls_mongodb_stage/production_db/users/2024/01/15/10/
+)
+FILE_FORMAT = parquet_format
+ON_ERROR = CONTINUE;
+```
+
+## Performance Metrics
+
+### **Staging vs Direct Comparison:**
+
+| Metric | With ADLS Gen2 Staging | Direct MongoDB→Snowflake |
+|--------|----------------------|-------------------------|
+| **Transfer Speed** | 200-500 MB/s | 50-100 MB/s |
+| **Resume Capability** | ✅ Yes | ❌ No |
+| **Cost (1TB data)** | $20 staging + $15 transfer | $50 direct transfer |
+| **Failure Recovery** | Minutes | Hours |
+| **Data Backup** | ✅ Automatic | ❌ None |
+| **Reprocessing** | ✅ Fast | ❌ Full re-extract |
+
+### **File Size Optimization:**
+- **JSON**: 1GB collection → 1GB file
+- **Parquet**: 1GB collection → 200-300MB file (70% compression)
+- **Snowflake Load**: Parquet loads 3-5x faster than JSON
+
+### 2. Change Data Capture with Azure Functions
+
+#### MongoDB Change Stream Function
+```python
+# change_stream_function.py
+import azure.functions as func
+import pymongo
+import json
+import logging
+from azure.storage.filedatalake import DataLakeServiceClient
+from datetime import datetime
+import os
+
+def main(timer: func.TimerTrigger) -> None:
+    """Process change streams for all active collections"""
+    
+    # Get active collections from environment or Azure Key Vault
+    active_collections = get_active_collections()
+    
+    mongo_client = pymongo.MongoClient(os.environ['MONGODB_CONNECTION_STRING'])
+    adls_client = DataLakeServiceClient.from_connection_string(
+        os.environ['ADLS_CONNECTION_STRING']
+    )
+    
+    for db_name, collection_name in active_collections:
+        process_collection_changes(mongo_client, adls_client, db_name, collection_name)
+
+def process_collection_changes(mongo_client, adls_client, db_name, collection_name):
+    """Process changes for a single collection"""
+    
+    collection = mongo_client[db_name][collection_name]
+    
+    # Get last processed timestamp (stored in Azure Table Storage or Snowflake)
+    last_processed = get_last_processed_timestamp(db_name, collection_name)
+    
+    # Create resume token filter
+    pipeline = [
+        {'$match': {
+            'operationType': {'$in': ['insert', 'update', 'delete', 'replace']},
+            'clusterTime': {'$gt': last_processed} if last_processed else {}
+        }}
+    ]
+    
+    changes_batch = []
+    batch_size = 1000
+    
+    try:
+        # Use change stream with time limit
+        with collection.watch(pipeline, full_document='updateLookup', max_await_time_ms=30000) as stream:
+            
+            for change in stream:
+                if len(changes_batch) >= batch_size:
+                    write_batch_to_adls(adls_client, changes_batch, db_name, collection_name)
+                    changes_batch = []
+                
+                # Process change document
+                processed_change = {
+                    'operation_type': change['operationType'],
+                    'database_name': db_name,
+                    'collection_name': collection_name,
+                    'timestamp': change['clusterTime'].as_datetime().isoformat(),
+                    'document_id': str(change.get('documentKey', {}).get('_id', '')),
+                    'full_document': change.get('fullDocument'),
+                    'update_description': change.get('updateDescription'),
+                    'processing_timestamp': datetime.utcnow().isoformat()
+                }
+                
+                changes_batch.append(processed_change)
+            
+            # Write remaining changes
+            if changes_batch:
+                write_batch_to_adls(adls_client, changes_batch, db_name, collection_name)
+                
+    except Exception as e:
+        logging.error(f"Error processing changes for {db_name}.{collection_name}: {e}")
+
+def write_batch_to_adls(adls_client, changes_batch, db_name, collection_name):
+    """Write batch of changes to ADLS Gen2"""
+    
+    now = datetime.utcnow()
+    file_path = (f"raw/mongodb/{db_name}/{collection_name}/"
+                f"year={now.year}/month={now.month:02d}/day={now.day:02d}/"
+                f"batch_{now.timestamp()}.json")
+    
+    # Write as JSONL format for efficient Snowflake loading
+    jsonl_content = '\n'.join([json.dumps(change, default=str) for change in changes_batch])
+    
+    try:
+        file_system_client = adls_client.get_file_system_client("datalake")
+        file_client = file_system_client.get_file_client(file_path)
+        file_client.upload_data(jsonl_content, overwrite=True)
+        
+        logging.info(f"Written {len(changes_batch)} changes to {file_path}")
+        
+    except Exception as e:
+        logging.error(f"Error writing to ADLS: {e}")
+```
+
+### 3. Optional: Real-time CDC with Azure Functions (Only if needed)
+
+#### Minimal Change Stream Function (Only for Critical Collections)
+```python
+# Optional: Real-time CDC for critical collections only
+import azure.functions as func
+import pymongo
+from azure.eventhub import EventHubProducerClient, EventData
+import json
+import os
+
+def main(timer: func.TimerTrigger) -> None:
+    """Lightweight change stream processor for critical collections only"""
+    
+    # Only process collections marked as 'REALTIME' in registry
+    critical_collections = [
+        ('prod_db', 'orders'),
+        ('prod_db', 'payments'),
+        ('prod_db', 'user_sessions')
+    ]
+    
+    mongo_client = pymongo.MongoClient(os.environ['MONGODB_CONNECTION_STRING'])
+    event_hub_client = EventHubProducerClient.from_connection_string(
+        os.environ['EVENT_HUB_CONNECTION_STRING']
+    )
+    
+    for db_name, collection_name in critical_collections:
+        try:
+            collection = mongo_client[db_name][collection_name]
+            
+            # Simple change stream for last 5 minutes
+            pipeline = [{'$match': {'operationType': {'$in': ['insert', 'update', 'delete']}}}]
+            
+            with collection.watch(pipeline, full_document='updateLookup', max_await_time_ms=5000) as stream:
+                changes = []
+                for change in stream:
+                    if len(changes) >= 100:  # Small batches
+                        break
+                        
+                    changes.append({
+                        'database': db_name,
+                        'collection': collection_name,
+                        'operation': change['operationType'],
+                        'document_id': str(change.get('documentKey', {}).get('_id')),
+                        'document': change.get('fullDocument'),
+                        'timestamp': change['clusterTime'].as_datetime().isoformat()
+                    })
+                
+                # Send to Event Hub to trigger ADF
+                if changes:
+                    event_data = EventData(json.dumps(changes))
+                    event_hub_client.send_batch([event_data])
+                    
+        except Exception as e:
+            print(f"Error processing {db_name}.{collection_name}: {e}")
+```
+
+### 4. Snowflake Native Processing
+
+#### Direct JSON Processing in Snowflake
+```sql
+-- Create staging table for raw JSON
+CREATE TABLE IF NOT EXISTS mongodb_raw_staging (
+    file_name STRING,
+    raw_data VARIANT,
+    load_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- Create file format for JSON loading
+CREATE OR REPLACE FILE FORMAT json_format
+    TYPE = 'JSON'
+    STRIP_OUTER_ARRAY = FALSE
+    COMMENT = 'JSON format for MongoDB data';
+
+-- Load data directly from ADLS Gen2
+COPY INTO mongodb_raw_staging (file_name, raw_data)
+FROM (
+    SELECT 
+        METADATA$FILENAME,
+        $1
+    FROM @adls_mongodb_stage/raw/mongodb/
+)
+FILE_FORMAT = json_format
+PATTERN = '.*\.json'
+ON_ERROR = CONTINUE;
+
+-- Process the raw data into structured tables
+CREATE OR REPLACE PROCEDURE sp_process_mongodb_raw_data()
+RETURNS STRING
+LANGUAGE SQL
+AS $$
+BEGIN
+    -- Dynamic processing based on database and collection
+    LET cursor_sql := 'SELECT DISTINCT 
+                        raw_data:database_name::STRING as db_name,
+                        raw_data:collection_name::STRING as coll_name
+                      FROM mongodb_raw_staging 
+                      WHERE load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())';
+    
+    LET cursor_result CURSOR FOR IDENTIFIER(:cursor_sql);
+    
+    FOR record IN cursor_result DO
+        LET table_name := LOWER(record.db_name) || '_' || LOWER(record.coll_name);
+        
+        -- Create target table if not exists
+        EXECUTE IMMEDIATE 'CREATE TABLE IF NOT EXISTS ' || :table_name || ' (
+            _id STRING PRIMARY KEY,
+            document_data VARIANT,
+            operation_type STRING,
+            source_timestamp TIMESTAMP,
+            etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+            is_current BOOLEAN DEFAULT TRUE
+        ) CLUSTER BY (_id)';
+        
+        -- Process the changes
+        EXECUTE IMMEDIATE '
+            MERGE INTO ' || :table_name || ' AS target
+            USING (
+                SELECT 
+                    raw_data:document_id::STRING as _id,
+                    raw_data:full_document as document_data,
+                    raw_data:operation_type::STRING as operation_type,
+                    raw_data:timestamp::TIMESTAMP as source_timestamp
+                FROM mongodb_raw_staging 
+                WHERE raw_data:database_name = ''' || record.db_name || '''
+                AND raw_data:collection_name = ''' || record.coll_name || '''
+                AND load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+            ) AS source
+            ON target._id = source._id
+            WHEN MATCHED THEN UPDATE SET
+                document_data = source.document_data,
+                operation_type = source.operation_type,
+                source_timestamp = source.source_timestamp,
+                etl_timestamp = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN INSERT VALUES (
+                source._id, source.document_data, source.operation_type, 
+                source.source_timestamp, CURRENT_TIMESTAMP(), TRUE
+            )';
+            
+        -- Handle deletes
+        EXECUTE IMMEDIATE '
+            UPDATE ' || :table_name || '
+            SET is_current = FALSE, 
+                etl_timestamp = CURRENT_TIMESTAMP()
+            WHERE _id IN (
+                SELECT raw_data:document_id::STRING
+                FROM mongodb_raw_staging 
+                WHERE raw_data:database_name = ''' || record.db_name || '''
+                AND raw_data:collection_name = ''' || record.coll_name || '''
+                AND raw_data:operation_type = ''delete''
+                AND load_timestamp >= DATEADD(hour, -1, CURRENT_TIMESTAMP())
+            )';
+    END FOR;
+    
+    -- Clean up processed staging data
+    DELETE FROM mongodb_raw_staging 
+    WHERE load_timestamp < DATEADD(hour, -1, CURRENT_TIMESTAMP());
+    
+    RETURN 'Processing completed';
+END;
+$$;
+```
+
+### 5. Analytics Views with Native Snowflake
+
+#### Automatic View Generation
+```sql
+-- Create analytics views using Snowflake's JSON functions
+CREATE OR REPLACE PROCEDURE sp_create_analytics_view(
+    table_name STRING
+)
+RETURNS STRING
+LANGUAGE JAVASCRIPT
+AS $$
+    // Sample the data to understand structure
+    var sample_sql = `
+        SELECT document_data
+        FROM ${TABLE_NAME}
+        WHERE is_current = TRUE
+        SAMPLE (100 ROWS)
+    `;
+    
+    var stmt = snowflake.createStatement({sqlText: sample_sql});
+    var result = stmt.execute();
+    
+    var common_fields = {};
+    var row_count = 0;
+    
+    // Analyze document structure
+    while (result.next() && row_count < 100) {
+        var doc = JSON.parse(result.getColumnValue(1));
+        analyzeFields(doc, "", common_fields);
+        row_count++;
+    }
+    
+    // Generate view SQL
+    var field_selects = ['_id', 'source_timestamp', 'etl_timestamp'];
+    
+    for (var field in common_fields) {
+        if (common_fields[field] > row_count * 0.1) { // Field appears in >10% of docs
+            var clean_name = field.replace(/[^a-zA-Z0-9_]/g, '_');
+            field_selects.push(`document_data:${field} as ${clean_name}`);
+        }
+    }
+    
+    var view_sql = `
+        CREATE OR REPLACE VIEW ${TABLE_NAME}_analytics AS
+        SELECT ${field_selects.join(',\n               ')}
+        FROM ${TABLE_NAME}
+        WHERE is_current = TRUE
+    `;
+    
+    var create_stmt = snowflake.createStatement({sqlText: view_sql});
+    create_stmt.execute();
+    
+    return `Analytics view created for ${TABLE_NAME}`;
+    
+    function analyzeFields(obj, prefix, fields) {
+        for (var key in obj) {
+            var fullKey = prefix ? prefix + '.' + key : key;
+            fields[fullKey] = (fields[fullKey] || 0) + 1;
+            
+            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                analyzeFields(obj[key], fullKey, fields);
+            }
+        }
+    }
+$$;
+```
+
+## Cost Comparison
+
+### Original (with Databricks):
+- **Databricks Cluster:** $300-800/month
+- **Azure Functions:** $20/month  
+- **ADF:** $50/month
+- **ADLS Gen2:** $30/month
+- **Snowflake:** $200/month
+- **Total:** $600-1,100/month
+
+### Streamlined (no Databricks):
+- **Azure Functions:** $20/month
+- **ADF:** $50/month  
+- **ADLS Gen2:** $30/month
+- **Snowflake:** $200/month
+- **Total:** $300/month
+
+## Benefits of Simplified Approach:
+
+1. **60-70% Cost Reduction:** Eliminates expensive Databricks clusters
+2. **Faster Processing:** No cluster startup time (2-5 minutes saved per job)
+3. **Native Integration:** Direct MongoDB → ADF → Snowflake flow
+4. **Lower Complexity:** Fewer moving parts, easier to maintain
+5. **Auto-scaling:** Functions scale automatically with workload
+6. **Better Error Handling:** Native ADF retry and monitoring
+
+This streamlined pipeline achieves the same functionality without the Spark overhead, making it much more cost-effective for your MongoDB to Snowflake migration needs.
+
+
