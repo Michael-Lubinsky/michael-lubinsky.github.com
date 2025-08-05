@@ -1,4 +1,4 @@
-
+# Grok
 
 ### **Overview of Pipelines**
 1. **Pipeline #1**: MQTT Broker -> Azure Event Hub -> Mongo -> Postgres (Current)
@@ -794,3 +794,174 @@ def mongo_to_snowflake_etl(batch_size: int = 1000):
 if __name__ == "__main__":
     mongo_to_snowflake_etl()
 ```
+
+
+
+############
+# ChatGPT
+############
+
+## 1. Extract-Transform-Load (ETL) Pipeline Overview
+
+MongoDB (nested JSON, arrays)
+    |
+    |  [Extract & Flatten]
+    v
+Intermediate Flat Format (Parquet/CSV)
+    |
+    |  [Load to Snowflake - staged]
+    v
+Snowflake (transformed schema optimized for JOINs, filters, aggregations)
+
+## 2. Tools & Tech Stack
+
+- Language: Python (with `pymongo`, `pandas`, `snowflake-connector-python`)
+- Flattening: `json_normalize` or custom flattening
+- Staging Format: Parquet (preferred), or CSV
+- Snowflake Load: `PUT` + `COPY INTO` from stage
+
+## 3. Example Code
+
+### A. Extract and Flatten MongoDB Collection
+
+```python
+from pymongo import MongoClient
+import pandas as pd
+from pandas import json_normalize
+
+client = MongoClient("mongodb://<user>:<pass>@host:port")
+db = client["your_db"]
+collection = db["your_collection"]
+
+# Fetch and flatten
+cursor = collection.find()
+docs = list(cursor)
+
+# Flatten nested JSON fields
+flat_docs = json_normalize(docs)
+
+# Optional: Drop unneeded or deeply nested fields
+# flat_docs.drop(columns=["some.deep.field"], inplace=True)
+
+flat_docs.to_parquet("data.parquet", index=False)
+```
+
+
+### B. Upload to Snowflake Stage and Load
+```python
+
+import snowflake.connector
+import os
+
+# Snowflake connection
+conn = snowflake.connector.connect(
+    user='USER',
+    password='PASS',
+    account='ACCOUNT',
+    warehouse='WAREHOUSE',
+    database='DB',
+    schema='SCHEMA'
+)
+cursor = conn.cursor()
+
+# Step 1: Create internal stage (once)
+cursor.execute("CREATE OR REPLACE STAGE mongo_stage")
+
+# Step 2: Upload file to stage
+os.system("snowsql -a ACCOUNT -u USER -f put_command.sql")
+# where put_command.sql contains:
+# PUT file://data.parquet @mongo_stage AUTO_COMPRESS=TRUE;
+
+# Step 3: Create destination table (flattened schema)
+cursor.execute("""
+CREATE OR REPLACE TABLE flattened_mongo (
+    field1 STRING,
+    field2 NUMBER,
+    date_field DATE,
+    ...
+)
+""")
+
+# Step 4: Copy into Snowflake table
+cursor.execute("""
+COPY INTO flattened_mongo
+FROM @mongo_stage/data.parquet.gz
+FILE_FORMAT = (TYPE = 'PARQUET')
+""")
+```
+
+## 4. Schema Design in Snowflake for Analytics
+Do:
+- Flatten deeply nested documents (no arrays inside rows)
+- Normalize large subdocuments into separate tables
+- Replace arrays of subdocuments with junction tables
+
+Example:
+MongoDB Document:
+
+```json
+
+{
+  "_id": "user1",
+  "name": "Alice",
+  "orders": [
+    {"order_id": "o1", "amount": 100},
+    {"order_id": "o2", "amount": 50}
+  ]
+}
+```
+Snowflake Schema:
+
+```
+users(_id, name)
+orders(user_id, order_id, amount)
+```
+This denormalization allows you to:
+
+```sql
+SELECT u.name, SUM(o.amount)
+FROM users u
+JOIN orders o ON u._id = o.user_id
+GROUP BY u.name
+```
+
+## 5. Best Practices for Joining Big Tables in Snowflake
+Use Clustered Tables
+
+```sql
+
+CREATE TABLE orders (
+    order_id STRING,
+    user_id STRING,
+    amount NUMBER,
+    order_date DATE
+)
+CLUSTER BY (user_id);
+```
+Filter Early and Avoid Cross Joins
+
+```sql
+-- Good pattern
+WITH filtered_orders AS (
+    SELECT * FROM orders WHERE order_date >= '2025-01-01'
+)
+SELECT u.name, SUM(o.amount)
+FROM filtered_orders o
+JOIN users u ON o.user_id = u._id
+GROUP BY u.name
+```
+Use HASH_JOIN() hints if needed (advanced)
+
+```sql
+SELECT /*+ HASH_JOIN(users orders) */
+...
+
+### 6. Summary
+
+| Step         | Description                                           |
+| ------------ | ----------------------------------------------------- |
+| 1. Extract   | Use `pymongo` to read data                            |
+| 2. Transform | Flatten JSON, remove arrays, normalize                |
+| 3. Load      | Write to Parquet → Stage → COPY INTO Snowflake        |
+| 4. Model     | Use Snowflake-friendly schema (flattened, normalized) |
+| 5. Optimize  | Use cluster keys, filter early, avoid cross joins     |
