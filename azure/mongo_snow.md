@@ -795,7 +795,430 @@ if __name__ == "__main__":
     mongo_to_snowflake_etl()
 ```
 
+To design an efficient Azure Cloud pipeline that moves multiple MongoDB collections, including frequently created new collections and periodically updated ones, to Snowflake for analytics, we need a solution that is scalable, automated, and capable of handling dynamic collection changes. The pipeline should minimize latency, optimize costs, and ensure data consistency while transforming MongoDB’s flexible JSON documents into Snowflake’s relational schema for efficient analytics. Below, I’ll outline the pipeline architecture, provide code for key components, and explain how to handle dynamic collections and updates.
 
+### **Pipeline Design Overview**
+**Goal**: Efficiently move data from multiple MongoDB collections (with frequent new collections and periodic updates) to Snowflake on a regular basis, optimized for analytics.
+
+**Architecture**:
+- **Source**: MongoDB with multiple collections, new collections created often, and existing ones updated periodically.
+- **Ingestion**: Azure Event Hub captures data from MongoDB change streams for real-time updates.
+- **Processing**: Azure Functions processes change streams and transforms data, staging it in Azure Blob Storage for efficiency.
+- **Storage**: Azure Blob Storage acts as a staging layer for batch or micro-batch loading.
+- **Destination**: Snowflake as the analytical database with schema-optimized tables.
+- **Orchestration**: Azure Data Factory (ADF) schedules and monitors the pipeline, handling dynamic collection discovery and ETL.
+
+**Pipeline Flow**:
+1. **MongoDB Change Streams**: Detect new and updated documents across all collections.
+2. **Azure Event Hub**: Ingest change stream events for real-time processing.
+3. **Azure Functions**: Transform MongoDB JSON documents (unroll nested structures) and write to Azure Blob Storage in Parquet format.
+4. **Azure Data Factory**: Discover new MongoDB collections, orchestrate ETL, and load data from Blob Storage to Snowflake using Snowpipe or COPY commands.
+5. **Snowflake**: Store data in optimized relational tables, with clustering keys for analytics performance.
+
+**Key Features**:
+- **Dynamic Collection Handling**: Automatically detect and process new MongoDB collections.
+- **Efficient Updates**: Use change streams to capture incremental updates, avoiding full collection scans.
+- **Schema Optimization**: Unroll nested JSON into relational tables, with flexible handling for schema evolution.
+- **Cost Efficiency**: Use serverless Azure Functions and Snowflake’s auto-scaling to minimize costs.
+- **Scalability**: Leverage Snowflake’s compute/storage separation and Blob Storage for large datasets.
+
+---
+
+### **Pipeline Components and Implementation**
+
+#### **1. MongoDB Change Streams for Real-Time Updates**
+- Use MongoDB change streams to capture inserts, updates, and new collections in real-time.
+- Configure a change stream to watch all collections in the database using `watch()` on the database level.
+
+```python
+
+import pymongo
+from pymongo import MongoClient
+import logging
+import json
+from azure.storage.blob import BlobServiceClient
+from azure.eventhub import EventHubProducerClient
+from azure.eventhub import EventData
+import os
+import uuid
+from datetime import datetime
+
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# MongoDB and Azure configurations
+MONGO_URI = "mongodb://<user>:<password>@<host>:<port>/<database>"
+MONGO_DB = "<mongo_database>"
+EVENT_HUB_CONNECTION_STR = "<event_hub_connection_string>"
+EVENT_HUB_NAME = "<event_hub_name>"
+BLOB_CONNECTION_STR = "<blob_connection_string>"
+BLOB_CONTAINER = "<blob_container>"
+
+# Connect to MongoDB
+def get_mongo_client():
+    try:
+        client = MongoClient(MONGO_URI)
+        db = client[MONGO_DB]
+        logger.info(f"Connected to MongoDB database: {MONGO_DB}")
+        return client, db
+    except Exception as e:
+        logger.error(f"Failed to connect to MongoDB: {e}")
+        raise
+
+# Connect to Event Hub
+def get_event_hub_producer():
+    try:
+        producer = EventHubProducerClient.from_connection_string(
+            conn_str=EVENT_HUB_CONNECTION_STR,
+            eventhub_name=EVENT_HUB_NAME
+        )
+        logger.info("Connected to Event Hub")
+        return producer
+    except Exception as e:
+        logger.error(f"Failed to connect to Event Hub: {e}")
+        raise
+
+# Transform MongoDB document
+def transform_document(doc: dict, collection_name: str) -> dict:
+    """
+    Unroll nested JSON into a flat structure for Snowflake.
+    Example input: 
+    {
+        "_id": "123",
+        "device_id": "sensor_001",
+        "timestamp": ISODate("2025-08-04T12:00:00Z"),
+        "readings": {"temperature": 25.5, "humidity": 60}
+    }
+    Output:
+    {
+        "id": "123",
+        "collection": "sensors",
+        "device_id": "sensor_001",
+        "timestamp": "2025-08-04 12:00:00",
+        "temperature": 25.5,
+        "humidity": 60
+    }
+    """
+    try:
+        flat_doc = {
+            "id": str(doc.get("_id", uuid.uuid4())),
+            "collection": collection_name,
+            "device_id": doc.get("device_id"),
+            "timestamp": doc.get("timestamp", datetime.utcnow()).strftime('%Y-%m-%d %H:%M:%S')
+        }
+        readings = doc.get("readings", {})
+        flat_doc.update({
+            "temperature": readings.get("temperature"),
+            "humidity": readings.get("humidity")
+        })
+        return {k: v for k, v in flat_doc.items() if v is not None}
+    except Exception as e:
+        logger.error(f"Error transforming document {doc.get('_id')} from {collection_name}: {e}")
+        return None
+
+# Write to Azure Blob Storage
+def write_to_blob(data: list, collection_name: str):
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(BLOB_CONNECTION_STR)
+        container_client = blob_service_client.get_container_client(BLOB_CONTAINER)
+        blob_name = f"{collection_name}/{datetime.utcnow().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4()}.parquet"
+        blob_client = container_client.get_blob_client(blob_name)
+        
+        import pandas as pd
+        df = pd.DataFrame(data)
+        df.to_parquet(blob_client.upload_blob(df.to_parquet(), overwrite=True))
+        logger.info(f"Wrote {len(data)} records to Blob Storage: {blob_name}")
+        return blob_name
+    except Exception as e:
+        logger.error(f"Failed to write to Blob Storage: {e}")
+        raise
+
+# Azure Function to process change streams
+def main():
+    client, db = get_mongo_client()
+    producer = get_event_hub_producer()
+    
+    # Watch all collections in the database
+    with db.watch(full_document='updateLookup') as change_stream:
+        batch = {}
+        for change in change_stream:
+            collection_name = change['ns']['coll']
+            if collection_name not in batch:
+                batch[collection_name] = []
+            
+            doc = change.get('fullDocument', {})
+            transformed_doc = transform_document(doc, collection_name)
+            if transformed_doc:
+                batch[collection_name].append(transformed_doc)
+            
+            # Write batch to Blob Storage and send to Event Hub
+            if sum(len(v) for v in batch.values()) >= 1000:
+                with producer:
+                    for coll, docs in batch.items():
+                        if docs:
+                            blob_path = write_to_blob(docs, coll)
+                            event_data = EventData(json.dumps({"collection": coll, "blob_path": blob_path}))
+                            producer.send_event(event_data)
+                            logger.info(f"Sent Event Hub message for {coll}")
+                    batch = {}
+
+    client.close()
+    producer.close()
+
+if __name__ == "__main__":
+    main()
+
+```
+
+#### **2. Azure Data Factory for Orchestration and Dynamic Collection Handling**
+- **Purpose**: Discover new MongoDB collections, orchestrate ETL, and load data from Blob Storage to Snowflake.
+- **Dynamic Collection Discovery**: Use ADF’s **ForEach** activity to iterate over MongoDB collections.
+- **Loading**: Use Snowflake’s **COPY INTO** command to load Parquet files from Blob Storage.
+
+```json
+
+{
+    "name": "MongoToSnowflakeDynamicPipeline",
+    "properties": {
+        "activities": [
+            {
+                "name": "GetMongoCollections",
+                "type": "Script",
+                "typeProperties": {
+                    "scripts": [
+                        {
+                            "type": "Query",
+                            "text": "db.getCollectionNames()"
+                        }
+                    ],
+                    "linkedServiceName": {
+                        "referenceName": "MongoDBLinkedService",
+                        "type": "LinkedServiceReference"
+                    }
+                },
+                "outputs": [
+                    {
+                        "referenceName": "MongoCollectionsDataset",
+                        "type": "DatasetReference"
+                    }
+                ]
+            },
+            {
+                "name": "ForEachCollection",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "GetMongoCollections",
+                        "dependencyConditions": ["Succeeded"]
+                    }
+                ],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('GetMongoCollections').output.value",
+                        "type": "Expression"
+                    },
+                    "activities": [
+                        {
+                            "name": "CreateSnowflakeTable",
+                            "type": "Script",
+                            "typeProperties": {
+                                "scripts": [
+                                    {
+                                        "type": "Query",
+                                        "text": "CREATE OR REPLACE TABLE @{item()} (\n    id VARCHAR(50) PRIMARY KEY,\n    collection VARCHAR(100),\n    device_id VARCHAR(50),\n    timestamp TIMESTAMP_NTZ,\n    temperature FLOAT,\n    humidity FLOAT,\n    ingestion_time TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()\n) CLUSTER BY (device_id, timestamp);"
+                                    }
+                                ],
+                                "linkedServiceName": {
+                                    "referenceName": "SnowflakeLinkedService",
+                                    "type": "LinkedServiceReference"
+                                }
+                            }
+                        },
+                        {
+                            "name": "CopyToSnowflake",
+                            "type": "Copy",
+                            "dependsOn": [
+                                {
+                                    "activity": "CreateSnowflakeTable",
+                                    "dependencyConditions": ["Succeeded"]
+                                }
+                            ],
+                            "typeProperties": {
+                                "source": {
+                                    "type": "ParquetSource",
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true,
+                                        "wildcardFolderPath": "@{item()}"
+                                    }
+                                },
+                                "sink": {
+                                    "type": "SnowflakeSink",
+                                    "writeBatchSize": 10000,
+                                    "preCopyScript": "TRUNCATE TABLE @{item()}"
+                                },
+                                "enableStaging": true,
+                                "stagingSettings": {
+                                    "linkedServiceName": {
+                                        "referenceName": "AzureBlobStorageLinkedService",
+                                        "type": "LinkedServiceReference"
+                                    },
+                                    "path": "staging"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "triggers": [
+            {
+                "name": "DailyTrigger",
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2025-08-04T00:00:00Z"
+                    }
+                }
+            }
+        ]
+    }
+}
+
+```
+
+#### **3. Snowflake Schema and Joins**
+- **Schema Design**:
+  - Create one table per MongoDB collection, dynamically named after the collection (e.g., `sensors`, `devices`).
+  - Use a consistent schema with clustering keys (`device_id`, `timestamp`) for analytics efficiency.
+  - Example table structure (as in ADF script):
+    ```sql
+    CREATE TABLE <collection_name> (
+        id VARCHAR(50) PRIMARY KEY,
+        collection VARCHAR(100),
+        device_id VARCHAR(50),
+        timestamp TIMESTAMP_NTZ,
+        temperature FLOAT,
+        humidity FLOAT,
+        ingestion_time TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+    ) CLUSTER BY (device_id, timestamp);
+    ```
+- **Handling Schema Evolution**:
+  - If new fields appear, use Snowflake’s `VARIANT` column temporarily:
+    ```sql
+    ALTER TABLE <collection_name> ADD COLUMN raw_json VARIANT;
+    ```
+  - Transform `VARIANT` data into new columns using Snowflake SQL:
+    ```sql
+    ALTER TABLE <collection_name> ADD COLUMN new_field FLOAT;
+    UPDATE <collection_name> SET new_field = raw_json:new_field::FLOAT;
+    ```
+- **Joining Large Tables**:
+  - Example join across collections (e.g., `sensors` and `devices`):
+    ```sql
+    SELECT 
+        s.device_id,
+        s.timestamp,
+        s.temperature,
+        s.humidity,
+        d.model
+    FROM sensors s
+    INNER JOIN devices d
+        ON s.device_id = d.device_id
+    WHERE s.timestamp BETWEEN '2025-08-01' AND '2025-08-04';
+    ```
+  - **Optimization**:
+    - Use **CLUSTER BY** on join keys (`device_id`) to reduce data scanning.
+    - Apply filters before joins to leverage partition pruning.
+    - Use a larger Snowflake warehouse (e.g., `MEDIUM`) for large joins.
+    - Consider materialized views for frequent joins:
+      ```sql
+      CREATE MATERIALIZED VIEW sensor_device_mv AS
+      SELECT s.device_id, s.timestamp, s.temperature, d.model
+      FROM sensors s
+      INNER JOIN devices d ON s.device_id = d.device_id;
+      ```
+
+---
+
+### **Key Implementation Details**
+
+#### **1. Handling Dynamic Collections**
+- **Discovery**: The ADF pipeline uses `db.getCollectionNames()` to fetch all MongoDB collections dynamically.
+- **Table Creation**: ADF’s `ForEach` activity creates a Snowflake table for each collection, ensuring new collections are automatically included.
+- **Scalability**: Use Azure Functions to process change streams in parallel for multiple collections, partitioning data by collection in Blob Storage.
+
+#### **2. Efficient Updates**
+- **Change Streams**: Capture inserts and updates in real-time, reducing the need for full collection scans.
+- **Incremental Loading**: Write only changed documents to Blob Storage and use Snowflake’s `MERGE` for upserts:
+  ```sql
+  MERGE INTO <collection_name> AS target
+  USING (SELECT * FROM @staging/<collection_name>) AS source
+  ON target.id = source.id
+  WHEN MATCHED THEN
+      UPDATE SET
+          device_id = source.device_id,
+          timestamp = source.timestamp,
+          temperature = source.temperature,
+          humidity = source.humidity
+  WHEN NOT MATCHED THEN
+      INSERT (id, collection, device_id, timestamp, temperature, humidity, ingestion_time)
+      VALUES (source.id, source.collection, source.device_id, source.timestamp, source.temperature, source.humidity, CURRENT_TIMESTAMP());
+  ```
+
+#### **3. Transformation**
+- **Unrolling JSON**: The `transform_document` function flattens nested JSON, handling common IoT fields (e.g., `device_id`, `timestamp`, `readings`).
+- **Schema Flexibility**: If collections have varying schemas, extend the transformation logic to detect new fields and update Snowflake tables dynamically (e.g., using `ALTER TABLE`).
+- **Parquet Format**: Store data in Blob Storage as Parquet to optimize compression and loading speed into Snowflake.
+
+#### **4. Scheduling and Automation**
+- **ADF Trigger**: Schedule the pipeline daily (or more frequently) using ADF’s `ScheduleTrigger`.
+- **Real-Time Option**: Use Snowpipe for continuous loading from Blob Storage:
+  ```sql
+  CREATE PIPE <collection_name>_pipe
+  AUTO_INGEST = TRUE
+  AS COPY INTO <collection_name>
+  FROM @staging/<collection_name>
+  FILE_FORMAT = (TYPE = PARQUET);
+  ```
+- **Monitoring**: Use ADF monitoring and Azure Monitor for pipeline health and errors.
+
+#### **5. Cost and Performance Optimization**
+- **Azure Functions**: Use serverless compute to scale with data volume, minimizing costs.
+- **Blob Storage**: Use the **Cool** tier ($0.0184/GB/month in East US, 2023 pricing) for staging data.
+- **Snowflake**: Enable **auto-suspend** and **auto-resume** to reduce compute costs. Use `XSMALL` warehouse for small datasets, scaling to `MEDIUM` for large joins.
+- **Batching**: Tune batch size in Azure Functions (e.g., 1000 documents) to balance memory and performance.
+- **Compression**: Use Parquet with Snappy compression to reduce storage and transfer costs.
+
+---
+
+### **Comparison to Prior Pipeline**
+In our prior conversation (August 4, 2025), we discussed **Pipeline #4 (MQTT -> Event Hub -> Mongo -> Snowflake)**, which used a sequential ETL process. The new pipeline enhances it by:
+- **Dynamic Collections**: Automatically handles new collections using ADF’s collection discovery.
+- **Incremental Updates**: Uses MongoDB change streams for real-time updates, reducing full scans.
+- **Staging Layer**: Adds Azure Blob Storage for efficient batch loading, aligning with **Pipeline #2** but optimized for dynamic collections.
+- **Automation**: Leverages ADF for orchestration and Snowpipe for continuous loading.
+
+This pipeline is a hybrid of **Pipeline #2 (Mongo & Blob -> Snowflake)** and **Pipeline #4**, offering real-time updates and dynamic collection support while maintaining cost efficiency.
+
+---
+
+### **Action Steps**
+1. **Deploy Azure Function**: Deploy `mongo_change_stream.py` as an Azure Function with an Event Hub trigger.
+2. **Configure ADF**: Set up the ADF pipeline (`adf_pipeline.json`) with MongoDB and Snowflake linked services.
+3. **Create Snowflake Tables**: Run the initial table creation scripts for existing collections.
+4. **Set Up Snowpipe**: Configure Snowpipe for each collection to auto-ingest from Blob Storage.
+5. **Monitor and Optimize**: Use ADF monitoring and Snowflake Query Profile to tune performance and costs.
+6. **Test**: Start with a single collection to validate the pipeline, then scale to all collections.
+
+Let me know if you need:
+- Detailed setup instructions for Azure Functions or ADF.
+- Snowflake query examples for specific analytics use cases.
+- Modifications for fully real-time ingestion (e.g., bypassing Blob Storage).
+- Cost estimates based on your data volume.
 
 ############
 # ChatGPT
