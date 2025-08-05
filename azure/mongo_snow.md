@@ -5,6 +5,11 @@ New Weavix MongoDB can be created any time
 In this case we need to implement Change Data Capture (CDC) Pipeline
 
 ## Azure Data Factory Pipeline 
+
+- Triggers the pipeline on a schedule (every N minutes/hours)
+- Lists all collections in MongoDB
+- Submits each collection for processing via event or job queue (e.g., Azure Queue)
+
 ```json
 {
   "name": "MongoDB-to-Snowflake-Direct-Pipeline",
