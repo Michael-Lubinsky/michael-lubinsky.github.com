@@ -968,6 +968,152 @@ SELECT /*+ HASH_JOIN(users orders) */
 
 
 
+
+
+
+# MongoDB to Snowflake Pipeline on Azure Cloud (Scalable, Incremental, Automated)
+
+## Goals:
+- Sync all MongoDB collections (including newly created ones) to Snowflake
+- Efficient transformation for analytical queries (flatten JSON, normalize)
+- Run on a schedule (daily/hourly)
+- Scalable and maintainable using Azure services
+
+---
+
+## 1. Azure-Based Architecture Overview
+
+MongoDB (hosted anywhere)
+|
+| [1. Azure Function / Data Factory - discover collections]
+|
+v
+Azure Container Instance (or Azure Databricks)
+|
+| [2. Extract & Flatten MongoDB collections]
+v
+Azure Data Lake / Blob Storage (Parquet files)
+|
+| [3. Load to Snowflake Staging via COPY INTO]
+v
+Snowflake (Flattened, Normalized Tables)
+
+ 
+
+## 2. Core Components and Their Responsibilities
+
+### ✅ Azure Function / Data Factory
+- Triggers the pipeline on a schedule (every N minutes/hours)
+- Lists all collections in MongoDB
+- Submits each collection for processing via event or job queue (e.g., Azure Queue)
+
+### ✅ Azure Container Instance or Azure Databricks
+- Executes Python-based ETL job per collection
+- Reads MongoDB collection
+- Flattens JSON and/or splits into normalized sub-tables
+- Writes to Azure Data Lake/Blob as Parquet
+
+### ✅ Azure Blob Storage / Data Lake Gen2
+- Stores intermediary `.parquet` files (partitioned by collection and timestamp)
+- Used by Snowflake as an external stage
+
+### ✅ Snowflake
+- Reads data via `COPY INTO` from Azure stage
+- Uses `MERGE` for upserts (if collection has updates)
+- Normalized table design with cluster keys for analytics
+
+---
+
+## 3. Python ETL Template for One Collection
+
+```python
+from pymongo import MongoClient
+import pandas as pd
+from snowflake.connector.pandas_tools import write_pandas
+from azure.storage.blob import BlobServiceClient
+import json
+
+def process_collection(collection_name):
+    # Mongo
+    client = MongoClient("mongodb://...")
+    coll = client["your_db"][collection_name]
+    docs = list(coll.find())
+
+    # Flatten
+    df = pd.json_normalize(docs)
+
+    # Save to Azure Blob
+    df.to_parquet(f"/tmp/{collection_name}.parquet", index=False)
+    
+    # Upload to Blob Storage
+    blob = BlobServiceClient.from_connection_string("AZURE_CONN")
+    container = blob.get_container_client("mongo-staging")
+    with open(f"/tmp/{collection_name}.parquet", "rb") as f:
+        container.upload_blob(f"{collection_name}/{collection_name}.parquet", f, overwrite=True)
+
+    # Connect to Snowflake and copy
+    # You can also use EXTERNAL STAGE pointing to Azure Blob
+```
+### 4. Snowflake Setup
+Create External Stage
+```sql
+
+CREATE OR REPLACE STAGE azure_stage
+URL='azure://<your-container-name>.blob.core.windows.net/mongo-staging'
+STORAGE_INTEGRATION = your_azure_integration;
+```
+Create Final Table (example)
+```sql
+
+CREATE TABLE IF NOT EXISTS users_flat (
+  _id STRING,
+  name STRING,
+  age INT,
+  ...
+)
+CLUSTER BY (_id);
+```
+Load Data
+```sql
+COPY INTO users_flat
+FROM @azure_stage/users/users.parquet
+FILE_FORMAT = (TYPE = 'PARQUET');
+```
+
+### 5. Handle Schema Changes
+- Use dynamic schema discovery in Python via df.columns
+- Log unknown columns and alert
+- Optionally create/alter target Snowflake tables using SQL DDL generation from Pandas schema
+
+### 6. Detect New/Updated Collections
+- Use db.list_collection_names() in MongoDB to detect new collections 
+- Maintain a metadata table in Snowflake to track: 
+      Last processed timestamp 
+      Schema hash 
+
+- Only reprocess changed collections
+
+### 7. Scheduling and Orchestration
+- Use Azure Data Factory or Durable Azure Functions
+- Parallelize collection processing
+- Monitor with Azure Monitor / Log Analytics
+
+### 8. Optional Optimizations
+- Use CDC from MongoDB (e.g., MongoDB Change Streams to Kafka) for real-time sync
+- Use Delta Lake or Iceberg format in Azure for richer snapshotting
+- Normalize deeply nested fields to junction tables before upload
+
+
+| Step      | Tool                                   | Purpose                               |
+| --------- | -------------------------------------- | ------------------------------------- |
+| Discovery | Azure Function / Data Factory          | Detect new collections                |
+| ETL       | Python in Azure Container / Databricks | Extract → Flatten → Store             |
+| Staging   | Azure Blob Storage                     | Parquet files for Snowflake ingestion |
+| Load      | Snowflake `COPY INTO`                  | Load and optionally `MERGE`           |
+| Monitor   | Azure Monitor / Logs                   | Track failures and freshness          |
+
+
+
 #########
 # GEMINI
 #########
