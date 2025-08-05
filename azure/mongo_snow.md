@@ -1132,3 +1132,386 @@ ALTER TABLE orders ADD CONSTRAINT PK_ORDER_ID PRIMARY KEY (order_id);
 ALTER TABLE orders ADD CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
 
 By following these steps, you can create a robust and efficient data pipeline that moves your MongoDB data into a format optimized for analytics in Snowflake.
+
+
+##############
+# CLAUDE ####
+#############
+
+# MongoDB to Snowflake Analytics Pipeline on Azure
+
+## Architecture Overview
+
+```
+MongoDB → Azure Data Factory → Azure Data Lake Gen2 → Snowflake → Analytics Layer
+    ↓              ↓                    ↓              ↓
+Change Streams → Event Hub → Functions → Staging → Transformation → Star Schema
+```
+
+## 1. Data Ingestion Layer
+
+### Azure Data Factory (ADF) Pipeline Design
+
+**Components:**
+- **MongoDB Linked Service**: Connect to MongoDB with connection pooling
+- **Snowflake Linked Service**: Native Snowflake connector
+- **Azure Data Lake Gen2**: Staging area for large datasets
+- **Azure Event Hub**: Real-time change capture
+- **Azure Functions**: Lightweight transformations
+
+### Pipeline Types:
+
+#### A. Full Load Pipeline (Initial & Periodic)
+```json
+{
+  "name": "MongoDB-Full-Load",
+  "activities": [
+    {
+      "name": "Get-Collection-List",
+      "type": "Lookup",
+      "source": "MongoDB",
+      "query": "db.runCommand('listCollections')"
+    },
+    {
+      "name": "For-Each-Collection",
+      "type": "ForEach",
+      "items": "@activity('Get-Collection-List').output",
+      "activities": [
+        {
+          "name": "Copy-Collection-to-ADLS",
+          "type": "Copy",
+          "source": {
+            "type": "MongoDbV2Source",
+            "batchSize": 10000
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "path": "raw/mongodb/@{item().name}/@{utcnow('yyyy/MM/dd')}"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### B. Incremental Load Pipeline (CDC)
+- Use MongoDB Change Streams via Azure Event Hub
+- Azure Functions trigger on document changes
+- Capture: inserts, updates, deletes with timestamps
+
+## 2. Data Lake Storage Strategy
+
+### Azure Data Lake Gen2 Structure:
+```
+/datalake
+  /raw
+    /mongodb
+      /collection_name
+        /year=2024/month=01/day=15
+          - partition by date for efficient querying
+  /staging
+    /flattened
+      /collection_name_flattened
+  /processed
+    /snowflake_ready
+      /fact_tables
+      /dimension_tables
+```
+
+## 3. Data Transformation Layer
+
+### Schema Design Philosophy for Analytics
+
+#### MongoDB Document → Snowflake Table Transformation:
+
+**1. Flatten Nested JSON Strategy:**
+```sql
+-- Original MongoDB Document
+{
+  "_id": "507f1f77bcf86cd799439011",
+  "user": {
+    "name": "John Doe",
+    "address": {
+      "street": "123 Main St",
+      "city": "Seattle",
+      "coordinates": [47.6062, -122.3321]
+    }
+  },
+  "orders": [
+    {"id": "ord1", "amount": 100, "items": ["item1", "item2"]},
+    {"id": "ord2", "amount": 200, "items": ["item3"]}
+  ],
+  "metadata": {
+    "created_at": "2024-01-15T10:30:00Z",
+    "tags": ["premium", "active"]
+  }
+}
+
+-- Transformed to Snowflake Tables:
+
+-- Main Entity Table (users)
+CREATE TABLE users (
+    id STRING PRIMARY KEY,
+    name STRING,
+    address_street STRING,
+    address_city STRING,
+    address_lat FLOAT,
+    address_lng FLOAT,
+    created_at TIMESTAMP,
+    tags ARRAY,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- Normalized Related Entity (orders)
+CREATE TABLE user_orders (
+    user_id STRING,
+    order_id STRING,
+    amount DECIMAL(10,2),
+    order_sequence INT,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (user_id, order_id)
+);
+
+-- Junction Table for Many-to-Many (order_items)
+CREATE TABLE order_items (
+    user_id STRING,
+    order_id STRING,
+    item_id STRING,
+    item_sequence INT,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+```
+
+### Transformation Rules:
+
+#### 1. **Primitive Fields**: Direct mapping
+```sql
+-- MongoDB: {"name": "John", "age": 30}
+-- Snowflake: name STRING, age INT
+```
+
+#### 2. **Nested Objects**: Flatten with underscore notation
+```sql
+-- MongoDB: {"address": {"city": "Seattle", "zip": "98101"}}
+-- Snowflake: address_city STRING, address_zip STRING
+```
+
+#### 3. **Arrays of Primitives**: Use Snowflake ARRAY type
+```sql
+-- MongoDB: {"tags": ["premium", "active"]}
+-- Snowflake: tags ARRAY
+```
+
+#### 4. **Arrays of Objects**: Separate table with foreign key
+```sql
+-- MongoDB: {"orders": [{"id": "1", "amount": 100}]}
+-- Snowflake: Separate orders table with user_id foreign key
+```
+
+#### 5. **Dynamic/Unknown Fields**: Store as VARIANT
+```sql
+-- MongoDB: {"custom_fields": {"field1": "value1", "field2": 123}}
+-- Snowflake: custom_fields VARIANT
+```
+
+## 4. Azure Functions for Real-time Processing
+
+### Change Stream Processor Function:
+```python
+import azure.functions as func
+import snowflake.connector
+import json
+
+def main(event: func.EventHubEvent):
+    # Parse MongoDB change event
+    change_doc = json.loads(event.get_body().decode('utf-8'))
+    
+    operation_type = change_doc['operationType']  # insert, update, delete
+    collection_name = change_doc['ns']['coll']
+    
+    if operation_type == 'insert':
+        process_insert(change_doc, collection_name)
+    elif operation_type == 'update':
+        process_update(change_doc, collection_name)
+    elif operation_type == 'delete':
+        process_delete(change_doc, collection_name)
+
+def process_insert(change_doc, collection_name):
+    flattened_doc = flatten_document(change_doc['fullDocument'])
+    upsert_to_snowflake(flattened_doc, collection_name)
+```
+
+## 5. Snowflake Schema Design for Analytics
+
+### Star Schema Approach:
+
+#### Fact Tables (Transaction Data):
+```sql
+-- High-volume, frequently updated collections
+CREATE TABLE fact_transactions (
+    transaction_id STRING PRIMARY KEY,
+    user_id STRING,
+    product_id STRING,
+    merchant_id STRING,
+    amount DECIMAL(12,2),
+    transaction_date DATE,
+    transaction_timestamp TIMESTAMP,
+    -- Dimensions as foreign keys
+    date_key INT,
+    user_key INT,
+    product_key INT,
+    etl_batch_id STRING,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+) 
+CLUSTER BY (transaction_date, user_id);
+```
+
+#### Dimension Tables (Reference Data):
+```sql
+-- Slowly changing dimensions
+CREATE TABLE dim_users (
+    user_key INT AUTOINCREMENT PRIMARY KEY,
+    user_id STRING UNIQUE,
+    user_name STRING,
+    user_email STRING,
+    user_segment STRING,
+    address_city STRING,
+    address_country STRING,
+    -- SCD Type 2 fields
+    effective_date TIMESTAMP,
+    expiry_date TIMESTAMP,
+    is_current BOOLEAN DEFAULT TRUE,
+    etl_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+)
+CLUSTER BY (user_id);
+```
+
+### Clustering Strategy:
+- **Fact Tables**: Cluster by date + high-cardinality dimension
+- **Dimension Tables**: Cluster by business key
+- **Large Tables**: Multi-column clustering
+
+## 6. Efficient Table Joins in Snowflake
+
+### Join Optimization Strategies:
+
+#### 1. **Clustering Keys for Co-location**:
+```sql
+-- Cluster both tables on join keys
+ALTER TABLE fact_orders CLUSTER BY (customer_id, order_date);
+ALTER TABLE dim_customers CLUSTER BY (customer_id);
+```
+
+#### 2. **Materialized Views for Complex Joins**:
+```sql
+CREATE MATERIALIZED VIEW mv_customer_order_summary
+CLUSTER BY (customer_id, order_month) AS
+SELECT 
+    c.customer_id,
+    c.customer_name,
+    c.customer_segment,
+    DATE_TRUNC('month', o.order_date) as order_month,
+    COUNT(*) as order_count,
+    SUM(o.order_amount) as total_amount
+FROM dim_customers c
+JOIN fact_orders o ON c.customer_id = o.customer_id
+WHERE c.is_current = TRUE
+GROUP BY 1,2,3,4;
+```
+
+#### 3. **Query Optimization Patterns**:
+```sql
+-- Use explicit join conditions
+-- Push down filters early
+-- Use appropriate join types
+
+SELECT /*+ USE_CACHED_RESULT(FALSE) */
+    c.customer_segment,
+    p.product_category,
+    SUM(f.amount) as revenue
+FROM fact_transactions f
+JOIN dim_customers c ON f.customer_id = c.customer_id
+JOIN dim_products p ON f.product_id = p.product_id
+WHERE f.transaction_date >= '2024-01-01'
+    AND c.is_current = TRUE
+    AND c.customer_segment IN ('Premium', 'Enterprise')
+GROUP BY 1,2
+ORDER BY 3 DESC;
+```
+
+## 7. Pipeline Orchestration & Monitoring
+
+### Azure Data Factory Schedule:
+```json
+{
+  "triggers": [
+    {
+      "name": "DailyFullLoad",
+      "type": "ScheduleTrigger",
+      "recurrence": {
+        "frequency": "Day",
+        "interval": 1,
+        "startTime": "2024-01-01T02:00:00Z"
+      }
+    },
+    {
+      "name": "HourlyIncremental",
+      "type": "ScheduleTrigger", 
+      "recurrence": {
+        "frequency": "Hour",
+        "interval": 1
+      }
+    }
+  ]
+}
+```
+
+### Monitoring & Alerting:
+- **Azure Monitor**: Pipeline execution metrics
+- **Snowflake Query History**: Performance monitoring
+- **Data Quality Checks**: Row counts, schema validation
+- **Cost Monitoring**: Snowflake credits and Azure costs
+
+## 8. Performance Optimizations
+
+### MongoDB Side:
+- **Indexes**: Ensure indexes on frequently queried fields
+- **Read Preferences**: Use secondary replicas for ETL
+- **Connection Pooling**: Optimize connection management
+
+### Azure Data Factory:
+- **Parallel Activities**: Process multiple collections simultaneously
+- **Data Integration Units**: Scale compute for large transfers
+- **Incremental Loading**: Use change streams for real-time updates
+
+### Snowflake Side:
+- **Warehouse Sizing**: Auto-suspend/resume for cost optimization
+- **Multi-cluster Warehouses**: Scale for concurrent workloads
+- **Result Caching**: Enable for repeated analytical queries
+- **Micro-partitions**: Leverage automatic partitioning
+
+## 9. Data Governance & Quality
+
+### Schema Evolution:
+```sql
+-- Handle new fields dynamically
+CREATE OR REPLACE PROCEDURE handle_schema_evolution()
+RETURNS STRING
+LANGUAGE JAVASCRIPT
+AS $$
+  // Detect new fields in staging
+  // Alter target tables
+  // Update transformation logic
+$$;
+```
+
+### Data Quality Framework:
+- **Validation Rules**: Check data types, nulls, ranges
+- **Reconciliation**: Compare row counts between source and target
+- **Data Lineage**: Track data flow from MongoDB to Snowflake
+- **Audit Logging**: Maintain ETL execution history
+
+This pipeline provides a robust, scalable solution for moving MongoDB data to Snowflake while optimizing for analytical workloads through proper schema design and efficient joining strategies.
+
+
