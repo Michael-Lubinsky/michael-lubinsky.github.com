@@ -973,7 +973,11 @@ SELECT /*+ HASH_JOIN(users orders) */
 #########
 
 
-Moving MongoDB Collections to SnowflakeThis guide outlines a comprehensive approach to moving data from MongoDB to Snowflake, focusing on efficiency, schema transformation for analytics, and best practices for joining large tables.1. Efficiently Moving Data from MongoDB to SnowflakeThe most efficient methods for data ingestion from MongoDB to Snowflake depend on whether you need a one-time migration or a continuous, real-time sync.
+Moving MongoDB Collections to SnowflakeThis guide outlines a comprehensive approach to moving data from MongoDB to Snowflake, focusing on efficiency, schema transformation for analytics, and best practices for joining large tables.
+
+## 1. Efficiently Moving Data from MongoDB to Snowflake
+
+The most efficient methods for data ingestion from MongoDB to Snowflake depend on whether you need a one-time migration or a continuous, real-time sync.
 
 Option A: Automated ELT/CDC Tools (Recommended)For most use cases, especially those requiring real-time or near-real-time 
 data, using a third-party ELT (Extract, Load, Transform) or CDC (Change Data Capture) tool is the most efficient and scalable method. These tools handle the complex details of data extraction, schema inference, and continuous synchronization.  
@@ -1014,7 +1018,7 @@ FROM @my_s3_stage
 FILE_FORMAT = (TYPE = 'JSON');
 ```
 
-2. Schema Transformation for Analytics (Unrolling JSON)
+## 2. Schema Transformation for Analytics (Unrolling JSON)
    This is the most critical step. MongoDB's flexible schema needs to be flattened into a relational structure to unlock Snowflake's full analytical power.  
    The key is to use Snowflake's FLATTEN and LATERAL functions.The best practice is to load the raw JSON into a staging table and then create views or new tables with a flattened schema for your analytical workloads.
 
@@ -1069,13 +1073,17 @@ LATERAL FLATTEN(INPUT => raw_document:items) AS item;
 ```
 This LATERAL FLATTEN statement creates a new row for each item in the items array, effectively "unrolling" the JSON.
 
-3. Joining Large Tables in SnowflakeOnce your data is in a flattened, relational structure, you can leverage Snowflake's powerful query engine. However, for large tables, you should follow these best practices for optimal performance.
+## 3. Joining Large Tables in SnowflakeOnce 
+your data is in a flattened, relational structure, you can leverage Snowflake's powerful query engine. 
+However, for large tables, you should follow these best practices for optimal performance.
 
-#### A. Filter EarlyAlways filter your data before performing a JOIN. 
+#### A. Filter Early
+Always filter your data before performing a JOIN. 
 This reduces the amount of data that needs to be processed, leading to significant performance gains.
--- Bad: Filters after the join
+
 
 ```sql
+-- Bad: Filters after the join
 SELECT
     o.order_id,
     c.customer_name
@@ -1095,7 +1103,8 @@ SELECT
 FROM filtered_orders fo
 JOIN customers c ON fo.customer_id = c.customer_id;
 ```
-#### B. Use Clustering KeysFor very large tables (over 1 TB) that are frequently queried on a specific set of columns, consider defining a clustering key. 
+#### B. Use Clustering Keys
+For very large tables (over 1 TB) that are frequently queried on a specific set of columns, consider defining a clustering key. 
 A clustering key ensures that data with similar values is stored physically close together, which can drastically improve query performance by enabling "query pruning."
 
 Example: If your sales table is often queried by order_date and customer_id, you could define a clustering key on these columns.
@@ -1104,13 +1113,20 @@ ALTER TABLE sales_fact CLUSTER BY (order_date, customer_id);
 
 Note: Clustering adds maintenance costs, so it should only be used on tables where it provides a significant benefit for your most critical queries.
 
-#### C. Leverage Search Optimization ServiceFor join predicates on columns with low cardinality (a small number of distinct values), enabling the Search Optimization Service can improve performance. It creates a persistent data structure that allows for faster lookups.
+#### C. Leverage Search Optimization Service
+For join predicates on columns with low cardinality (a small number of distinct values), enabling the Search Optimization Service can improve performance. 
+It creates a persistent data structure that allows for faster lookups.
 
 Example: If you frequently join your sales table with a products table on product_id, you can enable search optimization on that column.
 
 ALTER TABLE sales_fact ADD SEARCH OPTIMIZATION ON EQUALITY(product_id);
 
-#### D. Use JOIN with Primary and Foreign KeysWhile Snowflake doesn't enforce primary and foreign key constraints, defining them is a best practice. It helps the query optimizer understand the relationships between tables and can be used by business intelligence tools to build queries more efficiently.-- Define primary and foreign key constraints as "informational"
+#### D. Use JOIN with Primary and Foreign Keys
+
+While Snowflake doesn't enforce primary and foreign key constraints, defining them is a best practice. v
+It helps the query optimizer understand the relationships between tables and can be used by business intelligence tools to build queries more efficiently.
+
+-- Define primary and foreign key constraints as "informational"
 
 ALTER TABLE orders ADD CONSTRAINT PK_ORDER_ID PRIMARY KEY (order_id);  
 ALTER TABLE orders ADD CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
