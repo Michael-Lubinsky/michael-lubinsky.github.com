@@ -1,11 +1,5 @@
 ## mongo snow ChatGPT
 
-
-
-############
-# ChatGPT
-############
-
 ## 1. Extract-Transform-Load (ETL) Pipeline Overview
 
 MongoDB (nested JSON, arrays)
