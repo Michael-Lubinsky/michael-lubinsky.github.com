@@ -1073,8 +1073,8 @@ LATERAL FLATTEN(INPUT => raw_document:items) AS item;
 ```
 This LATERAL FLATTEN statement creates a new row for each item in the items array, effectively "unrolling" the JSON.
 
-## 3. Joining Large Tables in SnowflakeOnce 
-your data is in a flattened, relational structure, you can leverage Snowflake's powerful query engine. 
+## 3. Joining Large Tables in Snowflake
+Once your data is in a flattened, relational structure, you can leverage Snowflake's powerful query engine.  
 However, for large tables, you should follow these best practices for optimal performance.
 
 #### A. Filter Early
@@ -1123,7 +1123,7 @@ ALTER TABLE sales_fact ADD SEARCH OPTIMIZATION ON EQUALITY(product_id);
 
 #### D. Use JOIN with Primary and Foreign Keys
 
-While Snowflake doesn't enforce primary and foreign key constraints, defining them is a best practice. v
+While Snowflake doesn't enforce primary and foreign key constraints, defining them is a best practice.  
 It helps the query optimizer understand the relationships between tables and can be used by business intelligence tools to build queries more efficiently.
 
 -- Define primary and foreign key constraints as "informational"
