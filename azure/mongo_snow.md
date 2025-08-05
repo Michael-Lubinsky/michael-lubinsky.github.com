@@ -1023,7 +1023,7 @@ FILE_FORMAT = (TYPE = 'JSON');
    The key is to use Snowflake's FLATTEN and LATERAL functions.The best practice is to load the raw JSON into a staging table and then create views or new tables with a flattened schema for your analytical workloads.
 
    How to Flatten Nested DocumentsLet's assume your MongoDB collection has a nested document like this:
-```
+```json
    {
   "_id": "user123",
   "name": "John Doe",
