@@ -954,7 +954,7 @@ Use HASH_JOIN() hints if needed (advanced)
 
 ```sql
 SELECT /*+ HASH_JOIN(users orders) */
-...
+```
 
 ### 6. Summary
 
@@ -965,3 +965,154 @@ SELECT /*+ HASH_JOIN(users orders) */
 | 3. Load      | Write to Parquet → Stage → COPY INTO Snowflake        |
 | 4. Model     | Use Snowflake-friendly schema (flattened, normalized) |
 | 5. Optimize  | Use cluster keys, filter early, avoid cross joins     |
+
+
+
+#########
+# GEMINI
+#########
+
+
+Moving MongoDB Collections to SnowflakeThis guide outlines a comprehensive approach to moving data from MongoDB to Snowflake, focusing on efficiency, schema transformation for analytics, and best practices for joining large tables.1. Efficiently Moving Data from MongoDB to SnowflakeThe most efficient methods for data ingestion from MongoDB to Snowflake depend on whether you need a one-time migration or a continuous, real-time sync.
+
+Option A: Automated ELT/CDC Tools (Recommended)For most use cases, especially those requiring real-time or near-real-time 
+data, using a third-party ELT (Extract, Load, Transform) or CDC (Change Data Capture) tool is the most efficient and scalable method. These tools handle the complex details of data extraction, schema inference, and continuous synchronization.  
+How it Works: Tools like Fivetran, Stitch, or Estuary connect directly to your MongoDB instance (often using MongoDB's Change Streams) and stream the data to a staging area in your cloud provider (e.g., AWS S3). 
+
+Snowflake's Snowpipe can then automatically ingest this data as it arrives.
+Benefits:Automation: No custom code is required to handle data ingestion, transformations, or schema changes.Real-time: 
+
+CDC functionality ensures that new data and updates in MongoDB are reflected in Snowflake with low latency.Scalability: 
+These platforms are designed to handle high volumes of data without performance degradation.
+
+Option B: 
+Manual Batch Processing with Custom ScriptsIf you have a one-time migration or a simple, scheduled batch process, you can build a custom data pipeline using a scripting language like Python.Extract: Use a MongoDB client library (e.g., pymongo in Python) to extract data from your collection.
+
+Export: Export the data into a semi-structured format like JSON or Parquet.  
+Stage: Upload the files to an external stage (e.g., S3, Google Cloud Storage) that is accessible by Snowflake.Load: 
+Use Snowflake's COPY INTO command to load the staged files into a target table.
+
+Example: Loading a JSON File into SnowflakeFirst, create a target table in Snowflake with a VARIANT column to hold the raw JSON. This is crucial for maintaining the original data structure before transformation.
+
+```sql
+-- Step 1: Create a staging table with a VARIANT column
+
+CREATE OR REPLACE TABLE raw_mongo_data (
+    raw_document VARIANT
+);
+
+-- Step 2: Create a named external stage (if you haven't already)
+
+CREATE OR REPLACE STAGE my_s3_stage
+  URL = 's3://my-bucket/path/to/mongo-data/'
+  CREDENTIALS = (AWS_KEY_ID = 'your_key_id' AWS_SECRET_KEY = 'your_secret_key');
+
+-- Step 3: Use COPY INTO to load the data from your stage
+
+COPY INTO raw_mongo_data
+FROM @my_s3_stage
+FILE_FORMAT = (TYPE = 'JSON');
+```
+
+2. Schema Transformation for Analytics (Unrolling JSON)
+   This is the most critical step. MongoDB's flexible schema needs to be flattened into a relational structure to unlock Snowflake's full analytical power.  
+   The key is to use Snowflake's FLATTEN and LATERAL functions.The best practice is to load the raw JSON into a staging table and then create views or new tables with a flattened schema for your analytical workloads.
+
+   How to Flatten Nested DocumentsLet's assume your MongoDB collection has a nested document like this:
+```
+   {
+  "_id": "user123",
+  "name": "John Doe",
+  "contact": {
+    "email": "john.doe@example.com",
+    "phone": "555-1234"
+  }
+}
+```
+You can flatten this into a relational table using dot notation:CREATE OR REPLACE VIEW users_contact_view AS
+```sql
+SELECT
+    raw_document:_id::VARCHAR AS user_id,
+    raw_document:name::VARCHAR AS user_name,
+    raw_document:contact.email::VARCHAR AS email,
+    raw_document:contact.phone::VARCHAR AS phone_number
+FROM raw_mongo_data;
+```
+How to Flatten Arrays (Unroll JSON)If your document contains an array, like a list of orders, you need to "unroll" it into multiple rows. This is where FLATTEN and LATERAL come in.
+
+Consider a document with a nested items array:
+```json
+{
+  "_id": "order456",
+  "order_date": "2025-07-28",
+  "customer_id": "cust789",
+  "items": [
+    { "product_id": "prod_a", "quantity": 2, "price": 10.00 },
+    { "product_id": "prod_b", "quantity": 1, "price": 25.50 }
+  ]
+}
+```
+You can transform this into a relational fact table (orders_items_fact) where each row represents a single item in an order.
+
+```sql
+CREATE OR REPLACE VIEW orders_items_fact AS
+SELECT
+    raw_document:_id::VARCHAR AS order_id,
+    raw_document:order_date::DATE AS order_date,
+    raw_document:customer_id::VARCHAR AS customer_id,
+    item.value:product_id::VARCHAR AS product_id,
+    item.value:quantity::NUMBER AS quantity,
+    item.value:price::NUMBER AS price
+FROM raw_mongo_data,
+LATERAL FLATTEN(INPUT => raw_document:items) AS item;
+
+```
+This LATERAL FLATTEN statement creates a new row for each item in the items array, effectively "unrolling" the JSON.
+
+3. Joining Large Tables in SnowflakeOnce your data is in a flattened, relational structure, you can leverage Snowflake's powerful query engine. However, for large tables, you should follow these best practices for optimal performance.
+
+#### A. Filter EarlyAlways filter your data before performing a JOIN. 
+This reduces the amount of data that needs to be processed, leading to significant performance gains.
+-- Bad: Filters after the join
+
+```sql
+SELECT
+    o.order_id,
+    c.customer_name
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+WHERE o.order_date >= '2025-01-01';
+
+-- Good: Filters before the join
+WITH filtered_orders AS (
+    SELECT order_id, customer_id
+    FROM orders
+    WHERE order_date >= '2025-01-01'
+)
+SELECT
+    fo.order_id,
+    c.customer_name
+FROM filtered_orders fo
+JOIN customers c ON fo.customer_id = c.customer_id;
+```
+#### B. Use Clustering KeysFor very large tables (over 1 TB) that are frequently queried on a specific set of columns, consider defining a clustering key. 
+A clustering key ensures that data with similar values is stored physically close together, which can drastically improve query performance by enabling "query pruning."
+
+Example: If your sales table is often queried by order_date and customer_id, you could define a clustering key on these columns.
+
+ALTER TABLE sales_fact CLUSTER BY (order_date, customer_id);
+
+Note: Clustering adds maintenance costs, so it should only be used on tables where it provides a significant benefit for your most critical queries.
+
+#### C. Leverage Search Optimization ServiceFor join predicates on columns with low cardinality (a small number of distinct values), enabling the Search Optimization Service can improve performance. It creates a persistent data structure that allows for faster lookups.
+
+Example: If you frequently join your sales table with a products table on product_id, you can enable search optimization on that column.
+
+ALTER TABLE sales_fact ADD SEARCH OPTIMIZATION ON EQUALITY(product_id);
+
+#### D. Use JOIN with Primary and Foreign KeysWhile Snowflake doesn't enforce primary and foreign key constraints, defining them is a best practice. It helps the query optimizer understand the relationships between tables and can be used by business intelligence tools to build queries more efficiently.-- Define primary and foreign key constraints as "informational"
+
+ALTER TABLE orders ADD CONSTRAINT PK_ORDER_ID PRIMARY KEY (order_id);  
+ALTER TABLE orders ADD CONSTRAINT FK_CUSTOMER_ID FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+
+By following these steps, you can create a robust and efficient data pipeline that moves your MongoDB data into a format optimized for analytics in Snowflake.
