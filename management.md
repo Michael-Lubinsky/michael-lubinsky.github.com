@@ -1,5 +1,7 @@
 <https://habr.com/ru/companies/otus/articles/934318/>
 
+<https://habr.com/ru/companies/otus/articles/932792/>
+
 <https://medium.com/@sohail_saifi/the-meeting-behavior-that-separates-senior-engineers-from-everyone-else-4ce566cfdb08>
 
 I was in a design review meeting last week when I noticed something that made me completely rethink what “senior” actually means.
