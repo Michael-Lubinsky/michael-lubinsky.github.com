@@ -29,3 +29,6 @@ https://medium.com/@mgalalen/how-databases-work-under-the-hood-building-a-key-va
 https://arpitbhayani.me/blogs/bitcask/
 
 https://habr.com/ru/companies/ydb/articles/898716/
+
+
+https://habr.com/ru/articles/934668/  Firebird internals
