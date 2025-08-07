@@ -118,4 +118,125 @@ This structure:
 
 ---
 
-Let me know if you want the full ADF JSON pipeline template or the Python code to stream from MongoDB.
+## 🧩 Part 1: Node.js App – MongoDB Change Stream → ADLS Gen2
+
+This app:
+- Connects to MongoDB change stream
+- Buffers change events
+- Uploads them as JSON files to Azure Data Lake Storage Gen2 (ADLS Gen2)
+
+### 🔧 Requirements
+Install dependencies:
+```bash
+npm install mongodb @azure/storage-blob uuid dotenv
+```
+
+### 📁 `.env` file (local config)
+```env
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/dbname?retryWrites=true&w=majority
+CONTAINER_NAME=changestream
+AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=xxx;AccountKey=xxx;EndpointSuffix=core.windows.net
+```
+
+### 📜 `app.js`
+```js
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const { v4: uuidv4 } = require('uuid');
+const fs = require('fs');
+
+const MONGO_URI = process.env.MONGO_URI;
+const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const CONTAINER_NAME = process.env.CONTAINER_NAME;
+
+const client = new MongoClient(MONGO_URI);
+const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
+
+const buffer = [];
+const MAX_BUFFER_SIZE = 100; // number of events
+const FLUSH_INTERVAL_MS = 60_000; // 1 minute
+
+async function uploadToADLS(events) {
+  const fileName = `changes/${new Date().toISOString()}_${uuidv4()}.json`;
+  const blobClient = containerClient.getBlockBlobClient(fileName);
+  const jsonData = JSON.stringify(events, null, 2);
+  await blobClient.upload(jsonData, Buffer.byteLength(jsonData));
+  console.log(`Uploaded ${events.length} events to ADLS: ${fileName}`);
+}
+
+async function run() {
+  await client.connect();
+  const db = client.db(); // default
+  const collection = db.collection('your_collection');
+
+  const changeStream = collection.watch();
+
+  // Periodic flushing
+  setInterval(async () => {
+    if (buffer.length > 0) {
+      const toUpload = buffer.splice(0, buffer.length);
+      await uploadToADLS(toUpload);
+    }
+  }, FLUSH_INTERVAL_MS);
+
+  changeStream.on('change', async (change) => {
+    buffer.push(change);
+
+    if (buffer.length >= MAX_BUFFER_SIZE) {
+      const toUpload = buffer.splice(0, buffer.length);
+      await uploadToADLS(toUpload);
+    }
+  });
+
+  console.log('Listening to change stream...');
+}
+
+run().catch(console.error);
+```
+
+---
+
+## 🧩 Part 2: ADF Pipeline – Load JSON from ADLS → Snowflake
+
+### 💠 Source: ADLS Gen2
+- Linked service: Azure Blob Storage (ADLS Gen2)
+- Dataset: JSON files from `changestream/` folder
+
+### 💠 Sink: Snowflake
+- Linked service: Snowflake (with proper credentials)
+- Option 1: Use **Snowflake COPY command** (recommended for batched loads)
+- Option 2: Use **Snowpipe** via external stage + notification
+
+---
+
+### 🏗️ ADF Pipeline Activities
+
+1. **Get Metadata / List Files**
+   - Enumerate JSON files under `changestream/`
+
+2. **ForEach Activity**
+   - Loop over listed files
+
+3. **Copy Activity**
+   - Source: ADLS JSON file
+   - Sink: Snowflake table
+   - Use a staging table and handle `MERGE`/`UPSERT` in a later step if needed
+
+---
+
+## 🚀 Optional: Use Snowpipe + Event Grid
+
+- Enable **Event Grid** on ADLS container
+- Snowflake listens to new blob events via Snowpipe REST endpoint
+- Automatically triggers ingest without ADF
+
+---
+
+## ✅ Summary
+
+- Node.js app captures real-time changes → writes them to ADLS as batch JSON
+- ADF picks up new files → loads into Snowflake in batch
+- You can tune frequency, buffer size, and file layout for optimization
+
