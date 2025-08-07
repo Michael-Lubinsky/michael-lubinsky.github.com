@@ -408,3 +408,101 @@ For a more streamlined, low-code/no-code approach, you can use a third-party Ext
 
 * **Schema Evolution:** MongoDB is schemaless, while Snowflake is a relational database. When you load MongoDB data, you'll need to decide how to handle its flexible structure. You can load the entire JSON document into a **VARIANT** column in Snowflake and then use SQL to flatten the data, or use an ETL tool to flatten the schema during the loading process.
 * **Data Volume and Latency:** For large volumes of data where near-real-time updates are needed, using a CDC-based approach with an ELT tool or Snowpipe is the most effective. For smaller, less-frequently updated collections, a scheduled batch process via Azure Data Factory might be sufficient.
+
+
+Mongo dump
+```python
+import subprocess
+import datetime
+import os
+import shutil
+
+# --- Configuration ---
+MONGO_HOST = "your_mongodb_host"
+MONGO_PORT = "27017"
+MONGO_DATABASE = "your_database_name"
+MONGO_USERNAME = "your_mongodb_username" # Optional
+MONGO_PASSWORD = "your_mongodb_password" # Optional
+ADLS_STORAGE_ACCOUNT = "your_adls_storage_account_name"
+ADLS_CONTAINER_NAME = "your_adls_container_name"
+ADLS_CONNECTION_STRING = "your_adls_connection_string" # Recommended for automation
+
+# Get a timestamp for a unique file name
+timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+local_dump_dir = f"mongodb_dump_{timestamp}"
+archive_file = f"{local_dump_dir}.zip"
+
+def create_mongodb_dump():
+    """
+    Creates a compressed dump of the MongoDB database using mongodump.
+    """
+    print(f"Starting MongoDB dump for database: {MONGO_DATABASE}...")
+    
+    # Base mongodump command
+    command = [
+        "mongodump",
+        f"--host={MONGO_HOST}",
+        f"--port={MONGO_PORT}",
+        f"--db={MONGO_DATABASE}",
+        f"--out={local_dump_dir}",
+        "--gzip"
+    ]
+    
+    # Add authentication if a username is provided
+    if MONGO_USERNAME:
+        command.extend([
+            f"--username={MONGO_USERNAME}",
+            f"--password={MONGO_PASSWORD}"
+        ])
+
+    try:
+        subprocess.run(command, check=True)
+        print("MongoDB dump created successfully.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error during mongodump: {e}")
+        return False
+
+def upload_to_adls():
+    """
+    Uploads the compressed dump to ADLS Gen2 using Azure CLI.
+    """
+    print("Starting upload to ADLS G2...")
+    
+    command = [
+        "az", "storage", "blob", "upload-batch",
+        "--destination", f"{ADLS_CONTAINER_NAME}",
+        "--source", f"./{local_dump_dir}",
+        "--account-name", f"{ADLS_STORAGE_ACCOUNT}",
+        "--connection-string", ADLS_CONNECTION_STRING,
+        "--destination-path", f"mongodb_dumps/{timestamp}",
+        "--overwrite" # This is important for scheduled jobs to not fail
+    ]
+    
+    try:
+        # Note: 'az storage blob upload-batch' is for directories
+        # If you were uploading a single file, you'd use 'az storage blob upload'
+        subprocess.run(command, check=True)
+        print("Upload to ADLS G2 successful.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"Error during ADLS upload: {e}")
+        return False
+
+def cleanup_local_files():
+    """
+    Removes the local dump directory after a successful upload.
+    """
+    print("Cleaning up local files...")
+    if os.path.exists(local_dump_dir):
+        shutil.rmtree(local_dump_dir)
+        print("Local dump directory removed.")
+
+if __name__ == "__main__":
+    if create_mongodb_dump():
+        if upload_to_adls():
+            cleanup_local_files()
+    else:
+        print("Script failed, check logs for details.")
+
+```
