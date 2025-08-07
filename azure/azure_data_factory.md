@@ -410,6 +410,39 @@ For a more streamlined, low-code/no-code approach, you can use a third-party Ext
 * **Data Volume and Latency:** For large volumes of data where near-real-time updates are needed, using a CDC-based approach with an ELT tool or Snowpipe is the most effective. For smaller, less-frequently updated collections, a scheduled batch process via Azure Data Factory might be sufficient.
 
 
+Creating a full dump of a MongoDB database and writing it to Azure Data Lake Storage Gen2 (ADLS Gen2) can be accomplished with a script that leverages MongoDB's mongodump utility and Azure's command-line interface (az CLI).
+
+### Python Script for MongoDB Dump to ADLS G2
+The following Python script automates this process: it creates a dump of the specified MongoDB database, compresses it, and uploads it to ADLS G2. This can be scheduled to run periodically using a cron job (on Linux) or Task Scheduler (on Windows).
+
+I'll provide you with a Python script that uses the subprocess module to run mongodump and az storage blob upload. Please make sure you have both mongodump and the Azure CLI installed and configured on the machine where you run this script.
+
+Python Script to Dump MongoDB to ADLS G2
+ 
+
+Try again without Canvas
+The script first calls mongodump to create a directory containing BSON files for each collection. It then uses the az storage blob upload-batch command to upload this entire directory to a specified path within your ADLS container. Finally, it cleans up the temporary local files to save disk space.
+
+### Performance Impact of the Dump Process
+The performance impact of the mongodump process on a MongoDB instance can be significant, especially on a busy, production-level database. The process primarily affects the database's read performance and I/O resources.
+
+Read Load: mongodump reads all data from the specified collections, which can consume a substantial amount of disk I/O. For large collections, this can cause a noticeable slowdown for other read operations.
+
+CPU and Memory Usage: The compression (--gzip) and data processing during the dump will increase CPU and memory usage on the machine where you run mongodump, and potentially on the MongoDB server if it's on the same machine.
+
+Locking: While mongodump is designed to be non-blocking and uses a read lock, it still can impact performance. Newer versions of mongodump use a mechanism that minimizes the time the read lock is held, but you may still see a spike in read contention, especially on a very active replica set member.
+
+### Best Practices to Mitigate Performance Impact:
+Run on a Secondary Member: The most effective way to minimize impact is to run mongodump on a secondary member of a replica set. This offloads the read-heavy operation from the primary, which is handling all write operations.
+
+Schedule During Off-Peak Hours: Schedule your dump script to run during times when database activity is at its lowest.
+
+Use a Smaller Batch Size: If you're writing a custom script, you can use a smaller batch size for data retrieval to reduce memory pressure. mongodump handles this automatically, but it's a good practice for custom tooling.
+
+Isolate the Process: Run the mongodump process on a separate machine from the MongoDB server itself to prevent resource contention.
+
+By following these practices, you can effectively manage the periodic dumping process without causing significant disruption to your live MongoDB applications.
+
 Mongo dump
 ```python
 import subprocess
