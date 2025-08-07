@@ -240,3 +240,101 @@ run().catch(console.error);
 - ADF picks up new files → loads into Snowflake in batch
 - You can tune frequency, buffer size, and file layout for optimization
 
+#  Snowflake 
+
+To trigger a process in Snowflake right after JSON files are uploaded to ADLS Gen2 and ingested via Snowpipe, and to extract specific JSON attributes into another table, you can follow this design:
+ 
+
+## ✅ Overview
+
+```
+MongoDB → Node.js → ADLS Gen2 → Snowpipe → Raw JSON Table → Post-ingestion Procedure → Parsed Table
+```
+
+---
+
+## 🔄 Trigger Process After JSON Ingestion
+
+### 🔧 Option 1: Use Snowpipe with Notification + TASK
+
+If using **Snowpipe with Event Grid** (recommended for automation), then:
+1. Files are automatically loaded into a **raw landing table**.
+2. Use a **Snowflake `TASK`** to:
+   - Monitor new rows in the raw table.
+   - Extract JSON attributes.
+   - Insert into a **structured target table**.
+
+---
+
+## 🏗️ Table Design
+
+### 🔹 Raw Table (loaded via Snowpipe)
+```sql
+CREATE OR REPLACE TABLE raw_mongo_data (
+  file_name STRING,
+  load_time TIMESTAMP,
+  data VARIANT  -- entire JSON object
+);
+```
+
+### 🔹 Parsed Table
+```sql
+CREATE OR REPLACE TABLE parsed_events (
+  _id STRING,
+  operationType STRING,
+  ns STRUCT<db STRING, coll STRING>,
+  fullDocument STRUCT<field1 STRING, field2 INT, ...>,
+  ts TIMESTAMP
+);
+```
+
+---
+
+## ⚙️ Sample TASK + SQL Extract
+
+### 1. Stored Procedure
+```sql
+CREATE OR REPLACE PROCEDURE extract_json_to_structured()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+  INSERT INTO parsed_events (_id, operationType, ns, fullDocument, ts)
+  SELECT
+    data:_id::STRING,
+    data:operationType::STRING,
+    OBJECT_CONSTRUCT('db', data:ns.db, 'coll', data:ns.coll),
+    data:fullDocument,
+    CURRENT_TIMESTAMP()
+  FROM raw_mongo_data
+  WHERE processed IS NULL;
+
+  UPDATE raw_mongo_data
+  SET processed = TRUE
+  WHERE processed IS NULL;
+
+  RETURN 'done';
+$$;
+```
+
+### 2. Scheduled or Event-Driven
+
+```sql
+CREATE OR REPLACE TASK run_json_extraction
+  WAREHOUSE = my_wh
+  SCHEDULE = '1 MINUTE'
+AS
+  CALL extract_json_to_structured();
+```
+
+You can also trigger it manually or via Snowpipe event subscription.
+
+---
+
+## ✅ Best Practices
+
+- Add a `processed` or `status` column to `raw_mongo_data` to avoid duplicate processing.
+- Use `VARIANT` for flexible schema evolution in raw table.
+- Index/cluster `parsed_events` on key columns for fast queries.
+- If the data is deeply nested, consider flattening arrays using `LATERAL FLATTEN`.
+
