@@ -24,6 +24,40 @@ MongoDB → ADF (Pipeline) → ADLS Gen2 (Parquet/JSON layout) → [Optional: Sn
 4. **Configure Schedule Trigger**: run every 5m / 1h / daily, depending on freshness needs.
 5. **Store in ADLS Gen2**: use Parquet or JSON format.
 
+
+
+In the context of MongoDB → ADLS Gen2 via Azure Data Factory,  
+here's how you can generally classify small to moderate collections:
+
+
+| Category     | Document Count    | Data Volume per Collection | Recommended ADF Mode                     |
+| ------------ | ----------------- | -------------------------- | ---------------------------------------- |
+| **Small**    | < 1 million docs  | < 1 GB                     | Periodic full extract ✅                  |
+| **Moderate** | 1–10 million docs | 1–10 GB                    | Periodic full extract ✅                  |
+| **Large**    | > 10 million docs | > 10 GB                    | Change streams or incremental extract ⚠️ |
+
+Considerations Beyond Size
+1. Change Frequency
+If a collection updates very frequently (e.g., > 5% of docs/hour), full extract might cause high I/O or outdated snapshots.
+
+2. Index Availability
+If collections have an indexed updated_at or _id field, you can use incremental extract even for moderate/large datasets.
+
+3. Network & Runtime Limits
+ADF copy activities may timeout or throttle if transferring multi-GB unindexed documents frequently.
+
+4. Downstream Consumers
+If consumers (e.g., Snowflake, Synapse) are only interested in deltas or aggregates, a full extract wastes resources.
+
+
+Periodic Full Extract is fine if:
+
+- Collection is < 10 GB
+- Extract takes < 15 minutes per collection
+- Changes are not extremely frequent
+- Otherwise, use Change Streams or incremental lastModified-based sync
+
+
 ---
 
 ## ⚙️ Option 2: Incremental Loads Using Change Streams (for real-time/delta sync)
