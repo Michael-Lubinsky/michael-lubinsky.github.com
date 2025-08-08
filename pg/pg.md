@@ -806,6 +806,44 @@ BEGIN
 END;
 $$;
 ```
+pass procedure name as parameter
+```sql
+CREATE OR REPLACE PROCEDURE public.process_date_range(
+    p_start DATE,
+    p_end DATE,
+    p_proc_name TEXT  -- schema-qualified procedure name as string
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    current_date DATE := p_start;
+BEGIN
+    IF p_start > p_end THEN
+        RAISE EXCEPTION 'Start date (%) is after end date (%)', p_start, p_end;
+    END IF;
+
+    WHILE current_date <= p_end LOOP
+        EXECUTE format(
+            'CALL %I(%L)',
+            p_proc_name,
+            current_date
+        );
+        current_date := current_date + INTERVAL '1 day';
+    END LOOP;
+END;
+$$;
+
+CREATE OR REPLACE PROCEDURE public.process_single_date(p_date DATE)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RAISE NOTICE 'Processing %', p_date;
+END;
+$$;
+
+CALL public.process_date_range('2025-08-01', '2025-08-03', 'public.process_single_date');
+```
+
 ### Postgres 18
 <https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
