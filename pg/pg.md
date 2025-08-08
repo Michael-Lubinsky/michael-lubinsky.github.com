@@ -784,7 +784,28 @@ FROM tenk1 t1, tenk2 t2
 WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
 ORDER BY t1.fivethous;
 ```
+### Stored procedure example
+```sql
+CREATE OR REPLACE PROCEDURE public.process_date_range(
+    p_start DATE,
+    p_end DATE
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    current_date DATE := p_start;
+BEGIN
+    IF p_start > p_end THEN
+        RAISE EXCEPTION 'Start date (%) is after end date (%)', p_start, p_end;
+    END IF;
 
+    WHILE current_date <= p_end LOOP
+        CALL public.process_single_date(current_date);
+        current_date := current_date + INTERVAL '1 day';
+    END LOOP;
+END;
+$$;
+```
 ### Postgres 18
 <https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
