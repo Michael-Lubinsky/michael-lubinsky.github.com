@@ -1,6 +1,8 @@
 # Data Transfer From MongoDB to Snowflake
-Weavix MongoDB collections can be updated
-New Weavix MongoDB can be created any time
+There is  MongoDB with collections which can be updated very often
+and a new Mongo collections can be created any time.
+
+Currently there is change stream trigger which propagate all changes to Postgres.
 
 In this case we need to implement Change Data Capture (CDC) Pipeline
 
