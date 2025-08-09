@@ -81,7 +81,7 @@ Azure Data Factory Pipeline
 - Submits each collection for processing via event or job queue (e.g., Azure Queue)
 
 
-### Are you recommending Azure Function or Azure data factory fir thi pipeline?
+### Are you recommending Azure Function or Azure data factory for this pipeline?
 
 
 Great question! Let me clarify the optimal approach.  
