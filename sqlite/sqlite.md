@@ -320,3 +320,5 @@ A full list of output modes can be seen like this:
 <https://sqlpkg.org/>  sqlite extensions
 
 <https://github.com/tursodatabase/libsql>
+
+<https://habr.com/ru/companies/ruvds/articles/924338/>
