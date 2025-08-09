@@ -16,7 +16,7 @@ https://habr.com/ru/articles/912926/
 https://habr.com/ru/companies/pvs-studio/articles/708138/  
 https://accu.org/    
 https://www.learncpp.com/  
-https://roadmap2.me/PA74IVSGMe C++ exersizes
+https://roadmap2.me/PA74IVSGMe C++ exercises
 https://www.reddit.com/r/cpp/comments/1isd58i/selfdescribing_compact_binary_serialization_format/ 
 https://habr.com/ru/articles/896958/  Memory management
 https://www.reddit.com/r/cpp/comments/1j1cysb/the_cherno_tutorial_still_good/
@@ -35,6 +35,8 @@ https://github.com/taskflow/taskflow
 https://github.com/fffaraz/awesome-cpp
 
 https://habr.com/ru/companies/otus/articles/914262/ Ссылки и указатели в C++
+
+https://habr.com/ru/articles/935590/  C++ string library
 
 Flame Graph
 https://github.com/ibogosavljevic/fiya
