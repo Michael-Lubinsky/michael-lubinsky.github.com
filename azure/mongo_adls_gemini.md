@@ -7,7 +7,10 @@ with 1 json line per event
 
 ### Gemini
 
-To serialize a MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) with the specified partitioned folder structure, you'll need to create a data pipeline. The most common and effective way to do this is by using a combination of **MongoDB connectors**, a **message broker**, and a **data processing engine**. Here's a step-by-step guide on how to set it up:
+To serialize a MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) with the specified partitioned folder structure, you'll need to create a data pipeline.   
+The most common and effective way to do this is by using a combination of **MongoDB connectors**, a **message broker**,
+and a **data processing engine**. 
+Here's a step-by-step guide on how to set it up:
 
 ***
 
@@ -458,3 +461,16 @@ END;
 -- The task is initially suspended after creation. This command starts it.
 ALTER TASK LOAD_SILVER_FROM_BRONZE RESUME;
 ```
+The Potential for "Out of Sync"
+This staggered scheduling and batch processing introduces latency, but not necessarily an "out of sync" problem that results in lost or incorrect data.
+
+The biggest risk is a race condition if the schedules are not properly staggered. For example, if the Python script starts at 10:00 AM to read the 9:00 AM hour's file, and the Node.js application is still writing a late event for 9:00 AM, the Python script might read an incomplete file.
+
+The key to a robust pipeline is to build in a buffer between each stage. A good schedule would look like this:
+
+Node.js: Continuously writes to the file for the current hour (e.g., events-20231027-10.jsonl).
+
+Python Script: Runs at 10:05 AM to process the file from the previous hour (events-20231027-09.jsonl), giving the Node.js app a few minutes to finalize that file and start the next one.
+
+Snowflake Task: The task's SCHEDULE and WHEN clause ensure that it runs at 10:10 AM (or a similar time after the load) and will only process new data that has arrived from the Python script.
+
