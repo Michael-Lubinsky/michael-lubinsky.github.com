@@ -124,8 +124,26 @@ const subscription = consumerClient.subscribe(
 
 console.log("Consumer started. Press Ctrl+C to stop.");
 ```
-program which every hour reads the files created by previous script and uploaded them into Snowflake  bronze database tables using Snowflake copy command.
+## program which every hour reads the files created by previous script and uploaded them into Snowflake  bronze database tables using Snowflake copy command.
+
 The Snowflake table name should match the collection name.
+
+Planning script implementation
+Snowflake supports loading NDJSON files directly with TYPE = JSON, parsing each line as a separate JSON object.
+
+The program needs to install snowflake-sdk via npm for Snowflake connectivity.
+
+Let's consider using SAS tokens for secure Azure access in the script.
+
+Environment variables will likely include Snowflake connection details like account and user.
+
+For scheduling, setInterval can run the script every hour in Node.js.
+Configuring SAS token generation
+The script needs STORAGE_ACCOUNT_KEY in environment variables to generate SAS tokens.
+
+SAS tokens expire after 24 hours, ensuring read access for Azure storage.
+
+Next, let's plan how to handle file existence checks in the script.
 
 ```js
 const snowflake = require('snowflake-sdk');
