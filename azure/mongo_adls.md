@@ -841,4 +841,295 @@ Compression: If required, write .jsonl.gz via a gzip stream, but note ADLS appen
 
 Schema drift: Keep raw JSONL in bronze; normalize to Parquet in silver for analytics (Snowflake can read Parquet efficiently via external tables).
 
- 
+# Periodically load rolling JSONL from ADLS Gen2 into Snowflake (COPY INTO vs Snowpipe)
+
+##   Recommendation
+- If you need **near-real-time** (seconds–minutes) and are OK configuring Azure Event Grid → Snowflake: **Snowpipe (auto-ingest)**.
+- If **hourly or batch** cadence is fine, with simpler ops and strong dedup via load history: **COPY INTO on a schedule** (Snowflake TASK, Airflow, ADF, cron).  
+For your “periodically read jsonl files” requirement, I recommend **COPY INTO**.
+
+---
+
+## 1) One-time Snowflake setup (ADLS Gen2 + Stage + File Format)
+
+Replace placeholders `<...>` with your values.
+
+```sql
+-- 1A) Storage integration (ADLS Gen2)
+-- Ask your Azure admin to grant the generated application (snowflake storage integration)
+-- the required Reader permissions on the ADLS container.
+
+CREATE OR REPLACE STORAGE INTEGRATION my_adls_int
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = AZURE
+  ENABLED = TRUE
+  AZURE_TENANT_ID = '<your-azure-tenant-id>'
+  STORAGE_ALLOWED_LOCATIONS = ('azure://<account>.dfs.core.windows.net/raw');
+
+-- SHOW INTEGRATIONS;  -- Use this to retrieve AZURE_CONSENT_URL and EXTERNAL_OAUTH_APP_ID
+-- Complete the Azure side consent, then proceed.
+
+-- 1B) File format for JSONL
+CREATE OR REPLACE FILE FORMAT my_jsonl
+  TYPE = JSON
+  STRIP_OUTER_ARRAY = FALSE
+  -- (Optional) IGNORE_UTF8_ERRORS = TRUE
+;
+
+-- 1C) External stage pointing to ADLS Gen2 "raw" filesystem (container)
+CREATE OR REPLACE STAGE raw_mongo
+  URL = 'azure://<account>.dfs.core.windows.net/raw'
+  STORAGE_INTEGRATION = my_adls_int
+  FILE_FORMAT = my_jsonl
+  DIRECTORY = (ENABLE = TRUE);  -- enables directory table if you want to use it
+```
+#### Target table (bronze)
+We’ll land each JSON document as a VARIANT plus useful metadata parsed from the path:
+
+```sql
+
+CREATE OR REPLACE TABLE bronze_events (
+  v        VARIANT,
+  year     VARCHAR,
+  month    VARCHAR,
+  day      VARCHAR,
+  hour     VARCHAR,
+  filename STRING
+);
+```
+## 2) COPY INTO pattern for JSONL (hourly partitions, dedup by load history)
+Your ADLS path layout (from your writer):
+db/collection/year=YYYY/month=MM/day=DD/hour=HH/events-YYYYMMDD-HH.jsonl
+
+We’ll let Snowflake parse each line into $1 as VARIANT, and derive partitions from METADATA$FILENAME.
+
+```sql
+
+-- Example COPY INTO for a specific db/collection prefix:
+-- Replace <db> and <collection> with actual names. Use broader patterns if desired.
+
+COPY INTO bronze_events (v, year, month, day, hour, filename)
+FROM (
+  SELECT
+    $1,  -- each line (JSON object) in JSONL
+    REGEXP_SUBSTR(METADATA$FILENAME, 'year=([0-9]{4})', 1, 1, 'e', 1) AS year,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'month=([0-9]{2})', 1, 1, 'e', 1) AS month,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'day=([0-9]{2})', 1, 1, 'e', 1) AS day,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'hour=([0-9]{2})', 1, 1, 'e', 1) AS hour,
+    TO_VARCHAR(METADATA$FILENAME) AS filename
+  FROM @raw_mongo/<db>/<collection>/
+  PATTERN = '.*year=[0-9]{4}/month=[0-9]{2}/day=[0-9]{2}/hour=[0-9]{2}/events-.*\.jsonl'
+)
+FILE_FORMAT = (FORMAT_NAME = my_jsonl)
+ON_ERROR = 'CONTINUE';
+```
+Notes:
+
+Dedup: Snowflake’s COPY INTO tracks file load history by file name for 64 days, so re-running the same COPY won’t reload the same files (unless FORCE=TRUE or you changed file names).
+
+You can narrow the PATTERN to recent dates/hours if you want to reduce LIST time.
+
+### 3) Simple Python loader (periodic) using snowflake-connector
+This script:
+
+Connects to Snowflake
+
+Generates a list of recent hour prefixes (UTC) for the last N hours
+
+Issues COPY INTO for each prefix
+
+Relies on load history to avoid duplicate loads
+
+Install deps:
+
+```
+pip install snowflake-connector-python python-dateutil
+load_jsonl_to_snowflake.py:
+```
+
+```python
+import os
+import sys
+import datetime as dt
+from dateutil.tz import tzutc
+import snowflake.connector
+
+# Env vars expected:
+# SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD (or SNOWFLAKE_PRIVATE_KEY), SNOWFLAKE_ROLE,
+# SNOWFLAKE_WAREHOUSE, SNOWFLAKE_DATABASE, SNOWFLAKE_SCHEMA
+# Also set DB/COLLECTION lists or run with CLI args.
+
+ACCOUNT   = os.getenv("SNOWFLAKE_ACCOUNT")
+USER      = os.getenv("SNOWFLAKE_USER")
+PASSWORD  = os.getenv("SNOWFLAKE_PASSWORD")
+ROLE      = os.getenv("SNOWFLAKE_ROLE")
+WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE")
+DATABASE  = os.getenv("SNOWFLAKE_DATABASE")
+SCHEMA    = os.getenv("SNOWFLAKE_SCHEMA")
+
+STAGE = "raw_mongo"
+TABLE = "bronze_events"
+
+# Which db/collections on ADLS to load:
+DBS = os.getenv("MONGO_DBS", "database1").split(",")
+COLLS = os.getenv("MONGO_COLLS", "collection1").split(",")
+
+# How many recent hours to load (inclusive of current hour)
+RECENT_HOURS = int(os.getenv("RECENT_HOURS", "6"))  # safe overlap
+USE_UTC_NOW = dt.datetime.now(tzutc())
+
+COPY_TEMPLATE = """
+COPY INTO {table} (v, year, month, day, hour, filename)
+FROM (
+  SELECT
+    $1,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'year=([0-9]{{4}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'month=([0-9]{{2}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'day=([0-9]{{2}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'hour=([0-9]{{2}})', 1, 1, 'e', 1),
+    TO_VARCHAR(METADATA$FILENAME)
+  FROM @{stage}/{db}/{coll}/year={yyyy}/month={mm}/day={dd}/hour={hh}/
+  PATTERN = '.*events-.*\\.jsonl'
+)
+FILE_FORMAT = (FORMAT_NAME = my_jsonl)
+ON_ERROR = 'CONTINUE';
+"""
+
+def run():
+  if not all([ACCOUNT, USER, (PASSWORD or os.getenv("SNOWFLAKE_PRIVATE_KEY")), ROLE, WAREHOUSE, DATABASE, SCHEMA]):
+    print("Missing Snowflake connection env vars.", file=sys.stderr)
+    sys.exit(2)
+
+  conn = snowflake.connector.connect(
+    account=ACCOUNT,
+    user=USER,
+    password=PASSWORD,
+    role=ROLE,
+    warehouse=WAREHOUSE,
+    database=DATABASE,
+    schema=SCHEMA,
+  )
+  try:
+    cur = conn.cursor()
+    # Optional: set larger statement timeout if needed
+    # cur.execute("ALTER SESSION SET STATEMENT_TIMEOUT_IN_SECONDS=1800")
+
+    # For each db/coll and each recent hour prefix
+    for db in DBS:
+      db = db.strip()
+      if not db:
+        continue
+      for coll in COLLS:
+        coll = coll.strip()
+        if not coll:
+          continue
+
+        for i in range(RECENT_HOURS):
+          t = USE_UTC_NOW - dt.timedelta(hours=i)
+          yyyy = f"{t.year:04d}"
+          mm   = f"{t.month:02d}"
+          dd   = f"{t.day:02d}"
+          hh   = f"{t.hour:02d}"
+
+          sql = COPY_TEMPLATE.format(
+            table=TABLE,
+            stage=STAGE,
+            db=db,
+            coll=coll,
+            yyyy=yyyy,
+            mm=mm,
+            dd=dd,
+            hh=hh
+          )
+          print(f"Loading: {db}/{coll}/year={yyyy}/month={mm}/day={dd}/hour={hh}/ ...")
+          cur.execute(sql)
+
+    # Commit is implicit; COPY INTO is DML-like and persists on success.
+  finally:
+    conn.close()
+
+if __name__ == "__main__":
+  run()
+```
+Run it hourly via cron/Airflow/ADF.   
+It’s idempotent because COPY INTO won’t re-ingest files seen before (within the load history retention window).
+
+## 4) Snowflake TASK (built-in scheduler) alternative
+Have Snowflake run COPY INTO every N minutes (no external orchestrator needed):
+
+```sql
+
+-- Warehouse for the task
+CREATE OR REPLACE WAREHOUSE WH_LOAD
+  WAREHOUSE_SIZE = XSMALL
+  AUTO_SUSPEND = 60
+  AUTO_RESUME = TRUE
+;
+
+-- Task that loads new JSONL hourly for a given db/coll prefix
+CREATE OR REPLACE TASK task_load_database1_collection1_hourly
+  WAREHOUSE = WH_LOAD
+  SCHEDULE = 'USING CRON 5 * * * * UTC'   -- at minute 5 of every hour
+AS
+COPY INTO bronze_events (v, year, month, day, hour, filename)
+FROM (
+  SELECT
+    $1,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'year=([0-9]{4})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'month=([0-9]{2})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'day=([0-9]{2})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'hour=([0-9]{2})', 1, 1, 'e', 1),
+    TO_VARCHAR(METADATA$FILENAME)
+  FROM @raw_mongo/database1/collection1/
+  PATTERN = '.*year=[0-9]{4}/month=[0-9]{2}/day=[0-9]{2}/hour=[0-9]{2}/events-.*\.jsonl'
+)
+FILE_FORMAT = (FORMAT_NAME = my_jsonl)
+ON_ERROR = 'CONTINUE'
+;
+
+-- Enable the task
+ALTER TASK task_load_database1_collection1_hourly RESUME;
+```
+You can create one task per db/collection, or one broader task that targets multiple prefixes with separate COPY statements.
+
+## 5) Snowpipe option (if you want lower latency)
+Create pipe (no auto-ingest):
+```sql
+
+CREATE OR REPLACE PIPE bronze_events_pipe AS
+COPY INTO bronze_events (v, year, month, day, hour, filename)
+FROM (
+  SELECT
+    $1,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'year=([0-9]{4})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'month=([0-9]{2})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'day=([0-9]{2})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'hour=([0-9]{2})', 1, 1, 'e', 1),
+    TO_VARCHAR(METADATA$FILENAME)
+  FROM @raw_mongo
+  PATTERN = '.*events-.*\.jsonl'
+)
+FILE_FORMAT = (FORMAT_NAME = my_jsonl);
+
+```
+Periodic trigger (no Event Grid): you can nudge the pipe to scan by prefix:
+
+```sql
+
+ALTER PIPE bronze_events_pipe REFRESH PREFIX = 'database1/collection1/year=2025/month=08/day=10/';
+-- Or a broader prefix if needed
+```
+If you want true auto-ingest, configure Azure Event Grid → Snowflake on the stage (additional Azure setup required). Then Snowpipe listens for blob create events and loads within minutes automatically.
+
+6) Operational notes
+Idempotency: COPY and Snowpipe both use load history to avoid reloading the same file name.
+
+Latency: Snowpipe (auto-ingest) is near-real-time; COPY via TASK/cron is batch (e.g., hourly).
+
+Cost: COPY burns warehouse credits during runs; Snowpipe charges per file/byte ingested but no warehouse needed for ingestion.
+
+Schema: Keep bronze_events.v raw, then transform to typed columns in silver (e.g., CREATE TABLE ... AS SELECT v:field::type ...).
+
+Partition pruning: During transforms, use filename/path to filter specific dates/hours for efficient backfills.
+
+
