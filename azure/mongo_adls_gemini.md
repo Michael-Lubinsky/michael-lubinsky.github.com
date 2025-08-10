@@ -7,10 +7,17 @@ Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/ Rolling file na
 with 1 json line per event?
 
 This script sets up a complete consumer that listens to an Event Hub, parses the JSON body of each message, and writes it to a partitioned file in ADLS v2.  
-It includes a critical step: calling context.updateCheckpoint to ensure that if the application crashes or restarts, it can resume from the last successfully processed event.
+It includes a critical step:  
+calling context.updateCheckpoint to ensure that if the application crashes or restarts, it can resume from the last successfully processed event.
 
 For this code to work, you'll need to provide the Event Hub and ADLS Gen2 connection details via environment variables.  
 This pattern is highly scalable and reliable for streaming data from a message broker to your data lake.
+
+The getPartitionPathAndFilename function is responsible for dynamically creating the directory path and filename based on the current date and time and the database and collection name from the change event.
+
+Partition Path: The line const partitionPath = \dbName/{collectionName}/year=year/month={month}/day=day/hour={hour}`;` constructs the folder hierarchy you specified.
+
+Rolling File Name: The line const fileName = \events-year{month}day−{hour}.jsonl`;` creates the rolling file name, which is then written to that path.
 
 ```js
 // Install these packages with: npm install @azure/event-hubs @azure/storage-file-datalake
