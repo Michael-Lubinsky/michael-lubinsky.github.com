@@ -271,7 +271,7 @@ console.log("Loader started. Running every hour.");
 extract some json attributes and store in silver layer tables.
 
 
-```
+```sql
 -- Assume the bronze table is created with the following structure (if not, create it accordingly)
 CREATE TABLE IF NOT EXISTS BRONZE.PUBLIC.mycollection (
     data VARIANT,
