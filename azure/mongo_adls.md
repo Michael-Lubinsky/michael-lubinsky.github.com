@@ -351,3 +351,52 @@ db/collection/year=YYYY/month=MM/day=DD/
 - Use a scheduled Spark/ADF pipeline to read year=YYYY/month=MM/day=DD/, normalize fields, write Parquet partitioned by the same keys into a silver/ container or folder.
 
 - Point Snowflake external stage to the Parquet path for efficient analytics.
+
+
+### Rolling JSONL
+
+Rolling JSONL means instead of writing one file per event (which creates thousands or millions of tiny files),  
+you keep a single JSONL file open for a fixed time window or until it reaches a size limit,   
+and keep appending new events to it.
+
+JSONL stands for JSON Lines — a text format where each line is a valid JSON object:
+
+```json
+
+{"_id": 1, "name": "Alice"}
+{"_id": 2, "name": "Bob"}
+{"_id": 3, "name": "Charlie"}
+```
+There are no commas and no array brackets — each line is its own JSON document.
+
+#### Why "rolling"?
+Rolling means you replace or rotate the active file periodically — for example:
+
+- Every hour → events-2025-08-09-13.jsonl, events-2025-08-09-14.jsonl
+
+- Every day → events-2025-08-09.jsonl
+
+- Or when the file size hits a limit (e.g., 128 MB), you roll to events-2025-08-09-13-part2.jsonl.
+
+When you "roll", you close the current file and start writing a new one.
+
+#### Advantages over one-file-per-event
+- Much fewer files → better for analytics (Snowflake, Databricks, Spark perform badly with lots of tiny files).
+
+- Easy append → you can just append a line for each event.
+
+- Easy to read → each line is self-contained JSON.
+
+#### How it works with ADLS Gen2
+When using rolling JSONL, you:
+
+- Decide your partition path (e.g., db/collection/year=2025/month=08/day=09/).
+
+- Create or open a file like events-2025-08-09-13.jsonl in that directory.
+
+- Append each event’s JSON string + newline (\n).
+
+- Keep track of append offset (ADLS requires it for append() calls).
+
+- When rotation condition is met (time or size), close the file and start a new one.
+
