@@ -4,16 +4,14 @@ with partitioned folders like:
 database1/collection1/year=2024/month=01/day=15/
 ```
 It uses:
--- MongoDB Change Streams (Node.js driver)
--- Azure Data Lake SDK (@azure/storage-file-datalake)
--- One-object-per-file (simple & reliable).
+-- MongoDB Change Streams (Node.js driver)  
+-- Azure Data Lake SDK (@azure/storage-file-datalake)  
+-- One-object-per-file (simple & reliable).    
 At the end you’ll also see how to switch to rolling JSONL files if you prefer bigger files.
 
 ### 1) Prereqs
-- MongoDB must be a replica set or sharded cluster (Change Streams requirement).
-
-- Grant a user permission to watch the target collections or database.
-
+- MongoDB must be a replica set or sharded cluster (Change Streams requirement).  
+- Grant a user permission to watch the target collections or database.  
 - Node.js 18+ recommended.
 
 Install deps:
@@ -331,7 +329,10 @@ If you switch to AAD auth, use @azure/identity and pass a credential to DataLake
 Add $match in pipeline to exclude noisy ops or to target specific collections when using wider scopes.
 
 #### H) Pre/Post Images (optional)
-If you enable pre/post images on the collection, you can capture fullDocumentBeforeChange for updates/deletes by keeping fullDocumentBeforeChange: 'whenAvailable'.
+If you enable pre/post images on the collection,  
+you can capture fullDocumentBeforeChange for   
+updates/deletes by keeping  
+fullDocumentBeforeChange: 'whenAvailable'.
 
 ### 4) Operational checklist
 - Run this service under a supervisor (systemd, PM2, Kubernetes, Azure Container Apps).
