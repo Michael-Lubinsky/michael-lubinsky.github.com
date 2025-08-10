@@ -2,8 +2,10 @@
 
 Please write Node.js program which reads  from Azure EventHub and serialize   into 
 Azure Data Lake Storage Gen2 (ADLS v2)
-with partitioned folders like:
-Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/ Rolling file name: events-YYYYMMDD-HH.jsonl 
+with partitioned folders like:  
+Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/   
+
+Rolling file name: events-YYYYMMDD-HH.jsonl 
 with 1 json line per event?
 
 This script sets up a complete consumer that listens to an Event Hub, parses the JSON body of each message, and writes it to a partitioned file in ADLS v2.  
