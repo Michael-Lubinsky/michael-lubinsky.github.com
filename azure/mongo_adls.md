@@ -1216,3 +1216,345 @@ Short answer:
 ## Bottom line
 - For your “periodic loads” requirement and analytics focus, **COPY INTO → internal tables** is usually the best ROI and least friction.
 - If you’re strongly lake-first and want to avoid duplication, use **External Tables over Parquet** (not JSON) and accept some performance trade-offs.
+
+
+# Periodic load from ADLS JSONL → Snowflake bronze → build silver layer
+
+This delivers:
+1) A Python job that:
+   - Runs `COPY INTO` from ADLS Gen2 rolling hourly JSONL to a **bronze** table (`bronze_events`).
+   - Immediately transforms the just-loaded hours into a **silver** layer.
+2) SQL for one-time Snowflake setup and example **silver** extraction patterns.
+
+You can schedule the Python job with cron / Airflow / ADF / Snowflake Tasks (external function runner).
+
+---
+
+## 0) Assumptions
+
+- You already have hourly JSONL files in ADLS Gen2 at:
+  `@raw_mongo/<db>/<collection>/year=YYYY/month=MM/day=DD/hour=HH/events-YYYYMMDD-HH.jsonl`
+- A Snowflake **STORAGE INTEGRATION**, **STAGE** `raw_mongo`, and **FILE FORMAT** `my_jsonl` are created.
+- Bronze landing table is `bronze_events(v VARIANT, year VARCHAR, month VARCHAR, day VARCHAR, hour VARCHAR, filename STRING)`.
+
+If not, see section **[1) One-time Snowflake setup]** below.
+
+---
+
+## 1) One-time Snowflake setup
+
+```sql
+-- Storage integration (adjust as needed)
+CREATE OR REPLACE STORAGE INTEGRATION my_adls_int
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = AZURE
+  ENABLED = TRUE
+  AZURE_TENANT_ID = '<your-tenant-id>'
+  STORAGE_ALLOWED_LOCATIONS = ('azure://<account>.dfs.core.windows.net/raw');
+
+-- File format for JSONL
+CREATE OR REPLACE FILE FORMAT my_jsonl
+  TYPE = JSON
+  STRIP_OUTER_ARRAY = FALSE;
+
+-- External Stage
+CREATE OR REPLACE STAGE raw_mongo
+  URL = 'azure://<account>.dfs.core.windows.net/raw'
+  STORAGE_INTEGRATION = my_adls_int
+  FILE_FORMAT = my_jsonl
+  DIRECTORY = (ENABLE = TRUE);
+
+-- Bronze table for raw JSON docs (one row per JSON line)
+CREATE OR REPLACE TABLE bronze_events (
+  v        VARIANT,
+  year     VARCHAR,
+  month    VARCHAR,
+  day      VARCHAR,
+  hour     VARCHAR,
+  filename STRING
+);
+
+-- Optional: Silver schema
+CREATE SCHEMA IF NOT EXISTS silver;
+```
+
+### 2) Python job that: COPY INTO bronze → build silver
+Loads recent N hours per <db>/<collection> (idempotent thanks to Snowflake load history).
+
+Builds/updates a generic silver-wide table silver.events_flat for common attributes.
+
+Provides an example per-collection table silver.collection1 extracting app-specific fields.
+
+Install deps:
+
+```
+pip install snowflake-connector-python python-dateutil
+```
+Create load_and_transform.py:
+
+```python
+import os
+import sys
+import datetime as dt
+from dateutil.tz import tzutc
+import snowflake.connector
+
+# --- Configuration via env vars ---
+
+ACCOUNT   = os.getenv("SNOWFLAKE_ACCOUNT")
+USER      = os.getenv("SNOWFLAKE_USER")
+PASSWORD  = os.getenv("SNOWFLAKE_PASSWORD")  # or use key/pwdless as preferred
+ROLE      = os.getenv("SNOWFLAKE_ROLE")
+WAREHOUSE = os.getenv("SNOWFLAKE_WAREHOUSE")
+DATABASE  = os.getenv("SNOWFLAKE_DATABASE")
+SCHEMA    = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")  # bronze schema if not default
+SILVER_SCHEMA = os.getenv("SNOWFLAKE_SILVER_SCHEMA", "SILVER")
+
+STAGE = os.getenv("SNOWFLAKE_STAGE", "raw_mongo")
+BRONZE_TABLE = os.getenv("SNOWFLAKE_BRONZE_TABLE", "bronze_events")
+
+# Comma-separated lists
+DBS   = [s.strip() for s in os.getenv("MONGO_DBS", "database1").split(",") if s.strip()]
+COLLS = [s.strip() for s in os.getenv("MONGO_COLLS", "collection1").split(",") if s.strip()]
+
+# Load last N hours (UTC) including current hour
+RECENT_HOURS = int(os.getenv("RECENT_HOURS", "6"))
+NOW_UTC = dt.datetime.now(tzutc())
+```
+# --- SQL templates ---
+```sql
+COPY_TEMPLATE = """
+COPY INTO {db}.{schema}.{table} (v, year, month, day, hour, filename)
+FROM (
+  SELECT
+    $1,
+    REGEXP_SUBSTR(METADATA$FILENAME, 'year=([0-9]{{4}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'month=([0-9]{{2}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'day=([0-9]{{2}})', 1, 1, 'e', 1),
+    REGEXP_SUBSTR(METADATA$FILENAME, 'hour=([0-9]{{2}})', 1, 1, 'e', 1),
+    TO_VARCHAR(METADATA$FILENAME)
+  FROM @{stage}/{coll_db}/{coll_name}/year={yyyy}/month={mm}/day={dd}/hour={hh}/
+  PATTERN = '.*events-.*\\.jsonl'
+)
+FILE_FORMAT = (FORMAT_NAME = my_jsonl)
+ON_ERROR = 'CONTINUE';
+"""
+```
+# Generic silver table (flattening common attributes)
+
+```sql
+CREATE_SILVER_EVENTS_FLAT = """
+CREATE TABLE IF NOT EXISTS {db}.{silver_schema}.events_flat (
+  db                STRING,
+  collection        STRING,
+  cluster_time_ts   TIMESTAMP_TZ,
+  op                STRING,
+  id                STRING,
+  doc               VARIANT,
+  pre_image         VARIANT,
+  upd               VARIANT,
+  year              STRING,
+  month             STRING,
+  day               STRING,
+  hour              STRING,
+  filename          STRING,
+  _ingested_at      TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
+);
+"""
+```
+
+# Insert to silver.events_flat for a specific hour prefix just loaded
+```sql
+INSERT_EVENTS_FLAT_FOR_PREFIX = """
+INSERT INTO {db}.{silver_schema}.events_flat (
+  db, collection, cluster_time_ts, op, id, doc, pre_image, upd,
+  year, month, day, hour, filename
+)
+SELECT
+  COALESCE(TO_VARCHAR({bronze_alias}.v:"_meta":"ns":"db"), REGEXP_SUBSTR(filename, '([^/]+)/[^/]+/year=', 1, 1, 'e', 1))   AS db,
+  COALESCE(TO_VARCHAR({bronze_alias}.v:"_meta":"ns":"coll"), REGEXP_SUBSTR(filename, '/([^/]+)/year=', 1, 1, 'e', 1))    AS collection,
+  TRY_TO_TIMESTAMP_TZ({bronze_alias}.v:"_meta":"clusterTime"::STRING) AS cluster_time_ts,
+  TO_VARCHAR({bronze_alias}.v:"_meta":"operationType") AS op,
+  TO_VARCHAR(COALESCE({bronze_alias}.v:"documentKey":"_id", {bronze_alias}.v:"fullDocument":"_id")) AS id,
+  {bronze_alias}.v:"fullDocument" AS doc,
+  {bronze_alias}.v:"fullDocumentBeforeChange" AS pre_image,
+  {bronze_alias}.v:"updateDescription" AS upd,
+  {bronze_alias}.year, {bronze_alias}.month, {bronze_alias}.day, {bronze_alias}.hour,
+  {bronze_alias}.filename
+FROM {db}.{schema}.{bronze_table} {bronze_alias}
+WHERE {bronze_alias}.year = '{yyyy}'
+  AND {bronze_alias}.month = '{mm}'
+  AND {bronze_alias}.day = '{dd}'
+  AND {bronze_alias}.hour = '{hh}';
+"""
+```
+# Example per-collection silver table (custom fields) for 'collection1'
+# Adjust the field paths to your actual document schema.
+```sql
+CREATE_SILVER_COLLECTION1 = """
+CREATE TABLE IF NOT EXISTS {db}.{silver_schema}.collection1 (
+  id               STRING PRIMARY KEY,
+  op               STRING,
+  cluster_time_ts  TIMESTAMP_TZ,
+  device           STRING,
+  history_ts       TIMESTAMP_TZ,
+  payload          VARIANT,
+  _source_filename STRING,
+  _year            STRING,
+  _month           STRING,
+  _day             STRING,
+  _hour            STRING,
+  _ingested_at     TIMESTAMP_LTZ DEFAULT CURRENT_TIMESTAMP()
+);
+"""
+```
+
+# Merge into per-collection silver from events_flat (idempotent upserts)
+```sql
+MERGE_INTO_COLLECTION1 = """
+MERGE INTO {db}.{silver_schema}.collection1 t
+USING (
+  SELECT
+    id,
+    op,
+    cluster_time_ts,
+    doc:"device"::STRING AS device,
+    TRY_TO_TIMESTAMP_TZ(COALESCE(doc:"historytimestamp"::STRING, doc:"updated"::STRING)) AS history_ts,
+    doc AS payload,
+    filename AS _source_filename,
+    year AS _year, month AS _month, day AS _day, hour AS _hour
+  FROM {db}.{silver_schema}.events_flat
+  WHERE collection = 'collection1'
+    AND year = '{yyyy}' AND month = '{mm}' AND day = '{dd}' AND hour = '{hh}'
+) s
+ON (t.id = s.id)
+WHEN MATCHED THEN UPDATE SET
+  op = s.op,
+  cluster_time_ts = s.cluster_time_ts,
+  device = s.device,
+  history_ts = s.history_ts,
+  payload = s.payload,
+  _source_filename = s._source_filename,
+  _year = s._year, _month = s._month, _day = s._day, _hour = s._hour
+WHEN NOT MATCHED THEN INSERT (
+  id, op, cluster_time_ts, device, history_ts, payload,
+  _source_filename, _year, _month, _day, _hour
+) VALUES (
+  s.id, s.op, s.cluster_time_ts, s.device, s.history_ts, s.payload,
+  s._source_filename, s._year, s._month, s._day, s._hour
+);
+"""
+```
+Python:
+```python
+def connect_snowflake():
+  if not all([ACCOUNT, USER, (PASSWORD or os.getenv("SNOWFLAKE_PRIVATE_KEY")), ROLE, WAREHOUSE, DATABASE]):
+    print("Missing Snowflake connection env vars.", file=sys.stderr)
+    sys.exit(2)
+  conn = snowflake.connector.connect(
+    account=ACCOUNT,
+    user=USER,
+    password=PASSWORD,
+    role=ROLE,
+    warehouse=WAREHOUSE,
+    database=DATABASE,
+    schema=SCHEMA,
+  )
+  return conn
+
+def run():
+  conn = connect_snowflake()
+  cur = conn.cursor()
+  try:
+    # Ensure silver objects exist
+    cur.execute(CREATE_SILVER_EVENTS_FLAT.format(
+      db=DATABASE, silver_schema=SILVER_SCHEMA
+    ))
+    cur.execute(CREATE_SILVER_COLLECTION1.format(
+      db=DATABASE, silver_schema=SILVER_SCHEMA
+    ))
+
+    # For each db/collection and each recent hour
+    for coll_db in DBS:
+      for coll_name in COLLS:
+        for i in range(RECENT_HOURS):
+          t = NOW_UTC - dt.timedelta(hours=i)
+          yyyy = f"{t.year:04d}"
+          mm   = f"{t.month:02d}"
+          dd   = f"{t.day:02d}"
+          hh   = f"{t.hour:02d}"
+
+          # 1) COPY INTO bronze
+          copy_sql = COPY_TEMPLATE.format(
+            db=DATABASE, schema=SCHEMA, table=BRONZE_TABLE,
+            stage=STAGE, coll_db=coll_db, coll_name=coll_name,
+            yyyy=yyyy, mm=mm, dd=dd, hh=hh
+          )
+          print(f"[COPY] {coll_db}/{coll_name} {yyyy}-{mm}-{dd} {hh}:00Z")
+          cur.execute(copy_sql)
+
+          # 2) Insert rows for this prefix into silver.events_flat
+          insert_sql = INSERT_EVENTS_FLAT_FOR_PREFIX.format(
+            db=DATABASE, schema=SCHEMA, bronze_table=BRONZE_TABLE, bronze_alias="b",
+            silver_schema=SILVER_SCHEMA,
+            yyyy=yyyy, mm=mm, dd=dd, hh=hh
+          )
+          print(f"[SILVER.FLAT] {coll_db}/{coll_name} {yyyy}-{mm}-{dd} {hh}")
+          cur.execute(insert_sql)
+
+          # 3) Example: Upsert into a per-collection typed table (collection1)
+          if coll_name == "collection1":
+            merge_sql = MERGE_INTO_COLLECTION1.format(
+              db=DATABASE, silver_schema=SILVER_SCHEMA,
+              yyyy=yyyy, mm=mm, dd=dd, hh=hh
+            )
+            print(f"[SILVER.collection1] MERGE for {yyyy}-{mm}-{dd} {hh}")
+            cur.execute(merge_sql)
+
+    # Commit done by default at statement end; explicit if needed:
+    # conn.commit()
+
+  finally:
+    cur.close()
+    conn.close()
+
+if __name__ == "__main__":
+  run()
+```  
+Run periodically (cron example, every hour at minute 10 UTC):
+
+```
+# m h  dom mon dow  command
+10 * * * * /usr/bin/env python3 /path/load_and_transform.py >> /var/log/sf_load.log 2>&1
+```
+### 3) Notes and variations
+Idempotency:
+
+COPY INTO won’t reload already ingested files (load history tracked by filename).
+
+MERGE makes silver upserts safe when events repeat.
+
+Performance:
+
+Consider a compaction step that converts bronze JSONL to Parquet in a lake silver zone for other engines and/or External Tables.
+
+In Snowflake, keep events_flat minimal; push heavy normalization into dedicated per-collection silver tables like shown for collection1.
+
+Partition filters:
+
+We limit INSERT ... events_flat and MERGE to the same hour(s) just copied. This keeps transformations bounded and fast.
+
+Schema evolution:
+
+Keep payload VARIANT in per-collection silver to retain the raw doc even after extracting typed columns.
+
+More collections:
+
+Duplicate the CREATE TABLE + MERGE pair per collection, extracting fields relevant to that collection’s schema.
+
+### 4) Optional: Use Snowflake TASK to orchestrate inside Snowflake
+If you prefer Snowflake-native scheduling, you can embed the COPY + INSERT + MERGE logic in a JavaScript stored procedure and attach a TASK. However, Python or ADF/Airflow often remains simpler when targeting multiple <db>/<collection> prefixes dynamically.
+
+ 
+
+
