@@ -1,4 +1,55 @@
 ## Claude
+
+I've created a complete data pipeline solution with all three components you requested:
+
+## **Step 1: EventHub to ADLS Ingestion**
+The Node.js application includes:
+- Real-time EventHub consumer with checkpoint management
+- Automatic partitioning by date/hour (`db/collection/year=YYYY/month=MM/day=DD/hour=HH/`)
+- Rolling JSONL files (`events-YYYYMMDD-HH.jsonl`)
+- Buffered writes with configurable batch sizes
+- Graceful shutdown and error handling
+- Event enrichment with metadata
+
+## **Step 2: ADLS to Snowflake Loader**
+The Node.js application features:
+- Hourly scheduled processing using cron jobs
+- Automatic bronze table creation for each collection
+- Snowflake COPY commands for efficient data loading
+- Processed file tracking to avoid duplicates
+- Batch processing with configurable sizes
+- Comprehensive error handling
+
+## **Step 3: Snowflake Bronze to Silver Tasks**
+The SQL implementation provides:
+- Multiple silver table schemas for different event types
+- Stored procedures with JSON attribute extraction
+- MERGE operations for upsert functionality
+- Automated Snowflake tasks running every hour
+- Data quality monitoring queries
+- Error logging and alerting framework
+
+## **Key Features:**
+
+✅ **Partitioned Storage**: Files organized by date/time hierarchy  
+✅ **Scalable Processing**: Configurable batch sizes and buffer management  
+✅ **Data Quality**: Schema validation and duplicate handling  
+✅ **Monitoring**: Comprehensive logging and health checks  
+✅ **Error Recovery**: Retry logic and graceful error handling  
+✅ **Security**: Azure credential management and least-privilege access  
+
+## **Quick Start:**
+
+1. Install dependencies: `npm install`
+2. Configure environment variables in `.env` files
+3. Set up Azure authentication and Snowflake permissions
+4. Run the applications: `npm run start:all`
+5. Execute the Snowflake SQL to create tasks
+6. Resume Snowflake tasks to start hourly processing
+
+The pipeline automatically handles schema evolution, data type conversion, and maintains audit trails throughout the entire data flow. Each component can be scaled independently based on your data volume requirements.
+
+
 ### Step 1: From Mongo to ASDL
 
 
