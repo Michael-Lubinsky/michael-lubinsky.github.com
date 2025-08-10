@@ -229,3 +229,156 @@ async function startChangeStream() {
 startChangeStream();
 
 ```
+
+### Ingest  into Snowflake bronze layer. 
+It connects to both Azure and Snowflake, and uses Snowflake's PUT and COPY INTO commands for efficient bulk loading. The table is created with a single VARIANT column to hold the raw JSON, which is a common practice for a bronze layer to preserve the original data.
+
+You can set this script to run on an hourly schedule using a task scheduler like cron on a virtual machine, a service like Azure Functions, or a workflow orchestrator like Apache Airflow. 
+```python
+# Install these packages with: pip install azure-storage-file-datalake snowflake-connector-python
+import os
+import io
+import json
+from datetime import datetime, timedelta
+from azure.storage.filedatalake import DataLakeServiceClient
+import snowflake.connector
+from snowflake.connector.pandas_tools import write_pandas
+
+# =================================================================================================
+# Configuration - Use environment variables for production secrets!
+# =================================================================================================
+# Azure ADLS Gen2 Configuration
+AZURE_STORAGE_ACCOUNT_NAME = os.getenv('AZURE_STORAGE_ACCOUNT_NAME', 'your-adls-account-name')
+AZURE_STORAGE_ACCOUNT_KEY = os.getenv('AZURE_STORAGE_ACCOUNT_KEY', 'your-adls-account-key')
+ADLS_CONTAINER_NAME = os.getenv('ADLS_CONTAINER_NAME', 'mongo-changes')
+
+# Snowflake Configuration
+SNOWFLAKE_ACCOUNT = os.getenv('SNOWFLAKE_ACCOUNT', 'your-snowflake-account')
+SNOWFLAKE_USER = os.getenv('SNOWFLAKE_USER', 'your-snowflake-user')
+SNOWFLAKE_PASSWORD = os.getenv('SNOWFLAKE_PASSWORD', 'your-snowflake-password')
+SNOWFLAKE_WAREHOUSE = os.getenv('SNOWFLAKE_WAREHOUSE', 'your-snowflake-warehouse')
+SNOWFLAKE_DATABASE = os.getenv('SNOWFLAKE_DATABASE', 'your-snowflake-database')
+SNOWFLAKE_SCHEMA = os.getenv('SNOWFLAKE_SCHEMA', 'public')
+
+# MongoDB configuration used for pathing
+DB_NAME = 'your_database'
+COLLECTION_NAME = 'your_collection'
+SNOWFLAKE_TABLE_NAME = COLLECTION_NAME.upper()  # Use uppercase for Snowflake table name convention
+
+# =================================================================================================
+# Main script to connect and orchestrate the ingestion
+# =================================================================================================
+
+def create_adls_client():
+    """Initializes and returns an Azure Data Lake Service Client."""
+    try:
+        service_client = DataLakeServiceClient(
+            account_url=f"https://{AZURE_STORAGE_ACCOUNT_NAME}.dfs.core.windows.net",
+            credential=AZURE_STORAGE_ACCOUNT_KEY
+        )
+        return service_client
+    except Exception as e:
+        print(f"Error creating ADLS client: {e}")
+        return None
+
+def create_snowflake_connection():
+    """Initializes and returns a Snowflake connection."""
+    try:
+        conn = snowflake.connector.connect(
+            user=SNOWFLAKE_USER,
+            password=SNOWFLAKE_PASSWORD,
+            account=SNOWFLAKE_ACCOUNT,
+            warehouse=SNOWFLAKE_WAREHOUSE,
+            database=SNOWFLAKE_DATABASE,
+            schema=SNOWFLAKE_SCHEMA
+        )
+        return conn
+    except Exception as e:
+        print(f"Error creating Snowflake connection: {e}")
+        return None
+
+def get_hourly_path(date_time):
+    """Constructs the ADLS path for a given date and time."""
+    year = date_time.strftime('%Y')
+    month = date_time.strftime('%m')
+    day = date_time.strftime('%d')
+    hour = date_time.strftime('%H')
+    return f"{DB_NAME}/{COLLECTION_NAME}/year={year}/month={month}/day={day}/hour={hour}/"
+
+def process_and_load_hourly_data():
+    """
+    Processes files from ADLS for the previous hour and loads them into Snowflake.
+    This is designed to be run on the hour (e.g., at 10:00 AM) to process the 9:00 AM - 9:59 AM data.
+    """
+    adls_client = create_adls_client()
+    if not adls_client:
+        return
+
+    snowflake_conn = create_snowflake_connection()
+    if not snowflake_conn:
+        return
+
+    try:
+        # We process the PREVIOUS hour to ensure the file is complete
+        now = datetime.utcnow()
+        target_time = now - timedelta(hours=1)
+
+        print(f"Processing data for hour: {target_time.strftime('%Y-%m-%d %H:00')}")
+
+        directory_path = get_hourly_path(target_time)
+        file_name = f"events-{target_time.strftime('%Y%m%d-%H')}.jsonl"
+
+        file_system_client = adls_client.get_file_system_client(ADLS_CONTAINER_NAME)
+        directory_client = file_system_client.get_directory_client(directory_path)
+        file_client = directory_client.get_file_client(file_name)
+
+        if not file_client.exists():
+            print(f"No file found at {directory_path}{file_name}. Skipping...")
+            return
+
+        print(f"File found: {directory_path}{file_name}. Downloading...")
+        
+        # Download the file content
+        downloaded_file = file_client.download_file()
+        file_content = downloaded_file.readall()
+        
+        # Create a temporary stage in Snowflake to upload the file
+        with snowflake_conn.cursor() as cur:
+            # Create a temporary internal stage
+            stage_name = f"TEMP_MONGO_LOAD_STAGE_{int(datetime.now().timestamp())}"
+            cur.execute(f"CREATE TEMPORARY STAGE {stage_name};")
+            
+            # Create the table if it doesn't exist
+            # Assuming a simple structure for the bronze layer: one column for the raw JSON
+            create_table_sql = f"""
+            CREATE TABLE IF NOT EXISTS {SNOWFLAKE_TABLE_NAME} (
+                RAW_JSON VARIANT
+            );
+            """
+            cur.execute(create_table_sql)
+
+            # Upload the file content to the temporary stage
+            with io.BytesIO(file_content) as file_stream:
+                cur.execute(f"PUT file://{file_stream} @{stage_name}/{file_name}")
+
+            # Copy data from the staged file into the table
+            copy_into_sql = f"""
+            COPY INTO {SNOWFLAKE_TABLE_NAME}
+            FROM (SELECT T.$1 FROM @{stage_name}/{file_name} T)
+            FILE_FORMAT = (TYPE = 'JSON' STRIP_OUTER_ARRAY = FALSE)
+            ON_ERROR = 'CONTINUE';
+            """
+            cur.execute(copy_into_sql)
+            
+            print(f"Successfully loaded data from {file_name} into Snowflake table {SNOWFLAKE_TABLE_NAME}.")
+
+    except Exception as e:
+        print(f"An error occurred during the load process: {e}")
+    finally:
+        if snowflake_conn:
+            snowflake_conn.close()
+            print("Snowflake connection closed.")
+
+if __name__ == '__main__':
+    process_and_load_hourly_data()
+```
