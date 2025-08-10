@@ -2136,3 +2136,178 @@ maintaining the same partitioning structure and data format throughout your enti
   }
 }
 ```
+
+
+### If some of the 3  Steps of pipeline 
+- Step 1: EventHub to ADLS Ingestion  
+- Step 2: ADLS to Snowflake Loader  
+- Step 3: Snowflake Bronze to Silver Tasks
+  
+gets broken how to replay it?
+
+Perfect! Now let me update the package.json to include the recovery commands:## **Summary: Pipeline Recovery Capabilities**
+
+Here's how to handle failures in each step:
+
+### **🔄 Step 1: EventHub to ADLS Recovery**
+
+**What can break:**
+- Application crashes
+- Network issues  
+- ADLS write failures
+
+**Recovery method:**
+```bash
+# Replay from EventHub (data is retained for 1-90 days)
+npm run recovery step1 "2024-08-09T10:00:00Z" "2024-08-09T12:00:00Z"
+
+# Reset checkpoint if needed
+npm run recovery reset-checkpoint "0" "2024-08-09T10:00:00Z"
+```
+
+**Key advantage:** EventHub **never deletes messages** until retention expires, so you can replay any time window.
+
+---
+
+### **🔄 Step 2: ADLS to Snowflake Recovery**
+
+**What can break:**
+- Snowflake connection issues
+- COPY command failures
+- File format errors
+
+**Recovery method:**
+```bash
+# Reprocess files for specific date
+npm run recovery step2 "2024-08-09" "2024-08-10"
+
+# Force reprocess (ignore already-processed tracking)
+npm run recovery step2 "2024-08-09" "2024-08-10" force
+```
+
+**Key advantage:** Files in ADLS are **persistent**, so you can reprocess any historical data.
+
+---
+
+### **🔄 Step 3: Bronze to Silver Recovery**
+
+**What can break:**
+- Task execution failures
+- Schema mismatches
+- Transformation errors
+
+**Recovery method:**
+```sql
+-- Snowflake recovery
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+
+-- Or via Node.js
+npm run recovery step3 "2024-08-09" "2024-08-10"
+```
+
+**Key advantage:** Bronze data is **immutable**, so you can re-transform any time period safely.
+
+---
+
+## **🚨 Emergency Recovery Scenarios:**
+
+### **Complete 4-Hour Outage Recovery:**
+```bash
+# 1. Replay EventHub (Step 1)
+npm run recovery step1 "2024-08-09T10:00:00Z" "2024-08-09T14:00:00Z"
+
+# 2. Wait for files to be created, then reload to Snowflake (Step 2)  
+sleep 300
+npm run recovery step2 "2024-08-09" force
+
+# 3. Re-transform to Silver (Step 3)
+npm run recovery step3 "2024-08-09"
+
+# 4. Resume normal operations
+npm run start:all
+```
+
+### **Selective Collection Recovery:**
+```bash
+# Only recover specific collections
+COLLECTIONS_TO_MIGRATE=users,orders npm run recovery step2 "2024-08-09" force
+```
+
+## **🔍 Detection and Monitoring:**
+
+### **Automated Health Checks:**
+```bash
+# Run every 15 minutes
+*/15 * * * * /path/to/check_pipeline_health.sh
+
+# Auto-recovery every hour  
+0 * * * * /path/to/auto_recovery.sh
+```
+
+### **Data Gap Detection:**
+```sql
+-- Find missing hours
+SELECT * FROM TABLE(SILVER.FIND_DATA_GAPS('2024-08-09', '2024-08-10', 'ALL'));
+
+-- Check consistency
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY('2024-08-09'));
+```
+
+## **✅ Key Recovery Advantages:**
+
+1. **🔄 Full Replay Capability** - EventHub retention allows complete data recovery
+2. **📁 Persistent Storage** - ADLS files remain available for reprocessing  
+3. **🏗️ Immutable Bronze** - Source data preserved for re-transformation
+4. **⚡ Time-based Recovery** - Replay any specific time window
+5. **🎯 Granular Control** - Recover individual collections or date ranges
+6. **🔒 Zero Data Loss** - All layers maintain data for recovery
+
+The pipeline is designed to be **fully recoverable** with **zero data loss** potential. Every component can replay from its source, making it resilient to any type of failure scenario.
+
+
+Package.json
+```js
+{
+  "name": "eventhub-adls-snowflake-pipeline",
+  "version": "1.0.0",
+  "description": "Data pipeline from Azure EventHub to ADLS to Snowflake",
+  "main": "index.js",
+  "scripts": {
+    "start:ingestion": "node src/eventhub-to-adls.js",
+    "start:loader": "node src/adls-to-snowflake.js",
+    "start:all": "concurrently \"npm run start:ingestion\" \"npm run start:loader\"",
+    "migrate:full": "node src/mongodb-migration.js full",
+    "migrate:incremental": "node src/mongodb-migration.js incremental",
+    "migrate:collection": "node src/mongodb-migration.js collection",
+    "migrate:scheduler": "node src/mongodb-migration.js scheduler",
+    "recovery": "node src/pipeline-recovery.js",
+    "health-check": "node src/health-check.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "azure",
+    "eventhub",
+    "adls",
+    "snowflake",
+    "data-pipeline",
+    "etl"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.4",
+    "@azure/storage-file-datalake": "^12.15.0",
+    "@azure/identity": "^3.4.2",
+    "snowflake-sdk": "^1.9.0",
+    "node-cron": "^3.0.3",
+    "mongodb": "^6.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
