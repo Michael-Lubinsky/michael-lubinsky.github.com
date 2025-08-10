@@ -1340,3 +1340,27 @@ $$;
   }
 }
 ```
+
+
+
+## Data Pipeline: EventHub → ADLS → Snowflake
+
+This pipeline consists of three main components:
+1. **EventHub to ADLS Ingestion** (Node.js)
+2. **ADLS to Snowflake Loader** (Node.js)
+3. **Snowflake Bronze to Silver Transformation** (Snowflake Tasks)
+
+### Prerequisites
+
+- Node.js 18.x or higher
+- Azure subscription with EventHub and Storage Account
+- Snowflake account with appropriate permissions
+- Azure CLI (for authentication)
+
+
+### 1. Create `.env` file for Step 1 (EventHub to ADLS)
+
+```env
+# EventHub Configuration
+EVENTHUB_CONNECTION_STRING=Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccess
+```
