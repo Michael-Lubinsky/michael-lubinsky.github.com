@@ -15,6 +15,19 @@ calling context.updateCheckpoint to ensure that if the application crashes or re
 For this code to work, you'll need to provide the Event Hub and ADLS Gen2 connection details via environment variables.  
 This pattern is highly scalable and reliable for streaming data from a message broker to your data lake.
 
+This script is designed to run continuously as a long-running process, not just once per hour.
+
+Why It Needs to Run Continuously
+The core functionality of the script is to act as an event-driven consumer. It does this by establishing a continuous subscription to your Azure Event Hub.
+
+Real-Time Processing: The consumerClient.subscribe() method listens for new events as they arrive in the Event Hub. 
+If the script were only run once per hour, it would miss all the events that occurred in the intervening time.
+
+Checkpointing: A key feature of the Event Hub consumer client is checkpointing, which you see in the context.updateCheckpoint() call. This allows the consumer to remember the last event it successfully processed.  
+If the application stops and restarts, it can automatically resume from that point, ensuring no data is lost. This mechanism only works if the script is running continuously to maintain its state.
+
+
+
 The getPartitionPathAndFilename function is responsible for dynamically creating the directory path and filename based on the current date and time and the database and collection name from the change event.
 
 Partition Path: The line const partitionPath = \dbName/{collectionName}/year=year/month={month}/day=day/hour={hour}`;` constructs the folder hierarchy you specified.
