@@ -1,4 +1,106 @@
-How to stream MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) 
+# CharGPT
+# What is a MongoDB Change Stream?
+
+A **Change Stream** is a real-time, server-side feed of change events that MongoDB emits when documents are inserted, updated, replaced, or deleted (and for certain DDL operations).   
+Applications can **subscribe** to these events with a cursor-like API (`watch()`) without polling, enabling event-driven pipelines,   
+CDC (change data capture), cache invalidation, search indexing, and streaming ETL.
+
+---
+
+## Key points
+
+- **Prerequisite**: Your MongoDB must be a **replica set** or **sharded cluster** (change streams rely on the oplog). Not available on standalones.
+- **Scopes**:
+  - Collection: `db.collection('X').watch(...)`
+  - Database: `db.watch(...)` (all collections in a DB)
+  - Deployment: `client.watch(...)` (all DBs & collections)
+- **Event types** (common):
+  - `insert`, `update`, `replace`, `delete`
+  - DDL-ish: `invalidate`, `drop`, `rename`, `dropDatabase`
+- **Payload highlights**:
+  - `operationType`, `ns` (db/collection), `documentKey._id`
+  - `fullDocument` (post-image on inserts/replaces; can be fetched for updates)
+  - `updateDescription` (changed fields, removed fields for updates)
+  - `clusterTime` (logical time), `lsid`/`txnNumber` (transaction metadata when applicable)
+- **Images (before/after)**:
+  - `fullDocument: 'updateLookup'` → driver fetches the **post-image** on updates.
+  - `fullDocumentBeforeChange: 'whenAvailable'|'required'` → requires **pre/post image** feature enabled on the collection to get the **pre-image**.
+- **Reliability**:
+  - Each event includes a **resume token** (`_id`). Persist it after processing to **resume** exactly where you left off with `resumeAfter` / `startAfter` (handle duplicates around resume boundaries → treat delivery as **at-least-once**).
+  - Only **majority-committed** changes are emitted, so you don’t see rolled-back writes.
+- **Ordering & sharding**:
+  - Events are **ordered per shard**; there is no global total order across shards.
+- **Backfill behavior**:
+  - By default, you only see changes **after** `watch()` starts.
+  - Use `startAtOperationTime` (a clusterTime) to begin from a specific point in the past (limited by oplog history).
+- **Permissions**:
+  - The user/role must have rights to read the target namespace(s); in Atlas/on-prem RBAC, include the appropriate `changeStream`/read privileges.
+
+## Typical uses
+
+- **CDC to data lakes/warehouses** (e.g., append JSONL to ADLS, then COPY into Snowflake).
+- **Search indexers** or **caches** that update on document changes.
+- **Event-driven microservices** reacting to `insert/update/delete`.
+- **Audit** or **materialized views** that track deltas.
+
+---
+
+## Minimal Node.js example
+
+```js
+const { MongoClient } = require('mongodb');
+
+async function main() {
+  const uri = process.env.MONGO_URI;
+  const client = new MongoClient(uri);
+  await client.connect();
+
+  // Scope: a single collection
+  const coll = client.db('mydb').collection('mycoll');
+
+  // Change stream options
+  const options = {
+    fullDocument: 'updateLookup',               // fetch post-image on updates
+    fullDocumentBeforeChange: 'whenAvailable',  // needs pre-image enabled
+    // resumeAfter: <savedResumeToken>,
+    batchSize: 100,
+    maxAwaitTimeMS: 20000
+  };
+
+  // Optional pipeline to filter/project
+  const pipeline = [
+    { $match: { operationType: { $in: ['insert','update','replace','delete'] } } },
+    // { $project: { fullDocument: 1, updateDescription: 1, ns: 1, documentKey: 1, clusterTime: 1, operationType: 1 } }
+  ];
+
+  const stream = coll.watch(pipeline, options);
+
+  stream.on('change', (evt) => {
+    // process event atomically, then persist evt._id as resume token
+    console.log('Change:', evt.operationType, evt.documentKey?._id);
+    // saveResumeToken(evt._id)
+  });
+
+  stream.on('error', async (err) => {
+    console.error('Change stream error:', err);
+    try { await stream.close(); } catch {}
+    await client.close();
+    process.exit(1);
+  });
+
+  process.on('SIGINT', async () => {
+    try { await stream.close(); } catch {}
+    await client.close();
+    process.exit(0);
+  });
+}
+main();
+```
+
+
+
+
+## How to serialize MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) 
 with partitioned folders like:
 ```
 database1/collection1/year=2024/month=01/day=15/
