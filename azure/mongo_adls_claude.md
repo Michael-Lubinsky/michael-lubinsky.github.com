@@ -1,5 +1,10 @@
 ## Claude
 
+
+The current pipeline only processes new records from EventHub. 
+For existing MongoDB collections, you need an initial data migration strategy. 
+Let me provide you with additional components to handle historical data.
+
 Complete data pipeline solution with all three components:
 
 ## **Step 1: EventHub to ADLS Ingestion**
