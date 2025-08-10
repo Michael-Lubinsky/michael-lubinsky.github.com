@@ -264,3 +264,89 @@ raw/
                 ├─ update-...json
                 └─ delete-...json
 ```
+### 3) Notes & options
+#### A) Scope selection
+Collection scope gives the exact db/collection in evt.ns, which your partition path uses.
+
+Database scope works for all collections in a db.
+
+Deployment scope (client.watch) captures all dbs/collections—your partition path will still work  
+because it uses evt.ns.db and evt.ns.coll.
+
+#### B) fullDocument on updates
+Set fullDocument: 'updateLookup' so evt.fullDocument   
+contains the post-image on updates (a second query fetch).
+
+#### C) Resume tokens (reliability)
+The script writes evt._id (the resume token) to resume-token.json after each successful ADLS write.
+
+On restart, it resumes from exactly the last processed event.
+
+Store the token in a durable place (e.g., another ADLS file, a small Mongo collection, or Azure Table).
+
+#### D) Throughput & parallelism
+The sample writes each event serially. For higher throughput, buffer events and write in parallel (limit concurrency to avoid throttling).
+
+Example libs: p-limit (already installed), or write to an in-memory queue and flush.
+
+#### E) File count vs analytics performance
+Many small files are simple but not ideal for downstream analytics.
+
+If you prefer rolling JSONL:
+
+- Create hourly (or 5-min) files: .../events-YYYYMMDD-HH.jsonl.
+
+- Use ADLS append + flush to append events to the same file.
+
+- Track file length (getProperties().contentLength) to find the next append offset.
+
+- Rotate files on time boundary or size threshold (e.g., 128 MB).
+
+- Periodically compact to Parquet using a separate Spark/ADF job.
+
+A minimal rolling-writer sketch:
+
+```js
+// Sketch only – integrate into the main file writer:
+async function appendJsonl(fsClient, dirClient, fileName, line) {
+  const fileClient = dirClient.getFileClient(fileName);
+  let currentLen = 0;
+  if (!(await fileClient.exists())) {
+    await fileClient.create();
+  } else {
+    const props = await fileClient.getProperties();
+    currentLen = props.contentLength || 0;
+  }
+  const body = Buffer.from(line + '\n', 'utf8');
+  await fileClient.append(body, currentLen, body.length);
+  await fileClient.flush(currentLen + body.length);
+}
+```
+#### F) Security & auth
+For production, prefer Managed Identity or Service Principal (AAD) with RBAC on the container.
+
+If you switch to AAD auth, use @azure/identity and pass a credential to DataLakeServiceClient.
+
+#### G) Filtering
+Add $match in pipeline to exclude noisy ops or to target specific collections when using wider scopes.
+
+#### H) Pre/Post Images (optional)
+If you enable pre/post images on the collection, you can capture fullDocumentBeforeChange for updates/deletes by keeping fullDocumentBeforeChange: 'whenAvailable'.
+
+### 4) Operational checklist
+- Run this service under a supervisor (systemd, PM2, Kubernetes, Azure Container Apps).
+
+- Alert on errors and restarts.
+
+- Periodically verify ADLS partition health and file counts.
+
+- Downstream jobs (ADF, Databricks, Synapse, or Snowflake external stages) can read from the partition paths:
+
+db/collection/year=YYYY/month=MM/day=DD/
+
+### 5) (Optional) Transform to Parquet downstream
+- Keep the raw JSONL/JSON as the bronze layer.
+
+- Use a scheduled Spark/ADF pipeline to read year=YYYY/month=MM/day=DD/, normalize fields, write Parquet partitioned by the same keys into a silver/ container or folder.
+
+- Point Snowflake external stage to the Parquet path for efficient analytics.
