@@ -1,5 +1,103 @@
 ## Claude
 ### Step 1: From Mongo to ASDL
+
+
+These are two important configuration parameters in the EventHub to ADLS ingestion component:
+
+## **BUFFER_SIZE** (`process.env.BUFFER_SIZE`)
+
+**Default**: 1000 events  
+**Purpose**: Controls how many events are accumulated in memory before writing to ADLS
+
+**How it works**:
+- Events from EventHub are collected in an in-memory array (`this.eventBuffer`)
+- When the buffer reaches `BUFFER_SIZE` events, it automatically triggers a flush to ADLS
+- This batches multiple events into a single write operation
+
+**Why this matters**:
+- **Performance**: Writing 1000 events at once is much more efficient than writing each event individually
+- **Cost Optimization**: Reduces the number of API calls to ADLS (each call has overhead)
+- **Throughput**: Higher buffer sizes = better throughput for high-volume streams
+- **Memory Usage**: Larger buffers use more memory
+
+**Example scenarios**:
+```javascript
+// Low volume: smaller buffer for faster processing
+BUFFER_SIZE=100
+
+// High volume: larger buffer for better throughput  
+BUFFER_SIZE=5000
+
+// Memory constrained: smaller buffer
+BUFFER_SIZE=500
+```
+
+## **FLUSH_INTERVAL** (`process.env.FLUSH_INTERVAL`)
+
+**Default**: 30000 milliseconds (30 seconds)  
+**Purpose**: Maximum time to wait before forcing a write to ADLS, regardless of buffer size
+
+**How it works**:
+- A timer runs every `FLUSH_INTERVAL` milliseconds
+- If there are ANY events in the buffer (even just 1), they get written to ADLS
+- This prevents events from sitting in memory too long during low-traffic periods
+
+**Why this matters**:
+- **Data Freshness**: Ensures events don't wait indefinitely in low-volume scenarios
+- **Data Loss Prevention**: Reduces risk of losing events if the application crashes
+- **Predictable Latency**: Guarantees maximum delay between event receipt and storage
+
+**Example scenarios**:
+```javascript
+// Near real-time requirements: flush frequently
+FLUSH_INTERVAL=5000  // 5 seconds
+
+// Batch-oriented: less frequent flushes
+FLUSH_INTERVAL=300000  // 5 minutes
+
+// Balanced approach: default
+FLUSH_INTERVAL=30000  // 30 seconds
+```
+
+## **How They Work Together**
+
+The system flushes to ADLS when **either** condition is met:
+1. Buffer reaches `BUFFER_SIZE` events, OR
+2. `FLUSH_INTERVAL` time has elapsed
+
+**Example Timeline**:
+```
+Time 0s:    Buffer = 0 events
+Time 10s:   Buffer = 450 events (no flush - under buffer size)
+Time 20s:   Buffer = 800 events (no flush - under buffer size)  
+Time 25s:   Buffer = 1000 events → FLUSH! (hit buffer size)
+Time 30s:   Buffer = 200 events (timer triggers)
+Time 60s:   Buffer = 200 events → FLUSH! (hit time interval)
+```
+
+## **Tuning Guidelines**
+
+**High Volume Streams** (1000+ events/second):
+- `BUFFER_SIZE=5000-10000`
+- `FLUSH_INTERVAL=60000` (1 minute)
+
+**Medium Volume Streams** (100-1000 events/second):
+- `BUFFER_SIZE=1000-2000`  
+- `FLUSH_INTERVAL=30000` (30 seconds)
+
+**Low Volume Streams** (<100 events/second):
+- `BUFFER_SIZE=100-500`
+- `FLUSH_INTERVAL=10000` (10 seconds)
+
+**Memory Constrained Environments**:
+- `BUFFER_SIZE=100-500`
+- `FLUSH_INTERVAL=15000` (15 seconds)
+
+These parameters give you fine-grained control over the trade-off between throughput, latency, memory usage, and cost efficiency in your data pipeline.
+
+
+
+
 ```js
 const { EventHubConsumerClient } = require("@azure/event-hubs");
 const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
