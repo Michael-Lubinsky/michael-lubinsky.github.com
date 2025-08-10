@@ -1924,3 +1924,213 @@ GROUP BY TABLE_NAME;
 4. Use network security groups and private endpoints
 5. Enable audit logging in all components
 6. Implement data encryption at rest and in transit
+
+
+###  Full migration
+
+The current pipeline above only processes **new records** from EventHub.  
+For existing MongoDB collections, you need an **initial data migration** strategy. 
+Let me provide you with additional components to handle historical data.  
+Now let me update the package.json to include the MongoDB migration scripts: 
+
+### **1. `npm run start:all` Command:**
+This command runs **BOTH** Step 1 (EventHub to ADLS) AND Step 2 (ADLS to Snowflake) **simultaneously** using the `concurrently` package. It's equivalent to running both applications in parallel.
+
+### **2. EventHub Message Deletion:**
+**NO** - EventHub messages are **NOT automatically deleted** after reading. EventHub uses:
+- **Time-based retention** (1-90 days configurable)
+- **Checkpointing** to track consumer progress
+- Messages remain available for replay and multiple consumers
+
+### **3. MongoDB Historical Data Migration:**
+
+I've created a **MongoDB Migration Pipeline** that handles your existing collections:
+
+**Key Features:**
+- ✅ **Full migration** of all historical MongoDB data
+- ✅ **Incremental migration** for catching up missed changes  
+- ✅ **Same partitioning structure** as EventHub pipeline
+- ✅ **Collection-specific processing** with parallel execution
+- ✅ **Time-based chunking** for large datasets
+
+**Migration Strategy:**
+
+```bash
+# 1. One-time historical migration (before starting EventHub)
+npm run migrate:full
+
+# 2. Start real-time EventHub pipeline (after migration)
+npm run start:all
+
+# 3. Optional: Incremental catch-up for any overlap
+npm run migrate:incremental 2024-08-09T00:00:00Z
+```
+
+**Timeline Strategy:**
+
+```
+MongoDB Historical:  [████████████████████] (All data before cutoff)
+                                            |
+EventHub New Data:                          [████████████████] (All data after cutoff)
+                                            ^
+                                    August 10, 2025 00:00:00Z
+                                    (Migration Cutoff Point)
+```
+
+## **Complete Deployment Sequence:**
+
+### **Phase 1: Historical Migration (Run First)**
+```bash
+# 1. Install dependencies including MongoDB driver
+npm install
+
+# 2. Configure MongoDB connection
+# Add MONGODB_CONNECTION_STRING to .env
+
+# 3. Run full historical migration (this may take hours/days for large datasets)
+npm run migrate:full
+
+# 4. Validate migration completed successfully
+# Check logs and Snowflake bronze tables
+```
+
+### **Phase 2: Real-Time Pipeline (Run After Migration)**
+```bash
+# 1. Start EventHub to ADLS ingestion
+npm run start:ingestion
+
+# 2. Start ADLS to Snowflake loader  
+npm run start:loader
+
+# OR start both together
+npm run start:all
+```
+
+### **Phase 3: Snowflake Tasks (Run Last)**
+```sql
+-- Execute in Snowflake after bronze tables have data
+ALTER TASK SILVER.HOURLY_ALL_TRANSFORMATIONS RESUME;
+```
+
+## **Data Consistency Handling:**
+
+### **Option 1: Clean Cutoff (Recommended)**
+1. Stop writes to MongoDB at specific time
+2. Complete historical migration 
+3. Start EventHub pipeline
+4. Resume MongoDB writes (routing to EventHub)
+
+### **Option 2: Overlap Handling**
+```javascript
+// Add to EventHub processor for deduplication
+async processEvent(event) {
+    const eventTime = new Date(event.body.timestamp);
+    const migrationCutoff = new Date('2024-08-10T00:00:00Z');
+    
+    // Skip events that might be duplicated from migration
+    if (eventTime < migrationCutoff) {
+        console.log('Skipping - event before migration cutoff');
+        return;
+    }
+    
+    // Process normally...
+}
+```
+
+## **Monitoring Migration Progress:**
+
+### **Real-time Progress Tracking:**
+```bash
+# Watch migration logs
+tail -f migration.log
+
+# Check MongoDB progress
+db.collection.countDocuments({migrated: {$exists: false}})
+```
+
+### **Snowflake Validation:**
+```sql
+-- Check migration data in Snowflake
+SELECT 
+    REGEXP_SUBSTR(_PARTITION_PATH, 'db/([^/]+)/', 1, 1, 'e', 1) as COLLECTION,
+    COUNT(*) as MIGRATED_RECORDS,
+    MIN(RAW_DATA:_migrationTimestamp::TIMESTAMP_NTZ) as FIRST_MIGRATED,
+    MAX(RAW_DATA:_migrationTimestamp::TIMESTAMP_NTZ) as LAST_MIGRATED
+FROM BRONZE.YOUR_COLLECTION_BRONZE 
+WHERE FILE_NAME LIKE '%migration-%'
+GROUP BY COLLECTION
+ORDER BY COLLECTION;
+```
+
+## **Performance Tuning:**
+
+### **For Large Collections (1M+ documents):**
+```env
+MIGRATION_BATCH_SIZE=5000      # Larger batches
+PARALLEL_COLLECTIONS=1         # Reduce parallelism  
+FLUSH_INTERVAL=60000          # Less frequent flushes
+```
+
+### **For Many Small Collections:**
+```env
+MIGRATION_BATCH_SIZE=500       # Smaller batches
+PARALLEL_COLLECTIONS=5         # More parallelism
+```
+
+### **Memory Optimization:**
+```javascript
+// Add to migration config
+{
+    batchSize: 1000,
+    maxMemoryUsage: '2GB',
+    gcInterval: 10000  // Force garbage collection
+}
+```
+
+This migration strategy ensures you capture **all existing MongoDB data** while seamlessly transitioning to the **EventHub-based pipeline** for new data,  
+maintaining the same partitioning structure and data format throughout your entire data lake.
+
+```json
+
+{
+  "name": "eventhub-adls-snowflake-pipeline",
+  "version": "1.0.0",
+  "description": "Data pipeline from Azure EventHub to ADLS to Snowflake",
+  "main": "index.js",
+  "scripts": {
+    "start:ingestion": "node src/eventhub-to-adls.js",
+    "start:loader": "node src/adls-to-snowflake.js",
+    "start:all": "concurrently \"npm run start:ingestion\" \"npm run start:loader\"",
+    "migrate:full": "node src/mongodb-migration.js full",
+    "migrate:incremental": "node src/mongodb-migration.js incremental",
+    "migrate:collection": "node src/mongodb-migration.js collection",
+    "migrate:scheduler": "node src/mongodb-migration.js scheduler",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "azure",
+    "eventhub",
+    "adls",
+    "snowflake",
+    "data-pipeline",
+    "etl"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.4",
+    "@azure/storage-file-datalake": "^12.15.0",
+    "@azure/identity": "^3.4.2",
+    "snowflake-sdk": "^1.9.0",
+    "node-cron": "^3.0.3",
+    "mongodb": "^6.2.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
