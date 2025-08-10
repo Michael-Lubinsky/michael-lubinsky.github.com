@@ -267,3 +267,53 @@ process.on("SIGINT", () => {
 
 console.log("Loader started. Running every hour.");
 ```
+## Snowflake task which will read from the bronze tables every hour the new json records added in last hour   
+extract some json attributes and store in silver layer tables.
+
+
+```
+-- Assume the bronze table is created with the following structure (if not, create it accordingly)
+CREATE TABLE IF NOT EXISTS BRONZE.PUBLIC.mycollection (
+    data VARIANT,
+    load_time TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- Note: Update the COPY INTO command in the Node.js loader script to include the load_time column:
+-- COPY INTO mycollection (data, load_time)
+-- FROM (SELECT parse_json($1), CURRENT_TIMESTAMP() FROM '${url}')
+-- FILE_FORMAT = (TYPE = 'JSON' COMPRESSION = 'NONE')
+-- PATTERN = '.*\\.jsonl';
+
+-- Create the silver schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS BRONZE.SILVER;
+
+-- Create the silver table with extracted attributes (assuming JSON structure has id, user_id, event_type, event_timestamp)
+CREATE TABLE IF NOT EXISTS BRONZE.SILVER.mycollection (
+    id STRING,
+    user_id STRING,
+    event_type STRING,
+    event_timestamp TIMESTAMP_NTZ,
+    load_time TIMESTAMP_NTZ
+);
+
+-- Create a stream on the bronze table to capture new inserts
+CREATE STREAM IF NOT EXISTS BRONZE.PUBLIC.mycollection_stream ON TABLE BRONZE.PUBLIC.mycollection APPEND_ONLY = TRUE;
+
+-- Create the task to run every hour
+CREATE TASK IF NOT EXISTS BRONZE.PUBLIC.process_mycollection_to_silver
+    WAREHOUSE = 'COMPUTE_WH'  -- Replace with your warehouse name
+    SCHEDULE = '60 MINUTE'
+AS
+    INSERT INTO BRONZE.SILVER.mycollection (id, user_id, event_type, event_timestamp, load_time)
+    SELECT 
+        data:id::STRING AS id,
+        data:user_id::STRING AS user_id,
+        data:event_type::STRING AS event_type,
+        data:event_timestamp::TIMESTAMP_NTZ AS event_timestamp,
+        load_time
+    FROM BRONZE.PUBLIC.mycollection_stream
+    WHERE load_time >= DATEADD(HOUR, -1, CURRENT_TIMESTAMP());
+
+-- Resume the task to start scheduling
+ALTER TASK BRONZE.PUBLIC.process_mycollection_to_silver RESUME;
+```
