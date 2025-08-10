@@ -124,3 +124,128 @@ const subscription = consumerClient.subscribe(
 
 console.log("Consumer started. Press Ctrl+C to stop.");
 ```
+program which every hour reads the files created by previous script and uploaded them into Snowflake  bronze database tables using Snowflake copy command.
+The Snowflake table name should match the collection name.
+
+```js
+const snowflake = require('snowflake-sdk');
+const { StorageSharedKeyCredential, generateDataLakeSASQueryParameters, DataLakeSASPermissions } = require("@azure/storage-file-datalake");
+
+// Load environment variables
+const EVENT_HUB_CONNECTION_STRING = process.env.EVENT_HUB_CONNECTION_STRING; // Not used, but for consistency
+const EVENT_HUB_NAME = process.env.EVENT_HUB_NAME; // Not used
+const CONSUMER_GROUP = process.env.CONSUMER_GROUP || "$Default"; // Not used
+const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
+const STORAGE_ACCOUNT_KEY = process.env.STORAGE_ACCOUNT_KEY;
+const FILE_SYSTEM_NAME = process.env.FILE_SYSTEM_NAME;
+const DB_NAME = process.env.DB_NAME || "mydb";
+const COLLECTION_NAME = process.env.COLLECTION_NAME || "mycollection";
+const SNOWFLAKE_ACCOUNT = process.env.SNOWFLAKE_ACCOUNT;
+const SNOWFLAKE_USER = process.env.SNOWFLAKE_USER;
+const SNOWFLAKE_PASSWORD = process.env.SNOWFLAKE_PASSWORD;
+const SNOWFLAKE_DATABASE = process.env.SNOWFLAKE_DATABASE || "BRONZE";
+const SNOWFLAKE_SCHEMA = process.env.SNOWFLAKE_SCHEMA || "PUBLIC";
+
+// Validate required env vars
+if (!STORAGE_ACCOUNT_NAME || !STORAGE_ACCOUNT_KEY || !FILE_SYSTEM_NAME || !SNOWFLAKE_ACCOUNT || !SNOWFLAKE_USER || !SNOWFLAKE_PASSWORD) {
+  console.error("Missing required environment variables.");
+  process.exit(1);
+}
+
+// Snowflake connection
+const connection = snowflake.createConnection({
+  account: SNOWFLAKE_ACCOUNT,
+  username: SNOWFLAKE_USER,
+  password: SNOWFLAKE_PASSWORD,
+  database: SNOWFLAKE_DATABASE,
+  schema: SNOWFLAKE_SCHEMA,
+});
+
+connection.connect((err, conn) => {
+  if (err) {
+    console.error("Unable to connect to Snowflake:", err);
+    process.exit(1);
+  }
+  console.log("Connected to Snowflake.");
+});
+
+// Function to generate SAS token for a directory
+function generateSasToken(directoryPath) {
+  const credential = new StorageSharedKeyCredential(STORAGE_ACCOUNT_NAME, STORAGE_ACCOUNT_KEY);
+  const sasOptions = {
+    fileSystemName: FILE_SYSTEM_NAME,
+    pathName: directoryPath,
+    permissions: DataLakeSASPermissions.parse("r"),
+    startsOn: new Date(),
+    expiresOn: new Date(Date.now() + 3600 * 1000 * 24), // 24 hours
+  };
+  const sasQueryParameters = generateDataLakeSASQueryParameters(sasOptions, credential);
+  return sasQueryParameters.toString();
+}
+
+// Function to load data for a specific hour partition
+async function loadHourPartition(yyyy, mm, dd, hh) {
+  const directoryPath = `${DB_NAME}/${COLLECTION_NAME}/year=${yyyy}/month=${mm}/day=${dd}/hour=${hh}/`;
+  const sasToken = generateSasToken(directoryPath);
+  const url = `azure://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${FILE_SYSTEM_NAME}/${directoryPath}?${sasToken}`;
+
+  const sql = `
+    COPY INTO ${COLLECTION_NAME}
+    FROM '${url}'
+    FILE_FORMAT = (TYPE = 'JSON' COMPRESSION = 'NONE')
+    PATTERN = '.*\\.jsonl';
+  `;
+
+  return new Promise((resolve, reject) => {
+    connection.execute({
+      sqlText: sql,
+      complete: (err, stmt, rows) => {
+        if (err) {
+          console.error(`Failed to execute COPY for ${yyyy}-${mm}-${dd} ${hh}:`, err);
+          reject(err);
+        } else {
+          console.log(`Successfully loaded data for ${yyyy}-${mm}-${dd} ${hh}. Rows loaded: ${stmt.getNumRowsLoaded()}`);
+          resolve(rows);
+        }
+      }
+    });
+  });
+}
+
+// Function to compute and load previous hour
+async function loadPreviousHour() {
+  const now = new Date();
+  const previous = new Date(now.getTime() - 3600000);
+  const yyyy = previous.getUTCFullYear();
+  const mm = String(previous.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(previous.getUTCDate()).padStart(2, "0");
+  const hh = String(previous.getUTCHours()).padStart(2, "0");
+
+  console.log(`Loading data for ${yyyy}-${mm}-${dd} ${hh}...`);
+  try {
+    await loadHourPartition(yyyy, mm, dd, hh);
+  } catch (err) {
+    console.error("Error loading previous hour:", err);
+  }
+}
+
+// Run every hour (3600000 ms)
+setInterval(loadPreviousHour, 3600000);
+
+// Run once on startup for the immediate previous hour
+loadPreviousHour();
+
+// Handle graceful shutdown
+process.on("SIGTERM", () => {
+  console.log("Terminating...");
+  connection.destroy();
+  process.exit(0);
+});
+process.on("SIGINT", () => {
+  console.log("Terminating...");
+  connection.destroy();
+  process.exit(0);
+});
+
+console.log("Loader started. Running every hour.");
+```
