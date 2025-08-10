@@ -2138,14 +2138,14 @@ maintaining the same partitioning structure and data format throughout your enti
 ```
 
 
-### If some of the 3  Steps of pipeline 
+#  If some of the 3  Steps of pipeline 
 - Step 1: EventHub to ADLS Ingestion  
 - Step 2: ADLS to Snowflake Loader  
 - Step 3: Snowflake Bronze to Silver Tasks
   
 gets broken how to replay it?
 
-Perfect! Now let me update the package.json to include the recovery commands:## **Summary: Pipeline Recovery Capabilities**
+let me update the package.json to include the recovery commands:## **Summary: Pipeline Recovery Capabilities**
 
 Here's how to handle failures in each step:
 
@@ -2311,3 +2311,562 @@ Package.json
   }
 }
 ```
+
+
+
+
+
+# UPDATED Pipeline Recovery and Replay Guide (v2)
+
+## Overview
+
+Each step of the pipeline has different failure modes and recovery strategies. Here's how to handle each scenario:
+
+## Step 1 Recovery: EventHub to ADLS Failures
+
+### **Failure Scenarios:**
+- Application crash or restart
+- Network connectivity issues  
+- ADLS write failures
+- Processing lag/backlog
+
+### **Recovery Strategy:**
+EventHub's **checkpoint mechanism** allows replay from any point in time.
+
+#### **Quick Recovery Commands:**
+```bash
+# Replay specific time window
+node recovery.js step1 "2024-08-09T10:00:00Z" "2024-08-09T12:00:00Z"
+
+# Replay from specific checkpoint (last 4 hours)  
+node recovery.js step1 "$(date -d '4 hours ago' -u +%Y-%m-%dT%H:%M:%SZ)"
+
+# Reset checkpoint to specific time
+node recovery.js reset-checkpoint "0" "2024-08-09T10:00:00Z"
+```
+
+#### **Detailed Recovery Process:**
+```bash
+# 1. Check EventHub partition lag
+az eventhubs eventhub show \
+  --resource-group myRG \
+  --namespace-name myNamespace \
+  --name myEventHub
+
+# 2. Identify failure time window
+# Check application logs for last successful processing
+
+# 3. Reset consumer group checkpoint (if needed)
+node recovery.js reset-checkpoint "all" "2024-08-09T10:00:00Z"
+
+# 4. Replay the missing time window
+node recovery.js step1 "2024-08-09T10:00:00Z" "2024-08-09T12:00:00Z"
+
+# 5. Resume normal processing
+npm run start:ingestion
+```
+
+## Step 2 Recovery: ADLS to Snowflake Failures
+
+### **Failure Scenarios:**
+- Snowflake connection issues
+- COPY command failures
+- File format/parsing errors
+- Missing or corrupted files in ADLS
+
+### **Recovery Strategy:**
+Files in ADLS are persistent, so you can reprocess any time period.
+
+#### **Quick Recovery Commands:**
+```bash
+# Reprocess yesterday's files
+node recovery.js step2 "2024-08-09" 
+
+# Reprocess date range
+node recovery.js step2 "2024-08-09" "2024-08-10"
+
+# Force reprocess (ignore processed file tracking)
+node recovery.js step2 "2024-08-09" "2024-08-10" force
+
+# Dry run to see what would be processed
+node recovery.js step2 "2024-08-09" --dry-run
+```
+
+#### **Detailed Recovery Process:**
+```bash
+# 1. Check what files failed to load
+# Look at Snowflake COPY_HISTORY for errors
+
+# 2. Clear processed file tracking (if needed)
+rm processed_files.json
+
+# 3. Reprocess specific date range
+node recovery.js step2 "2024-08-09" "2024-08-10" force
+
+# 4. Validate data loaded correctly
+# Check Snowflake bronze tables for expected record counts
+```
+
+#### **Manual Snowflake Recovery:**
+```sql
+-- Check failed COPY operations
+SELECT 
+    TABLE_NAME,
+    FILE_NAME,
+    STATUS,
+    ERROR_COUNT,
+    FIRST_ERROR_MESSAGE
+FROM TABLE(INFORMATION_SCHEMA.COPY_HISTORY(
+    TABLE_NAME => 'BRONZE.EVENTS_BRONZE',
+    START_TIME => DATEADD('day', -1, CURRENT_TIMESTAMP())
+))
+WHERE STATUS = 'LOADED_WITH_ERRORS' OR STATUS = 'LOAD_FAILED'
+ORDER BY LAST_LOAD_TIME DESC;
+
+-- Manual COPY command for specific files
+COPY INTO BRONZE.EVENTS_BRONZE
+FROM @BRONZE.ADLS_STAGE/db/events/year=2024/month=08/day=09/hour=10/
+FILE_FORMAT = (TYPE = 'JSON', STRIP_OUTER_ARRAY = FALSE)
+PATTERN = '.*events-20240809-10\.jsonl'
+ON_ERROR = 'CONTINUE';
+```
+
+## Step 3 Recovery: Bronze to Silver Failures
+
+### **Failure Scenarios:**
+- Task execution failures
+- Data transformation errors
+- Schema mismatches
+- Warehouse suspension/scaling issues
+
+### **Recovery Strategy:**
+Bronze data is persistent, so you can re-transform any time period.
+
+#### **Quick Recovery Commands:**
+```bash
+# Reprocess through Node.js recovery tool
+node recovery.js step3 "2024-08-09"
+
+# Or directly in Snowflake
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+```
+
+#### **Detailed Recovery Process:**
+
+**1. Check Task Status:**
+```sql
+-- See failed tasks
+SELECT * FROM TABLE(SILVER.GET_FAILED_TASK_EXECUTIONS(24));
+
+-- Check current task status
+SHOW TASKS IN SCHEMA SILVER;
+```
+
+**2. Find Data Gaps:**
+```sql
+-- Check for missing data
+SELECT * FROM TABLE(SILVER.FIND_DATA_GAPS('2024-08-09', '2024-08-10', 'EVENTS'));
+
+-- Validate bronze vs silver consistency
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY('2024-08-09'));
+```
+
+**3. Manual Recovery:**
+```sql
+-- Reprocess specific date range
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+CALL SILVER.TRANSFORM_USER_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+
+-- Or use emergency task
+ALTER TASK SILVER.EMERGENCY_REPROCESS_24H RESUME;
+```
+
+## End-to-End Recovery Scenarios
+
+### **Scenario 1: Complete Pipeline Outage (4 hours)**
+
+```bash
+# 1. Determine outage window
+OUTAGE_START="2024-08-09T10:00:00Z"
+OUTAGE_END="2024-08-09T14:00:00Z"
+
+# 2. Replay Step 1 (EventHub to ADLS)
+node recovery.js step1 "$OUTAGE_START" "$OUTAGE_END"
+
+# 3. Wait for files to be created, then replay Step 2
+sleep 300  # Wait 5 minutes
+node recovery.js step2 "2024-08-09" "2024-08-09" force
+
+# 4. Replay Step 3 (Bronze to Silver)
+node recovery.js step3 "2024-08-09"
+
+# 5. Resume normal processing
+npm run start:all
+```
+
+### **Scenario 2: Selective Collection Recovery**
+
+```bash
+# Only replay specific collections
+COLLECTIONS_TO_REPLAY="users,orders,products"
+
+# Step 1: EventHub replay (filter in application logic)
+node recovery.js step1 "2024-08-09T10:00:00Z" "2024-08-09T14:00:00Z"
+
+# Step 2: ADLS to Snowflake for specific collections
+for collection in users orders products; do
+    node recovery.js step2 "2024-08-09" --collection="$collection"
+done
+
+# Step 3: Bronze to Silver for each collection
+for collection in users orders products; do
+    snowsql -q "CALL SILVER.TRANSFORM_${collection^^}_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');"
+done
+```
+
+### **Scenario 3: Data Quality Issue Recovery**
+
+```sql
+-- 1. Identify problematic data
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY('2024-08-09'))
+WHERE STATUS != 'CONSISTENT';
+
+-- 2. Check bronze data quality
+SELECT 
+    COUNT(*) as TOTAL_RECORDS,
+    COUNT(CASE WHEN RAW_DATA:event_id IS NULL THEN 1 END) as NULL_EVENT_IDS,
+    COUNT(CASE WHEN TRY_PARSE_JSON(RAW_DATA) IS NULL THEN 1 END) as INVALID_JSON,
+    COUNT(DISTINCT FILE_NAME) as UNIQUE_FILES
+FROM BRONZE.EVENTS_BRONZE 
+WHERE DATE(LOAD_TIMESTAMP) = '2024-08-09';
+
+-- 3. Clean and reprocess
+DELETE FROM SILVER.EVENTS_SILVER WHERE DATE(EVENT_TIMESTAMP) = '2024-08-09';
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+```
+
+## Monitoring and Alerting Setup
+
+### **Health Check Scripts:**
+
+```bash
+# Create monitoring script
+cat > check_pipeline_health.sh << 'EOF'
+#!/bin/bash
+
+echo "=== Pipeline Health Check ==="
+
+# Check Node.js processes
+if pgrep -f "eventhub-to-adls" > /dev/null; then
+    echo "✅ Step 1 (EventHub to ADLS) - Running"
+else
+    echo "❌ Step 1 (EventHub to ADLS) - Not Running"
+fi
+
+if pgrep -f "adls-to-snowflake" > /dev/null; then
+    echo "✅ Step 2 (ADLS to Snowflake) - Running"  
+else
+    echo "❌ Step 2 (ADLS to Snowflake) - Not Running"
+fi
+
+# Check Snowflake tasks
+snowsql -q "SELECT * FROM TABLE(SILVER.CHECK_PROCESSING_DELAYS()) WHERE STATUS != 'OK';" 
+EOF
+
+chmod +x check_pipeline_health.sh
+```
+
+### **Automated Recovery Setup:**
+
+```bash
+# Setup cron job for health checks
+crontab -e
+
+# Add this line for every 15 minutes health check
+*/15 * * * * /path/to/check_pipeline_health.sh >> /var/log/pipeline_health.log 2>&1
+
+# Add this line for hourly recovery check
+0 * * * * /path/to/auto_recovery.sh >> /var/log/pipeline_recovery.log 2>&1
+```
+
+## Best Practices for Recovery
+
+### **1. Preventive Measures:**
+- Set up comprehensive logging
+- Implement health check endpoints
+- Use process managers (PM2/systemd)
+- Monitor EventHub consumer lag
+- Set up Snowflake task alerts
+
+### **2. Recovery Principles:**
+- **Always replay from source** - EventHub is the source of truth
+- **Idempotent operations** - Safe to run multiple times
+- **Time-based recovery** - Use timestamps to define recovery windows
+- **Validate before and after** - Check data counts and quality
+- **Incremental recovery** - Start with small time windows, expand if needed
+
+### **3. Recovery Time Objectives:**
+
+| Failure Type | Detection Time | Recovery Time | Data Loss |
+|-------------|----------------|---------------|-----------|
+| **Step 1 Crash** | 1-5 minutes | 5-15 minutes | None (replay available) |
+| **Step 2 Failure** | 5-15 minutes | 10-30 minutes | None (files persistent) |
+| **Step 3 Error** | 15-60 minutes | 5-15 minutes | None (bronze data safe) |
+| **Complete Outage** | 1-5 minutes | 30-60 minutes | None (full replay) |
+
+## Recovery Command Reference
+
+### **EventHub Replay (Step 1)**
+```bash
+# Basic replay
+node recovery.js step1 "2024-08-09T10:00:00Z" "2024-08-09T12:00:00Z"
+
+# Replay specific partition only
+node recovery.js step1 "2024-08-09T10:00:00Z" --partition="0"
+
+# Replay last N hours
+node recovery.js step1 "$(date -d '2 hours ago' -u +%Y-%m-%dT%H:%M:%SZ)"
+
+# Reset checkpoint and replay
+node recovery.js reset-checkpoint "all" "2024-08-09T10:00:00Z"
+node recovery.js step1 "2024-08-09T10:00:00Z"
+```
+
+### **ADLS to Snowflake Replay (Step 2)**
+```bash
+# Reprocess specific date
+node recovery.js step2 "2024-08-09"
+
+# Reprocess date range
+node recovery.js step2 "2024-08-09" "2024-08-10"
+
+# Force reprocess (ignore tracking)
+node recovery.js step2 "2024-08-09" "2024-08-10" force
+
+# Dry run (see what would be processed)
+node recovery.js step2 "2024-08-09" --dry-run
+
+# Reprocess specific collection only
+COLLECTIONS_TO_MIGRATE=users node recovery.js step2 "2024-08-09"
+```
+
+### **Bronze to Silver Replay (Step 3)**
+```sql
+-- Reprocess specific date
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+
+-- Reprocess all collections for date range  
+CALL SILVER.TRANSFORM_ALL_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-10');
+
+-- Emergency reprocess last 24 hours
+ALTER TASK SILVER.EMERGENCY_REPROCESS_24H RESUME;
+
+-- Manual collection-specific reprocess
+DELETE FROM SILVER.USER_EVENTS_SILVER WHERE DATE(EVENT_TIMESTAMP) = '2024-08-09';
+CALL SILVER.TRANSFORM_USER_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+```
+
+## Monitoring and Detection
+
+### **Real-time Monitoring:**
+```bash
+# Check pipeline health every 5 minutes
+*/5 * * * * /usr/local/bin/check_pipeline_health.sh
+
+# Auto-recovery script every hour
+0 * * * * /usr/local/bin/auto_recovery.sh
+```
+
+### **Health Check Queries:**
+```sql
+-- Check processing delays
+SELECT * FROM TABLE(SILVER.CHECK_PROCESSING_DELAYS())
+WHERE STATUS IN ('WARNING', 'CRITICAL');
+
+-- Find data gaps
+SELECT * FROM TABLE(SILVER.FIND_DATA_GAPS(
+    TO_VARCHAR(DATEADD('day', -1, CURRENT_TIMESTAMP()), 'YYYY-MM-DD'),
+    TO_VARCHAR(CURRENT_TIMESTAMP(), 'YYYY-MM-DD'),
+    'ALL'
+));
+
+-- Check failed tasks
+SELECT * FROM TABLE(SILVER.GET_FAILED_TASK_EXECUTIONS(24));
+
+-- Data consistency validation
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY(
+    TO_VARCHAR(CURRENT_DATE() - 1, 'YYYY-MM-DD')
+))
+WHERE STATUS != 'CONSISTENT';
+```
+
+## Common Failure Patterns and Solutions
+
+### **Pattern 1: EventHub Consumer Lag**
+```bash
+# Symptoms: Events piling up in EventHub, consumer lag increasing
+# Solution: Scale out consumers or reset checkpoint
+
+# Check lag
+az eventhubs eventhub show --resource-group myRG --namespace-name myNS --name myHub
+
+# Scale out (run multiple consumer instances)
+for i in {1..3}; do
+    CONSUMER_GROUP="processor-$i" npm run start:ingestion &
+done
+
+# Or reset checkpoint if data loss is acceptable
+node recovery.js reset-checkpoint "all" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+```
+
+### **Pattern 2: ADLS File Corruption**
+```bash
+# Symptoms: Snowflake COPY failures, JSON parsing errors
+# Solution: Replay from EventHub
+
+# 1. Identify corrupt files from Snowflake logs
+snowsql -q "
+SELECT FILE_NAME, ERROR_COUNT, FIRST_ERROR_MESSAGE 
+FROM TABLE(INFORMATION_SCHEMA.COPY_HISTORY(...))
+WHERE STATUS = 'LOAD_FAILED'
+"
+
+# 2. Extract time range from file names
+# events-20240809-10.jsonl = August 9, 2024, hour 10
+
+# 3. Replay from EventHub for that time window
+node recovery.js step1 "2024-08-09T10:00:00Z" "2024-08-09T11:00:00Z"
+
+# 4. Reprocess through Snowflake
+node recovery.js step2 "2024-08-09" force
+```
+
+### **Pattern 3: Snowflake Task Failures**
+```sql
+-- Symptoms: Silver tables behind, task execution errors
+-- Solution: Manual reprocessing
+
+-- 1. Check what failed
+SELECT * FROM TABLE(SILVER.GET_FAILED_TASK_EXECUTIONS(24));
+
+-- 2. Check data availability in bronze
+SELECT 
+    DATE(LOAD_TIMESTAMP) as DATE,
+    COUNT(*) as RECORD_COUNT
+FROM BRONZE.EVENTS_BRONZE 
+WHERE DATE(LOAD_TIMESTAMP) >= CURRENT_DATE() - 3
+GROUP BY DATE(LOAD_TIMESTAMP)
+ORDER BY DATE;
+
+-- 3. Reprocess failed periods
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+
+-- 4. Resume tasks
+ALTER TASK SILVER.HOURLY_ALL_TRANSFORMATIONS RESUME;
+```
+
+### **Pattern 4: Schema Evolution Issues**
+```sql
+-- Symptoms: New fields in JSON causing transformation failures
+-- Solution: Update silver table schema and reprocess
+
+-- 1. Analyze new JSON structure
+SELECT DISTINCT RAW_DATA
+FROM BRONZE.EVENTS_BRONZE 
+WHERE DATE(LOAD_TIMESTAMP) = CURRENT_DATE()
+LIMIT 10;
+
+-- 2. Add new columns to silver table
+ALTER TABLE SILVER.EVENTS_SILVER 
+ADD COLUMN NEW_FIELD VARCHAR(200);
+
+-- 3. Update transformation procedure
+-- (Modify the stored procedure to handle new fields)
+
+-- 4. Reprocess affected data
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+```
+
+## Emergency Recovery Playbook
+
+### **🚨 Complete Pipeline Down**
+```bash
+# 1. Immediate assessment
+./check_pipeline_health.sh
+
+# 2. Restart applications
+pm2 restart all
+# OR
+npm run start:all
+
+# 3. Check EventHub lag
+az eventhubs eventhub show --resource-group myRG --namespace-name myNS --name myHub
+
+# 4. If lag > 2 hours, consider checkpoint reset
+node recovery.js reset-checkpoint "all" "$(date -d '4 hours ago' -u +%Y-%m-%dT%H:%M:%SZ)"
+
+# 5. Resume Snowflake tasks
+snowsql -q "ALTER TASK SILVER.HOURLY_ALL_TRANSFORMATIONS RESUME;"
+
+# 6. Monitor recovery progress
+watch -n 60 './check_pipeline_health.sh'
+```
+
+### **🚨 Data Inconsistency Detected**
+```sql
+-- 1. Identify scope of inconsistency
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY('2024-08-09'))
+WHERE STATUS != 'CONSISTENT';
+
+-- 2. Check bronze data quality
+SELECT 
+    FILE_NAME,
+    COUNT(*) as RECORDS,
+    COUNT(CASE WHEN RAW_DATA:event_id IS NULL THEN 1 END) as NULL_IDS,
+    MIN(LOAD_TIMESTAMP) as FIRST_LOAD,
+    MAX(LOAD_TIMESTAMP) as LAST_LOAD
+FROM BRONZE.EVENTS_BRONZE 
+WHERE DATE(LOAD_TIMESTAMP) = '2024-08-09'
+GROUP BY FILE_NAME
+HAVING NULL_IDS > 0;
+
+-- 3. Reprocess affected data
+DELETE FROM SILVER.EVENTS_SILVER WHERE DATE(EVENT_TIMESTAMP) = '2024-08-09';
+CALL SILVER.TRANSFORM_EVENTS_BRONZE_TO_SILVER_DATE_RANGE('2024-08-09', '2024-08-09');
+
+-- 4. Validate fix
+SELECT * FROM TABLE(SILVER.VALIDATE_BRONZE_SILVER_CONSISTENCY('2024-08-09'));
+```
+
+## Recovery Testing
+
+### **Regular Recovery Drills:**
+```bash
+# Monthly recovery drill script
+cat > recovery_drill.sh << 'EOF'
+#!/bin/bash
+echo "=== RECOVERY DRILL $(date) ==="
+
+# Test EventHub replay (last hour)
+LAST_HOUR=$(date -d '1 hour ago' -u +%Y-%m-%dT%H:00:00Z)
+THIS_HOUR=$(date -u +%Y-%m-%dT%H:00:00Z)
+
+echo "Testing EventHub replay: $LAST_HOUR to $THIS_HOUR"
+node recovery.js step1 "$LAST_HOUR" "$THIS_HOUR" --dry-run
+
+# Test ADLS reprocessing (yesterday)
+YESTERDAY=$(date -d '1 day ago' +%Y-%m-%d)
+echo "Testing ADLS reprocessing: $YESTERDAY"
+node recovery.js step2 "$YESTERDAY" --dry-run
+
+# Test Snowflake transformation
+echo "Testing Snowflake transformation: $YESTERDAY"
+snowsql -q "SELECT * FROM TABLE(SILVER.FIND_DATA_GAPS('$YESTERDAY', '$YESTERDAY', 'ALL'));"
+
+echo "=== DRILL COMPLETED ==="
+EOF
+
+chmod +x recovery_drill.sh
+```
+
+This comprehensive recovery strategy ensures you can handle any failure scenario in your pipeline while maintaining data integrity and minimizing downtime. The key is that each step preserves data (EventHub retention, ADLS persistence, Snowflake bronze layer) so you can always replay from any point in time.
