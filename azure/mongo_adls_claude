@@ -263,4 +263,397 @@ if (require.main === module) {
 
 module.exports = EventHubToADLSPipeline;
 ```
+### STEP 2: upload to bronze
+```js
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const { DefaultAzureCredential } = require("@azure/identity");
+const snowflake = require('snowflake-sdk');
+const cron = require('node-cron');
+const fs = require('fs').promises;
+
+class ADLSToSnowflakeLoader {
+    constructor(config) {
+        this.config = config;
+        this.credential = new DefaultAzureCredential();
+        this.dataLakeServiceClient = new DataLakeServiceClient(
+            `https://${config.storageAccount}.dfs.core.windows.net`,
+            this.credential
+        );
+        this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(config.containerName);
+        this.snowflakeConnection = null;
+        this.processedFiles = new Set();
+        this.loadProcessedFiles();
+    }
+
+    async loadProcessedFiles() {
+        try {
+            const data = await fs.readFile(this.config.processedFilesPath || './processed_files.json', 'utf8');
+            this.processedFiles = new Set(JSON.parse(data));
+            console.log(`Loaded ${this.processedFiles.size} previously processed files`);
+        } catch (error) {
+            console.log('No previous processed files found, starting fresh');
+        }
+    }
+
+    async saveProcessedFiles() {
+        try {
+            await fs.writeFile(
+                this.config.processedFilesPath || './processed_files.json',
+                JSON.stringify([...this.processedFiles], null, 2)
+            );
+        } catch (error) {
+            console.error('Error saving processed files:', error);
+        }
+    }
+
+    async initializeSnowflake() {
+        return new Promise((resolve, reject) => {
+            this.snowflakeConnection = snowflake.createConnection({
+                account: this.config.snowflake.account,
+                username: this.config.snowflake.username,
+                password: this.config.snowflake.password,
+                database: this.config.snowflake.database,
+                schema: this.config.snowflake.schema,
+                warehouse: this.config.snowflake.warehouse,
+                role: this.config.snowflake.role
+            });
+
+            this.snowflakeConnection.connect((err, conn) => {
+                if (err) {
+                    console.error('Unable to connect to Snowflake:', err);
+                    reject(err);
+                } else {
+                    console.log('Successfully connected to Snowflake');
+                    resolve(conn);
+                }
+            });
+        });
+    }
+
+    async executeSnowflakeQuery(query, binds = []) {
+        return new Promise((resolve, reject) => {
+            this.snowflakeConnection.execute({
+                sqlText: query,
+                binds: binds,
+                complete: (err, stmt, rows) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve({ stmt, rows });
+                    }
+                }
+            });
+        });
+    }
+
+    async createBronzeTable(tableName) {
+        const createTableQuery = `
+            CREATE TABLE IF NOT EXISTS ${this.config.snowflake.schema}.${tableName}_bronze (
+                RAW_DATA VARIANT,
+                FILE_NAME VARCHAR(500),
+                INGESTION_TIMESTAMP TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+                LOAD_TIMESTAMP TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+                _PARTITION_PATH VARCHAR(500)
+            )
+        `;
+
+        try {
+            await this.executeSnowflakeQuery(createTableQuery);
+            console.log(`Bronze table ${tableName}_bronze created/verified successfully`);
+        } catch (error) {
+            console.error(`Error creating bronze table ${tableName}_bronze:`, error);
+            throw error;
+        }
+    }
+
+    async createStageIfNotExists() {
+        const createStageQuery = `
+            CREATE STAGE IF NOT EXISTS ${this.config.snowflake.schema}.ADLS_STAGE
+            URL = 'azure://${this.config.storageAccount}.dfs.core.windows.net/${this.config.containerName}/'
+            CREDENTIALS = (AZURE_SAS_TOKEN = '${this.config.azureSasToken}')
+        `;
+
+        try {
+            await this.executeSnowflakeQuery(createStageQuery);
+            console.log('ADLS stage created/verified successfully');
+        } catch (error) {
+            console.error('Error creating ADLS stage:', error);
+            throw error;
+        }
+    }
+
+    async listFilesForHour(targetHour) {
+        const files = [];
+        const pathPrefix = this.generateHourPrefix(targetHour);
+        
+        try {
+            console.log(`Scanning for files in path: ${pathPrefix}`);
+            
+            // List all paths that match the hour pattern
+            const paths = await this.listPathsRecursively(pathPrefix);
+            
+            for (const path of paths) {
+                if (path.name.endsWith('.jsonl') && !this.processedFiles.has(path.name)) {
+                    files.push({
+                        name: path.name,
+                        collection: this.extractCollectionFromPath(path.name),
+                        path: path.name
+                    });
+                }
+            }
+            
+            console.log(`Found ${files.length} unprocessed files for hour ${targetHour.toISOString()}`);
+            return files;
+        } catch (error) {
+            console.error('Error listing files:', error);
+            return [];
+        }
+    }
+
+    async listPathsRecursively(prefix, paths = []) {
+        try {
+            const iterator = this.fileSystemClient.listPaths({ path: prefix, recursive: true });
+            
+            for await (const path of iterator) {
+                if (!path.isDirectory) {
+                    paths.push(path);
+                }
+            }
+        } catch (error) {
+            console.log(`No files found for prefix: ${prefix}`);
+        }
+        
+        return paths;
+    }
+
+    generateHourPrefix(targetHour) {
+        const year = targetHour.getUTCFullYear();
+        const month = String(targetHour.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(targetHour.getUTCDate()).padStart(2, '0');
+        const hour = String(targetHour.getUTCHours()).padStart(2, '0');
+        
+        return `db/*/year=${year}/month=${month}/day=${day}/hour=${hour}`;
+    }
+
+    extractCollectionFromPath(filePath) {
+        // Extract collection from path like: db/collection/year=2024/month=01/day=01/hour=01/events-20240101-01.jsonl
+        const parts = filePath.split('/');
+        const dbIndex = parts.findIndex(part => part === 'db');
+        return dbIndex >= 0 && parts[dbIndex + 1] ? parts[dbIndex + 1] : 'default';
+    }
+
+    async loadFileToSnowflake(file) {
+        const tableName = `${file.collection}_bronze`;
+        const stagePath = file.path;
+
+        // Ensure bronze table exists
+        await this.createBronzeTable(file.collection);
+
+        // Copy command to load data
+        const copyQuery = `
+            COPY INTO ${this.config.snowflake.schema}.${tableName}
+            (RAW_DATA, FILE_NAME, _PARTITION_PATH)
+            FROM (
+                SELECT 
+                    PARSE_JSON($1) as RAW_DATA,
+                    METADATA$FILENAME as FILE_NAME,
+                    METADATA$FILE_PATH as _PARTITION_PATH
+                FROM @${this.config.snowflake.schema}.ADLS_STAGE/${stagePath}
+            )
+            FILE_FORMAT = (
+                TYPE = 'JSON',
+                STRIP_OUTER_ARRAY = FALSE
+            )
+            ON_ERROR = 'CONTINUE'
+        `;
+
+        try {
+            const result = await this.executeSnowflakeQuery(copyQuery);
+            console.log(`Successfully loaded file ${file.name} to table ${tableName}`);
+            
+            // Mark file as processed
+            this.processedFiles.add(file.name);
+            
+            return {
+                success: true,
+                file: file.name,
+                table: tableName,
+                rowsLoaded: result.stmt.getNumRowsInserted() || 0
+            };
+        } catch (error) {
+            console.error(`Error loading file ${file.name}:`, error);
+            return {
+                success: false,
+                file: file.name,
+                error: error.message
+            };
+        }
+    }
+
+    async processHourlyFiles() {
+        console.log('Starting hourly file processing...');
+        
+        // Process files from the previous hour
+        const targetHour = new Date();
+        targetHour.setHours(targetHour.getHours() - 1, 0, 0, 0);
+        
+        try {
+            // Ensure stage exists
+            await this.createStageIfNotExists();
+            
+            const files = await this.listFilesForHour(targetHour);
+            
+            if (files.length === 0) {
+                console.log(`No new files found for hour ${targetHour.toISOString()}`);
+                return;
+            }
+
+            const results = [];
+            
+            // Process files in batches to avoid overwhelming Snowflake
+            const batchSize = this.config.batchSize || 5;
+            for (let i = 0; i < files.length; i += batchSize) {
+                const batch = files.slice(i, i + batchSize);
+                const batchPromises = batch.map(file => this.loadFileToSnowflake(file));
+                const batchResults = await Promise.allSettled(batchPromises);
+                
+                batchResults.forEach((result, index) => {
+                    if (result.status === 'fulfilled') {
+                        results.push(result.value);
+                    } else {
+                        results.push({
+                            success: false,
+                            file: batch[index].name,
+                            error: result.reason?.message || 'Unknown error'
+                        });
+                    }
+                });
+                
+                // Small delay between batches
+                if (i + batchSize < files.length) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+
+            // Save processed files list
+            await this.saveProcessedFiles();
+            
+            // Log summary
+            const successful = results.filter(r => r.success);
+            const failed = results.filter(r => !r.success);
+            const totalRows = successful.reduce((sum, r) => sum + (r.rowsLoaded || 0), 0);
+            
+            console.log(`Processing complete for ${targetHour.toISOString()}:`);
+            console.log(`  - Successful files: ${successful.length}`);
+            console.log(`  - Failed files: ${failed.length}`);
+            console.log(`  - Total rows loaded: ${totalRows}`);
+            
+            if (failed.length > 0) {
+                console.log('Failed files:', failed.map(f => `${f.file}: ${f.error}`));
+            }
+            
+        } catch (error) {
+            console.error('Error in hourly processing:', error);
+        }
+    }
+
+    async startScheduler() {
+        console.log('Starting ADLS to Snowflake loader scheduler...');
+        
+        // Run every hour at 5 minutes past the hour
+        cron.schedule('5 * * * *', async () => {
+            await this.processHourlyFiles();
+        });
+
+        // Initial run after 1 minute
+        setTimeout(() => {
+            this.processHourlyFiles();
+        }, 60000);
+
+        console.log('Scheduler started - will process files every hour at 5 minutes past the hour');
+    }
+
+    async shutdown() {
+        console.log('Shutting down ADLS to Snowflake loader...');
+        await this.saveProcessedFiles();
+        
+        if (this.snowflakeConnection) {
+            this.snowflakeConnection.destroy((err) => {
+                if (err) {
+                    console.error('Error closing Snowflake connection:', err);
+                } else {
+                    console.log('Snowflake connection closed');
+                }
+            });
+        }
+    }
+}
+
+// Configuration
+const config = {
+    storageAccount: process.env.STORAGE_ACCOUNT_NAME,
+    containerName: process.env.ADLS_CONTAINER_NAME || 'events',
+    azureSasToken: process.env.AZURE_SAS_TOKEN,
+    processedFilesPath: process.env.PROCESSED_FILES_PATH || './processed_files.json',
+    batchSize: parseInt(process.env.BATCH_SIZE) || 5,
+    snowflake: {
+        account: process.env.SNOWFLAKE_ACCOUNT,
+        username: process.env.SNOWFLAKE_USERNAME,
+        password: process.env.SNOWFLAKE_PASSWORD,
+        database: process.env.SNOWFLAKE_DATABASE,
+        schema: process.env.SNOWFLAKE_SCHEMA || 'BRONZE',
+        warehouse: process.env.SNOWFLAKE_WAREHOUSE,
+        role: process.env.SNOWFLAKE_ROLE
+    }
+};
+
+// Validate required configuration
+const requiredConfig = [
+    'storageAccount', 'azureSasToken',
+    'snowflake.account', 'snowflake.username', 'snowflake.password',
+    'snowflake.database', 'snowflake.warehouse'
+];
+
+for (const key of requiredConfig) {
+    const keys = key.split('.');
+    let value = config;
+    for (const k of keys) {
+        value = value[k];
+    }
+    if (!value) {
+        console.error(`Missing required configuration: ${key}`);
+        process.exit(1);
+    }
+}
+
+async function main() {
+    const loader = new ADLSToSnowflakeLoader(config);
+    
+    try {
+        await loader.initializeSnowflake();
+        await loader.startScheduler();
+        
+        // Graceful shutdown
+        process.on('SIGINT', async () => {
+            await loader.shutdown();
+            process.exit(0);
+        });
+        
+        process.on('SIGTERM', async () => {
+            await loader.shutdown();
+            process.exit(0);
+        });
+        
+    } catch (error) {
+        console.error('Failed to start ADLS to Snowflake loader:', error);
+        process.exit(1);
+    }
+}
+
+if (require.main === module) {
+    main();
+}
+
+module.exports = ADLSToSnowflakeLoader;
+```
 
