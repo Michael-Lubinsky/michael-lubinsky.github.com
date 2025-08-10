@@ -6,6 +6,155 @@ with partitioned folders like:
 Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/ Rolling file name: events-YYYYMMDD-HH.jsonl 
 with 1 json line per event?
 
+This script sets up a complete consumer that listens to an Event Hub, parses the JSON body of each message, and writes it to a partitioned file in ADLS v2.  
+It includes a critical step: calling context.updateCheckpoint to ensure that if the application crashes or restarts, it can resume from the last successfully processed event.
+
+For this code to work, you'll need to provide the Event Hub and ADLS Gen2 connection details via environment variables.  
+This pattern is highly scalable and reliable for streaming data from a message broker to your data lake.
+
+```js
+// Install these packages with: npm install @azure/event-hubs @azure/storage-file-datalake
+const { EventHubConsumerClient } = require('@azure/event-hubs');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+
+// =================================================================================================
+// Configuration - Use environment variables for production secrets!
+// =================================================================================================
+
+// Azure Event Hubs Configuration
+const eventHubConnectionString = process.env.EVENT_HUB_CONNECTION_STRING || 'Endpoint=sb://...';
+const eventHubName = process.env.EVENT_HUB_NAME || 'your-event-hub-name';
+const consumerGroup = process.env.EVENT_HUB_CONSUMER_GROUP || '$Default';
+
+// Azure ADLS Gen2 Configuration
+const azureStorageAccountName = process.env.AZURE_STORAGE_ACCOUNT_NAME || 'your-adls-account-name';
+const azureStorageAccountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY || 'your-adls-account-key';
+const adlsContainerName = process.env.ADLS_CONTAINER_NAME || 'mongo-changes';
+
+const adlsConnectionString = `DefaultEndpointsProtocol=https;AccountName=${azureStorageAccountName};AccountKey=${azureStorageAccountKey};EndpointSuffix=core.windows.net`;
+
+// =================================================================================================
+// Helper function to get a date-based partition path and file name
+// This assumes the MongoDB change stream event contains 'ns' for database and collection name.
+// =================================================================================================
+
+function getPartitionPathAndFilename(changeEvent) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    
+    // Extract database and collection from the change event namespace ('ns')
+    const dbName = changeEvent?.ns?.db || 'unknown_db';
+    const collectionName = changeEvent?.ns?.coll || 'unknown_collection';
+
+    // Create the directory path for the current hour
+    const partitionPath = `${dbName}/${collectionName}/year=${year}/month=${month}/day=${day}/hour=${hour}`;
+    
+    // Create the rolling filename for the current hour
+    const fileName = `events-${year}${month}${day}-${hour}.jsonl`;
+
+    return { partitionPath, fileName };
+}
+
+// =================================================================================================
+// Main function to connect and start the Event Hub consumer
+// =================================================================================================
+
+async function startEventHubConsumer() {
+    let adlsClient;
+    let consumerClient;
+
+    try {
+        // --- 1. Connect to Azure Data Lake Storage Gen2 ---
+        adlsClient = DataLakeServiceClient.fromConnectionString(adlsConnectionString);
+        const fileSystemClient = adlsClient.getFileSystemClient(adlsContainerName);
+        
+        console.log('Successfully connected to Azure ADLS Gen2 container.');
+
+        // --- 2. Connect to Azure Event Hubs ---
+        consumerClient = new EventHubConsumerClient(consumerGroup, eventHubConnectionString, eventHubName);
+        console.log(`Listening for events from Event Hub '${eventHubName}'...`);
+
+        // --- 3. Subscribe to the event stream ---
+        const subscription = consumerClient.subscribe({
+            processEvents: async (events, context) => {
+                for (const event of events) {
+                    try {
+                        const changeEvent = JSON.parse(event.body.toString());
+                        
+                        // Get the path and filename for the current hour
+                        const { partitionPath, fileName } = getPartitionPathAndFilename(changeEvent);
+                        
+                        // Get a reference to the directory client
+                        const directoryClient = fileSystemClient.getDirectoryClient(partitionPath);
+                        
+                        // Create the directory if it doesn't exist
+                        await directoryClient.createIfNotExists();
+                        
+                        // Get a reference to the rolling file
+                        const fileClient = directoryClient.getFileClient(fileName);
+
+                        // Check if the file exists before appending
+                        try {
+                            await fileClient.getProperties();
+                        } catch (error) {
+                            if (error.statusCode === 404) {
+                                await fileClient.create();
+                            }
+                        }
+                        
+                        // Convert the change event object to a JSON line
+                        const eventJson = JSON.stringify(changeEvent) + '\n';
+                        const eventBuffer = Buffer.from(eventJson, 'utf-8');
+                        
+                        // Get the current file size to know where to append
+                        const fileSize = (await fileClient.getProperties()).contentLength;
+                        
+                        // Append the event data to the rolling file
+                        await fileClient.append(eventBuffer, fileSize, eventBuffer.length);
+                        
+                        // Flush the appended data to commit it to the file
+                        await fileClient.flush(fileSize + eventBuffer.length);
+                        
+                        console.log(`Event written to: ${partitionPath}/${fileName}`);
+
+                    } catch (adlsError) {
+                        console.error('Error writing to Azure Data Lake Storage:', adlsError.message);
+                        // In a production environment, you would add retry logic here.
+                    }
+                }
+                // Update the checkpoint for each partition, so that we can restart from the last processed event
+                await context.updateCheckpoint(events[events.length - 1]);
+            },
+            processError: async (err, context) => {
+                console.error(`Error in Event Hub consumer: ${err}`);
+            }
+        });
+        
+        // This will keep the application running indefinitely
+        await new Promise(() => {});
+
+    } catch (error) {
+        console.error('An error occurred in the main function:', error);
+    } finally {
+        // Graceful shutdown
+        process.on('SIGINT', async () => {
+            console.log('\nShutting down...');
+            if (consumerClient) {
+                await consumerClient.close();
+                console.log('Event Hub consumer client closed.');
+            }
+            process.exit(0);
+        });
+    }
+}
+
+// Start the application
+startEventHubConsumer();
+```
+
 
 ### How to serialize periodically  MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) 
 with partitioned folders like:
