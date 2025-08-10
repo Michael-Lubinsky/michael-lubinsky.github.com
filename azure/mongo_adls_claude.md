@@ -1,6 +1,6 @@
 ## Claude
 
-I've created a complete data pipeline solution with all three components you requested:
+Complete data pipeline solution with all three components:
 
 ## **Step 1: EventHub to ADLS Ingestion**
 The Node.js application includes:
@@ -147,6 +147,53 @@ Time 60s:   Buffer = 200 events → FLUSH! (hit time interval)
 These parameters give you fine-grained control over the trade-off between throughput, latency, memory usage, and cost efficiency in your data pipeline.
 
 
+
+
+## Look at the `package.json` below: 
+the command `npm run start:all` will run **BOTH** Step 1 and Step 2 simultaneously.
+
+Here's what happens:
+
+```json
+"scripts": {
+  "start:ingestion": "node src/eventhub-to-adls.js",      // Step 1 only
+  "start:loader": "node src/adls-to-snowflake.js",       // Step 2 only  
+  "start:all": "concurrently \"npm run start:ingestion\" \"npm run start:loader\""  // Both steps
+}
+```
+
+## **Command Breakdown:**
+
+- `npm run start:ingestion` → Runs **Step 1 only** (EventHub to ADLS)
+- `npm run start:loader` → Runs **Step 2 only** (ADLS to Snowflake) 
+- `npm run start:all` → Runs **Both Step 1 AND Step 2** using the `concurrently` package
+
+## **Recommended Approach:**
+
+**For Development/Testing:**
+```bash
+# Start components individually for easier debugging
+npm run start:ingestion    # Terminal 1
+npm run start:loader       # Terminal 2
+```
+
+**For Production:**
+```bash
+# Use PM2 for better process management
+pm2 start src/eventhub-to-adls.js --name "step1-ingestion"
+pm2 start src/adls-to-snowflake.js --name "step2-loader"
+```
+
+**For Quick Testing:**
+```bash
+# Run both together (good for demos/testing)
+npm run start:all
+```
+
+The `concurrently` package runs both Node.js applications in parallel, 
+so you'll see logs from both components in the same terminal.   
+This is convenient for development but for production, 
+I recommend running them as separate processes for better monitoring and independent scaling.
 
 
 ```js
