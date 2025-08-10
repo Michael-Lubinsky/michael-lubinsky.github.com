@@ -6,10 +6,7 @@ Rolling file name: events-YYYYMMDD-HH.jsonl
 with 1 json line per event 
 
 
-ChatGPT said:
-
- 
-# Node.js: Azure Event Hubs → ADLS Gen2 (Rolling Hourly JSONL, 1 line per event)
+## Node.js: Azure Event Hubs → ADLS Gen2 (Rolling Hourly JSONL, 1 line per event)
 
 Below is a production-ready Node.js program that:
 - Reads from **Azure Event Hubs** using `@azure/event-hubs`
@@ -334,7 +331,7 @@ raw/
                 └─ hour=21/
                    └─ events-20250809-21.jsonl
 ```
-5) Notes
+### 5) Notes
 Checkpointing: For production, consider @azure/eventhubs-checkpointstore-blob to persist offsets in Azure Blob Storage so the consumer resumes where it left off after restarts.
 
 Throughput: Increase MAX_CONCURRENCY, maxBatchSize, and scale out multiple consumers (with different consumer groups or Event Processor host pattern) if needed.
