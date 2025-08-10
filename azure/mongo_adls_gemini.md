@@ -76,7 +76,15 @@ For a more custom, lightweight solution, you could write an Azure Function.
 
 This architecture ensures a scalable, reliable, and fault-tolerant way to serialize your MongoDB change stream data to ADLS v2.
 
+###
+This code sets up a listener for MongoDB change events and writes them to ADLS v2.   
+The script uses a helper function to dynamically generate the correct partition path and filename based on the current date and time.  
+It then uses the @azure/storage-file-datalake SDK to append each JSON-formatted event to the appropriate file.
 
+For this to work, you'll need to set the required environment variables (MONGO_URI, AZURE_STORAGE_ACCOUNT_NAME, AZURE_STORAGE_ACCOUNT_KEY,  
+and ADLS_CONTAINER_NAME) for your specific setup.
+
+You can modify this code to handle more complex scenarios, like adding retry logic for failed writes or using a different partitioning scheme.
 
 ```js
 // Install these packages with: npm install mongodb @azure/storage-file-datalake
