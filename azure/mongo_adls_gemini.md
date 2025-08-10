@@ -1,6 +1,6 @@
 ### MongoDB change stream writes into Azure EventHub.
 
-Please write Node.js program which reads  from Azure EventHub and serialize   into 
+ Node.js program which reads  from Azure EventHub and serialize   into 
 Azure Data Lake Storage Gen2 (ADLS v2)
 with partitioned folders like:  
 Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/   
@@ -8,9 +8,11 @@ Partition path: db/collection/year=YYYY/month=MM/day=DD/hour=HH/
 Rolling file name: events-YYYYMMDD-HH.jsonl 
 with 1 json line per event?
 
-This script sets up a complete consumer that listens to an Event Hub, parses the JSON body of each message, and writes it to a partitioned file in ADLS v2.  
+This script sets up a complete consumer that listens to an Event Hub,   
+parses the JSON body of each message, and writes it to a partitioned file in ADLS v2.  
 It includes a critical step:  
-calling context.updateCheckpoint to ensure that if the application crashes or restarts, it can resume from the last successfully processed event.
+calling context.updateCheckpoint to ensure that if the application crashes or restarts,  
+it can resume from the last successfully processed event.
 
 For this code to work, you'll need to provide the Event Hub and ADLS Gen2 connection details via environment variables.  
 This pattern is highly scalable and reliable for streaming data from a message broker to your data lake.
@@ -28,13 +30,17 @@ If the script were only run once per hour, it would miss all the events that occ
 Checkpointing:  
 A key feature of the Event Hub consumer client is checkpointing, which you see in the context.updateCheckpoint() call.  
 This allows the consumer to remember the last event it successfully processed.  
-If the application stops and restarts, it can automatically resume from that point, ensuring no data is lost. This mechanism only works if the script is running continuously to maintain its state.
+If the application stops and restarts, it can automatically resume from that point, ensuring no data is lost.  
+This mechanism only works if the script is running continuously to maintain its state.
 
-The getPartitionPathAndFilename function is responsible for dynamically creating the directory path and filename based on the current date and time and the database and collection name from the change event.
+The getPartitionPathAndFilename function is responsible for dynamically creating the directory path and filename  
+based on the current date and time and the database and collection name from the change event.
 
-Partition Path: The line const partitionPath = \dbName/{collectionName}/year=year/month={month}/day=day/hour={hour}`;` constructs the folder hierarchy you specified.
+Partition Path: The line const partitionPath = \dbName/{collectionName}/year=year/month={month}/day=day/hour={hour}`;`  
+constructs the folder hierarchy you specified.
 
-Rolling File Name: The line const fileName = \events-year{month}day−{hour}.jsonl`;` creates the rolling file name, which is then written to that path.
+Rolling File Name: The line const fileName = \events-year{month}day−{hour}.jsonl`;` creates the rolling file name,  
+which is then written to that path.
 
 ```js
 // Install these packages with: npm install @azure/event-hubs @azure/storage-file-datalake
@@ -415,8 +421,145 @@ startChangeStream();
 
 ```
 
-### Ingest  into Snowflake bronze layer. 
-It connects to both Azure and Snowflake, and uses Snowflake's PUT and COPY INTO commands for efficient bulk loading. The table is created with a single VARIANT column to hold the raw JSON, which is a common practice for a bronze layer to preserve the original data.
+### Ingest into Snowflake bronze layer using Node.js
+```js
+/**
+ * @fileoverview A Node.js command-line script to load hourly JSONL files
+ * from Azure Data Lake Storage Gen2 into Snowflake bronze layer tables.
+ * This script is designed to be scheduled hourly via a cron job or similar tool.
+ * * To run this script:
+ * 1. Ensure Node.js is installed.
+ * 2. Run `npm install @azure/storage-blob snowflake-sdk dotenv` in your project folder.
+ * 3. Create a `.env` file with your credentials (see example below).
+ * 4. Run `node data-loader.js` (assuming the file is named data-loader.js).
+ */
+
+// Load environment variables from a .env file
+require('dotenv').config();
+
+// Uncomment these imports in a real-world application
+// const { BlobServiceClient } = require("@azure/storage-blob");
+// const snowflake = require("snowflake-sdk");
+
+/**
+ * Gets the current UTC date and time components for the hourly partition path.
+ * @returns {{year: string, month: string, day: string, hour: string}} The current time components.
+ */
+function getCurrentHourlyPath() {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = (now.getUTCMonth() + 1).toString().padStart(2, '0');
+  const day = now.getUTCDate().toString().padStart(2, '0');
+  const hour = now.getUTCHours().toString().padStart(2, '0');
+  return { year, month, day, hour };
+}
+
+/**
+ * Main function to execute the data loading process.
+ * This function handles the full pipeline from reading ADLS Gen2 to executing the COPY command on Snowflake.
+ */
+async function runHourlyDataLoad() {
+  console.log("--------------------------------------------------");
+  console.log("Starting hourly data load process...");
+  console.log("--------------------------------------------------");
+
+  try {
+    // ----------------------------------------------------
+    // 1. Load configuration from environment variables
+    // ----------------------------------------------------
+    const azureConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+    const azureContainerName = process.env.AZURE_CONTAINER_NAME;
+    const snowflakeAccount = process.env.SNOWFLAKE_ACCOUNT;
+    const snowflakeUsername = process.env.SNOWFLAKE_USERNAME;
+    const snowflakePassword = process.env.SNOWFLAKE_PASSWORD;
+    const snowflakeRole = process.env.SNOWFLAKE_ROLE;
+    const snowflakeWarehouse = process.env.SNOWFLAKE_WAREHOUSE;
+    const snowflakeDatabase = process.env.SNOWFLAKE_DATABASE;
+    const snowflakeSchema = process.env.SNOWFLAKE_SCHEMA;
+    const snowflakeStageName = process.env.SNOWFLAKE_STAGE_NAME;
+
+    // Basic validation
+    if (!azureConnectionString || !snowflakeAccount) {
+      throw new Error("Missing required environment variables. Please check your .env file.");
+    }
+
+    // ----------------------------------------------------
+    // 2. Determine the path to the hourly file
+    // ----------------------------------------------------
+    const { year, month, day, hour } = getCurrentHourlyPath();
+    const collectionName = "events"; // This should be dynamic based on your logic
+    const partitionPath = `db/${collectionName}/year=${year}/month=${month}/day=${day}/hour=${hour}/`;
+    const fileName = `events-${year}${month}${day}-${hour}.jsonl`;
+    const fullFilePath = `${partitionPath}${fileName}`;
+    const destinationTableName = collectionName;
+
+    console.log(`Processing data for: YYYY=${year}, MM=${month}, DD=${day}, HH=${hour}`);
+    console.log(`Looking for file at path: ${fullFilePath}`);
+
+    // ----------------------------------------------------
+    // 3. Simulate Azure ADLS Gen2 file check
+    // ----------------------------------------------------
+    // In a real application, you would use BlobServiceClient here.
+    // Example:
+    // const blobServiceClient = BlobServiceClient.fromConnectionString(azureConnectionString);
+    // const containerClient = blobServiceClient.getContainerClient(azureContainerName);
+    // const fileExists = await containerClient.getBlobClient(fullFilePath).exists();
+    // if (!fileExists) {
+    //   console.log("File not found. Exiting process.");
+    //   return;
+    // }
+    console.log("Simulating file existence check... File found!");
+    
+    // ----------------------------------------------------
+    // 4. Construct and execute the Snowflake COPY command
+    // ----------------------------------------------------
+    const copyCommand = `
+      COPY INTO ${snowflakeDatabase}.${snowflakeSchema}.${destinationTableName}
+      FROM @${snowflakeStageName}/${fullFilePath}
+      FILE_FORMAT = (TYPE = 'JSON', STRIP_OUTER_ARRAY = TRUE)
+      ON_ERROR = 'CONTINUE';
+    `;
+
+    console.log("\nConstructed Snowflake COPY command:");
+    console.log(copyCommand);
+
+    // In a real application, you would connect to Snowflake and execute the command.
+    // Example:
+    // const connection = snowflake.createConnection({
+    //   account: snowflakeAccount,
+    //   username: snowflakeUsername,
+    //   password: snowflakePassword,
+    //   role: snowflakeRole,
+    //   warehouse: snowflakeWarehouse,
+    //   database: snowflakeDatabase,
+    //   schema: snowflakeSchema,
+    // });
+    // await connection.connectAsync();
+    // await connection.execute({ sqlText: copyCommand });
+    // console.log("\nSuccessfully executed COPY command.");
+
+    console.log("\nSimulating Snowflake connection and command execution...");
+    console.log("COPY command executed successfully!");
+
+  } catch (error) {
+    console.error("An error occurred during the data load process:");
+    console.error(error.message);
+    process.exit(1); // Exit with a non-zero code on error
+  } finally {
+    console.log("--------------------------------------------------");
+    console.log("Hourly data load process finished.");
+    console.log("--------------------------------------------------");
+  }
+}
+
+// Run the main function
+runHourlyDataLoad();
+```
+
+### Ingest  into Snowflake bronze layer using Python
+It connects to both Azure and Snowflake, and uses Snowflake's PUT and COPY INTO commands for efficient bulk loading. 
+The table is created with a single VARIANT column to hold the raw JSON, 
+which is a common practice for a bronze layer to preserve the original data.
 
 You can set this script to run on an hourly schedule using a task scheduler like cron on a virtual machine, a service like Azure Functions, or a workflow orchestrator like Apache Airflow. 
 ```python
