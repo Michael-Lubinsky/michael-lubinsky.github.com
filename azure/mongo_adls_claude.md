@@ -196,6 +196,89 @@ This is convenient for development but for production,
 I recommend running them as separate processes for better monitoring and independent scaling.
 
 
+
+Messages are **NOT automatically deleted** from EventHub after reading them. 
+This is a key difference between EventHub and traditional message queues.
+
+## **How EventHub Message Retention Works:**
+
+### **1. Time-Based Retention (Not Consumption-Based)**
+- EventHub retains messages for a **configurable retention period** (1-90 days)
+- Messages are deleted automatically when they **expire**, not when they're consumed
+- Multiple consumers can read the same messages during the retention window
+
+### **2. Checkpointing Mechanism**
+In the code, you'll see this line:
+```javascript
+await context.updateCheckpoint(events[events.length - 1]);
+```
+
+**What checkpoints do:**
+- Track the **last processed message** for each consumer group
+- Allow consumers to **resume from where they left off** after restarts
+- Enable **replay** of messages from any checkpoint position
+- **Do NOT delete messages** from EventHub
+
+### **3. EventHub vs Traditional Queues**
+
+| Aspect | EventHub | Service Bus Queue |
+|--------|----------|-------------------|
+| **Message Deletion** | Time-based only | After consumption |
+| **Multiple Consumers** | ✅ Yes | ❌ No (competing consumers) |
+| **Message Replay** | ✅ Yes | ❌ No |
+| **Retention** | 1-90 days | Until consumed + TTL |
+
+## **Configuration Options:**
+
+### **EventHub Retention Settings:**
+```bash
+# Set retention to 7 days (Azure CLI)
+az eventhubs eventhub update \
+    --resource-group myResourceGroup \
+    --namespace-name myNamespace \
+    --name myEventHub \
+    --message-retention 7
+```
+
+### **Consumer Behavior:**
+```javascript
+// Your consumer can start from:
+// - Latest: Only new messages after consumer starts
+// - Earliest: All available messages in retention window
+// - Specific checkpoint: Resume from last processed position
+
+const subscription = consumerClient.subscribe({
+    startPosition: { 
+        earliest: true  // Read all available messages
+        // OR
+        // latest: true     // Only new messages
+        // OR  
+        // offset: "12345"  // Start from specific offset
+    }
+});
+```
+
+## **Key Implications:**
+
+✅ **Replay Capability**: You can reprocess historical data by resetting checkpoints  
+✅ **Multiple Pipelines**: Different consumer groups can process the same events  
+✅ **Fault Tolerance**: Temporary outages don't cause data loss  
+⚠️ **Storage Costs**: Messages consume storage until retention expires  
+⚠️ **No Auto-Cleanup**: Old processed messages aren't automatically removed  
+
+## **Best Practices:**
+
+1. **Set appropriate retention** based on your replay requirements
+2. **Monitor partition lag** to ensure timely processing
+3. **Use consumer groups** to isolate different processing pipelines
+4. **Implement proper checkpoint management** for reliable resumption
+5. **Consider costs** - longer retention = higher storage costs
+
+This design makes EventHub perfect for event streaming scenarios where you might need to reprocess data or have multiple downstream systems consuming the same event stream.
+
+
+
+
 ```js
 const { EventHubConsumerClient } = require("@azure/event-hubs");
 const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
