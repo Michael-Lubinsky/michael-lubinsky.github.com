@@ -1343,24 +1343,300 @@ $$;
 
 
 
-## Data Pipeline: EventHub → ADLS → Snowflake
+
+# Data Pipeline: EventHub → ADLS → Snowflake
 
 This pipeline consists of three main components:
 1. **EventHub to ADLS Ingestion** (Node.js)
 2. **ADLS to Snowflake Loader** (Node.js)
 3. **Snowflake Bronze to Silver Transformation** (Snowflake Tasks)
 
-### Prerequisites
+## Prerequisites
 
 - Node.js 18.x or higher
 - Azure subscription with EventHub and Storage Account
 - Snowflake account with appropriate permissions
 - Azure CLI (for authentication)
 
+## Environment Setup
 
 ### 1. Create `.env` file for Step 1 (EventHub to ADLS)
 
 ```env
 # EventHub Configuration
-EVENTHUB_CONNECTION_STRING=Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccess
+EVENTHUB_CONNECTION_STRING=Endpoint=sb://your-eventhub-namespace.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccess;SharedAccessKey=your-key
+EVENTHUB_NAME=your-eventhub-name
+CONSUMER_GROUP=$Default
+
+# Azure Storage Configuration
+STORAGE_ACCOUNT_NAME=yourstorageaccount
+ADLS_CONTAINER_NAME=events
+
+# Application Configuration
+DEFAULT_COLLECTION=events
+BUFFER_SIZE=1000
+FLUSH_INTERVAL=30000
+
+# Azure Authentication (use one of the following methods)
+# Method 1: Service Principal
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+AZURE_TENANT_ID=your-tenant-id
+
+# Method 2: Managed Identity (if running on Azure)
+# AZURE_USE_MANAGED_IDENTITY=true
 ```
+
+### 2. Create `.env` file for Step 2 (ADLS to Snowflake)
+
+```env
+# Azure Storage Configuration
+STORAGE_ACCOUNT_NAME=yourstorageaccount
+ADLS_CONTAINER_NAME=events
+AZURE_SAS_TOKEN=your-sas-token-with-read-permissions
+
+# Snowflake Configuration
+SNOWFLAKE_ACCOUNT=your-account.region.cloud
+SNOWFLAKE_USERNAME=your-username
+SNOWFLAKE_PASSWORD=your-password
+SNOWFLAKE_DATABASE=your-database
+SNOWFLAKE_SCHEMA=BRONZE
+SNOWFLAKE_WAREHOUSE=your-warehouse
+SNOWFLAKE_ROLE=your-role
+
+# Application Configuration
+PROCESSED_FILES_PATH=./processed_files.json
+BATCH_SIZE=5
+
+# Azure Authentication
+AZURE_CLIENT_ID=your-client-id
+AZURE_CLIENT_SECRET=your-client-secret
+AZURE_TENANT_ID=your-tenant-id
+```
+
+## Installation and Setup
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Azure Authentication Setup
+
+#### Option A: Service Principal (Recommended for production)
+```bash
+# Create service principal
+az ad sp create-for-rbac --name "eventhub-adls-pipeline" --role "Storage Blob Data Contributor" --scopes /subscriptions/your-subscription-id
+
+# Grant additional permissions
+az role assignment create --assignee your-client-id --role "Azure Event Hubs Data Receiver" --scope /subscriptions/your-subscription-id
+```
+
+#### Option B: Azure CLI Login (Development)
+```bash
+az login
+```
+
+### 3. Azure Storage Account Setup
+
+```bash
+# Create storage account (if needed)
+az storage account create \
+    --name yourstorageaccount \
+    --resource-group your-resource-group \
+    --location eastus \
+    --sku Standard_LRS \
+    --enable-hierarchical-namespace true
+
+# Create container
+az storage fs create \
+    --name events \
+    --account-name yourstorageaccount
+
+# Generate SAS token for Snowflake access
+az storage account generate-sas \
+    --account-name yourstorageaccount \
+    --services b \
+    --resource-types sco \
+    --permissions rl \
+    --expiry 2025-12-31 \
+    --https-only
+```
+
+### 4. Snowflake Setup
+
+#### Create Database and Schemas
+```sql
+-- Run in Snowflake
+CREATE DATABASE IF NOT EXISTS YOUR_DATABASE;
+USE DATABASE YOUR_DATABASE;
+
+CREATE SCHEMA IF NOT EXISTS BRONZE;
+CREATE SCHEMA IF NOT EXISTS SILVER;
+
+-- Grant permissions to your role
+GRANT USAGE ON DATABASE YOUR_DATABASE TO ROLE your_role;
+GRANT ALL ON SCHEMA BRONZE TO ROLE your_role;
+GRANT ALL ON SCHEMA SILVER TO ROLE your_role;
+GRANT USAGE ON WAREHOUSE your_warehouse TO ROLE your_role;
+```
+
+## Deployment and Execution
+
+### Step 1: Start EventHub to ADLS Ingestion
+
+```bash
+# Development
+npm run start:ingestion
+
+# Production (with PM2)
+pm2 start src/eventhub-to-adls.js --name "eventhub-ingestion"
+```
+
+### Step 2: Start ADLS to Snowflake Loader
+
+```bash
+# Development
+npm run start:loader
+
+# Production (with PM2)
+pm2 start src/adls-to-snowflake.js --name "adls-snowflake-loader"
+```
+
+### Step 3: Execute Snowflake Setup and Start Tasks
+
+```sql
+-- 1. Run the silver table creation and stored procedures
+-- (Execute the SQL from the Snowflake artifact)
+
+-- 2. Start the tasks
+USE SCHEMA SILVER;
+
+-- Option A: Start individual tasks
+ALTER TASK HOURLY_EVENTS_TRANSFORMATION RESUME;
+ALTER TASK HOURLY_USER_EVENTS_TRANSFORMATION RESUME;
+ALTER TASK HOURLY_PRODUCT_EVENTS_TRANSFORMATION RESUME;
+ALTER TASK HOURLY_TRANSACTIONS_TRANSFORMATION RESUME;
+
+-- Option B: Start master task (recommended)
+ALTER TASK HOURLY_ALL_TRANSFORMATIONS RESUME;
+```
+
+## Monitoring and Troubleshooting
+
+### 1. Check Node.js Application Logs
+
+```bash
+# Check PM2 logs
+pm2 logs eventhub-ingestion
+pm2 logs adls-snowflake-loader
+
+# Check application status
+pm2 status
+```
+
+### 2. Monitor Snowflake Tasks
+
+```sql
+-- Check task execution history
+SELECT 
+    TASK_NAME,
+    SCHEDULED_TIME,
+    COMPLETED_TIME,
+    STATE,
+    ERROR_CODE,
+    ERROR_MESSAGE
+FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY()) 
+WHERE TASK_NAME LIKE '%TRANSFORMATION%' 
+ORDER BY SCHEDULED_TIME DESC 
+LIMIT 50;
+
+-- Check current task status
+SHOW TASKS IN SCHEMA SILVER;
+
+-- Monitor data flow
+SELECT 
+    TABLE_SCHEMA,
+    TABLE_NAME,
+    ROW_COUNT,
+    BYTES,
+    LAST_ALTERED
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_SCHEMA IN ('BRONZE', 'SILVER')
+ORDER BY TABLE_SCHEMA, TABLE_NAME;
+```
+
+### 3. Data Quality Checks
+
+```sql
+-- Check data freshness
+SELECT 
+    'BRONZE' as LAYER,
+    TABLE_NAME,
+    COUNT(*) as ROW_COUNT,
+    MAX(LOAD_TIMESTAMP) as LATEST_LOAD
+FROM INFORMATION_SCHEMA.TABLES t
+JOIN BRONZE.EVENTS_BRONZE b ON 1=1  -- Replace with dynamic query
+WHERE TABLE_SCHEMA = 'BRONZE'
+GROUP BY TABLE_NAME
+
+UNION ALL
+
+SELECT 
+    'SILVER' as LAYER,
+    TABLE_NAME,
+    COUNT(*) as ROW_COUNT,
+    MAX(UPDATED_AT) as LATEST_UPDATE
+FROM INFORMATION_SCHEMA.TABLES t
+JOIN SILVER.EVENTS_SILVER s ON 1=1  -- Replace with dynamic query
+WHERE TABLE_SCHEMA = 'SILVER'
+GROUP BY TABLE_NAME;
+```
+
+## Scaling Considerations
+
+### Node.js Applications
+- Use PM2 cluster mode for CPU-intensive workloads
+- Implement proper error handling and retry logic
+- Monitor memory usage and adjust buffer sizes
+- Consider using Azure Container Instances or AKS for production
+
+### Snowflake Tasks
+- Adjust warehouse sizes based on data volume
+- Use task dependencies for complex workflows
+- Implement proper error notifications
+- Consider using streams for change data capture
+
+## Troubleshooting Common Issues
+
+### EventHub Connection Issues
+- Verify connection string and permissions
+- Check network connectivity and firewall rules
+- Ensure consumer group exists
+
+### ADLS Access Issues
+- Verify Azure credentials and permissions
+- Check storage account firewall settings
+- Ensure hierarchical namespace is enabled
+
+### Snowflake Loading Issues
+- Verify SAS token permissions and expiry
+- Check stage configuration
+- Validate JSON format in source files
+- Monitor warehouse auto-suspend settings
+
+### Task Execution Issues
+- Check task schedule and timezone settings
+- Verify warehouse permissions and availability
+- Monitor task execution history for patterns
+- Ensure dependencies between tasks are properly configured
+
+## Security Best Practices
+
+1. Use Azure Key Vault for sensitive configuration
+2. Implement least-privilege access policies
+3. Rotate SAS tokens and connection strings regularly
+4. Use network security groups and private endpoints
+5. Enable audit logging in all components
+6. Implement data encryption at rest and in transit
