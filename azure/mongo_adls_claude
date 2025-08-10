@@ -1,5 +1,5 @@
 ## Claude
-### Step 1
+### Step 1: From Mongo to ASDL
 ```js
 const { EventHubConsumerClient } = require("@azure/event-hubs");
 const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
@@ -656,4 +656,158 @@ if (require.main === module) {
 
 module.exports = ADLSToSnowflakeLoader;
 ```
+### Step 3 from Bronze to Silver
+
+```sql
+-- ================================================================
+-- Snowflake Bronze to Silver Layer Transformation Tasks
+-- ================================================================
+
+-- Create Silver schema if it doesn't exist
+CREATE SCHEMA IF NOT EXISTS SILVER;
+
+-- ================================================================
+-- 1. Create Silver Tables (Example for different collection types)
+-- ================================================================
+
+-- Generic Silver table template - customize based on your JSON structure
+CREATE TABLE IF NOT EXISTS SILVER.EVENTS_SILVER (
+    EVENT_ID VARCHAR(100),
+    USER_ID VARCHAR(100),
+    SESSION_ID VARCHAR(100),
+    EVENT_TYPE VARCHAR(100),
+    EVENT_TIMESTAMP TIMESTAMP_NTZ,
+    PROPERTIES VARIANT,
+    USER_AGENT VARCHAR(500),
+    IP_ADDRESS VARCHAR(50),
+    COUNTRY VARCHAR(100),
+    CITY VARCHAR(100),
+    -- Metadata fields
+    INGESTION_TIMESTAMP TIMESTAMP_NTZ,
+    LOAD_TIMESTAMP TIMESTAMP_NTZ,
+    SOURCE_FILE VARCHAR(500),
+    PARTITION_PATH VARCHAR(500),
+    -- Audit fields
+    CREATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    UPDATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- User events silver table example
+CREATE TABLE IF NOT EXISTS SILVER.USER_EVENTS_SILVER (
+    EVENT_ID VARCHAR(100),
+    USER_ID VARCHAR(100) NOT NULL,
+    SESSION_ID VARCHAR(100),
+    EVENT_NAME VARCHAR(200),
+    EVENT_TIMESTAMP TIMESTAMP_NTZ,
+    PAGE_URL VARCHAR(1000),
+    REFERRER_URL VARCHAR(1000),
+    DEVICE_TYPE VARCHAR(100),
+    BROWSER VARCHAR(100),
+    OS VARCHAR(100),
+    -- Custom properties
+    CUSTOM_PROPERTIES VARIANT,
+    -- Metadata
+    INGESTION_TIMESTAMP TIMESTAMP_NTZ,
+    LOAD_TIMESTAMP TIMESTAMP_NTZ,
+    SOURCE_FILE VARCHAR(500),
+    CREATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    UPDATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (EVENT_ID, USER_ID)
+);
+
+-- Product events silver table example
+CREATE TABLE IF NOT EXISTS SILVER.PRODUCT_EVENTS_SILVER (
+    EVENT_ID VARCHAR(100),
+    PRODUCT_ID VARCHAR(100),
+    USER_ID VARCHAR(100),
+    EVENT_TYPE VARCHAR(100), -- view, purchase, add_to_cart, etc.
+    EVENT_TIMESTAMP TIMESTAMP_NTZ,
+    PRODUCT_NAME VARCHAR(500),
+    PRODUCT_CATEGORY VARCHAR(200),
+    PRICE DECIMAL(10,2),
+    QUANTITY INTEGER,
+    CURRENCY VARCHAR(10),
+    -- Metadata
+    INGESTION_TIMESTAMP TIMESTAMP_NTZ,
+    LOAD_TIMESTAMP TIMESTAMP_NTZ,
+    SOURCE_FILE VARCHAR(500),
+    CREATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    UPDATED_AT TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (EVENT_ID)
+);
+
+-- ================================================================
+-- 2. Create Stored Procedures for Bronze to Silver Transformation
+-- ================================================================
+
+-- Generic transformation procedure
+CREATE OR REPLACE PROCEDURE SILVER.TRANSFORM_BRONZE_TO_SILVER(
+    COLLECTION_NAME VARCHAR,
+    LOOKBACK_HOURS INTEGER DEFAULT 1
+)
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+DECLARE
+    bronze_table_name VARCHAR;
+    sql_stmt VARCHAR;
+    rows_processed INTEGER DEFAULT 0;
+    start_time TIMESTAMP_NTZ;
+    end_time TIMESTAMP_NTZ;
+BEGIN
+    SET start_time = CURRENT_TIMESTAMP();
+    SET bronze_table_name = 'BRONZE.' || COLLECTION_NAME || '_BRONZE';
+    SET end_time = DATEADD('hour', -LOOKBACK_HOURS, CURRENT_TIMESTAMP());
+    
+    -- Dynamic SQL based on collection type
+    CASE 
+        WHEN COLLECTION_NAME = 'EVENTS' THEN
+            SET sql_stmt = '
+            MERGE INTO SILVER.EVENTS_SILVER AS target
+            USING (
+                SELECT 
+                    RAW_DATA:event_id::VARCHAR AS EVENT_ID,
+                    RAW_DATA:user_id::VARCHAR AS USER_ID,
+                    RAW_DATA:session_id::VARCHAR AS SESSION_ID,
+                    RAW_DATA:event_type::VARCHAR AS EVENT_TYPE,
+                    TO_TIMESTAMP_NTZ(RAW_DATA:timestamp::VARCHAR) AS EVENT_TIMESTAMP,
+                    RAW_DATA:properties AS PROPERTIES,
+                    RAW_DATA:user_agent::VARCHAR AS USER_AGENT,
+                    RAW_DATA:ip_address::VARCHAR AS IP_ADDRESS,
+                    RAW_DATA:geo.country::VARCHAR AS COUNTRY,
+                    RAW_DATA:geo.city::VARCHAR AS CITY,
+                    INGESTION_TIMESTAMP,
+                    LOAD_TIMESTAMP,
+                    FILE_NAME AS SOURCE_FILE,
+                    _PARTITION_PATH AS PARTITION_PATH
+                FROM ' || bronze_table_name || '
+                WHERE LOAD_TIMESTAMP >= ''' || end_time || '''
+                  AND RAW_DATA:event_id IS NOT NULL
+            ) AS source
+            ON target.EVENT_ID = source.EVENT_ID
+            WHEN MATCHED THEN 
+                UPDATE SET
+                    USER_ID = source.USER_ID,
+                    SESSION_ID = source.SESSION_ID,
+                    EVENT_TYPE = source.EVENT_TYPE,
+                    EVENT_TIMESTAMP = source.EVENT_TIMESTAMP,
+                    PROPERTIES = source.PROPERTIES,
+                    USER_AGENT = source.USER_AGENT,
+                    IP_ADDRESS = source.IP_ADDRESS,
+                    COUNTRY = source.COUNTRY,
+                    CITY = source.CITY,
+                    UPDATED_AT = CURRENT_TIMESTAMP()
+            WHEN NOT MATCHED THEN
+                INSERT (
+                    EVENT_ID, USER_ID, SESSION_ID, EVENT_TYPE, EVENT_TIMESTAMP,
+                    PROPERTIES, USER_AGENT, IP_ADDRESS, COUNTRY, CITY,
+                    INGESTION_TIMESTAMP, LOAD_TIMESTAMP, SOURCE_FILE, PARTITION_PATH
+                )
+                VALUES (
+                    source.EVENT_ID, source.USER_ID, source.SESSION_ID, 
+                    
+```
+
+
 
