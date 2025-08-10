@@ -1,4 +1,4 @@
-How to stream MongoDB change events into Azure Data Lake Storage Gen2 (ADLS v2) 
+How to stream MongoDB change stream into Azure Data Lake Storage Gen2 (ADLS v2) 
 with partitioned folders like:
 ```
 database1/collection1/year=2024/month=01/day=15/
