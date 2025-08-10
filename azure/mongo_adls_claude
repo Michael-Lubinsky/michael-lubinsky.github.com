@@ -1,0 +1,266 @@
+## Claude
+### Step 1
+```js
+const { EventHubConsumerClient } = require("@azure/event-hubs");
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const { DefaultAzureCredential } = require("@azure/identity");
+const fs = require('fs');
+const path = require('path');
+
+class EventHubToADLSPipeline {
+    constructor(config) {
+        this.config = config;
+        this.credential = new DefaultAzureCredential();
+        this.dataLakeServiceClient = new DataLakeServiceClient(
+            `https://${config.storageAccount}.dfs.core.windows.net`,
+            this.credential
+        );
+        this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(config.containerName);
+        this.currentHour = null;
+        this.currentFile = null;
+        this.eventBuffer = [];
+        this.bufferSize = config.bufferSize || 1000;
+        this.flushInterval = config.flushInterval || 30000; // 30 seconds
+        
+        // Setup periodic flush
+        setInterval(() => this.flushBuffer(), this.flushInterval);
+    }
+
+    async initialize() {
+        try {
+            await this.fileSystemClient.createIfNotExists();
+            console.log('ADLS container initialized successfully');
+        } catch (error) {
+            console.error('Error initializing ADLS container:', error);
+            throw error;
+        }
+    }
+
+    generatePartitionPath(timestamp, collection) {
+        const date = new Date(timestamp);
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hour = String(date.getUTCHours()).padStart(2, '0');
+        
+        return `db/${collection}/year=${year}/month=${month}/day=${day}/hour=${hour}`;
+    }
+
+    generateFileName(timestamp) {
+        const date = new Date(timestamp);
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const hour = String(date.getUTCHours()).padStart(2, '0');
+        
+        return `events-${year}${month}${day}-${hour}.jsonl`;
+    }
+
+    async writeToADLS(partitionPath, fileName, data) {
+        const filePath = `${partitionPath}/${fileName}`;
+        const fileClient = this.fileSystemClient.getFileClient(filePath);
+        
+        try {
+            // Check if file exists and append, otherwise create new
+            const exists = await fileClient.exists();
+            
+            if (exists) {
+                // Append to existing file
+                const currentContent = await fileClient.read();
+                const existingData = await this.streamToString(currentContent.readableStreamBody);
+                const newContent = existingData + data;
+                await fileClient.upload(newContent, newContent.length, { overwrite: true });
+            } else {
+                // Create new file
+                await fileClient.upload(data, data.length);
+            }
+            
+            console.log(`Successfully wrote ${data.split('\n').length - 1} events to ${filePath}`);
+        } catch (error) {
+            console.error(`Error writing to ADLS file ${filePath}:`, error);
+            throw error;
+        }
+    }
+
+    async streamToString(readableStream) {
+        const chunks = [];
+        return new Promise((resolve, reject) => {
+            readableStream.on("data", (data) => {
+                chunks.push(data.toString());
+            });
+            readableStream.on("end", () => {
+                resolve(chunks.join(""));
+            });
+            readableStream.on("error", reject);
+        });
+    }
+
+    async processEvent(event) {
+        try {
+            // Extract collection name from event properties or body
+            const collection = event.properties?.collection || 
+                              event.body?.collection || 
+                              this.config.defaultCollection || 'default';
+            
+            // Add ingestion timestamp
+            const enrichedEvent = {
+                ...event.body,
+                _ingestionTimestamp: new Date().toISOString(),
+                _eventHubMetadata: {
+                    offset: event.offset,
+                    sequenceNumber: event.sequenceNumber,
+                    enqueuedTimeUtc: event.enqueuedTimeUtc,
+                    partitionKey: event.partitionKey
+                }
+            };
+
+            const timestamp = event.enqueuedTimeUtc || new Date();
+            const currentHour = new Date(timestamp).getUTCHours();
+            const currentDate = new Date(timestamp).toISOString().split('T')[0];
+
+            // Check if we need to flush buffer due to hour change
+            if (this.currentHour !== null && this.currentHour !== currentHour) {
+                await this.flushBuffer();
+            }
+
+            this.currentHour = currentHour;
+            
+            // Add event to buffer with partition info
+            this.eventBuffer.push({
+                event: enrichedEvent,
+                collection,
+                timestamp,
+                partitionPath: this.generatePartitionPath(timestamp, collection),
+                fileName: this.generateFileName(timestamp)
+            });
+
+            // Flush buffer if it reaches the buffer size
+            if (this.eventBuffer.length >= this.bufferSize) {
+                await this.flushBuffer();
+            }
+
+        } catch (error) {
+            console.error('Error processing event:', error);
+        }
+    }
+
+    async flushBuffer() {
+        if (this.eventBuffer.length === 0) {
+            return;
+        }
+
+        console.log(`Flushing buffer with ${this.eventBuffer.length} events`);
+
+        // Group events by partition path and file name
+        const grouped = {};
+        
+        for (const item of this.eventBuffer) {
+            const key = `${item.partitionPath}/${item.fileName}`;
+            if (!grouped[key]) {
+                grouped[key] = {
+                    partitionPath: item.partitionPath,
+                    fileName: item.fileName,
+                    events: []
+                };
+            }
+            grouped[key].events.push(item.event);
+        }
+
+        // Write each group to ADLS
+        const writePromises = Object.values(grouped).map(async (group) => {
+            const jsonLines = group.events.map(event => JSON.stringify(event)).join('\n') + '\n';
+            await this.writeToADLS(group.partitionPath, group.fileName, jsonLines);
+        });
+
+        try {
+            await Promise.all(writePromises);
+            console.log(`Successfully flushed ${this.eventBuffer.length} events to ADLS`);
+        } catch (error) {
+            console.error('Error flushing buffer to ADLS:', error);
+        }
+
+        // Clear buffer
+        this.eventBuffer = [];
+    }
+
+    async startConsumer() {
+        const consumerClient = new EventHubConsumerClient(
+            this.config.consumerGroup,
+            this.config.eventHubConnectionString,
+            this.config.eventHubName
+        );
+
+        console.log('Starting EventHub consumer...');
+
+        const subscription = consumerClient.subscribe({
+            processEvents: async (events, context) => {
+                console.log(`Received ${events.length} events from partition: ${context.partitionId}`);
+                
+                for (const event of events) {
+                    await this.processEvent(event);
+                }
+
+                // Update checkpoint
+                if (events.length > 0) {
+                    await context.updateCheckpoint(events[events.length - 1]);
+                }
+            },
+            processError: async (err, context) => {
+                console.error(`Error on partition "${context.partitionId}":`, err);
+            }
+        });
+
+        // Graceful shutdown
+        process.on('SIGINT', async () => {
+            console.log('Shutting down gracefully...');
+            await this.flushBuffer();
+            await subscription.close();
+            await consumerClient.close();
+            process.exit(0);
+        });
+
+        console.log('EventHub consumer started successfully');
+    }
+}
+
+// Configuration
+const config = {
+    eventHubConnectionString: process.env.EVENTHUB_CONNECTION_STRING,
+    eventHubName: process.env.EVENTHUB_NAME,
+    consumerGroup: process.env.CONSUMER_GROUP || '$Default',
+    storageAccount: process.env.STORAGE_ACCOUNT_NAME,
+    containerName: process.env.ADLS_CONTAINER_NAME || 'events',
+    defaultCollection: process.env.DEFAULT_COLLECTION || 'events',
+    bufferSize: parseInt(process.env.BUFFER_SIZE) || 1000,
+    flushInterval: parseInt(process.env.FLUSH_INTERVAL) || 30000
+};
+
+// Validate required configuration
+const requiredConfig = ['eventHubConnectionString', 'eventHubName', 'storageAccount'];
+for (const key of requiredConfig) {
+    if (!config[key]) {
+        console.error(`Missing required configuration: ${key}`);
+        process.exit(1);
+    }
+}
+
+// Start the pipeline
+async function main() {
+    const pipeline = new EventHubToADLSPipeline(config);
+    
+    try {
+        await pipeline.initialize();
+        await pipeline.startConsumer();
+    } catch (error) {
+        console.error('Failed to start pipeline:', error);
+        process.exit(1);
+    }
+}
+
+if (require.main === module) {
+    main();
+}
+
+module.exports = EventHubToADLSPipeline;
+```
+
