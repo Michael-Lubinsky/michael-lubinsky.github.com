@@ -382,3 +382,79 @@ def process_and_load_hourly_data():
 if __name__ == '__main__':
     process_and_load_hourly_data()
 ```
+## Snowflake script that creates a silver layer table and a periodic task to load data from the bronze layer. 
+This script uses a STREAM to efficiently capture new changes from the bronze table, ensuring you only process the data that has been added since the last run.
+This script demonstrates how to set up a robust, idempotent process for moving data from a raw bronze layer to a structured silver layer in Snowflake. The MERGE statement is crucial here as it allows you to handle insert, update, and delete operations from the MongoDB change stream correctly.
+
+```sql
+-- =================================================================================================
+-- Prerequisites
+-- 1. Ensure you are in the correct database and schema.
+--    USE DATABASE YOUR_SNOWFLAKE_DATABASE;
+--    USE SCHEMA PUBLIC;
+-- 2. Grant USAGE on the database and schema, and CREATE TABLE and CREATE TASK on the schema
+--    to the role that will execute this task.
+-- =================================================================================================
+
+
+-- Step 1: Create the silver layer table
+-- This table will have a defined schema, extracting specific attributes from the JSON.
+-- We are using the 'your_collection' name from the previous example.
+CREATE TABLE IF NOT EXISTS YOUR_COLLECTION_SILVER (
+    MONGO_ID        VARCHAR,
+    OPERATION_TYPE  VARCHAR,
+    FULL_DOCUMENT   VARIANT,  -- Keeping the full document is often useful for debugging
+    SOME_FIELD_1    VARCHAR,  -- Example of a specific field from the document
+    ANOTHER_FIELD   NUMBER,   -- Another example
+    METADATA_LOADED_AT TIMESTAMP_NTZ(9)
+);
+
+-- Step 2: Create a stream on the bronze table
+-- A stream captures CDC-like changes on a source table, allowing the task to
+-- only process new or changed records since the last query.
+CREATE OR REPLACE STREAM YOUR_COLLECTION_BRONZE_STREAM ON TABLE YOUR_COLLECTION;
+
+-- Step 3: Create the periodic task
+-- This task will run on a schedule (e.g., every hour) to process the stream
+-- and merge the data into the silver table.
+-- The SCHEDULE parameter uses a cron-like syntax.
+CREATE OR REPLACE TASK LOAD_SILVER_FROM_BRONZE
+    WAREHOUSE = YOUR_SNOWFLAKE_WAREHOUSE
+    SCHEDULE = 'USING CRON 0 * * * * UTC' -- Run every hour at the top of the hour (e.g., 10:00, 11:00, etc.)
+    WHEN SYSTEM$STREAM_HAS_DATA('YOUR_COLLECTION_BRONZE_STREAM')
+AS
+BEGIN
+    -- Merge data from the bronze stream into the silver table.
+    -- This statement handles inserts and updates based on the MongoDB _id.
+    MERGE INTO YOUR_COLLECTION_SILVER AS T
+    USING (
+        SELECT
+            RAW_JSON:fullDocument:_id::VARCHAR AS MONGO_ID,
+            RAW_JSON:operationType::VARCHAR AS OPERATION_TYPE,
+            RAW_JSON:fullDocument AS FULL_DOCUMENT,
+            RAW_JSON:fullDocument:some_field_1::VARCHAR AS SOME_FIELD_1,
+            RAW_JSON:fullDocument:another_field::NUMBER AS ANOTHER_FIELD,
+            CURRENT_TIMESTAMP() AS METADATA_LOADED_AT
+        FROM YOUR_COLLECTION_BRONZE_STREAM
+    ) AS S
+    ON T.MONGO_ID = S.MONGO_ID
+    WHEN MATCHED AND S.OPERATION_TYPE = 'delete' THEN
+        -- If the operation is a delete, delete the record from the silver table.
+        DELETE
+    WHEN MATCHED AND S.OPERATION_TYPE = 'update' THEN
+        -- If the operation is an update, update the record.
+        UPDATE SET
+            T.FULL_DOCUMENT = S.FULL_DOCUMENT,
+            T.SOME_FIELD_1 = S.SOME_FIELD_1,
+            T.ANOTHER_FIELD = S.ANOTHER_FIELD,
+            T.METADATA_LOADED_AT = S.METADATA_LOADED_AT
+    WHEN NOT MATCHED AND S.OPERATION_TYPE IN ('insert', 'update') THEN
+        -- If the record is new (and not a delete), insert it.
+        INSERT (MONGO_ID, OPERATION_TYPE, FULL_DOCUMENT, SOME_FIELD_1, ANOTHER_FIELD, METADATA_LOADED_AT)
+        VALUES (S.MONGO_ID, S.OPERATION_TYPE, S.FULL_DOCUMENT, S.SOME_FIELD_1, S.ANOTHER_FIELD, S.METADATA_LOADED_AT);
+END;
+
+-- Step 4: Resume the task to activate it
+-- The task is initially suspended after creation. This command starts it.
+ALTER TASK LOAD_SILVER_FROM_BRONZE RESUME;
+```
