@@ -1133,3 +1133,86 @@ Schema: Keep bronze_events.v raw, then transform to typed columns in silver (e.g
 Partition pruning: During transforms, use filename/path to filter specific dates/hours for efficient backfills.
 
 
+# Should we load JSONL into Snowflake tables, or use External Tables on ADLS?
+
+Short answer:
+- If you need **fast, consistent analytics** (joins, BI, low latency querying, optimizer features), prefer **COPY INTO → internal tables**.
+- If you want to **keep data only in the lake** (no duplication) and are okay with somewhat **slower queries**, then **External Tables** can work—ideally over **Parquet**, not JSON.
+
+---
+
+## Why I recommended loading JSONL with COPY INTO
+1) **Performance & Optimizer features**
+   - Internal tables use Snowflake micro-partitions, automatic clustering, statistics, pruning, result cache, time travel, fail-safe.
+   - Typically **lower latency and lower compute** for repeated analytics and joins than querying raw files.
+
+2) **Operational simplicity & idempotency**
+   - `COPY INTO` has built-in load history (no accidental re-load for same file names), good error handling, and straightforward retries.
+   - Your rolling hourly JSONL files are easy to schedule (TASK/Airflow/ADF) and load incrementally.
+
+3) **Stable schema-on-write option**
+   - Land raw VARIANT in **bronze**, then normalize to typed **silver** tables. Reduces downstream complexity and improves query speed.
+
+4) **Cost control for analytics**
+   - You pay Snowflake storage + compute, but **queries are cheaper** because the data is in Snowflake’s optimized storage format.
+   - For heavy BI users, this often beats repeatedly scanning files in the lake.
+
+
+## When External Tables per collection make sense
+1) **Lake-first architecture / data sovereignty**
+   - You must **avoid duplicating storage** in Snowflake.
+   - You want the lake (ADLS) to remain the system of record and Snowflake to be a query engine.
+
+2) **Ad-hoc exploration or validation**
+   - Quickly expose new data without building loads first.
+   - Great as a **temporary bridge** before promoting to curated internal tables.
+
+3) **You convert to columnar files**
+   - External Tables are **much more efficient over Parquet** than JSON.
+   - With Parquet + partitioned directories (year/month/day/hour), pruning is decent; queries can be good enough for some workloads.
+
+4) **Materialized views on top of External Tables**
+   - You can accelerate some queries, but MV-on-external has **limitations and costs**; still not equal to internal-table performance.
+
+---
+
+## Trade-offs (COPY INTO internal tables vs External Tables on ADLS)
+
+| Dimension | COPY INTO → Internal | External Table on ADLS |
+|---|---|---|
+| Data location | Stored in Snowflake | Stays in ADLS |
+| Query performance | Generally **faster** (optimizer, micro-partitions) | Generally **slower**; better with **Parquet** than JSON |
+| Latency to query new data | Batch or near-real-time (Snowpipe auto-ingest possible) | Near-immediate after **REFRESH**; auto-refresh requires event setup |
+| Cost model | Snowflake storage + cheaper query compute | No Snowflake storage dup; but compute may be **higher** per query |
+| Governance & features | Time Travel, Fail-safe, RBAC in Snowflake | Lake RBAC + Snowflake access; fewer table-native features |
+| Schema handling | Schema-on-write (bronze→silver) | Schema-on-read, more parsing in queries |
+| Operational complexity | Simple loaders; strong dedup & retries | Need stage/integration/refresh; more care with file layouts |
+| Best file format | JSONL ok for ingest → convert to Parquet in silver | **Parquet strongly recommended** (JSON is slower) |
+
+---
+
+## Practical guidance for your case (rolling hourly JSONL)
+- **If you will heavily query and join this data in Snowflake**: keep your current rolling JSONL → **COPY INTO bronze VARIANT**, then **transform to Parquet** (or typed columns) in **silver** internal tables.
+- **If you want no duplication and mostly light/occasional queries**: consider an **External Table over Parquet** (convert JSONL → Parquet via a compacting job). Avoid External Table directly on JSONL unless volumes are small and queries are rare.
+
+---
+
+## Patterns to reduce table sprawl for “per collection”
+- Instead of “one external table per collection”, you can:
+  - Use **one external table** with partition columns for `db`, `collection`, `year`, `month`, `day`, `hour`; then create **views per collection** (simpler metadata).
+  - Or keep **one internal bronze table** with `collection` as a column and partitioned paths; again, create views per collection for consumers.
+
+---
+
+## Hybrid approach (often the sweet spot)
+1) Land raw files in ADLS (JSONL hourly as you do).
+2) Define **External Tables** (optional) for quick validation or low-touch users.
+3) Run **batch COPY INTO** to internal bronze for analytics users.
+4) Transform to **silver Parquet/typed** tables for BI and joins.
+5) Optionally keep a compacting job that **converts JSONL → Parquet** in the lake for any external-table consumers.
+
+---
+
+## Bottom line
+- For your “periodic loads” requirement and analytics focus, **COPY INTO → internal tables** is usually the best ROI and least friction.
+- If you’re strongly lake-first and want to avoid duplication, use **External Tables over Parquet** (not JSON) and accept some performance trade-offs.
