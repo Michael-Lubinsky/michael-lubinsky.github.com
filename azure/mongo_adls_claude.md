@@ -1300,4 +1300,43 @@ END;
 $$;
 ```
 
+### Package.json
 
+```
+{
+  "name": "eventhub-adls-snowflake-pipeline",
+  "version": "1.0.0",
+  "description": "Data pipeline from Azure EventHub to ADLS to Snowflake",
+  "main": "index.js",
+  "scripts": {
+    "start:ingestion": "node src/eventhub-to-adls.js",
+    "start:loader": "node src/adls-to-snowflake.js",
+    "start:all": "concurrently \"npm run start:ingestion\" \"npm run start:loader\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "azure",
+    "eventhub",
+    "adls",
+    "snowflake",
+    "data-pipeline",
+    "etl"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.4",
+    "@azure/storage-file-datalake": "^12.15.0",
+    "@azure/identity": "^3.4.2",
+    "snowflake-sdk": "^1.9.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
