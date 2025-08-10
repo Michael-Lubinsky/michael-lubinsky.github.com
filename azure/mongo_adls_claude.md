@@ -2090,6 +2090,8 @@ PARALLEL_COLLECTIONS=5         # More parallelism
 This migration strategy ensures you capture **all existing MongoDB data** while seamlessly transitioning to the **EventHub-based pipeline** for new data,  
 maintaining the same partitioning structure and data format throughout your entire data lake.
 
+#### package.json
+
 ```json
 
 {
