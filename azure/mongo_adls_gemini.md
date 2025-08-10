@@ -75,3 +75,149 @@ For a more custom, lightweight solution, you could write an Azure Function.
 6.  The data is written to **ADLS v2** in the specified partitioned folders with the JSONL format.
 
 This architecture ensures a scalable, reliable, and fault-tolerant way to serialize your MongoDB change stream data to ADLS v2.
+
+
+
+```js
+// Install these packages with: npm install mongodb @azure/storage-file-datalake
+const { MongoClient } = require('mongodb');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+
+// =================================================================================================
+// Configuration - Use environment variables for production secrets!
+// =================================================================================================
+
+const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017';
+const azureStorageAccountName = process.env.AZURE_STORAGE_ACCOUNT_NAME || 'your-adls-account-name';
+const azureStorageAccountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY || 'your-adls-account-key';
+const adlsContainerName = process.env.ADLS_CONTAINER_NAME || 'mongo-changes';
+const dbName = 'your_database';
+const collectionName = 'your_collection';
+
+const adlsConnectionString = `DefaultEndpointsProtocol=https;AccountName=${azureStorageAccountName};AccountKey=${azureStorageAccountKey};EndpointSuffix=core.windows.net`;
+
+// =================================================================================================
+// Helper function to get a date-based partition path and file name
+// =================================================================================================
+
+function getPartitionPathAndFilename() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+
+    // Create the directory path for the current hour
+    const partitionPath = `${dbName}/${collectionName}/year=${year}/month=${month}/day=${day}/hour=${hour}`;
+    
+    // Create the rolling filename for the current hour
+    const fileName = `events-${year}${month}${day}-${hour}.jsonl`;
+
+    return { partitionPath, fileName };
+}
+
+// =================================================================================================
+// Main function to connect and start the change stream
+// =================================================================================================
+
+async function startChangeStream() {
+    let mongoClient;
+    let adlsClient;
+    
+    try {
+        // --- 1. Connect to Azure Data Lake Storage Gen2 ---
+        adlsClient = DataLakeServiceClient.fromConnectionString(adlsConnectionString);
+        const fileSystemClient = adlsClient.getFileSystemClient(adlsContainerName);
+        
+        console.log('Successfully connected to Azure ADLS Gen2 container.');
+
+        // --- 2. Connect to MongoDB ---
+        mongoClient = new MongoClient(mongoUri);
+        await mongoClient.connect();
+        const db = mongoClient.db(dbName);
+        const collection = db.collection(collectionName);
+        
+        console.log('Successfully connected to MongoDB.');
+        
+        // --- 3. Subscribe to the change stream ---
+        // Use a full document pre-image and post-image to get the entire document state
+        // before and after the change. This is only available for some change types.
+        const changeStream = collection.watch([], {
+            fullDocument: 'updateLookup'
+        });
+        
+        console.log(`Watching for changes on ${dbName}.${collectionName}...`);
+
+        // --- 4. Listen for change events ---
+        changeStream.on('change', async (change) => {
+            try {
+                // Get the path and filename for the current hour
+                const { partitionPath, fileName } = getPartitionPathAndFilename();
+                
+                // Get a reference to the directory client
+                const directoryClient = fileSystemClient.getDirectoryClient(partitionPath);
+                
+                // Create the directory if it doesn't exist
+                await directoryClient.createIfNotExists();
+                
+                // Get a reference to the rolling file
+                const fileClient = directoryClient.getFileClient(fileName);
+
+                // Check if the file exists before appending
+                // Note: The append API can create the file, but this is a good practice.
+                try {
+                    await fileClient.getProperties();
+                } catch (error) {
+                    if (error.statusCode === 404) {
+                        await fileClient.create();
+                    }
+                }
+                
+                // Convert the change event object to a JSON line
+                const eventJson = JSON.stringify(change) + '\n';
+                const eventBuffer = Buffer.from(eventJson, 'utf-8');
+                
+                // Get the current file size to know where to append
+                const fileSize = (await fileClient.getProperties()).contentLength;
+                
+                // Append the event data to the rolling file
+                await fileClient.append(eventBuffer, fileSize, eventBuffer.length);
+                
+                // Flush the appended data to commit it to the file
+                await fileClient.flush(fileSize + eventBuffer.length);
+                
+                console.log(`Change event written to: ${partitionPath}/${fileName}`);
+
+            } catch (adlsError) {
+                console.error('Error writing to Azure Data Lake Storage:', adlsError.message);
+                // In a production environment, you would add retry logic here.
+            }
+        });
+        
+        changeStream.on('error', (err) => {
+            console.error('Change stream error:', err);
+        });
+
+        // Keep the process alive
+        await new Promise(() => {});
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+    } finally {
+        // Graceful shutdown
+        process.on('SIGINT', async () => {
+            console.log('\nShutting down...');
+            if (mongoClient) {
+                await mongoClient.close();
+                console.log('MongoDB client closed.');
+            }
+            // ADLS client doesn't need to be explicitly closed
+            process.exit(0);
+        });
+    }
+}
+
+// Start the application
+startChangeStream();
+
+```
