@@ -6,6 +6,74 @@
 
 <https://github.com/danolivo/conf/blob/main/2024-Postgres-Analytics/postgres-analytics.pdf>
 
+
+### Postgres Parameters
+
+```sql
+SELECT 
+    name,
+    setting,
+    unit,
+    vartype,
+    context,
+    short_desc
+FROM  pg_settings
+WHERE 
+    name IN (
+        -- Memory settings
+        'shared_buffers',
+        'work_mem',
+        'maintenance_work_mem',
+        'temp_buffers',
+        'effective_cache_size',
+
+        -- Planner cost constants
+        'random_page_cost',
+        'seq_page_cost',
+        'cpu_tuple_cost',
+        'cpu_index_tuple_cost',
+        'cpu_operator_cost',
+
+        -- Parallelism
+        'max_parallel_workers',
+        'max_parallel_workers_per_gather',
+        'parallel_setup_cost',
+        'parallel_tuple_cost',
+
+        -- Autovacuum
+        'autovacuum_vacuum_cost_limit',
+        'autovacuum_vacuum_threshold',
+        'autovacuum_vacuum_scale_factor',
+        'autovacuum_naptime',
+        'autovacuum_max_workers',
+
+        -- WAL & Checkpoints
+        'wal_buffers',
+        'wal_compression',
+        'wal_writer_delay',
+        'commit_delay',
+        'synchronous_commit',
+        'checkpoint_timeout',
+        'max_wal_size',
+        'checkpoint_completion_target',
+
+        -- Connections & Statistics
+        'max_connections',
+        'default_statistics_target'
+    )
+ORDER BY name;
+```
+
+| Parameter              | Description                                               | Example Value       |
+| ---------------------- | --------------------------------------------------------- | ------------------- |
+| `shared_buffers`       | Amount of memory dedicated to PostgreSQL for caching data | 25–40% of total RAM |
+| `work_mem`             | Memory used per sort/hash/join operation (not per query!) | 4MB – 64MB          |
+| `maintenance_work_mem` | Memory for vacuuming, indexing, etc.                      | 64MB – 1GB          |
+| `temp_buffers`         | Buffers for temporary tables per session                  | 8MB – 64MB          |
+| `effective_cache_size` | Estimate of OS-level cache available to Postgres          | \~75% of total RAM  |
+
+
+
 ### Find unused indexes
 
 idx_tup_read = 0 — meaning no index entries were read (i.e., no index scans read any heap tuples via this index)
