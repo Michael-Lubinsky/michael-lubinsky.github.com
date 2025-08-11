@@ -886,8 +886,8 @@ PostgreSQL remembers which index was used for clustering (pg_index.indisclustere
 
 However, future inserts/updates do not maintain physical order; you must re-run CLUSTER periodically to maintain clustering benefits.
 
-
-
+### Copy command
+<https://habr.com/ru/companies/otus/articles/935454/>
 ### Backup
 <https://news.ycombinator.com/item?id=44473888>  
 <https://pgmoneta.github.io/>  
