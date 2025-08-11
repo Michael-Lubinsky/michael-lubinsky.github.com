@@ -6,6 +6,54 @@
 
 <https://github.com/danolivo/conf/blob/main/2024-Postgres-Analytics/postgres-analytics.pdf>
 
+<https://tembo.io/blog/optimizing-memory-usage>
+
+### Partition Pruning
+SET enable_partition_pruning = on; 
+
+#### Explain analyze
+```sql
+EXPLAIN ANALYZE SELECT *
+FROM tenk1 t1, tenk2 t2
+WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
+ORDER BY t1.fivethous;
+```
+
+
+### extension: pg_repack 
+pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
+and optionally restore the physical order of clustered indexes. 
+Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing. 
+pg_repack is efficient to boot, with performance comparable to using CLUSTER directly.
+<https://github.com/reorg/pg_repack>
+
+
+#### CLUSTER
+The CLUSTER keyword in PostgreSQL is used to:
+
+✅ Physically reorder the table data on disk based on the index order of a specified index.
+
+✅ This improves I/O performance for queries that frequently use the indexed column(s) because related rows are stored close together on disk, reducing page reads.
+
+CLUSTER table_name USING index_name;
+
+How it works:
+1️⃣ You specify an index, and PostgreSQL will sort the table's rows according to that index order.
+2️⃣ The table is rewritten on disk in this new order.
+3️⃣ The associated table indexes are rebuilt.
+
+Key Points:
+✅ Locks:
+
+CLUSTER requires an exclusive lock on the table during the operation.
+
+The table is unavailable for writes and reads while clustering.
+
+✅ Persistent clustering:
+
+PostgreSQL remembers which index was used for clustering (pg_index.indisclustered = true).
+
+However, future inserts/updates do not maintain physical order; you must re-run CLUSTER periodically to maintain clustering benefits.
 
 ### Postgres Parameters
 
