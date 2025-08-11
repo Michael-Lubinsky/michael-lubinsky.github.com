@@ -162,9 +162,6 @@ Then, refresh it without locking:
 REFRESH MATERIALIZED VIEW CONCURRENTLY sales_summary;
 ```
 
-
-
-
 ### Incremental MATERIALIZED VIEW
 ```
 To make the materialized view incremental
@@ -224,73 +221,6 @@ SELECT cron.schedule(
   $$
 );
 ```
-
-
-
-### Postgres Parameters
-
-```sql
-SELECT 
-    name,
-    setting,
-    unit,
-    vartype,
-    context,
-    short_desc
-FROM  pg_settings
-WHERE 
-    name IN (
-        -- Memory settings
-        'shared_buffers',
-        'work_mem',
-        'maintenance_work_mem',
-        'temp_buffers',
-        'effective_cache_size',
-
-        -- Planner cost constants
-        'random_page_cost',
-        'seq_page_cost',
-        'cpu_tuple_cost',
-        'cpu_index_tuple_cost',
-        'cpu_operator_cost',
-
-        -- Parallelism
-        'max_parallel_workers',
-        'max_parallel_workers_per_gather',
-        'parallel_setup_cost',
-        'parallel_tuple_cost',
-
-        -- Autovacuum
-        'autovacuum_vacuum_cost_limit',
-        'autovacuum_vacuum_threshold',
-        'autovacuum_vacuum_scale_factor',
-        'autovacuum_naptime',
-        'autovacuum_max_workers',
-
-        -- WAL & Checkpoints
-        'wal_buffers',
-        'wal_compression',
-        'wal_writer_delay',
-        'commit_delay',
-        'synchronous_commit',
-        'checkpoint_timeout',
-        'max_wal_size',
-        'checkpoint_completion_target',
-
-        -- Connections & Statistics
-        'max_connections',
-        'default_statistics_target'
-    )
-ORDER BY name;
-```
-
-| Parameter              | Description                                               | Example Value       |
-| ---------------------- | --------------------------------------------------------- | ------------------- |
-| `shared_buffers`       | Amount of memory dedicated to PostgreSQL for caching data | 25–40% of total RAM |
-| `work_mem`             | Memory used per sort/hash/join operation (not per query!) | 4MB – 64MB          |
-| `maintenance_work_mem` | Memory for vacuuming, indexing, etc.                      | 64MB – 1GB          |
-| `temp_buffers`         | Buffers for temporary tables per session                  | 8MB – 64MB          |
-| `effective_cache_size` | Estimate of OS-level cache available to Postgres          | \~75% of total RAM  |
 
 
 
@@ -723,9 +653,7 @@ CREATE TABLE products (
 
 <https://www.postgresql.org/docs/current/sql-select.html#SQL-EXCEPT>
 
-### Config
 
-<https://tembo.io/blog/optimizing-memory-usage>
 
 <https://pgtune.leopard.in.ua/>
 
@@ -774,16 +702,7 @@ Data Warehouse: Implement TimescaleDB on top of Postgres for data warehousing ne
 
 ```
 
-### Partition Pruning
-SET enable_partition_pruning = on; 
 
-#### Explain analyze
-```sql
-EXPLAIN ANALYZE SELECT *
-FROM tenk1 t1, tenk2 t2
-WHERE t1.unique1 < 100 AND t1.unique2 = t2.unique2
-ORDER BY t1.fivethous;
-```
 ### Stored procedure example
 ```sql
 CREATE OR REPLACE PROCEDURE public.process_date_range(
@@ -851,43 +770,9 @@ CALL public.process_date_range('2025-08-01', '2025-08-03', 'public.process_singl
 
 <https://medium.com/@kanishks772/how-we-designed-a-1-billion-row-system-on-postgresql-18-and-why-its-blazing-fast-6c97aec9271b>
 
-### extension: pg_repack 
-pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
-and optionally restore the physical order of clustered indexes. 
-Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing. 
-pg_repack is efficient to boot, with performance comparable to using CLUSTER directly.
-<https://github.com/reorg/pg_repack>
-
-
-#### CLUSTER
-The CLUSTER keyword in PostgreSQL is used to:
-
-✅ Physically reorder the table data on disk based on the index order of a specified index.
-
-✅ This improves I/O performance for queries that frequently use the indexed column(s) because related rows are stored close together on disk, reducing page reads.
-
-CLUSTER table_name USING index_name;
-
-How it works:
-1️⃣ You specify an index, and PostgreSQL will sort the table's rows according to that index order.
-2️⃣ The table is rewritten on disk in this new order.
-3️⃣ The associated table indexes are rebuilt.
-
-Key Points:
-✅ Locks:
-
-CLUSTER requires an exclusive lock on the table during the operation.
-
-The table is unavailable for writes and reads while clustering.
-
-✅ Persistent clustering:
-
-PostgreSQL remembers which index was used for clustering (pg_index.indisclustered = true).
-
-However, future inserts/updates do not maintain physical order; you must re-run CLUSTER periodically to maintain clustering benefits.
-
 ### Copy command
 <https://habr.com/ru/companies/otus/articles/935454/>
+
 ### Backup
 <https://news.ycombinator.com/item?id=44473888>  
 <https://pgmoneta.github.io/>  
@@ -1077,7 +962,5 @@ https://kmoppel.github.io/2025-04-10-postgres-scaling-roadmap/
 <https://mccue.dev/pages/3-11-25-life-altering-postgresql-patterns>
 
 <https://medium.com/@pesarakex/how-we-migrated-a-100m-row-postgresql-table-with-zero-downtime-and-survived-5b908de243e0>
-
-
 
 -->
