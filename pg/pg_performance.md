@@ -22,25 +22,25 @@ ORDER BY t1.fivethous;
 
 ### extension: pg_repack 
 pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
-and optionally restore the physical order of clustered indexes. 
-Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing. 
-pg_repack is efficient to boot, with performance comparable to using CLUSTER directly.
+and optionally restore the physical order of clustered indexes.  
+Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing.  
+pg_repack is efficient to boot, with performance comparable to using CLUSTER directly. 
 <https://github.com/reorg/pg_repack>
 
 
 #### CLUSTER
 The CLUSTER keyword in PostgreSQL is used to:
 
-✅ Physically reorder the table data on disk based on the index order of a specified index.
+✅ Physically reorder the table data on disk based on the index order of a specified index.  
 
-✅ This improves I/O performance for queries that frequently use the indexed column(s) because related rows are stored close together on disk, reducing page reads.
+✅ This improves I/O performance for queries that frequently use the indexed column(s) because related rows are stored close together on disk, reducing page reads.  
 
 CLUSTER table_name USING index_name;
 
 How it works:
-1️⃣ You specify an index, and PostgreSQL will sort the table's rows according to that index order.
-2️⃣ The table is rewritten on disk in this new order.
-3️⃣ The associated table indexes are rebuilt.
+1️⃣ You specify an index, and PostgreSQL will sort the table's rows according to that index order.  
+2️⃣ The table is rewritten on disk in this new order.  
+3️⃣ The associated table indexes are rebuilt.  
 
 Key Points:
 ✅ Locks:
@@ -124,9 +124,8 @@ ORDER BY name;
 
 ### Find unused indexes
 
-idx_tup_read = 0 — meaning no index entries were read (i.e., no index scans read any heap tuples via this index)
-
-
+idx_tup_read = 0 — meaning no index entries were read   
+(i.e., no index scans read any heap tuples via this index)
 
 ```sql
 SELECT schemaname, tablename, indexname, idx_tup_read, idx_tup_fetch 
@@ -154,8 +153,6 @@ WHERE
 ORDER BY 
     pg_relation_size(i.indexrelid) DESC;
 ```
-
-
 
 ### Find slow queries
 
