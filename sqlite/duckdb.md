@@ -22,6 +22,8 @@ https://medium.com/@shouke.wei/introducing-duckdb-local-ui-a-fast-private-and-in
 
 https://medium.com/@shouke.wei/duckdb-tutorial-the-fast-embedded-analytics-database-7d5d742bb251
 
+https://medium.com/@shouke.wei/complete-guide-to-reading-data-with-duckdb-from-local-files-to-remote-sources-ddb43bd4456f
+
 https://www.dbreunig.com/2025/05/03/duckdb-is-the-most-impactful-geospatial-software-in-a-decade.html
 
 https://news.ycombinator.com/item?id=43881468
