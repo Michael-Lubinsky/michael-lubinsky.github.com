@@ -313,8 +313,9 @@ ORDER BY  extname;
 ```
 
 <https://www.postgresql.org/docs/current/contrib.html>  
+<https://www.tigerdata.com/blog/top-8-postgresql-extensions>  
+<https://habr.com/ru/companies/selectel/articles/936362/>  
 <https://pgxn.org/>  
-<https://www.tigerdata.com/blog/top-8-postgresql-extensions>
 
 #### pg_anon
 <https://habr.com/ru/companies/tantor/articles/913196/>    
