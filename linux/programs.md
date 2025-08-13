@@ -29,6 +29,7 @@ https://superintendent.app/
 https://www.tadviewer.com/
 
 ### DB Modelling Tools ERD
+<https://datasherpa.blog/>  
 <https://medium.com/@billcoulam/i-tested-17-data-modeling-tools-one-was-the-clear-winner-ce2b7fc7c20e>
 
 ### PDF to text
