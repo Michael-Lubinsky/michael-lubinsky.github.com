@@ -52,6 +52,8 @@ https://github.com/solidiquis/erdtree
 
 https://github.com/Canop/broot
 
+https://github.com/juftin/browsr
+
 ### Others
 <https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
 
