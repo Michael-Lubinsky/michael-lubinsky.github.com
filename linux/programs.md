@@ -1,8 +1,7 @@
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
 
-Git <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>
-
-MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>
+Git <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>  
+MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>  
 Visidata <https://www.visidata.org/>
 
 
@@ -28,6 +27,9 @@ https://miller.readthedocs.io/  CSV, JSON processing
 ### GUI for CSV files
 https://superintendent.app/  
 https://www.tadviewer.com/
+
+### DB Modelling Tools ERD
+<https://medium.com/@billcoulam/i-tested-17-data-modeling-tools-one-was-the-clear-winner-ce2b7fc7c20e>
 
 ### PDF to text
 brew install poppler  
