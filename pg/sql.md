@@ -1020,6 +1020,8 @@ https://blog.devgenius.io/my-tough-sql-interview-experience-at-paytm-what-i-was-
 <https://medium.com/@esrasoylu/advanced-sql-techniques-7016163019eb>  
 <https://skphd.medium.com/sql-scenario-based-interview-questions-and-answers-08d6ca4bcabf>
 
+https://medium.com/@CodeWithHannan/10-sql-patterns-that-will-save-you-in-production-ad4968f5f8bc
+
 data modeling
 https://medium.com/projectpro/4-advanced-data-modelling-techniques-every-data-engineer-must-learn-1113bcf7f5e9
 -->
