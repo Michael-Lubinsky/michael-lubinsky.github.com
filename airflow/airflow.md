@@ -5,6 +5,8 @@ https://habr.com/ru/articles/918580/  Apache Airflow на практике
 
 https://medium.com/mr-plan-publication/spin-up-airflow-for-2025-a-beginner-friendly-guide-fd06c4d30608
 
+
+
 https://medium.com/@mihirs202/airflow-config-file-explained-3d8c899c8148
 
 https://medium.com/@lorenzouriel/airflow-docker-setup-step-by-step-f7f682b21197
