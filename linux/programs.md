@@ -1,7 +1,8 @@
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
 
-<https://habr.com/ru/companies/yandex_praktikum/articles/812139/> git
+Git <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>
 
+MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>
 Visidata <https://www.visidata.org/>
 
 
