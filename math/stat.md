@@ -246,6 +246,10 @@ https://www.kdnuggets.com/2021/07/single-line-exploratory-data-analysis.html
 
 https://habr.com/ru/articles/922454/ кросс-энтропия позволяет оценить разницу между двумя распределениями
 
+### CLT Central Limit Teorem
+
+<https://news.ycombinator.com/item?id=44909133>
+
 ### Secretary_problem
 https://en.wikipedia.org/wiki/Secretary_problem  
 https://www.mccme.ru/free-books/mmmf-lectures/book.25.pdf  
