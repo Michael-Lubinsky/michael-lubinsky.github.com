@@ -8,7 +8,8 @@
 
 <https://algorithmsbook.com/files/dm.pdf> Algos for Decision Making
 
-<https://synset.com/pdf/ito.pdf>
+<https://synset.com/pdf/ito.pdf> Stohastic world. Stepanov  (in russian)
+Ñåðãåé Ñ. Ñòåïàíîâ
 
 <https://vk.com/mathhedgehog>
 
