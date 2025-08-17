@@ -2,6 +2,62 @@
 There is  MongoDB with collections which can be updated very often
 and a new Mongo collections can be created any time.
 
+### MongoDB Change Stream 
+A MongoDB Change Stream is a feature that lets you subscribe to real-time notifications of changes happening in your MongoDB database or collections. 
+Instead of constantly polling the database to see what changed, change streams push events to your application whenever data is inserted, updated, deleted, or replaced.
+
+#### Real-time stream of events
+Change Streams allow your app to react immediately when something changes in the database.
+
+#### Non-polling mechanism
+They use MongoDB’s oplog (operations log in replica sets / sharded clusters) under the hood, which makes them efficient.
+
+#### Granularity
+
+You can open a change stream on:
+The whole database
+A single collection
+Or even a sharded cluster
+
+#### Types of events captured
+- insert – when a new document is added  
+- update – when a document is modified  
+- replace – when a document is fully replaced  
+- delete – when a document is removed  
+- invalidate – when the stream is closed (e.g., collection dropped)
+
+#### Resume Tokens
+Each event has a resume token, so if your application disconnects, it can resume from where it left off without missing changes.
+
+#### Example Use Cases
+
+- Real-time Notifications – trigger an alert or push message when data changes (e.g., new order placed).
+
+- Data Sync – keep MongoDB data synced with another system (e.g., update a cache or replicate to a data lake).
+
+- Analytics Pipelines – stream updates into Apache Kafka, Azure EventHub, or Snowflake for real-time analytics.
+
+- Event-driven Microservices – one service updates MongoDB, others react automatically via change streams.
+
+ #### Example
+```js
+const { MongoClient } = require("mongodb");
+
+async function run() {
+  const client = new MongoClient("mongodb://localhost:27017");
+  await client.connect();
+  
+  const collection = client.db("shop").collection("orders");
+
+  const changeStream = collection.watch();
+
+  changeStream.on("change", (next) => {
+    console.log("Change detected:", next);
+  });
+}
+
+run().catch(console.error);
+```
 Currently there is change stream trigger which propagate all changes to Postgres.
 
 In this case we need to implement Change Data Capture (CDC) Pipeline
