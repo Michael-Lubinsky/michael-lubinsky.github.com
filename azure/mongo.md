@@ -288,6 +288,194 @@ Once events flow, **Event Hubs Capture** will land files in your chosen containe
 
 If you want, I can tailor the pipeline to your exact DB/collection names, add windowing/aggregation, or provide Terraform for the Azure resources and the Atlas connections.
 
+
+### Here are two solid ways to land MongoDB changes into ADLS with the exact folder pattern:
+
+collection/YYYY-MM-DD-HH
+
+I’ll give you (A) a direct writer (simplest, full control of the path), and (B) an Event Hubs route (use Capture for durability, then a tiny post-process to reshape folders).
+
+---
+
+# A) Direct: Change Streams → ADLS (exact path)
+
+Pros: exact folder names, lowest moving parts.
+Cons: you own buffering/retries/resume.
+
+```javascript
+// package.json deps:
+//   "mongodb": "^6",
+//   "@azure/storage-blob": "^12"
+// env vars:
+//   MONGO_URI, AZURE_STORAGE_CONNECTION_STRING, ADLS_CONTAINER
+
+import { MongoClient } from "mongodb";
+import { BlobServiceClient, AppendBlobClient } from "@azure/storage-blob";
+
+const mongoUri   = process.env.MONGO_URI;
+const connStr    = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const container  = process.env.ADLS_CONTAINER || "events";
+
+// simple in-memory buffers keyed by "collection|yyyy-mm-dd-hh"
+const BUFFERS = new Map();
+// flush every N records or every T ms
+const FLUSH_COUNT = 500;
+const FLUSH_MS = 10_000;
+
+function hourKey(dateUtc) {
+  const d = new Date(dateUtc);
+  const y  = d.getUTCFullYear();
+  const m  = String(d.getUTCMonth()+1).padStart(2,"0");
+  const dd = String(d.getUTCDate()).padStart(2,"0");
+  const hh = String(d.getUTCHours()).padStart(2,"0");
+  return `${y}-${m}-${dd}-${hh}`;
+}
+
+function blobPathFor(coll, hour) {
+  // folder: collection/YYYY-MM-DD-HH/
+  // file: events-YYYYMMDD-HH.jsonl (one per hour per collection)
+  const ymdh = hour.replaceAll("-", "");
+  const ymd  = ymdh.slice(0,8);
+  const HH   = hour.slice(-2);
+  return `${coll}/${hour}/events-${ymd}-${HH}.jsonl`;
+}
+
+async function ensureAppendBlob(appendClient) {
+  try {
+    await appendClient.createIfNotExists({ blobHTTPHeaders: { blobContentType: "application/json" }});
+  } catch (_) {}
+}
+
+async function flushBuffer(bsc, key) {
+  const buf = BUFFERS.get(key);
+  if (!buf || buf.lines.length === 0) return;
+
+  const { coll, hour } = buf;
+  const path = blobPathFor(coll, hour);
+  const containerClient = bsc.getContainerClient(container);
+  await containerClient.createIfNotExists();
+  const appendClient = new AppendBlobClient(containerClient.url + "/" + path, bsc.credential, bsc.pipeline);
+
+  await ensureAppendBlob(appendClient);
+  const payload = buf.lines.join("\n") + "\n";
+  await appendClient.appendBlock(payload, Buffer.byteLength(payload));
+  buf.lines = [];
+  buf.lastFlush = Date.now();
+}
+
+async function periodicFlusher(bsc) {
+  setInterval(async () => {
+    const tasks = [];
+    for (const [key, buf] of BUFFERS.entries()) {
+      if (buf.lines.length >= FLUSH_COUNT || Date.now() - buf.lastFlush >= FLUSH_MS) {
+        tasks.push(flushBuffer(bsc, key));
+      }
+    }
+    await Promise.allSettled(tasks);
+  }, Math.max(FLUSH_MS, 3000));
+}
+
+function addLine(coll, hour, line) {
+  const k = `${coll}|${hour}`;
+  if (!BUFFERS.has(k)) BUFFERS.set(k, { coll, hour, lines: [], lastFlush: 0 });
+  BUFFERS.get(k).lines.push(line);
+}
+
+function getUtcSecondsFromClusterTime(bsonTs) {
+  // clusterTime is a BSON Timestamp with high bits = seconds
+  // if using driver types, prefer toString/seconds getter; fallback:
+  return typeof bsonTs?.getHighBits === "function" ? bsonTs.getHighBits() : Math.floor(Date.now()/1000);
+}
+
+async function main() {
+  const bsc = BlobServiceClient.fromConnectionString(connStr);
+  periodicFlusher(bsc);
+
+  const client = new MongoClient(mongoUri);
+  await client.connect();
+
+  // watch cluster-level or db-level; here: cluster-level
+  const changeStream = client.watch([], { fullDocument: "updateLookup" });
+
+  // TODO: load last resume token from durable storage (e.g., a small state collection)
+  // and start from it to guarantee exactly-resume semantics.
+
+  for await (const ev of changeStream) {
+    const coll = ev.ns?.coll || "unknown";
+    const tsSec = getUtcSecondsFromClusterTime(ev.clusterTime);
+    const hour  = hourKey(new Date(tsSec * 1000).toISOString());
+    // Keep it lean: serialize the essentials; you can store full event if needed
+    const out = {
+      op: ev.operationType,
+      ns: ev.ns,
+      doc: ev.fullDocument ?? null,
+      updateDesc: ev.updateDescription ?? null,
+      clusterTime: ev.clusterTime
+    };
+    addLine(coll, hour, JSON.stringify(out));
+    // persist resume token ev._id periodically (not shown)
+  }
+}
+
+main().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
+```
+
+Notes:
+
+* Uses Append Blobs (cheap, simple “append line” semantics per hour).
+* Writes JSONL; easy to `COPY INTO` Snowflake later, or to convert to Parquet in a separate job.
+* Persist the **resume token** (`ev._id`) to survive restarts exactly from last processed event.
+
+---
+
+# B) Event Hubs in the middle: ASP/Producer → Event Hubs → Capture → (reshape to target folders)
+
+Event Hubs Capture chooses its own directory layout (namespace/hub/partition/time). If you must have collection/YYYY-MM-DD-HH, do:
+
+1. **Ingest**: Mongo → (ASP or your producer) → **Event Hubs** (Kafka endpoint).
+2. **Land**: **Capture to ADLS** (Avro/Parquet).
+3. **Reshape**: tiny post-process that **moves/copies** files into `collection/YYYY-MM-DD-HH/…` based on metadata you include in each message.
+
+Two light-weight ways to reshape:
+
+• **Azure Function (Timer trigger):**
+
+* List new captured blobs.
+* Read Avro headers or parse file body to find `collection` and event timestamps (you can stamp `collection` and hour into the message headers or payload when emitting).
+* Copy to `collection/YYYY-MM-DD-HH/…` and delete the original from the landing zone.
+
+• **ADF Mapping Data Flow / Pipeline:**
+
+* Source = landing container
+* Derived columns to compute folder path from event payload/headers
+* Sink = curated container with dynamic folder path (`@{item().collection}/@{formatDateTime(item().ts,'yyyy-MM-dd-HH')}`)
+
+Tip for Event Hubs pathing:
+
+* When you emit events, include:
+
+  * `collection` in the message (payload or header)
+  * a normalized UTC timestamp (e.g., “eventHour” = 2025-08-17-14)
+* Your post-process only needs to read minimal metadata to compute the exact folder.
+
+---
+
+# Which should you use?
+
+* **Need the exact folder structure now, with minimal services?** Go with **A (Direct)**.
+* **Need durability, fan-out, and Azure-native landing with autoscaling?** Use **B (Event Hubs + Capture)** and add the small **reshape** step.
+
+If you want, tell me your DB/collection names and I’ll:
+
+* wire the direct writer to only watch specific collections, or
+* produce the Azure Function (Node.js or Python) that reshapes Event Hubs Capture output into `collection/YYYY-MM-DD-HH/`.
+
+
+
+
 [1]: https://www.mongodb.com/docs/atlas/atlas-stream-processing/kafka-connection/ "Apache Kafka Connections - Atlas - MongoDB Docs"
 [2]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-quickstart-kafka-enabled-event-hubs "Quickstart: Use Apache Kafka with Azure Event Hubs - Azure Event Hubs | Microsoft Learn"
 [3]: https://www.mongodb.com/docs/atlas/atlas-stream-processing/sp-agg-source/ "$source Stage (Stream Processing) - Atlas - MongoDB Docs"
