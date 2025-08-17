@@ -15,9 +15,9 @@ They use MongoDB’s oplog (operations log in replica sets / sharded clusters) u
 #### Granularity
 
 You can open a change stream on:
-The whole database
-A single collection
-Or even a sharded cluster
+- The whole database  
+- A single collection  
+- Or even a sharded cluster
 
 #### Types of events captured
 - insert – when a new document is added  
@@ -58,6 +58,76 @@ async function run() {
 
 run().catch(console.error);
 ```
+## Ho to write MongoDB Change Streams into Azure blob storage  
+Shell we use Azure Event Hub for it or not?
+
+Here’s a practical menu of ways to pipe MongoDB Change Streams → Azure Blob/ADLS Gen2, plus when to use Azure Event Hubs.
+
+
+#### Option A: Small/medium scale, simple pipeline, single consumer? 
+Go direct (your app reads Change Streams and writes JSONL/Parquet to ADLS).
+Your service reads Change Streams and writes to ADLS Gen2 (e.g., JSONL with hourly partitions).
+
+Pros: minimal infra, lowest cost/latency.
+Cons: you own backpressure/retries; outages can drop events unless you resume carefully.
+
+```js
+// package.json deps: mongodb, @azure/storage-blob
+import { MongoClient } from "mongodb";
+import { BlobServiceClient } from "@azure/storage-blob";
+import { Readable } from "node:stream";
+
+const mongoUri = process.env.MONGO_URI;
+const blobConn = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const containerName = "events";
+
+const bsc = BlobServiceClient.fromConnectionString(blobConn);
+const container = bsc.getContainerClient(containerName);
+
+function pathFor(evt) {
+  const db = evt.ns?.db ?? "unknown";
+  const coll = evt.ns?.coll ?? "unknown";
+  const t = new Date(evt.clusterTime.getHighBits() * 1000);
+  const YYYY = t.getUTCFullYear();
+  const MM = String(t.getUTCMonth() + 1).padStart(2, "0");
+  const DD = String(t.getUTCDate()).padStart(2, "0");
+  const HH = String(t.getUTCHours()).padStart(2, "0");
+  return `${db}/${coll}/year=${YYYY}/month=${MM}/day=${DD}/hour=${HH}/events-${YYYY}${MM}${DD}-${HH}.jsonl`;
+}
+
+async function appendLine(blobPath, line) {
+  const block = container.getBlockBlobClient(blobPath);
+  const stream = Readable.from([line + "\n"]);
+  await block.uploadStream(stream, 4 * 1024 * 1024, 5, { blobHTTPHeaders: { blobContentType: "application/json" } });
+}
+
+(async () => {
+  const client = new MongoClient(mongoUri);
+  await client.connect();
+  const cs = client.watch([], { fullDocument: "updateLookup" }); // db-level or cluster-level
+
+  for await (const evt of cs) {
+    const blobPath = pathFor(evt);
+    await appendLine(blobPath, JSON.stringify(evt));
+  }
+})();
+```
+
+#### High throughput, multiple downstreams, want durable buffering & easy autosave to ADLS? 
+Put Event Hubs in the middle and use Capture to land files (Avro natively; Parquet via Stream Analytics “no‑code” path). 
+Microsoft Learn
++2
+Microsoft Learn
++2
+
+#### Kafka-native shop? 
+Use the MongoDB Kafka Source Connector into Event Hubs (Kafka API), then a Kafka → Azure Blob sink connector. 
+MongoDB
+Microsoft Learn
+
+
+
+###
 Currently there is change stream trigger which propagate all changes to Postgres.
 
 In this case we need to implement Change Data Capture (CDC) Pipeline
