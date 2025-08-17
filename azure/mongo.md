@@ -486,3 +486,87 @@ If you want, tell me your DB/collection names and I’ll:
 [8]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-managed-identity?utm_source=chatgpt.com "Use managed Identities to capture events - Azure Event Hubs"
 [9]: https://www.mongodb.com/docs/atlas/atlas-stream-processing/tutorial/?utm_source=chatgpt.com "Get Started with Atlas Stream Processing"
 [10]: https://www.mongodb.com/docs/atlas/atlas-stream-processing/manage-stream-processor/?utm_source=chatgpt.com "Manage Stream Processors - Atlas - MongoDB Docs"
+
+
+## GEMINI
+
+Unfortunately, **MongoDB Atlas Stream Processing** doesn't support writing to **Azure Data Lake Storage (ADLS)** as a sink. It primarily focuses on real-time data processing and writing to other stream processing platforms or databases, such as other MongoDB collections, Kafka, and Amazon S3. For periodic data exports to ADLS, you'll need to use a different approach.
+
+-----
+
+## Recommended Approach Using Azure Functions
+
+A robust and common way to achieve your goal is to use an **Azure Function** with a **Node.js** runtime. This serverless solution allows you to schedule a function to run periodically and handle the data export logic.
+
+### 1\. Set Up Your Environment
+
+First, you'll need a **MongoDB Atlas cluster** and an **Azure Storage account** with a **Data Lake Storage Gen2** enabled. Create an Azure Function App in the Azure portal and select a Node.js runtime.
+
+### 2\. Write the Node.js Code
+
+The core of your solution will be a Node.js script that connects to your MongoDB Atlas cluster, queries the desired collection, and writes the data to ADLS.
+
+Here's an example of what the code would look like:
+
+```javascript
+const { MongoClient } = require('mongodb');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const { v1: uuidv1 } = require('uuid');
+
+const mongoUri = 'YOUR_MONGODB_ATLAS_CONNECTION_STRING';
+const storageAccountName = 'YOUR_AZURE_STORAGE_ACCOUNT_NAME';
+const storageAccountKey = 'YOUR_AZURE_STORAGE_ACCOUNT_KEY';
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  `DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountKey};EndpointSuffix=core.windows.net`
+);
+
+module.exports = async function (context, myTimer) {
+  context.log('Function started.');
+
+  const client = new MongoClient(mongoUri);
+
+  try {
+    await client.connect();
+    const database = client.db('yourDatabaseName');
+    const collections = await database.listCollections().toArray();
+
+    for (const collectionInfo of collections) {
+      const collectionName = collectionInfo.name;
+      const collection = database.collection(collectionName);
+      const documents = await collection.find({}).toArray();
+
+      if (documents.length > 0) {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const folderPath = `${collectionName}/${year}-${month}-${day}-${hour}`;
+        const fileName = `${uuidv1()}.json`; // Use a unique filename
+        const blobName = `${folderPath}/${fileName}`;
+        const containerClient = blobServiceClient.getContainerClient('yourContainerName');
+        const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+        const data = JSON.stringify(documents, null, 2);
+        await blockBlobClient.upload(data, data.length);
+        context.log(`Successfully uploaded data from collection "${collectionName}" to ADLS at: ${blobName}`);
+      }
+    }
+  } catch (error) {
+    context.log.error('An error occurred:', error);
+  } finally {
+    await client.close();
+  }
+};
+```
+
+### 3\. Configure the Function to Run Periodically
+
+In your Azure Function App, you'll need to configure the trigger to run on a schedule.
+
+1.  Navigate to the **Integrate** tab for your function.
+2.  Select **Timer trigger** as the trigger type.
+3.  Set the **CRON expression** to `0 0 * * * *`. This expression schedules the function to run at the start of every hour.
+
+This setup ensures that the function runs automatically, connects to MongoDB, retrieves the data, and stores it in the specified folder structure in your ADLS container.
