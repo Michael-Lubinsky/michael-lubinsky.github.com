@@ -71,6 +71,8 @@ Your service reads Change Streams and writes to ADLS Gen2 (e.g., JSONL with hour
 Pros: minimal infra, lowest cost/latency.
 Cons: you own backpressure/retries; outages can drop events unless you resume carefully.
 
+Warning: store the resume token (evt._id) so you can restart exactly from the last processed event.
+
 ```js
 // package.json deps: mongodb, @azure/storage-blob
 import { MongoClient } from "mongodb";
@@ -95,7 +97,7 @@ function pathFor(evt) {
   return `${db}/${coll}/year=${YYYY}/month=${MM}/day=${DD}/hour=${HH}/events-${YYYY}${MM}${DD}-${HH}.jsonl`;
 }
 
-async function appendLine(blobPath, line) {
+async function appendLine(blobPath, line) { 
   const block = container.getBlockBlobClient(blobPath);
   const stream = Readable.from([line + "\n"]);
   await block.uploadStream(stream, 4 * 1024 * 1024, 5, { blobHTTPHeaders: { blobContentType: "application/json" } });
@@ -113,19 +115,61 @@ async function appendLine(blobPath, line) {
 })();
 ```
 
-#### High throughput, multiple downstreams, want durable buffering & easy autosave to ADLS? 
+#### Option B: High throughput, multiple downstreams, want durable buffering & easy autosave to ADLS? - Put Event Hubs in the middle
 Put Event Hubs in the middle and use Capture to land files (Avro natively; Parquet via Stream Analytics “no‑code” path). 
-Microsoft Learn
-+2
-Microsoft Learn
-+2
 
-#### Kafka-native shop? 
+Flow: Change Streams consumer → publish to Event Hubs → Capture to ADLS.
+
+Event Hubs Capture can automatically land data to Blob/ADLS in Avro (native).
+
+To get Parquet files, use the Azure Stream Analytics “no‑code” Capture path that writes Parquet to ADLS. 
+ 
+
+Pros: durable buffer, elastic scale, multiple consumers, easy auto‑land.
+Cons: extra service + (slight) latency; Avro by default unless you add ASA for Parquet.
+
+When to prefer this:
+
+Spiky traffic or very high throughput.
+
+You want other consumers (Functions, Spark, Synapse) to read the same stream.
+
+Operational simplicity of managed file landing. 
+
+#### Option C: Kafka-native shop? 
 Use the MongoDB Kafka Source Connector into Event Hubs (Kafka API), then a Kafka → Azure Blob sink connector. 
-MongoDB
-Microsoft Learn
 
+Use the MongoDB Kafka Source Connector (reads Change Streams) → publish to Azure Event Hubs using its Kafka endpoint.
 
+Then use a Kafka Connect “Azure Blob Storage Sink” to write Avro/JSON/Parquet to Blob/ADLS. 
+ 
+
+Pros: declarative, scalable, battle-tested connectors.
+Cons: need a Kafka Connect runtime (self-managed, Aiven, Confluent Cloud, etc.)
+
+### Option D — MongoDB Atlas Stream Processing (managed)
+
+If you’re on Atlas, Atlas Stream Processing now supports Azure & Private Link and fits nicely with Kafka/Event Hubs pipelines. You can push to Event Hubs and then land to ADLS with Capture.
+
+#### Formats & partitioning (what lands in storage)
+
+Event Hubs Capture: Avro via native Capture; Parquet supported when Capture is configured through Azure Stream Analytics “no‑code editor”. 
+
+Kafka → Blob sink: can write Avro/JSON/Parquet/Bytes depending on connector. 
+Confluent Documentation
+
+Recommended folder scheme (works well downstream):
+db/collection/year=YYYY/month=MM/day=DD/hour=HH/…
+
+#### Recommendation (based on your typical workloads)
+
+Given your previous pipelines to ADLS → Snowflake, I’d pick:
+
+If events/sec < few thousand and you want minimal moving parts: Option A (direct JSONL to ADLS).
+
+If you expect growth, want replay/multiple consumers, and easy file landing: Option B (Event Hubs + Capture). Start with Avro; add ASA later if you need Parquet.
+
+If you want, I can tailor a ready-to-deploy Terraform + Node.js starter for either path (including IAM, container names, and partitioning).
 
 ###
 Currently there is change stream trigger which propagate all changes to Postgres.
