@@ -293,11 +293,14 @@ If you want, I can tailor the pipeline to your exact DB/collection names, add wi
 
 collection/YYYY-MM-DD-HH
 
-I’ll give you (A) a direct writer (simplest, full control of the path), and (B) an Event Hubs route (use Capture for durability, then a tiny post-process to reshape folders).
+ 
+(A) a direct writer (simplest, full control of the path),  
+  
+(B) an Event Hubs route (use Capture for durability, then a tiny post-process to reshape folders).
 
 ---
 
-# A) Direct: Change Streams → ADLS (exact path)
+#### A) Direct: Change Streams → ADLS (exact path)
 
 Pros: exact folder names, lowest moving parts.
 Cons: you own buffering/retries/resume.
@@ -431,7 +434,7 @@ Notes:
 
 ---
 
-# B) Event Hubs in the middle: ASP/Producer → Event Hubs → Capture → (reshape to target folders)
+##### B) Event Hubs in the middle: ASP/Producer → Event Hubs → Capture → (reshape to target folders)
 
 Event Hubs Capture chooses its own directory layout (namespace/hub/partition/time). If you must have collection/YYYY-MM-DD-HH, do:
 
@@ -490,7 +493,9 @@ If you want, tell me your DB/collection names and I’ll:
 
 ## GEMINI
 
-Unfortunately, **MongoDB Atlas Stream Processing** doesn't support writing to **Azure Data Lake Storage (ADLS)** as a sink. It primarily focuses on real-time data processing and writing to other stream processing platforms or databases, such as other MongoDB collections, Kafka, and Amazon S3. For periodic data exports to ADLS, you'll need to use a different approach.
+Unfortunately, **MongoDB Atlas Stream Processing** doesn't support writing to **Azure Data Lake Storage (ADLS)** as a sink.  
+It primarily focuses on real-time data processing and writing to other stream processing platforms or databases, such as other MongoDB collections, Kafka, and Amazon S3. 
+For periodic data exports to ADLS, you'll need to use a different approach.  
 
 -----
 
