@@ -917,5 +917,6 @@ https://signoz.io/blog/cicd-observability-with-opentelemetry/
 
 https://news.ycombinator.com/item?id=44247020
 
+https://victoriametrics.com/blog/victorialogs-concepts-message-time-stream/index.html
 
 https://pypi.org/project/otlp-json/
