@@ -22,6 +22,8 @@
 
 <https://www.youtube.com/watch?v=twTIGuVhKbQ>
 
+<https://www.youtube.com/watch?v=sq2gPzlrM0g&t=3s>
+
 ## Puzzles
 
 ### Question 
