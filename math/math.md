@@ -18,6 +18,8 @@
 ### Automatic differentiation
 <https://www.youtube.com/watch?v=17gfCTnw6uE> 
 
+<https://www.youtube.com/watch?v=MmkNSsGAZhw>
+
 <https://www.youtube.com/watch?v=wG_nF1awSSY>
 
 <https://www.youtube.com/watch?v=twTIGuVhKbQ>
