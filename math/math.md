@@ -10,7 +10,9 @@
 
 <https://synset.com/pdf/ito.pdf>
 
-https://vk.com/mathhedgehog
+<https://vk.com/mathhedgehog>
+
+<https://blog.demofox.org/2025/08/16/derivatives-gradients-jacobians-and-hessians-oh-my/> Derivatives, Gradients, Jacobians and Hessians.
 
 ## Puzzles
 
