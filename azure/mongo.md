@@ -667,3 +667,324 @@ cron.schedule('0 * * * *', () => {
 
 console.log('Scheduler started. Waiting for next hourly run...');
 ```
+Is this script robust for production?
+Does it handles errors, timeouts?
+Does it has  retry logic?
+
+The provided script is a good starting point but lacks several features critical for production robustness, including comprehensive error handling, timeout management, and retry logic. Below, I’ll evaluate its current state, identify gaps, and provide an enhanced version with improvements for production use.
+
+### Evaluation of the Original Script
+
+1. **Error Handling**:
+   - **Current State**: The script has minimal error handling. It catches errors in the main `exportCollections` function and during the streaming process (`readableStream.destroy(err)`), but it doesn’t handle specific failure scenarios like MongoDB connection issues, Azure upload failures, or partial exports.
+   - **Gaps**:
+     - No handling for MongoDB connection timeouts or authentication failures.
+     - No specific handling for Azure connection issues, rate limits, or partial upload failures.
+     - No cleanup for failed uploads (e.g., removing incomplete files in ADLS).
+     - No logging of errors to a persistent store for monitoring.
+     - If one collection fails, others may still proceed, but there’s no mechanism to track partial failures.
+
+2. **Timeouts**:
+   - **Current State**: The script doesn’t configure timeouts for MongoDB or Azure operations. It relies on default timeouts, which may be too short or too long for production.
+   - **Gaps**:
+     - MongoDB operations (e.g., connecting, querying) can hang indefinitely without explicit timeouts.
+     - Azure uploads lack timeout settings, risking stalled operations for large datasets.
+     - No mechanism to abort long-running exports that exceed a reasonable time.
+
+3. **Retry Logic**:
+   - **Current State**: There’s no retry logic for failed operations (e.g., MongoDB queries or Azure uploads).
+   - **Gaps**:
+     - Transient failures (e.g., network issues, temporary service unavailability) are not retried.
+     - No exponential backoff or maximum retry limits to prevent overwhelming services.
+
+4. **Other Production Concerns**:
+   - **Concurrency**: The script processes collections sequentially, which may be slow for many collections. It could benefit from controlled concurrency.
+   - **Logging**: Console logging is insufficient for production; structured logging to a file or service is needed.
+   - **Monitoring**: No metrics or alerts for export success/failure rates or durations.
+   - **Data Integrity**: No verification that uploaded data matches the source (e.g., checksums or document counts).
+   - **Resource Management**: MongoDB connections are closed properly, but there’s no handling for resource leaks in case of crashes.
+   - **Idempotency**: If an export partially completes and is retried, it may overwrite or duplicate data without checks.
+   - **Scheduling Overlap**: If an export takes longer than an hour, multiple instances could run concurrently, causing conflicts.
+
+### Enhanced Script with Production-Ready Features
+
+Below is an improved version of the script that addresses these concerns:
+- Adds robust error handling for MongoDB and Azure operations.
+- Configures timeouts for connections and operations.
+- Implements retry logic with exponential backoff.
+- Adds structured logging using `winston`.
+- Includes basic concurrency control for collections.
+- Adds cleanup for failed uploads.
+- Ensures idempotency by checking for existing files.
+
+```javascript
+// app.js
+// Enhanced script to export MongoDB collections to ADLS Gen2 hourly with production-ready features.
+// Exports data as NDJSON files in the format: collection/YYYY-MM-DD-HH/collection.ndjson
+// Features: error handling, timeouts, retries, structured logging, concurrency, idempotency.
+
+// Prerequisites:
+// - Install dependencies: npm install mongodb @azure/storage-file-datalake node-cron dotenv winston p-limit
+// - Set up .env file with:
+//   MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+//   DB_NAME=your_database_name
+//   AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=<account>;AccountKey=<key>;EndpointSuffix=core.windows.net
+//   FILE_SYSTEM_NAME=your_adls_container_name
+// - Run the script: node app.js
+
+const { MongoClient } = require('mongodb');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+const cron = require('node-cron');
+const winston = require('winston');
+const pLimit = require('p-limit');
+const { Readable } = require('stream');
+require('dotenv').config();
+
+// Configuration
+const config = {
+  mongoUri: process.env.MONGO_URI,
+  dbName: process.env.DB_NAME,
+  azureConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+  fileSystemName: process.env.FILE_SYSTEM_NAME,
+  mongoConnectTimeout: 5000, // 5 seconds
+  mongoSocketTimeout: 30000, // 30 seconds
+  azureUploadTimeout: 600000, // 10 minutes
+  maxRetries: 3,
+  retryDelay: 1000, // Initial delay in ms
+  maxConcurrency: 3, // Process 3 collections at a time
+};
+
+// Structured logging
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'export.log' }),
+    new winston.transports.Console(),
+  ],
+});
+
+// Retry helper with exponential backoff
+async function withRetry(operation, maxRetries = config.maxRetries, delay = config.retryDelay) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      logger.warn(`Retry ${attempt}/${maxRetries} after error: ${err.message}`);
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
+    }
+  }
+}
+
+// Export a single collection
+async function exportCollection(db, collectionName, fileSystemClient, folderSuffix) {
+  const collection = db.collection(collectionName);
+  const directoryPath = `${collectionName}/${folderSuffix}`;
+  const directoryClient = fileSystemClient.getDirectoryClient(directoryPath);
+  const fileClient = directoryClient.getFileClient(`${collectionName}.ndjson`);
+
+  // Check if file already exists (idempotency)
+  const exists = await withRetry(async () => {
+    try {
+      await fileClient.getProperties();
+      return true;
+    } catch (err) {
+      if (err.statusCode === 404) return false;
+      throw err;
+    }
+  });
+  if (exists) {
+    logger.info(`Skipping ${collectionName}: File already exists at ${directoryPath}/${collectionName}.ndjson`);
+    return;
+  }
+
+  await withRetry(async () => directoryClient.createIfNotExists());
+
+  const cursor = collection.find({}).maxTimeMS(config.mongoSocketTimeout);
+  const readableStream = new Readable({
+    read() {},
+  });
+
+  let docCount = 0;
+  (async () => {
+    try {
+      for await (const doc of cursor) {
+        readableStream.push(JSON.stringify(doc) + '\n');
+        docCount++;
+      }
+      readableStream.push(null);
+    } catch (err) {
+      readableStream.destroy(err);
+    }
+  })();
+
+  try {
+    await withRetry(async () => {
+      const uploadPromise = fileClient.upload(readableStream, {
+        timeout: config.azureUploadTimeout,
+      });
+      // Timeout wrapper
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Azure upload timed out')), config.azureUploadTimeout)
+      );
+      await Promise.race([uploadPromise, timeoutPromise]);
+    });
+    logger.info(`Exported ${collectionName} (${docCount} docs) to ${directoryPath}/${collectionName}.ndjson`);
+  } catch (err) {
+    logger.error(`Failed to export ${collectionName}: ${err.message}`);
+    // Clean up partial upload
+    await withRetry(async () => fileClient.deleteIfExists());
+    throw err;
+  }
+}
+
+// Main export function
+async function exportCollections() {
+  const startTime = Date.now();
+  logger.info('Starting hourly export...');
+
+  let mongoClient;
+  try {
+    // Connect to MongoDB with timeout
+    mongoClient = new MongoClient(config.mongoUri, {
+      connectTimeoutMS: config.mongoConnectTimeout,
+      socketTimeoutMS: config.mongoSocketTimeout,
+    });
+    await withRetry(async () => mongoClient.connect());
+    const db = mongoClient.db(config.dbName);
+    const collections = await withRetry(async () => db.listCollections().toArray());
+
+    const serviceClient = DataLakeServiceClient.fromConnectionString(config.azureConnectionString);
+    const fileSystemClient = serviceClient.getFileSystemClient(config.fileSystemName);
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const folderSuffix = `${year}-${month}-${day}-${hour}`;
+
+    // Limit concurrency
+    const limit = pLimit(config.maxConcurrency);
+    const exportPromises = collections
+      .filter(coll => !coll.name.startsWith('system.'))
+      .map(coll =>
+        limit(() =>
+          exportCollection(db, coll.name, fileSystemClient, folderSuffix).catch(err => {
+            logger.error(`Collection ${coll.name} export failed: ${err.message}`);
+            return null; // Continue with other collections
+          })
+        )
+      );
+
+    await Promise.all(exportPromises);
+    logger.info(`Export completed in ${(Date.now() - startTime) / 1000}s`);
+  } catch (err) {
+    logger.error(`Export job failed: ${err.message}`);
+    throw err;
+  } finally {
+    if (mongoClient) await mongoClient.close();
+  }
+}
+
+// Prevent overlapping runs
+let isRunning = false;
+
+// Schedule the export every hour
+cron.schedule('0 * * * *', async () => {
+  if (isRunning) {
+    logger.warn('Previous export still running, skipping this run');
+    return;
+  }
+  isRunning = true;
+  try {
+    await exportCollections();
+  } catch (err) {
+    logger.error('Hourly export failed', { error: err.message });
+  } finally {
+    isRunning = false;
+  }
+});
+
+logger.info('Scheduler started. Waiting for next hourly run...');
+```
+
+### Improvements Made
+
+1. **Error Handling**:
+   - Specific error handling for MongoDB connections, queries, and Azure uploads.
+   - Cleanup of partial uploads to avoid orphaned files.
+   - Structured logging with `winston` to both console and file (`export.log`) for monitoring.
+
+2. **Timeouts**:
+   - MongoDB connection and query timeouts set to 5s and 30s, respectively.
+   - Azure upload timeout set to 10 minutes, with a `Promise.race` to enforce it.
+   - Configurable via `config` object.
+
+3. **Retry Logic**:
+   - Added `withRetry` helper with exponential backoff (1s, 2s, 4s for 3 retries).
+   - Applied to MongoDB connections, collection listing, directory creation, file existence checks, and uploads.
+
+4. **Concurrency**:
+   - Uses `p-limit` to process up to 3 collections concurrently, reducing runtime for many collections while avoiding overwhelming resources.
+   - Configurable via `maxConcurrency`.
+
+5. **Idempotency**:
+   - Checks if the target file already exists in ADLS before exporting, skipping if present.
+
+6. **Scheduling Safety**:
+   - Added `isRunning` flag to prevent overlapping cron jobs if an export takes longer than an hour.
+
+7. **Logging**:
+   - Structured JSON logging with timestamps, including document counts and export duration.
+   - Logs to both file and console for debugging and monitoring.
+
+8. **Data Integrity**:
+   - Tracks document count during export for logging, though full checksum verification could be added if needed.
+
+### Additional Recommendations for Production
+
+1. **Monitoring and Alerts**:
+   - Integrate with a monitoring service (e.g., Azure Monitor, Prometheus) to track export success/failure rates and durations.
+   - Set up alerts for repeated failures or long-running exports.
+
+2. **Data Verification**:
+   - Add post-upload verification (e.g., compare document counts or compute checksums) to ensure data integrity.
+   - Example: Download the uploaded file and verify line count matches `docCount`.
+
+3. **Configuration Management**:
+   - Move sensitive data (e.g., `MONGO_URI`, `AZURE_STORAGE_CONNECTION_STRING`) to a secure vault (e.g., Azure Key Vault).
+   - Make timeouts and retry settings configurable via environment variables.
+
+4. **Performance Optimization**:
+   - For very large collections, consider batching documents or using MongoDB’s aggregation pipeline to export incrementally (e.g., by timestamp).
+   - Tune `maxConcurrency` based on your MongoDB and Azure capacity.
+
+5. **Security**:
+   - Ensure MongoDB and Azure credentials are rotated regularly.
+   - Use least-privilege access for MongoDB (read-only role) and Azure (write-only to specific container).
+
+6. **Testing**:
+   - Test with large datasets to validate memory usage and performance.
+   - Simulate network failures to ensure retry logic works as expected.
+   - Verify behavior under MongoDB and Azure service outages.
+
+7. **Backup Strategy**:
+   - Consider archiving older exports or implementing a retention policy in ADLS to manage storage costs.
+
+### Dependencies
+Install the additional dependencies:
+```bash
+npm install mongodb @azure/storage-file-datalake node-cron dotenv winston p-limit
+```
+
+### Running the Script
+1. Create a `.env` file with the required variables (see script comments).
+2. Run: `node app.js`.
+3. Monitor logs in `export.log` and console output.
+
+This enhanced script is much more suitable for production, with robust error handling, timeouts, retries, and logging. However, test it thoroughly in a staging environment to ensure it meets your specific requirements, especially for large datasets or high collection counts. If you need further customization (e.g., incremental exports, specific error alerts), let me know!
