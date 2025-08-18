@@ -987,4 +987,288 @@ npm install mongodb @azure/storage-file-datalake node-cron dotenv winston p-limi
 2. Run: `node app.js`.
 3. Monitor logs in `export.log` and console output.
 
-This enhanced script is much more suitable for production, with robust error handling, timeouts, retries, and logging. However, test it thoroughly in a staging environment to ensure it meets your specific requirements, especially for large datasets or high collection counts. If you need further customization (e.g., incremental exports, specific error alerts), let me know!
+This enhanced script is much more suitable for production, with robust error handling, timeouts, retries, and logging. 
+
+
+
+
+The provided code **dumps the entire MongoDB collection** to Azure Data Lake Storage Gen2 (ADLS Gen2) every hour, not just the changes from a change stream. It uses `collection.find({})` to retrieve all documents in each collection and exports them as NDJSON files in the format `collection/YYYY-MM-DD-HH/collection.ndjson`.
+
+### Explanation
+- **Current Behavior**: The script iterates through all collections in the specified MongoDB database, queries all documents in each collection using `find({})`, and streams them to ADLS Gen2. This means every hour, it exports the full contents of each collection, regardless of whether the data has changed.
+- **Change Stream**: MongoDB’s change streams allow you to listen for real-time changes (inserts, updates, deletes) in a collection. The original and enhanced scripts do not use change streams, so they do not track incremental changes.
+
+### If You Want to Export Only Changes (Using Change Streams)
+To modify the script to export only changes since the last export (using MongoDB change streams), you’d need to:
+1. Use MongoDB’s `watch()` method to monitor changes on each collection.
+2. Store a resume token to track the last processed change.
+3. Export only the changed documents to ADLS Gen2.
+4. Handle change stream events (e.g., inserts, updates, deletes) appropriately.
+
+Here’s an example of how you could modify the script to use change streams for incremental exports. This version assumes you want to export changes hourly, appending them to a file in ADLS Gen2.
+
+### Modified Script for Change Stream Export
+This script watches for changes in each collection since the last run and exports only those changes to ADLS Gen2. It stores resume tokens in a local JSON file to ensure continuity across script restarts.
+
+```javascript
+// app.js
+// Exports changes from MongoDB collections to ADLS Gen2 hourly using change streams.
+// Changes are appended as NDJSON files in the format: collection/YYYY-MM-DD-HH/collection.ndjson
+// Features: change stream support, resume tokens, error handling, retries, structured logging.
+
+// Prerequisites:
+// - Install dependencies: npm install mongodb @azure/storage-file-datalake node-cron dotenv winston p-limit fs-extra
+// - Set up .env file with:
+//   MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+//   DB_NAME=your_database_name
+//   AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=<account>;AccountKey=<key>;EndpointSuffix=core.windows.net
+//   FILE_SYSTEM_NAME=your_adls_container_name
+// - Run the script: node app.js
+// - Requires MongoDB replica set or sharded cluster for change streams.
+
+// Note: Change streams require a MongoDB replica set or sharded cluster.
+
+const { MongoClient } = require('mongodb');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+const cron = require('node-cron');
+const winston = require('winston');
+const pLimit = require('p-limit');
+const fs = require('fs-extra');
+const { Readable } = require('stream');
+require('dotenv').config();
+
+// Configuration
+const config = {
+  mongoUri: process.env.MONGO_URI,
+  dbName: process.env.DB_NAME,
+  azureConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+  fileSystemName: process.env.FILE_SYSTEM_NAME,
+  mongoConnectTimeout: 5000,
+  mongoSocketTimeout: 30000,
+  azureUploadTimeout: 600000,
+  maxRetries: 3,
+  retryDelay: 1000,
+  maxConcurrency: 3,
+  resumeTokenFile: 'resumeTokens.json',
+};
+
+// Structured logging
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.File({ filename: 'export.log' }),
+    new winston.transports.Console(),
+  ],
+});
+
+// Retry helper
+async function withRetry(operation, maxRetries = config.maxRetries, delay = config.retryDelay) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (err) {
+      if (attempt === maxRetries) throw err;
+      logger.warn(`Retry ${attempt}/${maxRetries} after error: ${err.message}`);
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, attempt - 1)));
+    }
+  }
+}
+
+// Load and save resume tokens
+async function loadResumeTokens() {
+  try {
+    return await fs.readJson(config.resumeTokenFile);
+  } catch (err) {
+    if (err.code === 'ENOENT') return {};
+    throw err;
+  }
+}
+
+async function saveResumeToken(collectionName, token) {
+  const tokens = await loadResumeTokens();
+  tokens[collectionName] = token;
+  await fs.writeJson(config.resumeTokenFile, tokens);
+}
+
+// Export changes for a single collection
+async function exportCollectionChanges(db, collectionName, fileSystemClient, folderSuffix, resumeTokens) {
+  const collection = db.collection(collectionName);
+  const directoryPath = `${collectionName}/${folderSuffix}`;
+  const directoryClient = fileSystemClient.getDirectoryClient(directoryPath);
+  const fileClient = directoryClient.getFileClient(`${collectionName}.ndjson`);
+
+  await withRetry(async () => directoryClient.createIfNotExists());
+
+  const readableStream = new Readable({
+    read() {},
+  });
+
+  let docCount = 0;
+  const changeStreamOptions = resumeTokens[collectionName]
+    ? { resumeAfter: resumeTokens[collectionName] }
+    : {};
+  const changeStream = collection.watch([], {
+    ...changeStreamOptions,
+    maxAwaitTimeMS: config.mongoSocketTimeout,
+  });
+
+  try {
+    // Process changes until the hour is up or no more changes are available
+    const endTime = Date.now() + 60 * 60 * 1000; // 1 hour from now
+    while (Date.now() < endTime) {
+      const next = await Promise.race([
+        changeStream.next(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Change stream timeout')), config.mongoSocketTimeout)
+        ),
+      ]);
+      if (!next) break; // No more changes
+      readableStream.push(JSON.stringify(next) + '\n');
+      docCount++;
+      // Save resume token after each change
+      await saveResumeToken(collectionName, next._id);
+    }
+    readableStream.push(null);
+  } catch (err) {
+    readableStream.destroy(err);
+    throw err;
+  } finally {
+    await changeStream.close();
+  }
+
+  if (docCount === 0) {
+    logger.info(`No changes for ${collectionName} in ${folderSuffix}`);
+    return;
+  }
+
+  try {
+    await withRetry(async () => {
+      const uploadPromise = fileClient.upload(readableStream, {
+        timeout: config.azureUploadTimeout,
+      });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Azure upload timed out')), config.azureUploadTimeout)
+      );
+      await Promise.race([uploadPromise, timeoutPromise]);
+    });
+    logger.info(`Exported ${docCount} changes for ${collectionName} to ${directoryPath}/${collectionName}.ndjson`);
+  } catch (err) {
+    logger.error(`Failed to export changes for ${collectionName}: ${err.message}`);
+    await withRetry(async () => fileClient.deleteIfExists());
+    throw err;
+  }
+}
+
+// Main export function
+async function exportCollectionChangesHourly() {
+  const startTime = Date.now();
+  logger.info('Starting hourly change stream export...');
+
+  let mongoClient;
+  try {
+    mongoClient = new MongoClient(config.mongoUri, {
+      connectTimeoutMS: config.mongoConnectTimeout,
+      socketTimeoutMS: config.mongoSocketTimeout,
+    });
+    await withRetry(async () => mongoClient.connect());
+    const db = mongoClient.db(config.dbName);
+    const collections = await withRetry(async () => db.listCollections().toArray());
+
+    const serviceClient = DataLakeServiceClient.fromConnectionString(config.azureConnectionString);
+    const fileSystemClient = serviceClient.getFileSystemClient(config.fileSystemName);
+
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const folderSuffix = `${year}-${month}-${day}-${hour}`;
+
+    const resumeTokens = await loadResumeTokens();
+    const limit = pLimit(config.maxConcurrency);
+    const exportPromises = collections
+      .filter(coll => !coll.name.startsWith('system.'))
+      .map(coll =>
+        limit(() =>
+          exportCollectionChanges(db, coll.name, fileSystemClient, folderSuffix, resumeTokens).catch(err => {
+            logger.error(`Collection ${coll.name} change export failed: ${err.message}`);
+            return null;
+          })
+        )
+      );
+
+    await Promise.all(exportPromises);
+    logger.info(`Change stream export completed in ${(Date.now() - startTime) / 1000}s`);
+  } catch (err) {
+    logger.error(`Export job failed: ${err.message}`);
+    throw err;
+  } finally {
+    if (mongoClient) await mongoClient.close();
+  }
+}
+
+// Prevent overlapping runs
+let isRunning = false;
+
+cron.schedule('0 * * * *', async () => {
+  if (isRunning) {
+    logger.warn('Previous export still running, skipping this run');
+    return;
+  }
+  isRunning = true;
+  try {
+    await exportCollectionChangesHourly();
+  } catch (err) {
+    logger.error('Hourly change stream export failed', { error: err.message });
+  } finally {
+    isRunning = false;
+  }
+});
+
+logger.info('Scheduler started. Waiting for next hourly run...');
+```
+
+### Key Changes for Change Stream Support
+1. **Change Stream Usage**:
+   - Uses `collection.watch()` to monitor changes (inserts, updates, deletes) in each collection.
+   - Processes changes within the current hour, stopping when the hour ends or no more changes are available.
+   - Exports change stream events (including operation type, document, and metadata) as NDJSON.
+
+2. **Resume Tokens**:
+   - Stores resume tokens in a `resumeTokens.json` file to track the last processed change per collection.
+   - Loads tokens at startup to resume from the last change, ensuring no changes are missed across script restarts.
+
+3. **Incremental Export**:
+   - Only changed documents are exported, reducing data volume compared to full collection dumps.
+   - If no changes occur in an hour, no file is created.
+
+4. **Dependencies**:
+   - Added `fs-extra` for reliable JSON file handling (`npm install fs-extra`).
+
+### Considerations for Change Streams
+- **MongoDB Requirements**: Change streams require a MongoDB replica set or sharded cluster. Ensure your MongoDB Atlas deployment meets this requirement.
+- **Change Stream Events**: The exported NDJSON files contain full change stream events (e.g., `{ operationType: "insert", fullDocument: {...}, ... }`). If you only want the document data, modify the script to extract `fullDocument` or handle specific operation types.
+- **Performance**: Change streams are efficient for incremental updates, but processing many collections with high change rates may require tuning `maxConcurrency`.
+- **Storage**: Change stream exports are smaller than full dumps but may still accumulate over time. Implement a retention policy in ADLS if needed.
+- **Error Handling**: The script retains robust error handling, retries, and logging from the previous version.
+
+### Choosing Between Full Dump and Change Stream
+- **Full Collection Dump** (Original/Enhanced Script):
+  - Use when you need a complete snapshot of the collection every hour.
+  - Suitable for analytics or backups requiring the full dataset.
+  - Higher storage and processing overhead.
+- **Change Stream Export** (Modified Script):
+  - Use when you only need incremental changes (e.g., for real-time analytics or auditing).
+  - Requires a replica set and careful management of resume tokens.
+  - Lower storage and processing overhead but requires handling change event formats.
+
+### Additional Notes
+- **Testing**: Test the change stream script in a staging environment, especially to verify resume token persistence and handling of high change volumes.
+- **Resume Token Storage**: Storing tokens in a JSON file is simple but may not be ideal for distributed systems. Consider storing tokens in MongoDB or another durable store for production.
+- **Change Stream Limitations**: Change streams don’t capture historical data before the script starts. If you need an initial full dump, run the original script once, then switch to change streams.
+
+If you want a hybrid approach (e.g., periodic full dumps plus change streams) or further customization (e.g., filtering specific change types), let me know!
