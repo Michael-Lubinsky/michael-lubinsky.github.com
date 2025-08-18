@@ -591,7 +591,118 @@ In your Azure Function App, you'll need to configure the trigger to run on a sch
 This setup ensures that the function runs automatically, connects to MongoDB, retrieves the data, and stores it in the specified folder structure in your ADLS container.
 
 
+## change stream dump
 
+ Node.js code to implement a MongoDB change stream dump.  
+ This approach listens for changes and writes them to Azure Data Lake Storage (ADLS) on an hourly schedule.
+
+### 1\. The Challenge of an Hourly Dump
+
+Dumping a change stream on an hourly basis is more complex than a full dump. The core idea is to have a long-running process that continuously listens to the change stream. At the top of every hour, it takes all the buffered changes from the previous hour, writes them to ADLS, and then clears the buffer.
+
+The code below is a simplified implementation designed to run as a single, persistent process, such as a containerized application or a long-running Node.js server. **It is not suitable for a standard serverless Azure Function**, as those functions are stateless and have short execution times.
+
+-----
+
+### 2\. Implementation with Node.js and Azure
+
+This code connects to MongoDB and Azure Blob Storage (acting as ADLS Gen2), then sets up a change stream listener. A timer (`setInterval`) is used to trigger the dump every hour.
+
+```javascript
+const { MongoClient } = require('mongodb');
+const { BlobServiceClient } = require('@azure/storage-blob');
+const { v1: uuidv1 } = require('uuid');
+
+// Configuration
+const mongoUri = 'YOUR_MONGODB_ATLAS_CONNECTION_STRING';
+const storageAccountName = 'YOUR_AZURE_STORAGE_ACCOUNT_NAME';
+const storageAccountKey = 'YOUR_AZURE_STORAGE_ACCOUNT_KEY';
+const containerName = 'yourContainerName'; // ADLS container
+const databaseName = 'yourDatabaseName';
+
+// Globals to store changes and last processed token
+const changeBuffer = {};
+let lastResumeToken = null;
+
+// Connect to Azure Storage
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  `DefaultEndpointsProtocol=https;AccountName=${storageAccountName};AccountKey=${storageAccountKey};EndpointSuffix=core.windows.net`
+);
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+async function dumpChangesToADLS() {
+  console.log('Dumping buffered changes to ADLS...');
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+
+  for (const collectionName in changeBuffer) {
+    if (changeBuffer[collectionName].length > 0) {
+      const documents = changeBuffer[collectionName];
+      const folderPath = `${collectionName}/${year}-${month}-${day}-${hour}`;
+      const fileName = `${uuidv1()}.json`; // Use a unique filename
+      const blobName = `${folderPath}/${fileName}`;
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      const data = JSON.stringify(documents, null, 2);
+      await blockBlobClient.upload(data, data.length);
+      console.log(`Successfully uploaded ${documents.length} changes from "${collectionName}" to ADLS at: ${blobName}`);
+      changeBuffer[collectionName] = []; // Clear the buffer
+    }
+  }
+}
+
+async function main() {
+  const client = new MongoClient(mongoUri);
+
+  try {
+    await client.connect();
+    const database = client.db(databaseName);
+    const collections = await database.listCollections().toArray();
+
+    // Initialize buffer for each collection
+    collections.forEach(c => {
+      if (c.name.startsWith('system.')) return;
+      changeBuffer[c.name] = [];
+    });
+
+    const changeStream = client.watch([], {
+      fullDocument: 'updateLookup'
+    });
+
+    changeStream.on('change', (change) => {
+      const collectionName = change.ns.coll;
+      if (changeBuffer[collectionName]) {
+        changeBuffer[collectionName].push(change);
+        lastResumeToken = change._id;
+      }
+    });
+
+    changeStream.on('error', (error) => {
+      console.error('Change stream error:', error);
+    });
+
+    // Schedule the dump to run every hour
+    setInterval(dumpChangesToADLS, 60 * 60 * 1000); // 60 minutes * 60 seconds * 1000 milliseconds
+
+    console.log('Listening for changes...');
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+}
+
+main().catch(console.error);
+```
+
+### 3\. Key Concepts Explained
+
+  * **`client.watch([], ...)`**: This is the core of the change stream. Calling it on the `client` (instead of a single collection) allows it to monitor changes across the entire cluster.
+  * **`changeBuffer`**: An in-memory object that stores the change events as they arrive. The `collectionName` is the key, and an array of change documents is the value.
+  * **`fullDocument: 'updateLookup'`**: An option for the change stream that tells MongoDB to return the **full document** after an update. This is very useful because the default behavior only returns the fields that were changed, not the entire document.
+  * **`setInterval(dumpChangesToADLS, 60 * 60 * 1000)`**: This timer calls the `dumpChangesToADLS` function every 60 minutes.
+  * **Resilience**: The provided code is a basic example. For a production environment, you would need to add logic for reconnecting to the change stream upon disconnection and resuming from the `lastResumeToken`. You would also need to handle errors and ensure the process runs reliably.
 
 ### GROK
 
