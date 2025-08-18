@@ -898,3 +898,32 @@ module.exports = { ChangeStreamDumper, CONFIG };
   }
 }
 ```
+
+### env.template
+
+```js
+# MongoDB Configuration
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+MONGODB_DATABASE=your_database_name
+MONGODB_COLLECTIONS=collection1,collection2,collection3
+
+# Azure Data Lake Storage Gen2 Configuration
+AZURE_STORAGE_ACCOUNT_NAME=your_storage_account_name
+AZURE_STORAGE_ACCOUNT_KEY=your_storage_account_key
+AZURE_ADLS_FILESYSTEM=changestreams
+
+# Dumper Configuration
+DUMP_SCHEDULE=0 * * * *    # Every hour (cron format)
+BATCH_SIZE=1000           # Number of changes to buffer before auto-dump
+RETRY_ATTEMPTS=3          # Number of retry attempts for failed operations
+RETRY_DELAY_MS=1000       # Initial retry delay in milliseconds
+TEMP_DIR=./temp           # Temporary directory for file operations
+MAX_FILE_SIZE=104857600   # Maximum file size in bytes (100MB)
+
+# Logging Configuration
+LOG_LEVEL=info            # Log level: error, warn, info, debug
+TZ=UTC                    # Timezone for scheduling
+
+# Optional: Monitoring
+HEALTH_CHECK_PORT=3000
+```
