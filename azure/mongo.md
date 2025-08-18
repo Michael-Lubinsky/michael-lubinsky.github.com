@@ -575,3 +575,95 @@ In your Azure Function App, you'll need to configure the trigger to run on a sch
 3.  Set the **CRON expression** to `0 0 * * * *`. This expression schedules the function to run at the start of every hour.
 
 This setup ensures that the function runs automatically, connects to MongoDB, retrieves the data, and stores it in the specified folder structure in your ADLS container.
+
+
+
+
+### GROK
+
+```javascript
+// app.js
+// This script exports data from all MongoDB collections in a specified database to Azure Data Lake Storage Gen2 (ADLS Gen2)
+// every hour. Data is exported as NDJSON files (one document per line) in the folder structure: collection/YYYY-MM-DD-HH/collection.ndjson
+// It uses streaming to handle large collections without loading everything into memory.
+
+// Prerequisites:
+// - Install dependencies: npm install mongodb @azure/storage-file-datalake node-cron dotenv
+// - Set up .env file with:
+//   MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+//   DB_NAME=your_database_name
+//   AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=<account>;AccountKey=<key>;EndpointSuffix=core.windows.net
+//   FILE_SYSTEM_NAME=your_adls_container_name
+// - Run the script: node app.js
+
+const { MongoClient } = require('mongodb');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+const cron = require('node-cron');
+const { Readable } = require('stream');
+require('dotenv').config();
+
+const mongoUri = process.env.MONGO_URI;
+const dbName = process.env.DB_NAME;
+const azureConnectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const fileSystemName = process.env.FILE_SYSTEM_NAME;
+
+async function exportCollections() {
+  const mongoClient = new MongoClient(mongoUri);
+  await mongoClient.connect();
+  const db = mongoClient.db(dbName);
+  const collections = await db.listCollections().toArray();
+
+  const serviceClient = DataLakeServiceClient.fromConnectionString(azureConnectionString);
+  const fileSystemClient = serviceClient.getFileSystemClient(fileSystemName);
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hour = String(now.getHours()).padStart(2, '0');
+  const folderSuffix = `${year}-${month}-${day}-${hour}`;
+
+  for (const collInfo of collections) {
+    const collectionName = collInfo.name;
+    // Skip system collections if needed; for now, export all
+    if (collectionName.startsWith('system.')) continue;
+
+    const collection = db.collection(collectionName);
+    const directoryPath = `${collectionName}/${folderSuffix}`;
+    const directoryClient = fileSystemClient.getDirectoryClient(directoryPath);
+    await directoryClient.createIfNotExists();
+
+    const fileClient = directoryClient.getFileClient(`${collectionName}.ndjson`);
+
+    const cursor = collection.find({});
+    const readableStream = new Readable({
+      read() {}  // No-op, as we push data asynchronously
+    });
+
+    (async () => {
+      try {
+        for await (const doc of cursor) {
+          readableStream.push(JSON.stringify(doc) + '\n');
+        }
+        readableStream.push(null);  // End the stream
+      } catch (err) {
+        readableStream.destroy(err);
+      }
+    })();
+
+    // Upload the stream to ADLS Gen2
+    await fileClient.upload(readableStream);
+    console.log(`Exported ${collectionName} to ${directoryPath}/${collectionName}.ndjson`);
+  }
+
+  await mongoClient.close();
+}
+
+// Schedule the export every hour (at the start of each hour)
+cron.schedule('0 * * * *', () => {
+  console.log('Starting hourly export...');
+  exportCollections().catch(err => console.error('Export failed:', err));
+});
+
+console.log('Scheduler started. Waiting for next hourly run...');
+```
