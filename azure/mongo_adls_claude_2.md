@@ -226,29 +226,30 @@ The application creates files in ADLS Gen2 with the following structure:
 ### File Format
 
 Each JSON file contains:
+```jsonl
+{"timestamp": "2024-01-15T14:15:23.123Z", "collection": "users", "dumper_version": "1.0.0", "change": {"_id": {"_data": "..."}, "operationType": "insert", "fullDocument": {"_id": "507f1f77bcf86cd799439011", "name": "John Doe"}, "ns": {"db": "mydb", "coll": "users"}, "documentKey": {"_id": "507f1f77bcf86cd799439011"}}}
+{"timestamp": "2024-01-15T14:16:45.456Z", "collection": "users", "dumper_version": "1.0.0", "change": {"_id": {"_data": "..."}, "operationType": "update", "fullDocument": {"_id": "507f1f77bcf86cd799439011", "name": "Jane Doe"}, "ns": {"db": "mydb", "coll": "users"}, "documentKey": {"_id": "507f1f77bcf86cd799439011"}}}
+{"timestamp": "2024-01-15T14:17:12.789Z", "collection": "users", "dumper_version": "1.0.0", "change": {"_id": {"_data": "..."}, "operationType": "delete", "ns": {"db": "mydb", "coll": "users"}, "documentKey": {"_id": "507f1f77bcf86cd799439011"}}}
 
-```json
-{
-  "metadata": {
-    "collection": "users",
-    "timestamp": "2024-01-15T14:30:00.000Z",
-    "count": 250,
-    "dumper_version": "1.0.0"
-  },
-  "changes": [
-    {
-      "timestamp": "2024-01-15T14:15:23.123Z",
-      "change": {
-        "_id": {"_data": "..."},
-        "operationType": "insert",
-        "fullDocument": {...},
-        "ns": {"db": "mydb", "coll": "users"},
-        "documentKey": {"_id": "..."}
-      }
-    }
-  ]
+```
+#### Example: how to read JSONL with Node.js:
+```js
+const fs = require('fs');
+const readline = require('readline');
+
+const fileStream = fs.createReadStream('users/2024-01-15-14.jsonl');
+const rl = readline.createInterface({
+  input: fileStream,
+  crlfDelay: Infinity
+});
+
+for await (const line of rl) {
+  const record = JSON.parse(line);
+  // Process each change record
+  console.log(record.change.operationType);
 }
 ```
+
 
 ## Monitoring and Observability
 
