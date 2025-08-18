@@ -511,6 +511,20 @@ First, you'll need a **MongoDB Atlas cluster** and an **Azure Storage account** 
 
 The core of your solution will be a Node.js script that connects to your MongoDB Atlas cluster, queries the desired collection, and writes the data to ADLS.
 
+
+The provided below code performs a **full collection dump** every hour, not a change stream dump. It connects to the MongoDB database and uses `collection.find({})` to retrieve **all documents** from each collection and then writes that entire dataset to Azure Data Lake Storage (ADLS).
+
+This approach is suitable for periodic full backups or snapshots. If your goal is to capture **only the changes** that occurred in the last hour, you would need to use MongoDB's **Change Streams** feature. This would require a different code structure that listens for real-time changes, buffers them, and then dumps them to ADLS on the hour.
+
+Here is a brief comparison of the two approaches:
+
+* **Full Dump (as shown in my code):**
+    * **Pros:** Simple to implement, guarantees a complete snapshot of the data at that specific moment.
+    * **Cons:** Inefficient for large collections as it processes the entire dataset every time, potentially leading to high resource usage and storage costs.
+
+* **Change Stream:**
+    * **Pros:** Highly efficient as it only processes new, updated, or deleted documents, making it ideal for real-time or near-real-time synchronization.
+    * **Cons:** More complex to implement, requires state management to track the last processed change, and a mechanism to handle disconnections and resume from where it left off.
 Here's an example of what the code would look like:
 
 ```javascript
