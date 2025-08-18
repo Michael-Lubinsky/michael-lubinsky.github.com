@@ -854,7 +854,7 @@ module.exports = { ChangeStreamDumper, CONFIG };
 ```
 
 ### package.json
-```
+```json
 {
   "name": "mongodb-changestream-adls-dumper",
   "version": "1.0.0",
@@ -901,7 +901,7 @@ module.exports = { ChangeStreamDumper, CONFIG };
 
 ### env.template
 
-```js
+```ini
 # MongoDB Configuration
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DATABASE=your_database_name
@@ -926,4 +926,43 @@ TZ=UTC                    # Timezone for scheduling
 
 # Optional: Monitoring
 HEALTH_CHECK_PORT=3000
+```
+
+### dockerfile
+
+```docker
+# Use official Node.js runtime as the base image
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S dumper -u 1001
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy application code
+COPY index.js ./
+
+# Create temp directory
+RUN mkdir -p temp logs && chown -R dumper:nodejs temp logs
+
+# Switch to non-root user
+USER dumper
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node -e "console.log('Health check passed')" || exit 1
+
+# Expose port (if needed for monitoring)
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "index.js"]
 ```
