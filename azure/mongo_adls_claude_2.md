@@ -365,3 +365,490 @@ For production deployments, consider:
 - Kubernetes Secrets
 - HashiCorp Vault
 - AWS Secrets Manager
+
+### index.js
+```js
+const { MongoClient } = require('mongodb');
+const { DataLakeServiceClient } = require('@azure/storage-file-datalake');
+const winston = require('winston');
+const cron = require('node-cron');
+const fs = require('fs').promises;
+const path = require('path');
+const { promisify } = require('util');
+
+// Configuration
+const CONFIG = {
+  mongodb: {
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
+    database: process.env.MONGODB_DATABASE || 'mydb',
+    collections: (process.env.MONGODB_COLLECTIONS || 'users,orders').split(','),
+    options: {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    }
+  },
+  azure: {
+    accountName: process.env.AZURE_STORAGE_ACCOUNT_NAME,
+    accountKey: process.env.AZURE_STORAGE_ACCOUNT_KEY,
+    fileSystemName: process.env.AZURE_ADLS_FILESYSTEM || 'changestreams',
+  },
+  dumper: {
+    schedule: process.env.DUMP_SCHEDULE || '0 * * * *', // Every hour
+    batchSize: parseInt(process.env.BATCH_SIZE) || 1000,
+    retryAttempts: parseInt(process.env.RETRY_ATTEMPTS) || 3,
+    retryDelayMs: parseInt(process.env.RETRY_DELAY_MS) || 1000,
+    tempDir: process.env.TEMP_DIR || './temp',
+    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 100 * 1024 * 1024, // 100MB
+  }
+};
+
+// Logger setup
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    }),
+    new winston.transports.File({ filename: 'error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'combined.log' })
+  ],
+});
+
+class ChangeStreamDumper {
+  constructor() {
+    this.mongoClient = null;
+    this.dataLakeClient = null;
+    this.changeStreams = new Map();
+    this.changeBuffer = new Map();
+    this.isShuttingDown = false;
+    this.activeUploads = new Set();
+  }
+
+  async initialize() {
+    try {
+      logger.info('Initializing MongoDB Change Stream Dumper...');
+      
+      // Validate configuration
+      this.validateConfig();
+      
+      // Initialize MongoDB client
+      await this.initializeMongoClient();
+      
+      // Initialize Azure Data Lake client
+      this.initializeAzureClient();
+      
+      // Create temp directory
+      await this.ensureTempDirectory();
+      
+      // Setup change streams for each collection
+      await this.setupChangeStreams();
+      
+      // Setup periodic dump job
+      this.setupDumpSchedule();
+      
+      logger.info('Initialization completed successfully');
+    } catch (error) {
+      logger.error('Failed to initialize:', error);
+      throw error;
+    }
+  }
+
+  validateConfig() {
+    const requiredEnvVars = [
+      'MONGODB_URI',
+      'AZURE_STORAGE_ACCOUNT_NAME',
+      'AZURE_STORAGE_ACCOUNT_KEY'
+    ];
+    
+    const missing = requiredEnvVars.filter(envVar => !process.env[envVar]);
+    if (missing.length > 0) {
+      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    }
+  }
+
+  async initializeMongoClient() {
+    this.mongoClient = new MongoClient(CONFIG.mongodb.uri, CONFIG.mongodb.options);
+    await this.mongoClient.connect();
+    
+    // Test connection
+    await this.mongoClient.db(CONFIG.mongodb.database).admin().ping();
+    logger.info('MongoDB connection established');
+  }
+
+  initializeAzureClient() {
+    this.dataLakeClient = new DataLakeServiceClient(
+      `https://${CONFIG.azure.accountName}.dfs.core.windows.net`,
+      { accountName: CONFIG.azure.accountName, accountKey: CONFIG.azure.accountKey }
+    );
+    logger.info('Azure Data Lake client initialized');
+  }
+
+  async ensureTempDirectory() {
+    try {
+      await fs.mkdir(CONFIG.dumper.tempDir, { recursive: true });
+    } catch (error) {
+      if (error.code !== 'EEXIST') {
+        throw error;
+      }
+    }
+  }
+
+  async setupChangeStreams() {
+    const db = this.mongoClient.db(CONFIG.mongodb.database);
+    
+    for (const collection of CONFIG.mongodb.collections) {
+      try {
+        const changeStream = db.collection(collection).watch([], {
+          fullDocument: 'updateLookup',
+          resumeAfter: await this.getResumeToken(collection)
+        });
+
+        this.changeBuffer.set(collection, []);
+        
+        changeStream.on('change', (change) => {
+          this.handleChangeEvent(collection, change);
+        });
+
+        changeStream.on('error', (error) => {
+          logger.error(`Change stream error for collection ${collection}:`, error);
+          this.handleChangeStreamError(collection, error);
+        });
+
+        changeStream.on('close', () => {
+          logger.warn(`Change stream closed for collection ${collection}`);
+          if (!this.isShuttingDown) {
+            this.reconnectChangeStream(collection);
+          }
+        });
+
+        this.changeStreams.set(collection, changeStream);
+        logger.info(`Change stream setup completed for collection: ${collection}`);
+      } catch (error) {
+        logger.error(`Failed to setup change stream for collection ${collection}:`, error);
+        throw error;
+      }
+    }
+  }
+
+  handleChangeEvent(collection, change) {
+    try {
+      const buffer = this.changeBuffer.get(collection);
+      buffer.push({
+        timestamp: new Date(),
+        change: change
+      });
+
+      // Auto-dump if buffer is getting large
+      if (buffer.length >= CONFIG.dumper.batchSize) {
+        logger.info(`Auto-dumping ${collection} due to buffer size: ${buffer.length}`);
+        this.dumpCollectionChanges(collection).catch(error => {
+          logger.error(`Auto-dump failed for ${collection}:`, error);
+        });
+      }
+    } catch (error) {
+      logger.error(`Error handling change event for ${collection}:`, error);
+    }
+  }
+
+  async handleChangeStreamError(collection, error) {
+    logger.error(`Handling change stream error for ${collection}:`, error);
+    
+    // Close existing stream
+    const existingStream = this.changeStreams.get(collection);
+    if (existingStream) {
+      try {
+        existingStream.close();
+      } catch (closeError) {
+        logger.error(`Error closing change stream for ${collection}:`, closeError);
+      }
+    }
+
+    // Reconnect after delay
+    setTimeout(() => {
+      if (!this.isShuttingDown) {
+        this.reconnectChangeStream(collection);
+      }
+    }, CONFIG.dumper.retryDelayMs);
+  }
+
+  async reconnectChangeStream(collection) {
+    try {
+      logger.info(`Reconnecting change stream for collection: ${collection}`);
+      
+      const db = this.mongoClient.db(CONFIG.mongodb.database);
+      const resumeToken = await this.getResumeToken(collection);
+      
+      const changeStream = db.collection(collection).watch([], {
+        fullDocument: 'updateLookup',
+        resumeAfter: resumeToken
+      });
+
+      changeStream.on('change', (change) => {
+        this.handleChangeEvent(collection, change);
+      });
+
+      changeStream.on('error', (error) => {
+        logger.error(`Reconnected change stream error for collection ${collection}:`, error);
+        this.handleChangeStreamError(collection, error);
+      });
+
+      changeStream.on('close', () => {
+        logger.warn(`Reconnected change stream closed for collection ${collection}`);
+        if (!this.isShuttingDown) {
+          this.reconnectChangeStream(collection);
+        }
+      });
+
+      this.changeStreams.set(collection, changeStream);
+      logger.info(`Change stream reconnected for collection: ${collection}`);
+    } catch (error) {
+      logger.error(`Failed to reconnect change stream for ${collection}:`, error);
+      
+      // Retry after delay
+      setTimeout(() => {
+        if (!this.isShuttingDown) {
+          this.reconnectChangeStream(collection);
+        }
+      }, CONFIG.dumper.retryDelayMs * 2);
+    }
+  }
+
+  async getResumeToken(collection) {
+    // In production, you might want to store resume tokens in a persistent store
+    // For now, we'll start from the current time
+    return null;
+  }
+
+  setupDumpSchedule() {
+    cron.schedule(CONFIG.dumper.schedule, async () => {
+      if (this.isShuttingDown) return;
+      
+      logger.info('Starting scheduled dump...');
+      await this.dumpAllCollections();
+      logger.info('Scheduled dump completed');
+    }, {
+      timezone: process.env.TZ || 'UTC'
+    });
+    
+    logger.info(`Dump scheduled with cron pattern: ${CONFIG.dumper.schedule}`);
+  }
+
+  async dumpAllCollections() {
+    const promises = CONFIG.mongodb.collections.map(collection => 
+      this.dumpCollectionChanges(collection)
+    );
+    
+    const results = await Promise.allSettled(promises);
+    
+    results.forEach((result, index) => {
+      const collection = CONFIG.mongodb.collections[index];
+      if (result.status === 'rejected') {
+        logger.error(`Dump failed for collection ${collection}:`, result.reason);
+      }
+    });
+  }
+
+  async dumpCollectionChanges(collection) {
+    const buffer = this.changeBuffer.get(collection);
+    if (!buffer || buffer.length === 0) {
+      logger.debug(`No changes to dump for collection: ${collection}`);
+      return;
+    }
+
+    // Get a copy of the buffer and clear it
+    const changesToDump = [...buffer];
+    buffer.length = 0;
+
+    const timestamp = new Date();
+    const filename = this.generateFilename(collection, timestamp);
+    
+    logger.info(`Dumping ${changesToDump.length} changes for ${collection} to ${filename}`);
+
+    await this.retryOperation(async () => {
+      await this.uploadToADLS(collection, filename, changesToDump);
+    }, `dump ${collection}`);
+
+    logger.info(`Successfully dumped ${changesToDump.length} changes for ${collection}`);
+  }
+
+  generateFilename(collection, timestamp) {
+    const year = timestamp.getFullYear();
+    const month = String(timestamp.getMonth() + 1).padStart(2, '0');
+    const day = String(timestamp.getDate()).padStart(2, '0');
+    const hour = String(timestamp.getHours()).padStart(2, '0');
+    
+    return `${collection}/${year}-${month}-${day}-${hour}.json`;
+  }
+
+  async uploadToADLS(collection, filename, changes) {
+    const uploadId = `${collection}-${Date.now()}`;
+    this.activeUploads.add(uploadId);
+    
+    try {
+      // Create temporary file
+      const tempFilePath = path.join(CONFIG.dumper.tempDir, `${uploadId}.json`);
+      const jsonData = JSON.stringify({
+        metadata: {
+          collection: collection,
+          timestamp: new Date().toISOString(),
+          count: changes.length,
+          dumper_version: '1.0.0'
+        },
+        changes: changes
+      }, null, 2);
+
+      await fs.writeFile(tempFilePath, jsonData);
+
+      // Get file system client
+      const fileSystemClient = this.dataLakeClient.getFileSystemClient(CONFIG.azure.fileSystemName);
+      
+      // Ensure file system exists
+      try {
+        await fileSystemClient.create();
+      } catch (error) {
+        if (error.statusCode !== 409) { // 409 means already exists
+          throw error;
+        }
+      }
+
+      // Upload file
+      const fileClient = fileSystemClient.getFileClient(filename);
+      
+      const fileBuffer = await fs.readFile(tempFilePath);
+      await fileClient.upload(fileBuffer, fileBuffer.length, {
+        overwrite: true,
+        metadata: {
+          collection: collection,
+          timestamp: new Date().toISOString(),
+          changeCount: changes.length.toString()
+        }
+      });
+
+      // Clean up temp file
+      await fs.unlink(tempFilePath).catch(error => {
+        logger.warn(`Failed to delete temp file ${tempFilePath}:`, error);
+      });
+
+      logger.info(`Successfully uploaded ${filename} (${fileBuffer.length} bytes)`);
+    } finally {
+      this.activeUploads.delete(uploadId);
+    }
+  }
+
+  async retryOperation(operation, operationName, maxRetries = CONFIG.dumper.retryAttempts) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        await operation();
+        return;
+      } catch (error) {
+        lastError = error;
+        logger.warn(`${operationName} attempt ${attempt}/${maxRetries} failed:`, error.message);
+        
+        if (attempt < maxRetries) {
+          const delay = CONFIG.dumper.retryDelayMs * Math.pow(2, attempt - 1);
+          logger.info(`Retrying ${operationName} in ${delay}ms...`);
+          await this.sleep(delay);
+        }
+      }
+    }
+    
+    throw new Error(`${operationName} failed after ${maxRetries} attempts: ${lastError.message}`);
+  }
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async gracefulShutdown() {
+    logger.info('Starting graceful shutdown...');
+    this.isShuttingDown = true;
+
+    // Wait for active uploads to complete
+    while (this.activeUploads.size > 0) {
+      logger.info(`Waiting for ${this.activeUploads.size} active uploads to complete...`);
+      await this.sleep(1000);
+    }
+
+    // Dump remaining changes
+    try {
+      await this.dumpAllCollections();
+    } catch (error) {
+      logger.error('Error during final dump:', error);
+    }
+
+    // Close change streams
+    for (const [collection, changeStream] of this.changeStreams) {
+      try {
+        changeStream.close();
+        logger.info(`Closed change stream for ${collection}`);
+      } catch (error) {
+        logger.error(`Error closing change stream for ${collection}:`, error);
+      }
+    }
+
+    // Close MongoDB connection
+    if (this.mongoClient) {
+      await this.mongoClient.close();
+      logger.info('MongoDB connection closed');
+    }
+
+    logger.info('Graceful shutdown completed');
+  }
+}
+
+// Application startup
+async function main() {
+  const dumper = new ChangeStreamDumper();
+
+  // Setup signal handlers for graceful shutdown
+  process.on('SIGINT', async () => {
+    logger.info('Received SIGINT, initiating graceful shutdown...');
+    await dumper.gracefulShutdown();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    logger.info('Received SIGTERM, initiating graceful shutdown...');
+    await dumper.gracefulShutdown();
+    process.exit(0);
+  });
+
+  process.on('unhandledRejection', (reason, promise) => {
+    logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
+  process.on('uncaughtException', (error) => {
+    logger.error('Uncaught Exception:', error);
+    process.exit(1);
+  });
+
+  try {
+    await dumper.initialize();
+    logger.info('MongoDB Change Stream Dumper is running...');
+  } catch (error) {
+    logger.error('Failed to start application:', error);
+    process.exit(1);
+  }
+}
+
+// Start the application
+if (require.main === module) {
+  main().catch(error => {
+    logger.error('Application startup failed:', error);
+    process.exit(1);
+  });
+}
+
+module.exports = { ChangeStreamDumper, CONFIG };
+```
