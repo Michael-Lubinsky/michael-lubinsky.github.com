@@ -686,7 +686,7 @@ class ChangeStreamDumper {
     const day = String(timestamp.getDate()).padStart(2, '0');
     const hour = String(timestamp.getHours()).padStart(2, '0');
     
-    return `${collection}/${year}-${month}-${day}-${hour}.json`;
+    return `${collection}/${year}-${month}-${day}-${hour}.jsonl`;
   }
 
   async uploadToADLS(collection, filename, changes) {
@@ -694,19 +694,22 @@ class ChangeStreamDumper {
     this.activeUploads.add(uploadId);
     
     try {
-      // Create temporary file
-      const tempFilePath = path.join(CONFIG.dumper.tempDir, `${uploadId}.json`);
-      const jsonData = JSON.stringify({
-        metadata: {
+      // Create temporary file in JSONL format
+      const tempFilePath = path.join(CONFIG.dumper.tempDir, `${uploadId}.jsonl`);
+      
+      // Create JSONL content - one JSON object per line
+      const jsonlLines = changes.map(changeItem => {
+        const jsonlRecord = {
+          timestamp: changeItem.timestamp.toISOString(),
           collection: collection,
-          timestamp: new Date().toISOString(),
-          count: changes.length,
-          dumper_version: '1.0.0'
-        },
-        changes: changes
-      }, null, 2);
-
-      await fs.writeFile(tempFilePath, jsonData);
+          dumper_version: '1.0.0',
+          change: changeItem.change
+        };
+        return JSON.stringify(jsonlRecord);
+      });
+      
+      const jsonlData = jsonlLines.join('\n');
+      await fs.writeFile(tempFilePath, jsonlData);
 
       // Get file system client
       const fileSystemClient = this.dataLakeClient.getFileSystemClient(CONFIG.azure.fileSystemName);
