@@ -852,3 +852,49 @@ if (require.main === module) {
 
 module.exports = { ChangeStreamDumper, CONFIG };
 ```
+
+### package.json
+```
+{
+  "name": "mongodb-changestream-adls-dumper",
+  "version": "1.0.0",
+  "description": "Production-ready MongoDB Change Stream to Azure Data Lake Storage Gen2 dumper",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "docker:build": "docker build -t mongodb-changestream-dumper .",
+    "docker:run": "docker run --env-file .env mongodb-changestream-dumper"
+  },
+  "keywords": [
+    "mongodb",
+    "change-stream",
+    "azure",
+    "adls",
+    "data-lake",
+    "etl"
+  ],
+  "author": "Your Organization",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/storage-file-datalake": "^12.17.0",
+    "mongodb": "^6.3.0",
+    "winston": "^3.11.0",
+    "node-cron": "^3.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "your-repo-url"
+  }
+}
+```
