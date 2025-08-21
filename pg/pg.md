@@ -28,6 +28,23 @@ JOIN pg_roles pg2 ON pg2.oid = m.member
 WHERE pg2.rolname = 'weavix_admin';
 ```
 
+### Run Stored Procedure In The Loop
+```sql
+DO $$
+DECLARE
+  d date;
+BEGIN
+  FOR d IN
+    SELECT generate_series(date '2025-01-01', date '2025-08-20', interval '1 day')::date
+  LOOP
+    BEGIN
+      CALL gold.ptt_receive_roundtriptime_daily(d);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE 'Failed for %: [%] %', d, SQLSTATE, SQLERRM;
+    END;
+  END LOOP;
+END$$;
+```
 
 ### ON CONFLICT 
 
