@@ -16,7 +16,7 @@ RAISE NOTICE 'Value of x = %', x;
 ```sql
 SELECT *
 FROM pg_roles
-WHERE rolname = 'weavix_owner';
+WHERE rolname = 'admin';
 
 
 SELECT 
@@ -38,7 +38,7 @@ BEGIN
     SELECT generate_series(date '2025-01-01', date '2025-08-20', interval '1 day')::date
   LOOP
     BEGIN
-      CALL gold.ptt_receive_roundtriptime_daily(d);
+      CALL schema_name.proc_name(d);
     EXCEPTION WHEN OTHERS THEN
       RAISE NOTICE 'Failed for %: [%] %', d, SQLSTATE, SQLERRM;
     END;
