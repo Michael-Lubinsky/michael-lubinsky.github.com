@@ -26,8 +26,32 @@ Identity – Azure AD (now Microsoft Entra ID)
 
 📌 Azure is a foundational platform for building and running any kind of application or data system in the cloud.
 
+### Azure Event Hubs
+
+#### Event retention
+
+Published events are removed from an event hub based on a configurable, timed-based retention policy. Here are a few important points:
+- The default value and shortest possible retention period is 1 hour.  
+- For Event Hubs Standard, the maximum retention period is 7 days.  
+- For Event Hubs Premium and Dedicated, the maximum retention period is 90 days.  
+
+If you need to archive events beyond the allowed retention period, you can have them automatically stored in Azure Storage or Azure Data Lake by turning on the Event Hubs Capture feature
+
+#### Mapping of events to partitions
+
+Specifying a partition key enables keeping related events together in the same partition and in the exact order in which they arrived.   
+The partition key is some string that is derived from your application context and identifies the interrelationship of the events.  
+
+<https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features?WT.mc_id=Portal-Microsoft_Azure_EventHub>
+
+Send events to or receive events from event hubs by using JavaScript
+<https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?tabs=passwordless%2Croles-azure-portal>
 
 ### 1. Azure Blob Storage
+
+Azure Data Lake Storage Gen2 (ADLS Gen2) 
+<https://azure.github.io/Storage/docs/analytics/hitchhikers-guide-to-the-datalake/>
+
 What it is:
 A scalable object storage service for storing unstructured data like images, videos, CSV files, Parquet files, backups, and logs.
 
