@@ -69,7 +69,38 @@ Azure Data Lake Storage Gen2 (ADLS Gen2)
 
 <https://azure.github.io/Storage/docs/analytics/hitchhikers-guide-to-the-datalake/>
 
-What it is:
+
+
+#### Is StorageV2 the same as ADLS Gen2?
+```
+Not automatically.
+
+ADLS Gen2 (Azure Data Lake Storage Gen2) is not a separate account kind.
+
+It is a set of hierarchical namespace (HNS) features you enable on top of a StorageV2 account.
+
+In other words:
+
+All ADLS Gen2 accounts are StorageV2.
+But not all StorageV2 accounts are ADLS Gen2.
+You only get true ADLS Gen2 capabilities (like Hadoop-compatible file system, directories, ACLs) if the Hierarchical Namespace setting is enabled.
+
+3. How to check if your StorageV2 account is ADLS Gen2
+Go to your storage account in the portal.
+Under Data storage → Containers, try to create a file system.
+Or, in Configuration, check if Hierarchical namespace = Enabled.
+
+If enabled, then it’s ADLS Gen2. If not, then it’s just a regular blob storage account.
+
+✅ Summary:
+
+“Kind = StorageV2” means it’s the right account type to support ADLS Gen2.
+To confirm it’s really ADLS Gen2, check if Hierarchical Namespace is enabled in the account configuration.
+```
+
+
+
+Azure Blog Storage:
 A scalable object storage service for storing unstructured data like images, videos, CSV files, Parquet files, backups, and logs.
 
 🔹 Key Points:
