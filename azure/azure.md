@@ -35,7 +35,12 @@ Published events are removed from an event hub based on a configurable, timed-ba
 - For Event Hubs Standard, the maximum retention period is 7 days.  
 - For Event Hubs Premium and Dedicated, the maximum retention period is 90 days.  
 
-If you need to archive events beyond the allowed retention period, you can have them automatically stored in Azure Storage or Azure Data Lake by turning on the Event Hubs Capture feature
+If you need to archive events beyond the allowed retention period, you can have them automatically stored in Azure Storage or Azure Data Lake by turning on the Event Hubs Capture feature.
+
+Event Hubs Capture enables you to automatically capture the streaming data in Event Hubs and save it to your choice of either a Blob storage account, or an Azure Data Lake Storage account.   
+You can enable capture from the Azure portal, and specify a minimum size and time window to perform the capture.   
+Using Event Hubs Capture, you specify your own Azure Blob Storage account and container, or Azure Data Lake Storage account, one of which is used to store the captured data.  
+Captured data is written in the Apache Avro format.
 
 #### Mapping of events to partitions
 
