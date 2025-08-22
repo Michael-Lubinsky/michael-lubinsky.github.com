@@ -64,6 +64,9 @@ It's possible to return to older data by specifying a lower offset from this che
 ### 1. Azure Blob Storage
 
 Azure Data Lake Storage Gen2 (ADLS Gen2) 
+
+<https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage?tabs=data-factory>
+
 <https://azure.github.io/Storage/docs/analytics/hitchhikers-guide-to-the-datalake/>
 
 What it is:
