@@ -24,9 +24,10 @@ AI and ML – Azure OpenAI, Azure ML
 DevOps – GitHub Actions, Azure DevOps Pipelines  
 Identity – Azure AD (now Microsoft Entra ID)  
 
-📌 Azure is a foundational platform for building and running any kind of application or data system in the cloud.
 
 ### Azure Event Hubs
+
+<https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features?WT.mc_id=Portal-Microsoft_Azure_EventHub>
 
 #### Event retention
 
@@ -47,9 +48,17 @@ Captured data is written in the Apache Avro format.
 Specifying a partition key enables keeping related events together in the same partition and in the exact order in which they arrived.   
 The partition key is some string that is derived from your application context and identifies the interrelationship of the events.  
 
-<https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features?WT.mc_id=Portal-Microsoft_Azure_EventHub>
 
-Send events to or receive events from event hubs by using JavaScript
+#### Checkpointing
+
+Checkpointing is a process by which readers mark or commit their position within a partition event sequence.   
+Checkpointing is the responsibility of the consumer and occurs on a per-partition basis within a consumer group.  
+This responsibility means that for each consumer group, each partition reader must keep track of its current position in the event stream, and can inform the service when it considers the data stream complete.
+If a reader disconnects from a partition, when it reconnects it begins reading at the checkpoint that was previously submitted by the last reader of that partition in that consumer group. 
+When the reader connects, it passes the offset to the event hub to specify the location at which to start reading. In this way, you can use checkpointing to both mark events as "complete" by downstream applications, and to provide resiliency if a failover between readers running on different machines occurs.  
+It's possible to return to older data by specifying a lower offset from this checkpointing process. Through this mechanism, checkpointing enables both failover resiliency and event stream replay.
+
+#### Send events to or receive events from event hubs by using JavaScript
 <https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?tabs=passwordless%2Croles-azure-portal>
 
 ### 1. Azure Blob Storage
