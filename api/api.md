@@ -2,6 +2,8 @@
 
 <https://lukasniessen.medium.com/simple-checklist-what-are-rest-apis-755b7565aa8e>
 
+<https://habr.com/ru/companies/sberbank/articles/937218/>
+
 ### Litestar
 
 <https://www.b-list.org/weblog/2025/aug/06/litestar/>
