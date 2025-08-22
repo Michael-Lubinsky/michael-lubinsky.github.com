@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/932938/>
 
+<https://habr.com/ru/articles/939876/>
+
 Jinja templating  
 CSS templates/customizations   
 Hyperlink between dashboards   
