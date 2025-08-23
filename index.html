@@ -180,6 +180,13 @@
             <h2>Links</h2>
             <div class="links-grid">
                 <a href="getpocket.csv">Links</a>
+                <ul>
+  {% for row in site.data.links %}
+    <li>
+      <a href="{{ row.url }}" target="_blank">{{ row.name }}</a>
+    </li>
+  {% endfor %}
+</ul>
             </div>
         </div>
         
