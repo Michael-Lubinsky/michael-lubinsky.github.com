@@ -1,0 +1,14 @@
+---
+layout: default
+title: My Links
+permalink: /links/
+---
+
+<h1>My Links</h1>
+<ul>
+  {% for row in site.data.links %}
+    {% assign url = row.url | strip %}
+    {% assign name = row.name | default: row.url %}
+    <li><a href="{{ url }}" target="_blank" rel="noopener">{{ name }}</a></li>
+  {% endfor %}
+</ul>
