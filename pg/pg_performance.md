@@ -1,5 +1,7 @@
 # Postgres performance
 
+<https://pg-hint-plan.readthedocs.io/en/latest/>
+
 <https://byteofdev.com/posts/tuning-postgres-intro/>
 
 <https://habr.com/ru/articles/931410/>
