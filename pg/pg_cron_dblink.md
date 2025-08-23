@@ -1,5 +1,6 @@
 ### postgres_fdw  
 
+<https://packagemain.tech/p/mastering-cross-database-operations-with-postgres-fdw>
 
 ```sql
 
