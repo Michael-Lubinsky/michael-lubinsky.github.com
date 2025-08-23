@@ -1,9 +1,17 @@
 ## DB internals
 
+https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk?ref=dailydev
+
 ### Replication
 https://levelup.gitconnected.com/10-essential-database-replication-techniques-every-software-developer-should-know-b51b4478646e 
 
 https://habr.com/ru/articles/895544/ Replication in different databases
+
+### Change Data Capture
+
+https://www.change-data-capture.com/
+
+https://www.paradedb.com/blog/etl_vs_logical_replication
 
 ### Query optimization
 
@@ -19,6 +27,4 @@ https://build-your-own.org/blog/20251015_db_in_3000/
 https://habr.com/ru/companies/tantor/articles/929980/
 
 
-### Change Data Capture
 
-https://www.change-data-capture.com/
