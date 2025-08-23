@@ -7,6 +7,8 @@ https://levelup.gitconnected.com/10-essential-database-replication-techniques-ev
 
 https://habr.com/ru/articles/895544/ Replication in different databases
 
+https://habr.com/ru/companies/magnit/articles/938164/ CDC без боли: как мы делали отказоустойчивую репликацию с Debezium и Kafka
+
 ### Change Data Capture
 
 https://www.change-data-capture.com/
