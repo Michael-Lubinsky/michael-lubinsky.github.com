@@ -432,9 +432,6 @@ az storage container create \
 
 Both give you a new **ADLS Gen2 file system** that will show up under **Containers** in Portal and via `az storage container list`.
 
----
-
-👉 Would you like me to also add how to **create a directory (subfolder) inside that container** (Portal + CLI), since that’s the main ADLS Gen2 difference from Blob?
 
 
 
