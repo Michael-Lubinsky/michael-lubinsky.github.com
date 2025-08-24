@@ -60,3 +60,71 @@ Tip: per-project version pin
 echo "18" > .nvmrc
 nvm use            # auto-switches to 18 in that folder
 ```
+
+
+#### Simple timer Using setInterval 
+
+Using setInterval (every minute, aligned to the start of each minute)  
+File: minute-ticker-interval.js
+```js
+// file: minute-ticker-interval.js
+'use strict';
+
+// Print current time
+function logTime() {
+  const now = new Date();
+  console.log(now.toISOString());
+}
+
+// Align to the next :00 second of the next minute, then tick every 60s
+(function start() {
+  const now = Date.now();
+  const msUntilNextMinute = 60_000 - (now % 60_000);
+
+  setTimeout(() => {
+    logTime();                     // first tick exactly at HH:MM:00
+    setInterval(logTime, 60_000);  // then every minute
+  }, msUntilNextMinute);
+})();
+
+// graceful exit
+process.on('SIGINT', () => {
+  console.log('\nStopped.');
+  process.exit(0);
+});
+```
+
+Run
+```
+node minute-ticker-interval.js
+```
+
+#### Simple timer Using node-cron
+File minute-ticker-cron.js
+```
+// file: minute-ticker-cron.js
+'use strict';
+
+const cron = require('node-cron');
+
+// Print current time
+function logTime() {
+  const now = new Date();
+  console.log(now.toISOString());
+}
+
+// Runs at the top of every minute.
+// Optionally set a timezone (replace with your TZ if desired).
+cron.schedule('* * * * *', logTime, {
+  timezone: 'America/Los_Angeles' // omit this line to use system local time
+});
+
+console.log('Cron schedule started: * * * * *');
+```
+
+Install and run
+```
+npm init -y
+npm i node-cron
+node minute-ticker-cron.js
+```
