@@ -120,8 +120,38 @@ Quickstarts also show connection-string alternatives if you prefer. ([Microsoft 
 [4]: https://learn.microsoft.com/en-us/javascript/api/overview/azure/eventhubs-checkpointstore-blob-readme?view=azure-node-latest&utm_source=chatgpt.com "Azure Event Hubs Checkpoint Store client library for ..."
 [5]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?utm_source=chatgpt.com "Send or receive events using JavaScript - Azure Event Hubs"
 
+
+
 #### Send events to or receive events from event hubs by using JavaScript
 <https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?tabs=passwordless%2Croles-azure-portal>
+
+
+## When two Node.js applications read from the same Event Hub using `EventHubConsumerClient`  
+
+they will compete for the same events unless you configure them properly. The key concept to understand here is the **consumer group**.
+
+An Azure Event Hub can have multiple consumer groups. A consumer group is a view over the entire Event Hub data stream.   
+It acts like a unique pointer, allowing multiple applications to read the same events from the Event Hub without interfering with each other.
+
+### How It Works
+
+1.  **Shared Consumer Group:** If both of your Node.js applications use the same consumer group (like the default `$Default`), they will **compete** to receive events. Only one application's partition consumer can "own" a specific partition at a time. The Event Hub service uses a load-balancing mechanism to distribute the partitions among the competing consumers. So, at any given moment, one app might read from partition 0 and another from partition 1, but they won't both read from the same partition simultaneously.
+
+2.  **Dedicated Consumer Groups:** For most use cases, it's best to have each application use its own dedicated consumer group. If App A uses `consumerGroupA` and App B uses `consumerGroupB`, they will both receive a **full copy** of all events sent to the Event Hub, completely independently of each other. This is the standard pattern for a publish-subscribe model, where each subscriber gets its own copy of the messages.
+
+### The "eventhub-to-adls" Canvas
+
+The code in the `eventhub-to-adls` Canvas uses the `$Default` consumer group. If you were to run two instances of this program, they would effectively be competing for partitions. The Event Hub service would handle the load balancing, ensuring that each event is processed exactly once by one of the running instances.
+
+To have two applications read the same data independently, you would need to:
+
+1.  Create a new consumer group in the Azure Portal or via the Azure CLI (e.g., `adls-archiver-cg`).
+2.  Update one of your applications to use this new consumer group name in its configuration.
+
+By using separate consumer groups, your two applications can operate on the same data stream without any conflict, which is typically the desired behavior for a robust, decoupled system.
+
+
+
 
 ### 1. Azure Blob Storage
 
@@ -257,7 +287,7 @@ az storage container create \
 
  
 
-## ADLS Gen2 on  **Azure Portal (Web UI)**
+## ADLS Gen2 on  **Azure Portal (Web UI) 
 
 1. **Search for Storage Accounts** in the top search bar.
 2. Click **+ Create**.
