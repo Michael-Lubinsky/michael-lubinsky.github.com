@@ -160,9 +160,10 @@ Fill in the required fields:
 * In the left menu, under **Data storage**, you’ll see **Containers** and **Data Lake Gen2 features** (like “File systems”).
 * If you see **File systems**, then Hierarchical namespace was enabled and it’s ADLS Gen2.
 
----
+ 
 
-Sure — here’s the **ready-to-use `az CLI` command** to create an ADLS Gen2 storage account (i.e., a Storage Account with **Hierarchical Namespace enabled**):
+Here’s the **ready-to-use `az CLI` command** to create an ADLS Gen2 storage account   
+(i.e., a Storage Account with **Hierarchical Namespace enabled**):
 
 ```bash
 # Variables (adjust as needed)
@@ -203,13 +204,9 @@ az storage container create \
   --auth-mode login
 ```
 
----
+ 
 
-Perfect 👍 — then the two main paths you’ll use are:
-
----
-
-## **Azure Portal (Web UI)**
+## ADLS Gen2 on  **Azure Portal (Web UI)**
 
 1. **Search for Storage Accounts** in the top search bar.
 2. Click **+ Create**.
@@ -220,7 +217,7 @@ Perfect 👍 — then the two main paths you’ll use are:
 
 ---
 
-## **Azure CLI**
+## ADLS Gen2 on **Azure CLI**
 
 Here’s the full setup in CLI:
 
@@ -281,11 +278,10 @@ az storage account show \
 
 You’ll see a column **IsHnsEnabled** → should be `True`. ✅
 
----
 
-Exactly 👍 — once you’ve confirmed **Hierarchical Namespace** is enabled, you can list all containers (in ADLS Gen2 they’re called **file systems**) with the CLI.
+Once you’ve confirmed **Hierarchical Namespace** is enabled, you can list all containers   
+(in ADLS Gen2 they’re called **file systems**) with the CLI:
 
----
 
 ### **List all containers (file systems)**
 
