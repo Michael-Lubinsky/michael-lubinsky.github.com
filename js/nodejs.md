@@ -171,3 +171,8 @@ Notes:
   npm config get init-license
   ```
 
+#### Warning: Failed to load the ES module:  list_all.js. Make sure to set "type": "module" in the nearest package.json file or use the .mjs extension.
+
+npm pkg set type=module
+
+This adds "type": "module" to package.json, so .js files are treated as ES modules.
