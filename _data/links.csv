@@ -1,9 +1,18 @@
 name,url,time_added,tags,status
+Common Gotchas — The Hitchhiker's Guide to Python,https://docs.python-guide.org/writing/gotchas/,1671495912,python,unread
+Python,https://www.reddit.com/r/Python/,1671555665,,unread
+Python dictionary implementation – Laurent Luce's Blog,https://www.laurentluce.com/posts/python-dictionary-implementation/,1665367595,programming,unread
+Programming FAQ — Python 3.11.0 documentation,https://docs.python.org/3/faq/programming.html#how-do-i-write-a-function-with-output-parameters-call-by-reference,1670380165,python,unread
+Python Names and Values | Ned Batchelder,https://nedbatchelder.com/text/names1.html,1673558108,python,unread
+structlog 22.3.0 documentation,https://www.structlog.org/en/stable/,1674087699,python,unread
+boltons — boltons 21.0.0 documentation,https://boltons.readthedocs.io/en/latest/,1676305973,python,unread
+rochacbruno/py2rs: A quick reference guide for the Pythonista in the proces,https://github.com/rochacbruno/py2rs,1664990469,rust,unread
+
 LaTeX - A document preparation system,https://www.latex-project.org/,1672604505,latex,unread
 The Chaos Hypertextbook,https://hypertextbook.com/chaos/,1672982565,math,unread
 "Consulting in mathematics, statistics, and data privacy",https://www.johndcook.com/blog/,1667409527,math,unread
 Domain Driven Design Quickly,https://www.infoq.com/minibooks/domain-driven-design-quickly/,1672630780,books,unread
-Python,https://www.reddit.com/r/Python/,1671555665,,unread
+
 Mind Your Decisions,https://mindyourdecisions.com/blog/,1678564365,math,unread
 The Algorithm Design Manual,https://www.algorist.com/,1669350227,algo,unread
 ProofWiki,https://proofwiki.org/wiki/Main_Page,1663885337,math,unread
@@ -24,7 +33,6 @@ gfology,https://www2.math.upenn.edu/~wilf/gfology2.pdf,1665861355,math,unread
 "disserCat — электронная библиотека диссертаций и авторефератов, современная",https://www.dissercat.com/,1668573748,science,unread
 Desmos | Let's learn together.,https://www.desmos.com/,1666137007,math,unread
 Chip Huyen,https://huyenchip.com/,1674505897,ml,unread
-Python dictionary implementation – Laurent Luce's Blog,https://www.laurentluce.com/posts/python-dictionary-implementation/,1665367595,programming,unread
 Mathics,https://mathics.org/,1677376484,math,unread
 "git - master branch and 'origin/master' have diverged, how to 'undiverge' b",https://stackoverflow.com/questions/2452226/master-branch-and-origin-master-have-diverged-how-to-undiverge-branches,1666137392,git,unread
 "pca - Making sense of principal component analysis, eigenvectors & eigenval",https://stats.stackexchange.com/questions/2691/making-sense-of-principal-component-analysis-eigenvectors-eigenvalues,1667103125,ml,unread
@@ -45,7 +53,6 @@ NO BULLSHIT TEXTBOOKS,https://minireference.com/,1663783926,math,unread
 30 Lessons for Living: Tried and True Advice from the Wisest Americans by K,https://www.goodreads.com/book/show/11376196-30-lessons-for-living,1665343651,life,unread
 Линейная алгебра. Пособие к решению задач и большая коллекция вариантов зад,http://joker150491.narod.ru/Kryakvin_V.D._Lineynaya_algebra._Posobie_k_resheniyu_zadach.pdf,1665876191,math,unread
 Купить книги в URSS.ru - Магазин научной книги,https://urss.ru/,1665424491,books,unread
-Common Gotchas — The Hitchhiker's Guide to Python,https://docs.python-guide.org/writing/gotchas/,1671495912,python,unread
 "Как помочь ребенку в чрезвычайной ситуации - Алексей С. Железнов, он же Але",https://grimnir74.livejournal.com/1917531.html,1668532266,health,unread
 The Year of Living Biblically - A.J. Jacobs - Official Website A.J. Jacobs ,https://ajjacobs.com/books/the-year-of-living-biblically/,1665206274,live,unread
 Neural networks and deep learning,http://neuralnetworksanddeeplearning.com/,1673288618,ml,unread
@@ -67,9 +74,7 @@ pre-commit,https://pre-commit.com/,1671553237,programming,unread
 pditommaso/awesome-pipeline: A curated list of awesome pipeline toolkits in,https://github.com/pditommaso/awesome-pipeline,1671063498,python,unread
 ahobson.AJP.#4,https://arxiv.org/pdf/1204.4616.pdf,1683743986,physics,unread
 Principal Component Analysis explained visually,https://setosa.io/ev/principal-component-analysis/,1667103106,ml,unread
-structlog 22.3.0 documentation,https://www.structlog.org/en/stable/,1674087699,python,unread
 You Cannot Have Exactly-Once Delivery – Brave New Geek,https://bravenewgeek.com/you-cannot-have-exactly-once-delivery/,1677699846,kafka,unread
-Python Names and Values | Ned Batchelder,https://nedbatchelder.com/text/names1.html,1673558108,python,unread
 "jlevy/the-art-of-command-line: Master the command line, in one page",https://github.com/jlevy/the-art-of-command-line,1671048750,linux,unread
 Ученые - Самообразованию - Учебные материалы по физ-мат наукам и их приложе,http://sci-edu.ru/,1666828173,math|physics,unread
 TeXstudio - A LaTeX editor,https://www.texstudio.org/,1671132338,latex,unread
@@ -83,7 +88,6 @@ UCB CS294-113: Virtual Machines and Managed Runtimes,http://www.wolczko.com/CS29
 Practical Algorithms and Data Structures,https://bradfieldcs.com/algos/,1679596729,algo,unread
 How to Learn Advanced Mathematics Without Heading to University - Part 2 | ,https://www.quantstart.com/articles/How-to-Learn-Advanced-Mathematics-Without-Heading-to-University-Part-2/,1663783533,math,unread
 dbohdan/structured-text-tools: A list of command line tools for manipulatin,https://github.com/dbohdan/structured-text-tools,1671166107,software,unread
-boltons — boltons 21.0.0 documentation,https://boltons.readthedocs.io/en/latest/,1676305973,python,unread
 chap6.pdf,https://people.eecs.berkeley.edu/~vazirani/algorithms/chap6.pdf,1671777020,algo,unread
 "Vectors | Chapter 1, Essence of linear algebra - YouTube",https://www.youtube.com/watch?v=fNk_zzaMoSs,1665618522,math,unread
 jakevdp/PythonDataScienceHandbook: Python Data Science Handbook: full text ,https://github.com/jakevdp/PythonDataScienceHandbook,1676078858,ml,unread
@@ -110,11 +114,9 @@ satwikkansal/wtfpython: What the f*ck Python? ?,https://github.com/satwikkansal/
 Python Graph Gallery,https://www.python-graph-gallery.com/,1672379547,python,unread
 Foundations of Applied Mathematics,https://foundations-of-applied-mathematics.github.io/,1665618713,math,unread
 UNIGE 14x050 – Deep Learning,https://fleuret.org/dlc/,1683874124,ml,unread
-rochacbruno/py2rs: A quick reference guide for the Pythonista in the proces,https://github.com/rochacbruno/py2rs,1664990469,rust,unread
 How to become a GOOD Theoretical Physicist,https://www.goodtheorist.science/,1666762274,physics,unread
 YouTube,https://www.youtube.com/watch?v=TLP-wak6dWM,1666926187,gymnastics,unread
 Library Genesis,https://libgen.is/,1668232522,math,unread
-Programming FAQ — Python 3.11.0 documentation,https://docs.python.org/3/faq/programming.html#how-do-i-write-a-function-with-output-parameters-call-by-reference,1670380165,python,unread
 Step 1 · Обзор · Stepik,https://stepik.org/lesson/13140/step/1?unit=3511,1672432418,interview,unread
 ♫ Pink Floyd - Shine On You Crazy Diamond [Lyrics] - YouTube,https://www.youtube.com/watch?v=SqGe9qErQ1k,1674113353,music,unread
 Bounded Rationality,https://bjlkeng.github.io/,1668618523,,unread
@@ -740,7 +742,6 @@ Generative AI I: Variational Autoencoders - Synthesis AI,https://synthesis.ai/20
 Создайте конвейер потоковой обработки событий в реальном времени с помощью ,https://habr.com/ru/company/southbridge/blog/716022/,1676309636,kafka,unread
 Learn Data Engineering From These GitHub Repositories - KDnuggets,https://www.kdnuggets.com/2023/02/learn-data-engineering-github-repositories.html?fbclid=IwAR1NHx1JH1bUD3uaqDoAeANUlnuxl9cwHX1xwCv6Zze_3gPYanwnGbvW0ik,1676086434,ml,unread
 Autodidax: JAX core from scratch | Hacker News,https://news.ycombinator.com/item?id=34732361,1676163556,ml,unread
-Mail - Michael Lubinsky - Outlook,https://outlook.live.com/mail/0/inbox/id/AQMkADAwATExAGVlADctNGMzMi02ZjZiLTAwAi0wMAoARgAAA874v8YbXT1PqhhIcrvpU%2BcHADJXQwxaqI1Dqmw7COU5JdEAAAIBDAAAADJXQwxaqI1Dqmw7COU5JdEABtXWwKEAAAA%3D,1676163643,interview,unread
 Инструменты для тестирования Kafka / Хабр,https://habr.com/ru/company/otus/blog/715572/,1677729987,kafka,unread
 Built-in Functions — Python 3.11.2 documentation,https://docs.python.org/3/library/functions.html?highlight=mutable,1676306074,python,unread
 (11) Messaging | LinkedIn,https://www.linkedin.com/messaging/thread/2-YTRiNDZiMGYtNzNjOS00NmMyLThiZmItZTJlNjdiNTk3MzdkXzAxMA==/,1676400326,,unread
@@ -901,5 +902,3 @@ Sensible SQLite Defaults | Hacker News,https://news.ycombinator.com/item?id=4233
 lichess.org • Free Online Chess,https://lichess.org/,1735017146,,unread
 tdi-project/Глубокое обучение/back_propagation at main · neuromancertdi/tdi-project,https://github.com/neuromancertdi/tdi-project/tree/main/%D0%93%D0%BB%D1%83%D0%B1%D0%BE%D0%BA%D0%BE%D0%B5%20%D0%BE%D0%B1%D1%83%D1%87%D0%B5%D0%BD%D0%B8%D0%B5/back_propagation,1736116550,ml,unread
 "Повторяем когортный анализ, выполненный в Power BI, силами Python / Хабр",https://habr.com/ru/articles/501492/,1743124872,,unread
-Search results - mlubinsky@gmail.com - Gmail,https://mail.google.com/mail/u/0/#search/pocket,1749298877,,unread
-
