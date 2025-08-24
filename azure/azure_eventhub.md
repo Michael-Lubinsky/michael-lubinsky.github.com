@@ -47,6 +47,7 @@ Full docs (official Microsoft Learn):
 * JS client library overview + guides & auth options. ([Microsoft Learn][2])
 * Official samples (receive/send, checkpointing). ([Microsoft Learn][3])
 
+AAD = Azure Active Directory.  
 Minimal AAD example (no connection string):
 
 ```js
@@ -177,9 +178,154 @@ This setup lets multiple instances in the **same consumer group** share work and
 
 * **≤5 readers per partition per consumer group**; recommended **one** active reader per partition to avoid duplicates. ([Microsoft Learn][2])
 
-If you tell me which of the three scenarios you want, I can show the exact code/config (same group with load-balancing vs. separate groups).
+
 
 [1]: https://learn.microsoft.com/en-us/javascript/api/overview/azure/event-hubs-readme?view=azure-node-latest&utm_source=chatgpt.com "Azure Event Hubs client library for JavaScript"
 [2]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features?utm_source=chatgpt.com "Overview of features - Azure Event Hubs"
 [3]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about?utm_source=chatgpt.com "Azure Event Hubs: Data streaming platform with Kafka ..."
 [4]: https://learn.microsoft.com/en-us/javascript/api/%40azure/event-hubs/subscribeoptions?view=azure-node-latest&utm_source=chatgpt.com "SubscribeOptions interface"
+
+
+## Here’s how the **“different consumer groups”** setup works and how to do it in Node.js.
+
+* You create **two consumer groups** on the same Event Hub (e.g., `cg-appA` and `cg-appB`).
+* **App A** connects with `cg-appA`; **App B** connects with `cg-appB`.
+* Each group has its **own cursor/checkpoints**. So:
+
+  * Both apps receive **all** events from all partitions independently.
+  * They can start at different positions (e.g., `earliest` vs `latest`) and **won’t affect each other**.
+  * If App A falls behind or is stopped, App B is unaffected.
+* Use this when two downstreams/pipelines must process the **same stream independently** (e.g., real-time alerts vs. analytics, A/B experiments, version migrations).
+
+Notes:
+
+* Checkpointing is **per consumer group**. Use separate checkpoint stores (or prefixes) for each group.
+* Each consumer group has its own concurrency/reader limits per partition—avoid unnecessary multiple readers per partition in the same group.
+* Reading the same data in two groups results in **two independent reads** (separate egress).
+
+---
+
+## Create consumer groups (one-time)
+
+```bash
+az eventhubs eventhub consumer-group create \
+  --resource-group <rg> \
+  --namespace-name <namespace> \
+  --eventhub-name <hub> \
+  --name cg-appA
+
+az eventhubs eventhub consumer-group create \
+  --resource-group <rg> \
+  --namespace-name <namespace> \
+  --eventhub-name <hub> \
+  --name cg-appB
+```
+
+---
+
+## Minimal Node.js consumer (AAD auth) — run twice with different groups
+AAD = Azure Active Directory.
+```js
+// file: consumer.js
+// Usage:
+//   export SUBSCRIPTION_ID=<sub-id>        # only needed if you also list namespaces elsewhere
+//   export EVENTHUB_FQDN='myns.servicebus.windows.net'
+//   export EVENTHUB_NAME='myhub'
+//   export CONSUMER_GROUP='cg-appA'         # or cg-appB for the second app
+//   node consumer.js
+//
+// Optional: add a Blob checkpoint store so offsets persist across restarts.
+
+import { DefaultAzureCredential } from "@azure/identity";
+import { EventHubConsumerClient, latestEventPosition } from "@azure/event-hubs";
+
+// Optional checkpoint store (recommended for production)
+// npm i @azure/storage-blob @azure/eventhubs-checkpointstore-blob
+// import { BlobServiceClient } from "@azure/storage-blob";
+// import { BlobCheckpointStore } from "@azure/eventhubs-checkpointstore-blob";
+
+const fqdn = process.env.EVENTHUB_FQDN;          // e.g., "myns.servicebus.windows.net"
+const hub  = process.env.EVENTHUB_NAME;          // e.g., "myhub"
+const group = process.env.CONSUMER_GROUP || "$Default";
+
+if (!fqdn || !hub) {
+  console.error("Please set EVENTHUB_FQDN and EVENTHUB_NAME.");
+  process.exit(1);
+}
+
+const credential = new DefaultAzureCredential();
+
+// OPTIONAL checkpoint store example (uncomment if you want durable checkpoints)
+/*
+const blobAccount = process.env.BLOB_ACCOUNT;    // e.g., "mystorage"
+const blobContainer = process.env.BLOB_CONTAINER || `eh-checkpoints-${group}`;
+if (!blobAccount) console.warn("No BLOB_ACCOUNT set; running without checkpointing.");
+const blobSvc = blobAccount
+  ? new BlobServiceClient(`https://${blobAccount}.blob.core.windows.net`, credential)
+  : undefined;
+const containerClient = blobSvc && blobSvc.getContainerClient(blobContainer);
+if (containerClient) await containerClient.createIfNotExists();
+const checkpointStore = containerClient ? new BlobCheckpointStore(containerClient) : undefined;
+*/
+
+const consumer = new EventHubConsumerClient(
+  group,
+  fqdn,
+  hub,
+  credential
+  // , checkpointStore   // pass this 5th arg if you enabled the checkpoint store above
+);
+
+const subscription = consumer.subscribe(
+  {
+    processEvents: async (events, ctx) => {
+      for (const ev of events) {
+        console.log(`[${group} | partition ${ctx.partitionId} | seq ${ev.sequenceNumber}]`, ev.body);
+      }
+    },
+    processError: async (err, ctx) => {
+      console.error(`[${group} | partition ${ctx.partitionId}] ERROR: ${err.message}`);
+    }
+  },
+  {
+    startPosition: latestEventPosition,   // or earliestEventPosition
+    maxBatchSize: 50,
+    maxWaitTimeInSeconds: 5
+  }
+);
+
+process.on("SIGINT", async () => {
+  console.log("\nShutting down…");
+  await subscription.close();
+  await consumer.close();
+  process.exit(0);
+});
+```
+
+Run two independent apps (each sees the full stream):
+
+```bash
+# terminal 1
+export EVENTHUB_FQDN='myns.servicebus.windows.net'
+export EVENTHUB_NAME='myhub'
+export CONSUMER_GROUP='cg-appA'
+node consumer.js
+
+# terminal 2
+export EVENTHUB_FQDN='myns.servicebus.windows.net'
+export EVENTHUB_NAME='myhub'
+export CONSUMER_GROUP='cg-appB'
+node consumer.js
+```
+
+(If you enable checkpointing, point each app to a **different** blob container or use distinct prefixes so their offsets don’t collide.)
+
+---
+
+## When to choose this pattern
+
+* Two (or more) independent pipelines must **both** read everything (e.g., fraud detection and BI).
+* You’re migrating consumers (new app in `cg-new`, old app in `cg-old`) and want **parallel run** with safe rollback.
+* Different retention/starting points or replay behavior per app (e.g., one starts from `earliest`, the other from `latest`).
+
+If you want, I can add the Blob checkpoint store wiring (with env vars) to make the sample production-ready for both consumer groups.
