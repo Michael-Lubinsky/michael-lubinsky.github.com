@@ -128,3 +128,46 @@ npm init -y
 npm i node-cron
 node minute-ticker-cron.js
 ```
+
+`npm init -y` (same as `npm init --yes`) creates a **default `package.json`** in the current folder **without asking any questions**. It auto-answers all prompts with defaults and does **not** install anything.
+
+What it does:
+
+* Generates `package.json` with default fields (name, version, main, scripts.test, license, etc.).
+* Uses npm’s init defaults from your config (`npm config get init-*`) when available.
+* Does **not** create `node_modules` or `package-lock.json` (those appear when you install packages).
+
+Typical result (example):
+
+```json
+{
+  "name": "current-folder-name",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": { "test": "echo \"Error: no test specified\" && exit 1" },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+Notes:
+
+* Run it inside your project directory.
+* If a `package.json` already exists, `npm init` will use it as a base and fill/update fields using defaults.
+* You can set your own defaults once so future `npm init -y` uses them:
+
+  ```
+  npm config set init-author-name "Your Name"
+  npm config set init-author-email "you@example.com"
+  npm config set init-license "MIT"
+  npm config set init-version "0.1.0"
+  ```
+* Check current defaults:
+
+  ```
+  npm config get init-author-name
+  npm config get init-license
+  ```
+
