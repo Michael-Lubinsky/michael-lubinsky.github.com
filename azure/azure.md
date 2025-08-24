@@ -90,10 +90,10 @@ All ADLS Gen2 accounts are StorageV2.
 But not all StorageV2 accounts are ADLS Gen2.
 You only get true ADLS Gen2 capabilities (like Hadoop-compatible file system, directories, ACLs) if the Hierarchical Namespace setting is enabled.
 
-3. How to check if your StorageV2 account is ADLS Gen2
-Go to your storage account in the portal.
-Under Data storage → Containers, try to create a file system.
-Or, in Configuration, check if Hierarchical namespace = Enabled.
+3. How to check if your StorageV2 account is ADLS Gen2?
+- Go to your storage account in the portal.
+- Under Data storage → Containers, try to create a file system.
+- Or, in Configuration, check if Hierarchical namespace = Enabled.
 
 If enabled, then it’s ADLS Gen2. If not, then it’s just a regular blob storage account.
 
@@ -103,22 +103,20 @@ If enabled, then it’s ADLS Gen2. If not, then it’s just a regular blob stora
 To confirm it’s really ADLS Gen2, check if Hierarchical Namespace is enabled in the account configuration.
 ```
 
-In the **Azure Portal (Web UI)** you create an **ADLS Gen2 storage account** by creating a **Storage Account** with *Hierarchical namespace* enabled. Here’s a step-by-step:
+## How to create   **ADLS Gen2 storage account**  in **Azure Portal (Web UI)** by creating a **Storage Account** with *Hierarchical namespace* enabled. 
 
----
+Here’s a step-by-step:
+
 
 ### 1. Sign in
 
 * Go to [https://portal.azure.com](https://portal.azure.com) and log in.
-
----
 
 ### 2. Start Storage Account creation
 
 * In the top search bar, type **Storage accounts**.
 * Click **+ Create**.
 
----
 
 ### 3. Basics tab
 
@@ -131,7 +129,6 @@ Fill in the required fields:
 * **Performance** → *Standard* (HDD, cheaper) or *Premium* (SSD, faster).
 * **Redundancy** → choose replication option (LRS, ZRS, GRS, RA-GRS).
 
----
 
 ### 4. Advanced tab (important for ADLS Gen2)
 
@@ -139,20 +136,17 @@ Fill in the required fields:
 * **Enable hierarchical namespace** → check this box. ✅
   (This is what makes it ADLS Gen2 instead of just Blob storage.)
 
----
 
 ### 5. Networking / Data Protection / Tags
 
 * Configure if needed (most defaults are fine for a test).
 
----
 
 ### 6. Review + Create
 
 * Review settings → click **Create**.
 * Deployment takes \~1–2 minutes.
 
----
 
 ### 7. Verify ADLS Gen2
 
@@ -162,7 +156,7 @@ Fill in the required fields:
 
  
 
-Here’s the **ready-to-use `az CLI` command** to create an ADLS Gen2 storage account   
+## How to create  ADLS Gen2 storage account  using `az CLI` command**  
 (i.e., a Storage Account with **Hierarchical Namespace enabled**):
 
 ```bash
