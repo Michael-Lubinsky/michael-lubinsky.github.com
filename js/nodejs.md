@@ -1,3 +1,10 @@
+```bash
+which node
+/opt/homebrew/bin/node
+node --version
+v24.6.0
+```
+
 Install nvm with Homebrew
 ```bash
 brew update
