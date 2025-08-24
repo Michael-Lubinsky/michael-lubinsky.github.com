@@ -63,6 +63,63 @@ If a reader disconnects from a partition, when it reconnects it begins reading a
 When the reader connects, it passes the offset to the event hub to specify the location at which to start reading. In this way, you can use checkpointing to both mark events as "complete" by downstream applications, and to provide resiliency if a failover between readers running on different machines occurs.  
 It's possible to return to older data by specifying a lower offset from this checkpointing process. Through this mechanism, checkpointing enables both failover resiliency and event stream replay.
 
+
+
+### `EventHubConsumerClient` is the JavaScript client you use to **receive** events from an Azure Event Hub 
+(all partitions or specific ones). 
+It exposes methods like `subscribe(...)`, `getPartitionIds()`, `getEventHubProperties()`,  
+and works with Azure AD credentials or connection strings.   
+With a Blob **checkpoint store**, it can checkpoint offsets and **load-balance** partitions across multiple consumers in the same consumer group.  
+
+Full docs (official Microsoft Learn):
+
+* API reference for `EventHubConsumerClient` (JS). ([Microsoft Learn][1])
+* JS client library overview + guides & auth options. ([Microsoft Learn][2])
+* Official samples (receive/send, checkpointing). ([Microsoft Learn][3])
+
+Minimal AAD example (no connection string):
+
+```js
+import { DefaultAzureCredential } from "@azure/identity";
+import { EventHubConsumerClient, latestEventPosition } from "@azure/event-hubs";
+
+const credential = new DefaultAzureCredential();
+const consumer = new EventHubConsumerClient(
+  "$Default",                      // consumer group
+  "mynamespace.servicebus.windows.net", // FQDN
+  "myeventhub",                    // event hub name
+  credential
+);
+
+const subscription = consumer.subscribe(
+  {
+    processEvents: async (events, ctx) => {
+      for (const ev of events) {
+        console.log(`[${ctx.partitionId}]`, ev.body);
+      }
+    },
+    processError: async (err, ctx) => {
+      console.error(`[${ctx.partitionId}]`, err.message);
+    }
+  },
+  { startPosition: latestEventPosition }
+);
+
+// later:
+// await subscription.close(); await consumer.close();
+```
+
+(For coordinated checkpoints/load-balancing, add the Blob checkpoint store package and pass it to the constructor.) ([Microsoft Learn][4])
+
+Permissions tip: to receive, your identity needs **Azure Event Hubs Data Receiver** on the hub/namespace.  
+Quickstarts also show connection-string alternatives if you prefer. ([Microsoft Learn][5])
+
+[1]: https://learn.microsoft.com/en-us/javascript/api/%40azure/event-hubs/eventhubconsumerclient?view=azure-node-latest&utm_source=chatgpt.com "EventHubConsumerClient class | Microsoft Learn"
+[2]: https://learn.microsoft.com/en-us/javascript/api/overview/azure/event-hubs-readme?view=azure-node-latest&utm_source=chatgpt.com "Azure Event Hubs client library for JavaScript"
+[3]: https://learn.microsoft.com/en-us/samples/azure/azure-sdk-for-js/event-hubs-javascript/?utm_source=chatgpt.com "Azure Event Hubs client library samples for JavaScript"
+[4]: https://learn.microsoft.com/en-us/javascript/api/overview/azure/eventhubs-checkpointstore-blob-readme?view=azure-node-latest&utm_source=chatgpt.com "Azure Event Hubs Checkpoint Store client library for ..."
+[5]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?utm_source=chatgpt.com "Send or receive events using JavaScript - Azure Event Hubs"
+
 #### Send events to or receive events from event hubs by using JavaScript
 <https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-node-get-started-send?tabs=passwordless%2Croles-azure-portal>
 
