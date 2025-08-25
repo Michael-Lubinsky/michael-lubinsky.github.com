@@ -46,7 +46,112 @@ In other words, ASP lets you **treat event streams like live collections** and q
 - **Atlas** = MongoDB’s managed cloud database service.  
 - **Atlas Stream Processing** = managed real-time stream analytics built into Atlas, powered by MongoDB’s aggregation framework.  
 
-# Confluence Sink connector which can read data from MongoDB Atlas and write it to Snowflake.
+
+
+**Yes.** Azure Event Hubs exposes a **Kafka-compatible endpoint**, so you can run **Kafka Connect** with the **Snowflake Kafka Sink connector** and consume from Event Hubs topics (Event Hubs) as if they were Kafka topics. You deploy Kafka Connect yourself (VM/container/Kubernetes), point the worker at Event Hubs, then add the Snowflake sink. ([Microsoft Learn][1])
+
+---
+
+## How to set it up (minimal)
+
+### 1) Configure your Kafka Connect worker to talk to Event Hubs
+
+Create `connect-distributed.properties` with the Event Hubs Kafka settings (note port **9093**, TLS + SASL/PLAIN):
+
+```properties
+bootstrap.servers=<NAMESPACE>.servicebus.windows.net:9093
+
+# Connect's internal topics (Connect will create them in Event Hubs)
+config.storage.topic=connect-cluster-configs
+offset.storage.topic=connect-cluster-offsets
+status.storage.topic=connect-cluster-status
+config.storage.replication.factor=1
+offset.storage.replication.factor=1
+status.storage.replication.factor=1
+
+# Required security settings for Event Hubs' Kafka endpoint
+security.protocol=SASL_SSL
+sasl.mechanism=PLAIN
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+  username="$ConnectionString" \
+  password="Endpoint=sb://<NAMESPACE>.servicebus.windows.net/;SharedAccessKeyName=<KeyName>;SharedAccessKey=<Key>";
+```
+
+Start the worker:
+
+```bash
+./bin/connect-distributed.sh /path/to/connect-distributed.properties
+```
+
+(Those exact settings are the Microsoft-documented recipe for running Kafka Connect against Event Hubs.) ([Microsoft Learn][2])
+
+### 2) Install the Snowflake Kafka connector and create the sink
+
+Install the Snowflake connector JARs on your Connect worker, then post a connector config. Example (JSON/Schema-less payloads):
+
+```json
+{
+  "name": "snowflake-sink",
+  "config": {
+    "connector.class": "com.snowflake.kafka.connector.SnowflakeSinkConnector",
+    "tasks.max": "2",
+
+    "topics": "orders,users",                          // Event Hubs names
+    "snowflake.topic2table.map": "orders:ORDERS,users:USERS",
+
+    "snowflake.url.name": "myacct-xy12345.snowflakecomputing.com:443",
+    "snowflake.user.name": "KAFKA_CONNECT",
+    "snowflake.private.key": "<PKCS8_PRIVATE_KEY_NO_HEADERS_NO_NEWLINES>",
+    "snowflake.private.key.passphrase": "<if_encrypted>",
+    "snowflake.database.name": "PROD",
+    "snowflake.schema.name": "PUBLIC",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "com.snowflake.kafka.connector.records.SnowflakeJsonConverter"
+  }
+}
+```
+
+POST it to the Connect REST API:
+
+```bash
+curl -X POST http://localhost:8083/connectors \
+  -H "Content-Type: application/json" \
+  --data @snowflake-sink.json
+```
+
+(Connector configuration and options from Snowflake docs.) ([Snowflake Docs][3])
+
+---
+
+## Notes & gotchas
+
+* **You need your own Kafka Connect** cluster for this path. Confluent Cloud’s managed Snowflake sink reads from **Confluent Cloud topics** only (not external Event Hubs). For Event Hubs → Snowflake you run self-managed Connect (VM, AKS, containers, etc.). ([Confluent Documentation][4])
+* **Auth to Event Hubs (Kafka endpoint):** TLS + SASL/PLAIN using the Event Hubs **namespace connection string** is the simplest path; Event Hubs also supports OAuth (Entra ID) for Kafka clients if you follow the OAuth samples. ([Microsoft Learn][5])
+* **Admin/creation:** Kafka Connect will auto-create its internal topics in Event Hubs (with compaction semantics via Azure Storage under the hood). You’ll still create your **data** Event Hubs (topics) as needed. ([Microsoft Learn][2])
+* **Throughput & limits:** Event Hubs enforces per-partition reader limits and Kafka protocol compatibility (you’re using the “Kafka on Event Hubs” gateway). Plan partitions and consumers accordingly. ([Microsoft Learn][1])
+* **Snowflake connector formats:** Use Snowflake’s JSON or Avro converters (or Protobuf via Schema Registry). Data lands as `VARIANT` by default; enable Snowpipe Streaming & schematization if you want automatic column evolution. ([Snowflake Docs][6])
+
+---
+
+### TL;DR
+
+**Yes**—run **Kafka Connect** against Event Hubs’ Kafka endpoint, then deploy the **Snowflake Kafka Sink connector** to write those Event Hubs topics into Snowflake. Follow Microsoft’s Event Hubs + Kafka Connect config and Snowflake’s connector docs for the sink settings. ([Microsoft Learn][2], [Snowflake Docs][3])
+
+If you share your Event Hubs names and desired Snowflake DB/SCHEMA/TABLE names, I can generate ready-to-POST connector JSON for you.
+
+[1]: https://learn.microsoft.com/en-us/azure/event-hubs/azure-event-hubs-apache-kafka-overview?utm_source=chatgpt.com "Azure Event Hubs for Apache Kafka"
+[2]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-kafka-connect-tutorial "Integrate with Apache Kafka Connect - Azure Event Hubs | Microsoft Learn"
+[3]: https://docs.snowflake.com/en/user-guide/kafka-connector-install "Installing and configuring the Kafka connector | Snowflake Documentation"
+[4]: https://docs.confluent.io/cloud/current/connectors/cc-snowflake-sink/cc-snowflake-sink.html?utm_source=chatgpt.com "Snowflake Sink Connector for Confluent Cloud Quick Start"
+[5]: https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-quickstart-kafka-enabled-event-hubs "Quickstart: Use Apache Kafka with Azure Event Hubs - Azure Event Hubs | Microsoft Learn"
+[6]: https://docs.snowflake.com/en/user-guide/kafka-connector-install?utm_source=chatgpt.com "Installing and configuring the Kafka connector"
+
+
+
+
+
+# Snowflake Sink connector which can read data from MongoDB Atlas and write it to Snowflake.
  
 This is a multi-step process that involves two separate connectors: a **MongoDB Atlas Source Connector** to read data from MongoDB and send it to a Kafka topic, and a **Snowflake Sink Connector** to read from that Kafka topic and write the data to Snowflake.
 
