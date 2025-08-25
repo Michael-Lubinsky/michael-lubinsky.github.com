@@ -46,6 +46,83 @@ In other words, ASP lets you **treat event streams like live collections** and q
 - **Atlas** = MongoDB’s managed cloud database service.  
 - **Atlas Stream Processing** = managed real-time stream analytics built into Atlas, powered by MongoDB’s aggregation framework.  
 
+# Confluence Sink connector which can read data from MongoDB Atlas and write it to Snowflake.
+ 
+This is a multi-step process that involves two separate connectors: a **MongoDB Atlas Source Connector** to read data from MongoDB and send it to a Kafka topic, and a **Snowflake Sink Connector** to read from that Kafka topic and write the data to Snowflake.
+
+### Documentation
+
+You need to consult the documentation for both the **MongoDB Kafka Connector** and the **Snowflake Kafka Connector**.
+
+  * **MongoDB Kafka Connector:** The official documentation is on the MongoDB website. This documentation covers both the source connector (reading from MongoDB) and the sink connector (writing to MongoDB).
+      * **Official Documentation:** [https://www.mongodb.com/docs/kafka-connector/current/](https://www.mongodb.com/docs/kafka-connector/current/)
+  * **Snowflake Kafka Connector:** The official documentation is on the Snowflake website. It provides details on installing, configuring, and managing the connector.
+      * **Official Documentation:** [https://docs.snowflake.com/en/user-guide/kafka-connector](https://docs.snowflake.com/en/user-guide/kafka-connector)
+  * **Confluent Hub:** You can also find information and quick-start guides for both connectors on Confluent Hub, which is the official registry for Kafka Connect connectors.
+
+### Example Configuration
+
+Since this is a two-part process, you'll have two separate connector configuration files. The MongoDB Source Connector will be configured to read from your MongoDB Atlas cluster and write to a Kafka topic. The Snowflake Sink Connector will then be configured to read from that same topic and write to Snowflake.
+
+#### MongoDB Atlas Source Connector Configuration
+
+This configuration is typically a JSON file used to start the connector.
+
+```json
+{
+  "name": "mongo-source-connector",
+  "config": {
+    "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+    "connection.uri": "mongodb+srv://<username>:<password>@<cluster_uri>/",
+    "topic.prefix": "mongodb",
+    "database": "your_database",
+    "collection": "your_collection",
+    "pipeline": "[{\" $match\":{\"operationType\":{\"$in\":[\"insert\",\"update\",\"replace\"]}}}]"
+  }
+}
+```
+
+  * `connection.uri`: Your MongoDB Atlas connection string. Be sure to replace `<username>`, `<password>`, and `<cluster_uri>` with your actual credentials and cluster details.
+  * `topic.prefix`: The prefix for the Kafka topics that will be created. For a collection named `your_collection`, the connector will create a topic named `mongodb.your_database.your_collection`.
+  * `database` and `collection`: The specific MongoDB database and collection to read from.
+  * `pipeline`: An optional Change Data Capture (CDC) pipeline to filter the events. This example only captures `insert`, `update`, and `replace` operations.
+
+#### Snowflake Sink Connector Configuration
+
+This configuration file is used to start the Snowflake connector. It will read from the Kafka topic created by the MongoDB connector.
+
+```json
+{
+  "name": "snowflake-sink-connector",
+  "config": {
+    "connector.class": "com.snowflake.kafka.connect.SnowflakeSinkConnector",
+    "topics": "mongodb.your_database.your_collection",
+    "snowflake.url.name": "<your_account_url>",
+    "snowflake.user.name": "<your_snowflake_user>",
+    "snowflake.private.key": "<your_private_key>",
+    "snowflake.database.name": "<your_snowflake_db>",
+    "snowflake.schema.name": "<your_snowflake_schema>",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "com.snowflake.kafka.connect.json.JSONConverter",
+    "value.converter.schemas.enable": "false",
+    "tasks.max": "1"
+  }
+}
+```
+
+  * `topics`: The name of the Kafka topic to read from. This must match the topic created by the MongoDB source connector.
+  * `snowflake.url.name`: Your Snowflake account URL.
+  * `snowflake.user.name`: Your Snowflake username.
+  * `snowflake.private.key`: The private key for Snowflake key-pair authentication. Using key-pair authentication is a best practice.
+  * `snowflake.database.name` and `snowflake.schema.name`: The destination database and schema in Snowflake.
+  * `value.converter`: Since the MongoDB connector will produce JSON data, you'll use the `JSONConverter` provided by Snowflake.
+
+
+
+
+
+
+
 
 # Atlas Stream Processing → Azure Event Hubs (Kafka) → ADLS via Capture
 
