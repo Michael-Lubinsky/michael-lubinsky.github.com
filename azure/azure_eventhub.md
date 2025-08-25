@@ -331,3 +331,34 @@ node consumer.js
 * Different retention/starting points or replay behavior per app (e.g., one starts from `earliest`, the other from `latest`).
 
 If you want, I can add the Blob checkpoint store wiring (with env vars) to make the sample production-ready for both consumer groups.
+
+
+
+## `EventHubManagementClient` and `EventHubConsumerClient` are two distinct clients in the Azure Event Hubs library for Node.js, 
+each serving a different purpose. 
+The core difference lies in their functionality: one is for administrative tasks, and the other is for data operations.
+
+### EventHubManagementClient 🛠️
+
+The **`EventHubManagementClient`** is an administrative client used for managing Event Hubs resources. It's designed for tasks that involve provisioning, configuring, and maintaining the Event Hubs namespace and its entities. You'd typically use this client in a dev-ops or automation script rather than in an application that is actively sending or receiving data.
+
+**Key functions include:**
+* Creating, updating, and deleting Event Hubs namespaces.
+* Creating, updating, and deleting individual Event Hubs within a namespace.
+* Creating, updating, and deleting consumer groups.
+* Managing authorization rules and keys.
+* Getting properties and metadata for Event Hubs.
+
+***
+
+### EventHubConsumerClient 📊
+
+The **`EventHubConsumerClient`** is a data-plane client used for consuming events from an Event Hub. Its primary function is to read and process the stream of data that has been sent to the Event Hub. It is the component an application uses to receive messages.
+
+**Key functions include:**
+* Connecting to an Event Hub and a specific consumer group.
+* Receiving events from one or more partitions.
+* Handling load balancing when multiple consumer instances are reading from the same consumer group.
+* Managing checkpoints to track the last successfully processed event, preventing the application from reprocessing data after a restart. This is a crucial feature for building resilient and scalable consumer applications.
+
+In short, `EventHubManagementClient` is for **control-plane operations** (managing the infrastructure), while `EventHubConsumerClient` is for **data-plane operations** (interacting with the data stream). 
