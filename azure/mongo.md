@@ -122,7 +122,125 @@ This configuration file is used to start the Snowflake connector. It will read f
 
 
 
+## There isn’t a single connector that “reads MongoDB and writes Snowflake.” In Kafka Connect you chain a **source** + **sink**:
 
+**MongoDB Atlas → (Kafka) → Snowflake**
+
+* **Source:** *MongoDB Kafka Source Connector* (reads Atlas change streams into Kafka). ([MongoDB][1])
+* **Sink:** *Snowflake Sink Connector* (reads Kafka topics and writes to Snowflake). For Confluent Cloud use the managed Snowflake sink; for self-managed use Snowflake’s Kafka connector. ([Confluent Documentation][2], [Snowflake Documentation][3])
+
+## Docs
+
+* MongoDB Kafka **Source** connector (self-managed): overview, properties, examples. ([MongoDB][1])
+* MongoDB Atlas **Source** (Confluent Cloud managed). ([Confluent Documentation][4])
+* **Snowflake Sink** (Confluent Cloud quick start). ([Confluent Documentation][2])
+* **Snowflake Connector for Kafka** (self-managed): install, config, sample JSON. ([Snowflake Documentation][3])
+* Kafka Connect REST API (create connectors). ([Confluent Documentation][5])
+
+## Minimal self-managed examples (Kafka Connect REST)
+
+## 1) MongoDB Atlas → Kafka (Source connector)
+
+```bash
+# file: mongo-source.json
+{
+  "name": "mongo-atlas-source",
+  "config": {
+    "connector.class": "com.mongodb.kafka.connect.MongoSourceConnector",
+    "tasks.max": "1",
+
+    "connection.uri": "mongodb+srv://<user>:<pass>@<cluster>.mongodb.net",
+    "database": "appdb",
+    "collection": "orders",
+
+    "copy.existing": "true",
+    "publish.full.document.only": "true",
+
+    # topic naming
+    "topic.prefix": "mongo",               # results in topic: mongo.appdb.orders
+    # or use advanced mapping:
+    # "topic.namespace.map": "{\"appdb.orders\":\"orders_topic\"}",
+
+    # output format (common choices)
+    "output.format.value": "json",
+    "output.format.key": "json"
+  }
+}
+curl -s -X PUT localhost:8083/connectors/mongo-atlas-source/config \
+  -H 'Content-Type: application/json' \
+  --data @mongo-source.json
+```
+
+(Topic naming via `topic.prefix` / `topic.namespace.map`; `publish.full.document.only` emits the full doc for inserts/updates. Deletes aren’t included when this is true.) ([MongoDB][6], [Stack Overflow][7])
+
+## 2) Kafka → Snowflake (Sink connector)
+
+```bash
+# file: snowflake-sink.json
+{
+  "name": "snowflake-sink",
+  "config": {
+    "connector.class": "com.snowflake.kafka.connector.SnowflakeSinkConnector",
+    "tasks.max": "2",
+    "topics": "mongo.appdb.orders",
+
+    # map topics to table names (optional; otherwise topic name is used)
+    "snowflake.topic2table.map": "mongo.appdb.orders:ORDERS",
+
+    # Snowflake connection (key-pair auth recommended)
+    "snowflake.url.name": "<account_locator>.<region>.snowflakecomputing.com:443",
+    "snowflake.user.name": "<SNOWFLAKE_USER>",
+    "snowflake.private.key": "<RSA_PRIVATE_KEY_NO_HEADERS_NO_NEWLINES>",
+    "snowflake.private.key.passphrase": "<if_encrypted>",
+    "snowflake.database.name": "PROD",
+    "snowflake.schema.name": "PUBLIC",
+
+    # converters (adjust to your serialization; example uses Avro + Schema Registry)
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "com.snowflake.kafka.connector.records.SnowflakeAvroConverter",
+    "value.converter.schema.registry.url": "http://<schema-registry>:8081"
+  }
+}
+curl -s -X PUT localhost:8083/connectors/snowflake-sink/config \
+  -H 'Content-Type: application/json' \
+  --data @snowflake-sink.json
+```
+
+(Snowflake shows the same JSON pattern and required privileges; Confluent Cloud has a managed version you configure in UI or via their API.) ([Snowflake Documentation][3], [Confluent Documentation][2])
+
+---
+
+## Confluent Cloud (fully-managed) option
+
+If you’re on Confluent Cloud, you add:
+
+* **MongoDB Atlas Source (managed)** → pick Atlas cluster, set **Topic prefix** (creates `<prefix>.<db>.<collection>`). ([Confluent Documentation][4])
+* **Snowflake Sink (managed)** → set account URL, key-pair auth, DB/Schema, and topics or `topics.regex`. ([Confluent Documentation][2])
+
+---
+
+### Tips
+
+* Make sure your Atlas user has permissions for **change streams** on the watched DB/collection. The source connector streams inserts/updates; deletes need different handling and aren’t emitted when `publish.full.document.only=true`. ([MongoDB][1], [Stack Overflow][7])
+* In Snowflake, grant a role that can `USAGE` on DB/Schema and `CREATE TABLE | STAGE | PIPE` (per docs). ([Snowflake Documentation][3])
+* Use the **Kafka Connect REST API** to create/update/delete connectors in self-managed deployments. ([Confluent Documentation][5])
+
+
+[1]: https://www.mongodb.com/docs/kafka-connector/current/source-connector/ "Source Connector - Kafka Connector - MongoDB Docs"
+[2]: https://docs.confluent.io/cloud/current/connectors/cc-snowflake-sink/cc-snowflake-sink.html "Snowflake Sink Connector for Confluent Cloud Quick Start | Confluent Documentation"
+[3]: https://docs.snowflake.com/en/user-guide/kafka-connector-install "Installing and configuring the Kafka connector | Snowflake Documentation"
+[4]: https://docs.confluent.io/cloud/current/connectors/cc-mongo-db-source.html?utm_source=chatgpt.com "MongoDB Atlas Source Connector for Confluent Cloud ..."
+[5]: https://docs.confluent.io/platform/current/connect/references/restapi.html?utm_source=chatgpt.com "Kafka Connect REST Interface for Confluent Platform"
+[6]: https://www.mongodb.com/docs/kafka-connector/current/source-connector/usage-examples/topic-naming/?utm_source=chatgpt.com "Topic Naming - Kafka Connector - MongoDB Docs"
+[7]: https://stackoverflow.com/questions/62966428/how-to-get-full-document-when-using-kafka-mongodb-source-connector-when-tracking?utm_source=chatgpt.com "How to get full document when using kafka mongodb ..."
+
+
+
+
+
+
+-------
+-------
 
 # Atlas Stream Processing → Azure Event Hubs (Kafka) → ADLS via Capture
 
