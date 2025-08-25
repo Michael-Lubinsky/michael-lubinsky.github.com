@@ -4,6 +4,8 @@
 
 <https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-features?WT.mc_id=Portal-Microsoft_Azure_EventHub>
 
+In Event Hubs, a single Event Hub is roughly analogous to a Kafka topic; inside it you have partitions and consumer groups.
+
 #### Event retention
 
 Published events are removed from an event hub based on a configurable, timed-based retention policy. Here are a few important points:
