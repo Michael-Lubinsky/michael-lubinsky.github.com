@@ -148,7 +148,7 @@ For uploading a local file,   the SDK also provides the more specific and often 
 which is optimized for Node.js.
 
 
-### How to run code above:
+### How to run TypeScript code above:
 
 To run your TypeScript code from the console, you'll need to have Node.js and npm installed. You'll also need the TypeScript compiler, `tsc`, and a package like `ts-node` to run TypeScript files directly without compiling them first.
 
@@ -207,8 +207,21 @@ npx ts-node your_file_name.ts
 This command will execute the code, perform the uploads, and print the results to your console.
 
 
+### Npx
+"Npx" is a tool that comes with **Node.js** and **npm** (Node Package Manager). It stands for **Node Package eXecuter**. 
 
-#### Is StorageV2 the same as ADLS Gen2?
+Its main purpose is to let you run an executable file from a package without having to install that package globally or in your project's `node_modules` directory first.
+
+In the context of the Canvas, when we use `npx tsc --init`,   
+we're running the TypeScript compiler (`tsc`) executable directly from the npm registry without needing to install it globally. 
+
+This is useful for one-off commands or when you want to ensure you're using a specific version of a tool without cluttering your global environment.
+
+
+
+
+
+##  Is StorageV2 the same as ADLS Gen2?
 ```
 Not automatically.
 
