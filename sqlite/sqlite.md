@@ -1,5 +1,5 @@
 ### SQLite
-<https://sqlitebrowser.org/> <https://sqlitestudio.pl/>
+<https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>
 
 <https://docs.python.org/3/library/sqlite3.html>
 
