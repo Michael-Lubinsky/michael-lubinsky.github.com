@@ -3,6 +3,36 @@
 
 ### 1. Azure Blob Storage
 
+ The hierarchical view you see in the Azure WebUI is a **logical hierarchy**, not a **physical** one.    
+ It's designed to make your data easier to manage and navigate, even in a storage account that doesn't have a hierarchical namespace enabled.
+
+ 
+
+### The Flat Namespace
+
+By default, Azure Blob Storage uses a **flat namespace**. This means that all blobs exist at the same level within a container, like files in a single, massive folder. The "folders" you see are just part of the blob's name.
+
+For example, a blob named `photos/2024/vacation.jpg` is treated by the storage system as a single object with that exact name. The forward slash (`/`) is just a character in the name, not a directory delimiter.
+
+
+
+### The Simulated Hierarchy
+
+The Azure portal, Azure Storage Explorer, and many SDKs simulate a folder structure by interpreting the `/` character. When they list the blobs, they group them visually based on these separators, creating the illusion of a file system hierarchy.
+
+This visual simulation is a convenience for you as a user, making it simple to organize and find your data. It doesn't change the underlying flat structure, but it provides a familiar and intuitive way to interact with your blobs.
+
+
+
+### True Hierarchical Namespace
+
+A true **hierarchical namespace** is a feature of Azure Data Lake Storage Gen2, which is built on top of Azure Blob Storage.  
+When this feature is enabled, "folders" are treated as first-class objects. 
+This allows for fast, atomic operations on entire directories, such as renaming or deleting.
+
+Without this feature, a logical folder rename or move operation would require a separate copy and delete command for every single blob within that folder,   
+which can be a slow and resource-intensive process for a large number of blobs.
+
 Azure Data Lake Storage Gen2 (ADLS Gen2) 
 
 <https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage?tabs=data-factory>
