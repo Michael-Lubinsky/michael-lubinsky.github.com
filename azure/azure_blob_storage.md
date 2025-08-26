@@ -8,8 +8,126 @@ Azure Data Lake Storage Gen2 (ADLS Gen2)
 <https://learn.microsoft.com/en-us/azure/data-factory/connector-azure-data-lake-storage?tabs=data-factory>
 
 <https://azure.github.io/Storage/docs/analytics/hitchhikers-guide-to-the-datalake/>
+```js
+/**
+ * This is a complete, runnable TypeScript example for uploading data
+ * to Azure Blob Storage. It demonstrates how to authenticate and
+ * upload a string, and how to upload a file from a local path.
+ *
+ * Prerequisites:
+ * 1. An Azure Storage Account with a blob container.
+ * 2. An environment variable named 'AZURE_STORAGE_CONNECTION_STRING'
+ * set to your storage account's connection string.
+ * 3. Run 'npm install @azure/storage-blob' to install the SDK.
+ */
 
+// Import the necessary classes from the SDK.
+import {
+  BlobServiceClient,
+  BlockBlobClient,
+  StorageSharedKeyCredential
+} from "@azure/storage-blob";
+import * as path from 'path';
+import * as fs from 'fs';
 
+// Load connection string from environment variables for security.
+const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+if (!connectionString) {
+  throw new Error("AZURE_STORAGE_CONNECTION_STRING environment variable is not set.");
+}
+
+// Set your container name here.
+const containerName = "your-container-name";
+
+// --- Main Function to Orchestrate Uploads ---
+async function main() {
+  console.log("Starting Azure Blob Storage upload demo...");
+
+  // Create a BlobServiceClient from the connection string.
+  // This client is used to interact with the Azure Blob service at the account level.
+  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+
+  // Get a reference to a container client.
+  // This client is used to interact with a specific container.
+  const containerClient = blobServiceClient.getContainerClient(containerName);
+
+  // Check if the container exists. If not, create it.
+  try {
+    await containerClient.createIfNotExists();
+    console.log(`Container "${containerName}" exists or was created successfully.`);
+  } catch (error) {
+    console.error("Failed to create container:", error);
+    return;
+  }
+
+  // Example 1: Upload a simple string as a blob.
+  const stringContent = "Hello, Azure Blob Storage! This is a test string.";
+  const stringBlobName = "hello-world.txt";
+  await uploadStringAsBlob(containerClient, stringBlobName, stringContent);
+
+  // Example 2: Upload a file from a local path.
+  // For this to work, you need a local file to upload.
+  const localFilePath = "data.json";
+  const fileBlobName = "uploaded-data.json";
+  
+  // Create a dummy file for the example if it doesn't exist.
+  if (!fs.existsSync(localFilePath)) {
+    fs.writeFileSync(localFilePath, JSON.stringify({ message: "This is a test file!" }));
+    console.log(`Created a dummy file at "${localFilePath}" for the demo.`);
+  }
+
+  await uploadFileAsBlob(containerClient, localFilePath, fileBlobName);
+
+  console.log("Azure Blob Storage upload demo completed.");
+}
+
+/**
+ * Uploads a string of data to a block blob.
+ * @param containerClient The ContainerClient object.
+ * @param blobName The name of the blob to create.
+ * @param content The string content to upload.
+ */
+async function uploadStringAsBlob(containerClient: any, blobName: string, content: string) {
+  try {
+    // Get a reference to a block blob client.
+    // This client is used to interact with a specific blob.
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    
+    // Upload the string content.
+    const uploadBlobResponse = await blockBlobClient.upload(content, content.length);
+    
+    console.log(`\nSuccessfully uploaded string to blob: ${blobName}`);
+    console.log(`Request ID: ${uploadBlobResponse.requestId}`);
+  } catch (error) {
+    console.error(`Error uploading string to blob ${blobName}:`, error);
+  }
+}
+
+/**
+ * Uploads a file from a local path to a block blob.
+ * This method is specifically for Node.js environments.
+ * @param containerClient The ContainerClient object.
+ * @param localFilePath The full path to the local file.
+ * @param blobName The name of the blob to create.
+ */
+async function uploadFileAsBlob(containerClient: any, localFilePath: string, blobName: string) {
+  try {
+    // Get a reference to a block blob client.
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    
+    // Use the uploadFile method for Node.js to efficiently upload the file.
+    const uploadResponse = await blockBlobClient.uploadFile(localFilePath);
+    
+    console.log(`\nSuccessfully uploaded file "${localFilePath}" to blob: ${blobName}`);
+    console.log(`Request ID: ${uploadResponse.requestId}`);
+  } catch (error) {
+    console.error(`Error uploading file to blob ${blobName}:`, error);
+  }
+}
+
+// Run the main function.
+main().catch((error) => console.error("Main function failed:", error));
+```
 
 #### Is StorageV2 the same as ADLS Gen2?
 ```
