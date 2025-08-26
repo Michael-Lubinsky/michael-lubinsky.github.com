@@ -29,6 +29,49 @@ AI and ML – Azure OpenAI, Azure ML
 DevOps – GitHub Actions, Azure DevOps Pipelines  
 Identity – Azure AD (now Microsoft Entra ID)  
 
+# 0. Azure Event Grid
+is a **fully managed event routing service** in Microsoft Azure. Its main purpose is to make it easy for applications and services to communicate with each other in a loosely coupled way using **event-driven architecture**.
+
+Here’s a breakdown:
+
+### Core Idea
+
+* Event Grid lets you publish and subscribe to events.
+* It acts like a middleman: when something happens (an *event*), Event Grid delivers a notification to whoever has subscribed.
+* This decouples event producers (like Azure services or custom apps) from event consumers (like functions, logic apps, or other services).
+
+### Example Flow
+
+1. An Azure Storage Blob is created.
+2. Event Grid publishes a "BlobCreated" event.
+3. A subscriber (e.g., an Azure Function) receives the event and processes it (maybe resizing an image or logging metadata).
+4. The storage account and the function don’t need to know about each other directly — Event Grid handles delivery.
+
+### Key Features
+
+* **Near real-time delivery** of events (push-based, not polling).
+* **Massive scale**: supports millions of events per second.
+* **Low cost**: you only pay per event processed.
+* **Reliable**: retries with exponential backoff until events are delivered or dead-lettered.
+* **Supports filtering**: subscribers can filter events based on attributes.
+* **Integrations**: works with many Azure services (Storage, Event Hubs, IoT Hub, Service Bus, Key Vault, etc.), as well as custom apps.
+
+### Common Use Cases
+
+* **Serverless workflows**: Triggering Azure Functions or Logic Apps when events occur.
+* **Automation**: Responding to resource changes (e.g., when a VM is created, automatically apply security settings).
+* **Application integration**: Connecting different systems or microservices.
+* **Audit/monitoring**: Capturing changes across resources for compliance or monitoring.
+
+### Difference from Other Azure Messaging Services
+
+* **Event Grid**: Lightweight, event notification service (react to changes).
+* **Event Hubs**: Big data event ingestion (millions of telemetry events, e.g., IoT).
+* **Service Bus**: Enterprise messaging with queues and topics (commands, reliable delivery, ordered processing).
+
+---
+
+Would you like me to also create a **comparison table of Event Grid vs Event Hubs vs Service Bus** (side-by-side) so you can clearly see when to use each?
 
 
 # 1. Azure Bolob Storage
