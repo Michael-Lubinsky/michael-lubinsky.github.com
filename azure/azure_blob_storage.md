@@ -148,7 +148,63 @@ For uploading a local file,   the SDK also provides the more specific and often 
 which is optimized for Node.js.
 
 
+### How to run code above:
 
+To run your TypeScript code from the console, you'll need to have Node.js and npm installed. You'll also need the TypeScript compiler, `tsc`, and a package like `ts-node` to run TypeScript files directly without compiling them first.
+
+Here's a step-by-step guide:
+
+### 1\. Initialize Your Project
+
+First, navigate to your project directory in the console and initialize a new Node.js project. This creates a `package.json` file.
+
+```bash
+npm init -y
+```
+
+### 2\. Install Dependencies
+
+Next, install the required packages: `typescript`, `ts-node`, and `@azure/storage-blob`. `ts-node` is a great tool that lets you execute TypeScript files directly, which is useful for development.
+
+```bash
+npm install typescript ts-node @azure/storage-blob
+```
+
+### 3\. Configure TypeScript
+
+Create a `tsconfig.json` file in your project's root directory. This file tells the TypeScript compiler how to compile your code. You can generate a basic one with the following command:
+
+```bash
+npx tsc --init
+```
+
+For the Azure Blob SDK example, you'll want to ensure `ES2017` or higher is the `target` to support `async/await` and that `esModuleInterop` and `skipLibCheck` are set to `true` to avoid common import errors.
+
+### 4\. Set the Environment Variable
+
+Before running the code, you must set the `AZURE_STORAGE_CONNECTION_STRING` environment variable as specified in the comments of the Canvas.
+
+**On Windows (Command Prompt):**
+
+```bash
+set AZURE_STORAGE_CONNECTION_STRING="your_connection_string_here"
+```
+
+**On macOS/Linux (Terminal):**
+
+```bash
+export AZURE_STORAGE_CONNECTION_STRING="your_connection_string_here"
+```
+
+### 5\. Run the Code
+
+Finally, you can run the TypeScript file directly from your console using `ts-node`.
+
+```bash
+npx ts-node your_file_name.ts
+```
+
+This command will execute the code, perform the uploads, and print the results to your console.
 
 
 
