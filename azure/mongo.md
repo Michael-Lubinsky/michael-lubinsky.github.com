@@ -42,13 +42,73 @@ In other words, ASP lets you **treat event streams like live collections** and q
 
 ---
 
-👉 In short:  
 - **Atlas** = MongoDB’s managed cloud database service.  
 - **Atlas Stream Processing** = managed real-time stream analytics built into Atlas, powered by MongoDB’s aggregation framework.  
 
 
 
-**Yes.** Azure Event Hubs exposes a **Kafka-compatible endpoint**, so you can run **Kafka Connect** with the **Snowflake Kafka Sink connector** and consume from Event Hubs topics (Event Hubs) as if they were Kafka topics. You deploy Kafka Connect yourself (VM/container/Kubernetes), point the worker at Event Hubs, then add the Snowflake sink. ([Microsoft Learn][1])
+Azure Event Hubs exposes a **Kafka-compatible endpoint**, so you can run **Kafka Connect** with the **Snowflake Kafka Sink connector** and consume from Event Hubs topics (Event Hubs) as if they were Kafka topics. You deploy Kafka Connect yourself (VM/container/Kubernetes), point the worker at Event Hubs, then add the Snowflake sink. ([Microsoft Learn][1])
+
+---
+Based on the search results, **yes, it is possible to use Snowflake Snowpipe to ingest data from Azure Event Hub**, but there are important nuances to understand:
+
+## Available Options for Event Hub → Snowflake Integration
+
+### 1. **Snowpipe Streaming with Kafka Connect** ✅
+Azure Event Hub exposes a Kafka interface that the Snowflake Connector for Kafka can access, leveraging the Snowflake Ingest SDK to stream data directly into Snowflake tables. This approach:
+
+- Uses Event Hub's Kafka-compatible endpoint
+- Employs the Snowflake Connector for Kafka with Snowpipe Streaming
+- Provides near real-time ingestion (not hourly batches)
+- Requires Kafka Connect infrastructure
+
+### 2. **Traditional Snowpipe via Azure Blob Storage** ✅
+Snowpipe can be automated using Azure Event Grid notifications when files are ready to load, copying files into a queue for loading into Snowflake tables. This approach:
+
+- Requires Event Hub → Azure Blob Storage → Snowflake flow
+- Uses Azure Event Grid for file-based notifications
+- Supports hourly batch processing
+- More traditional Snowpipe architecture
+
+## Direct Event Hub Integration Limitations
+
+**Important Note**: Snowpipe cannot directly consume from Event Hub streams without an intermediate layer. You need either:
+
+1. **Kafka Connect layer** (for streaming)
+2. **Azure Blob Storage** (for batch processing)
+
+## Recommended Architecture for Hourly Batches
+
+For your hourly requirement, I'd recommend this modified Pipeline A:
+
+```
+MongoDB Change Streams → Azure Event Hub → 
+Azure Function (hourly trigger) → 
+Azure Blob Storage → 
+Snowpipe (with Event Grid notifications)
+```
+
+**Benefits:**
+- Leverages native Azure Event Grid integration
+- Maintains hourly batch processing
+- Uses managed Azure Functions instead of custom NodeJS apps
+- Automatic Snowpipe triggering via Event Grid
+
+## Alternative: Snowpipe Streaming
+
+If you can accept near real-time ingestion instead of hourly batches:
+
+```
+MongoDB Change Streams → Azure Event Hub (Kafka endpoint) → 
+Kafka Connect with Snowflake Connector → 
+Snowflake (via Snowpipe Streaming)
+```
+
+## Recommendation
+
+For hourly ingestion, use the Event Hub → Azure Function → Blob Storage → Snowpipe approach rather than the ADLS Gen2 intermediate step in your original Pipeline A. This eliminates one hop while leveraging native Azure Event Grid integration with Snowpipe.
+
+
 
 ---
 
