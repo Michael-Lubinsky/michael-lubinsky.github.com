@@ -3,6 +3,8 @@ https://www.gilesthomas.com/python
 
 https://medium.com/@royrimo2006/understanding-and-implementing-transformers-from-scratch-3da5ddc0cdd6
 
+https://news.ycombinator.com/item?id=45002896
+
 https://habr.com/ru/companies/bothub/articles/922938/
 
 ### Input Representation: Word Embeddings
