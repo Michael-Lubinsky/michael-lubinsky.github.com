@@ -1,6 +1,6 @@
 ### SQLite
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>
-
+<https://visualdb.com/sqlite/>  
 <https://docs.python.org/3/library/sqlite3.html>
 
 #### Reading records by the column name (Python)
