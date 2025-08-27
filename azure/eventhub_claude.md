@@ -95,6 +95,804 @@ Your approach is superior because:
 
 The updated code now uses ADLS Gen2 with your recommended folder hierarchy, storing data permanently in an organized, recoverable format. This gives you both the automation benefits AND the data lake advantages you were looking for.
 
+
+**Absolutely yes!** You should definitely create and use a dedicated consumer group for your Azure Function. This is a critical best practice for Event Hub architectures with multiple consumers.
+
+## Why Consumer Groups Are Essential
+
+### **Without Dedicated Consumer Groups** ❌
+- **Competing Consumers**: Multiple apps reading from `$Default` group compete for the same messages
+- **Message Loss**: One consumer might process a message, preventing others from seeing it
+- **Unpredictable Behavior**: No guarantee which consumer gets which messages
+- **Checkpoint Conflicts**: Consumers overwrite each other's position tracking
+
+### **With Dedicated Consumer Groups** ✅ 
+- **Independent Processing**: Each consumer group sees ALL messages independently
+- **Parallel Processing**: Multiple consumers can process the same stream simultaneously
+- **Isolated Checkpoints**: Each group maintains its own position in the stream
+- **No Interference**: Consumers don't affect each other's processing
+
+## Updated Configuration
+
+Let me update the Azure Function code to use a dedicated consumer group:## Consumer Group Architecture Example
+
+```
+Event Hub: mongodb-changes
+├── Consumer Group: $Default (Other applications)
+│   └── App A: Real-time analytics
+├── Consumer Group: snowflake-pipeline (Your Azure Function)  
+│   └── Azure Function: Batch processing to Snowflake
+├── Consumer Group: backup-service
+│   └── App B: Backup service
+└── Consumer Group: monitoring
+    └── App C: Monitoring/alerting service
+```
+
+## Creating Consumer Groups
+
+### **Option 1: Azure Portal**
+1. Navigate to Event Hub → Consumer Groups
+2. Click "+ Consumer Group"
+3. Name: `snowflake-pipeline`
+4. Create
+
+### **Option 2: Azure CLI**
+```bash
+az eventhubs consumergroup create \
+  --resource-group mongodb-pipeline-rg \
+  --namespace-name mongodb-eh-namespace \
+  --eventhub-name mongodb-changes \
+  --name snowflake-pipeline
+```
+
+### **Option 3: Infrastructure as Code (Bicep)**
+```bicep
+resource consumerGroup 'Microsoft.EventHub/namespaces/eventhubs/consumergroups@2022-10-01-preview' = {
+  parent: eventHub
+  name: 'snowflake-pipeline'
+  properties: {}
+}
+```
+
+## Consumer Group Best Practices
+
+### **Naming Convention**
+```
+snowflake-pipeline          # Your batch processor
+real-time-analytics        # Real-time consumer
+backup-service            # Backup/archival service  
+monitoring-alerts         # Health monitoring
+data-quality-checks       # Data validation service
+```
+
+### **Partition Strategy**
+Each consumer group can have multiple consumers (instances) reading from different partitions:
+
+```
+Event Hub Partitions: [0, 1, 2, 3]
+
+Consumer Group: snowflake-pipeline
+├── Azure Function Instance 1: Reads partitions [0, 1]
+└── Azure Function Instance 2: Reads partitions [2, 3]
+```
+
+### **Checkpoint Management**
+Each consumer group maintains independent checkpoints:
+```
+$Default group checkpoint: Partition 0 → Offset 1000
+snowflake-pipeline checkpoint: Partition 0 → Offset 850
+```
+
+## Multiple Consumers Scenario
+
+Here's how your architecture would look with multiple consumers:
+
+```
+MongoDB Change Streams → Event Hub
+                           ├── Consumer Group: $Default
+                           │   └── Real-time Dashboard App
+                           ├── Consumer Group: snowflake-pipeline  
+                           │   └── Azure Function → ADLS Gen2 → Snowflake
+                           ├── Consumer Group: elasticsearch-sync
+                           │   └── Search Index Updater
+                           └── Consumer Group: audit-logger
+                               └── Compliance Logging Service
+```
+
+## Configuration Summary
+
+Update your environment variables:
+```bash
+CONSUMER_GROUP="snowflake-pipeline"  # Instead of "$Default"
+```
+
+This ensures:
+- ✅ **No conflicts** with other Event Hub consumers
+- ✅ **Independent processing** of all change stream events
+- ✅ **Isolated checkpoints** for reliable progress tracking
+- ✅ **Scalable architecture** that supports multiple use cases
+
+**Bottom line**: Yes, definitely create and use a dedicated consumer group. It's essential for any production Event Hub architecture with multiple consumers!
+
+
+## USING Consumer Groups
+```js
+// function.json - Azure Function configuration
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 */1 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+// index.js - Main Azure Function
+const { EventHubConsumerClient } = require("@azure/event-hubs");
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const crypto = require('crypto');
+
+// Configuration from environment variables
+const config = {
+  eventHub: {
+    connectionString: process.env.EVENT_HUB_CONNECTION_STRING,
+    eventHubName: process.env.EVENT_HUB_NAME,
+    consumerGroup: process.env.CONSUMER_GROUP || "snowflake-pipeline"
+  },
+  blobStorage: {
+    connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    fileSystemName: process.env.ADLS_FILESYSTEM_NAME || "mongodb-data",
+    basePath: process.env.ADLS_BASE_PATH || "changestreams"
+  },
+  processing: {
+    maxBatchSize: parseInt(process.env.MAX_BATCH_SIZE) || 1000,
+    maxWaitTimeMs: parseInt(process.env.MAX_WAIT_TIME_MS) || 300000, // 5 minutes
+    fileFormat: process.env.FILE_FORMAT || "json", // json or parquet
+    compressionEnabled: process.env.ENABLE_COMPRESSION === "true"
+  }
+};
+
+class EventHubProcessor {
+  constructor() {
+    this.consumerClient = new EventHubConsumerClient(
+      config.eventHub.consumerGroup,
+      config.eventHub.connectionString,
+      config.eventHub.eventHubName
+    );
+    
+    this.dataLakeServiceClient = new DataLakeServiceClient(
+      config.blobStorage.connectionString
+    );
+    
+    this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(
+      config.blobStorage.fileSystemName
+    );
+  }
+
+  async processEvents(context) {
+    const startTime = Date.now();
+    const batchId = crypto.randomUUID();
+    
+    context.log(`Starting batch processing: ${batchId}`);
+
+    try {
+      await this.ensureContainerExists();
+      
+      const events = await this.readEventsFromHub(context);
+      
+      if (events.length === 0) {
+        context.log("No events to process");
+        return;
+      }
+
+      const processedData = await this.transformEvents(events, context);
+      const fileName = await this.writeToBlob(processedData, batchId, context);
+      
+      await this.updateCheckpoint(events, context);
+      
+      context.log(`Batch processing completed: ${batchId}, Events: ${events.length}, File: ${fileName}`);
+      
+    } catch (error) {
+      context.log.error(`Error processing batch ${batchId}:`, error);
+      throw error;
+    }
+  }
+
+  async readEventsFromHub(context) {
+    const events = [];
+    const partitionIds = await this.consumerClient.getPartitionIds();
+    
+    const readPromises = partitionIds.map(async (partitionId) => {
+      const partitionEvents = [];
+      
+      try {
+        const receiver = this.consumerClient.getEventDataBatch(partitionId, {
+          maxBatchSize: Math.floor(config.processing.maxBatchSize / partitionIds.length),
+          maxWaitTimeInSeconds: Math.floor(config.processing.maxWaitTimeMs / 1000)
+        });
+
+        for await (const eventData of receiver) {
+          partitionEvents.push({
+            partitionId,
+            offset: eventData.offset,
+            sequenceNumber: eventData.sequenceNumber,
+            enqueuedTimeUtc: eventData.enqueuedTimeUtc,
+            body: eventData.body,
+            properties: eventData.properties,
+            systemProperties: eventData.systemProperties
+          });
+
+          if (partitionEvents.length >= Math.floor(config.processing.maxBatchSize / partitionIds.length)) {
+            break;
+          }
+        }
+        
+      } catch (error) {
+        context.log.error(`Error reading from partition ${partitionId}:`, error);
+      }
+      
+      return partitionEvents;
+    });
+
+    const partitionResults = await Promise.all(readPromises);
+    partitionResults.forEach(partitionEvents => {
+      events.push(...partitionEvents);
+    });
+
+    return events.sort((a, b) => 
+      new Date(a.enqueuedTimeUtc) - new Date(b.enqueuedTimeUtc)
+    );
+  }
+
+  async transformEvents(events, context) {
+    const transformed = events.map(event => {
+      try {
+        // Parse MongoDB change stream event if it's JSON
+        let changeStreamEvent = event.body;
+        if (typeof changeStreamEvent === 'string') {
+          changeStreamEvent = JSON.parse(changeStreamEvent);
+        }
+
+        // Transform to Snowflake-friendly format
+        return {
+          // Metadata
+          event_id: crypto.randomUUID(),
+          processed_timestamp: new Date().toISOString(),
+          event_hub_metadata: {
+            partition_id: event.partitionId,
+            offset: event.offset,
+            sequence_number: event.sequenceNumber,
+            enqueued_time: event.enqueuedTimeUtc
+          },
+          
+          // MongoDB Change Stream data
+          operation_type: changeStreamEvent.operationType,
+          database_name: changeStreamEvent.ns?.db,
+          collection_name: changeStreamEvent.ns?.coll,
+          document_key: changeStreamEvent.documentKey,
+          full_document: changeStreamEvent.fullDocument,
+          update_description: changeStreamEvent.updateDescription,
+          cluster_time: changeStreamEvent.clusterTime,
+          
+          // Raw event for debugging
+          raw_event: changeStreamEvent
+        };
+        
+      } catch (error) {
+        context.log.error(`Error transforming event:`, error);
+        // Return error record for investigation
+        return {
+          event_id: crypto.randomUUID(),
+          processed_timestamp: new Date().toISOString(),
+          error: error.message,
+          raw_event: event.body
+        };
+      }
+    });
+
+    return transformed;
+  }
+
+  async writeToBlob(data, batchId, context) {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hour = String(now.getUTCHours()).padStart(2, '0');
+    
+    // Group events by database and collection for better organization
+    const groupedEvents = this.groupEventsByCollection(data);
+    const uploadedFiles = [];
+
+    for (const [collectionKey, events] of Object.entries(groupedEvents)) {
+      const [dbName, collName] = collectionKey.split('.');
+      
+      // Create hierarchical path: basePath/database/collection/operation_type/YYYY/MM/DD/HH.jsonl
+      const folderPath = `${config.blobStorage.basePath}/${dbName}/${collName}/${year}/${month}/${day}`;
+      const fileName = `${hour}-${batchId}.jsonl`;
+      const fullPath = `${folderPath}/${fileName}`;
+
+      // Convert to JSONL format (one JSON per line)
+      const jsonlContent = events.map(record => JSON.stringify(record)).join('\n');
+      
+      let content = jsonlContent;
+      let contentType = 'application/x-ndjson';
+
+      if (config.processing.compressionEnabled) {
+        const zlib = require('zlib');
+        content = zlib.gzipSync(content);
+        fileName = fileName + '.gz';
+        fullPath = fullPath + '.gz';
+      }
+
+      try {
+        // Create directory path if it doesn't exist
+        await this.ensureDirectoryExists(folderPath);
+        
+        // Upload file to ADLS Gen2
+        const fileClient = this.fileSystemClient.getFileClient(fullPath);
+        await fileClient.create();
+        await fileClient.append(content, 0, content.length);
+        await fileClient.flush(content.length);
+        
+        // Set metadata
+        await fileClient.setMetadata({
+          batchId: batchId,
+          recordCount: events.length.toString(),
+          processedAt: now.toISOString(),
+          database: dbName,
+          collection: collName,
+          compressionEnabled: config.processing.compressionEnabled.toString()
+        });
+
+        uploadedFiles.push(fullPath);
+        context.log(`Uploaded ${events.length} records to ${fullPath}`);
+        
+      } catch (error) {
+        context.log.error(`Failed to upload ${fullPath}:`, error);
+        throw error;
+      }
+    }
+    
+    return uploadedFiles;
+  }
+
+  groupEventsByCollection(data) {
+    const grouped = {};
+    
+    data.forEach(event => {
+      const dbName = event.database_name || 'unknown_db';
+      const collName = event.collection_name || 'unknown_collection';
+      const key = `${dbName}.${collName}`;
+      
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(event);
+    });
+    
+    return grouped;
+  }
+
+  async ensureDirectoryExists(directoryPath) {
+    try {
+      const directoryClient = this.fileSystemClient.getDirectoryClient(directoryPath);
+      await directoryClient.createIfNotExists();
+    } catch (error) {
+      // Directory might already exist, which is fine
+      if (error.statusCode !== 409) {
+        throw error;
+      }
+    }
+  }
+
+  async ensureContainerExists() {
+    await this.fileSystemClient.createIfNotExists({
+      access: 'filesystem'
+    });
+  }
+
+  async ensureContainerExists() {
+    await this.containerClient.createIfNotExists({
+      access: 'blob'
+    });
+  }
+
+  async updateCheckpoint(events, context) {
+    // Store checkpoint information for tracking processed events
+    if (events.length === 0) return;
+
+    const checkpoint = {
+      lastProcessedTime: new Date().toISOString(),
+      partitionCheckpoints: {}
+    };
+
+    // Group events by partition and get latest offset for each
+    events.forEach(event => {
+      const partitionId = event.partitionId;
+      if (!checkpoint.partitionCheckpoints[partitionId] || 
+          event.sequenceNumber > checkpoint.partitionCheckpoints[partitionId].sequenceNumber) {
+        checkpoint.partitionCheckpoints[partitionId] = {
+          offset: event.offset,
+          sequenceNumber: event.sequenceNumber,
+          enqueuedTime: event.enqueuedTimeUtc
+        };
+      }
+    });
+
+    const checkpointPath = `${config.blobStorage.basePath}/_checkpoints/latest.json`;
+    const checkpointClient = this.fileSystemClient.getFileClient(checkpointPath);
+    
+    const checkpointContent = JSON.stringify(checkpoint, null, 2);
+    
+    try {
+      await checkpointClient.create();
+    } catch (error) {
+      // File might exist, which is fine for overwrite
+    }
+    
+    await checkpointClient.append(checkpointContent, 0, checkpointContent.length);
+    await checkpointClient.flush(checkpointContent.length);
+    
+    await checkpointClient.setMetadata({ 
+      updatedAt: new Date().toISOString() 
+    });
+  }
+
+  async close() {
+    await this.consumerClient.close();
+  }
+}
+
+// Main Azure Function entry point
+module.exports = async function (context, myTimer) {
+  const processor = new EventHubProcessor();
+  
+  try {
+    await processor.processEvents(context);
+  } catch (error) {
+    context.log.error('Function execution failed:', error);
+    throw error;
+  } finally {
+    await processor.close();
+  }
+};
+
+// package.json
+{
+  "name": "eventhub-to-blob-pipeline",
+  "version": "1.0.0",
+  "description": "Azure Function to process Event Hub events and store in Blob Storage for Snowflake ingestion",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.4",
+    "@azure/storage-file-datalake": "^12.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+
+```
+
+### Azure deployment configuration
+
+
+# Azure Resource Manager Template (ARM) or Bicep equivalent
+# Deploy this using Azure CLI or Azure DevOps
+```
+# 1. local.settings.json (for local development)
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=<storage-account>;AccountKey=<key>;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "WEBSITE_NODE_DEFAULT_VERSION": "~18",
+    
+    "EVENT_HUB_CONNECTION_STRING": "Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=<policy>;SharedAccessKey=<key>",
+    "EVENT_HUB_NAME": "mongodb-changes",
+    "CONSUMER_GROUP": "$Default",
+    
+    "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=<storage-account>;AccountKey=<key>;EndpointSuffix=core.windows.net",
+    "BLOB_CONTAINER_NAME": "snowflake-ingestion",
+    
+    "MAX_BATCH_SIZE": "1000",
+    "MAX_WAIT_TIME_MS": "300000",
+    "FILE_FORMAT": "json",
+    "ENABLE_COMPRESSION": "true"
+  }
+}
+
+---
+# 2. Azure Function App Configuration (for production deployment)
+# Environment Variables to set in Azure Portal or ARM template
+
+variables:
+  # Timer Configuration
+  # Format: "seconds minutes hours day month dayofweek"
+  # Examples:
+  # Hourly: "0 0 */1 * * *"
+  # Every 2 hours: "0 0 */2 * * *" 
+  # Every 30 minutes: "0 */30 * * * *"
+  # Daily at 2 AM: "0 0 2 * * *"
+  TIMER_SCHEDULE: "0 0 */1 * * *"  # Default: every hour
+  
+  # Event Hub Settings
+  EVENT_HUB_CONNECTION_STRING: "$(EventHub.ConnectionString)"
+  EVENT_HUB_NAME: "mongodb-changes"
+  CONSUMER_GROUP: "$Default"
+  
+  # Storage Settings  
+  AZURE_STORAGE_CONNECTION_STRING: "$(Storage.ConnectionString)"
+  BLOB_CONTAINER_NAME: "snowflake-ingestion"
+  
+  # Processing Settings
+  MAX_BATCH_SIZE: "1000"
+  MAX_WAIT_TIME_MS: "300000"  # 5 minutes
+  FILE_FORMAT: "json"
+  ENABLE_COMPRESSION: "true"
+
+---
+# 3. function.json configurations for different schedules
+
+# Hourly (default)
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger", 
+      "direction": "in",
+      "schedule": "0 0 */1 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+# Every 2 hours
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in", 
+      "schedule": "0 0 */2 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+# Every 30 minutes
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */30 * * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+# Every 4 hours
+{
+  "bindings": [
+    {
+      "name": "myTimer", 
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 */4 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+---
+# 4. Azure Event Grid Configuration for Snowpipe Auto-Ingest
+
+# Create Event Grid subscription on the storage account
+# This will notify Snowflake when new files are created
+
+# Azure CLI commands to set up Event Grid:
+
+# Create Event Grid subscription
+az eventgrid event-subscription create \
+  --name snowflake-ingestion-subscription \
+  --source-resource-id "/subscriptions/{subscription-id}/resourceGroups/{resource-group}/providers/Microsoft.Storage/storageAccounts/{storage-account}" \
+  --endpoint-type webhook \
+  --endpoint "https://{snowflake-account}.snowflakecomputing.com/api/v1/notifications/{pipe-notification-channel}" \
+  --included-event-types Microsoft.Storage.BlobCreated \
+  --subject-begins-with "/blobServices/default/containers/snowflake-ingestion/blobs/mongodb-changes/" \
+  --advanced-filter data.contentType stringin application/json
+
+---
+# 5. Azure DevOps Pipeline (azure-pipelines.yml)
+
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - src/functions/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  azureSubscription: 'your-service-connection'
+  functionAppName: 'mongodb-pipeline-function'
+  resourceGroupName: 'mongodb-pipeline-rg'
+
+stages:
+- stage: Build
+  jobs:
+  - job: BuildFunction
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run build --if-present
+      displayName: 'npm install and build'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: DeployFunction
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureFunctionApp@1
+            displayName: 'Deploy Azure Function'
+            inputs:
+              azureSubscription: '$(azureSubscription)'
+              appType: 'functionApp'
+              appName: '$(functionAppName)'
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              deploymentMethod: 'auto'
+
+---
+# 6. Infrastructure as Code (Bicep template)
+
+@description('The name of the function app')
+param functionAppName string = 'mongodb-pipeline-func-${uniqueString(resourceGroup().id)}'
+
+@description('The name of the storage account')
+param storageAccountName string = 'mongopipeline${uniqueString(resourceGroup().id)}'
+
+@description('The name of the Event Hub namespace')
+param eventHubNamespaceName string = 'mongodb-eh-${uniqueString(resourceGroup().id)}'
+
+@description('Processing schedule (cron expression)')
+param processingSchedule string = '0 0 */1 * * *'
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
+  name: storageAccountName
+  location: resourceGroup().location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    accessTier: 'Hot'
+  }
+}
+
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2022-09-01' = {
+  parent: storageAccount
+  name: 'default'
+}
+
+resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' = {
+  parent: blobService
+  name: 'snowflake-ingestion'
+  properties: {
+    publicAccess: 'None'
+  }
+}
+
+resource eventHubNamespace 'Microsoft.EventHub/namespaces@2022-10-01-preview' = {
+  name: eventHubNamespaceName
+  location: resourceGroup().location
+  sku: {
+    name: 'Standard'
+    tier: 'Standard'
+    capacity: 1
+  }
+}
+
+resource eventHub 'Microsoft.EventHub/namespaces/eventhubs@2022-10-01-preview' = {
+  parent: eventHubNamespace
+  name: 'mongodb-changes'
+  properties: {
+    messageRetentionInDays: 1
+    partitionCount: 2
+  }
+}
+
+resource hostingPlan 'Microsoft.Web/serverfarms@2022-03-01' = {
+  name: '${functionAppName}-plan'
+  location: resourceGroup().location
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+}
+
+resource functionApp 'Microsoft.Web/sites@2022-03-01' = {
+  name: functionAppName
+  location: resourceGroup().location
+  kind: 'functionapp'
+  properties: {
+    serverFarmId: hostingPlan.id
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'node'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~18'
+        }
+        {
+          name: 'EVENT_HUB_CONNECTION_STRING'
+          value: listKeys(resourceId('Microsoft.EventHub/namespaces/authorizationRules', eventHubNamespace.name, 'RootManageSharedAccessKey'), '2022-10-01-preview').primaryConnectionString
+        }
+        {
+          name: 'EVENT_HUB_NAME'
+          value: 'mongodb-changes'
+        }
+        {
+          name: 'AZURE_STORAGE_CONNECTION_STRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'TIMER_SCHEDULE'
+          value: processingSchedule
+        }
+      ]
+    }
+  }
+}
+```
+
+
+
+
+# Without consumer Groups
+
 ```js
 // function.json - Azure Function configuration
 {
@@ -611,7 +1409,7 @@ SELECT * FROM mongodb_changes ORDER BY _snowflake_ingested_at DESC LIMIT 10;
 
 
 
-Excellent question! Let me compare Azure Functions vs node-cron for this specific use case:
+
 
 ## Azure Functions vs Node-Cron Comparison
 
