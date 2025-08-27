@@ -76,28 +76,32 @@ python -m pip install thing
 ```
 You don't need to activate a virtual environment to use it! This is just a convenience feature.
 If you use the commands situated in the Scripts (on windows) or bin (on Unix) folders
-in the virtual environment directly, they are specially crafted to only see the virtual environment even without activation.
+in the virtual environment directly,  
+ they are specially crafted to only see the virtual environment even without activation.
 In fact, activating just make those commands the default ones by manipulating a bunch of environment variables.
 
 
-The statement "You don't need to activate a virtual environment to use it" means
-that even if you don't explicitly activate a virtual environment
-(e.g., with source venv/bin/activate or .\venv\Scripts\activate),
+The statement "You don't need to activate a virtual environment to use it" means  
+that even if you don't explicitly activate a virtual environment  
+(e.g., with source venv/bin/activate or .\venv\Scripts\activate),  
  you can still use the environment by referencing its Python executable directly.
-
-How Virtual Environments Work
+```
+### How Virtual Environments Work
+```
 When you create a virtual environment in Python (using python -m venv venv or similar tools like virtualenv), a directory is created with:
 
 A standalone Python interpreter specific to the virtual environment.
 Its own site-packages directory for storing dependencies installed within the virtual environment.
+
 Activation
 Activating a virtual environment is essentially a convenience feature:
 
 It modifies your shell environment so that:
-The virtual environment's Python interpreter is used by default
+The virtual environment's Python interpreter is used by default  
 (e.g., running python refers to venv/bin/python instead of the system Python).
 Commands like pip install packages into the virtual environment.
 It often changes the shell prompt to indicate that the virtual environment is active.
+
 Using a Virtual Environment Without Activation
 Even if you don't activate the environment, you can use it by directly referencing the Python executable in the virtual environment.
 
@@ -142,6 +146,10 @@ https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
 ### uv  
 
 https://docs.astral.sh/uv/
+
+https://daniel.fastapicloud.dev/posts/til-2025-08-single-source-version-package-builds-with-uv-redux
+
+https://habr.com/ru/companies/otus/articles/940674/
 
 https://www.saaspegasus.com/guides/uv-deep-dive/
 
