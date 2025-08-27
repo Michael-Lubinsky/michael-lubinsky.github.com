@@ -1,3 +1,244 @@
+### How  to run Azure Function  **once per hour** 
+and read from **Azure Event Hubs** using an **Azure Functions (JavaScript)** **Timer Trigger**. The function uses **AAD (DefaultAzureCredential)** and a **Blob checkpoint store** so each hourly run resumes where the last one left off (no reprocessing).
+
+---
+
+## Project layout (Functions v4, JavaScript)
+
+```
+my-hourly-func/
+├─ host.json
+├─ local.settings.json          # local-only secrets/settings
+├─ package.json
+├─ pullHourly/                  # the Timer-triggered function
+│  ├─ function.json
+│  └─ index.js
+```
+
+---
+
+## 1) Create the Function
+
+```bash
+mkdir my-hourly-func && cd my-hourly-func
+func init . --worker-runtime javascript --model V4
+func new --template "Timer trigger" --name pullHourly
+npm i @azure/identity @azure/event-hubs @azure/storage-blob @azure/eventhubs-checkpointstore-blob
+```
+
+---
+
+## 2) Bindings (cron schedule = every hour on the hour, UTC)
+
+**pullHourly/function.json**
+
+```json
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 * * * *"
+    }
+  ]
+}
+```
+
+Notes:
+
+* NCRONTAB format is: `{second} {minute} {hour} {day} {month} {day-of-week}`.
+* The schedule is **UTC** by default. If you need local time, either (a) adjust the cron for your offset, or (b) on **Windows plans** set the app setting `WEBSITE_TIME_ZONE=America/Los_Angeles`. On Linux plans, keep UTC and adjust the cron.
+
+---
+
+## 3) Timer function code (reads up to N seconds, checkpoints, then exits)
+
+**pullHourly/index.js**
+
+```js
+// Reads new events once per hour using AAD and a Blob checkpoint store.
+// Each run resumes from the last checkpoint per partition, otherwise
+// starts from events enqueued in the last HOUR (configurable).
+
+const { DefaultAzureCredential } = require("@azure/identity");
+const { EventHubConsumerClient, earliestEventPosition } = require("@azure/event-hubs");
+const { BlobServiceClient } = require("@azure/storage-blob");
+const { BlobCheckpointStore } = require("@azure/eventhubs-checkpointstore-blob");
+
+const EH_FQDN = process.env.EVENTHUB_FQDN;              // e.g. "myns.servicebus.windows.net"
+const EH_NAME = process.env.EVENTHUB_NAME;              // e.g. "myeventh u b"
+const GROUP    = process.env.CONSUMER_GROUP || "$Default";
+
+const BLOB_ACCOUNT_URL = process.env.BLOB_ACCOUNT_URL;  // e.g. "https://mystorage.blob.core.windows.net"
+const BLOB_CONTAINER   = process.env.BLOB_CONTAINER || `eh-checkpoints-hourly`;
+
+const MAX_RUN_MS       = Number(process.env.MAX_RUN_MS || 60_000);     // how long to read each hour
+const LOOKBACK_MINUTES = Number(process.env.LOOKBACK_MINUTES || 60);   // first run start position
+
+module.exports = async function (context, myTimer) {
+  if (!EH_FQDN || !EH_NAME || !BLOB_ACCOUNT_URL) {
+    context.log.error("Missing env: EVENTHUB_FQDN, EVENTHUB_NAME, BLOB_ACCOUNT_URL are required.");
+    return;
+  }
+
+  const credential = new DefaultAzureCredential();
+
+  // Prepare checkpoint store
+  const blobSvc = new BlobServiceClient(BLOB_ACCOUNT_URL, credential);
+  const container = blobSvc.getContainerClient(BLOB_CONTAINER);
+  await container.createIfNotExists();
+  const checkpointStore = new BlobCheckpointStore(container);
+
+  // Create consumer client (no connection string; uses AAD)
+  const consumer = new EventHubConsumerClient(GROUP, EH_FQDN, EH_NAME, credential, checkpointStore);
+
+  // If no checkpoint exists yet, start from a time window (default: last 60 minutes)
+  const fallbackStart = {
+    enqueuedOn: new Date(Date.now() - LOOKBACK_MINUTES * 60 * 1000)
+  };
+
+  const startOptions = {
+    // startPosition is only used for partitions without a checkpoint.
+    startPosition: fallbackStart,
+    maxBatchSize: 100,            // tune as needed
+    maxWaitTimeInSeconds: 5
+  };
+
+  context.log(`Starting hourly pull: group=${GROUP}, start=${fallbackStart.enqueuedOn.toISOString()}, window=${MAX_RUN_MS}ms`);
+
+  const subscription = consumer.subscribe(
+    {
+      processEvents: async (events, ctx) => {
+        for (const ev of events) {
+          // Your processing here:
+          context.log(`[p${ctx.partitionId} seq=${ev.sequenceNumber}]`, safeBody(ev.body));
+
+          // Checkpoint periodically (here: each batch’s last event)
+        }
+        if (events.length > 0) {
+          await ctx.updateCheckpoint(events[events.length - 1]);
+        }
+      },
+      processError: async (err, ctx) => {
+        context.log.warn(`Error on partition ${ctx.partitionId}: ${err.message}`);
+      }
+    },
+    startOptions
+  );
+
+  // Let it run for MAX_RUN_MS, then stop and exit until next hour
+  await delay(MAX_RUN_MS);
+  await subscription.close();
+  await consumer.close();
+
+  context.log("Hourly pull complete.");
+};
+
+function delay(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function safeBody(b) {
+  try {
+    if (Buffer.isBuffer(b)) return b.toString("utf8");
+    if (typeof b === "string") return b;
+    return JSON.stringify(b);
+  } catch {
+    return String(b);
+  }
+}
+```
+
+How it works:
+
+* On each hourly invocation:
+
+  * The function subscribes across all partitions.
+  * If checkpoints exist, it resumes from there. If not, it starts from events enqueued in the last `LOOKBACK_MINUTES` (default 60).
+  * Processes events for `MAX_RUN_MS` (default 60s), checkpoints, then closes and exits.
+* Next hour, it picks up from the saved checkpoints.
+
+---
+
+## 4) Local settings (for local test only)
+
+**local.settings.json**
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",  // required placeholder for local run
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "EVENTHUB_FQDN": "myns.servicebus.windows.net",
+    "EVENTHUB_NAME": "myeventhub",
+    "CONSUMER_GROUP": "$Default",
+    "BLOB_ACCOUNT_URL": "https://mystorage.blob.core.windows.net",
+    "BLOB_CONTAINER": "eh-checkpoints-hourly",
+    "MAX_RUN_MS": "60000",
+    "LOOKBACK_MINUTES": "60"
+  }
+}
+```
+
+To run locally:
+
+```bash
+func start
+```
+
+Sign in for AAD locally (`az login`) or set credentials via environment (service principal) so `DefaultAzureCredential` can authenticate both **Event Hubs** and **Blob Storage**.
+
+---
+
+## 5) Deploy & configure in Azure
+
+```bash
+# create resource group, storage, and function app (Consumption, Node)
+az group create -n my-func-rg -l westus3
+az storage account create -g my-func-rg -n <uniqueStorageName> -l westus3 --sku Standard_LRS
+az functionapp create -g my-func-rg -n <uniqueFuncName> \
+  --consumption-plan-location westus3 --runtime node --functions-version 4 \
+  --storage-account <uniqueStorageName>
+```
+
+App settings (at minimum):
+
+```bash
+az functionapp config appsettings set -g my-func-rg -n <uniqueFuncName> --settings \
+  "EVENTHUB_FQDN=myns.servicebus.windows.net" \
+  "EVENTHUB_NAME=myeventhub" \
+  "CONSUMER_GROUP=$Default" \
+  "BLOB_ACCOUNT_URL=https://mystorage.blob.core.windows.net" \
+  "BLOB_CONTAINER=eh-checkpoints-hourly" \
+  "MAX_RUN_MS=60000" \
+  "LOOKBACK_MINUTES=60"
+```
+
+Publish:
+
+```bash
+func azure functionapp publish <uniqueFuncName>
+```
+
+Grant permissions (AAD) to the function’s identity (Managed Identity or your SPN):
+
+* **Event Hubs data-plane:** `Azure Event Hubs Data Receiver` on the namespace (or hub).
+* **Blob Storage:** `Storage Blob Data Contributor` on the storage account.
+  (Assign via `az role assignment create …` or Portal.)
+
+---
+
+## Alternative: Event Hubs **Capture** + hourly Timer
+
+If you truly want batch/hour semantics and avoid holding any Event Hubs client, enable **Event Hubs Capture** → ADLS Gen2/Blob (hourly or 5-min windows), then the hourly Timer Function enumerates the new files and processes them. This is often simpler and scales well.
+
+
+
+
+
+
 # How to run your Node.js code as an Azure Function (JavaScript)
 
 Below is a practical path to take a plain Node.js file and run it as an Azure Function. I’ll show two common trigger styles:
