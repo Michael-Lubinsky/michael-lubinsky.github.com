@@ -128,3 +128,106 @@ Snowflake
 **This is significantly simpler and more robust** than my original approach. 
 
 Event Hub Capture eliminates all the Event Hub client complexity while providing true batch semantics and better reliability!
+
+
+```bash
+# Event Hub Capture Setup Commands
+
+# 1. Create ADLS Gen2 Storage Account (if not exists)
+az storage account create \
+  --name yourstorageaccount \
+  --resource-group mongodb-pipeline-rg \
+  --location eastus \
+  --sku Standard_LRS \
+  --kind StorageV2 \
+  --hierarchical-namespace true  # This enables ADLS Gen2
+
+# 2. Create filesystem for capture
+az storage fs create \
+  --name eventhub-capture \
+  --account-name yourstorageaccount
+
+# 3. Enable Event Hub Capture - Method A: Azure CLI
+az eventhubs eventhub update \
+  --resource-group mongodb-pipeline-rg \
+  --namespace-name mongodb-eh-namespace \
+  --name mongodb-changes \
+  --enable-capture true \
+  --capture-interval-seconds 3600 \
+  --capture-size-limit-bytes 314572800 \
+  --destination-name EventHubArchive.AzureBlockBlob \
+  --storage-account yourstorageaccount \
+  --blob-container eventhub-capture \
+  --archive-name-format "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+
+# Alternative: 5-minute windows for lower latency
+az eventhubs eventhub update \
+  --resource-group mongodb-pipeline-rg \
+  --namespace-name mongodb-eh-namespace \
+  --name mongodb-changes \
+  --enable-capture true \
+  --capture-interval-seconds 300 \
+  --capture-size-limit-bytes 10485760 \
+  --destination-name EventHubArchive.AzureBlockBlob \
+  --storage-account yourstorageaccount \
+  --blob-container eventhub-capture \
+  --archive-name-format "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+
+# 4. Verify Capture is enabled
+az eventhubs eventhub show \
+  --resource-group mongodb-pipeline-rg \
+  --namespace-name mongodb-eh-namespace \
+  --name mongodb-changes \
+  --query '{captureEnabled:captureDescription.enabled, interval:captureDescription.intervalInSeconds, sizeLimit:captureDescription.sizeLimitInBytes}'
+
+# 5. List captured files (after some data flows)
+az storage fs file list \
+  --account-name yourstorageaccount \
+  --file-system eventhub-capture \
+  --path "mongodb-changes/" \
+  --recursive \
+  --output table
+
+# 6. Example: Download a specific capture file for inspection
+az storage fs file download \
+  --account-name yourstorageaccount \
+  --file-system eventhub-capture \
+  --source "mongodb-changes/2025/01/15/14/30/45/namespace.mongodb-changes.0.2025-01-15-14-30-45.json" \
+  --destination ./inspect-capture.json
+
+# 7. Set up proper permissions for the Function App
+# Get Function App's managed identity
+FUNCTION_APP_IDENTITY=$(az functionapp identity show \
+  --name mongodb-pipeline-function \
+  --resource-group mongodb-pipeline-rg \
+  --query principalId -o tsv)
+
+# Assign Storage Blob Data Contributor role
+az role assignment create \
+  --assignee $FUNCTION_APP_IDENTITY \
+  --role "Storage Blob Data Contributor" \
+  --scope "/subscriptions/<subscription-id>/resourceGroups/mongodb-pipeline-rg/providers/Microsoft.Storage/storageAccounts/yourstorageaccount"
+
+# 8. Configure Function App environment variables
+az functionapp config appsettings set \
+  --name mongodb-pipeline-function \
+  --resource-group mongodb-pipeline-rg \
+  --settings \
+    "AZURE_STORAGE_CONNECTION_STRING=<connection-string>" \
+    "ADLS_FILESYSTEM_NAME=eventhub-capture" \
+    "CAPTURE_PATH=mongodb-changes" \
+    "PROCESSED_PATH=processed/mongodb-changes" \
+    "LOOKBACK_HOURS=2" \
+    "BATCH_SIZE=1000" \
+    "ENABLE_COMPRESSION=true"
+
+# 9. Test capture is working - send test events
+# (This would be done by your MongoDB change stream producer)
+
+# 10. Monitor capture files being created
+watch "az storage fs file list \
+  --account-name yourstorageaccount \
+  --file-system eventhub-capture \
+  --path mongodb-changes/$(date -u +%Y/%m/%d/%H) \
+  --output table"
+```
