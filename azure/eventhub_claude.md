@@ -1,3 +1,103 @@
+# Event Hub → Azure Function → Blob Storage → Snowpipe Deployment Guide
+
+## Overview
+This solution processes MongoDB change streams from Azure Event Hub, transforms the data, stores it in Azure Blob Storage, and automatically ingests it into Snowflake using Snowpipe with configurable scheduling.
+
+## Architecture Components
+
+1. **Azure Function**: Timer-triggered function that processes Event Hub messages
+2. **Azure Blob Storage**: Intermediate storage for transformed data files
+3. **Azure Event Grid**: Triggers Snowpipe when new files are created
+4. **Snowflake Snowpipe**: Automatically ingests data from Blob Storage
+
+## Prerequisites
+
+- Azure subscription with appropriate permissions
+- Snowflake account with SYSADMIN privileges
+- MongoDB Atlas cluster with change streams enabled
+- Azure CLI installed locally
+
+## Step-by-Step Deployment
+
+### 1. Azure Resource Setup
+
+#### Option A: Using Azure Portal
+1. Create a Resource Group
+2. Create Storage Account with Blob Storage
+3. Create Event Hub Namespace and Event Hub
+4. Create Function App (Node.js runtime)
+
+#### Option B: Using Bicep Template (Recommended)
+```bash
+# Deploy infrastructure
+az deployment group create \
+  --resource-group mongodb-pipeline-rg \
+  --template-file infrastructure.bicep \
+  --parameters processingSchedule="0 0 */1 * * *"
+```
+
+### 2. Configure Snowflake
+
+1. Run the Snowflake setup script to create:
+   - Database and schema
+   - File format for JSON
+   - Storage integration
+   - External stage
+   - Target table
+   - Snowpipe
+
+2. **Important**: After creating the storage integration, retrieve the consent URL:
+```sql
+DESC STORAGE INTEGRATION azure_mongodb_integration;
+```
+Visit the provided URL to grant Snowflake access to your Azure Storage.
+
+### 3. Deploy Azure Function
+
+#### Local Development
+```bash
+# Install Azure Functions Core Tools
+npm install -g azure-functions-core-tools@4
+
+# Clone/create your function project
+func init MongoDBPipeline --node
+cd MongoDBPipeline
+
+# Copy the function code
+# Update local.settings.json with your connection strings
+
+# Test locally
+func start
+```
+
+#### Production Deployment
+```bash
+# Deploy using Azure Functions Core Tools
+func azure functionapp publish <function-app-name>
+
+# Or using Azure CLI
+az functionapp deployment source config-zip \
+  --resource-group mongodb-pipeline-rg \
+  --name <function-app-name> \
+  --src deployment.zip
+```
+
+### 4. Configure Event Grid for Auto-Ingest
+
+```bash
+# Get Snowpipe notification channel from Snowflake
+# Run in Snowflake: SHOW PIPES LIKE 'mongodb_changes_pipe';
+
+# Create Event Grid subscription
+az eventgrid event-subscription create \
+  --name snowflake-ingestion-subscription \
+  --source-resource-id "/subscriptions/{subscription-id}/resourceGroups/{rg}/providers/Microsoft.Storage/storageAccounts/{storage-account}" \
+  --endpoint-type webhook \
+  --endpoint "{snowflake-notification-url}" \
+  --included-event-types Microsoft.Storage.BlobCreated \
+  --subject-begins-with "/blobServices/default/containers/snowflake-ing
+```
+
 For hourly ingestion, use the Event Hub → Azure Function → Blob Storage → Snowpipe approach   
 rather than the ADLS Gen2 intermediate step in your original Pipeline A.   
 This eliminates one hop while leveraging native Azure Event Grid integration with Snowpipe.
