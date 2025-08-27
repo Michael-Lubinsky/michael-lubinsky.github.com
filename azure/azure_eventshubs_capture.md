@@ -233,9 +233,10 @@ watch "az storage fs file list \
 ```
 
 
-JAVASCRIPT
-```
+### Azure function
+ 
 // function.json - Azure Function configuration for file processing
+```json
 {
   "bindings": [
     {
@@ -247,8 +248,9 @@ JAVASCRIPT
   ],
   "scriptFile": "index.js"
 }
-
+```
 // index.js - Timer-triggered function to process Event Hub Capture files
+```js
 const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
 const path = require('path');
 const zlib = require('zlib');
@@ -591,8 +593,9 @@ module.exports = async function (context, myTimer) {
     throw error;
   }
 };
-
+```
 // package.json
+```json
 {
   "name": "eventhub-capture-processor",
   "version": "1.0.0",
