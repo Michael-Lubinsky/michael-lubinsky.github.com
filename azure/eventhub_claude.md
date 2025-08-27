@@ -95,12 +95,529 @@ Your approach is superior because:
 
 The updated code now uses ADLS Gen2 with your recommended folder hierarchy, storing data permanently in an organized, recoverable format. This gives you both the automation benefits AND the data lake advantages you were looking for.
 
+```js
+// function.json - Azure Function configuration
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 */1 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+// index.js - Main Azure Function
+const { EventHubConsumerClient } = require("@azure/event-hubs");
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const crypto = require('crypto');
+
+// Configuration from environment variables
+const config = {
+  eventHub: {
+    connectionString: process.env.EVENT_HUB_CONNECTION_STRING,
+    eventHubName: process.env.EVENT_HUB_NAME,
+    consumerGroup: process.env.CONSUMER_GROUP || "$Default"
+  },
+  blobStorage: {
+    connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    fileSystemName: process.env.ADLS_FILESYSTEM_NAME || "mongodb-data",
+    basePath: process.env.ADLS_BASE_PATH || "changestreams"
+  },
+  processing: {
+    maxBatchSize: parseInt(process.env.MAX_BATCH_SIZE) || 1000,
+    maxWaitTimeMs: parseInt(process.env.MAX_WAIT_TIME_MS) || 300000, // 5 minutes
+    fileFormat: process.env.FILE_FORMAT || "json", // json or parquet
+    compressionEnabled: process.env.ENABLE_COMPRESSION === "true"
+  }
+};
+
+class EventHubProcessor {
+  constructor() {
+    this.consumerClient = new EventHubConsumerClient(
+      config.eventHub.consumerGroup,
+      config.eventHub.connectionString,
+      config.eventHub.eventHubName
+    );
+    
+    this.dataLakeServiceClient = new DataLakeServiceClient(
+      config.blobStorage.connectionString
+    );
+    
+    this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(
+      config.blobStorage.fileSystemName
+    );
+  }
+
+  async processEvents(context) {
+    const startTime = Date.now();
+    const batchId = crypto.randomUUID();
+    
+    context.log(`Starting batch processing: ${batchId}`);
+
+    try {
+      await this.ensureContainerExists();
+      
+      const events = await this.readEventsFromHub(context);
+      
+      if (events.length === 0) {
+        context.log("No events to process");
+        return;
+      }
+
+      const processedData = await this.transformEvents(events, context);
+      const fileName = await this.writeToBlob(processedData, batchId, context);
+      
+      await this.updateCheckpoint(events, context);
+      
+      context.log(`Batch processing completed: ${batchId}, Events: ${events.length}, File: ${fileName}`);
+      
+    } catch (error) {
+      context.log.error(`Error processing batch ${batchId}:`, error);
+      throw error;
+    }
+  }
+
+  async readEventsFromHub(context) {
+    const events = [];
+    const partitionIds = await this.consumerClient.getPartitionIds();
+    
+    const readPromises = partitionIds.map(async (partitionId) => {
+      const partitionEvents = [];
+      
+      try {
+        const receiver = this.consumerClient.getEventDataBatch(partitionId, {
+          maxBatchSize: Math.floor(config.processing.maxBatchSize / partitionIds.length),
+          maxWaitTimeInSeconds: Math.floor(config.processing.maxWaitTimeMs / 1000)
+        });
+
+        for await (const eventData of receiver) {
+          partitionEvents.push({
+            partitionId,
+            offset: eventData.offset,
+            sequenceNumber: eventData.sequenceNumber,
+            enqueuedTimeUtc: eventData.enqueuedTimeUtc,
+            body: eventData.body,
+            properties: eventData.properties,
+            systemProperties: eventData.systemProperties
+          });
+
+          if (partitionEvents.length >= Math.floor(config.processing.maxBatchSize / partitionIds.length)) {
+            break;
+          }
+        }
+        
+      } catch (error) {
+        context.log.error(`Error reading from partition ${partitionId}:`, error);
+      }
+      
+      return partitionEvents;
+    });
+
+    const partitionResults = await Promise.all(readPromises);
+    partitionResults.forEach(partitionEvents => {
+      events.push(...partitionEvents);
+    });
+
+    return events.sort((a, b) => 
+      new Date(a.enqueuedTimeUtc) - new Date(b.enqueuedTimeUtc)
+    );
+  }
+
+  async transformEvents(events, context) {
+    const transformed = events.map(event => {
+      try {
+        // Parse MongoDB change stream event if it's JSON
+        let changeStreamEvent = event.body;
+        if (typeof changeStreamEvent === 'string') {
+          changeStreamEvent = JSON.parse(changeStreamEvent);
+        }
+
+        // Transform to Snowflake-friendly format
+        return {
+          // Metadata
+          event_id: crypto.randomUUID(),
+          processed_timestamp: new Date().toISOString(),
+          event_hub_metadata: {
+            partition_id: event.partitionId,
+            offset: event.offset,
+            sequence_number: event.sequenceNumber,
+            enqueued_time: event.enqueuedTimeUtc
+          },
+          
+          // MongoDB Change Stream data
+          operation_type: changeStreamEvent.operationType,
+          database_name: changeStreamEvent.ns?.db,
+          collection_name: changeStreamEvent.ns?.coll,
+          document_key: changeStreamEvent.documentKey,
+          full_document: changeStreamEvent.fullDocument,
+          update_description: changeStreamEvent.updateDescription,
+          cluster_time: changeStreamEvent.clusterTime,
+          
+          // Raw event for debugging
+          raw_event: changeStreamEvent
+        };
+        
+      } catch (error) {
+        context.log.error(`Error transforming event:`, error);
+        // Return error record for investigation
+        return {
+          event_id: crypto.randomUUID(),
+          processed_timestamp: new Date().toISOString(),
+          error: error.message,
+          raw_event: event.body
+        };
+      }
+    });
+
+    return transformed;
+  }
+
+  async writeToBlob(data, batchId, context) {
+    const now = new Date();
+    const year = now.getUTCFullYear();
+    const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(now.getUTCDate()).padStart(2, '0');
+    const hour = String(now.getUTCHours()).padStart(2, '0');
+    
+    // Group events by database and collection for better organization
+    const groupedEvents = this.groupEventsByCollection(data);
+    const uploadedFiles = [];
+
+    for (const [collectionKey, events] of Object.entries(groupedEvents)) {
+      const [dbName, collName] = collectionKey.split('.');
+      
+      // Create hierarchical path: basePath/database/collection/operation_type/YYYY/MM/DD/HH.jsonl
+      const folderPath = `${config.blobStorage.basePath}/${dbName}/${collName}/${year}/${month}/${day}`;
+      const fileName = `${hour}-${batchId}.jsonl`;
+      const fullPath = `${folderPath}/${fileName}`;
+
+      // Convert to JSONL format (one JSON per line)
+      const jsonlContent = events.map(record => JSON.stringify(record)).join('\n');
+      
+      let content = jsonlContent;
+      let contentType = 'application/x-ndjson';
+
+      if (config.processing.compressionEnabled) {
+        const zlib = require('zlib');
+        content = zlib.gzipSync(content);
+        fileName = fileName + '.gz';
+        fullPath = fullPath + '.gz';
+      }
+
+      try {
+        // Create directory path if it doesn't exist
+        await this.ensureDirectoryExists(folderPath);
+        
+        // Upload file to ADLS Gen2
+        const fileClient = this.fileSystemClient.getFileClient(fullPath);
+        await fileClient.create();
+        await fileClient.append(content, 0, content.length);
+        await fileClient.flush(content.length);
+        
+        // Set metadata
+        await fileClient.setMetadata({
+          batchId: batchId,
+          recordCount: events.length.toString(),
+          processedAt: now.toISOString(),
+          database: dbName,
+          collection: collName,
+          compressionEnabled: config.processing.compressionEnabled.toString()
+        });
+
+        uploadedFiles.push(fullPath);
+        context.log(`Uploaded ${events.length} records to ${fullPath}`);
+        
+      } catch (error) {
+        context.log.error(`Failed to upload ${fullPath}:`, error);
+        throw error;
+      }
+    }
+    
+    return uploadedFiles;
+  }
+
+  groupEventsByCollection(data) {
+    const grouped = {};
+    
+    data.forEach(event => {
+      const dbName = event.database_name || 'unknown_db';
+      const collName = event.collection_name || 'unknown_collection';
+      const key = `${dbName}.${collName}`;
+      
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(event);
+    });
+    
+    return grouped;
+  }
+
+  async ensureDirectoryExists(directoryPath) {
+    try {
+      const directoryClient = this.fileSystemClient.getDirectoryClient(directoryPath);
+      await directoryClient.createIfNotExists();
+    } catch (error) {
+      // Directory might already exist, which is fine
+      if (error.statusCode !== 409) {
+        throw error;
+      }
+    }
+  }
+
+  async ensureContainerExists() {
+    await this.fileSystemClient.createIfNotExists({
+      access: 'filesystem'
+    });
+  }
+
+  async ensureContainerExists() {
+    await this.containerClient.createIfNotExists({
+      access: 'blob'
+    });
+  }
+
+  async updateCheckpoint(events, context) {
+    // Store checkpoint information for tracking processed events
+    if (events.length === 0) return;
+
+    const checkpoint = {
+      lastProcessedTime: new Date().toISOString(),
+      partitionCheckpoints: {}
+    };
+
+    // Group events by partition and get latest offset for each
+    events.forEach(event => {
+      const partitionId = event.partitionId;
+      if (!checkpoint.partitionCheckpoints[partitionId] || 
+          event.sequenceNumber > checkpoint.partitionCheckpoints[partitionId].sequenceNumber) {
+        checkpoint.partitionCheckpoints[partitionId] = {
+          offset: event.offset,
+          sequenceNumber: event.sequenceNumber,
+          enqueuedTime: event.enqueuedTimeUtc
+        };
+      }
+    });
+
+    const checkpointPath = `${config.blobStorage.basePath}/_checkpoints/latest.json`;
+    const checkpointClient = this.fileSystemClient.getFileClient(checkpointPath);
+    
+    const checkpointContent = JSON.stringify(checkpoint, null, 2);
+    
+    try {
+      await checkpointClient.create();
+    } catch (error) {
+      // File might exist, which is fine for overwrite
+    }
+    
+    await checkpointClient.append(checkpointContent, 0, checkpointContent.length);
+    await checkpointClient.flush(checkpointContent.length);
+    
+    await checkpointClient.setMetadata({ 
+      updatedAt: new Date().toISOString() 
+    });
+  }
+
+  async close() {
+    await this.consumerClient.close();
+  }
+}
+
+// Main Azure Function entry point
+module.exports = async function (context, myTimer) {
+  const processor = new EventHubProcessor();
+  
+  try {
+    await processor.processEvents(context);
+  } catch (error) {
+    context.log.error('Function execution failed:', error);
+    throw error;
+  } finally {
+    await processor.close();
+  }
+};
+
+// package.json
+{
+  "name": "eventhub-to-blob-pipeline",
+  "version": "1.0.0",
+  "description": "Azure Function to process Event Hub events and store in Blob Storage for Snowflake ingestion",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.4",
+    "@azure/storage-file-datalake": "^12.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
+ ## Snowflake Setup
+```sql
+-- Snowflake Setup Script for Azure Blob Storage Integration
+-- Run these commands in your Snowflake worksheet
+
+-- 1. Create database and schema
+CREATE DATABASE IF NOT EXISTS MONGODB_REPLICA;
+USE DATABASE MONGODB_REPLICA;
+CREATE SCHEMA IF NOT EXISTS CHANGESTREAM_DATA;
+USE SCHEMA CHANGESTREAM_DATA;
+
+-- 2. Create file format for JSON data
+CREATE OR REPLACE FILE FORMAT json_format
+  TYPE = 'JSON'
+  COMPRESSION = 'GZIP'
+  STRIP_OUTER_ARRAY = FALSE;
+
+-- 3. Create storage integration for Azure Blob Storage
+-- Replace with your actual Azure storage account details
+CREATE OR REPLACE STORAGE INTEGRATION azure_mongodb_integration
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'AZURE'
+  ENABLED = TRUE
+  AZURE_TENANT_ID = '<your-azure-tenant-id>'
+  STORAGE_ALLOWED_LOCATIONS = ('azure://yourstorageaccount.blob.core.windows.net/snowflake-ingestion/');
+
+-- 4. Retrieve the Azure consent URL (run this and follow the URL to grant permissions)
+DESC STORAGE INTEGRATION azure_mongodb_integration;
+
+-- 5. Create external stage pointing to ADLS Gen2 with hierarchical structure
+CREATE OR REPLACE STAGE mongodb_stage
+  STORAGE_INTEGRATION = azure_mongodb_integration
+  URL = 'azure://yourstorageaccount.dfs.core.windows.net/mongodb-data/changestreams/'
+  FILE_FORMAT = json_format;
+
+-- 6. Create target table for MongoDB change stream data
+CREATE OR REPLACE TABLE mongodb_changes (
+  -- Metadata columns
+  event_id VARCHAR(36),
+  processed_timestamp TIMESTAMP_NTZ,
+  
+  -- Event Hub metadata
+  partition_id VARCHAR(10),
+  offset VARCHAR(50),
+  sequence_number NUMBER,
+  enqueued_time TIMESTAMP_NTZ,
+  
+  -- MongoDB change stream columns
+  operation_type VARCHAR(20),
+  database_name VARCHAR(100),
+  collection_name VARCHAR(100),
+  document_key VARIANT,
+  full_document VARIANT,
+  update_description VARIANT,
+  cluster_time TIMESTAMP_NTZ,
+  
+  -- Raw data for debugging
+  raw_event VARIANT,
+  
+  -- Snowflake metadata
+  _snowflake_ingested_at TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
+);
+
+-- 7. Create pipe for automatic ingestion
+CREATE OR REPLACE PIPE mongodb_changes_pipe
+  AUTO_INGEST = TRUE
+  AWS_SNS_TOPIC = '<notification-channel-if-using-aws>' -- Optional for Azure Event Grid
+AS
+  COPY INTO mongodb_changes (
+    event_id,
+    processed_timestamp,
+    partition_id,
+    offset,
+    sequence_number,
+    enqueued_time,
+    operation_type,
+    database_name,
+    collection_name,
+    document_key,
+    full_document,
+    update_description,
+    cluster_time,
+    raw_event
+  )
+  FROM (
+    SELECT 
+      $1:event_id::VARCHAR,
+      $1:processed_timestamp::TIMESTAMP_NTZ,
+      $1:event_hub_metadata.partition_id::VARCHAR,
+      $1:event_hub_metadata.offset::VARCHAR,
+      $1:event_hub_metadata.sequence_number::NUMBER,
+      $1:event_hub_metadata.enqueued_time::TIMESTAMP_NTZ,
+      $1:operation_type::VARCHAR,
+      $1:database_name::VARCHAR,
+      $1:collection_name::VARCHAR,
+      $1:document_key::VARIANT,
+      $1:full_document::VARIANT,
+      $1:update_description::VARIANT,
+      $1:cluster_time::TIMESTAMP_NTZ,
+      $1:raw_event::VARIANT
+    FROM @mongodb_stage
+  )
+  FILE_FORMAT = json_format;
+
+-- 8. Show pipe details (you'll need the notification_channel for Azure Event Grid)
+SHOW PIPES LIKE 'mongodb_changes_pipe';
+
+-- 9. Create views for different operation types
+CREATE OR REPLACE VIEW mongodb_inserts AS
+SELECT * FROM mongodb_changes WHERE operation_type = 'insert';
+
+CREATE OR REPLACE VIEW mongodb_updates AS
+SELECT * FROM mongodb_changes WHERE operation_type = 'update';
+
+CREATE OR REPLACE VIEW mongodb_deletes AS
+SELECT * FROM mongodb_changes WHERE operation_type = 'delete';
+
+-- 10. Create a monitoring view
+CREATE OR REPLACE VIEW ingestion_monitoring AS
+SELECT 
+  DATE_TRUNC('hour', _snowflake_ingested_at) as ingestion_hour,
+  database_name,
+  collection_name,
+  operation_type,
+  COUNT(*) as record_count,
+  MIN(_snowflake_ingested_at) as first_record_time,
+  MAX(_snowflake_ingested_at) as last_record_time
+FROM mongodb_changes 
+GROUP BY 1, 2, 3, 4
+ORDER BY 1 DESC;
+
+-- 11. Grant necessary permissions (adjust roles as needed)
+GRANT USAGE ON WAREHOUSE COMPUTE_WH TO ROLE SYSADMIN;
+GRANT USAGE ON DATABASE MONGODB_REPLICA TO ROLE SYSADMIN;
+GRANT USAGE ON SCHEMA CHANGESTREAM_DATA TO ROLE SYSADMIN;
+GRANT SELECT, INSERT ON TABLE mongodb_changes TO ROLE SYSADMIN;
+GRANT SELECT ON ALL VIEWS IN SCHEMA CHANGESTREAM_DATA TO ROLE SYSADMIN;
+
+-- 12. Test the setup
+-- List files in stage
+LIST @mongodb_stage;
+
+-- Manual copy command for testing (before pipe is set up)
+-- COPY INTO mongodb_changes FROM @mongodb_stage FILE_FORMAT = json_format;
+
+-- Check pipe status
+SELECT SYSTEM$PIPE_STATUS('mongodb_changes_pipe');
+
+-- View recent ingestions
+SELECT * FROM mongodb_changes ORDER BY _snowflake_ingested_at DESC LIMIT 10;
+
+
+```
 
 
 
 
 
 
+
+
+
+-----  OLD
 
 
 ----   old ------
