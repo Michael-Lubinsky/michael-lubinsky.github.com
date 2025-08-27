@@ -452,39 +452,48 @@ If you paste your current Node file (or describe what it does), I can drop it in
 [9]: https://learn.microsoft.com/en-us/azure/azure-functions/functions-host-json?utm_source=chatgpt.com "host.json reference for Azure Functions 2.x and later"
 
 
-### Gemini
+# Gemini
 
 
-Guide to Deploying and Testing an Azure Function1.
-Prerequisites
+## Guide to Deploying and Testing an Azure Function1.
 
-Before you can deploy and test your Azure Function, you need to set up your local environment.Node.js: Make sure you have Node.js and npm installed. The Azure Functions runtime supports various Node.js versions.Azure Functions Core Tools: 
+### Prerequisites
+
+Before you can deploy and test your Azure Function, you need to set up your local environment.Node.js:   
+Make sure you have Node.js and npm installed. The Azure Functions runtime supports various Node.js versions.  
+Azure Functions Core Tools: 
 This is a local development kit for Azure Functions. You can install it via npm:n
-
-pm install -g azure-functions-core-tools@4 --unsafe-perm true
-
+```
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
+```
 Azure CLI: This command-line tool is used for deploying and managing Azure resources.
-
+```
 az login
-
+```
 Event Hubs and Storage Account: You'll need an Event Hubs namespace with an Event Hub and a Storage Account for the consumer group and checkpointing.
 
 2. Local Development
    Initialize your Function project: In an empty directory, run the following command to create a new TypeScript project.
-
+```
  func init . --worker-runtime node --language typescript
-
+```
 
 Create the function: Run this command to create a new timer-triggered function.
 
-
+```
 func new --name HourlyEventHubReader --template "Timer trigger"
-
+```
 
 This will create a new folder HourlyEventHubReader with a function.json and index.ts file.
 
-3. Install dependencies: Install the necessary Azure SDK packages.npm install @azure/event-hubs @azure/eventhubs-checkpointstore-blob @azure/storage-blob
-Add the code: Replace the content of HourlyEventHubReader/index.ts with the code provided in the Canvas above.Configure local settings: Create a file named local.settings.json in the root of your project. This is where you'll store your connection strings for local testing. Do not check this file into source control.
+3. Install dependencies: Install the necessary Azure SDK packages.
+```
+   npm install @azure/event-hubs @azure/eventhubs-checkpointstore-blob @azure/storage-blob
+```
+Add the code: Replace the content of ```HourlyEventHubReader/index.ts``` with the code provided in the Canvas above.  
+Configure local settings: Create a file named ```local.settings.json``` in the root of your project.   
+This is where you'll store your connection strings for local testing. 
+Do not check this file into source control.
 
 ```ini
 {
@@ -498,23 +507,31 @@ Add the code: Replace the content of HourlyEventHubReader/index.ts with the code
   }
 }
 ```
-5. Local TestingTo test your function locally, run this command from the root of your project:
-  
+5. Local Testing
+
+ To test your function locally, run this command from the root of your project:
+```  
    func start
-
-This will start the Azure Functions host and you can see your function being triggered and processing events in the terminal output.4. Deployment to AzureCreate a Function App: Log in to the Azure portal and create a new Function App. Choose a Node.js runtime and an appropriate plan (e.g., Consumption Plan).Deploy from your local machine: Use the Azure CLI to deploy your function. Navigate to your project's root directory and run:func azure functionapp publish <YOUR_FUNCTION_APP_NAME>
-
+```
+This will start the Azure Functions host and you can see your function being triggered and processing events in the terminal output.
+4. Deployment to AzureCreate a Function App: 
+```
+Log in to the Azure portal and create a new Function App. 
+Choose a Node.js runtime and an appropriate plan (e.g., Consumption Plan).
+Deploy from your local machine: Use the Azure CLI to deploy your function. 
+Navigate to your project's root directory and run:func azure functionapp publish <YOUR_FUNCTION_APP_NAME>
+```
 
 Configure Application Settings:
 
 In the Azure portal, navigate to your Function App and go to Configuration. 
 
-Add the EventHubsConnection, EventHubName, and ConsumerGroupName settings with their respective values.
-This is equivalent to local.settings.json but for the cloud.
+Add the `EventHubsConnection`, `EventHubName`, and `ConsumerGroupName` settings with their respective values.
+This is equivalent to ```local.settings.json``` but for the cloud.
 
 5. Monitoring and Testing in AzureView Logs:
 
-In your Function App in the Azure portal, you can use the Log Stream to see the real-time output of your function's context.log calls.
+In your Function App in the Azure portal, you can use the Log Stream to see the real-time output of your function's ```context.log``` calls.
 
 Run Now: You can manually trigger your timer function in the portal by clicking the Run button to test the event processing without waiting for the next scheduled run.
 
