@@ -231,3 +231,378 @@ watch "az storage fs file list \
   --path mongodb-changes/$(date -u +%Y/%m/%d/%H) \
   --output table"
 ```
+
+
+JAVASCRIPT
+```
+// function.json - Azure Function configuration for file processing
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 5 */1 * * *"
+    }
+  ],
+  "scriptFile": "index.js"
+}
+
+// index.js - Timer-triggered function to process Event Hub Capture files
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const path = require('path');
+const zlib = require('zlib');
+
+// Configuration from environment variables
+const config = {
+  adls: {
+    connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    fileSystemName: process.env.ADLS_FILESYSTEM_NAME || "eventhub-capture",
+    capturePath: process.env.CAPTURE_PATH || "mongodb-changes",
+    processedPath: process.env.PROCESSED_PATH || "processed/mongodb-changes"
+  },
+  processing: {
+    lookbackHours: parseInt(process.env.LOOKBACK_HOURS) || 2, // Process last N hours
+    batchSize: parseInt(process.env.BATCH_SIZE) || 1000,
+    enableCompression: process.env.ENABLE_COMPRESSION === "true"
+  }
+};
+
+class EventHubCaptureProcessor {
+  constructor() {
+    this.dataLakeServiceClient = new DataLakeServiceClient(
+      config.adls.connectionString
+    );
+    
+    this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(
+      config.adls.fileSystemName
+    );
+  }
+
+  async processNewCaptures(context) {
+    const batchId = new Date().toISOString().replace(/[:.]/g, '-');
+    
+    context.log(`Starting capture file processing: ${batchId}`);
+
+    try {
+      // Find new capture files to process
+      const newFiles = await this.findNewCaptureFiles(context);
+      
+      if (newFiles.length === 0) {
+        context.log("No new capture files to process");
+        return;
+      }
+
+      context.log(`Found ${newFiles.length} new capture files`);
+
+      // Process each capture file
+      const processedData = [];
+      for (const captureFile of newFiles) {
+        const events = await this.processCaptureFile(captureFile, context);
+        processedData.push(...events);
+      }
+
+      if (processedData.length === 0) {
+        context.log("No events extracted from capture files");
+        return;
+      }
+
+      // Write transformed data to organized hierarchy
+      await this.writeTransformedData(processedData, batchId, context);
+      
+      // Mark files as processed
+      await this.markFilesAsProcessed(newFiles, context);
+      
+      context.log(`Processing completed: ${processedData.length} events processed`);
+      
+    } catch (error) {
+      context.log.error(`Error processing captures:`, error);
+      throw error;
+    }
+  }
+
+  async findNewCaptureFiles(context) {
+    const newFiles = [];
+    const now = new Date();
+    
+    // Look back specified hours to catch any missed files
+    for (let i = 0; i < config.processing.lookbackHours; i++) {
+      const checkTime = new Date(now.getTime() - (i * 60 * 60 * 1000));
+      const year = checkTime.getUTCFullYear();
+      const month = String(checkTime.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(checkTime.getUTCDate()).padStart(2, '0');
+      const hour = String(checkTime.getUTCHours()).padStart(2, '0');
+      
+      // Event Hub Capture creates files like: 
+      // mongodb-changes/2025/01/15/14/eventhubnamespacename.mongodb-changes.0.2025-01-15.14.avro
+      const captureFolderPath = `${config.adls.capturePath}/${year}/${month}/${day}/${hour}`;
+      
+      try {
+        const directoryClient = this.fileSystemClient.getDirectoryClient(captureFolderPath);
+        const fileIter = directoryClient.listPaths({ recursive: false });
+        
+        for await (const file of fileIter) {
+          if (!file.isDirectory && 
+              (file.name.endsWith('.avro') || file.name.endsWith('.json')) &&
+              !await this.isFileProcessed(file.name)) {
+            
+            newFiles.push({
+              path: file.name,
+              lastModified: file.lastModified,
+              size: file.contentLength,
+              captureHour: `${year}-${month}-${day}-${hour}`
+            });
+          }
+        }
+        
+      } catch (error) {
+        if (error.statusCode !== 404) {
+          context.log.error(`Error checking folder ${captureFolderPath}:`, error);
+        }
+      }
+    }
+
+    return newFiles.sort((a, b) => new Date(a.lastModified) - new Date(b.lastModified));
+  }
+
+  async processCaptureFile(captureFile, context) {
+    context.log(`Processing capture file: ${captureFile.path}`);
+    
+    try {
+      const fileClient = this.fileSystemClient.getFileClient(captureFile.path);
+      const downloadResponse = await fileClient.read();
+      const content = await this.streamToBuffer(downloadResponse.readableStreamBody);
+      
+      let events;
+      
+      if (captureFile.path.endsWith('.avro')) {
+        // Parse Avro format (Event Hub Capture default)
+        events = await this.parseAvroContent(content, context);
+      } else if (captureFile.path.endsWith('.json')) {
+        // Parse JSON format
+        events = await this.parseJsonContent(content, context);
+      } else {
+        throw new Error(`Unsupported file format: ${captureFile.path}`);
+      }
+
+      // Transform events to Snowflake format
+      const transformedEvents = events.map(event => this.transformEvent(event, captureFile));
+      
+      context.log(`Extracted ${transformedEvents.length} events from ${captureFile.path}`);
+      return transformedEvents;
+      
+    } catch (error) {
+      context.log.error(`Error processing ${captureFile.path}:`, error);
+      return []; // Continue processing other files
+    }
+  }
+
+  async parseAvroContent(content, context) {
+    // Event Hub Capture stores in Avro format by default
+    // For simplicity, assuming JSON format here
+    // In production, use avro-js library to parse Avro files
+    throw new Error("Avro parsing not implemented - configure Event Hub Capture for JSON format");
+  }
+
+  async parseJsonContent(content, context) {
+    const textContent = content.toString('utf-8');
+    const lines = textContent.split('\n').filter(line => line.trim());
+    
+    return lines.map(line => {
+      try {
+        return JSON.parse(line);
+      } catch (error) {
+        context.log.warn(`Failed to parse line: ${line}`);
+        return null;
+      }
+    }).filter(event => event !== null);
+  }
+
+  transformEvent(event, captureFile) {
+    // Transform Event Hub captured event to Snowflake format
+    return {
+      event_id: require('crypto').randomUUID(),
+      processed_timestamp: new Date().toISOString(),
+      capture_file: captureFile.path,
+      capture_hour: captureFile.captureHour,
+      
+      // MongoDB Change Stream data (assuming event.body contains the change stream event)
+      operation_type: event.body?.operationType,
+      database_name: event.body?.ns?.db,
+      collection_name: event.body?.ns?.coll,
+      document_key: event.body?.documentKey,
+      full_document: event.body?.fullDocument,
+      update_description: event.body?.updateDescription,
+      cluster_time: event.body?.clusterTime,
+      
+      // Event Hub metadata
+      event_hub_metadata: {
+        enqueued_time: event.enqueuedTimeUtc,
+        offset: event.offset,
+        sequence_number: event.sequenceNumber,
+        partition_id: event.partitionId
+      },
+      
+      // Raw event for debugging
+      raw_event: event.body
+    };
+  }
+
+  async writeTransformedData(events, batchId, context) {
+    // Group events by database and collection
+    const groupedEvents = this.groupEventsByCollection(events);
+    const uploadedFiles = [];
+
+    for (const [collectionKey, collectionEvents] of Object.entries(groupedEvents)) {
+      const [dbName, collName] = collectionKey.split('.');
+      
+      // Use first event's capture hour for consistent organization
+      const captureHour = collectionEvents[0]?.capture_hour || 'unknown';
+      const [year, month, day, hour] = captureHour.split('-');
+      
+      // Create hierarchical path: processed/database/collection/YYYY/MM/DD/HH.jsonl
+      const folderPath = `${config.adls.processedPath}/${dbName}/${collName}/${year}/${month}/${day}`;
+      const fileName = `${hour}-${batchId}.jsonl`;
+      const fullPath = `${folderPath}/${fileName}`;
+
+      // Convert to JSONL format
+      let content = collectionEvents.map(record => JSON.stringify(record)).join('\n');
+      
+      if (config.processing.enableCompression) {
+        content = zlib.gzipSync(content);
+        fullPath += '.gz';
+      }
+
+      try {
+        await this.ensureDirectoryExists(folderPath);
+        
+        const fileClient = this.fileSystemClient.getFileClient(fullPath);
+        await fileClient.create();
+        await fileClient.append(content, 0, content.length);
+        await fileClient.flush(content.length);
+        
+        await fileClient.setMetadata({
+          batchId: batchId,
+          recordCount: collectionEvents.length.toString(),
+          processedAt: new Date().toISOString(),
+          database: dbName,
+          collection: collName,
+          sourceFiles: collectionEvents.map(e => e.capture_file).join(',')
+        });
+
+        uploadedFiles.push(fullPath);
+        context.log(`Uploaded ${collectionEvents.length} records to ${fullPath}`);
+        
+      } catch (error) {
+        context.log.error(`Failed to upload ${fullPath}:`, error);
+        throw error;
+      }
+    }
+    
+    return uploadedFiles;
+  }
+
+  groupEventsByCollection(events) {
+    const grouped = {};
+    
+    events.forEach(event => {
+      const dbName = event.database_name || 'unknown_db';
+      const collName = event.collection_name || 'unknown_collection';
+      const key = `${dbName}.${collName}`;
+      
+      if (!grouped[key]) {
+        grouped[key] = [];
+      }
+      grouped[key].push(event);
+    });
+    
+    return grouped;
+  }
+
+  async ensureDirectoryExists(directoryPath) {
+    try {
+      const directoryClient = this.fileSystemClient.getDirectoryClient(directoryPath);
+      await directoryClient.createIfNotExists();
+    } catch (error) {
+      if (error.statusCode !== 409) {
+        throw error;
+      }
+    }
+  }
+
+  async isFileProcessed(filePath) {
+    // Check if file has been processed by looking for marker
+    const markerPath = `_processed/${filePath}.marker`;
+    try {
+      const markerClient = this.fileSystemClient.getFileClient(markerPath);
+      await markerClient.getProperties();
+      return true; // File exists = already processed
+    } catch (error) {
+      return false; // File doesn't exist = not processed
+    }
+  }
+
+  async markFilesAsProcessed(files, context) {
+    const promises = files.map(async (file) => {
+      const markerPath = `_processed/${file.path}.marker`;
+      const markerClient = this.fileSystemClient.getFileClient(markerPath);
+      
+      const markerContent = JSON.stringify({
+        processedAt: new Date().toISOString(),
+        originalFile: file.path,
+        fileSize: file.size,
+        captureHour: file.captureHour
+      });
+
+      try {
+        await markerClient.create();
+        await markerClient.append(markerContent, 0, markerContent.length);
+        await markerClient.flush(markerContent.length);
+      } catch (error) {
+        context.log.error(`Failed to create marker for ${file.path}:`, error);
+      }
+    });
+
+    await Promise.all(promises);
+  }
+
+  async streamToBuffer(readableStream) {
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      readableStream.on('data', (data) => {
+        chunks.push(data instanceof Buffer ? data : Buffer.from(data));
+      });
+      readableStream.on('end', () => {
+        resolve(Buffer.concat(chunks));
+      });
+      readableStream.on('error', reject);
+    });
+  }
+}
+
+// Main Azure Function entry point
+module.exports = async function (context, myTimer) {
+  const processor = new EventHubCaptureProcessor();
+  
+  try {
+    await processor.processNewCaptures(context);
+  } catch (error) {
+    context.log.error('Function execution failed:', error);
+    throw error;
+  }
+};
+
+// package.json
+{
+  "name": "eventhub-capture-processor",
+  "version": "1.0.0",
+  "description": "Azure Function to process Event Hub Capture files and prepare for Snowflake ingestion",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/storage-file-datalake": "^12.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+```
