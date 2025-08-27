@@ -70,6 +70,15 @@ this.dataLakeServiceClient = new DataLakeServiceClient(
 this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(fileSystemName);
 ```
 
+The `AZURE_STORAGE_ACCOUNT_KEY` is required in a scenario where your code needs to **directly interact with Azure Storage services** (like Blob, Table, Queue, or File storage) outside of the security context provided by Managed Identities or Service Principals.
+
+For example, you would need to use `AZURE_STORAGE_ACCOUNT_KEY` if you are:
+
+* Using an older Azure SDK that does not support token-based authentication.
+* Running a non-Azure application that needs to authenticate with an Azure Storage account.
+* Accessing a storage account from a local development environment and you have not configured other authentication methods.
+* Performing an operation that is specifically a "data plane" operation and requires a key, as opposed to a "management plane" operation.
+* 
 ### 1. Azure Blob Storage
 
  The hierarchical view you see in the Azure WebUI is a **logical hierarchy**, not a **physical** one.    
