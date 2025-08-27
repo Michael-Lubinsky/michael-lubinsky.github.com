@@ -1,5 +1,6 @@
 # Azure Data Lake Storage
 
+az storage fs
 
 ### 1. Azure Blob Storage
 
