@@ -2,6 +2,74 @@
 
 az storage fs
 
+### Finding your storage account name and key 
+
+You can find both values directly in the Azure portal. Here are the steps:
+
+### 1. Navigate to your Storage Account
+Log in to the **Azure portal**. In the search bar at the top, type "Storage accounts" and select the service. From the list, click on the **name of your specific storage account**.
+
+---
+
+### 2. Access the Keys
+On the left-hand menu for your storage account, under the **"Security + networking"** section, click on **"Access keys"**.
+
+You will see two keys, `key1` and `key2`, along with their respective connection strings. Your **`AZURE_STORAGE_ACCOUNT_NAME`** is the name of the storage account itself. You can find your **`AZURE_STORAGE_ACCOUNT_KEY`** by clicking the **"Show keys"** button and then copying the **`Key`** value for either `key1` or `key2`. 
+
+You can absolutely find the storage account name and access keys using the Azure CLI. 
+
+Here are the commands you would use:
+
+**1. Get the Storage Account Name**
+You can list all storage accounts in a resource group to find the one you need.
+
+```bash
+az storage account list --resource-group <your-resource-group-name>
+```
+
+This command will return a JSON array of all storage accounts in that resource group.
+
+**2. Get the Access Keys**
+Once you have the storage account name, you can retrieve its access keys.
+
+```bash
+az storage account keys list --resource-group <your-resource-group-name> --account-name <your-storage-account-name>
+```
+
+The output will be a JSON object containing two keys (`key1` and `key2`). You can then extract the `value` field from either of these to use as your `AZURE_STORAGE_ACCOUNT_KEY`.
+
+Using the CLI is a great way to manage these credentials without needing to go through the Azure Portal.
+
+It is a recommended security best practice for production environments. 
+Instead of a single connection string, you can provide a list of name-value attributes, typically as environment variables.
+
+The Azure SDK for JavaScript uses a library called **`@azure/identity`** to handle authentication. 
+This library can automatically find credentials from your environment variables, so you don't have to manage a hard-coded connection string.
+
+You would typically set the following environment variables:
+
+  * **`AZURE_STORAGE_ACCOUNT_NAME`**: The name of your Azure storage account.
+  * **`AZURE_STORAGE_ACCOUNT_KEY`**: The access key for your storage account.
+
+With these variables set, you can modify your code to use a credential object instead of the connection string. Here is how your code would look:
+
+```javascript
+const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
+const { DefaultAzureCredential } = require("@azure/identity");
+
+// Instead of a connection string, use DefaultAzureCredential
+const credential = new DefaultAzureCredential();
+
+const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+
+this.dataLakeServiceClient = new DataLakeServiceClient(
+  `https://${accountName}.dfs.core.windows.net`,
+  credential
+);
+
+this.fileSystemClient = this.dataLakeServiceClient.getFileSystemClient(fileSystemName);
+```
+
 ### 1. Azure Blob Storage
 
  The hierarchical view you see in the Azure WebUI is a **logical hierarchy**, not a **physical** one.    
