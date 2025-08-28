@@ -2,7 +2,9 @@
 
 az storage fs
 
-Of course. You can see the contents of an ADLS Gen2 folder using the Azure CLI with a specific set of commands from the `az storage fs` group. This command group is designed to work with the hierarchical namespace of ADLS Gen2.
+You can see the contents of an ADLS Gen2 folder using the Azure CLI with a specific set of commands from the `az storage fs` group. 
+
+This command group is designed to work with the hierarchical namespace of ADLS Gen2.
 
 -----
 
