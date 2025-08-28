@@ -409,7 +409,7 @@ Try the updated code - it should handle the subscriber conflicts much better!
 
 
 --- fixed from bottom
-```
+```js
 const { EventHubConsumerClient, latestEventPosition } = require("@azure/event-hubs");
 const { DataLakeServiceClient } = require("@azure/storage-file-datalake");
 const { DefaultAzureCredential } = require("@azure/identity");
