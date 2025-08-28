@@ -2,6 +2,46 @@
 
 az storage fs
 
+Of course. You can see the contents of an ADLS Gen2 folder using the Azure CLI with a specific set of commands from the `az storage fs` group. This command group is designed to work with the hierarchical namespace of ADLS Gen2.
+
+-----
+
+### Listing Folder Contents
+
+The primary command to list the contents of a directory (or "file system" in ADLS terminology) is `az storage fs ls`.
+
+To see the contents of a specific folder, use this syntax:
+
+```bash
+az storage fs ls --account-name <account-name> --file-system <file-system-name> --path <folder-path>
+```
+
+Let's break down the parameters:
+
+  * **`--account-name`**: The name of your Azure Data Lake Storage Gen2 account (e.g., `weavixcheckpointsdevsa` from your script).
+  * **`--file-system`**: The name of the container or file system. This is the top-level directory (e.g., `adls`).
+  * **`--path`**: The path to the folder you want to inspect, relative to the file system root.
+
+For example, based on the `folderPath` in your Node.js script, you could use the following command to list the files in a specific hour's folder:
+
+```bash
+az storage fs ls --account-name weavixcheckpointsdevsa --file-system adls --path "adls/weavix_dev_db/telemetry/2025/08/27/12"
+```
+
+-----
+
+### Viewing File Content
+
+If you want to view the content of a specific file, you can use the `az storage fs cat` command.
+
+For example, to view the contents of a JSONL file:
+
+```bash
+az storage fs cat --account-name <account-name> --file-system <file-system-name> --path <file-path>
+```
+
+You would replace `<file-path>` with the full path to the file you want to see. This is useful for quickly verifying that the data was written correctly to the file system.
+
 ### Finding your storage account name and key 
 
 You can find both values directly in the Azure portal. Here are the steps:
