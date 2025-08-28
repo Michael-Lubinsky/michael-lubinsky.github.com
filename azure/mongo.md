@@ -26,7 +26,58 @@ Think of it as: *“MongoDB in the cloud, production-ready out of the box.”*
 
 In other words, ASP lets you **treat event streams like live collections** and query them in real time with familiar MongoDB syntax.  
 
----
+## MongoDB change streams have several standard `operationType` values t
+hat indicate what type of operation occurred on the database. Here are the typical values:
+
+## Core CRUD Operations:
+- **`insert`** - A new document was inserted
+- **`update`** - An existing document was modified
+- **`replace`** - An entire document was replaced
+- **`delete`** - A document was deleted
+
+## Database/Collection Operations:
+- **`drop`** - A collection was dropped
+- **`rename`** - A collection was renamed
+- **`dropDatabase`** - An entire database was dropped
+
+## Index Operations:
+- **`createIndexes`** - New indexes were created
+- **`dropIndexes`** - Indexes were dropped
+
+## Sharding Operations (MongoDB 4.2+):
+- **`shardCollection`** - A collection was sharded
+- **`reshardCollection`** - A collection was resharded
+- **`refineCollectionShardKey`** - A shard key was refined
+
+## Transaction Operations:
+- **`invalidate`** - The change stream was invalidated (usually due to collection drop, rename, or database drop)
+
+## Most Common Operations:
+In typical applications, you'll mostly see:
+- `insert` (new records)
+- `update` (modified records) 
+- `delete` (removed records)
+- `replace` (full document replacements)
+
+## Example Change Stream Event:
+```javascript
+{
+  _id: { ... },
+  operationType: 'insert',
+  clusterTime: { ... },
+  fullDocument: { ... }, // The actual document
+  ns: { db: 'myDatabase', coll: 'myCollection' },
+  documentKey: { _id: ObjectId('...') }
+}
+```
+
+Since your error mentions "Missing operationType in change stream event" but you're reading from Azure Event Hub, it suggests your code is expecting MongoDB change stream format but receiving Event Hub messages instead. You'll need to either:
+
+1. Transform Event Hub messages to include an `operationType` field
+2. Modify your `transformEvents` method to handle Event Hub message format
+3. Add a default `operationType` value for Event Hub messages
+
+What does your Event Hub message structure look like?
 
 ### **Example Use Case**
 - You have an **IoT fleet** sending device telemetry.  
