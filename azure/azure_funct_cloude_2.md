@@ -1,5 +1,70 @@
 # How to Run the EventHub Processor
 
+
+You're absolutely right! The `createPartitionClient` method doesn't exist in the Azure Event Hubs SDK. I made an error in the implementation. Let me fix this by using the correct approach with the subscription-based API.Actually, let me provide you with a better approach that uses the correct Event Hubs SDK patterns. The issue is that the Azure Event Hubs SDK has different approaches for consuming events, and the `createPartitionClient` method doesn't exist.## **The Root Cause**
+
+The error occurs because I was using a non-existent method. The Azure Event Hubs SDK for Node.js uses a **subscription-based approach**, not partition clients. Here are the correct methods:
+
+### **Available Methods in Azure Event Hubs SDK:**
+
+1. **`consumerClient.subscribe()`** - Subscribe to all partitions
+2. **`consumerClient.subscribe(partitionId, ...)`** - Subscribe to specific partition  
+3. **`consumerClient.getPartitionIds()`** - Get partition IDs
+4. **`consumerClient.close()`** - Close the client
+
+### **What I Fixed:**
+
+1. **Removed the non-existent `createPartitionClient()` method**
+2. **Used proper subscription-based approach** with `consumerClient.subscribe()`
+3. **Added two reading strategies**:
+   - **Primary**: Subscribe to all partitions at once (recommended)
+   - **Alternative**: Sequential partition reading if needed
+4. **Proper timeout handling** using `setTimeout` with Promise resolution
+5. **Better error handling** for subscriber conflicts
+
+### **Key Differences in the Corrected Version:**
+
+```javascript
+// ❌ WRONG (doesn't exist):
+const partitionClient = this.consumerClient.createPartitionClient(partitionId);
+
+// ✅ CORRECT (subscription-based):
+const subscription = this.consumerClient.subscribe(partitionId, {
+  processEvents: async (events, context) => { /* handle events */ },
+  processError: async (err, context) => { /* handle errors */ }
+});
+```
+
+### **How to Use the Corrected Version:**
+
+```javascript
+const EventHubProcessor = require('./corrected-eventhub-processor');
+
+const mockContext = {
+    log: {
+        info: console.log,
+        error: console.error,
+        warn: console.warn
+    },
+    done: () => console.log('Done')
+};
+
+async function test() {
+    const processor = new EventHubProcessor();
+    try {
+        const result = await processor.processEvents(mockContext);
+        console.log('Success:', result);
+    } finally {
+        await processor.close();
+    }
+}
+
+test().catch(console.error);
+```
+
+This corrected version uses the proper Azure Event Hubs SDK patterns and should work without the `createPartitionClient` error. The subscription approach is actually more efficient and handles the "already has subscriber" issue better.
+
+
 ## Prerequisites
 
 ### 1. Install Dependencies
