@@ -15,7 +15,7 @@ The primary command to list the contents of a directory (or "file system" in ADL
 To see the contents of a specific folder, use this syntax:
 
 ```bash
-az storage fs ls --account-name <account-name> --file-system <file-system-name> --path <folder-path>
+az storage fs list --account-name <account-name> --file-system <file-system-name> --path <folder-path>
 ```
 
 Let's break down the parameters:
@@ -27,7 +27,7 @@ Let's break down the parameters:
 For example, based on the `folderPath` in your Node.js script, you could use the following command to list the files in a specific hour's folder:
 
 ```bash
-az storage fs ls --account-name weavixcheckpointsdevsa --file-system adls --path "adls/weavix_dev_db/telemetry/2025/08/27/12"
+az storage fs list --account-name weavixcheckpointsdevsa --file-system adls --path "adls/weavix_dev_db/telemetry/2025/08/27/12"
 ```
 
 -----
@@ -43,6 +43,119 @@ az storage fs cat --account-name <account-name> --file-system <file-system-name>
 ```
 
 You would replace `<file-path>` with the full path to the file you want to see. This is useful for quickly verifying that the data was written correctly to the file system.
+
+
+
+
+
+
+Here are reliable Azure CLI ways to list the contents of a specific ADLS Gen2 *folder* (directory) inside a filesystem (container).
+
+---
+
+Basic idea:
+
+* “Folder” == “directory path” inside a **filesystem** (aka container).
+* Use `az storage fs file list` to list paths under that directory. It works with ADLS Gen2 (hierarchical namespace).
+
+Prereqs (one-time):
+
+```
+az login
+az account show -o table
+# If 'fs' group is missing, upgrade CLI or add extension:
+# az upgrade -y
+# az extension add --name storage-preview
+```
+
+List the root of a filesystem:
+
+```
+az storage fs file list \
+  --account-name <storage_account> \
+  --file-system <filesystem_name> \
+  --auth-mode login \
+  --query "[].{name:name,isDir:isDirectory,size:contentLength,modified:lastModified}" \
+  -o table
+```
+
+List a specific folder (non-recursive):
+
+```
+az storage fs file list \
+  --account-name <storage_account> \
+  --file-system <filesystem_name> \
+  --path "path/to/folder" \
+  --auth-mode login \
+  --query "[].{name:name,isDir:isDirectory,size:contentLength,modified:lastModified}" \
+  -o table
+```
+
+List a specific folder (recursive, all descendants):
+
+```
+az storage fs file list \
+  --account-name <storage_account> \
+  --file-system <filesystem_name> \
+  --path "path/to/folder" \
+  --recursive \
+  --auth-mode login \
+  --query "[].{name:name,isDir:isDirectory,size:contentLength,modified:lastModified}" \
+  -o table
+```
+
+Only directories (filter out files):
+
+```
+az storage fs file list \
+  --account-name <storage_account> \
+  --file-system <filesystem_name> \
+  --path "path/to/folder" \
+  --auth-mode login \
+  --query "[?isDirectory==`true`].{name:name,modified:lastModified}" \
+  -o table
+```
+
+Only files (with sizes):
+
+```
+az storage fs file list \
+  --account-name <storage_account> \
+  --file-system <filesystem_name> \
+  --path "path/to/folder" \
+  --auth-mode login \
+  --query "[?isDirectory!=`true`].{name:name,size:contentLength,modified:lastModified}" \
+  -o table
+```
+
+Notes:
+
+* `--auth-mode login` requires you to have RBAC like **Storage Blob Data Reader/Contributor** on the storage account. Otherwise use a key or SAS:
+
+  * `--account-key "<key>"` or `--sas-token "<sas>"`
+* If you keep data in partitioned folders, you can pass that full path:
+
+  ```
+  --path "db/collection/year=2025/month=08/day=27/hour=21"
+  ```
+* You can also use the blob commands (work with HNS too):
+
+  ```
+  az storage blob list \
+    --account-name <storage_account> \
+    --container-name <filesystem_name> \
+    --prefix "path/to/folder/" \
+    --delimiter "/" \
+    --auth-mode login \
+    -o table
+  ```
+
+If you share your exact `<account>`, `<filesystem>`, and folder path pattern, I can hand you a single copy-paste command tailored to your layout.
+
+
+
+
+
 
 ### Finding your storage account name and key 
 
