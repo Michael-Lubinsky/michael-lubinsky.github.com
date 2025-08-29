@@ -195,9 +195,9 @@ host.json (enable Durable Functions extension bundle)
   "logging": { "applicationInsights": { "samplingSettings": { "isEnabled": true } } }
 }
 ```
-======================================================================
-package.json (key dependencies)
-======================================================================
+ 
+#### package.json (key dependencies)
+
 ```js
 {
   "name": "durable-pipeline",
@@ -214,9 +214,9 @@ package.json (key dependencies)
   "devDependencies": {}
 }
 ```
-======================================================================
-Starter_Timer/function.json  (hourly at HH:05 UTC — adjust as needed)
-======================================================================
+
+#### Starter_Timer/function.json  (hourly at HH:05 UTC — adjust as needed)
+
 ```js
 {
   "bindings": [
@@ -234,12 +234,12 @@ Starter_Timer/function.json  (hourly at HH:05 UTC — adjust as needed)
   ]
 }
 ```
-# Note: The CRON here is NCRONTAB (seconds first).
-# "0 5 * * * *" = every hour when minutes==5, seconds==0 (UTC by default in Azure).
+#### Note: The CRON here is NCRONTAB (seconds first).
+#### "0 5 * * * *" = every hour when minutes==5, seconds==0 (UTC by default in Azure).
 
-======================================================================
-Starter_Timer/index.js (compute previous UTC hour, start orchestration)
-======================================================================
+
+#### Starter_Timer/index.js (compute previous UTC hour, start orchestration)
+
 ```js
 module.exports = async function (context, myTimer) {
   const client = context.bindings.starter; // Durable client binding
@@ -266,9 +266,9 @@ module.exports = async function (context, myTimer) {
   context.log(`Started orchestration '${instanceId}' for hour ${path}`);
 };
 ```
-======================================================================
-Orchestrator/function.json
-======================================================================
+
+#### Orchestrator/function.json
+
 ```json
 {
   "bindings": [
@@ -280,9 +280,9 @@ Orchestrator/function.json
   ]
 }
 ```
-======================================================================
-Orchestrator/index.js (the durable orchestrator with retries)
-======================================================================
+
+#### Orchestrator/index.js (the durable orchestrator with retries)
+
 ```js
 const df = require("durable-functions");
 
@@ -305,9 +305,9 @@ module.exports = df.orchestrator(function* (context) {
   return { ok: true, processedHour: path };
 });
 ```
-======================================================================
-Activity_RunIngestion/function.json
-======================================================================
+
+#### Activity_RunIngestion/function.json
+
 ```json
 {
   "bindings": [
@@ -319,9 +319,9 @@ Activity_RunIngestion/function.json
   ]
 }
 ```
-======================================================================
-Activity_RunIngestion/index.js  (wrap your step1.js)
-======================================================================
+
+#### Activity_RunIngestion/index.js  (wrap your step1.js)
+
 ```js
 /**
  * Assumptions about your step1.js:
@@ -345,9 +345,9 @@ module.exports = async function (context, input) {
   }
 };
 ```
-======================================================================
-Activity_SnowflakeCopy/function.json
-======================================================================
+
+#### Activity_SnowflakeCopy/function.json
+
 ```json
 {
   "bindings": [
@@ -448,9 +448,9 @@ module.exports = async function (context, input) {
   }
 };
 ```
-======================================================================
-Activity_BronzeToSilver/function.json
-======================================================================
+
+#### Activity_BronzeToSilver/function.json
+
 ```json
 {
   "bindings": [
@@ -462,9 +462,9 @@ Activity_BronzeToSilver/function.json
   ]
 }
 ```
-======================================================================
-Activity_BronzeToSilver/index.js (call proc or run MERGE)
-======================================================================
+
+#### Activity_BronzeToSilver/index.js (call proc or run MERGE)
+
 ```js
 const snowflake = require("snowflake-sdk");
 
@@ -532,9 +532,9 @@ WHEN NOT MATCHED THEN INSERT (id, event_ts, raw) VALUES (b.id, b.event_ts, b.raw
   }
 };
 ```
-======================================================================
-Your step1.js (placeholder shape)
-======================================================================
+
+#### Your step1.js (placeholder shape)
+
 ```js
 /**
  * Example shape for your existing ingestion. Keep your real code.
@@ -547,9 +547,9 @@ async function run({ year, month, day, hour, path }) {
 }
 module.exports = { run };
 ```
-======================================================================
-local.settings.json (for local testing only)
-======================================================================
+
+#### local.settings.json (for local testing only)
+
 ```json
 {
   "IsEncrypted": false,
@@ -571,11 +571,11 @@ local.settings.json (for local testing only)
   }
 }
 ```
-# In Azure, set these as App Settings (Key Vault strongly recommended).
+#### In Azure, set these as App Settings (Key Vault strongly recommended).
 
-======================================================================
+
 Notes, Options, and Best Practices
-======================================================================
+
 ```
 • Time windowing: Orchestrator processes the **previous** UTC hour; adjust the timer and path logic if you prefer local time or a different delay.  
 • Idempotency:
