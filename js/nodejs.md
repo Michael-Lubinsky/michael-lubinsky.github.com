@@ -62,7 +62,54 @@ nvm use            # auto-switches to 18 in that folder
 ```
 
 
-#### Simple timer Using setInterval 
+`"type": "commonjs"` in `package.json` tells Node to treat **.js files as CommonJS modules** by default in that package.
+
+### What that means
+
+* **Default for .js:** `require()` / `module.exports`
+* **ESM not enabled for .js:** `import/export` won’t work in plain `.js` unless you use `.mjs` or switch to `"type":"module"`
+* **Extensions still override:**
+
+  * `.cjs` → always CommonJS
+  * `.mjs` → always ES Module
+
+### Quick matrix
+
+| package.json `"type"` | `.js` behavior | `.cjs`   | `.mjs`    |
+| --------------------- | -------------- | -------- | --------- |
+| `"commonjs"` (yours)  | CommonJS       | CommonJS | ES Module |
+| `"module"`            | ES Module      | CommonJS | ES Module |
+| (omitted)             | CommonJS       | CommonJS | ES Module |
+
+### CommonJS vs ESM snippets
+
+```js
+// CommonJS (.js with "type":"commonjs" or .cjs)
+const express = require('express');
+module.exports = { foo: 1 };
+```
+
+```js
+// ES Module (.mjs or .js with "type":"module")
+import express from 'express';
+export const foo = 1;
+```
+
+### When to change it
+
+* If you want to use `import/export` in `.js`, set `"type": "module"` **or** rename files to `.mjs`.
+* If you prefer `require()` everywhere, keep `"commonjs"`.
+
+### Interop tips
+
+* From CJS → ESM package: `const pkg = await import('some-esm-only').then(m => m.default ?? m);`
+* From ESM → CJS module: `import pkg from 'some-cjs';` (default import usually works), and use `createRequire` if you need `require`.
+
+Given your earlier “Cannot use import statement outside a module” error: switch to `"type": "module"` **or** rename the file to `.mjs` if you want to keep `import` syntax.
+
+
+
+#### JS code example: Simple timer Using setInterval 
 
 Using setInterval (every minute, aligned to the start of each minute)  
 File: minute-ticker-interval.js
@@ -99,7 +146,7 @@ Run
 node minute-ticker-interval.js
 ```
 
-#### Simple timer Using node-cron
+#### JS code example: Simple timer Using node-cron
 File minute-ticker-cron.js
 ```
 // file: minute-ticker-cron.js
