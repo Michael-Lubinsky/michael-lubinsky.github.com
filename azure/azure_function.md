@@ -1,3 +1,6 @@
+<https://learn.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=in-process%2Cnodejs-v3%2Cv1-model&pivots=csharp>
+
+
 ### How  to run Azure Function  **once per hour** 
 and read from **Azure Event Hubs** using an **Azure Functions (JavaScript)** **Timer Trigger**. The function uses **AAD (DefaultAzureCredential)** and a **Blob checkpoint store** so each hourly run resumes where the last one left off (no reprocessing).
 
