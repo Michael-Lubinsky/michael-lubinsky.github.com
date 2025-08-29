@@ -127,7 +127,8 @@ If you prefer staying in Functions:
 
 ---
 ```text
-You got it — here’s a complete, code-first Durable Functions orchestration for your 3 steps. It’s written for **Azure Functions v4 (Node.js)** with the **Durable Functions** extension. I’ll also explain what Durable Functions are and how they relate to v4.
+Here’s a complete, code-first Durable Functions orchestration for   3 steps.
+It’s written for **Azure Functions v4 (Node.js)** with the **Durable Functions** extension.
 
 ======================================================================
 What is Durable Functions? Is it different from “Functions v4”?
@@ -184,7 +185,7 @@ functions-app/
 ======================================================================
 host.json (enable Durable Functions extension bundle)
 ======================================================================
-
+```js
 {
   "version": "2.0",
   "extensionBundle": {
@@ -193,11 +194,11 @@ host.json (enable Durable Functions extension bundle)
   },
   "logging": { "applicationInsights": { "samplingSettings": { "isEnabled": true } } }
 }
-
+```
 ======================================================================
 package.json (key dependencies)
 ======================================================================
-
+```js
 {
   "name": "durable-pipeline",
   "version": "1.0.0",
@@ -212,11 +213,11 @@ package.json (key dependencies)
   },
   "devDependencies": {}
 }
-
+```
 ======================================================================
 Starter_Timer/function.json  (hourly at HH:05 UTC — adjust as needed)
 ======================================================================
-
+```js
 {
   "bindings": [
     {
@@ -232,14 +233,14 @@ Starter_Timer/function.json  (hourly at HH:05 UTC — adjust as needed)
     }
   ]
 }
-
+```
 # Note: The CRON here is NCRONTAB (seconds first).
 # "0 5 * * * *" = every hour when minutes==5, seconds==0 (UTC by default in Azure).
 
 ======================================================================
 Starter_Timer/index.js (compute previous UTC hour, start orchestration)
 ======================================================================
-
+```js
 module.exports = async function (context, myTimer) {
   const client = context.bindings.starter; // Durable client binding
   const now = new Date();
@@ -264,11 +265,11 @@ module.exports = async function (context, myTimer) {
   const instanceId = await client.startNew("Orchestrator", undefined, input);
   context.log(`Started orchestration '${instanceId}' for hour ${path}`);
 };
-
+```
 ======================================================================
 Orchestrator/function.json
 ======================================================================
-
+```json
 {
   "bindings": [
     {
@@ -278,11 +279,11 @@ Orchestrator/function.json
     }
   ]
 }
-
+```
 ======================================================================
 Orchestrator/index.js (the durable orchestrator with retries)
 ======================================================================
-
+```js
 const df = require("durable-functions");
 
 module.exports = df.orchestrator(function* (context) {
@@ -303,11 +304,11 @@ module.exports = df.orchestrator(function* (context) {
 
   return { ok: true, processedHour: path };
 });
-
+```
 ======================================================================
 Activity_RunIngestion/function.json
 ======================================================================
-
+```json
 {
   "bindings": [
     {
@@ -317,11 +318,11 @@ Activity_RunIngestion/function.json
     }
   ]
 }
-
+```
 ======================================================================
 Activity_RunIngestion/index.js  (wrap your step1.js)
 ======================================================================
-
+```js
 /**
  * Assumptions about your step1.js:
  * - It exports an async function run({ year, month, day, hour, path }) that:
@@ -343,11 +344,11 @@ module.exports = async function (context, input) {
     throw err; // Let Durable handle retries/fail
   }
 };
-
+```
 ======================================================================
 Activity_SnowflakeCopy/function.json
 ======================================================================
-
+```json
 {
   "bindings": [
     {
@@ -357,11 +358,11 @@ Activity_SnowflakeCopy/function.json
     }
   ]
 }
-
+```
 ======================================================================
 Activity_SnowflakeCopy/index.js (COPY INTO Bronze for the hour)
 ======================================================================
-
+```js
 const snowflake = require("snowflake-sdk");
 
 /**
@@ -446,11 +447,11 @@ module.exports = async function (context, input) {
     if (conn) try { conn.destroy(); } catch {}
   }
 };
-
+```
 ======================================================================
 Activity_BronzeToSilver/function.json
 ======================================================================
-
+```json
 {
   "bindings": [
     {
@@ -460,11 +461,11 @@ Activity_BronzeToSilver/function.json
     }
   ]
 }
-
+```
 ======================================================================
 Activity_BronzeToSilver/index.js (call proc or run MERGE)
 ======================================================================
-
+```js
 const snowflake = require("snowflake-sdk");
 
 function connect() {
@@ -530,11 +531,11 @@ WHEN NOT MATCHED THEN INSERT (id, event_ts, raw) VALUES (b.id, b.event_ts, b.raw
     if (conn) try { conn.destroy(); } catch {}
   }
 };
-
+```
 ======================================================================
 Your step1.js (placeholder shape)
 ======================================================================
-
+```js
 /**
  * Example shape for your existing ingestion. Keep your real code.
  */
@@ -545,11 +546,11 @@ async function run({ year, month, day, hour, path }) {
   // 4) Resolve when writes are completed (and flushed/closed)
 }
 module.exports = { run };
-
+```
 ======================================================================
 local.settings.json (for local testing only)
 ======================================================================
-
+```json
 {
   "IsEncrypted": false,
   "Values": {
@@ -569,13 +570,13 @@ local.settings.json (for local testing only)
     "BRONZE_TABLE": "EVENTS"
   }
 }
-
+```
 # In Azure, set these as App Settings (Key Vault strongly recommended).
 
 ======================================================================
 Notes, Options, and Best Practices
 ======================================================================
-
+```
 • Time windowing: Orchestrator processes the **previous** UTC hour; adjust the timer and path logic if you prefer local time or a different delay.  
 • Idempotency:
   – If Activity 1 can be re-run, ensure it either is a no-op for completed hours or writes identical file names so COPY can skip duplicates via filename tracking or stage table.  
@@ -588,7 +589,7 @@ Notes, Options, and Best Practices
 • Fan-out: If you have multiple logical collections per hour, the orchestrator can fan-out to N parallel COPY/MERGE activity calls and then fan-in (`yield context.df.Task.all([...])`).
 
 That’s everything you need to run the Durable orchestration that coordinates:
-1) EventHub→ADLS,
+1) EventHub→ADLS,  
 2) ADLS→Snowflake Bronze (COPY INTO),
 3) Bronze→Silver SQL.
 ```
