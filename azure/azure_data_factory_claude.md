@@ -174,7 +174,41 @@ ON_ERROR = 'ABORT_STATEMENT'
 FORCE = TRUE;
 ```
 
-## **Approach 2: Explicit COPY Command (More Control)**## **Approach 3: Direct Snowflake Script Activity**
+## **Approach 2: Explicit COPY Command (More Control)**
+
+```js
+{
+  "name": "ExplicitSnowflakeCopy",
+  "activities": [
+    {
+      "name": "ExecuteSnowflakeCopyCommand",
+      "type": "SqlServerStoredProcedure",
+      "linkedServiceName": "SnowflakeLinkedService",
+      "typeProperties": {
+        "storedProcedureName": "EXECUTE_IMMEDIATE",
+        "storedProcedureParameters": {
+          "QUERY_STRING": {
+            "value": "@concat('COPY INTO bronze.events FROM ''azure://weavixdatalakedevsa.dfs.core.windows.net/telemetry/', formatDateTime(utcnow(), 'yyyy/MM/dd/HH'), '/'' CREDENTIALS=(AZURE_SAS_TOKEN=''', pipeline().parameters.SasToken, ''') FILE_FORMAT=(TYPE=''JSON'') ON_ERROR=''CONTINUE'' FORCE=TRUE')",
+            "type": "String"
+          }
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "SasToken": {
+      "type": "String"
+    },
+    "TargetFolder": {
+      "type": "String",
+      "defaultValue": "@formatDateTime(utcnow(), 'yyyy/MM/dd/HH')"
+    }
+  }
+}
+
+```
+
+## **Approach 3: Direct Snowflake Script Activity**
 
 ```json
 {
