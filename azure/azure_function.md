@@ -2,9 +2,135 @@
 and read from **Azure Event Hubs** using an **Azure Functions (JavaScript)** **Timer Trigger**. The function uses **AAD (DefaultAzureCredential)** and a **Blob checkpoint store** so each hourly run resumes where the last one left off (no reprocessing).
 
 ---
+Got it 👍 — you already have a Node.js file (say `index.js`) and you want to run it as an **Azure Function** that executes every hour. Here’s the step-by-step:
 
-## Project layout (Functions v4, JavaScript)
+---
 
+# 1. Create a Function App (Node.js runtime)
+
+From your project folder (where your Node.js file is):
+
+```bash
+func init my-func-app --worker-runtime node --language javascript
+cd my-func-app
+```
+
+This sets up the boilerplate for an Azure Function App using Node.js.
+
+---
+
+# 2. Add a Timer-triggered Function
+
+Create a new function with a **timer trigger**:
+
+```bash
+func new --template "Timer trigger" --name MyHourlyJob
+```
+
+This creates:
+
+* `MyHourlyJob/index.js`
+* `MyHourlyJob/function.json`
+
+---
+
+# 3. Configure the Schedule
+
+Open `MyHourlyJob/function.json`. You’ll see something like:
+
+```json
+{
+  "bindings": [
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"
+    }
+  ]
+}
+```
+
+* The `schedule` is a **CRON expression**.
+* For “every hour, at minute 0” → use:
+
+```json
+"schedule": "0 0 * * * *"
+```
+
+---
+
+# 4. Call Your Node.js File
+
+Inside `MyHourlyJob/index.js`, require and call your existing module. Example:
+
+```js
+const myProcessor = require('../path-to-your-file');  // adjust path
+
+module.exports = async function (context, myTimer) {
+    context.log('Hourly function triggered:', new Date().toISOString());
+
+    try {
+        const result = await myProcessor(); // if your file exports a function
+        context.log('Success:', result);
+    } catch (err) {
+        context.log.error('Error in hourly job:', err);
+    }
+};
+```
+
+---
+
+# 5. Run Locally (Test)
+
+Make sure you have the Azure Functions Core Tools installed (`npm i -g azure-functions-core-tools@4`).
+Run:
+
+```bash
+func start
+```
+
+It will execute your function on schedule locally.
+
+---
+
+# 6. Deploy to Azure
+
+If you haven’t yet, create the Azure resources:
+
+```bash
+az functionapp create \
+  --resource-group <your-resource-group> \
+  --consumption-plan-location <region> \
+  --runtime node \
+  --runtime-version 18 \
+  --functions-version 4 \
+  --name <your-func-app-name> \
+  --storage-account <your-storage-account>
+```
+
+Then deploy:
+
+```bash
+func azure functionapp publish <your-func-app-name>
+```
+
+---
+
+# ✅ Summary
+
+* Use **Timer Trigger** Azure Function.
+* Configure CRON `0 0 * * * *` for hourly execution.
+* Inside the function, **require your Node.js file** and call it.
+* Test locally with `func start`, then deploy with `func azure functionapp publish`.
+
+---
+
+Do you want me to also show the **CRON schedule examples** (like every 30 min, daily at midnight, etc.) so you can tweak the schedule easily later?
+
+---
+
+## Project layout 
 ```
 my-hourly-func/
 ├─ host.json
