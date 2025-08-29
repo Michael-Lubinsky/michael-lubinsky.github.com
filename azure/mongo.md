@@ -1,4 +1,15 @@
 
+| Concept         | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| **Database**    | A container of collections (like a schema in SQL)            |
+| **Collection**  | A container of documents (like a table)                      |
+| **Document**    | A JSON-like record (BSON under the hood)                     |
+| **\_id field**  | Every document has a unique `_id`                            |
+| **Query**       | Use MongoDB query language (MQL), like `{ "name": "Alice" }` |
+| **Indexing**    | To improve query performance                                 |
+| **Aggregation** | MongoDB’s equivalent of SQL GROUP BY and more                |
+
+ 
 ## **MongoDB Atlas**
 - **Atlas** is MongoDB’s fully managed **Database-as-a-Service (DBaaS)**.  
 - It runs MongoDB clusters for you on **AWS, Azure, or GCP**, so you don’t have to manage servers, replication, backups, or scaling yourself.  
