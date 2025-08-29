@@ -25,6 +25,8 @@ npm i -D typescript   # add to devDependencies
 npm i -g vercel       # install globally
 npm i lodash@^4       # install with a version range
 npm i --save-exact lodash@4.17.21  # pin exact version
+
+npm i @azure/event-hubs @azure/storage-file-datalake @azure/identity
 ```
 
 Related:
