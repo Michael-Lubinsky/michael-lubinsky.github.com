@@ -149,6 +149,8 @@ https://docs.astral.sh/uv/
 
 https://daniel.fastapicloud.dev/posts/til-2025-08-single-source-version-package-builds-with-uv-redux
 
+https://lerner.co.il/2025/08/28/youre-probably-using-uv-wrong/
+
 https://habr.com/ru/companies/otus/articles/940674/
 
 https://www.saaspegasus.com/guides/uv-deep-dive/
