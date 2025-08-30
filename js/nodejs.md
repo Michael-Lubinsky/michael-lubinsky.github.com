@@ -74,7 +74,58 @@ Output:
 * Access them via `process.argv`.
 * For easier parsing, use `minimist` or `yargs`.
 
-Do you want me to show you a **minimal reusable boilerplate** for parsing named args without any library, so you don’t depend on `npm install`?
+Here’s a **minimal reusable boilerplate** for parsing named arguments in a Node.js script without any external libraries:
+
+```js
+// args.js
+
+function parseArgs(argv) {
+  const args = {};
+  argv.slice(2).forEach(arg => {
+    if (arg.startsWith("--")) {
+      const [key, value] = arg.slice(2).split("=");
+      args[key] = value !== undefined ? value : true;
+    } else {
+      // positional arguments (not prefixed with --)
+      if (!args._) args._ = [];
+      args._.push(arg);
+    }
+  });
+  return args;
+}
+
+// Example usage
+const args = parseArgs(process.argv);
+console.log(args);
+```
+
+### How it works
+
+```bash
+node args.js --name=Michael --age=40 --debug file1 file2
+```
+
+Output:
+
+```json
+{
+  "name": "Michael",
+  "age": "40",
+  "debug": true,
+  "_": ["file1", "file2"]
+}
+```
+
+### Features
+
+* Supports `--key=value` format
+* Supports `--flag` (boolean true)
+* Captures positional arguments in an array `_`
+
+---
+
+Would you like me to extend this so it also **auto-converts numbers and booleans** (e.g., `"40"` → `40`, `"true"` → `true`)?
+
 
 ## Node
 ```bash
