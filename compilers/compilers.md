@@ -21,3 +21,4 @@ https://news.ycombinator.com/item?id=43593088
 
 https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
 
+https://tratt.net/laurie/blog/2020/which_parsing_approach.html
