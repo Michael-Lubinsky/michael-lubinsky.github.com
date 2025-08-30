@@ -8,6 +8,15 @@
 |  17.0 (Beta)     | 4.0.0         | May 20, 2025   | Nov 20, 2025                                                     |
 | 16.3 / 16.2 / 16.1 | 3.5.x         | Early–mid 2025 | Mid–late 2025                                                    |
 
+```
+Catalog (top-level container)
+│
+├── Schema (aka Database)
+│   │
+│   ├── Table (dataset)
+│   ├── View (saved query)
+│   └── Function (UDF)
+```
 
 ### Delta Lake
 Delta Lake is an open-source storage layer that brings reliability, performance, and governance to data lakes. It is tightly integrated with Databricks and underpins much of its functionality.
