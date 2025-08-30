@@ -2,6 +2,8 @@
 
 https://ru.algorithmica.org/
 
+https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+
 https://www.youtube.com/watch?v=qO-HpEgmd6U
 
 https://videolectures.net/authors/david_mackay
