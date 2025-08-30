@@ -16,3 +16,8 @@ Nora Sandler : Writing a C compiler
 https://www.google.com/books/edition/Writing_a_C_Compiler/pS1mEAAAQBAJ?hl=en&gbpv=1&printsec=frontcover
 
 https://news.ycombinator.com/item?id=43593088
+
+### Parsing
+
+https://matklad.github.io/2020/04/13/simple-but-powerful-pratt-parsing.html
+
