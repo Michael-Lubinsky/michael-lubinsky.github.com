@@ -126,6 +126,62 @@ Output:
 
 Would you like me to extend this so it also **auto-converts numbers and booleans** (e.g., `"40"` → `40`, `"true"` → `true`)?
 
+Perfect 👍 Here’s the improved boilerplate that also **auto-converts numbers and booleans**:
+
+```js
+// args.js
+
+function parseValue(val) {
+  if (val === undefined) return true;          // --flag → true
+  if (val.toLowerCase?.() === "true") return true;
+  if (val.toLowerCase?.() === "false") return false;
+  if (!isNaN(val) && val.trim() !== "") return Number(val);
+  return val;
+}
+
+function parseArgs(argv) {
+  const args = {};
+  argv.slice(2).forEach(arg => {
+    if (arg.startsWith("--")) {
+      const [key, value] = arg.slice(2).split("=");
+      args[key] = parseValue(value);
+    } else {
+      // positional arguments
+      if (!args._) args._ = [];
+      args._.push(parseValue(arg));
+    }
+  });
+  return args;
+}
+
+// Example usage
+const args = parseArgs(process.argv);
+console.log(args);
+```
+
+### Example run
+
+```bash
+node args.js --name=Michael --age=40 --debug --active=false file1 123
+```
+
+### Output
+
+```json
+{
+  "name": "Michael",
+  "age": 40,
+  "debug": true,
+  "active": false,
+  "_": ["file1", 123]
+}
+```
+
+---
+
+This way you don’t need any external library—booleans and numbers are handled automatically.
+
+
 
 ## Node
 ```bash
