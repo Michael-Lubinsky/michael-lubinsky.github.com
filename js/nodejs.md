@@ -1,3 +1,82 @@
+## JavaScript
+
+When you run a JavaScript program with Node.js, arguments you pass after the script name are available in `process.argv`.
+
+By default:
+
+* `process.argv[0]` → path to the `node` binary
+* `process.argv[1]` → path to your script
+* `process.argv[2..]` → arguments you typed after the script name
+
+### Example 1: Passing named arguments
+
+```bash
+node app.js --name=Michael --age=40 --debug
+```
+
+Inside `app.js`:
+
+```js
+console.log(process.argv);
+// [
+//   '/usr/local/bin/node',
+//   '/path/to/app.js',
+//   '--name=Michael',
+//   '--age=40',
+//   '--debug'
+// ]
+```
+
+You’ll need to parse these. A quick manual way:
+
+```js
+const args = {};
+process.argv.slice(2).forEach(arg => {
+  const [key, value] = arg.split("=");
+  args[key.replace(/^--/, "")] = value ?? true; // if no value, set true
+});
+
+console.log(args); 
+// { name: 'Michael', age: '40', debug: true }
+```
+
+### Example 2: Using a library (recommended)
+
+Instead of manually parsing, use **minimist** or **yargs**:
+
+```bash
+npm install minimist
+```
+
+```js
+const minimist = require("minimist");
+const args = minimist(process.argv.slice(2));
+console.log(args);
+```
+
+Run:
+
+```bash
+node app.js --name=Michael --age=40 --debug
+```
+
+Output:
+
+```json
+{ _: [], name: "Michael", age: 40, debug: true }
+```
+
+---
+
+✅ **Summary:**
+
+* Pass arguments as `--key=value` or `--key value` in the console.
+* Access them via `process.argv`.
+* For easier parsing, use `minimist` or `yargs`.
+
+Do you want me to show you a **minimal reusable boilerplate** for parsing named args without any library, so you don’t depend on `npm install`?
+
+## Node
 ```bash
 which node
 /opt/homebrew/bin/node
