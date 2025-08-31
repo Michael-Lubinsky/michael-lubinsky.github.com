@@ -26,6 +26,8 @@ https://neetcode.io/roadmap
 
 https://habr.com/ru/articles/924828/
 
+https://news.ycombinator.com/item?id=45065705
+
 ### компактных структур данных  succinct data structure
 
 https://habr.com/ru/companies/ruvds/articles/890232/
