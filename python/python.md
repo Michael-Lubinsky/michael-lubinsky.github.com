@@ -396,7 +396,30 @@ order.add_product(mango)
 print(f"Total Price: ${order.total_price / 100:.2f}")
 ```
 
+```
+if (uri := os.getenv("POSTGRES_URI")) is None:
+    raise Exception("POSTGRES_URI environment variable not set")
+```
 
+
+x = re.match(pattern, text) or default_value
+
+export PYTHONWARNINGS="ignore:DeprecationWarning,ignore::UserWarning"
+
+### difflib
+```
+import difflib
+
+print(difflib.get\_close\_matches("appel", \["apple","apply","applet"\]))
+```
+
+### python -m modulename
+```
+ python -m modulename function, that let's me run python projects by their name from anywhere on my computer, as long as the projects parent folder is in the PYTHONPATH or PATH environment variable and the projects root dir has an __init__.py and a __main__.py.
+The latter is also helpful for providing an immediately obvious entry point to the program,
+so I can use each script's if __name__ == "__main__":
+for testing purpose and do not have to rely on naming my main script main.py.
+``` 
 ### Difference between `dataclass` and `TypedDict` in Python
 
 #### `dataclass`:
