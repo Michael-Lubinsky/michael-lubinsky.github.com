@@ -20,6 +20,9 @@ https://adamgrant.micro.blog/2025/07/24/123050.html
 https://news.ycombinator.com/item?id=44675119
 
 
+https://www.reddit.com/r/Python/comments/1n1hkls/i_bundled_my_common_python_utilities_into_a/
+
+
 ### Working with large files: 
 https://blog.devgenius.io/10-ways-to-work-with-large-files-in-python-effortlessly-handle-gigabytes-of-data-aeef19bc0429
 
