@@ -90,6 +90,88 @@ print("Address:", location.address)
 ### Reverse Geocoding
 <https://austinhenley.com/blog/coord2state.html>
 
+
+Good question 👍 — when you have a lot of raw **latitude/longitude points** in Databricks and want to enrich them with **U.S. state** (or nearest city), you’ll need a **static reference dataset** that you can join against.
+
+Here are the most common and reliable options:
+
+---
+
+## 1. **U.S. States Boundary Shapefiles (for state lookup)**
+
+* **Source:** U.S. Census Bureau — [TIGER/Line Shapefiles](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+* **What it gives:** Polygon boundaries for all U.S. states.
+* **Use case:** You can do a **point-in-polygon spatial join**:
+
+  * Load the shapefile into Databricks as a GeoParquet or Delta table.
+  * Use **Apache Sedona** (formerly GeoSpark) or **Databricks Mosaic** for spatial joins.
+  * Query: “Which polygon (state) does this point fall inside?”
+
+👉 This is the most accurate way to assign **state**.
+
+---
+
+## 2. **Cities / Population Centers**
+
+* **Source:** [GeoNames.org](https://www.geonames.org/) (free, has U.S. city database)
+* **Alternative:** Census Bureau **“Places” shapefiles** (cities, towns, census-designated places)
+* **Use case:**
+
+  * Store city centroids in a lookup table: `(city_name, state, latitude, longitude, population)`
+  * To find *closest city*, compute **haversine distance** from your point to all city centroids, then take the minimum.
+  * For efficiency, use **k-nearest-neighbor (KNN) search** with a spatial index (e.g. Sedona KNN, or PostGIS if available).
+
+---
+
+## 3. **Hybrid Table: Cities + States**
+
+If you don’t need extreme precision:
+
+* Use **GeoNames “US cities > 1000 population” dataset** (smaller, faster).
+* Preload into Databricks as a Delta/Parquet table.
+* Then:
+
+  * Assign state with TIGER boundaries.
+  * Assign “nearest city” with KNN lookup on centroids.
+
+---
+
+## 4. **Prebuilt Options**
+
+If you’d rather not preprocess shapefiles:
+
+* **Databricks Mosaic** has helpers to load and query GeoJSON/Parquet boundaries.
+* **Apache Sedona** has U.S. census polygon loaders and spatial join operators.
+* Commercial alternative: use APIs like Google Maps or Mapbox — but that’s *not static* and usually costly at scale.
+
+---
+
+## ⚡ Suggested Static Lookup Table Setup in Databricks
+
+1. **Download** TIGER/Line state boundaries (`tl_latest_us_state.zip`) and city centroids (GeoNames `US.txt`).
+2. **Convert** shapefiles/CSV to Parquet (use `ogr2ogr` or Python `geopandas.to_parquet`).
+3. **Load into Databricks**:
+
+   ```python
+   df_states = spark.read.format("parquet").load("/mnt/lookup/us_states/")
+   df_cities = spark.read.format("parquet").load("/mnt/lookup/us_cities/")
+   ```
+4. **Use spatial join** (with Mosaic or Sedona):
+
+   * `point_in_polygon` → to get state.
+   * `knn` → to get nearest city.
+
+---
+
+✅ **Summary:**
+
+* For **state lookup**: U.S. Census TIGER/Line **state boundary polygons**.
+* For **closest city lookup**: GeoNames U.S. cities dataset (centroids) + nearest-neighbor search.
+* Store them as static Parquet/Delta tables in Databricks and join via **Mosaic** or **Sedona**.
+
+---
+
+
 ### GeoJSON 
  GeoJSON  is a widely-used format for encoding geographic data structures using JSON. 
 It’s supported by many tools like Mapbox, Leaflet, PostGIS, and others.
