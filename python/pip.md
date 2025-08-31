@@ -9,6 +9,11 @@ https://martynassubonis.substack.com/p/python-project-management-primer-a55
 
 https://news.ycombinator.com/item?id=42676432
 
+
+### PyApp
+https://github.com/ofek/pyapp
+
+
 https://www.infoworld.com/article/4030697/pyapp-an-easy-way-to-package-python-apps-as-executables.html
 
 ### pip 
