@@ -3,6 +3,7 @@
 <https://www.dash0.com/guides/logging-in-python>  
 <https://www.youtube.com/watch?v=9L77QExPmI0>
 
+print(f”{value=}”)
 
 ### ABC vs Protocol
 
