@@ -143,16 +143,6 @@ https://num.pyro.ai/en/stable/
 https://github.com/pyro-ppl/numpyro    
 
 
-### Automatic differentiation
-
-https://huggingface.co/blog/andmholm/what-is-automatic-differentiation
-
-https://habr.com/ru/articles/874592/
-
-https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
-
-MLFlow https://habr.com/ru/companies/pgk/articles/904078/
-
 ### Outliers and Anomaly  detection
 
 https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/
@@ -225,3 +215,4 @@ The BIC score is intended to balance the fit of the model to the data with the c
 ⭐ It's often used when the sample size is large, and you want to avoid overfitting.
 So, when choosing between models, you can use either AIC or BIC to help you find the best one.
 ```
+MLFlow https://habr.com/ru/companies/pgk/articles/904078/
