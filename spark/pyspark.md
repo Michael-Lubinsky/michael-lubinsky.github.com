@@ -385,6 +385,27 @@ df_final=df.groupBy(col("ID"),col("Name")).agg(collect_list(col('Marks')))
 display(df_final)
 ```
 
+### UDTF
+
+https://habr.com/ru/companies/otus/articles/942148/
+```python
+from pyspark.sql.functions import udtf
+from pyspark.sql.types import Row
+
+@udtf(returnType="id: int")
+class FilterUDTF:
+    def eval(self, row: Row):
+        # Если значение столбца "id" больше 5, возвращаем эту строку
+        if row["id"] > 5:
+            yield (row["id"],)
+
+```
+```sql
+SELECT * FROM filter_udtf(
+    TABLE(SELECT * FROM range(10) AS t(id))
+);
+```
+
 ### Explicit broadcast to avoid shuffle joins
 ```python
 spark.conf.set("spark.sql.autoBroadcastJoinThreshold", -1)
