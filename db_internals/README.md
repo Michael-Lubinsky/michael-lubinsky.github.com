@@ -6,6 +6,9 @@ https://habr.com/ru/articles/940066/ SELECT FOR UPDATE
 
 https://memoizethebackend.substack.com/p/optimistic-or-pessimistic-understanding
 
+### Storage
+https://www.youtube.com/watch?v=i-FFVM4cIXQ База по Базам Данных - Storage (Индексы, Paging, LSM, B+-Tree, R-Tree) | Влад Тен 
+
 https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk?ref=dailydev
 
 ### Replication
