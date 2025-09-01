@@ -6,7 +6,10 @@ https://www.understandingai.org/p/reinforcement-learning-explained
 ### Book with code: Understanding Deep Learning 
 https://udlbook.github.io/udlbook/
 
-### Book: Sebastian Rashka
+###  Sebastian Rashka
+
+https://sebastianraschka.com/
+
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
 
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
