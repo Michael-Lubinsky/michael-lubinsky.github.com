@@ -5,3 +5,5 @@ https://habr.com/ru/companies/otus/articles/911992/ Почему java -jar иг�
 https://habr.com/ru/companies/otus/articles/913922/ 10 техник оптимизации Java
 
 https://habr.com/ru/companies/sberbank/articles/921528/ Tree traversing 
+
+https://habr.com/ru/articles/942674/
