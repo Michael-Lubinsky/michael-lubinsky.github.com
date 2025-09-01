@@ -180,3 +180,10 @@ print(f"dy/dx3 = {x3.grad}")  # 5.0
 
 
 https://rlhick.people.wm.edu/posts/mle-autograd.html
+
+
+https://huggingface.co/blog/andmholm/what-is-automatic-differentiation
+
+https://habr.com/ru/articles/874592/
+
+https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
