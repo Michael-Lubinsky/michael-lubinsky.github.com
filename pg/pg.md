@@ -701,7 +701,7 @@ Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
 
 <https://stormatics.tech/blogs/which-postgresql-ha-solution-fits-your-needs-pgpool-or-patroni>
 
-
+<https://habr.com/ru/articles/942788/>  Patroni web UI
 
 ### Features
 ```
