@@ -1,18 +1,31 @@
-Reinforcement learning: https://www.understandingai.org/p/reinforcement-learning-explained
+https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
 
-Book:
+### Reinforcement learning: 
+https://www.understandingai.org/p/reinforcement-learning-explained
+
+### Book with code: Understanding Deep Learning 
+https://udlbook.github.io/udlbook/
+
+### Book: Sebastian Rashka
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
-
-Book: Information Theory, Inference, and Learning Algorithms
-https://www.inference.org.uk/itprnn/book.pdf
 
 https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
 
 https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
 
-Book: Forecasting: Principles and Practice, the Pythonic Way
+https://sebastianraschka.com/notebooks/ml-notebooks/
+
+###  Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
+
+https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
+
+### Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
+
+### Book: Forecasting: Principles and Practice, the Pythonic Way
 https://otexts.com/fpppy
 
+### Book: Information Theory, Inference, and Learning Algorithms
+https://www.inference.org.uk/itprnn/book.pdf
 
 https://habr.com/ru/companies/netologyru/articles/926776/
 
@@ -39,26 +52,23 @@ https://habr.com/ru/articles/926160/
  
 https://datasecrets.ru/articles
 
-https://franknielsen.github.io/Books/CuratedBookLists.html
+### https://franknielsen.github.io/Books/CuratedBookLists.html
 
 https://habr.com/ru/articles/917664/ основополагающих статей мира ML
 
 https://habr.com/ru/articles/925404/ Text-to-LoRA: мгновенная адаптация трансформеров
 
-### Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
 
-https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
 
 https://github.com/ageron/handson-ml3
 
-Book with code: Understanding Deep Learning 
-https://udlbook.github.io/udlbook/
+
 
 https://machine-learning-with-python.readthedocs.io/
 
 https://lux-api.readthedocs.io/en/latest/index.html
 
-https://sebastianraschka.com/notebooks/ml-notebooks/
+
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
@@ -88,8 +98,6 @@ https://www.stephendiehl.com/posts/post_transformers/  Attention ?
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/mlsd-ads-ranking.md
 
 ### ML
-
-Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
 
 https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 
