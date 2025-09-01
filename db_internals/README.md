@@ -1,6 +1,9 @@
 ## DB notes
 
 ### Locking
+
+https://habr.com/ru/articles/940066/ SELECT FOR UPDATE
+
 https://memoizethebackend.substack.com/p/optimistic-or-pessimistic-understanding
 
 https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk?ref=dailydev
