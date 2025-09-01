@@ -32,7 +32,7 @@ https://www.inference.org.uk/itprnn/book.pdf
 
 https://habr.com/ru/companies/netologyru/articles/926776/
 
-https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md  ML System Design
+
 
 https://github.com/Dyakonov/DL
 
@@ -95,17 +95,6 @@ https://habr.com/ru/companies/yandex_praktikum/articles/901432/
 
 https://www.kaggle.com/discussions/getting-started/390402
 
-### ML System design 
-
-https://www.youtube.com/watch?v=iqbsHiSnZQE System Design с Валерием Бабушкиным 
-
-https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md
-
-https://habr.com/ru/articles/900788/  ML project setup
-
-https://habr.com/ru/companies/ingos_it/articles/901782/  ML project setup
-
-
 
 
 ### Ads clicks prediction
@@ -142,24 +131,16 @@ https://habr.com/ru/articles/897946/ Error backpropagation
 
 https://eli.thegreenplace.net/2025/reproducing-word2vec-with-jax/
 
-https://habr.com/ru/companies/yadro/articles/896362/  Свертка 
+https://habr.com/ru/companies/yadro/articles/896362/  Convolution Свертка 
 
-
-### ML
 https://eli.thegreenplace.net/2024/ml-in-go-with-a-python-sidecar/
 
 
-
- 
 
 ### Probabilistic programming with NumPy powered by JAX for autograd and JIT compilation to GPU/TPU/CPU.
 https://news.ycombinator.com/item?id=42156126    
 https://num.pyro.ai/en/stable/   
 https://github.com/pyro-ppl/numpyro    
-
-
-
-
 
 
 ### Automatic differentiation
