@@ -1,7 +1,8 @@
 ## Postgres
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
-<https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>
+<https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  
+<https://habr.com/ru/companies/otus/articles/941456/>
 
 ### 
 
