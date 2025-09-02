@@ -1,4 +1,4 @@
-### YARN
+##  YARN
 Your root package.json file explicitly states:
 ```
 "packageManager": "yarn@4.5.1",
@@ -24,6 +24,159 @@ Run index.ts:
 cd src
 npx tsx index.ts name=Alice times=3
 ```
+
+
+
+Great plan. Here’s a minimal Yarn workspaces setup that lets **`weavix/project1`** import code from **`weavix/common`** using the `workspace:` protocol.
+
+⚠️ One correction: package names with a slash must be **scoped**. So use **`@weavix/common`** (✅ valid) instead of `weavix/common` (❌ invalid).
+
+---
+
+# File tree
+
+```
+weavix/
+  common/
+    package.json
+    test/
+      a.ts
+  project1/
+    package.json
+    src/
+      index.ts
+package.json        # monorepo root
+```
+
+---
+
+# 1) Root `package.json` (monorepo)
+
+```json
+{
+  "name": "weavix-monorepo",
+  "private": true,
+  "packageManager": "yarn@stable",
+  "workspaces": ["weavix/*"]
+}
+```
+
+> If your repo already has a root `package.json`, just add `"private": true` and `"workspaces": ["weavix/*"]`.
+
+---
+
+# 2) `weavix/common/package.json`
+
+This exposes your TS files directly (nice for dev with `tsx`). We also export the deep path `./test/a`.
+
+```json
+{
+  "name": "@weavix/common",
+  "version": "0.1.0",
+  "private": false,
+  "exports": {
+    ".": "./test/a.ts",
+    "./test/a": "./test/a.ts"
+  },
+  "types": "./test/a.ts"
+}
+```
+
+> Keeping it simple: no build step; we’ll run with **tsx** which understands TypeScript directly.
+
+---
+
+# 3) `weavix/common/test/a.ts`
+
+```ts
+// weavix/common/test/a.ts
+export function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+
+export function add(a: number, b: number): number {
+  return a + b;
+}
+```
+
+---
+
+# 4) `weavix/project1/package.json`
+
+Declare the workspace dependency:
+
+```json
+{
+  "name": "@weavix/project1",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@weavix/common": "workspace:^"
+  },
+  "devDependencies": {
+    "tsx": "^4.7.0",
+    "typescript": "^5.5.4",
+    "@types/node": "^20.14.2"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts"
+  }
+}
+```
+
+---
+
+# 5) `weavix/project1/src/index.ts`
+
+You can import either the deep path **`@weavix/common/test/a`** or the package root **`@weavix/common`** (we exported both).
+
+```ts
+// weavix/project1/src/index.ts
+
+// Option A: deep path
+import { greet, add } from "@weavix/common/test/a";
+
+// Option B: package root (thanks to exports ".": "./test/a.ts")
+// import { greet, add } from "@weavix/common";
+
+function main() {
+  console.log(greet("Weavix"));
+  console.log(`2 + 3 = ${add(2, 3)}`);
+}
+
+main();
+```
+
+---
+
+# 6) Install & run (Yarn via Corepack)
+
+```bash
+# enable modern Yarn
+corepack enable
+yarn -v
+
+# install deps for the whole monorepo
+yarn install
+
+# run project1
+yarn workspace @weavix/project1 dev
+```
+
+If your repo expects `node_modules` (not PnP), set:
+
+```bash
+yarn config set nodeLinker node-modules
+# or add to .yarnrc.yml at repo root:
+# nodeLinker: node-modules
+```
+
+---
+
+## Notes / variations
+
+* If you prefer compiled output, give `@weavix/common` a small build step (tsc) and set `"main": "dist/index.js"`, `"types": "dist/index.d.ts"`. For quick dev, **tsx** is perfect.
+* If you insist on npm instead of Yarn, the `workspace:` protocol won’t work—use Yarn for this setup.
 
 ## JavaScript
 
