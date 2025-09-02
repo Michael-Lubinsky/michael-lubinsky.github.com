@@ -40,7 +40,7 @@ When the reader connects, it passes the offset to the event hub to specify the l
 It's possible to return to older data by specifying a lower offset from this checkpointing process. Through this mechanism, checkpointing enables both failover resiliency and event stream replay.
 
 
-#### Claude suggestion for checkpoint fix
+#### Claude suggestion for checkpoint fix 1
 
 Looking at your code, I can see the main issue with EventHub checkpoint handling. Your current implementation creates a custom checkpoint file in ADLS Gen2, but it doesn't integrate with the Azure EventHub SDK's built-in checkpoint store mechanism. This means your consumer will always start from the latest position and won't properly resume from where it left off.
 
@@ -104,6 +104,81 @@ The key improvement is that your consumer will now properly resume processing fr
 
 
 
+Claude suggestion 2
+
+Great job on the fixes! I can see you've made several important improvements. Let me review your changes and suggest a few additional enhancements:
+
+## Your Fixes - Well Done:
+
+1. **Fixed compression logic**: You simplified the gzip handling by creating unique files instead of decompressing/recompressing existing ones - much more efficient!
+
+2. **Improved file naming**: Better timestamp-based unique file naming for compressed files
+
+3. **Cleaner writeToBlob method**: Streamlined the logic and variables
+
+4. **Fixed error handling**: Better null safety in `transformEvents` with `event.body?.id || 'unknown'`
+
+5. **Metadata naming**: Changed to lowercase keys which is correct for Azure storage metadata
+
+## Issues I Found and Suggestions:## Issues I Fixed in Your Code:
+
+### 1. **Subscription Cleanup**
+- Added proper subscription cleanup in `resolveWithEvents()` to prevent resource leaks
+- Moved subscription closing logic to ensure it happens before resolving
+
+### 2. **Checkpoint Frequency Logic** 
+- Changed to checkpoint every successful batch instead of every N batches
+- This ensures better reliability - you don't want to lose processed events due to skipped checkpoints
+- Removed the `checkpointFrequency` logic since it can lead to data loss
+
+### 3. **Parallel Checkpoint Updates**
+- Used `Promise.allSettled()` for concurrent checkpoint updates across partitions
+- This improves performance when you have many partitions
+
+### 4. **Base Path Support**
+- Added proper support for `config.blobStorage.basePath` in the folder path construction
+
+### 5. **Metadata Key Fix**
+- Fixed `compressedenabled` to `compressionenabled` for consistency
+
+## Additional Recommendations:
+
+### 1. **Package.json Dependencies**
+Make sure you have:
+```json
+{
+  "dependencies": {
+    "@azure/event-hubs": "^5.11.0",
+    "@azure/eventhubs-checkpointstore-blob": "^1.0.1",
+    "@azure/storage-blob": "^12.17.0",
+    "@azure/storage-file-datalake": "^12.16.0",
+    "@azure/identity": "^4.0.1"
+  }
+}
+```
+
+### 2. **Environment Variable Example**
+```bash
+# EventHub settings
+EVENT_HUB_NAME=telemetry-stream-parallel-hub
+EVENT_HUB_NAMESPACE=weavix-reporting-dev-ehns.servicebus.windows.net
+CONSUMER_GROUP=telemetry
+
+# Storage settings
+AZURE_STORAGE_ACCOUNT_NAME=weavixdatalakedevsa
+ADLS_FILESYSTEM_NAME=telemetry
+CHECKPOINT_CONTAINER_NAME=eventhub-checkpoints
+
+# Processing settings
+START_FROM_BEGINNING=false
+INCLUDE_BATCH_ID=true
+ENABLE_COMPRESSION=true
+MAX_WAIT_TIME_SECONDS=30
+```
+
+Your fixes were excellent! The main improvements you made (especially the gzip file handling and metadata naming) show good understanding of the Azure storage APIs. The checkpoint logic should now work reliably with the Azure EventHub SDK's built-in checkpoint store.
+
+------------
 Gemini suggestion for checkpoint fix:
 
 Short answer: your code isn’t “wrong,” but it’s **not an Event Hubs checkpoint store**. You’re just writing a JSON file to ADLS Gen2. The “use an isolated container” guidance applies to the **official Blob checkpoint store** (`BlobCheckpointStore`) that the SDK knows how to use. Since you aren’t passing a checkpoint store to `EventHubConsumerClient`, the SDK will **not resume** from your `_checkpoints/latest.json`, nor will it load-balance/coordinate from it.
