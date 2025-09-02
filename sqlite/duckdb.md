@@ -24,9 +24,6 @@ https://medium.com/@shouke.wei/duckdb-tutorial-the-fast-embedded-analytics-datab
 
 https://medium.com/@shouke.wei/complete-guide-to-reading-data-with-duckdb-from-local-files-to-remote-sources-ddb43bd4456f
 
-https://www.dbreunig.com/2025/05/03/duckdb-is-the-most-impactful-geospatial-software-in-a-decade.html
-
-https://news.ycombinator.com/item?id=43881468
 
 https://github.com/turbolytics/sql-flow
 
@@ -39,6 +36,13 @@ https://habr.com/ru/companies/cinimex/articles/913878/
 https://medium.com/@hadiyolworld007/7-duckdb-tricks-that-make-pandas-feel-outdated-02d427eb6e66
 
 https://medium.com/@hadiyolworld007/why-i-run-sql-in-python-now-7-duckdb-queries-that-changed-my-workflow-dea9393ca005
+
+## Spacial features
+https://duckdb.org/2025/08/08/spatial-joins.html
+
+https://www.dbreunig.com/2025/05/03/duckdb-is-the-most-impactful-geospatial-software-in-a-decade.html
+
+https://news.ycombinator.com/item?id=43881468
 
 ###   DuckDB pg extension
 
