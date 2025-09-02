@@ -6,7 +6,7 @@
 ### 
 
 ```sql
-select current_schema() 
+select current_schema() ƒ
 select current_database()
 show  search_path
 RAISE NOTICE 'Value of x = %', x;
@@ -333,6 +333,9 @@ ORDER BY  extname;
 <https://www.tigerdata.com/blog/top-8-postgresql-extensions>  
 <https://habr.com/ru/companies/selectel/articles/936362/>  
 <https://pgxn.org/>  
+
+### csv import  
+<https://github.com/PostgREST/pg_csv>
 
 #### pg_anon
 <https://habr.com/ru/companies/tantor/articles/913196/>    
