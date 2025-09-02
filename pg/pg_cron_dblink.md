@@ -300,4 +300,52 @@ If you are on an older pg_cron version that lacks schedule_in_database(),
 then dblink is the more straightforward choice for executing ad-hoc SQL or calling stored procedures in another database directly from a pg_cron job, with the important caveat of secure credential management.   
 postgres_fdw is typically not the primary choice for simply executing code in another database, but rather for accessing data as if it were local.
 
+# Question: in which timezone pg_cron 7:00 am ?
 
+select schedule, command, database, jobname from cron.job ; |0 7 * * * |call gold.perform_yesterdays_aggregations(); Here '0 7 * * *' means 7:00 am daily. Question: in which timezone 7:00 am ?
+
+
+Short answer: **UTC**—unless you (or your admin) have explicitly set pg\_cron’s own timezone.
+
+* By default, `pg_cron` runs schedules in **GMT/UTC**. Recent versions let you override this with the `cron.timezone` GUC in `postgresql.conf`. ([GitHub][1], [Neon][2])
+
+## How to check what yours is using
+
+Run one of these in your DB:
+
+```sql
+-- Shows pg_cron-specific settings (including cron.timezone if available)
+SELECT name, setting FROM pg_settings WHERE name LIKE 'cron.%';
+
+-- Directly check the timezone setting (NULL/empty means not set; default is GMT/UTC)
+SELECT current_setting('cron.timezone', true) AS cron_timezone;
+
+-- See which pg_cron version you have (older versions were UTC-only)
+SELECT extversion FROM pg_extension WHERE extname = 'pg_cron';
+```
+
+* If `cron.timezone` exists and has a value (e.g., `America/Chicago`), your `0 7 * * *` runs at **07:00 in that zone**.
+* If `cron.timezone` is absent or empty, it runs at **07:00 UTC**. ([GitHub][1], [Neon][2])
+
+## How to change it (if you have access)
+
+Add to `postgresql.conf`, then restart PostgreSQL:
+
+```conf
+# Run all pg_cron schedules in this zone
+cron.timezone = 'America/Los_Angeles'
+```
+
+Note: some managed services may not expose `cron.timezone` yet (it’s supported starting with newer pg\_cron/PostgreSQL versions). In those cases, leave it at UTC and adjust your cron expressions accordingly. ([Scaleway][3])
+
+So your job:
+
+```
+0 7 * * *  call gold.perform_yesterdays_aggregations();
+```
+
+fires at **07:00 in `cron.timezone`**, or **07:00 UTC** if that setting isn’t configured.
+
+[1]: https://github.com/citusdata/pg_cron?utm_source=chatgpt.com "citusdata/pg_cron: Run periodic jobs in PostgreSQL"
+[2]: https://neon.com/docs/extensions/pg_cron?utm_source=chatgpt.com "The pg_cron extension - Neon Docs"
+[3]: https://www.scaleway.com/en/docs/managed-databases-for-postgresql-and-mysql/api-cli/using-pgcron/?utm_source=chatgpt.com "Setting up and using the pg_cron extension"
