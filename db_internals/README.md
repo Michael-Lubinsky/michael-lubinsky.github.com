@@ -37,5 +37,8 @@ https://build-your-own.org/blog/20251015_db_in_3000/
 
 https://habr.com/ru/companies/tantor/articles/929980/
 
+## StarRocks
+
+https://habr.com/ru/articles/943050/  Query optimization in StarRocks
 
 
