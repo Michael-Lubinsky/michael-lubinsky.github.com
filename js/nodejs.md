@@ -1,10 +1,28 @@
 ### YARN
+Your root package.json file explicitly states:
+```
+"packageManager": "yarn@4.5.1",
+"workspaces": [ "modules/*", "packages/*" ],
+```
 
+You need to use the correct package manager (Yarn) to install your dependencies.
 ```bash
 corepack enable                  # comes with Node 16.10+
 yarn set version stable
 yarn install
 yarn add -D typescript tsx @types/node
+
+
+The -D flag is the equivalent of npm i --save-dev and will add these packages
+to the devDependencies of the package.json file in your current working directory.
+
+Since you are in a monorepo, if you want to install these dependencies for a specific package inside your monorepo
+(e.g., in the eventhub-processor package), you should navigate to that package's directory and run the command from there.
+```
+Run index.ts:
+```
+cd src
+npx tsx index.ts name=Alice times=3
 ```
 
 ## JavaScript
