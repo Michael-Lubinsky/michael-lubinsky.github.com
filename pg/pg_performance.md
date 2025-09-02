@@ -10,6 +10,8 @@
 
 <https://tembo.io/blog/optimizing-memory-usage>
 
+<https://habr.com/ru/companies/tantor/articles/940752/> Performance Monitoring
+
 ### Partition Pruning
 SET enable_partition_pruning = on; 
 
