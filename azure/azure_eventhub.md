@@ -31,10 +31,94 @@ The partition key is some string that is derived from your application context a
 Checkpointing is a process by which readers mark or commit their position within a partition event sequence.   
 Checkpointing is the responsibility of the consumer and occurs on a per-partition basis within a consumer group.  
 This responsibility means that for each consumer group, each partition reader must keep track of its current position in the event stream, and can inform the service when it considers the data stream complete.
-If a reader disconnects from a partition, when it reconnects it begins reading at the checkpoint that was previously submitted by the last reader of that partition in that consumer group. 
+
+
+If a reader disconnects from a partition, when it reconnects it begins reading at the checkpoint that was previously submitted by the last reader of that partition in that consumer group.  
+
 When the reader connects, it passes the offset to the event hub to specify the location at which to start reading. In this way, you can use checkpointing to both mark events as "complete" by downstream applications, and to provide resiliency if a failover between readers running on different machines occurs.  
+
 It's possible to return to older data by specifying a lower offset from this checkpointing process. Through this mechanism, checkpointing enables both failover resiliency and event stream replay.
 
+Short answer: your code isn’t “wrong,” but it’s **not an Event Hubs checkpoint store**. You’re just writing a JSON file to ADLS Gen2. The “use an isolated container” guidance applies to the **official Blob checkpoint store** (`BlobCheckpointStore`) that the SDK knows how to use. Since you aren’t passing a checkpoint store to `EventHubConsumerClient`, the SDK will **not resume** from your `_checkpoints/latest.json`, nor will it load-balance/coordinate from it.
+
+### What the doc means by “isolated container”
+
+When you use the official checkpoint store:
+
+* You create a **separate blob container** (e.g. `eh-checkpoints-myapp`), dedicated to checkpoints/ownership.
+* You pass it to the consumer client; the SDK then writes **per-partition** checkpoints and uses leases for load-balancing.
+
+### What your code does
+
+* Aggregates offsets per partition and writes a single file `_checkpoints/latest.json` in your **data** filesystem.
+* The Event Hubs SDK **doesn’t read this file**, so next run will start from `latestEventPosition` (new events only), not from your JSON.
+
+If your goal is “proper” checkpointing & resume/load-balancing, switch to the official store:
+
+```js
+import { DefaultAzureCredential } from "@azure/identity";
+import { EventHubConsumerClient } from "@azure/event-hubs";
+import { BlobServiceClient } from "@azure/storage-blob";
+import { BlobCheckpointStore } from "@azure/eventhubs-checkpointstore-blob";
+
+const credential = new DefaultAzureCredential();
+
+// dedicated container just for checkpoints
+const blobSvc = new BlobServiceClient(`https://${ACCOUNT}.blob.core.windows.net`, credential);
+const container = blobSvc.getContainerClient("eh-checkpoints-changestream");
+await container.createIfNotExists();
+
+const checkpointStore = new BlobCheckpointStore(container);
+
+const consumer = new EventHubConsumerClient(
+  CONSUMER_GROUP,
+  EVENTHUB_FQDN,
+  EVENTHUB_NAME,
+  credential,
+  checkpointStore
+);
+
+const subscription = consumer.subscribe({
+  processEvents: async (events, ctx) => {
+    // ...process...
+    if (events.length) {
+      await ctx.updateCheckpoint(events[events.length - 1]); // SDK persists per-partition checkpoint
+    }
+  },
+  processError: async (err) => console.error(err)
+});
+```
+
+### If you want to keep your custom JSON file
+
+That’s fine as an **audit/log**, but to make it functional you’d need to:
+
+1. **Read it at startup** and construct **per-partition** start positions.
+
+2. Use **per-partition clients** so you can pass different `startPosition` for each partition:
+
+   ```js
+   const positions = {/* "0": { sequenceNumber: "..." }, ... */};
+   for (const pid of await consumer.getPartitionIds()) {
+     const pc = consumer.createPartitionClient(pid, { startPosition: positions[pid] ?? latestEventPosition });
+     const events = await pc.receiveBatch(…);
+     await pc.close();
+   }
+   ```
+
+   (A single `subscribe({ startPosition })` can only take **one** start position for **all** partitions.)
+
+3. Handle **concurrency/atomicity**:
+
+   * Avoid `deleteIfExists()` + `create()` races; write to a temp file and **rename** to `latest.json`, or include an ETag condition.
+   * If multiple instances run, they’ll overwrite each other—no leases/ownership.
+
+4. Consider keeping the checkpoint file in its **own filesystem/container** so it doesn’t get picked up by downstream ingestion/lifecycle policies (this mirrors the “isolated container” advice).
+
+### Verdict
+
+* If you want real Event Hubs checkpointing & scaling: **Yes, there’s an issue**—you’re not using a checkpoint store the SDK understands.
+* If you only want a human-readable progress file: your code is **okay**, but it doesn’t influence the consumer’s starting point, and you should harden it (atomic writes, per-partition starts, isolation).
 
 
 ### `EventHubConsumerClient` is the JavaScript client you use to **receive** events from an Azure Event Hub 
