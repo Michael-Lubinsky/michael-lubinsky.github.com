@@ -467,5 +467,57 @@ If some events don’t have `raw_event.event`, consider a fallback (e.g., `"unkn
 * You’re cleaning `_partitionContext`/`_originalEvent` before serializing — exactly right.
 
 ---
+### Claude
 
-If you want, I can re-emit your file with items 1–4 folded in (no behavioral changes other than earlier stop when cap reached).
+I've reviewed your modified EventHub processor code, and overall it looks well-structured with good improvements. Here's my feedback:
+
+## Positive Changes
+
+**1. Simplified Checkpoint Handling**: The `Promise.allSettled` approach is much cleaner and provides better visibility into which checkpoints succeed/fail.
+
+**2. Hard Cap Implementation**: The early subscription closure when reaching `maxBatchSize` is a good safeguard against runaway processing.
+
+**3. Directory Optimization**: Moving `ensureDirectoryExists` outside the loop is efficient - no need to check/create the same directory multiple times.
+
+**4. Clean State Management**: Removing the unused `partitionContextMap` simplifies the code.
+
+## Areas for Improvement
+
+**1. Error Handling Gap**
+```javascript
+// In processEvents() catch block:
+this.successfullyProcessedEvents.clear();
+```
+This clears ALL processed events on any failure, even if some files were successfully written. Consider only clearing events that actually failed to persist.
+
+**2. Potential Race Condition**
+The subscription might continue processing events after you call `closeSub()` but before it actually closes. Consider adding a flag:
+```javascript
+let shouldStop = false;
+// Set shouldStop = true before closeSub()
+// Check shouldStop in processEvents callback
+```
+
+**3. Memory Efficiency**
+With a 1000 event cap, you're loading everything into memory. For larger batches, consider streaming or batching the writes.
+
+**4. Checkpoint Timing**
+You checkpoint after every successful batch, but what if the function times out? Consider periodic checkpointing for long-running batches.
+
+**5. Metadata Enhancement**
+Consider adding more context to file metadata:
+```javascript
+await file.setMetadata({
+  // ... existing metadata
+  functionexecutionid: context.executionContext?.invocationId,
+  partitionids: JSON.stringify([...new Set(records.map(r => r.event_hub_metadata?.partition_id))]),
+});
+```
+
+## Minor Suggestions
+
+- Consider making the early closure threshold configurable (maybe 90% of maxBatchSize)
+- Add retry logic for the `ensureDirectoryExists` call
+- Log partition distribution in the final summary
+
+The code is production-ready as-is, but these improvements would make it more robust for high-volume scenarios. The core logic is sound and your error handling approach is much improved!
