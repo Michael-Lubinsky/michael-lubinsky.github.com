@@ -1,3 +1,12 @@
+### YARN
+
+```bash
+corepack enable                  # comes with Node 16.10+
+yarn set version stable
+yarn install
+yarn add -D typescript tsx @types/node
+```
+
 ## JavaScript
 
 When you run a JavaScript program with Node.js, arguments you pass after the script name are available in `process.argv`.
