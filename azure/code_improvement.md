@@ -328,6 +328,68 @@ includeBatchIdInFilename: process.env.INCLUDE_BATCH_ID === "true",
 
 ---
 
-If you want, I can fold the patches above directly into your file and give you the full merged version. Otherwise, drop these in and ping me with any new errors or logs; I’ll iterate quickly.
+### Claude
 
+Looking at your latest version, you've made some solid improvements, but I notice a critical issue with the checkpoint logic that could cause data loss. Let me review the key changes and provide feedback:
 
+## Your Improvements:
+
+1. **Better error handling structure** - The `EventHubErrorHandler` now returns clearer outcome objects
+2. **Improved event body parsing** - The `parseEventBody` function handles different data types robustly
+3. **Cleaner code organization** - Better variable naming and structure
+4. **Resource management** - Added `isClosed` check before closing subscription
+5. **Content-Type headers** - Added proper HTTP headers for the uploaded files
+
+## Critical Issue Found:
+
+There's a significant problem in your `readEventsFromHub` method that could cause data loss:
+
+```javascript
+// This is problematic:
+allEvents.push({
+  partitionId,
+  offset: ev.offset,
+  // ... other fields
+  // Missing: partitionContext reference
+});
+
+// But you track for checkpointing separately:
+this.processedEvents.set(partitionId, { event: ev, partitionContext });
+```
+
+**The Problem**: The events in `allEvents` don't have partition context references, but your checkpointing logic depends on the partition context being available. If there's an error during processing, you might checkpoint events that weren't actually processed successfully.
+
+## Recommended Fix:## Key Improvements in My Final Version:
+
+### 1. **Safe Checkpoint Logic**
+- Renamed `processedEvents` to `successfullyProcessedEvents` for clarity
+- Added `markEventsAsProcessed()` method that only marks events as ready for checkpointing AFTER successful storage
+- Events are only checkpointed after they're confirmed written to ADLS Gen2
+
+### 2. **Data Integrity Protection**
+- Preserve `_partitionContext` and `_originalEvent` through the processing pipeline
+- Clean these internal fields before serializing to storage
+- Clear processed events on any error to prevent partial checkpointing
+
+### 3. **Better Error Recovery**
+- Clear `successfullyProcessedEvents` on batch failure to prevent inconsistent state
+- More detailed checkpoint operation reporting
+
+### 4. **Resource Management**
+- Improved subscription cleanup with proper error handling
+- Better timeout messaging
+
+## Critical Benefits:
+
+1. **No Data Loss**: Events are only checkpointed after successful storage
+2. **No Duplicate Processing**: Proper checkpoint management prevents reprocessing
+3. **Crash Recovery**: Consumer restarts from last successfully processed position
+4. **Partition Independence**: Each partition's checkpoint is managed separately
+
+## Testing Recommendations:
+
+1. **Test checkpoint recovery**: Stop the process mid-batch and restart to verify it resumes correctly
+2. **Test with failures**: Introduce storage failures to ensure events aren't checkpointed until successfully stored
+3. **Monitor checkpoint container**: Verify checkpoints are being created in blob storage
+
+Your code was quite close! The main issue was the timing of when events get marked for checkpointing. The fixed version ensures data integrity by only checkpointing events that have been successfully processed and stored.
