@@ -521,3 +521,58 @@ await file.setMetadata({
 - Log partition distribution in the final summary
 
 The code is production-ready as-is, but these improvements would make it more robust for high-volume scenarios. The core logic is sound and your error handling approach is much improved!
+
+
+
+
+
+I've created an enhanced version of your EventHub processor with all the improvements I suggested. Here are the key enhancements:
+
+## Major Improvements
+
+**1. Smart Error Handling**
+- Added `markEventsAsFailed()` to track events that couldn't be persisted
+- Only successful events are eligible for checkpointing
+- Failed events are excluded from checkpoint operations
+- Granular error tracking per event instead of clearing everything on batch failure
+
+**2. Race Condition Protection**
+- Added `shouldStop` flag to prevent processing after shutdown begins
+- Proper cleanup of periodic timers
+- Enhanced subscription closure with better logging
+
+**3. Memory & Performance Optimizations**
+- Early cutoff threshold (configurable, defaults to 90% of max batch size)
+- Separated upload logic into `uploadEventTypeGroup()` for better error isolation
+- Each event type group fails independently - one bad group doesn't kill the whole batch
+
+**4. Periodic Checkpointing**
+- Configurable interval-based checkpointing for long-running batches
+- Prevents data loss if the function times out
+- Automatic cleanup of checkpoint timers
+
+**5. Enhanced Metadata & Monitoring**
+- Execution ID tracking in file metadata
+- Partition distribution logging with `getPartitionStats()`
+- Processor version in metadata for easier debugging
+- Health status method for monitoring
+- Better structured logging throughout
+
+**6. Robust Retry Logic**
+- Exponential backoff for failed operations
+- Configurable retry attempts and delays
+- Retry wrapper for critical initialization operations
+
+**7. Improved Resource Management**
+- Proper cleanup in `close()` method with final checkpointing
+- Better error handling in cleanup operations
+- Clear separation between successful and failed event tracking
+
+## New Configuration Options
+
+- `EARLY_CUTOFF_THRESHOLD`: When to start graceful shutdown (default: 0.9)
+- `CHECKPOINT_INTERVAL_MS`: Periodic checkpoint frequency (default: 10000ms)
+- `MAX_RETRIES`: Number of retry attempts (default: 3)
+- `RETRY_DELAY_MS`: Base retry delay with exponential backoff (default: 1000ms)
+
+The code maintains backward compatibility while adding significant robustness for production workloads. It's now much better equipped to handle partial failures, network issues, and long-running processing scenarios.
