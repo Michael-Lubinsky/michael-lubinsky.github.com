@@ -39,6 +39,73 @@ When the reader connects, it passes the offset to the event hub to specify the l
 
 It's possible to return to older data by specifying a lower offset from this checkpointing process. Through this mechanism, checkpointing enables both failover resiliency and event stream replay.
 
+
+#### Claude suggestion for checkpoint fix
+
+Looking at your code, I can see the main issue with EventHub checkpoint handling. Your current implementation creates a custom checkpoint file in ADLS Gen2, but it doesn't integrate with the Azure EventHub SDK's built-in checkpoint store mechanism. This means your consumer will always start from the latest position and won't properly resume from where it left off.
+
+Let me fix this by implementing proper EventHub checkpointing using Azure Blob Storage as the checkpoint store.Here are the key fixes I've implemented to properly handle EventHub checkpoints:
+
+## Major Changes Made:
+
+### 1. **Proper Checkpoint Store Integration**
+- Added `@azure/eventhubs-checkpointstore-blob` dependency for Azure Blob checkpoint store
+- Configured `BlobCheckpointStore` to persist checkpoints in Azure Blob Storage
+- EventHub consumer now automatically resumes from the last processed position
+
+### 2. **Built-in Checkpoint Management**
+- Replaced custom checkpoint logic with Azure SDK's built-in checkpointing
+- Uses `partitionContext.updateCheckpoint(event)` method for proper checkpoint updates
+- Checkpoints are now stored in the Azure-standard format that EventHub SDK understands
+
+### 3. **Enhanced Configuration**
+```javascript
+checkpointContainerName: process.env.CHECKPOINT_CONTAINER_NAME || 'eventhub-checkpoints',
+checkpointFrequency: parseInt(process.env.CHECKPOINT_FREQUENCY) || 10, // Checkpoint every N batches
+startFromBeginning: process.env.START_FROM_BEGINNING === "true"
+```
+
+### 4. **Improved Event Processing Flow**
+- Events are tracked per partition during processing
+- Checkpoints are updated after successful data serialization to ADLS Gen2
+- Only the latest processed event per partition is checkpointed
+- Configurable checkpoint frequency to balance performance vs. reliability
+
+### 5. **Better Error Handling**
+- Checkpoint failures don't stop event processing
+- Each partition's checkpoint is updated independently
+- Proper cleanup of processed events after checkpointing
+
+## Required Dependencies:
+Make sure to install the checkpoint store package:
+```bash
+npm install @azure/eventhubs-checkpointstore-blob
+```
+
+## Environment Variables to Add:
+```bash
+# Checkpoint configuration
+CHECKPOINT_CONTAINER_NAME=eventhub-checkpoints
+CHECKPOINT_FREQUENCY=10
+START_FROM_BEGINNING=false
+```
+
+## How It Works:
+
+1. **First Run**: If `START_FROM_BEGINNING=true`, processes from the beginning of the stream. Otherwise starts from latest.
+
+2. **Subsequent Runs**: Automatically resumes from the last checkpointed position for each partition.
+
+3. **Checkpointing**: Updates checkpoints every N batches (configurable) after successful data upload to ADLS Gen2.
+
+4. **Recovery**: If the process crashes and restarts, it will automatically resume from the last checkpoint.
+
+The key improvement is that your consumer will now properly resume processing from where it left off, preventing duplicate processing and ensuring no events are lost during restarts or failures.
+
+
+
+Gemini suggestion for checkpoint fix:
+
 Short answer: your code isn’t “wrong,” but it’s **not an Event Hubs checkpoint store**. You’re just writing a JSON file to ADLS Gen2. The “use an isolated container” guidance applies to the **official Blob checkpoint store** (`BlobCheckpointStore`) that the SDK knows how to use. Since you aren’t passing a checkpoint store to `EventHubConsumerClient`, the SDK will **not resume** from your `_checkpoints/latest.json`, nor will it load-balance/coordinate from it.
 
 ### What the doc means by “isolated container”
