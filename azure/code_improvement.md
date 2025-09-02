@@ -393,3 +393,79 @@ this.processedEvents.set(partitionId, { event: ev, partitionContext });
 3. **Monitor checkpoint container**: Verify checkpoints are being created in blob storage
 
 Your code was quite close! The main issue was the timing of when events get marked for checkpointing. The fixed version ensures data integrity by only checkpointing events that have been successfully processed and stored.
+
+
+
+chatgpt
+
+Thanks for the upload — I read your new `telemetry-reader.js`. The changes you described are there and they’re solid: you now (a) use a real **BlobCheckpointStore**; (b) carry `_partitionContext`/`_originalEvent` through the pipeline, only **marking** events after a successful ADLS write; (c) checkpoint via `Promise.allSettled`; (d) normalize/use `basePath`; (e) set proper `Content-Type`; and (f) cleanly close the subscription. Nice work.&#x20;
+
+Here are a few **surgical fixes/cleanups** I recommend:
+
+1. ### Simplify/strengthen checkpoint aggregation
+
+Right now each per-partition `updateCheckpoint()` has its own `.catch(...)` **and** you also use `allSettled`. That means every promise ends up *fulfilled* (because of the catch), so `allSettled` doesn’t buy you signal. Either approach is fine; the simplest is to **remove the inner `.catch`** and rely on `allSettled`:
+
+```js
+// build ops without .catch
+const ops = [];
+for (const [pid, info] of this.successfullyProcessedEvents.entries()) {
+  ops.push(info.partitionContext.updateCheckpoint(info.event).then(() => ({ pid, ok: true })));
+}
+
+// evaluate results and log
+const results = await Promise.allSettled(ops);
+const ok = results.filter(r => r.status === 'fulfilled').length;
+const failed = results.length - ok;
+context.log.info(`Checkpoint operations: ${ok}/${results.length} succeeded`);
+if (failed) {
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') context.log.error(`Checkpoint failed [${i}]: ${r.reason?.message || r.reason}`);
+  });
+}
+this.successfullyProcessedEvents.clear();
+```
+
+2. ### Remove an unused variable
+
+You create `partitionContextMap` in `readEventsFromHub` but never use it. Safe to delete.
+
+3. ### (Optional) honor a global cap and end early
+
+You timebox reads (good), but if you want to **hard-cap** total events per run, stop as soon as you reach the target:
+
+```js
+const MAX_TOTAL = config.processing.maxBatchSize;
+if (allEvents.length >= MAX_TOTAL) {
+  context.log.info(`Reached cap of ${MAX_TOTAL} events; closing subscription early`);
+  await closeSub();
+  return resolveWithEvents();
+}
+```
+
+(Place that right after you push into `allEvents` in `processEvents`.)
+
+4. ### Avoid repeated directory checks
+
+You call `ensureDirectoryExists(baseFolder)` inside the loop over event groups. Move it **before** the loop:
+
+```js
+await this.ensureDirectoryExists(baseFolder);
+for (const [eventType, events] of Object.entries(groups)) {
+  // ...
+}
+```
+
+5. ### Grouping fallback
+
+If some events don’t have `raw_event.event`, consider a fallback (e.g., `"unknown"` is fine) or use a different discriminator if your payloads provide one (e.g., `telemetryEvent.type`).
+
+6. ### Tiny polish
+
+* Your `parseEventBody` covers Buffer/Uint8Array/string/object well — keep it.
+* Metadata keys are lowercased and values are strings — perfect for ADLS.
+* You’re cleaning `_partitionContext`/`_originalEvent` before serializing — exactly right.
+
+---
+
+If you want, I can re-emit your file with items 1–4 folded in (no behavioral changes other than earlier stop when cap reached).
