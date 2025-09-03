@@ -44,7 +44,7 @@ Install these tools:
 -- Example assumes your JSON is under container “telemetry” at path root_name/
 --  >>> IMPORTANT: Put only the *fixed* root here; the per-hour folders stay in the URL path or the COPY paths <<<
 CREATE OR REPLACE STAGE weavix.bronze.adls_stage
-  URL='azure://telemetry@weavixdatalakedevsa.blob.core.windows.net/root_name'
+  URL='azure://weavixdatalakedevsa.blob.core.windows.net/<blobstorage>'
   CREDENTIALS=(AZURE_SAS_TOKEN='<PASTE_SAS_TOKEN>')  -- or use STORAGE INTEGRATION (recommended long-term)
   FILE_FORMAT = weavix.bronze.ff_jsonl;
 
@@ -111,7 +111,7 @@ https://weavixdatalakedevsa.blob.core.windows.net/telemetry?<SAS_TOKEN>
 
 ---
 
-👉 Do you want me to give you a **ready-to-use CLI command** to generate a SAS token specifically for your `/root_name/YYYY-MM-DD-HH/` folder in ADLS Gen2?
+👉 Do you want me to give you a **ready-to-use CLI command** to generate a SAS token specifically for your `/root_name/YYYY/MM/DD/HH/` folder in ADLS Gen2?
 
 
 Perfect 👍 Let’s make this concrete for your case: you want a **SAS token** that Snowflake can use to read JSONL files from a **specific ADLS Gen2 folder**:
@@ -175,7 +175,7 @@ This version uses the storage account key, so you don’t need `--auth-mode logi
 
 ---
 
-👉 Do you want me to show you how to **scope the SAS token to a specific subfolder** (like `/root_name/2025-09-03-13/`) so it doesn’t expose the whole container?
+👉 Do you want me to show you how to **scope the SAS token to a specific subfolder** (like `/root_name/2025/09/03/13/`) so it doesn’t expose the whole container?
 
 This returns just the **SAS query string**, e.g.:
 
@@ -246,7 +246,13 @@ CREATE OR REPLACE STAGE weavix.bronze.adls_stage
   FILE_FORMAT = weavix.bronze.ff_jsonl;
 
 -- Sanity check
-LIST @weavix.bronze.adls_stage/2025-09-03-13/;
+LIST @weavix.bronze.telemetry_stage/2025/09/03/13/;
+
+LIST @weavix.bronze.telemetry_stage/2025/09/03/17/;
+
+LIST @weavix.bronze.telemetry_stage/2025/09/03/17/ PATTERN='.*\.jsonl';
+
+LIST @weavix.bronze.telemetry_stage;
 ```
 
 ---
