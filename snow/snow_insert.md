@@ -37,7 +37,7 @@ Install these tools:
   brew install azure-cli
   ```
 
-### Azure Token
+### Azure SAS Token
 ```
 -- Easiest path to start is a SAS token on the stage (rotate regularly).
 -- URL form for Azure in Snowflake: azure://<container>@<account>.blob.core.windows.net/<optional/path>
@@ -51,6 +51,179 @@ CREATE OR REPLACE STAGE weavix.bronze.adls_stage
 -- (Recommended long-term) Replace SAS with a STORAGE INTEGRATION (RBAC, no secrets on stage).
 -- You can swap the CREDENTIALS clause for: STORAGE_INTEGRATION = my_azure_integration
 ```
+
+
+Not quite 🙂 — the command you showed:
+
+```bash
+az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv
+```
+
+generates an **Azure Active Directory (AAD) access token**, not a **SAS token**.
+
+---
+
+## Difference
+
+* **AAD Access Token**
+
+  * Short-lived OAuth2 token (JWT).
+  * Used for authenticating against Azure services that support Azure AD directly (e.g., Azure Database for PostgreSQL, Azure SQL, ARM APIs).
+  * Works only for a few minutes (usually 1 hour).
+  * Returned by `az account get-access-token`.
+
+* **SAS Token (Shared Access Signature)**
+
+  * A signed query string you append to a **storage URL**.
+  * Grants scoped access (read/write/list/etc.) to blobs, containers, or directories in **Azure Storage** (including ADLS Gen2).
+  * Lifetime and permissions are defined when you create it.
+  * Generated using `az storage` commands (or the Portal).
+
+---
+
+## Example: Generate a SAS token for ADLS Gen2
+
+### Container-level SAS (read + list)
+
+```bash
+az storage container generate-sas \
+  --account-name weavixdatalakedevsa \
+  --name telemetry \
+  --permissions rl \
+  --expiry 2025-09-05T00:00Z \
+  --auth-mode login \
+  --as-user
+```
+
+This returns just the SAS string (e.g., `sv=...&ss=...&sig=...`).
+You then append it to your container URL:
+
+```
+https://weavixdatalakedevsa.blob.core.windows.net/telemetry?<SAS_TOKEN>
+```
+
+---
+
+## When to use each
+
+* Use **AAD access tokens** if you’re calling ARM APIs or databases with AAD auth.
+* Use **SAS tokens** when you need Snowflake, Databricks, or some external app to fetch files from ADLS Gen2 without storing account keys.
+
+---
+
+👉 Do you want me to give you a **ready-to-use CLI command** to generate a SAS token specifically for your `/root_name/YYYY-MM-DD-HH/` folder in ADLS Gen2?
+
+
+Perfect 👍 Let’s make this concrete for your case: you want a **SAS token** that Snowflake can use to read JSONL files from a **specific ADLS Gen2 folder**:
+
+```
+/root_name/YYYY-MM-DD-HH/
+```
+
+in your storage account `weavixdatalakedevsa`, container `telemetry`.
+
+---
+
+## 1. Generate SAS token with Azure CLI
+
+### Command
+
+
+
+```bash
+az storage container generate-sas \
+  --account-name weavixdatalakedevsa \
+  --name telemetry \
+  --permissions rl \
+  --expiry 2025-10-30T00:00Z \
+  --https-only \
+  --auth-mode login \
+  --as-user
+```
+
+---
+
+## Explanation  
+* --permissions rl → read and list (enough for Snowflake COPY INTO).
+
+* --expiry → set when the token should expire. Here it’s valid until Sept 5, 2025 (UTC). Adjust as needed.
+
+* --https-only → ensures token works only over HTTPS.
+
+*  --auth-mode login → uses your logged-in Azure CLI identity.
+* `--auth-mode login` → use your signed-in Azure AD identity (instead of storage account key).
+* `--as-user` → tells Azure to issue a **user delegation SAS**, which works with ADLS Gen2.
+* Without `--as-user`, the CLI expects you to provide an **account key** or **connection string** instead.
+
+---
+
+## Alternative (if you don’t want `--as-user`)
+
+You can also generate a SAS with the **account key**:
+
+```bash
+az storage container generate-sas \
+  --account-name weavixdatalakedevsa \
+  --name telemetry \
+  --permissions rl \
+  --expiry 2025-10-30T00:00Z \
+  --https-only \
+  --account-key "$(az storage account keys list --account-name weavixdatalakedevsa --query '[0].value' -o tsv)"
+```
+
+This version uses the storage account key, so you don’t need `--auth-mode login` or `--as-user`. But in general, **user delegation SAS** (`--as-user`) is more secure if you’re on RBAC.
+
+---
+
+👉 Do you want me to show you how to **scope the SAS token to a specific subfolder** (like `/root_name/2025-09-03-13/`) so it doesn’t expose the whole container?
+
+This returns just the **SAS query string**, e.g.:
+
+```
+sv=2022-11-02&ss=b&srt=sco&sp=rl&se=2025-09-05T00:00Z&st=2025-09-03T00:00Z&spr=https&sig=abc123...
+```
+
+---
+
+## 2. Construct full SAS URL for Snowflake
+
+Combine your container URL with the SAS string:
+
+```
+https://weavixdatalakedevsa.blob.core.windows.net/telemetry/root_name/YYYY-MM-DD-HH?<SAS_TOKEN>
+```
+
+Example:
+
+```
+https://weavixdatalakedevsa.blob.core.windows.net/telemetry/root_name/2025-09-03-13?sv=2022-11-02&ss=b...&sig=abc123
+```
+
+---
+
+## 3. Use in Snowflake stage
+
+```sql
+CREATE OR REPLACE STAGE weavix.bronze.adls_stage_hour
+  URL='azure://telemetry@weavixdatalakedevsa.blob.core.windows.net/root_name/2025-09-03-13'
+  CREDENTIALS=(AZURE_SAS_TOKEN='sv=2022-11-02&ss=b...&sig=abc123')
+  FILE_FORMAT = weavix.bronze.ff_jsonl;
+```
+
+Now Snowflake can `LIST` and `COPY INTO` from that folder.
+
+---
+
+⚠️ Notes:
+
+* If you want the SAS to cover **all hour folders**, generate it at the container or `/root_name/` level instead of `/root_name/YYYY-MM-DD-HH/`.
+* SAS tokens are **secrets**: don’t commit them to GitHub or share publicly.
+* For production, a **Storage Integration** (Snowflake ↔ Azure AD RBAC) is more secure than SAS.
+
+---
+
+ 
+
 
 ## 2. One-time Snowflake Setup
 
