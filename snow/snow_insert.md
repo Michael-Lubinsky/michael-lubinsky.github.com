@@ -1,3 +1,6 @@
+<https://www.snowflake.com/en/developers/>
+
+<https://www.snowflake.com/en/developers/downloads/>
 
 # Load JSONL from Azure ADLS Gen2 into Snowflake Bronze Tables
 
