@@ -37,7 +37,20 @@ Install these tools:
   brew install azure-cli
   ```
 
----
+### Azure Token
+```
+-- Easiest path to start is a SAS token on the stage (rotate regularly).
+-- URL form for Azure in Snowflake: azure://<container>@<account>.blob.core.windows.net/<optional/path>
+-- Example assumes your JSON is under container “telemetry” at path root_name/
+--  >>> IMPORTANT: Put only the *fixed* root here; the per-hour folders stay in the URL path or the COPY paths <<<
+CREATE OR REPLACE STAGE weavix.bronze.adls_stage
+  URL='azure://telemetry@weavixdatalakedevsa.blob.core.windows.net/root_name'
+  CREDENTIALS=(AZURE_SAS_TOKEN='<PASTE_SAS_TOKEN>')  -- or use STORAGE INTEGRATION (recommended long-term)
+  FILE_FORMAT = weavix.bronze.ff_jsonl;
+
+-- (Recommended long-term) Replace SAS with a STORAGE INTEGRATION (RBAC, no secrets on stage).
+-- You can swap the CREDENTIALS clause for: STORAGE_INTEGRATION = my_azure_integration
+```
 
 ## 2. One-time Snowflake Setup
 
