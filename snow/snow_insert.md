@@ -205,7 +205,7 @@ https://weavixdatalakedevsa.blob.core.windows.net/telemetry/root_name/2025-09-03
 
 ```sql
 CREATE OR REPLACE STAGE weavix.bronze.adls_stage_hour
-  URL='azure://telemetry@weavixdatalakedevsa.blob.core.windows.net/root_name/2025-09-03-13'
+  URL='azure://weavixdatalakedevsa.blob.core.windows.net/root_name/telemetry'
   CREDENTIALS=(AZURE_SAS_TOKEN='sv=2022-11-02&ss=b...&sig=abc123')
   FILE_FORMAT = weavix.bronze.ff_jsonl;
 ```
@@ -241,7 +241,7 @@ CREATE OR REPLACE FILE FORMAT weavix.bronze.ff_jsonl
 
 -- External stage pointing to ADLS Gen2
 CREATE OR REPLACE STAGE weavix.bronze.adls_stage
-  URL='azure://telemetry@weavixdatalakedevsa.blob.core.windows.net/root_name'
+  URL='azure://weavixdatalakedevsa.blob.core.windows.net/telemetry'
   CREDENTIALS=(AZURE_SAS_TOKEN='<PASTE_SAS_TOKEN>')
   FILE_FORMAT = weavix.bronze.ff_jsonl;
 
@@ -299,11 +299,11 @@ BEGIN
       FROM (
         SELECT
           $1,
-          REGEXP_SUBSTR(METADATA$FILENAME, ''([0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2})''),
+          REGEXP_SUBSTR(METADATA$FILENAME, ''([0-9]{4}/[0-9]{2}/[0-9]{2}/[0-9]{2})''),
           METADATA$FILENAME,
           METADATA$FILE_ROW_NUMBER,
           CURRENT_TIMESTAMP()
-        FROM @weavix.bronze.adls_stage (FILE_FORMAT => weavix.bronze.ff_jsonl)
+        FROM @weavix.bronze.telemetry_stage (FILE_FORMAT => weavix.bronze.ff_jsonl)
         WHERE METADATA$FILENAME ILIKE ''%' || :v_prefix || rec.base_name || '''
       )
       ON_ERROR = ''ABORT_STATEMENT''
@@ -319,7 +319,7 @@ $$;
 Run it:
 
 ```sql
-CALL weavix.bronze.load_hour_folder('2025-09-03-13');
+CALL weavix.bronze.load_hour_folder('2025/09/03/13');
 ```
 
 ---
