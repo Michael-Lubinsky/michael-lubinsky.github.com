@@ -22,8 +22,8 @@ You do **not** install `COPY` or `Snowpipe` locally—those are Snowflake featur
 Install these tools:
 
 * **SnowSQL CLI** – run SQL from your Mac
-  [Install SnowSQL](https://developers.snowflake.com/snowsql/)
-* **(Optional) Snowflake CLI** – newer multi-command tool
+   SnowSQL  <https://developers.snowflake.com/snowsql/>
+* **(Optional) Snowflake CLI** – newer multi-command tool  <https://developers.snowflake.com/cli/>
 * **(Optional) SDK** for automation
 
   * Node.js: `snowflake-sdk`
