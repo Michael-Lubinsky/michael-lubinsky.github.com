@@ -178,7 +178,97 @@ yarn config set nodeLinker node-modules
 * If you prefer compiled output, give `@weavix/common` a small build step (tsc) and set `"main": "dist/index.js"`, `"types": "dist/index.d.ts"`. For quick dev, **tsx** is perfect.
 * If you insist on npm instead of Yarn, the `workspace:` protocol won’t work—use Yarn for this setup.
 
-## JavaScript
+
+
+
+
+You’re importing a **deep path that isn’t exported** by the `@weavix/snowflake-common` package:
+
+```ts
+// Fails because package "exports" blocks unknown subpaths:
+import { greet, add } from "@weavix/snowflake-common/src/event-util/a";
+```
+
+When a package has an `"exports"` field, Node only allows the subpaths you explicitly list. Fix in one of two ways:
+
+## Option A (simplest) — Import the package root
+
+Update your import to use the root export:
+
+```ts
+// weavix/packages/telemetry-snowflake/src/index.ts
+import { greet, add } from "@weavix/snowflake-common";
+
+function main() {
+  console.log(greet("Weavix"));
+  console.log(`2 + 3 = ${add(2, 3)}`);
+}
+main();
+```
+
+…and make sure the common package exports that file from its root:
+
+```json
+// weavix/packages/snowflake-common/package.json
+{
+  "name": "@weavix/snowflake-common",
+  "version": "0.1.0",
+  "private": false,
+  "exports": {
+    ".": "./src/event-util/a.ts"
+  }
+}
+```
+
+## Option B — Keep a subpath import (export it explicitly)
+
+If you prefer `@weavix/snowflake-common/event-util/a`, add subpath exports:
+
+```json
+// weavix/packages/snowflake-common/package.json
+{
+  "name": "@weavix/snowflake-common",
+  "version": "0.1.0",
+  "private": false,
+  "exports": {
+    ".": "./src/event-util/a.ts",
+    "./event-util/a": "./src/event-util/a.ts",
+    "./event-util/*": "./src/event-util/*.ts"
+  }
+}
+```
+
+Then in `index.ts`:
+
+```ts
+import { greet, add } from "@weavix/snowflake-common/event-util/a";
+```
+
+## Make sure the workspace is installed
+
+From the **repo root** (where the root `package.json` lists `workspaces`), run Yarn so the workspace link is created:
+
+```bash
+corepack enable
+yarn config set nodeLinker node-modules   # optional, if you want node_modules instead of PnP
+yarn install
+```
+
+Then run your file (either):
+
+```bash
+# from project dir
+yarn workspace @weavix/telemetry-snowflake tsx src/index.ts
+# or if tsx is in devDependencies there:
+npx tsx src/index.ts
+```
+
+> Bonus: your `weavix/packages/snowflake-common/config.json` looks like a `tsconfig.json` but has JSON errors (trailing commas) and a nonstandard name. If you need TS compiler settings, rename it to `tsconfig.json` and fix commas. If you’re only using `tsx`, you can skip it for now.
+
+
+
+
+# JavaScript
 
 When you run a JavaScript program with Node.js, arguments you pass after the script name are available in `process.argv`.
 
