@@ -26,9 +26,6 @@ npx tsx index.ts name=Alice times=3
 ```
 
 
-
-Great plan. Here’s a minimal Yarn workspaces setup that lets **`weavix/project1`** import code from **`weavix/common`** using the `workspace:` protocol.
-
 ⚠️ One correction: package names with a slash must be **scoped**. So use **`@weavix/common`** (✅ valid) instead of `weavix/common` (❌ invalid).
 
 ---
@@ -266,7 +263,92 @@ npx tsx src/index.ts
 > Bonus: your `weavix/packages/snowflake-common/config.json` looks like a `tsconfig.json` but has JSON errors (trailing commas) and a nonstandard name. If you need TS compiler settings, rename it to `tsconfig.json` and fix commas. If you’re only using `tsx`, you can skip it for now.
 
 
+The issue is with your package exports configuration and how TypeScript/Node.js resolves the modules. Here are the problems and solutions:
 
+## Problem 1: Package Exports Configuration
+
+Your `snowflake-common/package.json` exports are pointing to `.ts` files, but at runtime Node.js needs `.js` files. The exports should point to compiled JavaScript files.
+
+## Problem 2: Missing Main Entry Point
+
+Your `snowflake-common` package doesn't have a `main` field, which can cause resolution issues.
+
+## Problem 3: Import Path Mismatch
+
+You're importing from `@weavix/snowflake-common/src/event-util/a` but your exports define `./event-util/a`, not the full `src/` path.
+
+## Solutions:
+
+**1. Fix snowflake-common/package.json:**
+```json
+{
+  "name": "@weavix/snowflake-common",
+  "version": "0.1.0",
+  "private": false,
+  "main": "dist/event-util/a.js",
+  "types": "dist/event-util/a.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/event-util/a.d.ts",
+      "require": "./dist/event-util/a.js",
+      "import": "./dist/event-util/a.js"
+    },
+    "./event-util/a": {
+      "types": "./dist/event-util/a.d.ts",
+      "require": "./dist/event-util/a.js",
+      "import": "./dist/event-util/a.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  }
+}
+```
+
+**2. Update your import in telemetry-snowflake/src/index.ts:**
+```typescript
+import { greet, add } from "@weavix/snowflake-common/event-util/a";
+// Remove the "src/" part from the import path
+```
+
+**3. Build the snowflake-common package first:**
+```bash
+# From weavix/packages/snowflake-common
+npm run build
+# or
+npx tsc
+```
+
+**4. Add root workspace package.json if missing:**
+```json
+{
+  "name": "weavix",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
+```
+
+**5. Install dependencies from root:**
+```bash
+# From weavix/ root
+yarn install
+```
+
+## Alternative Quick Fix (Development Only):
+
+If you want to import TypeScript files directly during development, change your import to use a relative path:
+```typescript
+import { greet, add } from "../../snowflake-common/src/event-util/a";
+```
+
+## Recommended Approach:
+
+The proper solution is to build your TypeScript packages and reference the compiled JavaScript. This ensures your workspace behaves like real npm packages and will work in production environments.
+
+Try building the `snowflake-common` package first, then running your code again. The error should resolve once Node.js can find the compiled JavaScript files.
 
 # JavaScript
 
