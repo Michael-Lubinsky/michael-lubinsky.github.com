@@ -141,7 +141,7 @@ az storage container generate-sas \
   --as-user
 ```
 
----
+incorrect usage: --expiry should be within 7 days from now
 
 ## Explanation  
 * --permissions rl → read and list (enough for Snowflake COPY INTO).
