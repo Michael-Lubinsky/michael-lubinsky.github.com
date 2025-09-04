@@ -67,6 +67,9 @@ https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffus
 
 ### Transformers
 
+https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
+https://news.ycombinator.com/item?id=45116957
+
 https://nlp.seas.harvard.edu/annotated-transformer/
 
 https://habr.com/ru/articles/925404/ Text-to-LoRA: мгновенная адаптация трансформеров
