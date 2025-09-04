@@ -204,8 +204,8 @@ https://weavixdatalakedevsa.blob.core.windows.net/telemetry/root_name/2025-09-03
 ## 3. Use in Snowflake stage
 
 ```sql
-CREATE OR REPLACE STAGE weavix.bronze.adls_stage_hour
-  URL='azure://weavixdatalakedevsa.blob.core.windows.net/root_name/telemetry'
+CREATE OR REPLACE STAGE weavix.events.adls_stage_hour
+  URL='azure://weavixdatalakedevsa.blob.core.windows.net/telemetry'
   CREDENTIALS=(AZURE_SAS_TOKEN='sv=2022-11-02&ss=b...&sig=abc123')
   FILE_FORMAT = weavix.bronze.ff_jsonl;
 ```
@@ -216,7 +216,7 @@ Now Snowflake can `LIST` and `COPY INTO` from that folder.
 
 ⚠️ Notes:
 
-* If you want the SAS to cover **all hour folders**, generate it at the container or `/root_name/` level instead of `/root_name/YYYY-MM-DD-HH/`.
+* If you want the SAS to cover **all hour folders**, generate it at the container or `/root_name/` level instead of `/root_name/YYYY/MM/DD/HH/`.
 * SAS tokens are **secrets**: don’t commit them to GitHub or share publicly.
 * For production, a **Storage Integration** (Snowflake ↔ Azure AD RBAC) is more secure than SAS.
 
@@ -230,20 +230,20 @@ Now Snowflake can `LIST` and `COPY INTO` from that folder.
 ```sql
 -- Database and schema
 CREATE DATABASE IF NOT EXISTS weavix;
-CREATE SCHEMA IF NOT EXISTS weavix.bronze;
+CREATE SCHEMA IF NOT EXISTS weavix.events;
 
 -- JSONL file format
-CREATE OR REPLACE FILE FORMAT weavix.bronze.ff_jsonl
+CREATE OR REPLACE FILE FORMAT weavix.events.ff_jsonl
   TYPE = JSON
   STRIP_OUTER_ARRAY = FALSE
   IGNORE_UTF8_ERRORS = TRUE
   COMPRESSION = AUTO;
 
 -- External stage pointing to ADLS Gen2
-CREATE OR REPLACE STAGE weavix.bronze.adls_stage
+CREATE OR REPLACE STAGE weavix.events.telemetry_stage
   URL='azure://weavixdatalakedevsa.blob.core.windows.net/telemetry'
   CREDENTIALS=(AZURE_SAS_TOKEN='<PASTE_SAS_TOKEN>')
-  FILE_FORMAT = weavix.bronze.ff_jsonl;
+  FILE_FORMAT = weavix.events.ff_jsonl;
 
 -- Sanity check
 LIST @weavix.bronze.telemetry_stage/2025/09/03/13/;
@@ -254,8 +254,158 @@ LIST @weavix.bronze.telemetry_stage/2025/09/03/17/ PATTERN='.*\.jsonl';
 
 LIST @weavix.bronze.telemetry_stage;
 ```
+--------------
+--- CLAUDE
+-------------
 
----
+## Key Features:
+
+1. **Dynamic Path Handling**: Takes a path parameter in 'YYYY/MM/DD/HH' format and lists all `.jsonl` files in that directory.
+
+2. **Automatic Table Creation**: For each JSONL file found, it creates a table with the same name (minus the `.jsonl` extension) if it doesn't exist.
+
+3. **Flexible Schema**: Each created table has:
+   - `load_timestamp`: Automatic timestamp when data was loaded
+   - `load_path`: The folder path being processed (for audit/tracking)
+   - `raw_data`: VARIANT column to store the JSON data
+
+4. **Error Handling**: Uses `ON_ERROR = 'CONTINUE'` to skip malformed records rather than failing the entire load.
+
+5. **Return Results**: Returns a table showing the number of records inserted per table.
+
+## Usage Example:
+
+```sql
+-- Load data from the specified hour
+CALL weavix.events.load_hour('2025/09/03/17');
+
+-- This will process all .jsonl files in:
+-- @weavix.events.telemetry_stage/2025/09/03/17/
+```
+
+## Table Structure:
+
+For each JSONL file (e.g., `user_events.jsonl`), a table `weavix.events.user_events` will be created with:
+- Metadata columns for tracking when and from where data was loaded
+- Raw JSON data stored in a VARIANT column for flexible querying
+
+## Notes:
+
+1. **Fixed Stage Reference**: I noticed your `LIST` command has a typo (`weavix.event.telemetry_stage` instead of `weavix.events.telemetry_stage`). The procedure uses the correct reference.
+
+2. **JSON Querying**: Once loaded, you can query the JSON data using Snowflake's JSON functions:
+   ```sql
+   SELECT raw_data:user_id, raw_data:event_type, load_path
+   FROM weavix.events.user_events
+   WHERE load_path = '2025/09/03/17';
+   ```
+
+3. **Scalability**: The procedure processes files one by one, which is good for error isolation but may be slower for very large numbers of files.
+
+The procedure will return a result set showing how many records were loaded into each table, making it easy to verify the load results.
+
+-----------------------------------
+```sql
+CREATE OR REPLACE PROCEDURE weavix.events.load_hour(path STRING)
+RETURNS TABLE (table_name STRING, records_inserted NUMBER)
+LANGUAGE SQL
+AS
+$$
+DECLARE
+    file_cursor CURSOR FOR 
+        SELECT DISTINCT REGEXP_SUBSTR("name", '[^/]+(?=\\.jsonl$)') AS table_name,
+               "name" AS file_path
+        FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))
+        WHERE "name" LIKE '%.jsonl';
+    
+    table_name_var STRING;
+    file_path_var STRING;
+    create_table_sql STRING;
+    copy_sql STRING;
+    records_count NUMBER;
+    results TABLE (table_name STRING, records_inserted NUMBER);
+    stage_path STRING;
+BEGIN
+    -- Initialize results table
+    results := TABLE(SELECT '' AS table_name, 0 AS records_inserted WHERE FALSE);
+    
+    -- Construct the full stage path
+    stage_path := '@weavix.events.telemetry_stage/' || path || '/';
+    
+    -- List files in the specified path
+    EXECUTE IMMEDIATE 'LIST ' || stage_path || ' PATTERN=''.*\\.jsonl''';
+    
+    -- Open cursor to iterate through files
+    OPEN file_cursor;
+    
+    FOR record IN file_cursor DO
+        table_name_var := record.table_name;
+        file_path_var := record.file_path;
+        
+        -- Skip if table name is null (shouldn't happen with our regex, but safety check)
+        IF (table_name_var IS NULL OR table_name_var = '') THEN
+            CONTINUE;
+        END IF;
+        
+        -- Create table if it doesn't exist
+        -- Using a flexible schema that can handle any JSON structure
+        create_table_sql := 'CREATE TABLE IF NOT EXISTS weavix.events.' || table_name_var || ' ('
+                         || 'load_timestamp TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(), '
+                         || 'load_path STRING, '
+                         || 'raw_data VARIANT'
+                         || ')';
+        
+        EXECUTE IMMEDIATE create_table_sql;
+        
+        -- Copy data from the specific file
+        copy_sql := 'COPY INTO weavix.events.' || table_name_var || ' (load_path, raw_data) '
+                 || 'FROM ('
+                 || '  SELECT ''' || path || ''', $1 '
+                 || '  FROM @weavix.events.telemetry_stage/' || file_path_var
+                 || ') '
+                 || 'FILE_FORMAT = weavix.events.ff_jsonl '
+                 || 'ON_ERROR = ''CONTINUE''';
+        
+        EXECUTE IMMEDIATE copy_sql;
+        
+        -- Get the number of records inserted from the last COPY command
+        SELECT "rows_loaded" INTO records_count 
+        FROM TABLE(RESULT_SCAN(LAST_QUERY_ID())) 
+        WHERE "rows_loaded" IS NOT NULL 
+        LIMIT 1;
+        
+        -- Add result to our results table
+        results := results UNION ALL 
+                  SELECT table_name_var, NVL(records_count, 0);
+        
+    END FOR;
+    
+    CLOSE file_cursor;
+    
+    -- Return the results
+    RETURN TABLE(results);
+    
+EXCEPTION
+    WHEN OTHER THEN
+        -- Close cursor if still open
+        IF (file_cursor%ISOPEN) THEN
+            CLOSE file_cursor;
+        END IF;
+        
+        -- Re-raise the exception with context
+        RAISE;
+END;
+$$;
+
+
+
+
+
+
+
+
+```
+---------------------------------
 
 ## 3. Auto-Creating Tables and Loading
 
