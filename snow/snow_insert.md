@@ -7,13 +7,13 @@
 There are newline-delimited JSON (JSONL) arriving in Azure ADLS Gen2 under:
 
 ```
-/root_name/YYYY-MM-DD-HH/*.jsonl
+/root_name/YYYY/MM/DD/HH/*.jsonl
 ```
 
 ### Goal
 
 * Load each JSONL file into a Snowflake table whose name matches the file name (without `.jsonl`).
-* Capture the hour folder (`YYYY-MM-DD-HH`) as a column in the destination table.
+* Capture the hour folder (`YYYY/MM/DD/HH`) as a column in the destination table.
 * Auto-create the table if it doesn’t exist.
 
 ---
