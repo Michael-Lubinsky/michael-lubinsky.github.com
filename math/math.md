@@ -10,6 +10,7 @@
 
 <https://synset.com/pdf/ito.pdf> Stohastic world. Stepanov  (in russian)
  
+<https://news.ycombinator.com/item?id=45132810> Fourier Transform
 
 <https://vk.com/mathhedgehog>
 
