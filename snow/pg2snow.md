@@ -1,6 +1,101 @@
 How to move data from Postgres to Snowflake?
 
-Got it — Azure stack. Here’s a tight, Azure-specific playbook you can drop in.
+You can’t make `\copy` write “directly to Azure Blob” by itself—the `\copy ... TO PROGRAM` runs **on the client** (where `psql` is running). On Azure Database for PostgreSQL you also don’t have superuser, so server-side `COPY … TO PROGRAM` isn’t an option.
+
+The good news: you can **stream** the export straight to Azure without writing a local file by piping `psql` → `gzip` → **AzCopy** (which supports stdin). No disk space needed.
+
+## One table (stream to ADLS Gen2 with AzCopy)
+
+```bash
+# Log in AzCopy with your AAD identity (or use a SAS on the URL instead)
+azcopy login --tenant-id "<your-tenant-guid>"
+
+PG_URL="host=<pg-host> dbname=<db> user=<user> password=<pwd> port=5432"
+TABLE="public.customers"
+DEST_URL="https://<storageacct>.dfs.core.windows.net/<filesystem>/pg_full_load/public__customers.csv.gz"
+
+# Stream: Postgres -> CSV -> gzip -> AzCopy to ADLS (no local file)
+psql "$PG_URL" -c "COPY (SELECT * FROM ${TABLE}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
+  | gzip -c \
+  | azcopy copy "stdin:" "$DEST_URL" --from-to=PipeBlob --content-type "text/csv" --content-encoding "gzip"
+```
+
+Notes:
+
+* Use the **DFS endpoint** (`.dfs.core.windows.net`) for ADLS Gen2.
+* If you prefer a SAS instead of AAD login, append it to `DEST_URL` and skip `azcopy login`.
+* `--from-to=PipeBlob` tells AzCopy to read from **STDIN** and upload as a block blob, chunking automatically (works for large files).
+
+## Many tables (loop)
+
+This loops over a list from Postgres and streams each table straight to ADLS. Adjust schemas and naming as you like.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+PG_URL="host=<pg-host> dbname=<db> user=<user> password=<pwd> port=5432"
+ACCOUNT="<storageacct>"
+FILESYS="<filesystem>"
+PREFIX="pg_full_load"
+
+# 1) get the table list
+TABLES=$(psql "$PG_URL" -At -c "
+  SELECT schemaname||'.'||tablename
+  FROM pg_catalog.pg_tables
+  WHERE schemaname IN ('public')  -- add schemas here
+  ORDER BY 1;
+")
+
+# 2) upload each table via streaming
+for T in $TABLES; do
+  SAFE_NAME=$(echo "$T" | tr '.' '__')
+  DEST_URL="https://${ACCOUNT}.dfs.core.windows.net/${FILESYS}/${PREFIX}/${SAFE_NAME}.csv.gz"
+
+  echo "Uploading $T -> $DEST_URL"
+  psql "$PG_URL" -c "COPY (SELECT * FROM ${T}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
+    | gzip -c \
+    | azcopy copy "stdin:" "$DEST_URL" --from-to=PipeBlob --content-type "text/csv" --content-encoding "gzip"
+done
+```
+
+## Why not `az` CLI?
+
+`az storage fs/blob upload` expects a **file path**; it doesn’t read from stdin. **AzCopy** is the supported way to upload from a pipe.
+
+## Alternative: Parquet streaming (optional)
+
+If you want Parquet for faster `COPY` in Snowflake, you’d need a local temp file or a small VM/ephemeral disk because typical Parquet writers don’t stream to stdout. The CSV+gzip+pipe method above avoids disk entirely.
+
+## Load in Snowflake
+
+After files land in ADLS Gen2, use an external stage and `COPY INTO`:
+
+```sql
+CREATE OR REPLACE FILE FORMAT UTIL.FF_CSV_GZ
+  TYPE=CSV FIELD_OPTIONALLY_ENCLOSED_BY='"' SKIP_HEADER=1 COMPRESSION=GZIP;
+
+CREATE OR REPLACE STAGE UTIL.PG_STAGE
+  URL='azure://<storageacct>.dfs.core.windows.net/<filesystem>/pg_full_load'
+  STORAGE_INTEGRATION=AZ_INT
+  FILE_FORMAT=UTIL.FF_CSV_GZ;
+
+COPY INTO LANDING.PUBLIC.CUSTOMERS
+FROM @UTIL.PG_STAGE
+PATTERN='.*public__customers\.csv\.gz'
+ON_ERROR='ABORT_STATEMENT';
+```
+
+## Troubleshooting tips
+
+* If you see `authorization` errors, verify `azcopy login` (or SAS) has **write** access to the container/path.
+* For very wide rows, add `QUOTE '"' ESCAPE '"'` to the CSV options on Postgres if needed.
+* For huge tables, consider splitting by ranges (multiple concurrent pipes), each with a distinct destination blob name.
+
+If you share your storage account + filesystem names (and whether you want AAD or SAS), I’ll tailor the loop script exactly to your environment.
+
+
+
 
 # Fastest path (Azure → Snowflake)
 
