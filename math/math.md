@@ -9,6 +9,8 @@
 <https://algorithmsbook.com/files/dm.pdf> Algos for Decision Making
 
 <https://synset.com/pdf/ito.pdf> Stohastic world. Stepanov  (in russian)
+
+<https://news.ycombinator.com/item?id=45116849> Random walk
  
 <https://news.ycombinator.com/item?id=45132810> Fourier Transform
 
