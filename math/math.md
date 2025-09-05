@@ -16,7 +16,7 @@
 
 <https://blog.demofox.org/2025/08/16/derivatives-gradients-jacobians-and-hessians-oh-my/> Derivatives, Gradients, Jacobians and Hessians.
 
-
+<https://www.cantorsparadise.com/an-amazing-geometric-technique-for-evaluating-integrals-48b68e9b4638>
 
 ## Puzzles
 
