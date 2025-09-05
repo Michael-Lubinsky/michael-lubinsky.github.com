@@ -187,4 +187,17 @@ print(f"dy/dx3 = {x3.grad}")  # 5.0
 
 <https://habr.com/ru/articles/874592/>
 
-https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/
+<https://eli.thegreenplace.net/2025/reverse-mode-automatic-differentiation/>
+
+### Automatic differentiation
+<https://www.youtube.com/watch?v=17gfCTnw6uE> 
+
+<https://www.youtube.com/watch?v=MmkNSsGAZhw>
+
+<https://www.youtube.com/watch?v=nxaOp76MaDQ>
+
+<https://www.youtube.com/watch?v=wG_nF1awSSY>
+
+<https://www.youtube.com/watch?v=twTIGuVhKbQ>
+
+<https://www.youtube.com/watch?v=sq2gPzlrM0g&t=3s>
