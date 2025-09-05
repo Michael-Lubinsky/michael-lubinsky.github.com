@@ -16,18 +16,7 @@
 
 <https://blog.demofox.org/2025/08/16/derivatives-gradients-jacobians-and-hessians-oh-my/> Derivatives, Gradients, Jacobians and Hessians.
 
-### Automatic differentiation
-<https://www.youtube.com/watch?v=17gfCTnw6uE> 
 
-<https://www.youtube.com/watch?v=MmkNSsGAZhw>
-
-<https://www.youtube.com/watch?v=nxaOp76MaDQ>
-
-<https://www.youtube.com/watch?v=wG_nF1awSSY>
-
-<https://www.youtube.com/watch?v=twTIGuVhKbQ>
-
-<https://www.youtube.com/watch?v=sq2gPzlrM0g&t=3s>
 
 ## Puzzles
 
