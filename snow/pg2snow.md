@@ -59,6 +59,96 @@ for T in $TABLES; do
 done
 ```
 
+## GEMINI
+
+Since you don't have enough disk space on your MacBook for a PostgreSQL dump, 
+you can perform the dump and upload it to Azure Blob Storage in a single, streamed operation without saving the file locally. This method pipes the output of `pg_dump` directly to `azcopy`.
+
+-----
+
+### Method 1: Stream `pg_dump` to `azcopy`
+
+This is the most efficient and direct way to dump a database to cloud storage without using any local disk space.
+
+#### Step 1: Install `azcopy` and `pg_dump`
+
+Make sure you have both `azcopy` and the `pg_dump` client tools installed on your MacBook.
+
+#### Step 2: Use a Named Pipe
+
+Create a named pipe (a special file that acts as a stream) to connect the output of `pg_dump` to the input of `azcopy`. This allows data to flow directly from one command to the other.
+
+1.  **Create a named pipe:**
+
+    ```bash
+    mkfifo /tmp/postgres_dump_pipe
+    ```
+
+2.  **Start `azcopy` listening on the pipe:**
+    In one terminal window, start the `azcopy` command, telling it to copy from the named pipe to your Azure Blob Storage container. The `azcopy` command will wait for data to be sent to the pipe.
+
+    ```bash
+    azcopy copy /tmp/postgres_dump_pipe "https://<your-storage-account>.blob.core.windows.net/<your-container-name>/<dump-file-name>?[SAS_TOKEN]"
+    ```
+
+    *`azcopy` will now be paused, waiting for input.*
+
+3.  **Pipe `pg_dump` output to the pipe:**
+    In a **separate** terminal window, run the `pg_dump` command and redirect its output to the named pipe. As soon as `pg_dump` starts generating the dump, the data will be streamed directly to `azcopy` and uploaded to Azure.
+
+    ```bash
+    pg_dump -h <your-server-name.postgres.database.azure.com> -U <your-username> -d <your-database-name> -Fp > /tmp/postgres_dump_pipe
+    ```
+
+    *Once `pg_dump` completes, `azcopy` will finish its transfer.*
+
+#### Step 3: Clean Up
+
+After the transfer is complete, delete the named pipe.
+
+```bash
+rm /tmp/postgres_dump_pipe
+```
+
+\<br\>
+
+-----
+
+### Method 2: Use an Azure Virtual Machine
+
+If you have an Azure subscription, you can spin up a small VM (e.g., a B1s) to act as an intermediary. This offloads the entire process to the cloud, using the VM's temporary disk space.
+
+#### Step 1: Create an Azure VM
+
+Create a Linux VM in the same region as your PostgreSQL Flexible Server. This minimizes data transfer latency.
+
+#### Step 2: Install PostgreSQL and `azcopy`
+
+On the VM, install the PostgreSQL client tools and `azcopy`.
+
+#### Step 3: Run `pg_dump` on the VM
+
+Log in to the VM via SSH and run the `pg_dump` command to dump the database to the VM's disk.
+
+#### Step 4: Upload from the VM
+
+Use the `azcopy` command on the VM to upload the dump file to your Azure Blob Storage. This transfer will be extremely fast because it's happening within the Azure network.
+
+
+
+
+
+
+
+
+
+
+
+
+
+###############
+
+
 ## Why not `az` CLI?
 
 `az storage fs/blob upload` expects a **file path**; it doesn’t read from stdin. **AzCopy** is the supported way to upload from a pipe.
