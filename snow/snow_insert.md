@@ -43,14 +43,17 @@ Install these tools:
 -- URL form for Azure in Snowflake: azure://<container>@<account>.blob.core.windows.net/<optional/path>
 -- Example assumes your JSON is under container “telemetry” at path root_name/
 --  >>> IMPORTANT: Put only the *fixed* root here; the per-hour folders stay in the URL path or the COPY paths <<<
+```
+```sql
 CREATE OR REPLACE STAGE weavix.bronze.adls_stage
   URL='azure://weavixdatalakedevsa.blob.core.windows.net/<blobstorage>'
   CREDENTIALS=(AZURE_SAS_TOKEN='<PASTE_SAS_TOKEN>')  -- or use STORAGE INTEGRATION (recommended long-term)
   FILE_FORMAT = weavix.bronze.ff_jsonl;
+```
 
 -- (Recommended long-term) Replace SAS with a STORAGE INTEGRATION (RBAC, no secrets on stage).
 -- You can swap the CREDENTIALS clause for: STORAGE_INTEGRATION = my_azure_integration
-```
+
 
 
 Not quite 🙂 — the command you showed:
