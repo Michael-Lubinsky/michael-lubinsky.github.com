@@ -150,23 +150,4 @@ brew info --json python3 | jq -r '.[].versioned_formulae[]'
 
 https://zahlman.github.io/posts/2025/01/07/python-packaging-2/
 
-### uv  
-
-https://docs.astral.sh/uv/
-
-https://daniel.fastapicloud.dev/posts/til-2025-08-single-source-version-package-builds-with-uv-redux
-
-https://lerner.co.il/2025/08/28/youre-probably-using-uv-wrong/
-
-https://habr.com/ru/companies/otus/articles/940674/
-
-https://www.saaspegasus.com/guides/uv-deep-dive/
-
-https://martynassubonis.substack.com/p/python-project-management-primer-a55
-
-https://www.peterbe.com/plog/run-standalone-python-2025
-
-https://news.ycombinator.com/item?id=42676432
-
-https://simonwillison.net/2024/Dec/19/one-shot-python-tools/
 
