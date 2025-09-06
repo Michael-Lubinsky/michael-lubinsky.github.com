@@ -4,7 +4,7 @@ You can’t make `\copy` write “directly to Azure Blob” by itself—the `\co
 
 The good news: you can **stream** the export straight to Azure without writing a local file by piping `psql` → `gzip` → **AzCopy** (which supports stdin). No disk space needed.
 
-### Howto find Tenant id
+### How to find Tenant id
 
 Your **tenant GUID** is the unique identifier of your Azure Active Directory (AAD) tenant. You can find it directly from the Azure Portal or via CLI:
 
