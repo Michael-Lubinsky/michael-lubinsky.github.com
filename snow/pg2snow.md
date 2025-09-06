@@ -4,6 +4,41 @@ You can’t make `\copy` write “directly to Azure Blob” by itself—the `\co
 
 The good news: you can **stream** the export straight to Azure without writing a local file by piping `psql` → `gzip` → **AzCopy** (which supports stdin). No disk space needed.
 
+### Howto find Tenant id
+
+Your **tenant GUID** is the unique identifier of your Azure Active Directory (AAD) tenant. You can find it directly from the Azure Portal or via CLI:
+
+---
+
+#### Option 1: Azure Portal
+
+1. Go to [portal.azure.com](https://portal.azure.com).
+2. In the search bar at the top, type **Azure Active Directory** and click it.
+3. In the **Overview** page of Azure Active Directory, you’ll see:
+
+   * **Tenant ID** (that’s the GUID you need).
+   * **Primary domain**.
+4. Copy the **Tenant ID** — that’s the value to use in your `azcopy login --tenant-id "<tenant-guid>"`.
+
+---
+
+#### Option 2: Azure CLI
+
+If you are already logged in with `az login`:
+
+```bash
+az account show --query tenantId --output tsv
+```
+
+This will print just the tenant GUID.
+
+Alternatively, to see all tenants you have access to:
+
+```bash
+az account list --output table
+```
+
+
 ## One table (stream to ADLS Gen2 with AzCopy)
 
 ```bash
