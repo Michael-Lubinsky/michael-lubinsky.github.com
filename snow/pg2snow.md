@@ -50,9 +50,13 @@ TABLE="public.customers"
 DEST_URL="https://<storageacct>.dfs.core.windows.net/<filesystem>/pg_full_load/public__customers.csv.gz"
 
 # Stream: Postgres -> CSV -> gzip -> AzCopy to ADLS (no local file)
-psql "$PG_URL" -c "COPY (SELECT * FROM ${TABLE}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
+psql "$PG_URL"
+  | -c "COPY (SELECT * FROM ${TABLE}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
   | gzip -c \
-  | azcopy copy "stdin:" "$DEST_URL" --from-to=PipeBlob --content-type "text/csv" --content-encoding "gzip"
+  | azcopy copy "stdin:" "$DEST_URL" \
+  | --from-to=PipeBlob \
+  | --content-type "text/csv" \
+  | --content-encoding "gzip"
 ```
 
 Notes:
@@ -88,9 +92,12 @@ for T in $TABLES; do
   DEST_URL="https://${ACCOUNT}.dfs.core.windows.net/${FILESYS}/${PREFIX}/${SAFE_NAME}.csv.gz"
 
   echo "Uploading $T -> $DEST_URL"
-  psql "$PG_URL" -c "COPY (SELECT * FROM ${T}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
+  psql "$PG_URL"
+    | -c "COPY (SELECT * FROM ${T}) TO STDOUT WITH (FORMAT csv, HEADER true)" \
     | gzip -c \
-    | azcopy copy "stdin:" "$DEST_URL" --from-to=PipeBlob --content-type "text/csv" --content-encoding "gzip"
+    | azcopy copy "stdin:" "$DEST_URL" \
+    | --from-to=PipeBlob \
+    | --content-type "text/csv" --content-encoding "gzip"
 done
 ```
 
