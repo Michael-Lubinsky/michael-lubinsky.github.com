@@ -138,7 +138,7 @@ https://habr.com/ru/companies/yadro/articles/896362/  Convolution Свертка
 
 https://eli.thegreenplace.net/2024/ml-in-go-with-a-python-sidecar/
 
-
+https://news.ycombinator.com/item?id=45110311 The maths you need to start understanding LLMs
 
 ### Probabilistic programming with NumPy powered by JAX for autograd and JIT compilation to GPU/TPU/CPU.
 https://news.ycombinator.com/item?id=42156126    
