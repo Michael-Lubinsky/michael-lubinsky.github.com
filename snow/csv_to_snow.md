@@ -1,4 +1,82 @@
-To upload the CSV file to Snowflake and automatically create the table, you'll need to use Snowflake's SQL commands. Here's a script that will handle this:This script provides three methods to upload your CSV file to Snowflake and automatically create the table:
+Looking at your scripts, I'll help you extend them to handle entire schemas and answer your compression question.
+
+## Compression Question First
+
+Yes, using gzip compression will improve performance and Snowflake fully supports compressed CSV files. Benefits include:
+- **Faster uploads**: Smaller files transfer quicker to Azure
+- **Lower storage costs**: Compressed files use less space
+- **Snowflake auto-detection**: Snowflake automatically detects and decompresses gzip filesNow let me create the schema-wide Snowflake upload script:Now here's how to use these enhanced scripts:
+
+## Usage Examples:
+
+**1. Export entire schema with compression:**
+```bash
+# Export all tables from 'events' schema with gzip compression
+./schema_pg_to_adls.sh events true
+
+# Export 'public' schema without compression
+./schema_pg_to_adls.sh public false
+
+# Export 'events' schema, skip certain tables
+./schema_pg_to_adls.sh events true "large_table,temp_table"
+```
+
+**2. Import entire schema to Snowflake:**
+```bash
+# Import all files from the exported directory
+./schema_adls_to_snowflake.sh events_20250907_041000
+
+# Import with table prefix
+./schema_adls_to_snowflake.sh events_20250907_041000 "backup_"
+
+# Skip existing tables
+./schema_adls_to_snowflake.sh events_20250907_041000 "" true
+```
+
+## Key Enhancements:
+
+**Schema Export Script:**
+- Processes all tables in a schema automatically
+- Supports gzip compression (recommended)
+- Creates timestamped output directories
+- Provides detailed progress and summary
+- Handles empty tables gracefully
+- Allows skipping specific tables
+
+**Schema Import Script:**
+- Auto-detects compressed files
+- Creates shared stage and file format
+- Processes multiple files in batch
+- Provides progress tracking
+- Can skip existing tables
+- Supports table name prefixes
+
+## Compression Benefits:
+
+**PostgreSQL CSV → Gzip:**
+```bash
+# In the export script, gzip compression is automatic
+gzip "$temp_file"  # Typically 70-90% size reduction
+```
+
+**Snowflake Support:**
+- `COMPRESSION = 'AUTO'` in file format automatically detects gzip
+- Faster uploads due to smaller files
+- Lower Azure storage costs
+- No performance penalty in Snowflake
+
+The scripts now handle entire schemas efficiently while maintaining all the robustness of your single-table versions.
+
+
+
+
+
+To upload the CSV file to Snowflake and automatically create the table, you'll need to use Snowflake's SQL commands. 
+
+
+
+
+This script provides three methods to upload your CSV file to Snowflake and automatically create the table:
 
 ## Key Features:
 
