@@ -238,3 +238,36 @@ echo "1. SnowSQL: ./snowflake_upload.sh [filename]"
 echo "2. Python: python3 /tmp/snowflake_upload.py [filename] [sas_token]"
 echo "3. Manual: Copy SQL from /tmp/snowflake_upload.sql to Snowflake Web UI"
 ```
+
+
+The main issue is in this error: 
+
+**"Provided Azure storage endpoint 'weavixdatalakedevsa.dfs.core.windows.net' is currently not supported."**
+
+Snowflake doesn't support the ADLS Gen2 DFS endpoint (`dfs.core.windows.net`) directly. You need to use the Blob Storage endpoint instead (`blob.core.windows.net`).
+
+Let me fix the script to use the correct endpoint:The key fix is changing from `dfs.core.windows.net` to `blob.core.windows.net`. Even though your storage account is ADLS Gen2, Snowflake accesses it through the Blob Storage API endpoint.
+
+However, there's another issue - we need to generate a SAS token that works with the Blob Storage endpoint. Let me also update the SAS token generation:I changed the SAS token generation to use `--auth-mode key` instead of `--auth-mode login` because Snowflake typically works better with account key-based SAS tokens when accessing Azure storage.
+
+**Important:** For the `--auth-mode key` to work, you'll need to either:
+
+1. **Set your storage account key as an environment variable:**
+   ```bash
+   export AZURE_STORAGE_KEY="your-storage-account-key"
+   ```
+
+2. **Or use Azure CLI login with sufficient permissions:**
+   ```bash
+   az login
+   ```
+
+3. **Or provide the key directly in the command** (update the script to include `--account-key` parameter)
+
+Try running the updated script. If you get an authentication error for the SAS token generation, you can find your storage account key in the Azure portal under Storage Account → Access Keys.
+
+The main changes:
+1. ✅ **Fixed endpoint**: `blob.core.windows.net` instead of `dfs.core.windows.net`
+2. ✅ **Updated SAS token auth**: Uses account key method for better Snowflake compatibility
+
+Run the script again and it should create the stage successfully this time.
