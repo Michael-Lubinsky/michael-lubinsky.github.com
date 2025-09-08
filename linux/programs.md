@@ -46,6 +46,8 @@ pdftotext -layout your_file.pdf output.txt
 
 https://github.com/jarun/nnn
 
+https://github.com/gokcehan/lf
+
 https://github.com/sxyazi/yazi
 
 https://crates.io/crates/lstr
