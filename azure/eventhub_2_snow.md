@@ -866,3 +866,99 @@ After configuration, verify capture is working:
 4. **Monitor metrics** in Azure Portal
 
 The captured files will be automatically created in your storage account and ready for processing by Snowflake or other analytics tools.
+
+Azure Event Hub Capture handles heterogeneous event schemas in several ways, but there are important limitations to understand:
+
+## How Capture Handles Different Schemas
+
+### Avro Format (Default)
+- **Writes raw message data** as-is into Avro files
+- **No schema enforcement** at capture time
+- Each message becomes a record with these fields:
+  ```
+  SequenceNumber: long
+  Offset: string  
+  EnqueuedTimeUtc: string
+  SystemProperties: map
+  Properties: map
+  Body: bytes (your actual event data)
+  ```
+- Your event data goes into the `Body` field as raw bytes
+
+### Parquet Format
+- Similar structure to Avro
+- Your heterogeneous events still stored as raw bytes in `Body` field
+
+## Challenges with Heterogeneous Data
+
+### Schema Evolution Issues
+- Capture doesn't understand your event schemas
+- All events stored with same envelope structure
+- Your actual event differences are buried in the `Body` field
+
+### Downstream Processing Complexity
+When loading into Snowflake, you'll need to:
+1. Parse the `Body` field (likely JSON)
+2. Handle different event types in your ETL
+3. Create separate tables or use VARIANT columns
+
+## Recommended Approaches
+
+### Option 1: Event Type Routing
+```
+- Route different event types to different Event Hubs
+- Each Event Hub captures to separate storage paths  
+- More uniform schema per Event Hub
+```
+
+### Option 2: Schema Registry + Processing
+```
+- Use Azure Schema Registry to define event schemas
+- Process captured files with schema-aware tools
+- Transform during load into Snowflake
+```
+
+### Option 3: Snowflake VARIANT Columns
+```sql
+CREATE TABLE events (
+  sequence_number NUMBER,
+  enqueued_time TIMESTAMP,
+  event_body VARIANT  -- Stores JSON with flexible schema
+);
+
+-- Load with JSON parsing
+COPY INTO events 
+FROM (
+  SELECT 
+    $1:SequenceNumber,
+    $1:EnqueuedTimeUtc,
+    PARSE_JSON($1:Body)
+  FROM @my_stage
+);
+```
+
+### Option 4: Post-Processing Pipeline
+```
+Capture → Storage → Azure Data Factory/Functions → 
+Parse events by type → Separate Snowflake tables
+```
+
+## Storage Organization Strategy
+
+Structure your capture path by event type if possible:
+```
+{EventHub}/eventtype={EventType}/{Year}/{Month}/{Day}
+```
+
+Or use Event Hub routing to separate event types:
+```
+user-events/year=2025/month=01/day=15/
+order-events/year=2025/month=01/day=15/
+system-events/year=2025/month=01/day=15/
+```
+
+## Key Limitation
+
+Event Hub Capture is essentially a "dumb" storage mechanism - it doesn't provide schema transformation or event type separation. You'll need additional processing layers to handle the heterogeneous nature of your events effectively.
+
+The captured files will contain all events in the same format envelope, regardless of their internal structure differences.
