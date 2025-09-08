@@ -722,3 +722,147 @@ Costs depend on data volume (assume 1 TB/month for illustration), Event Hubs thr
 | **Total Estimated Monthly (1 TB)** | ~$130 (dominated by Capture + storage)                                       | ~$150 (VM + ingestion; scales down to ~$100 at higher volumes)               | Batch ~10-20% cheaper for moderate volumes/low velocity. Streaming costs more upfront (VM) but efficient for continuous flow (no idle storage/compute). For 10 TB+, streaming saves ~30% via serverless scaling. Monitor via Snowflake `METERING_HISTORY` and Azure Cost Management. |
 
 **Key Trade-offs**: Batch is simpler, lower latency-tolerant, and cost-optimized for hourly needs (fixed costs, minimal compute). Streaming enables real-time but adds VM management/overhead—use managed Kafka (e.g., Confluent Cloud) to reduce to ~$50/month extra. For cost savings in streaming, optimize record size/batching to minimize per-GB fees.
+
+
+
+## How to configre EventHub Capture:
+
+Here's how to configure Azure Event Hub Capture to automatically export data to Azure Storage:
+
+## Prerequisites
+- Event Hub namespace and Event Hub created
+- Azure Storage account (Blob Storage or Data Lake Gen2)
+- Appropriate permissions
+
+## Step-by-Step Configuration
+
+### 1. Via Azure Portal
+
+**Navigate to Event Hub:**
+- Go to Azure Portal → Event Hubs → Your namespace → Your Event Hub
+- Select "Capture" from the left menu
+
+**Configure Capture Settings:**
+```
+Enable Capture: ON
+Time window: 1-15 minutes (how often to create files)
+Size window: 10-500 MB (max file size before creating new file)
+```
+
+**Storage Configuration:**
+```
+Azure Storage Account: Select your storage account
+Container: Choose/create container (e.g., "eventhub-capture")
+Name Format: 
+  {Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}
+```
+
+**File Format Options:**
+- **Avro** (default, compact binary format)
+- **Parquet** (columnar, better for analytics)
+
+### 2. Via Azure CLI
+
+```bash
+# Enable capture with basic settings
+az eventhubs eventhub update \
+  --resource-group myResourceGroup \
+  --namespace-name myNamespace \
+  --name myEventHub \
+  --enable-capture true \
+  --capture-interval 300 \
+  --capture-size-limit 314572800 \
+  --destination-name EventHubArchive.AzureBlockBlob \
+  --storage-account myStorageAccount \
+  --blob-container myContainer \
+  --archive-name-format '{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}'
+```
+
+### 3. Via ARM Template
+
+```json
+{
+  "type": "Microsoft.EventHub/namespaces/eventhubs",
+  "apiVersion": "2021-11-01",
+  "name": "[concat(parameters('namespaceName'), '/', parameters('eventHubName'))]",
+  "properties": {
+    "captureDescription": {
+      "enabled": true,
+      "encoding": "Avro",
+      "intervalInSeconds": 300,
+      "sizeLimitInBytes": 314572800,
+      "destination": {
+        "name": "EventHubArchive.AzureBlockBlob",
+        "properties": {
+          "storageAccountResourceId": "[parameters('storageAccountResourceId')]",
+          "blobContainer": "[parameters('blobContainer')]",
+          "archiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/{Year}/{Month}/{Day}/{Hour}/{Minute}/{Second}"
+        }
+      }
+    }
+  }
+}
+```
+
+## Configuration Options Explained
+
+### Time Window
+- **1 minute**: More files, near real-time availability
+- **15 minutes**: Fewer files, more cost-effective
+- **Recommendation**: 5-10 minutes for most scenarios
+
+### Size Limit
+- **10 MB**: Small files, good for frequent processing
+- **500 MB**: Larger files, better for batch processing
+- **Recommendation**: 100-200 MB for balanced approach
+
+### Naming Format Variables
+```
+{Namespace}     - Event Hub namespace name
+{EventHub}      - Event Hub name
+{PartitionId}   - Partition number (0, 1, 2, etc.)
+{Year}          - 4-digit year (2025)
+{Month}         - 2-digit month (01-12)
+{Day}           - 2-digit day (01-31)
+{Hour}          - 2-digit hour (00-23)
+{Minute}        - 2-digit minute (00-59)
+{Second}        - 2-digit second (00-59)
+```
+
+### Example File Paths
+With the default format, files would be created like:
+```
+myNamespace/myEventHub/0/2025/01/15/14/30/45.avro
+myNamespace/myEventHub/1/2025/01/15/14/30/47.avro
+```
+
+## Best Practices
+
+### For Snowflake Integration
+```
+Time window: 5-10 minutes (balance between latency and file count)
+Size limit: 100 MB (good size for Snowflake COPY commands)
+Format: Parquet (better compression, faster Snowflake loading)
+Naming: Include timestamp for easy sorting
+```
+
+### Storage Optimization
+- Use **cool storage tier** for captured data (cheaper)
+- Set up **lifecycle policies** to archive old data
+- Consider **Data Lake Gen2** for better analytics integration
+
+### Monitoring
+- Set up **alerts** for capture failures
+- Monitor **capture lag** metrics
+- Check **storage costs** regularly
+
+## Verification
+
+After configuration, verify capture is working:
+
+1. **Send test events** to your Event Hub
+2. **Check storage account** after the time window
+3. **Verify file format** and content
+4. **Monitor metrics** in Azure Portal
+
+The captured files will be automatically created in your storage account and ready for processing by Snowflake or other analytics tools.
