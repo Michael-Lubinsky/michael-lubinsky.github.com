@@ -102,4 +102,166 @@ Here are the main approaches for getting data from Azure Event Hub to Snowflake,
 - Bulk analytics data: Batch processing
 - Use Event Hub routing to different endpoints
 
+
+Here’s a **comprehensive guide** to ingest data from **Azure Event Hubs to Snowflake**, covering both **batch (hourly)** and **near-real-time** scenarios, with cost comparisons:
+
+---
+
+## **1. Batch Mode (Hourly)**
+### **Architecture**
+```
+Azure Event Hubs → Azure Blob Storage/ADLS Gen2 → Snowflake (Snowpipe)
+```
+### **Steps**
+1. **Capture Events to Storage**:
+   - Use **Azure Event Hubs Capture** to auto-save events to **Blob Storage/ADLS Gen2** in **Avro/Parquet** format (hourly).
+   - Configure Capture with:
+     - Time window: 60 minutes.
+     - File format: Avro (recommended for schema evolution).
+
+2. **Set Up Snowflake Stage**:
+   ```sql
+   CREATE STAGE snowflake_eh_stage
+     URL = 'azure://yourstorage.blob.core.windows.net/eh-data/'
+     STORAGE_INTEGRATION = azure_int
+     FILE_FORMAT = (TYPE = 'AVRO');
+   ```
+
+3. **Load via Snowpipe**:
+   - Create a **Snowpipe** to auto-ingest files as they arrive:
+   ```sql
+   CREATE PIPE snowflake_eh_pipe
+     AUTO_INGEST = TRUE
+     AS COPY INTO your_table
+     FROM @snowflake_eh_stage;
+   ```
+
+### **Pros/Cons**
+| **Pros**                          | **Cons**                          |
+|-----------------------------------|-----------------------------------|
+| Low cost (pay per storage + compute) | Latency: ~1 hour                  |
+| Simple to set up                  | Not suitable for real-time analytics |
+| Leverages Snowflake’s serverless  | Requires storage intermediary     |
+
+### **Cost Estimate (Monthly)**
+| **Component**               | **Cost**                          |
+|-----------------------------|-----------------------------------|
+| Event Hubs Capture          | ~$0.03/GB stored                 |
+| Blob Storage (Hot Tier)     | ~$0.018/GB                       |
+| Snowflake Storage           | ~$0.023/GB                       |
+| Snowpipe (Serverless)       | ~$0.06 per 1M files processed    |
+| **Total (1TB/month)**       | **~$40–$60** (storage + compute) |
+
+---
+
+## **2. Near-Real-Time (Sub-Minute)**
+### **Architecture**
+```
+Azure Event Hubs → Azure Functions/App Service → Snowflake (REST API or Connector)
+```
+### **Option A: Azure Functions + Snowflake Connector**
+1. **Trigger Function on Events**:
+   - Use **Event Hubs trigger** in Azure Functions (Python/Node.js).
+   - Batch events (e.g., 100 events or 30-second intervals) to reduce API calls.
+
+2. **Write to Snowflake**:
+   - Use **Snowflake Connector for Python** or **REST API** (`INSERT` via JDBC).
+   - Example (Python):
+     ```python
+     from snowflake.connector import connect
+     conn = connect(user='', password='', account='')
+     cursor = conn.cursor()
+     cursor.executemany("INSERT INTO your_table VALUES (%s, %s)", events)
+     ```
+
+### **Option B: Databricks + AutoLoader**
+1. **Stream with Databricks**:
+   - Use **Spark Structured Streaming** + **AutoLoader** to read from Event Hubs.
+   - Write to Snowflake via **Snowflake Connector for Spark**.
+
+2. **Snowflake Ingestion**:
+   - Use `COPY INTO` or `MERGE` for upserts.
+
+### **Pros/Cons**
+| **Pros**                          | **Cons**                          |
+|-----------------------------------|-----------------------------------|
+| Latency: <1 minute                | Higher cost (compute + API calls) |
+| Supports real-time analytics      | Complex setup ( Functions/Databricks) |
+| No storage intermediary           | Requires error handling/retry logic |
+
+### **Cost Estimate (Monthly)**
+| **Component**               | **Cost**                          |
+|-----------------------------|-----------------------------------|
+| Event Hubs Throughput       | ~$0.03–$0.30 per million events  |
+| Azure Functions (Consumption)| ~$0.20 per million executions    |
+| Snowflake Compute           | ~$2–$4 per hour (XS warehouse)   |
+| **Total (1TB/month)**       | **~$200–$500** (depends on volume) |
+
+---
+
+## **3. Cost Comparison**
+| **Scenario**       | **Latency**  | **Monthly Cost (1TB)** | **Complexity** | **Use Case**                  |
+|--------------------|--------------|------------------------|----------------|-------------------------------|
+| **Batch (Snowpipe)** | ~1 hour      | $40–$60               | Low            | Reporting, batch analytics    |
+| **Near-Real-Time**  | <1 minute    | $200–$500             | High           | Fraud detection, live dashboards |
+
+---
+
+## **4. Hybrid Approach (Cost-Optimized)**
+- **Critical data**: Use **near-real-time** (e.g., fraud events).
+- **Non-critical data**: Use **batch** (e.g., logs, metrics).
+- **Tool**: **Databricks Delta Live Tables (DLT)** for unified streaming/batch.
+
+### **Example Hybrid Cost (1TB)**
+| **Data Type**      | **Method**          | **Cost**       |
+|--------------------|---------------------|----------------|
+| 10% Real-Time      | Azure Functions     | ~$50           |
+| 90% Batch          | Snowpipe            | ~$40           |
+| **Total**          |                     | **~$90**       |
+
+---
+
+## **5. Key Considerations**
+### **Batch Mode**
+- **Best for**: High-volume, non-urgent data (e.g., logs, historical analytics).
+- **Optimizations**:
+  - Compress files (Parquet + Snappy).
+  - Use **Snowflake’s `CLUSTER BY`** to reduce query costs.
+
+### **Near-Real-Time**
+- **Best for**: Time-sensitive data (e.g., user activity, IoT telemetry).
+- **Optimizations**:
+  - **Batch events** in the Function/App (e.g., 100 events per API call).
+  - Use **Snowflake’s `MERGE`** to avoid duplicates.
+
+### **Cost-Saving Tips**
+1. **Batch Mode**:
+   - Use **Blob Storage Cool Tier** for older data ($0.01/GB).
+   - Schedule Snowpipe to run less frequently (e.g., every 2 hours).
+
+2. **Near-Real-Time**:
+   - **Right-size Azure Functions** (e.g., Premium Plan for high throughput).
+   - **Snowflake Micro-Warehouses** (XS) for small, frequent loads.
+
+---
+
+## **6. Recommended Tools**
+| **Tool**               | **Batch** | **Real-Time** | **Notes**                          |
+|------------------------|-----------|---------------|------------------------------------|
+| **Snowpipe**           | ✅ Best   | ❌            | Serverless, low-cost               |
+| **Azure Functions**    | ❌        | ✅            | Pay-per-use, scalable              |
+| **Databricks DLT**     | ✅        | ✅            | Unified pipeline, higher cost      |
+| **Snowflake Connector**| ❌        | ✅            | Low latency, dev effort required   |
+
+---
+### **Final Recommendation**
+- **Start with batch (Snowpipe)** for simplicity and cost savings.
+- **Add near-real-time** only for critical paths (e.g., fraud, alerts).
+- **Pilot with Databricks DLT** if you need both modes in one pipeline.
+
+---
+**Let me know:**
+- Which latency/SLA do you need for your use case?
+- Do you already use Databricks or Azure Functions? I can tailor the setup further.
+
 The batch approach is typically 60-70% cheaper but introduces latency. Real-time provides immediate data availability but requires continuous compute resources and more complex infrastructure management.
