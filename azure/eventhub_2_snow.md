@@ -265,3 +265,53 @@ Azure Event Hubs → Azure Functions/App Service → Snowflake (REST API or Conn
 - Do you already use Databricks or Azure Functions? I can tailor the setup further.
 
 The batch approach is typically 60-70% cheaper but introduces latency. Real-time provides immediate data availability but requires continuous compute resources and more complex infrastructure management.
+
+
+### Getting Data from Azure Event Hub to Snowflake
+
+Getting data from Azure Event Hub to Snowflake can be accomplished using different architectures to suit your latency and cost requirements. The two main approaches are batch-mode loading and near-real-time streaming.
+
+***
+
+### 1. Batch Mode (Hourly)
+
+This approach uses a serverless function to move data from Event Hub to an intermediate storage location, from which it's loaded into Snowflake using a scheduled task. This method is cost-effective for hourly or daily loads where latency is not a primary concern.
+
+#### Architecture:
+1.  **Event Hub to Azure Blob Storage**: Use a service like **Azure Functions** or **Azure Stream Analytics** to read data from the Event Hub.
+2.  The function processes the events and writes them as files (e.g., JSON, Avro, Parquet) to an Azure Blob Storage container.
+3.  **Blob Storage to Snowflake**: A **Snowflake Task** is scheduled to run hourly. This task executes a `COPY INTO` command to load all new files from the Blob Storage container into a Snowflake table.
+
+#### Cost Comparison:
+* **Azure Cost**: You'll pay for the Event Hub's throughput units, the Azure Function's execution time and memory usage, and Blob Storage for the data at rest.
+* **Snowflake Cost**: You'll pay for the Snowflake warehouse compute time used by the `COPY INTO` task. The cost is predictable and tied directly to the duration of the hourly batch job.
+
+This method is generally **cheaper** for large, infrequent loads, as you're only paying for compute during the short time the batch job is running.
+
+***
+
+### 2. Almost Real-Time (Event-Driven)
+
+This approach uses **Snowpipe** to automatically ingest data as soon as new files are created, providing near-real-time latency.
+
+#### Architecture:
+1.  **Event Hub to Azure Blob Storage**: Similar to the batch mode, use **Azure Functions** or a similar service to read from the Event Hub and write the data as files to Azure Blob Storage.
+2.  **Blob Storage to Snowflake (Snowpipe)**: This is the key difference. Instead of a scheduled task, you'll configure a **Snowpipe** and **Azure Event Grid Notifications**. When a new file is created in Blob Storage, Azure Event Grid sends a notification to Snowpipe.
+3.  Snowpipe is automatically triggered to load the new file into Snowflake.
+
+#### Cost Comparison:
+* **Azure Cost**: Same as the batch method, you pay for Event Hub, Azure Function, and Blob Storage. You'll also have a small cost for the Event Grid notifications.
+* **Snowflake Cost**: You'll pay for the **Snowpipe service**. Snowpipe has a separate pricing model from virtual warehouses. It's charged based on the amount of time the serverless compute takes to load each file. This is often more cost-effective for smaller, more frequent file loads, as you're not paying for a full virtual warehouse to remain running or wake up for each tiny batch.
+
+This method is often **more expensive for large, batched loads** because you pay for the overhead of triggering Snowpipe for each individual file. However, it's the **most cost-effective solution for a continuous, low-latency stream of many small files**.
+
+***
+
+### Summary of Cost Comparison
+
+| Feature | Batch Mode (Hourly `COPY INTO`) | Almost Real-Time (Snowpipe) |
+| :--- | :--- | :--- |
+| **Data Latency** | High (hourly or daily) | Low (minutes) |
+| **Data Volume** | Best for large, batched files | Best for many small, frequent files |
+| **Snowflake Cost** | **Predictable**. Billing is for the scheduled virtual warehouse compute time. | **Variable**. Billing is per file loaded by the serverless Snowpipe service. |
+| **Ideal For** | Analytics dashboards, reporting, ETL | Log analytics, real-time dashboards, IoT data |
