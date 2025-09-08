@@ -101,6 +101,146 @@ for T in $TABLES; do
 done
 ```
 
+
+Short answer: a straight `COPY (SELECT * FROM schema.table)` will slam your primary with large sequential scans. To minimize impact, use one or more of these patterns (best first):
+
+# 1) Run exports from a **read replica** (best option)
+
+On Azure Database for PostgreSQL Flexible Server, create a **read replica** and point your `psql ... COPY TO STDOUT` at the replica. You’ll get consistent data with *zero* load on the primary’s CPU/IO. Everything below still applies, but you can be more relaxed with throttling.
+
+# 2) Throttle and isolate on the primary (if you must export there)
+
+• **Do it off-peak** and **one big table at a time** (or very low parallelism like 1–2).
+• Add **timeouts** so you don’t block DDL or get stuck on locks.
+• Keep transactions **short** (export per table or per chunk).
+• **Cap network speed** so the DB isn’t encouraged to saturate reads.
+
+```bash
+# Per-session guards inside the COPY command
+psql "$PG_URL" -v ON_ERROR_STOP=1 -c "
+  SET lock_timeout = '5s';
+  SET statement_timeout = '30min';
+  SET idle_in_transaction_session_timeout = '5min';
+  -- avoid huge parallel plans while exporting
+  SET max_parallel_workers_per_gather = 0;
+  COPY (SELECT * FROM schema.table) TO STDOUT WITH (FORMAT csv, HEADER true);
+" \
+| gzip -c \
+| azcopy copy "stdin:" "$DEST_URL" \
+    --from-to=PipeBlob \
+    --content-type "text/csv" \
+    --content-encoding "gzip" \
+    --overwrite=true \
+    --cap-mbps 50              # throttle upload; reduces read pressure indirectly
+```
+
+Notes:
+
+* `COPY` takes **ACCESS SHARE** lock; it won’t block normal inserts/updates, but avoid running during schema changes (ALTER TABLE needs Access Exclusive).
+* The `--cap-mbps` on `azcopy` prevents your pipeline from pulling as fast as possible (which would drive faster scans).
+
+# 3) Export in **chunks** (short transactions, fewer buffers held)
+
+Instead of one full-table scan, split by a monotonic key (e.g., `id` or `created_at`). This keeps each transaction small and friendlier to the shared buffer cache.
+
+```bash
+# Example: ID-based chunks of 5M rows
+T="schema.big_table"
+read lo hi <<< "$(psql -At "$PG_URL" -c "SELECT COALESCE(MIN(id),0), COALESCE(MAX(id),0) FROM $T;")"
+STEP=5000000
+
+for (( start=lo; start<=hi; start+=STEP )); do
+  end=$(( start+STEP-1 ))
+  DEST_URL="https://$acct.dfs.core.windows.net/$container/exports/${T//./__}_${start}_${end}.csv.gz?$SAS"
+
+  echo "Exporting $T [$start,$end]"
+  psql -v ON_ERROR_STOP=1 "$PG_URL" -c "
+    SET lock_timeout = '5s';
+    SET statement_timeout = '30min';
+    SET max_parallel_workers_per_gather = 0;
+    COPY (
+      SELECT * FROM $T
+      WHERE id BETWEEN $start AND $end
+      ORDER BY id                 -- helps index/IO locality if an index exists
+    ) TO STDOUT WITH (FORMAT csv, HEADER true);
+  " \
+  | gzip -c \
+  | azcopy copy "stdin:" "$DEST_URL" \
+      --from-to=PipeBlob \
+      --content-type "text/csv" \
+      --content-encoding "gzip" \
+      --overwrite=true \
+      --cap-mbps 50
+done
+```
+
+Tips:
+
+* Use an **indexed** column for ranges. If you have `created_at`, chunk by time windows (e.g., 1 day at a time during off-peak).
+* Keep **parallelism low** (e.g., 1–2 chunks in parallel). More parallelism = more disk IO and buffer churn.
+
+# 4) Prioritize & stage: do **largest tables last** and during the quietest window
+
+Find big tables first:
+
+```sql
+SELECT n.nspname AS schema, c.relname AS table,
+       pg_size_pretty(pg_total_relation_size(c.oid)) AS total_size
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE c.relkind='r' AND n.nspname IN ('schema')
+ORDER BY pg_total_relation_size(c.oid) DESC
+LIMIT 20;
+```
+
+Export small/medium tables anytime; schedule very large ones overnight.
+
+# 5) Watch impact as you go (simple built-ins)
+
+```sql
+-- Active queries
+SELECT pid, usename, state, wait_event_type, wait_event, query
+FROM pg_stat_activity
+WHERE state <> 'idle';
+
+-- Table-level IO (rough indicator)
+SELECT relname, heap_blks_read, heap_blks_hit
+FROM pg_statio_user_tables
+ORDER BY heap_blks_read DESC
+LIMIT 20;
+
+-- If pg_stat_statements is enabled
+SELECT calls, total_time, mean_time, query
+FROM pg_stat_statements
+WHERE query ILIKE 'copy (select%$schema%'
+ORDER BY total_time DESC;
+```
+
+# 6) Consider **Parquet** on a replica (if you can)
+
+CSV `COPY` is read-heavy and large. If you can run on a small VM against a **replica**, pull with `psql` into Python and write **Parquet** (smaller files, faster `COPY INTO` in Snowflake). You’ll touch the primary a lot less (since it’s a replica) and make Snowflake much faster.
+
+# 7) Practical export policy that won’t upset prod
+
+* Use a **read replica** wherever possible.
+* If exporting on primary: **off-peak**, **one table at a time**, **chunked**, **throttled**, with **timeouts**.
+* Stop if you see latency spikes; resume later (idempotent file names help).
+* Communicate “no DDL window” during exports to avoid lock conflicts.
+
+---
+
+If you tell me:
+
+* schema name,
+* average row counts / largest 3 tables,
+* key column to chunk on (`id` or `created_at`),
+* acceptable off-peak window,
+
+…I can generate a ready-to-run **chunked export script** (plus matching Snowflake `COPY INTO` statements) that stays within a safe IO budget.
+
+
+
+
 ## GEMINI
 
 Since you don't have enough disk space on your MacBook for a PostgreSQL dump, 
