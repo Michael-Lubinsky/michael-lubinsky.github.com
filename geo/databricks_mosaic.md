@@ -1,4 +1,4 @@
- **Databricks Mosaic** 
+ **Databricks Mosaic**  <https://databrickslabs.github.io/mosaic/>
  
  is an **open-source geospatial analytics library** built specifically for **Apache Spark** (and deeply integrated with Databricks).
 
