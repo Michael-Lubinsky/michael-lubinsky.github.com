@@ -1,3 +1,230 @@
+Good question 👍.
+
+Enabling **Capture** on an Event Hub means two things:
+
+1. **You need to be allowed to update the Event Hub resource** (to turn Capture on).
+2. **The Event Hubs service itself needs permission to write into your storage account** (Blob/ADLS container).
+
+---
+
+## 1. Permissions for **you** (the human / admin)
+
+* To configure Capture on an Event Hub, you need **write access to the Event Hubs namespace/event hub**.
+* Built-in roles that cover this:
+
+  * **Contributor** on the Event Hubs namespace or resource group, or
+  * **Azure Event Hubs Data Owner** (gives full management rights).
+
+Either role lets you toggle Capture in portal/CLI.
+
+---
+
+## 2. Permissions for **Event Hubs service principal** (so Capture can write files)
+
+When you enable Capture, Azure creates a managed identity for the Event Hubs service. That identity must be able to **write blobs** to your storage container.
+
+* Assign the role **Storage Blob Data Contributor** to the Event Hubs namespace’s managed identity, scoped to:
+
+  * the **storage account**, or
+  * the specific **container** used for Capture.
+
+This role allows Create/Write/Delete on blobs. Without it, you’ll get silent failures (no files appear).
+
+---
+
+## 3. Step-by-step (Portal)
+
+1. Go to your **storage account** → **Access Control (IAM)**.
+2. Click **Add role assignment**.
+3. Select **Storage Blob Data Contributor**.
+4. Assign it to the **Event Hubs namespace** managed identity.
+
+   * You can find this in **Event Hubs namespace → Identity (System-assigned)**.
+5. Save.
+
+---
+
+## 4. Step-by-step (CLI)
+
+```bash
+# Variables
+rg=<resource-group>
+ehns=<eventhub-namespace>
+sa=<storage-account>
+container=<container>
+
+# Get Event Hubs namespace managed identity objectId
+mi=$(az eventhubs namespace identity show \
+  --resource-group $rg \
+  --name $ehns \
+  --query principalId -o tsv)
+
+# Assign Storage Blob Data Contributor
+az role assignment create \
+  --assignee $mi \
+  --role "Storage Blob Data Contributor" \
+  --scope $(az storage account show -g $rg -n $sa --query id -o tsv)
+```
+---
+
+Perfect 👍 — here’s how you can **verify that the Event Hubs namespace managed identity really has permission** to write into your storage container for Capture.
+
+---
+
+## 1. Check role assignment in Azure Portal
+
+1. Go to your **storage account** (the one used for Capture).
+2. In the left menu → **Access Control (IAM)** → **Role assignments**.
+3. Filter by **Role = Storage Blob Data Contributor**.
+4. In the list of principals, you should see your **Event Hubs namespace name** (because it has a system-assigned managed identity).
+
+If you don’t see it, Capture will not work.
+
+---
+
+## 2. Check via Azure CLI
+
+```bash
+# Variables
+rg=<resource-group>
+ehns=<eventhub-namespace>
+sa=<storage-account>
+
+# Get the Event Hubs namespace managed identity objectId
+mi=$(az eventhubs namespace identity show \
+  --resource-group $rg \
+  --name $ehns \
+  --query principalId -o tsv)
+
+# Check assignments on the storage account
+az role assignment list \
+  --assignee $mi \
+  --scope $(az storage account show -g $rg -n $sa --query id -o tsv) \
+  -o table
+```
+
+Expected output includes a row like:
+
+```
+Principal    RoleDefinitionName            Scope
+-----------  ----------------------------  ------------------------------------------------
+<guid>       Storage Blob Data Contributor /subscriptions/.../resourceGroups/.../providers/Microsoft.Storage/storageAccounts/<sa>
+```
+
+---
+
+## 3. Test by writing a blob (sanity check)
+
+If you want to be 100% sure:
+
+1. Temporarily create a **test Event Hub** in the same namespace.
+2. Turn on Capture pointing to your container.
+3. Send a few test messages into the Event Hub (`az eventhubs eventhub send`).
+4. Within a few minutes, you should see files appear in the container under a path like:
+
+   ```
+   <namespace>/<eventhub>/<partition>/Y=2025/M=09/D=08/H=12/m=00/...
+   ```
+
+---
+
+✅ If role assignment exists **and** you see files landing, then Capture is fully authorized.
+⚠️ If no files appear: double-check
+
+* Capture is enabled (Std or Premium tier only).
+* Namespace managed identity is **enabled** (Event Hubs namespace → Identity → System-assigned).
+* That exact identity has **Storage Blob Data Contributor** at storage scope.
+
+---
+
+Do you want me to give you a **one-liner CLI command** that checks both (Capture enabled + role assignment present) so you can quickly validate any Event Hub namespace in your subscription?
+
+--
+Here’s a **one-liner style CLI check** that validates both parts at once:
+
+1. **That Capture is enabled on the Event Hub**
+2. **That the Event Hubs namespace managed identity has the Storage Blob Data Contributor role on the storage account**
+
+---
+
+### One-liner script (bash)
+
+```bash
+# Vars you need to fill
+rg=<resource-group>
+ehns=<eventhub-namespace>
+eh=<eventhub-name>
+sa=<storage-account>
+
+# Check capture + role assignment in one go
+echo "=== Capture settings for $eh ==="
+az eventhubs eventhub show \
+  --resource-group $rg \
+  --namespace-name $ehns \
+  --name $eh \
+  --query "captureDescription" -o jsonc
+
+echo "=== Role assignments for EH namespace identity on $sa ==="
+mi=$(az eventhubs namespace identity show -g $rg -n $ehns --query principalId -o tsv)
+scope=$(az storage account show -g $rg -n $sa --query id -o tsv)
+az role assignment list --assignee $mi --scope $scope -o table
+```
+
+---
+
+### Example output
+
+**Capture section**
+
+```json
+{
+  "enabled": true,
+  "encoding": "Avro",
+  "intervalInSeconds": 300,
+  "sizeLimitInBytes": 314572800,
+  "destination": {
+    "blobContainer": "capture",
+    "archiveNameFormat": "{Namespace}/{EventHub}/{PartitionId}/Y={Year}/M={Month}/D={Day}/H={Hour}/m={Minute}/{Second}"
+  }
+}
+```
+
+**Role assignment section**
+
+```
+Principal                              RoleDefinitionName            Scope
+------------------------------------  ----------------------------  -------------------------------------------------
+11111111-2222-3333-4444-555555555555  Storage Blob Data Contributor  /subscriptions/.../resourceGroups/.../storageAccounts/<sa>
+```
+
+---
+
+✅ If `enabled` is `true` in the capture description **and** you see a `Storage Blob Data Contributor` assignment for your namespace’s managed identity on the storage account, then Capture is fully configured.
+
+⚠️ If either piece is missing:
+
+* `enabled = false` → Capture not turned on yet.
+* No role assignment row → grant the role with:
+
+  ```bash
+  az role assignment create --assignee $mi --role "Storage Blob Data Contributor" --scope $scope
+  ```
+
+---
+
+Would you like me to also wrap this into a **single reusable bash function** (`check_eventhub_capture <rg> <namespace> <eventhub> <storage>`) so you can run it for multiple hubs quickly?
+
+
+---
+
+✅ **Summary**
+
+* *You* need **Contributor** (or Event Hubs Data Owner) on the Event Hub.
+* *Event Hubs namespace identity* needs **Storage Blob Data Contributor** on the storage container/account.
+
+---
+
+Do you want me to also show you how to **verify the Capture role assignment** (to confirm Event Hubs can actually write to your ADLS)?
 
 
 ## How to get data from Azure EventHub to Snowflake?
