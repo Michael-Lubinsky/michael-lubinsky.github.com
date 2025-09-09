@@ -222,9 +222,70 @@ Would you like me to also wrap this into a **single reusable bash function** (`c
 * *You* need **Contributor** (or Event Hubs Data Owner) on the Event Hub.
 * *Event Hubs namespace identity* needs **Storage Blob Data Contributor** on the storage container/account.
 
+
+
+### When I tried to serialize capture in parquet format The Parquet option adds complexity through the hidden Stream Analytics layer. 
+I do not need Stream Analytics layer.
+
+### You’re seeing that note because **Event Hubs Capture doesn’t natively write Parquet**.
+
+Parquet requires the **Stream Analytics (ASA) “no-code” job** that Microsoft wires up behind the scenes. If you don’t want ASA, you can’t choose Parquet on the Capture blade—use **Avro** instead. Microsoft’s docs show Parquet via ASA/no-code, and the Event Hubs Capture overview documents Avro as the built-in option. In fact, Azure’s (China) portal doc says explicitly: “**Parquet is supported only via Azure Stream Analytics integration**.” ([Microsoft Learn][1], [Azure Documentation][2])
+
+## What to do instead (no ASA)
+
+### Option 1 — Capture as **Avro** and load Avro directly into Snowflake
+
+Snowflake can ingest Avro just fine.
+
+```sql
+-- 1) File format for AVRO
+CREATE OR REPLACE FILE FORMAT util.ff_avro TYPE = AVRO;
+
+-- 2) External stage on your ADLS Gen2 Capture container/path
+CREATE OR REPLACE STAGE util.eh_capture
+  URL='azure://<acct>.dfs.core.windows.net/<container>/<optional-prefix>'
+  STORAGE_INTEGRATION=AZ_INT
+  FILE_FORMAT=util.ff_avro;
+
+-- 3) Landing table (use VARIANT for semi-structured payloads)
+CREATE OR REPLACE TABLE raw.eventhub_events (payload VARIANT);
+
+-- 4) COPY INTO from Avro Capture files (partitioned by EH: Year/Month/Day/Hour/Minute)
+COPY INTO raw.eventhub_events
+FROM (
+  SELECT $1  -- entire Avro record
+  FROM @util.eh_capture (FILE_FORMAT => util.ff_avro)
+)
+PATTERN='.*Year=.*';  -- or a tighter regex per hour/day
+```
+
+Then shred `payload` into columns for your silver/gold tables.
+
+### Option 2 — Keep Capture Avro, convert to Parquet yourself (no ASA)
+
+If you truly want Parquet on disk (e.g., for a lakehouse), do a light transform:
+
+* **Databricks / Spark** reading Avro from Capture → write Parquet.
+* **Azure Functions** + Avro reader + PyArrow/fastparquet → write Parquet.
+  This avoids ASA but adds your own small compute. (Later, Snowflake can still load Parquet with `TYPE=PARQUET`.)
+
+### Option 3 — Skip files entirely for NRT
+
+For near-real-time, read Event Hubs with your client and use **Snowpipe Streaming** to push rows directly into Snowflake (no ADLS, no ASA). Use Capture+Avro only for archival if needed.
+
 ---
 
-Do you want me to also show you how to **verify the Capture role assignment** (to confirm Event Hubs can actually write to your ADLS)?
+## Why this recommendation?
+
+* **Lowest ops** without ASA: Capture **Avro** → Snowflake `COPY` with `TYPE=AVRO`.
+* **ASA adds cost/infra** solely to get Parquet; if Parquet isn’t a hard requirement on storage, skip it.
+* You can always convert Avro→Parquet later in a scheduled job.
+
+If you want, tell me the exact Event Hub Capture path (namespace/hub/container prefix), and I’ll hand you the **ready-to-run Snowflake SQL** (stage, file format, COPY with a day/hour `PATTERN`) tailored to your layout.
+
+[1]: https://learn.microsoft.com/en-us/azure/stream-analytics/event-hubs-parquet-capture-tutorial?utm_source=chatgpt.com "Capture Event Hubs data to ADLS in parquet format"
+[2]: https://docs.azure.cn/en-us/event-hubs/event-hubs-capture-enable-through-portal?utm_source=chatgpt.com "Event Hubs - Capture streaming events using Azure portal"
+
 
 
 ## How to get data from Azure EventHub to Snowflake?
