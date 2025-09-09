@@ -1,5 +1,7 @@
 ## PostGIS
 
+https://www.manning.com/books/postgis-in-action-third-edition PostGIS book
+
 https://habr.com/ru/companies/selectel/articles/939804/
 
 ### Metabase
