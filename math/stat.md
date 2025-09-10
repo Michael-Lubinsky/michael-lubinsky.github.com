@@ -170,18 +170,19 @@ f_Z(z) =
 
 <https://medium.com/data-science-collective/how-to-find-the-right-distribution-for-your-data-a-practical-guide-for-non-statistician-with-two-dc2aa0ed707f>
 
-https://habr.com/ru/companies/tbank/articles/911900/ к какому классу распределения отнести нашу выборку?
+<https://habr.com/ru/companies/tbank/articles/911900/> к какому классу распределения отнести нашу выборку?
 
-
+<https://entropicthoughts.com/it-takes-long-to-become-gaussian>
 
 #### Gini index 
-https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac
+<https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac>
 
 ### reservoir sampling
-https://samwho.dev/reservoir-sampling/
+
+<https://samwho.dev/reservoir-sampling/>
 
 #### Monte Carlo 
-https://thenumb.at/Sampling/
+<https://thenumb.at/Sampling/>
 
 ### Stat rethinking
 https://xcelab.net/rm/statistical-rethinking/  
