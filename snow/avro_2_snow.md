@@ -49,7 +49,7 @@ az storage container generate-sas \
   --account-name weavixdatalakedevsa \
   --name adls \
   --permissions rl \
-  --expiry "$(date -u -v+30d '+%Y-%m-%dT%H:%MZ')" \
+  --expiry "$(date -u -v+7d '+%Y-%m-%dT%H:%MZ')" \
   --output tsv
 ```
 
