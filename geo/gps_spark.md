@@ -170,6 +170,57 @@ If you’d rather not preprocess shapefiles:
 * Store them as static Parquet/Delta tables in Databricks and join via **Mosaic** or **Sedona**.
 
 ---
+```python?code_reference&code_event_index=2
+# Define the conversion factors in miles
+miles_per_lat_degree = 69 # Constant value
+miles_per_lon_degree_usa = 54.4 # Approximate value for mid-latitudes of the USA (around 38 degrees N)
+
+# Define the rounding precisions
+precisions = [0.1, 0.01, 0.001]
+
+# Calculate the lost accuracy for latitude
+lat_accuracy = [p * miles_per_lat_degree for p in precisions]
+
+# Calculate the lost accuracy for longitude
+lon_accuracy = [p * miles_per_lon_degree_usa for p in precisions]
+
+# Create a list of dictionaries to store the results
+results = []
+for i in range(len(precisions)):
+    results.append({
+        'Decimal Places': i + 1,
+        'Latitude (miles)': lat_accuracy[i],
+        'Longitude (miles)': lon_accuracy[i]
+    })
+
+print(results)
+```
+
+```text?code_stdout&code_event_index=2
+[{'Decimal Places': 1, 'Latitude (miles)': 6.9, 'Longitude (miles)': 5.44}, {'Decimal Places': 2, 'Latitude (miles)': 0.6900000000000001, 'Longitude (miles)': 0.544}, {'Decimal Places': 3, 'Latitude (miles)': 0.069, 'Longitude (miles)': 0.0544}]
+
+```
+
+When you round latitude and longitude, the precision you lose in miles depends on where you are on the globe.
+Latitude accuracy is consistent, but longitude accuracy varies by latitude.
+
+Based on a mid-latitude U.S. location (around 38° N), here's the approximate precision lost for each level of rounding:
+
+| Decimal Places | Latitude Accuracy (miles) | Longitude Accuracy (miles) |
+| :--- | :--- | :--- |
+| **1** | 6.9 | 5.4 |
+| **2** | 0.69 | 0.54 |
+| **3** | 0.069 | 0.054 |
+
+-----
+
+### How the Precision Is Calculated
+
+  * **Latitude:** A single degree of latitude is always about **69 miles** (111 km) because latitude lines are parallel. Rounding to one decimal place means you're accurate to within 0.1 degrees, so the precision lost is $0.1 \\times 69 = 6.9$ miles.
+
+  * **Longitude:** A single degree of longitude is about **69 miles** at the equator but shrinks to zero at the poles. For the mid-latitudes of the U.S. (around 38° N), one degree of longitude is approximately **54.4 miles** (87.5 km). Therefore, the precision lost is $0.1 \\times 54.4 = 5.4$ miles.
+
+---
 
 
 ### GeoJSON 
