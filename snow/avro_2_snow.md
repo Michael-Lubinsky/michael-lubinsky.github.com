@@ -627,3 +627,67 @@ SELECT COUNT(*) FROM T_USERLOGIN;
 - You might want to add additional filtering for data quality (e.g., excluding records with malformed JSON)
 
 This approach creates separate tables for each event type, making it easier to work with homogeneous event structures.
+
+
+
+# Updadated CODE
+
+Here's the updated stored procedure that eliminates all non-alphanumeric characters from table names:
+
+```sql
+CREATE OR REPLACE PROCEDURE split_table_by_event()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+DECLARE
+    event_type STRING;
+    table_name STRING;
+    clean_name STRING;
+    create_sql STRING;
+    insert_sql STRING;
+    cursor_events CURSOR FOR SELECT DISTINCT EVENT_DATA:event::STRING FROM T WHERE EVENT_DATA:event IS NOT NULL;
+BEGIN
+    FOR record IN cursor_events DO
+        event_type := record.EVENT_DATA:event::STRING;
+        
+        -- Clean the event name: remove all non-alphanumeric characters
+        clean_name := REGEXP_REPLACE(UPPER(event_type), '[^A-Z0-9]', '');
+        
+        -- Ensure table name doesn't start with a number
+        IF REGEXP_LIKE(clean_name, '^[0-9]') THEN
+            clean_name := 'T_' || clean_name;
+        ELSE
+            clean_name := 'T_' || clean_name;
+        END IF;
+        
+        table_name := clean_name;
+        
+        -- Create table for this event type
+        create_sql := 'CREATE OR REPLACE TABLE ' || table_name || ' AS SELECT * FROM T WHERE 1=0';
+        EXECUTE IMMEDIATE create_sql;
+        
+        -- Insert data for this event type
+        insert_sql := 'INSERT INTO ' || table_name || ' SELECT * FROM T WHERE EVENT_DATA:event::STRING = ''' || event_type || '''';
+        EXECUTE IMMEDIATE insert_sql;
+    END FOR;
+    
+    RETURN 'Tables created successfully';
+END;
+$$;
+```
+
+## What This Does:
+
+**REGEXP_REPLACE(UPPER(event_type), '[^A-Z0-9]', '')** removes all characters that are not letters or numbers
+
+**Examples of transformations:**
+- `"Change Stream Transform"` → `T_CHANGESTREAMTRANSFORM`
+- `"User-Login@Event"` → `T_USERLOGINEVENT`
+- `"Page.View.2024"` → `T_PAGEVIEW2024`
+- `"Special@#$%Characters"` → `T_SPECIALCHARACTERS`
+- `"123StartWithNumber"` → `T_123STARTWITHUMBER`
+
+The procedure ensures all table names contain only alphanumeric characters and always start with `T_` prefix, making them valid Snowflake identifiers regardless of what special characters were in the original event names.
+
+
