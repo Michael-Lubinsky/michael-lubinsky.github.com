@@ -28,6 +28,75 @@ FILE_FORMAT = (TYPE = 'AVRO');
 ## Option 2: Scheduled Tasks (Better for 15-minute intervals)
 Since you want regular 15-minute intervals, use Snowflake Tasks:
 
+### create stage
+Here's how to create the `eventhub_stage` external stage in Snowflake that points to your ADLS Gen2 storage:
+
+### Step 1: Create File Format for Avro
+```sql
+CREATE OR REPLACE FILE FORMAT avro_format
+TYPE = 'AVRO'
+COMPRESSION = 'AUTO';
+```
+
+### Step 2: Get SAS Token for Azure Storage
+
+Generate a SAS token with read and list permissions:
+
+```bash
+az storage container generate-sas \
+  --as-user \
+  --auth-mode login \
+  --account-name weavixdatalakedevsa \
+  --name adls \
+  --permissions rl \
+  --expiry "$(date -u -v+30d '+%Y-%m-%dT%H:%MZ')" \
+  --output tsv
+```
+
+### Step 3: Create External Stage
+```sql
+CREATE OR REPLACE STAGE eventhub_stage
+URL = 'azure://weavixdatalakedevsa.blob.core.windows.net/adls/weavix-reporting-dev-ehns/telemetry-stream-parallel-hub/'
+CREDENTIALS = (
+    AZURE_SAS_TOKEN = 'your-sas-token-here'
+)
+FILE_FORMAT = avro_format;
+```
+
+### Step 4: Test the Stage
+```sql
+-- List files in the stage
+LIST @eventhub_stage;
+
+-- Test loading a single file
+SELECT $1 FROM @eventhub_stage LIMIT 10;
+```
+
+### Step 5: Verify Stage Structure
+Based on your previous Event Hub capture path structure:
+```
+adls/weavix-reporting-dev-ehns/telemetry-stream-parallel-hub/17/2025/09/09/14/34/38.avro
+```
+
+You might want to create stages for specific time periods:
+```sql
+-- Stage for today's data
+CREATE OR REPLACE STAGE eventhub_stage_daily
+URL = 'azure://weavixdatalakedevsa.blob.core.windows.net/adls/weavix-reporting-dev-ehns/telemetry-stream-parallel-hub/*/2025/09/09/'
+CREDENTIALS = (AZURE_SAS_TOKEN = 'your-token')
+FILE_FORMAT = avro_format;
+```
+
+## Notes:
+- Replace `your-sas-token-here` with the actual SAS token
+- The URL path should match your Event Hub capture directory structure
+- SAS token needs read (`r`) and list (`l`) permissions
+- Consider token expiration and rotation strategy
+
+Once created, you can use this stage in your COPY commands or Snowpipe configuration.
+
+
+
 ```sql
 -- Create task that runs every 15 minutes
 CREATE TASK load_eventhub_data
