@@ -1,6 +1,59 @@
 # AVRO -> Snowflake
 
+## **`CREATE STORAGE INEGRATION` vs `CREATE STAGE`.
 
+Here's the distinction:
+
+## CREATE STORAGE INTEGRATION
+**Purpose**: Creates a named cloud storage connection that can be reused across multiple stages
+**Security**: Uses Snowflake's identity-based authentication (no exposed credentials)
+**Syntax**:
+```sql
+CREATE STORAGE INTEGRATION my_integration
+  TYPE = EXTERNAL_STAGE
+  STORAGE_PROVIDER = 'AZURE'
+  ENABLED = TRUE
+  AZURE_TENANT_ID = 'your-tenant-id'
+  STORAGE_ALLOWED_LOCATIONS = ('azure://account.blob.core.windows.net/container/');
+```
+
+## CREATE STAGE
+**Purpose**: Creates the actual external stage that references data files
+**Two Authentication Methods**:
+
+### Method 1: Using Storage Integration (Recommended)
+```sql
+CREATE STAGE eventhub_stage
+  URL = 'azure://account.blob.core.windows.net/container/'
+  STORAGE_INTEGRATION = my_integration
+  FILE_FORMAT = avro_format;
+```
+
+### Method 2: Direct Credentials (What you're using)
+```sql
+CREATE STAGE eventhub_stage
+  URL = 'azure://account.blob.core.windows.net/container/'
+  CREDENTIALS = (AZURE_SAS_TOKEN = 'token')
+  FILE_FORMAT = avro_format;
+```
+
+## Key Differences
+
+**Storage Integration Approach**:
+- More secure (no SAS tokens in SQL)
+- Centralized credential management
+- Can be reused by multiple stages
+- Requires additional Azure AD setup
+
+**Direct Credentials Approach**:
+- Simpler to set up initially
+- SAS tokens visible in SQL/metadata
+- Each stage manages its own credentials
+- Token expiration requires stage updates
+
+Your current approach using direct credentials is perfectly valid and often easier for getting started. Storage integrations are better for production environments with multiple stages and stricter security requirements.
+
+## EnqueuedTimeUtc timestamp format in AVRO 
 The timestamp "9/9/2025 2:34:38 PM" is **not** from your original Event Hub event data. This is a **system-generated timestamp** created by Azure Event Hub itself when the event was received and enqueued.
 
 ## Where This Timestamp Comes From
