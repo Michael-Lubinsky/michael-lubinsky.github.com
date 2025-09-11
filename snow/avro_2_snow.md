@@ -1,5 +1,43 @@
 # AVRO -> Snowflake
 
+
+The timestamp "9/9/2025 2:34:38 PM" is **not** from your original Event Hub event data. This is a **system-generated timestamp** created by Azure Event Hub itself when the event was received and enqueued.
+
+## Where This Timestamp Comes From
+
+**EnqueuedTimeUtc** is automatically added by Azure Event Hub infrastructure when an event arrives. It represents when Event Hub received the event, not when your application created it.
+
+Your original event data is in the `Body` field (the hex-encoded JSON), which contains:
+```json
+{
+  "id": "c9d1f3a1-b5e4-4314-8512-956ece6689b7",
+  "originalTimestamp": "Tue Sep 09 2025 14:34:39 GMT+0000 (Coordinated Universal Time)",
+  "event": "ChangeStreamTransform",
+  "environment": "dev",
+  "properties": {...}
+}
+```
+
+## Event Hub Avro Structure
+
+Event Hub Capture wraps every event in this standard envelope:
+- **SequenceNumber**: Event Hub's internal sequence number
+- **Offset**: Position in the Event Hub partition
+- **EnqueuedTimeUtc**: When Event Hub received it (system time)
+- **Body**: Your actual event data (hex-encoded)
+- **Properties**: Custom properties from sender
+- **SystemProperties**: Event Hub metadata
+
+## Why the Format Difference
+
+The "9/9/2025 2:34:38 PM" format is Azure's default .NET DateTime string representation, which gets serialized into the Avro file. This is different from your application's timestamp format in the Body.
+
+Your application sent the event with `originalTimestamp` in a different format, but Event Hub added its own `EnqueuedTimeUtc` in the standard Azure format.
+
+So you're dealing with two different timestamps:
+1. **EnqueuedTimeUtc**: Azure system time (needs format conversion)
+2. **originalTimestamp** (in Body): Your application time (after hex decoding)
+
 I configured Azure EventHub Capture with serialization in Avro format on ADLS Gen2.
 How to configure automate triggering Snowpipe from ADLS Gen2 on regular bases every 15 minutes?
 
