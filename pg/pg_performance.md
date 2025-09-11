@@ -12,6 +12,12 @@
 
 <https://habr.com/ru/companies/tantor/articles/940752/> Performance Monitoring
 
+### how to save space
+
+https://habr.com/ru/articles/944704/ 
+
+https://hakibenita.com/postgresql-unused-index-size#clearing-bloat-in-tables
+
 ### Partition Pruning
 SET enable_partition_pruning = on; 
 
