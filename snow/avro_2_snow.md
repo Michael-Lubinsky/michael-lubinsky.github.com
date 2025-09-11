@@ -1,6 +1,6 @@
 # AVRO -> Snowflake
 
-##  CREATE STORAGE INEGRATION vs `CREATE STAGE`.
+##  CREATE STORAGE INTEGRATION vs `CREATE STAGE`.
 
 Here's the distinction:
 
@@ -394,7 +394,8 @@ Since you asked for *regular 15-minute triggers*, I’ll show you the **Task app
 
 ### Storage integration
 
-Good question 👍 — a **STORAGE INTEGRATION** in Snowflake is the secure object that holds the trust relationship between Snowflake and your Azure ADLS Gen2 account. It lets Snowflake read/write to ADLS without embedding secrets.
+**STORAGE INTEGRATION** in Snowflake is the secure object that holds the trust relationship between Snowflake and your Azure ADLS Gen2 account. 
+It lets Snowflake read/write to ADLS without embedding secrets.
 
 Here’s the step-by-step:
 
@@ -464,94 +465,7 @@ Now Snowflake can securely read files from that ADLS path.
 * Approve Snowflake’s service principal in Azure (via consent URL + IAM role assignment).
 * Reference the integration when you create stages/pipes.
 
----
-
-Do you want me to also give you the **Azure CLI commands** to grant Snowflake’s service principal access  
-to your ADLS Gen2 container (instead of only showing the portal steps)?
-
-Good question 👍 — a **STORAGE INTEGRATION** in Snowflake is the secure object that holds the trust relationship between Snowflake and your Azure ADLS Gen2 account. It lets Snowflake read/write to ADLS without embedding secrets.
-
-Here’s the step-by-step:
-
----
-
-## 1. In Snowflake: Create the storage integration
-
-```sql
-CREATE OR REPLACE STORAGE INTEGRATION my_adls_integration
-  TYPE = EXTERNAL_STAGE
-  STORAGE_PROVIDER = AZURE
-  ENABLED = TRUE
-  AZURE_TENANT_ID = '<your-azure-tenant-guid>'
-  STORAGE_ALLOWED_LOCATIONS = (
-    'azure://<storage-account-name>.dfs.core.windows.net/<container-name>'
-  );
-```
-
-**Notes:**
-
-* `AZURE_TENANT_ID`: your Azure AD tenant GUID (you can get it from Azure portal under **Azure Active Directory → Properties → Tenant ID**).
-* `STORAGE_ALLOWED_LOCATIONS`: one or more ADLS Gen2 paths that Snowflake can access. Restrict to only what you need for security.
-
----
-
-## 2. Get the generated **App ID** from Snowflake
-
-After creating, run:
-
-```sql
-DESC STORAGE INTEGRATION my_adls_integration;
-```
-
-This shows:
-
-* **AZURE\_CONSENT\_URL** → a URL you (an Azure admin) must visit once to grant Snowflake’s service principal access.
-* **AZURE\_MULTI\_TENANT\_APP\_NAME** → the Snowflake-managed app you’ll see registered in Azure.
-
----
-
-## 3. In Azure: Grant Snowflake access
-
-1. An Azure AD admin opens the `AZURE_CONSENT_URL` in a browser and accepts permissions.
-2. In your ADLS Gen2 storage account:
-
-   * Go to **Access control (IAM)**.
-   * Assign **Storage Blob Data Contributor** role (minimum) to Snowflake’s service principal (the app name from the DESC output).
-
----
-
-## 4. Back in Snowflake: Create the stage that uses the integration
-
-```sql
-CREATE OR REPLACE STAGE my_adls_stage
-  URL = 'azure://<storage-account-name>.dfs.core.windows.net/<container-name>/<path>'
-  STORAGE_INTEGRATION = my_adls_integration
-  FILE_FORMAT = (TYPE = AVRO);
-```
-
-Now Snowflake can securely read files from that ADLS path.
-
----
-
-✅ **Summary**
-
-* Define the `STORAGE_INTEGRATION` in Snowflake (ties to your tenant + allowed containers).
-* Approve Snowflake’s service principal in Azure (via consent URL + IAM role assignment).
-* Reference the integration when you create stages/pipes.
-
-
-
-```sql
-CREATE STAGE my_adls_stage
-  URL='azure://<storage-account-name>.dfs.core.windows.net/<container-name>/<eventhub-path>'
-  STORAGE_INTEGRATION = my_adls_integration
-  FILE_FORMAT = (TYPE = AVRO);
-```
-
-* `STORAGE_INTEGRATION` is a Snowflake object that holds the OAuth/AAD credentials to ADLS Gen2.
-* `FILE_FORMAT = AVRO` tells Snowflake how to parse your files.
-
----
+ 
 
 ## 3. Create the target table (example)
 
@@ -617,15 +531,8 @@ To automate ingestion every 15 minutes:
 2. Task runs `ALTER PIPE … REFRESH;` every 15 minutes.
 3. Snowpipe ingests any new EventHub Avro files from ADLS.
 
----
 
-Do you want me to also show you an **end-to-end example with Avro column extraction** (how to flatten `VARIANT` into structured Snowflake columns)? That way your pipeline isn’t just landing raw Avro, but also producing query-ready tables.
-
-
-
-
-
-Here's how to split table T into separate tables based on the "event" values in your JSON:
+# How to split table T into separate tables based on the "event" values in  JSON:
 
 ## Step 1: Identify Unique Event Types
 First, find all distinct event types:
