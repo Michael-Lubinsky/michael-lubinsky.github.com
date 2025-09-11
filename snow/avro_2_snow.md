@@ -62,3 +62,106 @@ For your 15-minute requirement, **Option 2 (Snowflake Tasks)** is most appropria
 Event-driven Snowpipe is better for near real-time loading but adds complexity for your scheduled use case.
 
 ## ChatGPT
+
+Here’s how you can wire up **Azure Event Hub Capture → ADLS Gen2 (Avro) → Snowflake (Snowpipe)** with a 15-minute refresh cycle:
+
+---
+
+## 1. Understand the flow
+
+* **EventHub Capture** is already dropping Avro files into ADLS Gen2 in folders like:
+
+  ```
+  {eventhub_namespace}/{eventhub_name}/{partition_id}/YYYY/MM/DD/HH/mm/
+  ```
+* Snowpipe has two trigger modes:
+
+  * **Auto-ingest (event notifications):** requires Azure Event Grid integration. This is near real-time but involves more setup.
+  * **Scheduled load:** done by a **Snowflake Task** that runs `COPY INTO …` at fixed intervals. This is simpler if you just want *every 15 minutes*.
+
+Since you asked for *regular 15-minute triggers*, I’ll show you the **Task approach**.
+
+---
+
+## 2. Set up the Snowflake external stage (pointing to ADLS Gen2)
+
+```sql
+CREATE STAGE my_adls_stage
+  URL='azure://<storage-account-name>.dfs.core.windows.net/<container-name>/<eventhub-path>'
+  STORAGE_INTEGRATION = my_adls_integration
+  FILE_FORMAT = (TYPE = AVRO);
+```
+
+* `STORAGE_INTEGRATION` is a Snowflake object that holds the OAuth/AAD credentials to ADLS Gen2.
+* `FILE_FORMAT = AVRO` tells Snowflake how to parse your files.
+
+---
+
+## 3. Create the target table (example)
+
+```sql
+CREATE OR REPLACE TABLE raw_events (
+  data VARIANT
+);
+```
+
+* With Avro, you often load into a VARIANT column first, then normalize with `SELECT …:field`.
+
+---
+
+## 4. Define the Snowpipe
+
+```sql
+CREATE OR REPLACE PIPE my_eventhub_pipe
+  AUTO_INGEST = FALSE
+  AS
+  COPY INTO raw_events
+  FROM @my_adls_stage
+  FILE_FORMAT = (TYPE = AVRO);
+```
+
+* Here `AUTO_INGEST = FALSE` because we’re going to schedule it.
+* Pipe tracks what files are already loaded, so you won’t double-load.
+
+---
+
+## 5. Schedule it with a Snowflake Task
+
+```sql
+CREATE OR REPLACE TASK run_eventhub_pipe_15min
+  WAREHOUSE = my_wh
+  SCHEDULE = '15 MINUTE'
+AS
+  ALTER PIPE my_eventhub_pipe REFRESH;
+```
+
+* The task executes every 15 minutes and tells Snowpipe to ingest new files.
+* `ALTER PIPE … REFRESH` checks ADLS for new files and ingests them.
+
+---
+
+## 6. Enable the task
+
+```sql
+ALTER TASK run_eventhub_pipe_15min RESUME;
+```
+
+---
+
+## 7. (Optional) Event-driven auto-ingest
+
+If you want **near real-time ingestion instead of 15-minute batching**, you can integrate **Azure Event Grid** with Snowflake. That requires configuring **event subscriptions** from ADLS to Snowpipe, and Snowflake listens for blob-created events. But that’s more complex than a fixed 15-minute Task.
+
+---
+
+✅ **Summary:**
+To automate ingestion every 15 minutes:
+
+1. Create external stage → Pipe → Task.
+2. Task runs `ALTER PIPE … REFRESH;` every 15 minutes.
+3. Snowpipe ingests any new EventHub Avro files from ADLS.
+
+---
+
+Do you want me to also show you an **end-to-end example with Avro column extraction** (how to flatten `VARIANT` into structured Snowflake columns)? That way your pipeline isn’t just landing raw Avro, but also producing query-ready tables.
+
