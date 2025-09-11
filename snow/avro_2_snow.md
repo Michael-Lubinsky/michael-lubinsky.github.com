@@ -41,6 +41,153 @@ So you're dealing with two different timestamps:
 I configured Azure EventHub Capture with serialization in Avro format on ADLS Gen2.
 How to configure automate triggering Snowpipe from ADLS Gen2 on regular bases every 15 minutes?
 
+
+For automating periodic loads with incremental file processing, you have several options. Here's the most effective approach using Snowflake Tasks:
+
+## Option 1: Snowflake Tasks with Incremental Loading
+
+Create a task that runs every 15-30 minutes and only processes new files:
+
+```sql
+-- Create a table to track processed files
+CREATE TABLE IF NOT EXISTS eventhub_file_log (
+    file_path STRING,
+    processed_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    file_size NUMBER,
+    rows_loaded NUMBER
+);
+
+-- Create the automated task
+CREATE OR REPLACE TASK load_eventhub_incremental
+    WAREHOUSE = 'COMPUTE_WH'
+    SCHEDULE = 'USING CRON */15 * * * *'  -- Every 15 minutes
+AS
+DECLARE
+    files_processed NUMBER DEFAULT 0;
+BEGIN
+    -- Load only new files not in our log
+    COPY INTO my_eventhub_events (sequence_number, enqueued_time, offset, event_data)
+    FROM (
+        SELECT 
+            $1:SequenceNumber::NUMBER,
+            TO_TIMESTAMP($1:EnqueuedTimeUtc::STRING, 'MM/DD/YYYY HH12:MI:SS AM'),
+            $1:Offset::STRING,
+            PARSE_JSON(TRY_HEX_DECODE_STRING($1:Body))
+        FROM @eventhub_stage
+        WHERE metadata$filename NOT IN (
+            SELECT file_path FROM eventhub_file_log
+        )
+    )
+    FILE_FORMAT = avro_format
+    ON_ERROR = 'CONTINUE';
+    
+    -- Log processed files
+    INSERT INTO eventhub_file_log (file_path, file_size, rows_loaded)
+    SELECT 
+        metadata$filename,
+        metadata$file_size,
+        COUNT(*)
+    FROM @eventhub_stage
+    WHERE metadata$filename NOT IN (
+        SELECT file_path FROM eventhub_file_log WHERE processed_timestamp > CURRENT_TIMESTAMP - INTERVAL '1 hour'
+    )
+    GROUP BY metadata$filename, metadata$file_size;
+    
+    RETURN 'Task completed successfully';
+END;
+
+-- Start the task
+ALTER TASK load_eventhub_incremental RESUME;
+```
+
+## Option 2: Time-Based Incremental Loading
+
+```sql
+CREATE OR REPLACE TASK load_eventhub_timeboxed
+    WAREHOUSE = 'COMPUTE_WH'
+    SCHEDULE = 'USING CRON */20 * * * *'
+AS
+BEGIN
+    -- Load files from last 25 minutes to handle overlap
+    COPY INTO my_eventhub_events (sequence_number, enqueued_time, offset, event_data)
+    FROM (
+        SELECT 
+            $1:SequenceNumber::NUMBER,
+            TO_TIMESTAMP($1:EnqueuedTimeUtc::STRING, 'MM/DD/YYYY HH12:MI:SS AM'),
+            $1:Offset::STRING,
+            PARSE_JSON(TRY_HEX_DECODE_STRING($1:Body))
+        FROM @eventhub_stage
+        WHERE metadata$file_last_modified > CURRENT_TIMESTAMP - INTERVAL '25 minutes'
+    )
+    FILE_FORMAT = avro_format
+    ON_ERROR = 'CONTINUE';
+END;
+
+ALTER TASK load_eventhub_timeboxed RESUME;
+```
+
+## Option 3: Dynamic Path-Based Loading
+
+Since your files are organized by date/time, you can target specific time periods:
+
+```sql
+CREATE OR REPLACE TASK load_eventhub_hourly
+    WAREHOUSE = 'COMPUTE_WH'
+    SCHEDULE = 'USING CRON 5 * * * *'  -- 5 minutes past each hour
+AS
+DECLARE
+    current_hour STRING;
+    prev_hour STRING;
+    pattern_current STRING;
+    pattern_prev STRING;
+BEGIN
+    -- Build patterns for current and previous hour
+    SET current_hour = DATE_PART('hour', CURRENT_TIMESTAMP)::STRING;
+    SET prev_hour = (DATE_PART('hour', CURRENT_TIMESTAMP) - 1)::STRING;
+    
+    -- Load from previous hour (should be complete)
+    SET pattern_prev = '.*/' || YEAR(CURRENT_TIMESTAMP) || '/' || 
+                       LPAD(MONTH(CURRENT_TIMESTAMP), 2, '0') || '/' ||
+                       LPAD(DAY(CURRENT_TIMESTAMP), 2, '0') || '/' ||
+                       LPAD(prev_hour, 2, '0') || '/.*\\.avro';
+    
+    COPY INTO my_eventhub_events (sequence_number, enqueued_time, offset, event_data)
+    FROM (
+        SELECT 
+            $1:SequenceNumber::NUMBER,
+            TO_TIMESTAMP($1:EnqueuedTimeUtc::STRING, 'MM/DD/YYYY HH12:MI:SS AM'),
+            $1:Offset::STRING,
+            PARSE_JSON(TRY_HEX_DECODE_STRING($1:Body))
+        FROM @eventhub_stage
+    )
+    FILE_FORMAT = avro_format
+    PATTERN = $pattern_prev
+    ON_ERROR = 'CONTINUE';
+END;
+
+ALTER TASK load_eventhub_hourly RESUME;
+```
+
+## Monitoring and Troubleshooting
+
+```sql
+-- Check task history
+SELECT * FROM TABLE(INFORMATION_SCHEMA.TASK_HISTORY()) 
+WHERE NAME = 'LOAD_EVENTHUB_INCREMENTAL' 
+ORDER BY SCHEDULED_TIME DESC;
+
+-- Check what files have been processed
+SELECT * FROM eventhub_file_log ORDER BY processed_timestamp DESC;
+
+-- Manual run for testing
+EXECUTE TASK load_eventhub_incremental;
+```
+
+I recommend **Option 1** for production use since it tracks processed files and prevents duplicates while handling the hierarchical folder structure automatically.
+
+
+
+
 ## Claude
 Snowpipe doesn't support direct triggering from ADLS Gen2 on a time-based schedule. 
 Snowpipe is designed for event-driven loading when new files arrive, not scheduled batch processing. 
