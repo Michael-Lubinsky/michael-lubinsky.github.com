@@ -621,3 +621,102 @@ To automate ingestion every 15 minutes:
 
 Do you want me to also show you an **end-to-end example with Avro column extraction** (how to flatten `VARIANT` into structured Snowflake columns)? That way your pipeline isn’t just landing raw Avro, but also producing query-ready tables.
 
+
+
+
+
+Here's how to split table T into separate tables based on the "event" values in your JSON:
+
+## Step 1: Identify Unique Event Types
+First, find all distinct event types:
+
+```sql
+SELECT DISTINCT EVENT_DATA:event::STRING as event_type
+FROM T
+WHERE EVENT_DATA:event IS NOT NULL;
+```
+
+## Step 2: Create Tables Dynamically
+Use a stored procedure to create tables for each event type:
+
+```sql
+CREATE OR REPLACE PROCEDURE split_table_by_event()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$$
+DECLARE
+    event_type STRING;
+    table_name STRING;
+    create_sql STRING;
+    insert_sql STRING;
+    cursor_events CURSOR FOR SELECT DISTINCT EVENT_DATA:event::STRING FROM T WHERE EVENT_DATA:event IS NOT NULL;
+BEGIN
+    FOR record IN cursor_events DO
+        event_type := record.EVENT_DATA:event::STRING;
+        table_name := 'T_' || UPPER(REPLACE(event_type, ' ', '_'));
+        
+        -- Create table for this event type
+        create_sql := 'CREATE OR REPLACE TABLE ' || table_name || ' AS SELECT * FROM T WHERE 1=0';
+        EXECUTE IMMEDIATE create_sql;
+        
+        -- Insert data for this event type
+        insert_sql := 'INSERT INTO ' || table_name || ' SELECT * FROM T WHERE EVENT_DATA:event::STRING = ''' || event_type || '''';
+        EXECUTE IMMEDIATE insert_sql;
+    END FOR;
+    
+    RETURN 'Tables created successfully';
+END;
+$$;
+
+-- Execute the procedure
+CALL split_table_by_event();
+```
+
+## Step 3: Manual Approach (if you prefer explicit control)
+If you know the event types, create tables manually:
+
+```sql
+-- For event type "ChangeStreamTransform"
+CREATE TABLE T_CHANGESTREAMTRANSFORM AS
+SELECT * FROM T 
+WHERE EVENT_DATA:event::STRING = 'ChangeStreamTransform';
+
+-- For event type "UserLogin"
+CREATE TABLE T_USERLOGIN AS
+SELECT * FROM T 
+WHERE EVENT_DATA:event::STRING = 'UserLogin';
+
+-- For event type "PageView"
+CREATE TABLE T_PAGEVIEW AS
+SELECT * FROM T 
+WHERE EVENT_DATA:event::STRING = 'PageView';
+```
+
+## Step 4: Verify the Split
+Check the results:
+
+```sql
+-- Count records in original table
+SELECT 
+    EVENT_DATA:event::STRING as event_type,
+    COUNT(*) as record_count
+FROM T 
+GROUP BY EVENT_DATA:event::STRING;
+
+-- Check created tables
+SHOW TABLES LIKE 'T_%';
+
+-- Verify record counts match
+SELECT COUNT(*) FROM T_CHANGESTREAMTRANSFORM;
+SELECT COUNT(*) FROM T_USERLOGIN;
+-- etc.
+```
+
+## Considerations
+- Table names will be prefixed with `T_` and event names will be uppercased with spaces replaced by underscores
+- NULL or empty event values will be excluded
+- The procedure approach handles any number of event types automatically
+- You might want to add additional filtering for data quality (e.g., excluding records with malformed JSON)
+
+This approach creates separate tables for each event type, making it easier to work with homogeneous event structures.
