@@ -1,6 +1,6 @@
 # AVRO -> Snowflake
 
-## **`CREATE STORAGE INEGRATION` vs `CREATE STAGE`.
+##  CREATE STORAGE INEGRATION vs `CREATE STAGE`.
 
 Here's the distinction:
 
