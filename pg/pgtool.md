@@ -34,6 +34,181 @@ The destination table should be created automatically, based on input file name
 If destination table already exists then show warning.
 
 ## chat.mistral.ai
+```bash
+#!/bin/bash
+
+# pgtool.sh - PostgreSQL table backup and recovery tool (Bash 3.2.5 compatible)
+# Usage:
+#   Backup: ./pgtool.sh backup <instance> <table> [<time_column>] [<date>] [--no-compress] [--dest <folder>]
+#   Restore: ./pgtool.sh restore <instance> <file>
+
+set -euo pipefail
+
+# --- Config ---
+# Use environment variables or case statements for instance config
+# Example: export PG_DEV="user=dev_user dbname=dev_db host=dev-host port=5432"
+# Or set here:
+PG_DEV="user=dev_user dbname=dev_db host=dev-host port=5432"
+PG_PROD="user=prod_user dbname=prod_db host=prod-host port=5432"
+PG_TEST="user=test_user dbname=test_db host=test-host port=5432"
+PG_LOCAL="user=postgres dbname=postgres host=localhost port=5432"
+DEFAULT_DEST_FOLDER="/var/backups/postgres"
+COMPRESS=true
+# --- End Config ---
+
+function usage() {
+    cat <<EOF
+Usage:
+  Backup: $0 backup <instance> <table> [<time_column>] [<date>] [--no-compress] [--dest <folder>]
+  Restore: $0 restore <instance> <file>
+
+  <instance>: dev, prod, test, or local
+  <table>: full table name, e.g. weavix.silver.mytable
+  <time_column>: column with timestamptz datatype (for date filtering)
+  <date>: YYYY-MM-DD or YYYY-MM (for date filtering)
+  <file>: backup file to restore
+EOF
+    exit 1
+}
+
+function get_conn() {
+    local instance="$1"
+    case "$instance" in
+        dev)    echo "$PG_DEV" ;;
+        prod)   echo "$PG_PROD" ;;
+        test)   echo "$PG_TEST" ;;
+        local)  echo "$PG_LOCAL" ;;
+        *)      echo "" ;;
+    esac
+}
+
+function backup() {
+    local instance="$1"
+    local table="$2"
+    local time_column="${3:-}"
+    local date_filter="${4:-}"
+    local compress="${5:-true}"
+    local dest_folder="${6:-${DEFAULT_DEST_FOLDER}}"
+
+    local conn=$(get_conn "$instance")
+    if [[ -z "$conn" ]]; then
+        echo "Error: Unknown instance '$instance'"
+        usage
+    fi
+
+    local schema=$(echo "$table" | cut -d. -f1,2)
+    local table_name=$(echo "$table" | cut -d. -f3)
+    local dest_file="$dest_folder/${instance}_${table//./_}"
+
+    if [[ -n "$time_column" && -n "$date_filter" ]]; then
+        dest_file="${dest_file}_${time_column}_${date_filter}"
+        local where_clause="WHERE date_trunc('day', \"$time_column\")"
+        if [[ "$date_filter" =~ ^[0-9]{4}-[0-9]{2}$ ]]; then
+            where_clause+=" BETWEEN '${date_filter}-01' AND '${date_filter}-01' + INTERVAL '1 month'"
+        else
+            where_clause+=" = '$date_filter'"
+        fi
+    fi
+
+    dest_file+=".csv"
+
+    echo "Backing up $table to $dest_file (compress: $compress)"
+
+    local query="COPY (SELECT * FROM $table"
+    [[ -n "$time_column" && -n "$date_filter" ]] && query+=" $where_clause"
+    query+=") TO STDOUT WITH CSV HEADER"
+
+    mkdir -p "$dest_folder"
+    if [[ "$compress" == "true" ]]; then
+        PGPASSWORD=${PGPASSWORD:-} psql "$conn" -c "$query" | gzip > "$dest_file.gz"
+        echo "Backup saved to $dest_file.gz"
+    else
+        PGPASSWORD=${PGPASSWORD:-} psql "$conn" -c "$query" > "$dest_file"
+        echo "Backup saved to $dest_file"
+    fi
+}
+
+function restore() {
+    local instance="$1"
+    local file="$2"
+    local conn=$(get_conn "$instance")
+    if [[ -z "$conn" ]]; then
+        echo "Error: Unknown instance '$instance'"
+        usage
+    fi
+
+    local filename=$(basename "$file")
+    local table_name=$(echo "$filename" | sed 's/\.csv\(\.gz\)\?$//')
+    table_name=$(echo "$table_name" | sed "s/^${instance}_//")
+
+    local schema=$(echo "$table_name" | cut -d_ -f1,2)
+    local table=$(echo "$table_name" | cut -d_ -f3-)
+
+    # If table_name contains date, extract the base table name
+    if [[ "$table" =~ ^([^_]+_[^_]+)_[^_]+_[0-9]{4}-[0-9]{2}(-[0-9]{2})?$ ]]; then
+        table=$(echo "$table" | sed 's/_[^_]*_[0-9]\{4\}-[0-9]\{2\}-*[0-9]*$//')
+    fi
+
+    # Check if table exists
+    local exists=$(PGPASSWORD=${PGPASSWORD:-} psql "$conn" -tAc "SELECT 1 FROM information_schema.tables WHERE table_schema || '.' || table_name = '$schema.$table'")
+    if [[ "$exists" == "1" ]]; then
+        echo "Warning: Table $schema.$table already exists. Data will be appended."
+    else
+        echo "Creating table $schema.$table from backup..."
+        PGPASSWORD=${PGPASSWORD:-} psql "$conn" -c "CREATE TABLE IF NOT EXISTS $schema.$table (LIKE $schema.$table INCLUDING ALL);"
+    fi
+
+    if [[ "$file" == *.gz ]]; then
+        gunzip -c "$file" | PGPASSWORD=${PGPASSWORD:-} psql "$conn" -c "\COPY $schema.$table FROM STDIN WITH CSV HEADER"
+    else
+        PGPASSWORD=${PGPASSWORD:-} psql "$conn" -c "\COPY $schema.$table FROM '$file' WITH CSV HEADER"
+    fi
+    echo "Data restored to $schema.$table"
+}
+
+# --- Main ---
+if [[ $# -lt 2 ]]; then
+    usage
+fi
+
+case "$1" in
+    backup)
+        shift
+        local instance="$1"
+        local table="$2"
+        local time_column="${3:-}"
+        local date_filter="${4:-}"
+        local compress=true
+        local dest_folder="$DEFAULT_DEST_FOLDER"
+
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --no-compress) compress=false ;;
+                --dest) dest_folder="$2"; shift ;;
+            esac
+            shift
+        done
+
+        backup "$instance" "$table" "$time_column" "$date_filter" "$compress" "$dest_folder"
+        ;;
+    restore)
+        shift
+        local instance="$1"
+        local file="$2"
+        restore "$instance" "$file"
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+
+```
+
+```
+The script I provided below some Bash 4+ features (declare -A for associative arrays), which are not available in macOS's default Bash 3.2.5.
+However, it's easy to adapt the script for Bash 3.2.5 compatibility.
+```
 
 ```bash
 #!/bin/bash
