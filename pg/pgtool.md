@@ -581,3 +581,147 @@ case "$cmd" in
     ;;
 esac
 ```
+### gzip instead zip for screen above:
+```bash
+#!/usr/bin/env bash
+# pgtool.sh — Backup & restore a Postgres table (full or date-filtered partial) to/from CSV (.csv or .csv.gz)
+# Requirements: bash, psql (>=10), gzip (for compression)
+#
+# USAGE (backup):
+#   pgtool.sh backup <instance> <schema.table> [<timestamptz_col> <YYYY-MM|YYYY-MM-DD>] [--no-compress] [--dest DIR]
+#
+# USAGE (restore):
+#   pgtool.sh restore <instance> </path/to/file.csv|.csv.gz> [--force-append]
+#
+# FILE NAMING:
+#   FULL:     <dest_dir>/<instance>_<schema.table>.csv[.gz]
+#   PARTIAL:  <dest_dir>/<instance>_<schema.table>_<timecol>_<YYYY-MM or YYYY-MM-DD>.csv[.gz]
+#
+# DEST DIR DEFAULTS (edit as needed):
+DEST_DEV="/var/backups/pg/dev"
+DEST_PROD="/var/backups/pg/prod"
+DEST_TEST="/var/backups/pg/test"
+DEST_LOCAL="/var/backups/pg/local"
+
+# CONNECTIONS — override with env vars (PGURI_DEV, etc.)
+PGURI_DEV="${PGURI_DEV:-postgres://localhost:5432/postgres}"
+PGURI_PROD="${PGURI_PROD:-postgres://localhost:5432/postgres}"
+PGURI_TEST="${PGURI_TEST:-postgres://localhost:5432/postgres}"
+PGURI_LOCAL="${PGURI_LOCAL:-postgres://localhost:5432/postgres}"
+
+set -euo pipefail
+
+die() { echo "ERROR: $*" >&2; exit 1; }
+warn() { echo "WARN: $*" >&2; }
+info() { echo "INFO: $*" >&2; }
+
+PSQL() { local uri="$1"; shift; psql $uri "$@"; }
+
+resolve_instance() {
+  case "$1" in
+    dev)   PGURI="$PGURI_DEV";   DEST_DIR_DEFAULT="$DEST_DEV" ;;
+    prod)  PGURI="$PGURI_PROD";  DEST_DIR_DEFAULT="$DEST_PROD" ;;
+    test)  PGURI="$PGURI_TEST";  DEST_DIR_DEFAULT="$DEST_TEST" ;;
+    local) PGURI="$PGURI_LOCAL"; DEST_DIR_DEFAULT="$DEST_LOCAL" ;;
+    *) die "Unknown instance '$1'";;
+  esac
+}
+
+split_qualname() {
+  [[ "$1" =~ ^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$ ]] || die "Bad table name '$1'"
+  SCHEMA="${1%%.*}"; TABLE="${1##*.}"
+  QSCHEMA="\"$SCHEMA\""; QTABLE="\"$TABLE\""
+}
+
+build_time_window_sql() {
+  local col="$1" date_arg="$2"
+  if [[ "$date_arg" =~ ^[0-9]{4}-[0-9]{2}$ ]]; then
+    TIME_WINDOW_SQL="($col >= date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) 
+      AND $col < (date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) + interval '1 month'))"
+  elif [[ "$date_arg" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+    TIME_WINDOW_SQL="($col >= to_timestamp('$date_arg','YYYY-MM-DD') 
+      AND $col < (to_timestamp('$date_arg','YYYY-MM-DD') + interval '1 day'))"
+  else
+    die "Invalid date '$date_arg'"
+  fi
+}
+
+# ---------------- BACKUP ----------------
+do_backup() {
+  local instance="$1" qualname="$2"; shift 2
+  local timecol="" date_arg="" dest_dir="" compress=1
+
+  if [[ $# -ge 1 && "$1" != --* ]]; then timecol="$1"; shift; fi
+  if [[ $# -ge 1 && "$1" != --* ]]; then date_arg="$1"; shift; fi
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-compress) compress=0; shift ;;
+      --dest) dest_dir="$2"; shift 2 ;;
+      *) die "Unknown option: $1" ;;
+    esac
+  done
+
+  resolve_instance "$instance"; split_qualname "$qualname"
+  mkdir -p "${dest_dir:-$DEST_DIR_DEFAULT}"
+
+  local filename out_csv where_sql=""
+  if [[ -n "$timecol" && -n "$date_arg" ]]; then
+    build_time_window_sql "$timecol" "$date_arg"
+    where_sql="WHERE $TIME_WINDOW_SQL"
+    filename="${instance}_${SCHEMA}.${TABLE}_${timecol}_${date_arg}.csv"
+  else
+    filename="${instance}_${SCHEMA}.${TABLE}.csv"
+  fi
+  out_csv="${dest_dir:-$DEST_DIR_DEFAULT}/$filename"
+
+  local sql
+  if [[ -n "$where_sql" ]]; then
+    sql="\\copy (SELECT * FROM $QSCHEMA.$QTABLE $where_sql ORDER BY 1) TO STDOUT WITH CSV HEADER"
+  else
+    sql="\\copy $QSCHEMA.$QTABLE TO STDOUT WITH CSV HEADER"
+  fi
+
+  info "Backing up $SCHEMA.$TABLE -> $out_csv"
+  if [[ $compress -eq 1 ]]; then
+    PSQL "$PGURI" -qAt -c "$sql" | gzip > "${out_csv}.gz"
+    info "Backup complete: ${out_csv}.gz"
+  else
+    PSQL "$PGURI" -qAt -c "$sql" > "$out_csv"
+    info "Backup complete: $out_csv"
+  fi
+}
+
+# ---------------- RESTORE ----------------
+do_restore() {
+  local instance="$1" input="$2"; shift 2
+  resolve_instance "$instance"
+
+  [[ -f "$input" ]] || die "File not found: $input"
+  local work_csv="$input"
+  if [[ "$input" =~ \.gz$ ]]; then
+    work_csv="$(mktemp).csv"
+    gunzip -c "$input" > "$work_csv"
+  fi
+
+  local base="$(basename "$work_csv" .csv)"
+  local schema_table="${base%%_*}"  # naive parse, adjust as needed
+  local schema="${schema_table%%.*}"
+  local table="${schema_table##*.}"
+
+  info "Restoring into $schema.$table"
+  local copy_sql="\\copy \"$schema\".\"$table\" FROM STDIN WITH CSV HEADER"
+  PSQL "$PGURI" -q -c "$copy_sql" < "$work_csv"
+  info "Restore complete."
+
+  [[ "$input" =~ \.gz$ ]] && rm -f "$work_csv"
+}
+
+# ---------------- MAIN ----------------
+cmd="$1"; shift || true
+case "$cmd" in
+  backup) do_backup "$@" ;;
+  restore) do_restore "$@" ;;
+  *) die "Usage: pgtool.sh (backup|restore) ..." ;;
+esac
+
+```
