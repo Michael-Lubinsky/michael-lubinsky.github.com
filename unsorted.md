@@ -5,6 +5,8 @@ https://grep.app/ search on github
 Book: how to build API
 https://habr.com/ru/articles/921008/
 
+https://nikolamsu.livejournal.com/232347.html  Джареда Даймонда «Ружья, микробы и сталь: судьбы человеческих обществ»
+
 https://www.reddit.com/r/MachineLearning+Python+apachespark+code+csbooks+datamining+flask+hadoop+learnmachinelearning+programming/
 
 https://keenwrite.com/ cross-platform desktop text editor for producing beautifully typeset PDF files.
