@@ -1,6 +1,6 @@
 Write the bash script pgtool.sh for backup and recovery postgres table. 
 It could be a full or partial content of the table.
-Output format: csv (optionally - compressed).
+Output format: csv (optionally - compressed by gzip).
 
 It should be possible to dump just part of the table based on  
 date range filter applied to some column. 
@@ -29,7 +29,7 @@ Also this script should be able to restore data to the Postgres table.
 pgtool.sh restore dev  weavix.silver.mytable_timecol_2025-01.csv
 
 The destination table should be created automatically, based on input file name 
-(without suffix .csv ot csv.zip), it should include the date, if it is part of file name.
+(without suffix .csv ot csv.gz), it should include the date, if it is part of file name.
 
 If destination table already exists then show warning.
 
