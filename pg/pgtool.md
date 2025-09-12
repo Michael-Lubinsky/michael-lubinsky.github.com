@@ -219,7 +219,255 @@ esac
 
 
 ```
+### GEMINI
+```bash
+#!/bin/bash
 
+# ==============================================================================
+# Script: pgtool.sh
+# Description: A tool for backing up and restoring PostgreSQL table data.
+# It supports full or partial dumps based on a date range and handles
+# compression and automatic table creation on restore.
+# ==============================================================================
+
+# --- Configuration ---
+# Set up a dictionary-like structure for database connection configurations.
+# This assumes you have corresponding environment variables for each instance
+# (e.g., PGHOST_dev, PGDATABASE_dev, etc.).
+declare -A PG_CONFIG
+PG_CONFIG["dev"]="PGHOST=$PGHOST_dev PGDATABASE=$PGDATABASE_dev PGUSER=$PGUSER_dev PGPASSWORD=$PGPASSWORD_dev"
+PG_CONFIG["prod"]="PGHOST=$PGHOST_prod PGDATABASE=$PGDATABASE_prod PGUSER=$PGUSER_prod PGPASSWORD=$PGPASSWORD_prod"
+PG_CONFIG["test"]="PGHOST=$PGHOST_test PGDATABASE=$PGDATABASE_test PGUSER=$PGUSER_test PGPASSWORD=$PGPASSWORD_test"
+PG_CONFIG["local"]="PGHOST=$PGHOST_local PGDATABASE=$PGDATABASE_local PGUSER=$PGUSER_local PGPASSWORD=$PGPASSWORD_local"
+
+# Default settings
+DEFAULT_DEST_DIR="/var/backups"
+DEFAULT_COMPRESS=true
+
+# --- Helper Functions ---
+
+# Function to display script usage
+usage() {
+    echo "Usage: $0 <command> <instance> <full_table_name> [options]"
+    echo "Commands:"
+    echo "  backup    Backup a PostgreSQL table."
+    echo "  restore   Restore a PostgreSQL table from a file."
+    echo ""
+    echo "Backup options:"
+    echo "  <full_table_name>       Required. Format: <schema>.<table_name>"
+    echo "  [timestamptz_column]    Optional. Column for date filtering."
+    echo "  [date]                  Optional. YYYY-MM-DD or YYYY-MM for filtering."
+    echo "  --no-compress           Optional. Do not compress the output file."
+    echo "  --dest-dir <path>       Optional. Destination folder."
+    echo ""
+    echo "Restore options:"
+    echo "  <backup_file>           Required. Path to the backup file (.csv or .csv.gz)."
+    echo ""
+    exit 1
+}
+
+# --- Main Logic ---
+
+# Check for a command and instance argument
+if [ "$#" -lt 3 ]; then
+    usage
+fi
+
+COMMAND=$1
+INSTANCE=$2
+FULL_TABLE_NAME_OR_FILE=$3
+
+# Check if the instance is valid
+if [ -z "${PG_CONFIG[$INSTANCE]}" ]; then
+    echo "Error: Invalid instance '$INSTANCE'. Supported instances: ${!PG_CONFIG[@]}"
+    usage
+fi
+PG_CONN=${PG_CONFIG[$INSTANCE]}
+
+# --- Backup Command ---
+if [ "$COMMAND" = "backup" ]; then
+    echo "Starting backup process for instance '$INSTANCE'..."
+
+    SCHEMA_NAME=$(echo "$FULL_TABLE_NAME_OR_FILE" | cut -d'.' -f1-2)
+    TABLE_NAME=$(echo "$FULL_TABLE_NAME_OR_FILE" | cut -d'.' -f3)
+
+    # Validate table name format
+    if [[ ! "$FULL_TABLE_NAME_OR_FILE" =~ ^[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+$ ]]; then
+        echo "Error: Invalid table name format. Use <schema>.<table_name>."
+        exit 1
+    fi
+
+    TIMESTAMP_COL=
+    DATE_FILTER=
+    COMPRESS=$DEFAULT_COMPRESS
+    DEST_DIR="$DEFAULT_DEST_DIR/$INSTANCE"
+
+    # Parse optional arguments
+    shift 3
+    while (( "$#" )); do
+        case "$1" in
+            --no-compress)
+                COMPRESS=false
+                shift
+                ;;
+            --dest-dir)
+                if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+                    DEST_DIR=$2
+                    shift 2
+                else
+                    echo "Error: --dest-dir requires a path."
+                    exit 1
+                fi
+                ;;
+            *)
+                if [ -z "$TIMESTAMP_COL" ]; then
+                    TIMESTAMP_COL=$1
+                    shift
+                elif [ -z "$DATE_FILTER" ]; then
+                    DATE_FILTER=$1
+                    shift
+                else
+                    echo "Error: Unknown argument: $1"
+                    usage
+                fi
+                ;;
+        esac
+    done
+
+    # Create destination directory if it doesn't exist
+    mkdir -p "$DEST_DIR" || { echo "Error: Failed to create directory $DEST_DIR"; exit 1; }
+
+    # Build the WHERE clause for date filtering
+    WHERE_CLAUSE=""
+    if [ -n "$TIMESTAMP_COL" ] && [ -n "$DATE_FILTER" ]; then
+        if [[ "$DATE_FILTER" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            WHERE_CLAUSE="WHERE \"$TIMESTAMP_COL\" >= '$DATE_FILTER' AND \"$TIMESTAMP_COL\" < '$DATE_FILTER'::date + INTERVAL '1 day'"
+            OUTPUT_DATE_PART="_$(echo "$DATE_FILTER" | tr '-' '_')"
+        elif [[ "$DATE_FILTER" =~ ^[0-9]{4}-[0-9]{2}$ ]]; then
+            WHERE_CLAUSE="WHERE \"$TIMESTAMP_COL\" >= '$DATE_FILTER-01' AND \"$TIMESTAMP_COL\" < '$DATE_FILTER-01'::date + INTERVAL '1 month'"
+            OUTPUT_DATE_PART="_$(echo "$DATE_FILTER" | tr '-' '_')"
+        else
+            echo "Error: Invalid date format. Use YYYY-MM-DD or YYYY-MM."
+            exit 1
+        fi
+    fi
+
+    # Construct the output file name
+    FILE_NAME="${INSTANCE}_${SCHEMA_NAME}_${TABLE_NAME}"
+    if [ -n "$TIMESTAMP_COL" ]; then
+        FILE_NAME+="_${TIMESTAMP_COL}"
+    fi
+    if [ -n "$DATE_FILTER" ]; then
+        FILE_NAME+="_$(echo "$DATE_FILTER" | tr '-' '_')"
+    fi
+    FILE_EXTENSION=".csv"
+    if [ "$COMPRESS" = true ]; then
+        FILE_EXTENSION=".csv.gz"
+    fi
+    OUTPUT_FILE="${DEST_DIR}/${FILE_NAME}${FILE_EXTENSION}"
+
+    echo "Dumping data from '$FULL_TABLE_NAME_OR_FILE'..."
+    echo "Output file: '$OUTPUT_FILE'"
+    echo "SQL Query: SELECT * FROM \"$SCHEMA_NAME\".\"$TABLE_NAME\" $WHERE_CLAUSE;"
+
+    # The actual backup command using psql and COPY
+    PGPASSWORD_CMD="$PGPASSWORD" psql -c "\copy (SELECT * FROM \"$SCHEMA_NAME\".\"$TABLE_NAME\" $WHERE_CLAUSE) TO STDOUT WITH (FORMAT CSV, HEADER)" "$PG_CONN"
+    
+    if [ "$COMPRESS" = true ]; then
+        PGPASSWORD_CMD="$PGPASSWORD" psql -c "\copy (SELECT * FROM \"$SCHEMA_NAME\".\"$TABLE_NAME\" $WHERE_CLAUSE) TO STDOUT WITH (FORMAT CSV, HEADER)" "$PG_CONN" | gzip > "$OUTPUT_FILE"
+    else
+        PGPASSWORD_CMD="$PGPASSWORD" psql -c "\copy (SELECT * FROM \"$SCHEMA_NAME\".\"$TABLE_NAME\" $WHERE_CLAUSE) TO '$OUTPUT_FILE' WITH (FORMAT CSV, HEADER)" "$PG_CONN"
+    fi
+
+    if [ "$?" -eq 0 ]; then
+        echo "Backup completed successfully."
+    else
+        echo "Error: Backup failed. Check the parameters and database connection."
+        exit 1
+    fi
+
+# --- Restore Command ---
+elif [ "$COMMAND" = "restore" ]; then
+    BACKUP_FILE=$FULL_TABLE_NAME_OR_FILE
+
+    # Validate file existence
+    if [ ! -f "$BACKUP_FILE" ]; then
+        echo "Error: Backup file '$BACKUP_FILE' not found."
+        exit 1
+    fi
+
+    echo "Starting restore process to instance '$INSTANCE'..."
+    echo "Restoring from file '$BACKUP_FILE'..."
+
+    # Extract original table name from backup file name.
+    # Assumes the filename format: <instance>_<schema>.<table_name>...
+    TEMP_FILE_NAME=$(basename "$BACKUP_FILE")
+    ORIGINAL_TABLE_INFO=$(echo "$TEMP_FILE_NAME" | sed -E "s/^${INSTANCE}_([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)_.*/\1/")
+    ORIGINAL_SCHEMA=$(echo "$ORIGINAL_TABLE_INFO" | cut -d'.' -f1-2)
+    ORIGINAL_TABLE=$(echo "$ORIGINAL_TABLE_INFO" | cut -d'.' -f3)
+
+    # Determine the new table name based on the backup file name.
+    # Example: dev_weavix.silver.mytable_timecol_2025_01.csv -> weavix.silver.mytable_2025_01
+    DEST_TABLE_NAME=$(echo "$TEMP_FILE_NAME" | sed -E "s/^${INSTANCE}_([a-zA-Z0-9_]+\.[a-zA-Z0-9_]+\.[a-zA-Z0-9_]+)_(.*)\.csv\.?gz?/\1_\2/")
+    DEST_SCHEMA=$(echo "$DEST_TABLE_NAME" | cut -d'.' -f1-2)
+    DEST_TABLE=$(echo "$DEST_TABLE_NAME" | cut -d'.' -f3)
+
+    # Check if the destination table exists
+    PGPASSWORD_CMD="$PGPASSWORD" psql -t -c "SELECT 1 FROM pg_tables WHERE schemaname = '$DEST_SCHEMA' AND tablename = '$DEST_TABLE';" "$PG_CONN" | grep -q 1
+    if [ "$?" -eq 0 ]; then
+        echo "Warning: Destination table '$DEST_TABLE_NAME' already exists. Data will be appended. Press Enter to continue, or Ctrl+C to cancel."
+        read -r
+    else
+        echo "Destination table '$DEST_TABLE_NAME' does not exist. Creating schema and table..."
+        
+        # Create schema if it doesn't exist.
+        PGPASSWORD_CMD="$PGPASSWORD" psql -c "CREATE SCHEMA IF NOT EXISTS \"$DEST_SCHEMA\";" "$PG_CONN"
+        if [ "$?" -ne 0 ]; then
+            echo "Error: Failed to create schema '$DEST_SCHEMA'."
+            exit 1
+        fi
+
+        # Use pg_dump to get the schema of the original table, then modify it to create the new table.
+        SCHEMA_DUMP=$(PGPASSWORD_CMD="$PGPASSWORD" pg_dump -s -t "$ORIGINAL_SCHEMA.$ORIGINAL_TABLE" --no-owner --no-privileges --no-comments --schema-only "$PG_CONN")
+        if [ "$?" -ne 0 ]; then
+            echo "Error: Failed to dump schema for '$ORIGINAL_SCHEMA.$ORIGINAL_TABLE'."
+            exit 1
+        fi
+        
+        MODIFIED_SCHEMA_DUMP=$(echo "$SCHEMA_DUMP" | sed -E "s/CREATE TABLE \"$ORIGINAL_SCHEMA\"\.\"$ORIGINAL_TABLE\"/CREATE TABLE \"$DEST_SCHEMA\"\.\"$DEST_TABLE\"/")
+
+        # Execute the modified schema dump to create the new table.
+        PGPASSWORD_CMD="$PGPASSWORD" psql -c "$MODIFIED_SCHEMA_DUMP" "$PG_CONN"
+        if [ "$?" -ne 0 ]; then
+            echo "Error: Failed to create destination table '$DEST_TABLE_NAME'."
+            exit 1
+        fi
+        echo "Table '$DEST_TABLE_NAME' created successfully."
+    fi
+
+    # The actual restore command
+    if [[ "$BACKUP_FILE" =~ \.gz$ ]]; then
+        echo "Restoring compressed data..."
+        gunzip -c "$BACKUP_FILE" | PGPASSWORD_CMD="$PGPASSWORD" psql -c "\copy \"$DEST_SCHEMA\".\"$DEST_TABLE\" FROM STDIN WITH (FORMAT CSV, HEADER)" "$PG_CONN"
+    else
+        echo "Restoring uncompressed data..."
+        PGPASSWORD_CMD="$PGPASSWORD" psql -c "\copy \"$DEST_SCHEMA\".\"$DEST_TABLE\" FROM '$BACKUP_FILE' WITH (FORMAT CSV, HEADER)" "$PG_CONN"
+    fi
+
+    if [ "$?" -eq 0 ]; then
+        echo "Restore completed successfully."
+    else
+        echo "Error: Restore failed. Check the file and table schema."
+        exit 1
+    fi
+
+else
+    echo "Error: Invalid command '$COMMAND'."
+    usage
+fi
+
+
+```
 
 
 ## ChatGPT
