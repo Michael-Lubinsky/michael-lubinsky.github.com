@@ -194,6 +194,34 @@ esac
 
 ```
 
+### Usage
+```backup
+# Full table backup (compressed)
+./pgtool.sh backup dev weavix.silver.mytable
+
+# Partial backup (by month, compressed)
+./pgtool.sh backup dev weavix.silver.mytable created_at 2025-01
+
+# Partial backup (by day, uncompressed)
+./pgtool.sh backup dev weavix.silver.mytable created_at 2025-01-15 --no-compress
+
+# Custom destination folder
+./pgtool.sh backup dev weavix.silver.mytable created_at 2025-01 --dest /my/backups
+```
+
+### restore
+```bash
+# Restore from compressed file
+./pgtool.sh restore dev /var/backups/postgres/dev_weavix_silver_mytable_created_at_2025-01.csv.gz
+
+# Restore from uncompressed file
+./pgtool.sh restore dev /var/backups/postgres/dev_weavix_silver_mytable_created_at_2025-01-15.csv
+
+
+```
+
+
+
 ## ChatGPT
 ```bash
 #!/usr/bin/env bash
