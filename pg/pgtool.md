@@ -5,7 +5,7 @@ Some Postgres tables are created with timescaledb extension.
 What is the best practice to archive the old data ( 90 days back fro now) in such tables?
 
 
-## Gemini
+## ChatGPT
 
 Short version: move those “always-growing” tables to **time-based partitions** and enforce a **90-day hot-data retention policy**. Keep ≤90 days in Postgres for speed and cost, and **archive partitions older than 90 days** to cheaper storage (ADLS/S3/Snowflake) before dropping them. This is the most battle-tested pattern and it scales smoothly.
 
