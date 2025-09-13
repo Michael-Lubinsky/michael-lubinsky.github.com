@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/943918/>
 
+<https://habr.com/ru/articles/946276/>
+
 Book: how to build API <https://habr.com/ru/articles/921008/>
 
 ### Litestar
