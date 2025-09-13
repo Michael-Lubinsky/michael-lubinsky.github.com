@@ -3,6 +3,8 @@ The database has several huge always growing tables with timestamptz column.
 We are approaching Postgres instance capacity.
 Some Postgres tables are created with timescaledb extension.
 What is the best practice to archive the old data ( 90 days back fro now) in such tables?
+Also it should be possible to restore archived data back to Postgres if required.
+
 
 
 ## ChatGPT
