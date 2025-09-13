@@ -388,7 +388,53 @@ If you want, I can:
 [1]: https://learn.microsoft.com/en-us/answers/questions/1534809/timescaledb-on-azure-postgresql-v16?utm_source=chatgpt.com "TimescaleDB on Azure PostgreSQL v16"
 [2]: https://www.tigerdata.com/blog/how-to-install-timescaledb-on-azure?utm_source=chatgpt.com "How to Install TimescaleDB on Azure"
 
+### GEMINI
 
+Thank you for the clarification. You're right, simply dropping the data isn't archiving it. The best practice for archiving old data (90 days back) from a managed Azure Postgres Flexible Server with huge, growing tables involves a **multi-step process of exporting and deleting**. This method applies to both tables with the TimescaleDB extension and standard Postgres tables.
+
+-----
+
+### **Archiving Data from Tables with TimescaleDB**
+
+TimescaleDB's native functionality can be adapted for archiving instead of just dropping. The key is to leverage the chunking mechanism.
+
+1.  **Export the Old Chunks**: Instead of using a retention policy to drop old chunks, you should **manually export** the data from chunks older than 90 days. You can identify these chunks by querying the `timescaledb_information.chunks` view.
+      * **Method**: Use a script to run `COPY TO` commands to export the data from these chunks into a file. This is far more efficient than a `SELECT` query on the entire table.
+      * **Example**: You can loop through the chunks older than your 90-day threshold and use a `COPY` command.
+    <!-- end list -->
+    ```sql
+    COPY (SELECT * FROM your_table WHERE your_timestamptz_column < now() - INTERVAL '90 days') TO '/path/to/archive/file.csv' WITH CSV;
+    ```
+2.  **Move to Cheaper Storage**: Transfer the exported data files from the database server to a more cost-effective **Azure Blob Storage**. This is the core of the archiving process, as it moves the data off the expensive Postgres instance.
+3.  **Delete the Old Chunks**: After successfully exporting and verifying the data, you can now **drop the old chunks** from the hypertable. This can be done by using the `drop_chunks` function.
+    ```sql
+    SELECT drop_chunks('your_table_name', older_than => INTERVAL '90 days');
+    ```
+    This function is extremely fast because it drops entire partitions (chunks) at once, rather than deleting rows individually.
+
+-----
+
+### **Archiving Data from Standard Postgres Tables**
+
+For tables without TimescaleDB, the principle is the same but the process is more manual and should be based on **declarative partitioning**.
+
+1.  **Partitioning**: Ensure your large tables are partitioned by time (e.g., daily or monthly partitions). If they are not, you will need to implement this first.
+2.  **Identify Old Partitions**: Write a script that identifies partitions that contain data older than your 90-day threshold.
+3.  **Export the Old Partition**: Use the `COPY TO` command to export the data from these specific partitions.
+    ```sql
+    COPY your_partition_name TO '/path/to/archive/partition_data.csv' WITH CSV;
+    ```
+    This is highly efficient as it focuses on a single table (the partition) rather than the entire dataset.
+4.  **Transfer to Azure Blob Storage**: Move the exported `.csv` files to Azure Blob Storage for long-term, low-cost storage.
+5.  **Detach and Drop**: After the data is safely archived, **detach the old partition** from the main table. This removes the data from your active database.
+    ```sql
+    ALTER TABLE your_main_table DETACH PARTITION your_old_partition;
+    ```
+    You can then choose to either keep the detached table for potential re-attachment or **drop it completely** if you're confident in your archive.
+    ```sql
+    DROP TABLE your_old_partition;
+    ```
+6.  **Automate**: This entire workflow should be automated using an **Azure Function** or a **Logic App**. The job should run on a schedule, identify the correct partitions/chunks, perform the export, transfer the files, and then delete the old data from Postgres. This ensures the process is consistently and efficiently managed without manual intervention.
 
 # Write the bash script pgtool.sh for backup and recovery postgres table. 
 It should be compatible with bash   version 3.2.57
