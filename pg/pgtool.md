@@ -1,7 +1,7 @@
 # There is managed Postgres on Azure Cloud (Flexible Server).
 The database has several huge always growing tables with timestamptz column.
 We are approaching Postgres instance capacity.
-Some Postgres tables are created with timescaledb extension.
+Some Postgres tables are created with timescaledb extension, but others are not using timescaledb.
 What is the best practice to archive the old records ( 90 days back from now) into Azure Blob Storage?
 Also it should be possible to restore archived data back to Postgres if required.
 
