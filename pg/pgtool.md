@@ -16,6 +16,8 @@ Script should accept command line arguments:
 - optional: destination folder (default folder should be in the script,
   ( it depend on postgres instance name)
 
+ delete records from table after backup was validated
+
 The output: csv or compressed csv, depending of command line flag.
 The output file name is concatenation of input parameters:
 - postgres instance (dev, prod, test)
