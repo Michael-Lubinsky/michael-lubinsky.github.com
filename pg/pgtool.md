@@ -1,16 +1,271 @@
-There is managed Postgres on Azure Cloud.
+# There is managed Postgres on Azure Cloud.
 The database has several huge always growing tables with timestamptz column.
 We are approaching Postgres instance capacity.
 
-What is the best practive to archive the old data ( 90 days back fro now) in such tables?
+What is the best practice to archive the old data ( 90 days back fro now) in such tables?
+
+
+## Gemini
+
+Short version: move those “always-growing” tables to **time-based partitions** and enforce a **90-day hot-data retention policy**. Keep ≤90 days in Postgres for speed and cost, and **archive partitions older than 90 days** to cheaper storage (ADLS/S3/Snowflake) before dropping them. This is the most battle-tested pattern and it scales smoothly.
+
+Below is a practical, copy-pasteable plan you can run on Azure Database for PostgreSQL (managed). It uses **native declarative partitioning** (works on Postgres 11+) plus `pg_cron` to automate creation and eviction. If your service tier also supports TimescaleDB, I include that option at the end.
+
+---
+
+# 1) Target state (hot/warm-cold split)
+
+* **Hot (Postgres):** last 90 days, in a **partitioned** table by `timestamptz` (daily or monthly, pick based on volume).
+* **Warm/Cold (Archive):** older than 90 days, **compressed parquet/csv in ADLS Gen2** (or Snowflake), with an optional view/FDW to query on demand.
+
+Benefits:
+
+* Inserts & queries stay fast due to partition pruning.
+* Autovacuum scales better (per-partition).
+* Dropping old data is a fast `DROP TABLE PARTITION`, not a huge `DELETE`.
+
+---
+
+# 2) Partition design
+
+Choose **RANGE partitioning on your time column** (here: `event_ts timestamptz`).
+Rule of thumb:
+
+* **Daily partitions** if you ingest > 5–10M rows/day or need frequent backfills.
+* **Monthly partitions** if daily volume is modest.
+
+Example uses **daily**. Adjust `"INTERVAL '1 day'"` and names if you prefer monthly.
+
+```sql
+-- 2.1 New partitioned table (same columns as your current big table)
+CREATE TABLE weavix.silver.mytable_part
+(
+  -- your actual columns:
+  id           bigint       NOT NULL,
+  event_ts     timestamptz  NOT NULL,
+  payload      jsonb,
+  -- ... indexes/constraints will be added per partition
+  PRIMARY KEY (id, event_ts)  -- example; choose a realistic PK for your workload
+)
+PARTITION BY RANGE (event_ts);
+```
+
+Create a **rolling window of partitions** (e.g., ±120 days around “now” to cover backfills):
+
+```sql
+DO $$
+DECLARE
+  d date := date_trunc('day', now())::date - INTERVAL '120 days';
+  stop date := date_trunc('day', now())::date + INTERVAL '30 days';
+  part_name text;
+BEGIN
+  WHILE d < stop LOOP
+    part_name := format('mytable_part_%s', to_char(d, 'YYYYMMDD'));
+    EXECUTE format(
+      'CREATE TABLE IF NOT EXISTS weavix.silver.%I
+         PARTITION OF weavix.silver.mytable_part
+         FOR VALUES FROM (%L) TO (%L);',
+      part_name,
+      d::timestamptz, (d + INTERVAL '1 day')::timestamptz
+    );
+    -- Optional: create per-partition indexes commonly used by queries
+    EXECUTE format('CREATE INDEX IF NOT EXISTS %I_event_ts_idx ON weavix.silver.%I (event_ts);',
+                   part_name || '_ts', part_name);
+    d := d + INTERVAL '1 day';
+  END LOOP;
+END $$;
+```
+
+---
+
+# 3) Migrate existing big table → partitioned table
+
+You have two common migration patterns:
+
+### A) Shadow-copy + rename (safest)
+
+1. **Create** `mytable_part` (above) and pre-create partitions for full history (loop by month/day, as needed).
+2. **Copy in batches** from old heap table to the new partitioned one (keeps WAL & locks sane):
+
+```sql
+-- Repeat in reasonable time buckets; adjust WHERE ranges to your history.
+INSERT INTO weavix.silver.mytable_part
+SELECT * 
+FROM   weavix.silver.mytable_old
+WHERE  event_ts >= '2024-01-01' AND event_ts < '2024-02-01';
+-- …repeat for each month/day
+```
+
+3. **Swap names** during a brief maintenance window:
+
+```sql
+ALTER TABLE weavix.silver.mytable_old RENAME TO mytable_old_bk;
+ALTER TABLE weavix.silver.mytable_part RENAME TO mytable;
+```
+
+### B) Attach existing chunks (only if you already had CHECK constraints)
+
+If your old table has **per-range child tables with CHECKs**, you can `ALTER TABLE ... ATTACH PARTITION ...`. Most monolithic tables don’t—so A) is typically easier.
+
+---
+
+# 4) Enforce 90-day retention (create & drop jobs)
+
+Use `pg_cron` to:
+
+* create upcoming partitions daily,
+* archive & drop partitions older than 90 days.
+
+### 4.1 Helper functions
+
+```sql
+-- Create tomorrow's partition each night
+CREATE OR REPLACE FUNCTION weavix.silver.ensure_tomorrow_partition() RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+  d date := (date_trunc('day', now()) + INTERVAL '1 day')::date;
+  part_name text := format('mytable_%s', to_char(d, 'YYYYMMDD'));
+BEGIN
+  EXECUTE format(
+    'CREATE TABLE IF NOT EXISTS weavix.silver.%I
+       PARTITION OF weavix.silver.mytable
+       FOR VALUES FROM (%L) TO (%L);',
+    part_name, d::timestamptz, (d + INTERVAL '1 day')::timestamptz
+  );
+  EXECUTE format('CREATE INDEX IF NOT EXISTS %I_ts ON weavix.silver.%I (event_ts);',
+                 part_name || '_ts', part_name);
+END $$;
+
+-- Return partitions older than 90 days (name & range) so your external job can export them
+CREATE OR REPLACE VIEW weavix.silver.mytable_old_partitions AS
+SELECT
+  c.relname               AS partition_name,
+  to_char((pg_get_expr(p.boundexpr, p.parsedatatype)), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS from_bound,
+  to_char((pg_get_expr(p.boundexpr, p.parsedatatype) + interval '1 day'), 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS to_bound
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+JOIN pg_partitioned_table pt ON pt.partrelid = (SELECT oid FROM pg_class WHERE relname = 'mytable' AND relnamespace = n.oid)
+JOIN pg_inherits i ON i.inhparent = pt.partrelid AND i.inhrelid = c.oid
+JOIN pg_partition p ON p.partrelid = c.oid
+WHERE n.nspname = 'weavix' AND c.relname ~ '^mytable_\d{8}$'   -- if regex not desired, filter by relname prefix and length
+  AND (pg_get_expr(p.boundexpr, p.parsedatatype))::timestamptz < now() - interval '90 days';
+```
+
+> If your Postgres version doesn’t expose those internal catalogs the same way, you can derive old partitions simply by **name prefix** + **date suffix** and compare to `current_date - 90`.
+
+### 4.2 Cron the tasks
+
+```sql
+-- Create tomorrow’s partition at 00:05 daily
+SELECT cron.schedule('ensure_tomorrow_mytable', '5 0 * * *',
+  $$SELECT weavix.silver.ensure_tomorrow_partition();$$);
+
+-- (External step) Nightly: for each partition in weavix.silver.mytable_old_partitions
+-- 1) export to ADLS/Snowflake (CSV/Parquet)
+-- 2) then call this SQL to drop:
+--    EXECUTE format('DROP TABLE IF EXISTS weavix.silver.%I', partition_name);
+
+-- You can wrap step #2 into a function:
+CREATE OR REPLACE FUNCTION weavix.silver.drop_partitions_older_than_90_days() RETURNS void LANGUAGE plpgsql AS $$
+DECLARE r record;
+BEGIN
+  FOR r IN
+    SELECT c.relname AS partition_name
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname='weavix' AND c.relname LIKE 'mytable_%'
+      AND substring(c.relname from 'mytable_(\d{8})')::int < to_char(now() - interval '90 days','YYYYMMDD')::int
+  LOOP
+    RAISE NOTICE 'Dropping %', r.partition_name;
+    EXECUTE format('DROP TABLE IF EXISTS weavix.silver.%I', r.partition_name);
+  END LOOP;
+END $$;
+
+-- Schedule the drop (after your archive/export completes)
+SELECT cron.schedule('drop_old_mytable', '30 1 * * *',  -- 01:30 nightly
+  $$SELECT weavix.silver.drop_partitions_older_than_90_days();$$);
+```
+
+> Important: **Export first, drop second.** You can drive the export with your existing pipelines (ADF/Databricks/Snowflake “COPY INTO”) using the per-partition time range (or simply the partition’s name-derived date).
+
+---
+
+# 5) Query patterns (get pruning for free)
+
+* Always filter (or join) on `event_ts` (the partition key).
+  Postgres will prune partitions automatically when it sees the range.
+* For analysts, provide a **stable view** so they don’t need to care about partition names:
+
+```sql
+CREATE OR REPLACE VIEW weavix.silver.mytable_last_90d AS
+SELECT * FROM weavix.silver.mytable
+WHERE event_ts >= now() - INTERVAL '90 days';
+```
+
+Optionally create a **federated view** that `UNION ALL`s hot data (Postgres) with an external table (Snowflake/ADLS) for old slices, if you need single-pane access to history.
+
+---
+
+# 6) Indexing & maintenance
+
+* Prefer **local indexes** per partition (created automatically when you define them on each child).
+  Keep them minimal (e.g., `(event_ts)`, plus any highly-selective business keys).
+* Keep an eye on **autovacuum** thresholds per partition. Because partitions are smaller, vacuum works better and doesn’t block the entire table.
+* Consider a **fillfactor** tweak if you have updates; append-only workloads usually don’t need it.
+* **Avoid `DELETE` for retention**—`DROP PARTITION` is instantaneous from the user’s perspective.
+
+---
+
+# 7) Archiving formats & tools
+
+* **ADLS Gen2 + Parquet** is great for cost/perf (columnar, compressed).
+  Paths like: `abfss://telemetry@yourlake.dfs.core.windows.net/weavix/silver/mytable/ingest_dt=YYYY-MM-DD/part-*.parquet`
+* Export methods:
+
+  * Databricks/Spark reading via JDBC then writing Parquet.
+  * ADF copy activity (JDBC → ADLS Parquet).
+  * Your existing **`pgtool.sh` / `pgtool.py`** to CSV.gz per partition date, then convert to Parquet (optional).
+
+---
+
+# 8) TimescaleDB (if your tier allows the extension)
+
+If you can enable TimescaleDB:
+
+* `SELECT create_hypertable('weavix.silver.mytable', 'event_ts');`
+* **Retention policy**: `SELECT add_retention_policy('weavix.silver.mytable', INTERVAL '90 days');`
+* **Compression** for older chunks (huge storage wins):
+
+  ```sql
+  ALTER TABLE weavix.silver.mytable SET (timescaledb.compress, timescaledb.compress_segmentby = 'some_dim');
+  SELECT add_compression_policy('weavix.silver.mytable', INTERVAL '7 days');
+  ```
+* You still can **export chunks** older than 90 days to ADLS before dropping, using chunk metadata.
+
+If Timescale isn’t available in your Azure plan, stick with native partitioning as above—it’s solid.
+
+---
+
+# 9) Safety & rollout checklist
+
+* [ ] Create partitioned twin table in **staging**, validate queries & explain plans (pruning).
+* [ ] Backfill in batches; compare counts and sample checksums vs. old table.
+* [ ] Swap names during a quiet window; update writers to point at the new table.
+* [ ] Turn on cron jobs (create tomorrow’s partition; nightly archive+drop).
+* [ ] Add **alerts** for: missing future partition, failed archive, or unusually big partitions.
+
+---
+
+If you want, I can:
+
+* generate the **exact SQL** for your table(s) given schema/columns,
+* provide an **ADF/Databricks** job that exports a partition to ADLS as **Parquet**,
+* or adapt your `pgtool.py` to automatically iterate **partitions older than 90 days**: export → verify → drop.
 
 
 
 
 
-
-
-Write the bash script pgtool.sh for backup and recovery postgres table. 
+# Write the bash script pgtool.sh for backup and recovery postgres table. 
 It should be compatible with bash   version 3.2.57
 
 It could be a full or partial content of the table.
