@@ -855,3 +855,333 @@ case "$cmd" in
     ;;
 esac
 ```
+
+```python
+#!/usr/bin/env python3
+"""
+pgtool.py — Backup & restore a Postgres table (full or date-filtered partial) to/from CSV (.csv or .csv.gz)
+
+Requires: Python 3.8+, psycopg2-binary
+  pip install psycopg2-binary
+
+Usage:
+  # Full-table backup (gzip by default)
+  python pgtool.py backup dev weavix.silver.mytable
+
+  # Month partial backup (January 2025) using timestamptz column "timecol"
+  python pgtool.py backup dev weavix.silver.mytable --timecol timecol --date 2025-01
+
+  # Day partial backup, no compression, custom dest dir
+  python pgtool.py backup dev weavix.silver.mytable --timecol timecol --date 2025-01-15 --no-compress --dest /tmp
+
+  # Restore from file; auto-creates table (TEXT cols) if it doesn't exist; appends if it does
+  python pgtool.py restore dev /backups/dev_weavix.silver.mytable_timecol_2025-01.csv.gz
+"""
+
+import argparse
+import csv
+import gzip
+import io
+import os
+import re
+import sys
+from contextlib import contextmanager
+from datetime import datetime
+from pathlib import Path
+import psycopg2
+from psycopg2 import sql
+
+# -------- Instance configuration (override with env) --------
+DEST_DEFAULTS = {
+    "dev":   os.environ.get("PGTOOL_DEST_DEV",   "/var/backups/pg/dev"),
+    "prod":  os.environ.get("PGTOOL_DEST_PROD",  "/var/backups/pg/prod"),
+    "test":  os.environ.get("PGTOOL_DEST_TEST",  "/var/backups/pg/test"),
+    "local": os.environ.get("PGTOOL_DEST_LOCAL", "/var/backups/pg/local"),
+}
+
+PGURI = {
+    "dev":   os.environ.get("PGURI_DEV",   "postgres://localhost:5432/postgres"),
+    "prod":  os.environ.get("PGURI_PROD",  "postgres://localhost:5432/postgres"),
+    "test":  os.environ.get("PGURI_TEST",  "postgres://localhost:5432/postgres"),
+    "local": os.environ.get("PGURI_LOCAL", "postgres://localhost:5432/postgres"),
+}
+# ------------------------------------------------------------
+
+IDENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+SCHEMA_TABLE_RE = re.compile(r"^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$")
+MONTH_FMT_RE = re.compile(r"^\d{4}-\d{2}$")
+DAY_FMT_RE   = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+def die(msg: str, code: int = 1):
+    print(f"ERROR: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+def info(msg: str):
+    print(f"INFO:  {msg}", file=sys.stderr)
+
+def warn(msg: str):
+    print(f"WARN:  {msg}", file=sys.stderr)
+
+def assert_ident(name: str, kind: str = "identifier"):
+    if not IDENT_RE.match(name or ""):
+        die(f"Invalid {kind}: {name!r}")
+
+def assert_schema_table(qual: str):
+    if not SCHEMA_TABLE_RE.match(qual or ""):
+        die(f"Invalid table name {qual!r} (expected schema.table)")
+
+@contextmanager
+def connect(instance: str):
+    dsn = PGURI.get(instance)
+    if not dsn:
+        die(f"Unknown instance {instance!r} (expected dev|prod|test|local)")
+    conn = psycopg2.connect(dsn)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+def qualify(schema_table: str):
+    assert_schema_table(schema_table)
+    schema, table = schema_table.split(".", 1)
+    return schema, table
+
+def time_window_sql(timecol: str, date_arg: str) -> sql.SQL:
+    assert_ident(timecol, "column")
+    if MONTH_FMT_RE.match(date_arg):
+        # [first day of month, first day of next month)
+        return sql.SQL(
+            "({col} >= date_trunc('month', to_date(%s,'YYYY-MM-DD')) "
+            "AND {col} < (date_trunc('month', to_date(%s,'YYYY-MM-DD')) + interval '1 month'))"
+        ).format(col=sql.Identifier(timecol)), [f"{date_arg}-01", f"{date_arg}-01"]
+    if DAY_FMT_RE.match(date_arg):
+        # [day, next day)
+        return sql.SQL(
+            "({col} >= to_timestamp(%s,'YYYY-MM-DD') "
+            "AND {col} < (to_timestamp(%s,'YYYY-MM-DD') + interval '1 day'))"
+        ).format(col=sql.Identifier(timecol)), [date_arg, date_arg]
+    die("Invalid --date (use YYYY-MM or YYYY-MM-DD)")
+
+def validate_timecol(conn, schema: str, table: str, col: str):
+    with conn.cursor() as cur:
+        cur.execute("""
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema=%s AND table_name=%s AND column_name=%s
+              AND data_type='timestamp with time zone'
+        """, (schema, table, col))
+        if not cur.fetchone():
+            die(f"Column {schema}.{table}.{col} not found or not timestamptz")
+
+def default_dest(instance: str) -> Path:
+    d = DEST_DEFAULTS.get(instance)
+    if not d:
+        die(f"No default destination configured for instance {instance!r}")
+    return Path(d)
+
+def build_backup_filename(instance: str, schema: str, table: str,
+                          timecol: str | None, date_arg: str | None) -> str:
+    if timecol and date_arg:
+        return f"{instance}_{schema}.{table}_{timecol}_{date_arg}.csv"
+    return f"{instance}_{schema}.{table}.csv"
+
+def backup(args):
+    instance = args.instance
+    schema, table = qualify(args.schema_table)
+    dest_dir = Path(args.dest or default_dest(instance))
+    dest_dir.mkdir(parents=True, exist_ok=True)
+
+    timecol = args.timecol
+    date_arg = args.date
+
+    with connect(instance) as conn, conn.cursor() as cur:
+        where_sql = None
+        where_params = []
+        if (timecol and not date_arg) or (date_arg and not timecol):
+            die("Partial backup requires BOTH --timecol and --date")
+        if timecol and date_arg:
+            validate_timecol(conn, schema, table, timecol)
+            where_sql, where_params = time_window_sql(timecol, date_arg)
+
+        filename = build_backup_filename(instance, schema, table, timecol, date_arg)
+        out_path = dest_dir / filename
+        compress = not args.no_compress
+
+        # Build COPY command
+        if where_sql is None:
+            copy_sql = sql.SQL("COPY {}.{} TO STDOUT WITH (FORMAT csv, HEADER, FORCE_QUOTE *)").format(
+                sql.Identifier(schema), sql.Identifier(table)
+            )
+            params = None
+        else:
+            copy_sql = sql.SQL(
+                "COPY (SELECT * FROM {}.{} WHERE {} ORDER BY 1) TO STDOUT WITH (FORMAT csv, HEADER, FORCE_QUOTE *)"
+            ).format(
+                sql.Identifier(schema),
+                sql.Identifier(table),
+                where_sql
+            )
+            params = where_params
+
+        info(f"Backing up {schema}.{table} -> {out_path}{'.gz' if compress else ''}")
+
+        if compress:
+            with gzip.open(str(out_path) + ".gz", "wb") as gz:
+                cur.copy_expert(copy_sql.as_string(conn), gz, vars=params)
+            info(f"Backup complete: {out_path}.gz")
+        else:
+            with open(out_path, "wb") as f:
+                cur.copy_expert(copy_sql.as_string(conn), f, vars=params)
+            info(f"Backup complete: {out_path}")
+
+def sanitize_colname(raw: str) -> str:
+    # Strip quotes and spaces, keep A-Za-z0-9_, replace others with _
+    raw = raw.replace('"', '').strip()
+    cleaned = re.sub(r'[^A-Za-z0-9_]', '_', raw)
+    if not cleaned:
+        cleaned = "col"
+    if cleaned[0].isdigit():
+        cleaned = "_" + cleaned
+    return cleaned
+
+def ensure_schema(conn, schema: str):
+    with conn.cursor() as cur:
+        cur.execute("""
+        DO $$
+        BEGIN
+          IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = %s) THEN
+            EXECUTE format('CREATE SCHEMA %I', %s);
+          END IF;
+        END $$;
+        """, (schema, schema))
+        conn.commit()
+
+def table_exists(conn, schema: str, table: str) -> bool:
+    with conn.cursor() as cur:
+        cur.execute("""
+          SELECT 1
+          FROM pg_class c
+          JOIN pg_namespace n ON n.oid = c.relnamespace
+          WHERE n.nspname=%s AND c.relname=%s AND c.relkind='r'
+        """, (schema, table))
+        return cur.fetchone() is not None
+
+def create_table_from_csv_header(conn, schema: str, table: str, header_line: str):
+    # Build TEXT columns from CSV header
+    reader = csv.reader([header_line])
+    cols = next(reader)
+    if not cols:
+        die("Empty CSV header; cannot create table")
+
+    cleaned = [sanitize_colname(c) for c in cols]
+    # Build DDL
+    col_list = sql.SQL(", ").join(sql.SQL("{} text").format(sql.Identifier(c)) for c in cleaned)
+    ddl = sql.SQL("CREATE TABLE {}.{} (").format(sql.Identifier(schema), sql.Identifier(table))
+    ddl = sql.SQL("").join([ddl, col_list, sql.SQL(")")])
+
+    ensure_schema(conn, schema)
+    with conn.cursor() as cur:
+        cur.execute(ddl)
+    conn.commit()
+
+def parse_dest_table_from_filename(path: Path, instance: str) -> tuple[str, str]:
+    """
+    Accepts file names like:
+      <instance>_<schema.table>.csv[.gz]
+      <instance>_<schema.table>_<timecol>_<YYYY-MM>.csv[.gz]
+      <schema.table>_<timecol>_<YYYY-MM-DD>.csv
+      <schema.table>.csv
+    Restored table name includes any suffix after schema.table, appended to the base table.
+    """
+    base = path.name
+    if base.endswith(".gz"): base = base[:-3]
+    if base.endswith(".csv"): base = base[:-4]
+
+    # Strip leading "<instance>_"
+    prefix = f"{instance}_"
+    if base.startswith(prefix):
+        base = base[len(prefix):]
+
+    # schema.table is up to first underscore (if any)
+    parts = base.split("_", 1)
+    schema_table = parts[0]
+    rest = parts[1] if len(parts) > 1 else ""
+
+    if not SCHEMA_TABLE_RE.match(schema_table):
+        die(f"Cannot parse schema.table from filename: {path.name}")
+
+    schema, table = schema_table.split(".", 1)
+    if rest:
+        table = f"{table}_{rest}"
+    return schema, table
+
+def restore(args):
+    instance = args.instance
+    infile = Path(args.input)
+    if not infile.exists():
+        die(f"Input file not found: {infile}")
+
+    with connect(instance) as conn:
+        # Open file (gzip or plain)
+        if infile.suffix == ".gz":
+            opener = lambda p: io.TextIOWrapper(gzip.open(p, "rb"), newline="")
+        else:
+            opener = lambda p: open(p, "rt", newline="")
+
+        with opener(str(infile)) as f:
+            # Peek header safely without losing it
+            header_pos = f.tell()
+            header_line = f.readline()
+            if not header_line:
+                die("Input file is empty")
+            # Normalize header (ensure one line without trailing newline)
+            header_line = header_line.rstrip("\r\n")
+            f.seek(header_pos)
+
+            schema, table = parse_dest_table_from_filename(infile, instance)
+            info(f"Restoring into: {schema}.{table}")
+
+            # Create table if not exists; warn otherwise
+            if table_exists(conn, schema, table):
+                warn(f"Destination table {schema}.{table} already exists; rows will be appended.")
+                if not args.force_append:
+                    warn("Pass --force-append to suppress this warning.")
+            else:
+                info("Creating table from CSV header (all columns TEXT)")
+                create_table_from_csv_header(conn, schema, table, header_line)
+
+            # COPY FROM STDIN
+            with conn.cursor() as cur:
+                copy_sql = sql.SQL("COPY {}.{} FROM STDIN WITH (FORMAT csv, HEADER)").format(
+                    sql.Identifier(schema), sql.Identifier(table)
+                )
+                cur.copy_expert(copy_sql.as_string(conn), f)
+            conn.commit()
+            info("Restore complete.")
+
+def main():
+    parser = argparse.ArgumentParser(prog="pgtool.py", description="Postgres CSV backup/restore (gzip by default)")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p_b = sub.add_parser("backup", help="Backup a table to CSV/.csv.gz")
+    p_b.add_argument("instance", choices=PGURI.keys())
+    p_b.add_argument("schema_table", help="Fully-qualified table name, e.g. weavix.silver.mytable")
+    p_b.add_argument("--timecol", help="timestamptz column for date filtering")
+    p_b.add_argument("--date", help="YYYY-MM or YYYY-MM-DD to filter by")
+    p_b.add_argument("--no-compress", action="store_true", help="Write plain .csv instead of .csv.gz")
+    p_b.add_argument("--dest", help="Destination folder (defaults by instance)")
+    p_b.set_defaults(func=backup)
+
+    p_r = sub.add_parser("restore", help="Restore CSV/.csv.gz into a table (auto-creates if needed)")
+    p_r.add_argument("instance", choices=PGURI.keys())
+    p_r.add_argument("input", help="Path to .csv or .csv.gz file")
+    p_r.add_argument("--force-append", action="store_true", help="Suppress warning when table exists")
+    p_r.set_defaults(func=restore)
+
+    args = parser.parse_args()
+    args.func(args)
+
+if __name__ == "__main__":
+    main()
+
+```
