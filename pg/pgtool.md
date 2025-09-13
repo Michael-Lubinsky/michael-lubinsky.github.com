@@ -75,7 +75,77 @@ Great question! Archiving old data from PostgreSQL (especially with TimescaleDB)
 
 **Would you like a sample script for automating the archive process, or do you want to discuss a specific part in more detail?**
 
+## For PostgreSQL tables **not using TimescaleDB**, 
+archiving old records to Azure Blob Storage — while keeping the ability to restore them later—requires a slightly different approach. Here’s a step-by-step best practice:
 
+---
+
+## **1. Identify and Partition Data (Optional but Recommended)**
+- **Add a time-based index** if not already present:
+  ```sql
+  CREATE INDEX idx_your_table_time ON your_table(time_column);
+  ```
+- **Consider table partitioning** (by range or list) for large tables to make archiving more efficient:
+  ```sql
+  CREATE TABLE your_table_y2025m09 PARTITION OF your_table
+      FOR VALUES FROM ('2025-09-01') TO ('2025-10-01');
+  ```
+  This makes it easier to archive entire partitions at once.
+
+---
+
+## **2. Archive Old Records**
+### **Option A: Export to CSV/JSON and Upload to Blob Storage**
+- **Step 1**: Export data older than 90 days to a file:
+  ```bash
+  psql -d your_db -c "\COPY (SELECT * FROM your_table WHERE time_column < NOW() - INTERVAL '90 days') TO STDOUT WITH CSV HEADER" > old_data.csv
+  ```
+  Or, for binary format (faster, smaller):
+  ```bash
+  pg_dump -Fc -t your_table -d your_db --where="time_column < NOW() - INTERVAL '90 days'" -f old_data.dump
+  ```
+- **Step 2**: Upload to Azure Blob Storage:
+  ```bash
+  az storage blob upload --account-name <your-account> --container-name <container> --name "archives/your_table_$(date +%Y%m%d).csv" --file old_data.csv
+  ```
+- **Step 3**: Delete archived data from PostgreSQL:
+  ```sql
+  DELETE FROM your_table WHERE time_column < NOW() - INTERVAL '90 days';
+  ```
+
+### **Option B: Use PostgreSQL Foreign Data Wrapper (FDW)**
+- **Set up the `azure_blob` FDW** (if available) to directly export data to Blob Storage, but this is less common and may require custom scripting.
+
+---
+
+## **3. Restore Archived Data**
+- **From CSV**:
+  ```bash
+  az storage blob download --account-name <your-account> --container-name <container> --name "archives/your_table_20250913.csv" --file old_data.csv
+  psql -d your_db -c "\COPY your_table FROM 'old_data.csv' WITH (FORMAT csv, HEADER true)"
+  ```
+- **From pg_dump**:
+  ```bash
+  az storage blob download --account-name <your-account> --container-name <container> --name "archives/your_table_20250913.dump" --file old_data.dump
+  pg_restore -d your_db old_data.dump
+  ```
+
+---
+
+## **4. Automation & Best Practices**
+- **Automate with scripts**: Use a shell script, Python, or Azure Functions to run the export, upload, and delete steps on a schedule.
+- **Monitor and log**: Track the number of rows archived, file sizes, and any errors.
+- **Test restores**: Regularly verify that you can restore archived data.
+- **Consider compression**: Use `gzip` or similar to reduce storage costs and transfer time.
+
+---
+
+## **5. Alternative: Use PostgreSQL Logical Decoding**
+- For very large tables, consider using PostgreSQL’s logical decoding (e.g., `pg_recvlogical`) to stream changes to a custom application that writes to Blob Storage. This is more complex but can be more efficient for continuous archiving.
+
+---
+
+**Would you like a sample script for automating the archive process for non-TimescaleDB tables, or do you want to discuss a specific step in more detail?**
 ## ChatGPT
 
 Short version: move those “always-growing” tables to **time-based partitions** and enforce a **90-day hot-data retention policy**. Keep ≤90 days in Postgres for speed and cost, and **archive partitions older than 90 days** to cheaper storage (ADLS/S3/Snowflake) before dropping them. This is the most battle-tested pattern and it scales smoothly.
