@@ -489,108 +489,186 @@ fi
 ```
 
 ## ChatGPT
-### gzip  :
 ```bash
 #!/usr/bin/env bash
 # pgtool.sh — Backup & restore a Postgres table (full or date-filtered partial) to/from CSV (.csv or .csv.gz)
-# Requirements: bash, psql (>=10), gzip (for compression)
+# Compatible with Bash 3.2 (macOS default). No regex used.
 #
-# USAGE (backup):
-#   pgtool.sh backup <instance> <schema.table> [<timestamptz_col> <YYYY-MM|YYYY-MM-DD>] [--no-compress] [--dest DIR]
+# Features
+#   • BACKUP: full table, or partial by date window on a timestamptz column.
+#   • RESTORE: auto-creates destination table from CSV header (TEXT columns). Warns if table exists (appends).
+#   • Compression: gzip by default (.csv.gz). Use --no-compress for plain .csv.
+#   • File naming:
+#       FULL:     <dest>/<instance>_<schema.table>.csv[.gz]
+#       PARTIAL:  <dest>/<instance>_<schema.table>_<timecol>_<YYYY-MM | YYYY-MM-DD>.csv[.gz]
 #
-# USAGE (restore):
-#   pgtool.sh restore <instance> </path/to/file.csv|.csv.gz> [--force-append]
+# Usage
+#   Backup:
+#     pgtool.sh backup <instance> <schema.table> [<timestamptz_col> <YYYY-MM|YYYY-MM-DD>] [--no-compress] [--dest DIR]
+#     pgtool.sh backup dev weavix.silver.mytable
+#     pgtool.sh backup dev weavix.silver.mytable timecol 2025-01
+#     pgtool.sh backup dev weavix.silver.mytable timecol 2025-01-15 --no-compress --dest /tmp
 #
-# FILE NAMING:
-#   FULL:     <dest_dir>/<instance>_<schema.table>.csv[.gz]
-#   PARTIAL:  <dest_dir>/<instance>_<schema.table>_<timecol>_<YYYY-MM or YYYY-MM-DD>.csv[.gz]
+#   Restore:
+#     pgtool.sh restore <instance> </path/to/file.csv|.csv.gz> [--force-append]
+#     pgtool.sh restore dev /backups/dev_weavix.silver.mytable_2025-01.csv.gz
 #
-# DEST DIR DEFAULTS (edit as needed):
+# Defaults (edit if desired) ----------------------------------------------
 DEST_DEV="/var/backups/pg/dev"
 DEST_PROD="/var/backups/pg/prod"
 DEST_TEST="/var/backups/pg/test"
 DEST_LOCAL="/var/backups/pg/local"
 
-# CONNECTIONS — override with env vars (PGURI_DEV, etc.)
+# Connection URIs (override via env: PGURI_DEV, PGURI_PROD, PGURI_TEST, PGURI_LOCAL)
 PGURI_DEV="${PGURI_DEV:-postgres://localhost:5432/postgres}"
 PGURI_PROD="${PGURI_PROD:-postgres://localhost:5432/postgres}"
 PGURI_TEST="${PGURI_TEST:-postgres://localhost:5432/postgres}"
 PGURI_LOCAL="${PGURI_LOCAL:-postgres://localhost:5432/postgres}"
+# -------------------------------------------------------------------------
 
 set -euo pipefail
 
-die() { echo "ERROR: $*" >&2; exit 1; }
-warn() { echo "WARN: $*" >&2; }
-info() { echo "INFO: $*" >&2; }
+die()  { echo "ERROR: $*" >&2; exit 1; }
+warn() { echo "WARN:  $*" >&2; }
+info() { echo "INFO:  $*" >&2; }
+
+need_cmd() { command -v "$1" >/dev/null 2>&1 || die "Required command not found: $1"; }
 
 PSQL() { local uri="$1"; shift; psql $uri "$@"; }
 
+usage() {
+  sed -n '1,120p' "$0" | sed 's/^# \{0,1\}//'
+  exit 1
+}
+
 resolve_instance() {
-  case "$1" in
+  case "${1:-}" in
     dev)   PGURI="$PGURI_DEV";   DEST_DIR_DEFAULT="$DEST_DEV" ;;
     prod)  PGURI="$PGURI_PROD";  DEST_DIR_DEFAULT="$DEST_PROD" ;;
     test)  PGURI="$PGURI_TEST";  DEST_DIR_DEFAULT="$DEST_TEST" ;;
     local) PGURI="$PGURI_LOCAL"; DEST_DIR_DEFAULT="$DEST_LOCAL" ;;
-    *) die "Unknown instance '$1'";;
+    *) die "Unknown instance '${1:-}' (expected: dev|prod|test|local)";;
+  esac
+}
+
+# Identifier checks without regex
+is_valid_ident() {
+  # letters, digits, underscore; must not be empty
+  local s="${1:-}"
+  [ -n "$s" ] || return 1
+  case "$s" in
+    *[!A-Za-z0-9_]* ) return 1 ;;
+    * ) return 0 ;;
   esac
 }
 
 split_qualname() {
-  [[ "$1" =~ ^[A-Za-z0-9_]+\.[A-Za-z0-9_]+$ ]] || die "Bad table name '$1'"
-  SCHEMA="${1%%.*}"; TABLE="${1##*.}"
+  local qual="${1:-}"
+  case "$qual" in
+    *.*) : ;;
+    *) die "Invalid table name '$qual' (expected schema.table)";;
+  esac
+  SCHEMA="${qual%%.*}"
+  TABLE="${qual##*.}"
+  is_valid_ident "$SCHEMA" || die "Invalid schema identifier '$SCHEMA'"
+  is_valid_ident "$TABLE"  || die "Invalid table identifier '$TABLE'"
   QSCHEMA="\"$SCHEMA\""; QTABLE="\"$TABLE\""
 }
 
+# Date format helpers (no regex)
+is_month_fmt() {
+  # YYYY-MM
+  local d="${1:-}"
+  case "$d" in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+is_day_fmt() {
+  # YYYY-MM-DD
+  local d="${1:-}"
+  case "$d" in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 build_time_window_sql() {
+  # Builds TIME_WINDOW_SQL using to_date/to_timestamp and date_trunc
   local col="$1" date_arg="$2"
-  if [[ "$date_arg" =~ ^[0-9]{4}-[0-9]{2}$ ]]; then
-    TIME_WINDOW_SQL="($col >= date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) 
-      AND $col < (date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) + interval '1 month'))"
-  elif [[ "$date_arg" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
-    TIME_WINDOW_SQL="($col >= to_timestamp('$date_arg','YYYY-MM-DD') 
-      AND $col < (to_timestamp('$date_arg','YYYY-MM-DD') + interval '1 day'))"
+  is_valid_ident "$col" || die "Invalid column name '$col'"
+  if is_month_fmt "$date_arg"; then
+    # [first day of month, first day of next month)
+    TIME_WINDOW_SQL="($col >= date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) AND $col < (date_trunc('month', to_date('$date_arg-01','YYYY-MM-DD')) + interval '1 month'))"
+  elif is_day_fmt "$date_arg"; then
+    # [day, next day)
+    TIME_WINDOW_SQL="($col >= to_timestamp('$date_arg','YYYY-MM-DD') AND $col < (to_timestamp('$date_arg','YYYY-MM-DD') + interval '1 day'))"
   else
-    die "Invalid date '$date_arg'"
+    die "Invalid date '$date_arg' (use YYYY-MM or YYYY-MM-DD)"
   fi
 }
 
-# ---------------- BACKUP ----------------
+validate_timecol() {
+  local schema="$1" table="$2" col="$3"
+  # Check timestamptz by data_type
+  local q="
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema=$$${schema}$$
+      AND table_name=$$${table}$$
+      AND column_name=$$${col}$$
+      AND data_type='timestamp with time zone';
+  "
+  PSQL "$PGURI" -Atq -c "$q" | grep -q '^1$' || die "Column '$schema.$table.$col' not found or not timestamptz"
+}
+
+# ---------- BACKUP ----------
 do_backup() {
   local instance="$1" qualname="$2"; shift 2
   local timecol="" date_arg="" dest_dir="" compress=1
 
-  if [[ $# -ge 1 && "$1" != --* ]]; then timecol="$1"; shift; fi
-  if [[ $# -ge 1 && "$1" != --* ]]; then date_arg="$1"; shift; fi
-  while [[ $# -gt 0 ]]; do
+  # Optionals: <timecol> <date>
+  if [ $# -ge 1 ] && [ "${1#--}" = "$1" ]; then timecol="$1"; shift; fi
+  if [ $# -ge 1 ] && [ "${1#--}" = "$1" ]; then date_arg="$1"; shift; fi
+
+  # Flags
+  while [ $# -gt 0 ]; do
     case "$1" in
       --no-compress) compress=0; shift ;;
-      --dest) dest_dir="$2"; shift 2 ;;
-      *) die "Unknown option: $1" ;;
+      --dest) dest_dir="${2:-}"; [ -n "$dest_dir" ] || die "--dest requires a directory"; shift 2 ;;
+      -h|--help) usage ;;
+      *) die "Unknown option for backup: $1" ;;
     esac
   done
 
-  resolve_instance "$instance"; split_qualname "$qualname"
-  mkdir -p "${dest_dir:-$DEST_DIR_DEFAULT}"
+  resolve_instance "$instance"
+  split_qualname "$qualname"
 
-  local filename out_csv where_sql=""
-  if [[ -n "$timecol" && -n "$date_arg" ]]; then
+  local out_dir="${dest_dir:-$DEST_DIR_DEFAULT}"
+  mkdir -p "$out_dir"
+
+  local filename where_sql=""
+  if [ -n "$timecol" ] || [ -n "$date_arg" ]; then
+    [ -n "$timecol" ] && [ -n "$date_arg" ] || die "Partial backup requires BOTH <timestamptz_col> and <date>"
+    validate_timecol "$SCHEMA" "$TABLE" "$timecol"
     build_time_window_sql "$timecol" "$date_arg"
     where_sql="WHERE $TIME_WINDOW_SQL"
     filename="${instance}_${SCHEMA}.${TABLE}_${timecol}_${date_arg}.csv"
   else
     filename="${instance}_${SCHEMA}.${TABLE}.csv"
   fi
-  out_csv="${dest_dir:-$DEST_DIR_DEFAULT}/$filename"
 
+  local out_csv="$out_dir/$filename"
   local sql
-  if [[ -n "$where_sql" ]]; then
-    sql="\\copy (SELECT * FROM $QSCHEMA.$QTABLE $where_sql ORDER BY 1) TO STDOUT WITH CSV HEADER"
+  if [ -n "$where_sql" ]; then
+    sql="\\copy (SELECT * FROM $QSCHEMA.$QTABLE $where_sql ORDER BY 1) TO STDOUT WITH (FORMAT csv, HEADER, FORCE_QUOTE *)"
   else
-    sql="\\copy $QSCHEMA.$QTABLE TO STDOUT WITH CSV HEADER"
+    sql="\\copy $QSCHEMA.$QTABLE TO STDOUT WITH (FORMAT csv, HEADER, FORCE_QUOTE *)"
   fi
 
   info "Backing up $SCHEMA.$TABLE -> $out_csv"
-  if [[ $compress -eq 1 ]]; then
+  if [ "$compress" -eq 1 ]; then
+    need_cmd gzip
     PSQL "$PGURI" -qAt -c "$sql" | gzip > "${out_csv}.gz"
     info "Backup complete: ${out_csv}.gz"
   else
@@ -599,37 +677,181 @@ do_backup() {
   fi
 }
 
-# ---------------- RESTORE ----------------
+# ---------- RESTORE HELPERS ----------
+ensure_schema() {
+  local schema="$1"
+  local sql="DO $$
+  BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_namespace WHERE nspname = '$schema') THEN
+      EXECUTE format('CREATE SCHEMA %I', '$schema');
+    END IF;
+  END
+  $$;"
+  PSQL "$PGURI" -q -c "$sql"
+}
+
+table_exists() {
+  local schema="$1" table="$2"
+  local q="SELECT 1
+           FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
+           WHERE n.nspname=$$${schema}$$ AND c.relname=$$${table}$$ AND c.relkind='r';"
+  PSQL "$PGURI" -Atq -c "$q" | grep -q '^1$'
+}
+
+sanitize_colname() {
+  # Keep letters/digits/_ ; replace others with _ ; ensure starts with letter/_.
+  local raw="$1"
+  # strip CR and quotes and trim spaces
+  raw="${raw%$'\r'}"
+  raw="${raw//\"/}"
+  # squeeze spaces around
+  # shellcheck disable=SC2001
+  raw="$(echo "$raw" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
+  local cleaned
+  cleaned="$(echo "$raw" | tr -cs 'A-Za-z0-9_' '_' )"
+  # ensure not empty
+  [ -n "$cleaned" ] || cleaned="col"
+  # ensure first char not a digit
+  case "$cleaned" in
+    [0-9]* ) cleaned="_$cleaned" ;;
+  esac
+  echo "$cleaned"
+}
+
+create_table_from_csv_header() {
+  local schema="$1" table="$2" csv_path="$3"
+  local header
+  IFS= read -r header < "$csv_path" || die "Failed to read header from $csv_path"
+  [ -n "$header" ] || die "Empty CSV header in $csv_path"
+
+  # Split by commas into array (Bash 3.2 supports arrays)
+  local IFS=',' cols=()
+  # shellcheck disable=SC2206
+  cols=($header)
+
+  local coldefs=""
+  local i
+  for i in "${!cols[@]}"; do
+    local c
+    c="$(sanitize_colname "${cols[$i]}")"
+    if [ "$i" -gt 0 ]; then coldefs="$coldefs, "; fi
+    coldefs="$coldefs\"$c\" text"
+  done
+
+  ensure_schema "$schema"
+  local ddl="CREATE TABLE \"$schema\".\"$table\" ( $coldefs );"
+  PSQL "$PGURI" -q -c "$ddl"
+}
+
+# Derive destination table from filename base (no regex)
+# Accepts names like:
+#   <instance>_<schema.table>
+#   <instance>_<schema.table>_<timecol>_<YYYY-MM or YYYY-MM-DD>
+#   or without the instance prefix.
+derive_dest_table_from_base() {
+  local base="$1" instance="$2"
+
+  # If starts with "<instance>_", strip it
+  case "$base" in
+    "${instance}_"*) base="${base#${instance}_}" ;;
+  esac
+
+  # schema.table is up to first underscore, or whole string if none
+  local schema_table rest
+  case "$base" in
+    *_*)
+      schema_table="${base%%_*}"
+      rest="${base#${schema_table}_}"
+      ;;
+    *)
+      schema_table="$base"
+      rest=""
+      ;;
+  esac
+
+  case "$schema_table" in
+    *.*) : ;;
+    *) die "Cannot parse schema.table from '$base'";;
+  esac
+
+  DEST_SCHEMA="${schema_table%%.*}"
+  DEST_TABLE="${schema_table##*.}"
+
+  # If there is "rest", append to table to keep timecol/date suffix in table name
+  if [ -n "$rest" ]; then
+    DEST_TABLE="${DEST_TABLE}_$rest"
+  fi
+
+  is_valid_ident "$DEST_SCHEMA" || die "Invalid schema parsed from filename: '$DEST_SCHEMA'"
+  # Allow underscores in appended parts; sanitize double underscores later if needed
+}
+
+# ---------- RESTORE ----------
 do_restore() {
   local instance="$1" input="$2"; shift 2
   resolve_instance "$instance"
 
-  [[ -f "$input" ]] || die "File not found: $input"
+  [ -f "$input" ] || die "File not found: $input"
+
   local work_csv="$input"
-  if [[ "$input" =~ \.gz$ ]]; then
-    work_csv="$(mktemp).csv"
-    gunzip -c "$input" > "$work_csv"
+  local tmp_csv=""
+  case "$input" in
+    *.gz)
+      need_cmd gunzip
+      tmp_csv="$(mktemp -t pgtool_restore_XXXX).csv"
+      gunzip -c "$input" > "$tmp_csv"
+      work_csv="$tmp_csv"
+      ;;
+    *.csv)
+      : ;; # use as-is
+    *)
+      die "Input must be .csv or .csv.gz"
+      ;;
+  esac
+
+  local base
+  base="$(basename "$work_csv")"
+  base="${base%.csv}"  # strip suffix
+
+  derive_dest_table_from_base "$base" "$instance"
+
+  info "Restoring into: $DEST_SCHEMA.$DEST_TABLE"
+
+  if table_exists "$DEST_SCHEMA" "$DEST_TABLE"; then
+    warn "Destination table $DEST_SCHEMA.$DEST_TABLE already exists; rows will be appended."
+    warn "Pass --force-append to suppress this warning."
+  else
+    info "Creating $DEST_SCHEMA.$DEST_TABLE from CSV header (all columns TEXT)"
+    create_table_from_csv_header "$DEST_SCHEMA" "$DEST_TABLE" "$work_csv"
   fi
 
-  local base="$(basename "$work_csv" .csv)"
-  local schema_table="${base%%_*}"  # naive parse, adjust as needed
-  local schema="${schema_table%%.*}"
-  local table="${schema_table##*.}"
-
-  info "Restoring into $schema.$table"
-  local copy_sql="\\copy \"$schema\".\"$table\" FROM STDIN WITH CSV HEADER"
+  local copy_sql="\\copy \"$DEST_SCHEMA\".\"$DEST_TABLE\" FROM STDIN WITH (FORMAT csv, HEADER)"
   PSQL "$PGURI" -q -c "$copy_sql" < "$work_csv"
-  info "Restore complete."
+  info "Restore complete into: $DEST_SCHEMA.$DEST_TABLE"
 
-  [[ "$input" =~ \.gz$ ]] && rm -f "$work_csv"
+  [ -n "${tmp_csv:-}" ] && rm -f "$tmp_csv"
 }
 
-# ---------------- MAIN ----------------
+# ---------- MAIN ----------
+[ $# -lt 1 ] && usage
 cmd="$1"; shift || true
-case "$cmd" in
-  backup) do_backup "$@" ;;
-  restore) do_restore "$@" ;;
-  *) die "Usage: pgtool.sh (backup|restore) ..." ;;
-esac
 
+case "$cmd" in
+  backup)
+    [ $# -ge 2 ] || usage
+    need_cmd psql
+    do_backup "$@"
+    ;;
+  restore)
+    [ $# -ge 2 ] || usage
+    need_cmd psql
+    do_restore "$@"
+    ;;
+  -h|--help|help)
+    usage
+    ;;
+  *)
+    die "Unknown command '$cmd' (use backup|restore)"
+    ;;
+esac
 ```
