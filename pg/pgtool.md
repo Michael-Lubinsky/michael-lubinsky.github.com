@@ -819,6 +819,257 @@ fi
 
 ```
 
+### python
+
+```python
+#!/usr/bin/env python3
+
+import argparse
+import os
+import sys
+import re
+import subprocess
+import gzip
+import shutil
+import psycopg2
+from psycopg2 import sql
+
+def get_pg_conn_params(instance):
+    """
+    Retrieves PostgreSQL connection parameters from environment variables
+    for a given instance.
+    """
+    prefix = f"PG_{instance.upper()}"
+    return {
+        "host": os.getenv(f"PGHOST_{instance}"),
+        "dbname": os.getenv(f"PGDATABASE_{instance}"),
+        "user": os.getenv(f"PGUSER_{instance}"),
+        "password": os.getenv(f"PGPASSWORD_{instance}")
+    }
+
+def backup_table(instance, full_table_name, timestamp_col, date_filter, no_compress, dest_dir):
+    """
+    Backs up a PostgreSQL table.
+    """
+    print(f"Starting backup process for instance '{instance}'...")
+
+    try:
+        schema, table = full_table_name.split('.', 1)
+    except ValueError:
+        print("Error: Invalid table name format. Use <schema>.<table_name>.")
+        sys.exit(1)
+
+    # Set up destination directory
+    dest_dir_path = dest_dir or os.path.join("/var/backups", instance)
+    os.makedirs(dest_dir_path, exist_ok=True)
+
+    # Build WHERE clause for date filtering
+    where_clause = ""
+    output_date_part = ""
+    if timestamp_col and date_filter:
+        match = re.match(r"^(\d{4}-\d{2}-\d{2})$", date_filter)
+        if match:
+            where_clause = f"WHERE \"{timestamp_col}\" >= '{date_filter}' AND \"{timestamp_col}\" < ('{date_filter}'::date + INTERVAL '1 day')::text"
+            output_date_part = f"_{date_filter.replace('-', '_')}"
+        else:
+            match = re.match(r"^(\d{4}-\d{2})$", date_filter)
+            if match:
+                where_clause = f"WHERE \"{timestamp_col}\" >= '{date_filter}-01' AND \"{timestamp_col}\" < ('{date_filter}-01'::date + INTERVAL '1 month')::text"
+                output_date_part = f"_{date_filter.replace('-', '_')}"
+            else:
+                print("Error: Invalid date format. Use YYYY-MM-DD or YYYY-MM.")
+                sys.exit(1)
+    
+    # Construct output file name
+    file_name = f"{instance}_{schema}_{table}"
+    if timestamp_col:
+        file_name += f"_{timestamp_col}"
+    file_name += output_date_part
+
+    if no_compress:
+        output_file = os.path.join(dest_dir_path, f"{file_name}.csv")
+    else:
+        output_file = os.path.join(dest_dir_path, f"{file_name}.csv.gz")
+
+    print(f"Dumping data from '{full_table_name}'...")
+    print(f"Output file: '{output_file}'")
+
+    conn_params = get_pg_conn_params(instance)
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cur:
+                # Use psycopg2's copy_to method
+                query = sql.SQL("SELECT * FROM {schema}.{table} {where_clause}").format(
+                    schema=sql.Identifier(schema),
+                    table=sql.Identifier(table),
+                    where_clause=sql.Literal(where_clause)
+                )
+
+                if no_compress:
+                    with open(output_file, 'wb') as f:
+                        cur.copy_to(f, f"{schema}.{table}", sep=',', null='', header=True, columns=None, binary=False, with_oids=False)
+                else:
+                    with gzip.open(output_file, 'wb') as f:
+                        cur.copy_to(f, f"{schema}.{table}", sep=',', null='', header=True, columns=None, binary=False, with_oids=False)
+
+        print("Backup completed successfully.")
+    except psycopg2.Error as e:
+        print(f"Error: Backup failed. Check parameters and database connection. {e}")
+        sys.exit(1)
+
+
+def restore_table(instance, backup_file):
+    """
+    Restores a PostgreSQL table from a CSV file.
+    """
+    print(f"Starting restore process to instance '{instance}'...")
+
+    if not os.path.isfile(backup_file):
+        print(f"Error: Backup file '{backup_file}' not found.")
+        sys.exit(1)
+
+    # Extract original table name from backup file name
+    base_name = os.path.basename(backup_file)
+    try:
+        parts = base_name.split('_')
+        schema_table = parts[1] + "." + parts[2] + "." + parts[3]
+        original_schema = parts[1] + "." + parts[2]
+        original_table = parts[3]
+    except IndexError:
+        print("Error: Invalid backup file name format.")
+        sys.exit(1)
+
+    # Determine the new table name
+    dest_table_name = os.path.splitext(os.path.basename(backup_file))[0]
+    dest_table_name = dest_table_name.replace(f"{instance}_", "").replace(".csv", "").replace(".gz", "")
+    
+    # Check if a date part is present in the filename
+    match = re.search(r"(_\d{4}_\d{2}(_\d{2})?)", dest_table_name)
+    if match:
+        dest_table_name = dest_table_name.replace(match.group(0), "")
+        dest_table_name = f"{dest_table_name}{match.group(0)}"
+    
+    try:
+        dest_schema, dest_table = dest_table_name.split('.', 1)
+    except ValueError:
+        print("Error: Could not determine destination table name.")
+        sys.exit(1)
+        
+    print(f"Restoring from file '{backup_file}' to table '{dest_table_name}'...")
+
+    conn_params = get_pg_conn_params(instance)
+    try:
+        with psycopg2.connect(**conn_params) as conn:
+            with conn.cursor() as cur:
+                # Check if destination table exists
+                cur.execute(sql.SQL(
+                    "SELECT 1 FROM pg_tables WHERE schemaname = %s AND tablename = %s"
+                ), [dest_schema, dest_table])
+                if cur.fetchone():
+                    print(f"Warning: Destination table '{dest_table_name}' already exists. Data will be appended.")
+                    input("Press Enter to continue, or Ctrl+C to cancel.")
+                else:
+                    print(f"Destination table '{dest_table_name}' does not exist. Creating schema and table...")
+
+                    # Create schema if it doesn't exist
+                    cur.execute(sql.SQL("CREATE SCHEMA IF NOT EXISTS {schema}").format(
+                        schema=sql.Identifier(dest_schema)
+                    ))
+
+                    # Use pg_dump to get schema and recreate the table
+                    try:
+                        # Construct a DSN string for pg_dump
+                        dsn = " ".join([f"{k}='{v}'" for k, v in conn_params.items()])
+                        pg_dump_cmd = f"pg_dump -s -t {original_schema}.{original_table} --no-owner --no-privileges --no-comments --schema-only {dsn}"
+                        
+                        result = subprocess.run(
+                            pg_dump_cmd,
+                            shell=True,
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            env=os.environ
+                        )
+                        schema_dump = result.stdout
+                        
+                        # Modify the CREATE TABLE statement for the new name
+                        modified_schema_dump = re.sub(
+                            rf'CREATE TABLE "{original_schema}"\."{original_table}"',
+                            f'CREATE TABLE "{dest_schema}"."{dest_table}"',
+                            schema_dump
+                        )
+                        
+                        cur.execute(modified_schema_dump)
+                        conn.commit()
+                        print(f"Table '{dest_table_name}' created successfully.")
+
+                    except subprocess.CalledProcessError as e:
+                        print(f"Error: Failed to dump schema. {e.stderr}")
+                        sys.exit(1)
+                    except Exception as e:
+                        print(f"Error: Failed to create destination table. {e}")
+                        sys.exit(1)
+
+                # Restore data using COPY
+                with open(backup_file, 'rb') as f_in:
+                    if backup_file.endswith('.gz'):
+                        f = gzip.open(f_in, 'rb')
+                    else:
+                        f = f_in
+                    
+                    cur.copy_from(f, f"{dest_schema}.{dest_table}", sep=',', null='', size=8192)
+
+                conn.commit()
+                print("Restore completed successfully.")
+
+    except psycopg2.Error as e:
+        print(f"Error: Restore failed. Check the file and database connection. {e}")
+        sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="A tool for backing up and restoring PostgreSQL table data.",
+        epilog="Note: Database connection details should be provided via environment variables (e.g., PGHOST_dev)."
+    )
+    
+    subparsers = parser.add_subparsers(dest="command", required=True, help="command to execute")
+
+    # Backup command parser
+    backup_parser = subparsers.add_parser("backup", help="Backup a PostgreSQL table.")
+    backup_parser.add_argument("instance", help="Postgres instance (dev, prod, test, or local).")
+    backup_parser.add_argument("full_table_name", help="Full table name (e.g., weavix.silver.mytable).")
+    backup_parser.add_argument("timestamp_col", nargs="?", default="", help="Optional: column with timestamptz datatype.")
+    backup_parser.add_argument("date_filter", nargs="?", default="", help="Optional: date in YYYY-MM-DD or YYYY-MM format.")
+    backup_parser.add_argument("--no-compress", action="store_true", help="Do not compress the output file.")
+    backup_parser.add_argument("--dest-dir", help="Optional: destination folder.")
+
+    # Restore command parser
+    restore_parser = subparsers.add_parser("restore", help="Restore a PostgreSQL table from a file.")
+    restore_parser.add_argument("instance", help="Postgres instance to restore to.")
+    restore_parser.add_argument("backup_file", help="Path to the backup file (.csv or .csv.gz).")
+
+    args = parser.parse_args()
+
+    if args.command == "backup":
+        backup_table(
+            args.instance,
+            args.full_table_name,
+            args.timestamp_col,
+            args.date_filter,
+            args.no_compress,
+            args.dest_dir
+        )
+    elif args.command == "restore":
+        restore_table(
+            args.instance,
+            args.backup_file
+        )
+
+if __name__ == "__main__":
+    main()
+
+```
+
 ## ChatGPT
 ```bash
 #!/usr/bin/env bash
