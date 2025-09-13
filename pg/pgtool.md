@@ -262,6 +262,131 @@ If you want, I can:
 * or adapt your `pgtool.py` to automatically iterate **partitions older than 90 days**: export → verify → drop.
 
 
+Short answer: you’re right to be cautious. On **Azure Database for PostgreSQL (Flexible Server)**, TimescaleDB is available but **feature support can lag and certain features (including compression in some versions/tiers) may not be available or reliable**. Multiple Microsoft Q\&A threads and community posts note gaps and version friction around TimescaleDB on Azure-managed Postgres, so treating compression as “not guaranteed” on Flexible Server is prudent. ([Microsoft Learn][1])
+
+Given that, here’s a safe, proven archiving pattern that works great **without** Timescale compression:
+
+# Best-practice plan (no Timescale compression required)
+
+1. Partition by time & keep only 90 days “hot” in Postgres
+
+   * If you already use Timescale **hypertables**, use **retention** (drop old chunks) but skip compression policies.
+
+     ```sql
+     -- If you have a hypertable already:
+     -- keep only 90 days in Postgres
+     SELECT add_retention_policy('weavix.silver.mytable', INTERVAL '90 days');
+     ```
+
+     If Timescale’s retention isn’t available in your Azure plan, do **native declarative partitioning** on `timestamptz` and drop old partitions instead (very fast vs. DELETE).
+
+2. Export partitions/chunks older than 90 days to cheap storage, then drop
+
+   * Nightly job:
+
+     * Find partitions/chunks < now() - 90 days
+     * **Export to ADLS Gen2** as **Parquet** (or CSV.gz)
+     * Verify counts → **DROP** partition/chunk
+   * Tools that work well on Azure:
+
+     * **ADF** (JDBC → ADLS Parquet), or
+     * **Databricks**/**Spark** (read via JDBC, write Parquet), or
+     * Your `pgtool.py`/`.sh` to stream **CSV.gz** per day/month, then (optionally) a small Spark/ADF step to convert to Parquet.
+
+3. Keep a convenience view for analysts
+
+   ```sql
+   CREATE OR REPLACE VIEW weavix.silver.mytable_last_90d AS
+   SELECT * FROM weavix.silver.mytable
+   WHERE event_ts >= now() - INTERVAL '90 days';
+   ```
+
+4. Optional: downsample before archiving
+
+   * Use **continuous aggregates** (if available) or plain SQL jobs to persist daily/weekly rollups you *do* want to keep hot. Store the raw >90d in ADLS only.
+
+5. Automate with `pg_cron`
+
+   * Create tomorrow’s partition (or ensure future chunks)
+   * Nightly archive+drop >90d
+   * Alert if a future partition/chunk is missing or an export fails
+
+---
+
+## Concrete starter templates
+
+### A) Native Postgres (no Timescale features assumed)
+
+* Partitioned table by day:
+
+```sql
+CREATE TABLE weavix.silver.mytable_part (LIKE weavix.silver.mytable INCLUDING ALL)
+PARTITION BY RANGE (event_ts);
+
+DO $$
+DECLARE d date := (date_trunc('day', now()) - interval '120 days')::date;
+BEGIN
+  WHILE d < (date_trunc('day', now()) + interval '30 days')::date LOOP
+    EXECUTE format(
+      'CREATE TABLE IF NOT EXISTS weavix.silver.mytable_%s
+         PARTITION OF weavix.silver.mytable_part
+         FOR VALUES FROM (%L) TO (%L);',
+      to_char(d,'YYYYMMDD'), d::timestamptz, (d + interval '1 day')::timestamptz
+    );
+    EXECUTE format('CREATE INDEX IF NOT EXISTS mytable_%s_ts_idx ON weavix.silver.mytable_%s (event_ts);',
+                   to_char(d,'YYYYMMDD'), to_char(d,'YYYYMMDD'));
+    d := d + interval '1 day';
+  END LOOP;
+END $$;
+```
+
+* Nightly archive+drop (pseudo-flow):
+
+  1. List partitions older than 90d (by name suffix or by `pg_inherits` bounds)
+  2. For each partition date **D**:
+
+     * Export `SELECT * FROM weavix.silver.mytable_D` → ADLS (Parquet/CSV.gz)
+     * Validate counts → `DROP TABLE weavix.silver.mytable_D;`
+
+You can drive (2) with ADF/Databricks or the Python `pgtool.py` I gave you (add a small loop that walks daily dates < now()-90d and calls `backup` then executes a `DROP TABLE`).
+
+### B) Timescale hypertables (retention only)
+
+If you already have a hypertable but can’t rely on compression:
+
+```sql
+-- keep 90 days hot, drop older chunks after your export completes
+SELECT add_retention_policy('weavix.silver.mytable', INTERVAL '90 days');
+```
+
+For exporting old ranges, use your external tool to query by `WHERE event_ts >= $from AND event_ts < $to` (chunk boundary). After a successful export, the retention policy (or a custom job) will remove them safely.
+
+---
+
+## Where compression stands on Azure managed Postgres
+
+* **Feature availability is inconsistent across Azure Flexible Server versions** and can change over time; users report issues enabling Timescale across PG major versions and mention limitations vs. running TimescaleDB yourself or on Timescale Cloud. That’s why planning **without** depending on compression is safest on Flexible Server. ([Microsoft Learn][1])
+* Community threads from Azure/Timescale ecosystems also note that **compression may not be supported** in the Azure-managed TimescaleDB combination you get on Flexible Server. If compression is a hard requirement, the two clean options are:
+
+  1. **Timescale Cloud** (fully managed, supports compression), or
+  2. **Self-manage Postgres+Timescale on an Azure VM/AKS**, where you control the TimescaleDB build and can enable compression as documented by Timescale. ([TigerData][2])
+
+---
+
+## TL;DR recommendation for you
+
+* Keep ≤90 days in Postgres (partitioned or hypertable).
+* **Export >90 days to ADLS as Parquet** nightly, then drop the old slice.
+* Add lightweight rollups (continuous aggregates or scheduled SQL) to keep recent summaries hot.
+* Don’t depend on Timescale compression on Azure Flexible Server; design the pipeline so it’s great even without it.
+
+If you want, I can:
+
+* Extend your `pgtool.py` to **iterate dates older than 90d**: export (CSV.gz), validate, and execute the corresponding `DROP` (partition or `DELETE WHERE` guarded by day range if you’re not partitioned yet).
+* Or generate an **ADF pipeline** (JDBC→ADLS Parquet) + a tiny SQL script to drop yesterday’s “now()-90d” slice after a successful copy run.
+
+[1]: https://learn.microsoft.com/en-us/answers/questions/1534809/timescaledb-on-azure-postgresql-v16?utm_source=chatgpt.com "TimescaleDB on Azure PostgreSQL v16"
+[2]: https://www.tigerdata.com/blog/how-to-install-timescaledb-on-azure?utm_source=chatgpt.com "How to Install TimescaleDB on Azure"
 
 
 
