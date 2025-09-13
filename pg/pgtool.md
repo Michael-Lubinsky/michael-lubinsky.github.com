@@ -1,3 +1,15 @@
+There is managed Postgres on Azure Cloud.
+The database has several huge always growing tables with timestamptz column.
+We are approaching Postgres instance capacity.
+
+What is the best practive to archive the old data ( 90 days back fro now) in such tables?
+
+
+
+
+
+
+
 Write the bash script pgtool.sh for backup and recovery postgres table. 
 It should be compatible with bash   version 3.2.57
 
