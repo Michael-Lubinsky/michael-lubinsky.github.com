@@ -282,6 +282,8 @@ ORDER BY car_id, travel_id;
 ```
 # **Reverse geocoding** with static datasets.
 
+<https://austinhenley.com/blog/coord2state.html>
+
 Here are the best approaches for detecting states and cities from lat/lon coordinates without external APIs:
 
 ## 1. State Detection - Recommended Datasets
