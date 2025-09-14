@@ -13,8 +13,7 @@ you can query the `timescaledb_information.hypertables` and `timescaledb_informa
 
 ### 1. Find the Partition Interval
 
-The `timescaledb_information.hypertables` view stores metadata about your hypertables, including the time interval used for partitioning.   
-The `chunk_time_interval` column is what you need.
+ 
 
 ```sql
 SELECT 
