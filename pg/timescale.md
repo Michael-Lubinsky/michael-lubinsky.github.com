@@ -17,30 +17,23 @@ The `timescaledb_information.hypertables` view stores metadata about your hypert
 The `chunk_time_interval` column is what you need.
 
 ```sql
-SELECT
-    table_name,
-    chunk_time_interval
-FROM
-    timescaledb_information.hypertables
-WHERE
-    table_name = 'your_hypertable_name';
+SELECT 
+     hypertable_schema,
+     hypertable_name,
+     time_interval  
+FROM timescaledb_information.dimensions
+WHERE dimension_type = 'Time';
+
 ```
 
-This will return the interval, but it's often in microseconds. 
-To convert it to hours, you can divide it. 
-For example,  if the column is a `BIGINT` representing microseconds:
+ 
 
 ```sql
-SELECT
-    table_name,
-    chunk_time_interval / (1000 * 60 * 60) AS chunk_time_interval_hours
-FROM
-    timescaledb_information.hypertables
-WHERE
-    table_name = 'your_hypertable_name';
+SELECT *
+FROM    timescaledb_information.hypertables
+
 ```
 
-This query divides the interval (in microseconds) by the number of microseconds in an hour to give you the interval in hours.
 
 ### 2. See Partitions for a Specific Table
 
