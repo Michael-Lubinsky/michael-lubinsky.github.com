@@ -300,7 +300,8 @@ Here are the best approaches for detecting states and cities from lat/lon coordi
 - **Size**: ~50MB (includes all US geographic features)
 - **Coverage**: Comprehensive, includes cities, towns, villages
 
-## 3. Implementation Strategy## 4. Implementation Steps
+
+## 4. Implementation Steps
 
 ### Step 1: Download and Upload Datasets
 
