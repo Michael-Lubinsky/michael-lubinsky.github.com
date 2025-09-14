@@ -90,8 +90,11 @@ print("Address:", location.address)
 ### Reverse Geocoding
 <https://austinhenley.com/blog/coord2state.html>
 
+<https://news.ycombinator.com/item?id=44175356>
 
-Good question 👍 — when you have a lot of raw **latitude/longitude points** in Databricks and want to enrich them with **U.S. state** (or nearest city), you’ll need a **static reference dataset** that you can join against.
+<https://nominatim.org>
+
+When you have a lot of raw **latitude/longitude points** in Databricks and want to enrich them with **U.S. state** (or nearest city), you’ll need a **static reference dataset** that you can join against.
 
 Here are the most common and reliable options:
 
