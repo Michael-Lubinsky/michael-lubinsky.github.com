@@ -7,10 +7,63 @@ Version Check - Make sure it's version 2.0 or higher fo compression support:
 SELECT extversion FROM pg_extension WHERE extname = 'timescaledb';
 ```
 
+## To to see  partition intervals in hours 
+To see the partition intervals in hours for a TimescaleDB hypertable in PostgreSQL,   
+you can query the `timescaledb_information.hypertables` and `timescaledb_information.chunks` views.
 
+### 1. Find the Partition Interval
+
+The `timescaledb_information.hypertables` view stores metadata about your hypertables, including the time interval used for partitioning.   
+The `chunk_time_interval` column is what you need.
+
+```sql
+SELECT
+    table_name,
+    chunk_time_interval
+FROM
+    timescaledb_information.hypertables
+WHERE
+    table_name = 'your_hypertable_name';
+```
+
+This will return the interval, but it's often in microseconds. 
+To convert it to hours, you can divide it. 
+For example,  if the column is a `BIGINT` representing microseconds:
+
+```sql
+SELECT
+    table_name,
+    chunk_time_interval / (1000 * 60 * 60) AS chunk_time_interval_hours
+FROM
+    timescaledb_information.hypertables
+WHERE
+    table_name = 'your_hypertable_name';
+```
+
+This query divides the interval (in microseconds) by the number of microseconds in an hour to give you the interval in hours.
+
+### 2. See Partitions for a Specific Table
+
+To see the actual partitions (chunks) for a hypertable, you can query the `timescaledb_information.chunks` view. This view lists all the individual chunks that make up your hypertable.
+
+```sql
+SELECT
+    chunk_name,
+    range_start,
+    range_end
+FROM
+    timescaledb_information.chunks
+WHERE
+    hypertable_name = 'your_hypertable_name'
+ORDER BY
+    range_start DESC;
+```
+
+This will show you each chunk's name and the start and end timestamps of its time interval. The difference between `range_end` and `range_start` should equal the `chunk_time_interval` you found earlier.
 
 If you are using Azure Database for PostgreSQL - Flexible Server, and TimescaleDB is enabled,
 
+### Compression support
 Then compression is supported if 
 - You're using TimescaleDB 2.x+  
 - And you are using community edition features (not enterprise-only)
