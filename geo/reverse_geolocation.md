@@ -129,6 +129,79 @@ ORDER BY total_gps_points DESC;
 ## ** Option 2: Using Pre-built ZIP Code Table**
 
 If you prefer to use existing data in Databricks
+```sql
+-- Option 2: Create a sample ZIP codes table with major US cities
+-- This is a smaller dataset for testing/prototyping
+
+CREATE OR REPLACE TABLE sample_zip_codes AS
+SELECT * FROM VALUES
+  ('10001', 40.7505, -73.9934, 'New York', 'NY'),
+  ('90210', 34.0901, -118.4065, 'Beverly Hills', 'CA'), 
+  ('60601', 41.8827, -87.6233, 'Chicago', 'IL'),
+  ('77001', 29.7347, -95.3897, 'Houston', 'TX'),
+  ('33101', 25.7839, -80.2102, 'Miami', 'FL'),
+  ('02101', 42.3584, -71.0598, 'Boston', 'MA'),
+  ('98101', 47.6089, -122.3356, 'Seattle', 'WA'),
+  ('69101', 41.2565, -95.9345, 'Omaha', 'NE'),  -- Nebraska ZIP for your test data
+  ('69001', 41.8781, -103.6647, 'Scottsbluff', 'NE'), -- Closer to your coordinates
+  ('30301', 33.7907, -84.3733, 'Atlanta', 'GA')
+AS t(zip_code, latitude, longitude, city, state);
+
+-- Simple function for ZIP detection using sample data
+CREATE OR REPLACE FUNCTION detect_zip_simple(input_lat DOUBLE, input_lng DOUBLE)
+RETURNS STRUCT<zip_code: STRING, distance_miles: DOUBLE, city: STRING, state: STRING>
+LANGUAGE SQL
+AS $$
+  SELECT STRUCT(
+    zip_code,
+    distance_miles,
+    city,
+    state
+  )
+  FROM (
+    SELECT 
+      zip_code,
+      city,
+      state,
+      3959 * ACOS(
+        GREATEST(-1, LEAST(1,
+          COS(RADIANS(latitude)) * COS(RADIANS(input_lat)) * 
+          COS(RADIANS(input_lng) - RADIANS(longitude)) + 
+          SIN(RADIANS(latitude)) * SIN(RADIANS(input_lat))
+        ))
+      ) as distance_miles
+    FROM sample_zip_codes
+    ORDER BY distance_miles
+    LIMIT 1
+  )
+$$;
+
+-- Test with your coordinates
+SELECT 
+  latitude,
+  longitude,
+  detect_zip_simple(latitude, longitude).zip_code as zip_code,
+  detect_zip_simple(latitude, longitude).distance_miles as distance_miles,
+  detect_zip_simple(latitude, longitude).city as city,
+  detect_zip_simple(latitude, longitude).state as state
+FROM VALUES 
+  (41.883758, -103.047944),
+  (41.954183, -103.231843)
+AS t(latitude, longitude);
+
+-- Apply to your trip data
+SELECT 
+  car_id,
+  trip_id,
+  time,
+  latitude,
+  longitude,
+  detect_zip_simple(latitude, longitude).zip_code as zip_code,
+  detect_zip_simple(latitude, longitude).city as city,
+  detect_zip_simple(latitude, longitude).state as state
+FROM trip_data
+LIMIT 10;
+```
 
 ## **Step-by-Step Implementation Guide:**
 
