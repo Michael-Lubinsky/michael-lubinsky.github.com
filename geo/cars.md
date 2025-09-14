@@ -507,10 +507,7 @@ Run the verification queries to confirm the data meets your requirements for tes
 ### Generating
 
 ```sql
-
--- Generate synthetic trip data for 5 cars, 4 trips each, 5 data points per trip
--- Trip lengths: 10-20 miles, States: CA, FL, WA, OR, NE
-
+%sql
 WITH 
 -- Define state coordinate ranges (approximate bounding boxes)
 state_bounds AS (
@@ -523,7 +520,7 @@ state_bounds AS (
   AS t(state, min_lat, max_lat, min_lng, max_lng)
 ),
 
--- Generate base combinations
+-- Generate base combinations with deterministic randomness
 base_data AS (
   SELECT 
     car_id,
@@ -531,8 +528,8 @@ base_data AS (
     point_num,
     state,
     min_lat, max_lat, min_lng, max_lng,
-    -- Random trip length between 10-20 miles
-    10 + (RAND(car_id * 1000 + travel_id * 100) * 10) as trip_length_miles
+    -- Use hash for deterministic trip length between 10-20 miles
+    10 + (ABS(HASH(CONCAT(car_id, travel_id))) % 1000) / 100.0 as trip_length_miles
   FROM (
     SELECT car_id FROM VALUES ('CAR_001'), ('CAR_002'), ('CAR_003'), ('CAR_004'), ('CAR_005') AS t(car_id)
   ) cars
@@ -547,7 +544,7 @@ base_data AS (
            ROW_NUMBER() OVER (ORDER BY state) as state_rank
     FROM state_bounds
   ) states
-  WHERE MOD(ABS(HASH(car_id, travel_id)), 5) + 1 = states.state_rank
+  WHERE MOD(ABS(HASH(CONCAT(car_id, travel_id))), 5) + 1 = states.state_rank
 ),
 
 -- Generate trip start points and calculate trip vectors
@@ -557,12 +554,11 @@ trip_starts AS (
     travel_id, 
     state,
     trip_length_miles,
-    -- Random start latitude within state bounds
-    min_lat + RAND(HASH(car_id, travel_id, 1)) * (max_lat - min_lat) as start_lat,
-    -- Random start longitude within state bounds  
-    min_lng + RAND(HASH(car_id, travel_id, 2)) * (max_lng - min_lng) as start_lng,
-    -- Random direction (0-360 degrees)
-    RAND(HASH(car_id, travel_id, 3)) * 360 as direction_degrees
+    -- Deterministic start coordinates using hash
+    min_lat + (ABS(HASH(CONCAT(car_id, travel_id, 'lat'))) % 1000) / 1000.0 * (max_lat - min_lat) as start_lat,
+    min_lng + (ABS(HASH(CONCAT(car_id, travel_id, 'lng'))) % 1000) / 1000.0 * (max_lng - min_lng) as start_lng,
+    -- Deterministic direction (0-360 degrees)
+    (ABS(HASH(CONCAT(car_id, travel_id, 'dir'))) % 360) as direction_degrees
   FROM base_data
 ),
 
@@ -593,11 +589,12 @@ trip_data AS (
     te.start_lng + ((bd.point_num - 1) / 4.0) * (te.end_lng - te.start_lng) as longitude,
     
     -- Generate realistic timestamps (15-minute intervals)
-    TIMESTAMP('2024-01-01 08:00:00') + 
-    INTERVAL (ROW_NUMBER() OVER (ORDER BY bd.car_id, bd.travel_id, bd.point_num) * 15) MINUTES as time_stamp,
+    TIMESTAMPADD(MINUTE, 
+                (ROW_NUMBER() OVER (ORDER BY bd.car_id, bd.travel_id, bd.point_num) - 1) * 15, 
+                TIMESTAMP('2024-01-01 08:00:00')) as time_stamp,
     
     -- Generate odometer readings (starting from random base, increasing by trip distance)
-    50000 + (HASH(bd.car_id) % 100000) + 
+    50000 + (ABS(HASH(bd.car_id)) % 100000) + 
     (ROW_NUMBER() OVER (PARTITION BY bd.car_id ORDER BY bd.travel_id, bd.point_num) - 1) * 
     (te.trip_length_miles / 5.0) as odometer
 
@@ -611,9 +608,9 @@ final_data AS (
     car_id,
     travel_id as trip_id,
     time_stamp as time,
-    ROUND(odometer + RAND(HASH(car_id, trip_id, point_num)) * 0.1, 1) as odometer,
-    ROUND(longitude + (RAND(HASH(car_id, trip_id, point_num, 1)) - 0.5) * 0.001, 6) as longitude,
-    ROUND(latitude + (RAND(HASH(car_id, trip_id, point_num, 2)) - 0.5) * 0.001, 6) as latitude,
+    ROUND(odometer + (ABS(HASH(CONCAT(car_id, trip_id, CAST(point_num AS STRING)))) % 100) / 1000.0, 1) as odometer,
+    ROUND(longitude + ((ABS(HASH(CONCAT(car_id, trip_id, CAST(point_num AS STRING), 'lng'))) % 1000) - 500) / 1000000.0, 6) as longitude,
+    ROUND(latitude + ((ABS(HASH(CONCAT(car_id, trip_id, CAST(point_num AS STRING), 'lat'))) % 1000) - 500) / 1000000.0, 6) as latitude,
     state,
     ROUND(trip_length_miles, 1) as trip_length_miles
   FROM trip_data
@@ -629,20 +626,6 @@ SELECT
   latitude
 FROM final_data
 ORDER BY car_id, trip_id, time;
-
--- Uncomment below to create the actual table
-/*
-CREATE OR REPLACE TABLE trip_data AS
-SELECT 
-  car_id,
-  trip_id,
-  time,
-  odometer,
-  longitude,
-  latitude
-FROM final_data
-ORDER BY car_id, trip_id, time;
-*/
 ```
 
 
