@@ -455,3 +455,294 @@ LEFT JOIN state_bounds s2 ON (
 )
 ORDER BY t.car_id, t.travel_id;
 ```
+
+## Generate a synthetic dataset with realistic GPS coordinates and trip data
+for the specified states: California, Florida,  Washington, Oregon and Nebraska
+using Databricks SQL.
+
+## Usage Instructions
+
+1. **Run the query above** to see the generated data
+2. **Create the table** by uncommenting and running the `CREATE TABLE` statement at the bottom
+3. **Verify the data** with sample queries
+
+## Data Characteristics
+
+- **5 cars**: CAR_001 through CAR_005
+- **4 trips per car**: TRIP_001 through TRIP_004  
+- **5 data points per trip**: Evenly spaced along each journey
+- **Trip lengths**: Randomized between 10-20 miles
+- **States coverage**: Each car-trip combination is randomly assigned to CA, FL, WA, OR, or NE
+- **Realistic coordinates**: Within actual state boundaries
+- **Time progression**: 15-minute intervals between data points
+- **Odometer progression**: Increases realistically with distance traveled
+
+## Sample Verification Queries## Key Features of Generated Data
+
+### **Realistic Geography**
+- Coordinates fall within actual state boundaries
+- Trip directions and lengths are geographically plausible
+- Small random variations simulate GPS noise
+
+### **Consistent Data Progression**
+- Odometer values increase monotonically per car
+- Time stamps progress in 15-minute intervals
+- GPS coordinates interpolate smoothly along trip paths
+
+### **Configurable Parameters**
+You can easily modify:
+- **Trip lengths**: Change the `10 + (RAND(...) * 10)` formula
+- **States**: Add/remove states in the `state_bounds` CTE
+- **Number of points**: Modify the points VALUES clause
+- **Time intervals**: Adjust the `INTERVAL 15 MINUTES` value
+
+### **Data Quality**
+- No NULL values
+- Realistic odometer progression (increases with distance)
+- GPS coordinates have appropriate precision (6 decimal places)
+- Time stamps are properly formatted
+
+Run the verification queries to confirm the data meets your requirements for testing the distance comparison and geocoding queries we developed earlier!
+
+### Generating
+
+```sql
+
+-- Generate synthetic trip data for 5 cars, 4 trips each, 5 data points per trip
+-- Trip lengths: 10-20 miles, States: CA, FL, WA, OR, NE
+
+WITH 
+-- Define state coordinate ranges (approximate bounding boxes)
+state_bounds AS (
+  SELECT * FROM VALUES
+    ('CA', 34.0, 37.0, -122.0, -117.0),  -- California (LA to SF area)
+    ('FL', 25.5, 30.5, -84.0, -80.0),    -- Florida 
+    ('WA', 47.0, 49.0, -124.0, -120.0),  -- Washington
+    ('OR', 42.0, 46.0, -124.0, -120.0),  -- Oregon
+    ('NE', 40.0, 43.0, -104.0, -96.0)    -- Nebraska
+  AS t(state, min_lat, max_lat, min_lng, max_lng)
+),
+
+-- Generate base combinations
+base_data AS (
+  SELECT 
+    car_id,
+    travel_id,
+    point_num,
+    state,
+    min_lat, max_lat, min_lng, max_lng,
+    -- Random trip length between 10-20 miles
+    10 + (RAND(car_id * 1000 + travel_id * 100) * 10) as trip_length_miles
+  FROM (
+    SELECT car_id FROM VALUES ('CAR_001'), ('CAR_002'), ('CAR_003'), ('CAR_004'), ('CAR_005') AS t(car_id)
+  ) cars
+  CROSS JOIN (
+    SELECT travel_id FROM VALUES ('TRIP_001'), ('TRIP_002'), ('TRIP_003'), ('TRIP_004') AS t(travel_id)
+  ) trips
+  CROSS JOIN (
+    SELECT point_num FROM VALUES (1), (2), (3), (4), (5) AS t(point_num)
+  ) points
+  CROSS JOIN (
+    SELECT state, min_lat, max_lat, min_lng, max_lng,
+           ROW_NUMBER() OVER (ORDER BY state) as state_rank
+    FROM state_bounds
+  ) states
+  WHERE MOD(ABS(HASH(car_id, travel_id)), 5) + 1 = states.state_rank
+),
+
+-- Generate trip start points and calculate trip vectors
+trip_starts AS (
+  SELECT DISTINCT
+    car_id,
+    travel_id, 
+    state,
+    trip_length_miles,
+    -- Random start latitude within state bounds
+    min_lat + RAND(HASH(car_id, travel_id, 1)) * (max_lat - min_lat) as start_lat,
+    -- Random start longitude within state bounds  
+    min_lng + RAND(HASH(car_id, travel_id, 2)) * (max_lng - min_lng) as start_lng,
+    -- Random direction (0-360 degrees)
+    RAND(HASH(car_id, travel_id, 3)) * 360 as direction_degrees
+  FROM base_data
+),
+
+-- Calculate end points based on trip length and direction
+trip_ends AS (
+  SELECT *,
+    -- Calculate end coordinates using trip length and direction
+    -- 1 degree lat ≈ 69 miles, 1 degree lng ≈ 69 * cos(lat) miles
+    start_lat + (trip_length_miles * SIN(RADIANS(direction_degrees))) / 69.0 as end_lat,
+    start_lng + (trip_length_miles * COS(RADIANS(direction_degrees))) / (69.0 * COS(RADIANS(start_lat))) as end_lng
+  FROM trip_starts
+),
+
+-- Generate individual data points along each trip
+trip_data AS (
+  SELECT 
+    bd.car_id,
+    bd.travel_id,
+    bd.point_num,
+    bd.state,
+    te.trip_length_miles,
+    
+    -- Calculate progress along trip (0 to 1)
+    (bd.point_num - 1) / 4.0 as progress,
+    
+    -- Interpolate coordinates along the trip
+    te.start_lat + ((bd.point_num - 1) / 4.0) * (te.end_lat - te.start_lat) as latitude,
+    te.start_lng + ((bd.point_num - 1) / 4.0) * (te.end_lng - te.start_lng) as longitude,
+    
+    -- Generate realistic timestamps (15-minute intervals)
+    TIMESTAMP('2024-01-01 08:00:00') + 
+    INTERVAL (ROW_NUMBER() OVER (ORDER BY bd.car_id, bd.travel_id, bd.point_num) * 15) MINUTES as time_stamp,
+    
+    -- Generate odometer readings (starting from random base, increasing by trip distance)
+    50000 + (HASH(bd.car_id) % 100000) + 
+    (ROW_NUMBER() OVER (PARTITION BY bd.car_id ORDER BY bd.travel_id, bd.point_num) - 1) * 
+    (te.trip_length_miles / 5.0) as odometer
+
+  FROM base_data bd
+  JOIN trip_ends te ON bd.car_id = te.car_id AND bd.travel_id = te.travel_id
+),
+
+-- Add some realistic variation to make data more realistic
+final_data AS (
+  SELECT 
+    car_id,
+    travel_id as trip_id,
+    time_stamp as time,
+    ROUND(odometer + RAND(HASH(car_id, trip_id, point_num)) * 0.1, 1) as odometer,
+    ROUND(longitude + (RAND(HASH(car_id, trip_id, point_num, 1)) - 0.5) * 0.001, 6) as longitude,
+    ROUND(latitude + (RAND(HASH(car_id, trip_id, point_num, 2)) - 0.5) * 0.001, 6) as latitude,
+    state,
+    ROUND(trip_length_miles, 1) as trip_length_miles
+  FROM trip_data
+)
+
+-- Final SELECT with proper column order
+SELECT 
+  car_id,
+  trip_id,
+  time,
+  odometer,
+  longitude,
+  latitude
+FROM final_data
+ORDER BY car_id, trip_id, time;
+
+-- Uncomment below to create the actual table
+/*
+CREATE OR REPLACE TABLE trip_data AS
+SELECT 
+  car_id,
+  trip_id,
+  time,
+  odometer,
+  longitude,
+  latitude
+FROM final_data
+ORDER BY car_id, trip_id, time;
+*/
+```
+
+
+
+### Validation
+-- Verification queries for the generated trip data
+```sql
+-- 1. Count records (should be 100 total: 5 cars × 4 trips × 5 points)
+SELECT 
+  COUNT(*) as total_records,
+  COUNT(DISTINCT car_id) as unique_cars,
+  COUNT(DISTINCT CONCAT(car_id, '-', trip_id)) as unique_trips
+FROM trip_data;
+
+-- 2. Check trip lengths using Haversine formula
+WITH trip_distances AS (
+  SELECT 
+    car_id,
+    trip_id,
+    MIN(latitude) as start_lat,
+    MIN(longitude) as start_lng,
+    MAX(latitude) as end_lat,
+    MAX(longitude) as end_lng,
+    MIN(odometer) as start_odometer,
+    MAX(odometer) as end_odometer,
+    (MAX(odometer) - MIN(odometer)) as odometer_distance
+  FROM trip_data
+  GROUP BY car_id, trip_id
+)
+SELECT 
+  car_id,
+  trip_id,
+  ROUND(odometer_distance, 1) as odometer_miles,
+  ROUND(
+    3959 * ACOS(
+      COS(RADIANS(start_lat)) * 
+      COS(RADIANS(end_lat)) * 
+      COS(RADIANS(end_lng) - RADIANS(start_lng)) + 
+      SIN(RADIANS(start_lat)) * 
+      SIN(RADIANS(end_lat))
+    ), 1
+  ) as gps_distance_miles,
+  start_lat, start_lng, end_lat, end_lng
+FROM trip_distances
+ORDER BY car_id, trip_id;
+
+-- 3. Sample data by state (approximate state detection using coordinate ranges)
+SELECT 
+  CASE 
+    WHEN latitude BETWEEN 34.0 AND 37.0 AND longitude BETWEEN -122.0 AND -117.0 THEN 'California'
+    WHEN latitude BETWEEN 25.5 AND 30.5 AND longitude BETWEEN -84.0 AND -80.0 THEN 'Florida'
+    WHEN latitude BETWEEN 47.0 AND 49.0 AND longitude BETWEEN -124.0 AND -120.0 THEN 'Washington'
+    WHEN latitude BETWEEN 42.0 AND 46.0 AND longitude BETWEEN -124.0 AND -120.0 THEN 'Oregon'
+    WHEN latitude BETWEEN 40.0 AND 43.0 AND longitude BETWEEN -104.0 AND -96.0 THEN 'Nebraska'
+    ELSE 'Other'
+  END as estimated_state,
+  COUNT(DISTINCT CONCAT(car_id, '-', trip_id)) as trips_count,
+  COUNT(*) as data_points,
+  ROUND(MIN(latitude), 4) as min_lat,
+  ROUND(MAX(latitude), 4) as max_lat,
+  ROUND(MIN(longitude), 4) as min_lng,
+  ROUND(MAX(longitude), 4) as max_lng
+FROM trip_data
+GROUP BY 1
+ORDER BY trips_count DESC;
+
+-- 4. Show sample trip progression
+SELECT 
+  car_id,
+  trip_id,
+  time,
+  ROUND(latitude, 6) as latitude,
+  ROUND(longitude, 6) as longitude,
+  ROUND(odometer, 1) as odometer,
+  ROW_NUMBER() OVER (PARTITION BY car_id, trip_id ORDER BY time) as point_sequence
+FROM trip_data
+WHERE car_id = 'CAR_001' AND trip_id = 'TRIP_001'
+ORDER BY time;
+
+-- 5. Check time progression and odometer consistency
+SELECT 
+  car_id,
+  trip_id,
+  COUNT(*) as points_per_trip,
+  MIN(time) as trip_start,
+  MAX(time) as trip_end,
+  ROUND(MAX(odometer) - MIN(odometer), 1) as odometer_diff,
+  ROUND(AVG(TIMESTAMPDIFF(MINUTE, LAG(time) OVER (PARTITION BY car_id, trip_id ORDER BY time), time)), 0) as avg_interval_minutes
+FROM trip_data
+GROUP BY car_id, trip_id
+ORDER BY car_id, trip_id;
+
+-- 6. Geographic distribution summary
+SELECT 
+  ROUND(AVG(latitude), 2) as avg_latitude,
+  ROUND(AVG(longitude), 2) as avg_longitude,
+  ROUND(MIN(latitude), 2) as min_latitude,
+  ROUND(MAX(latitude), 2) as max_latitude,
+  ROUND(MIN(longitude), 2) as min_longitude,
+  ROUND(MAX(longitude), 2) as max_longitude
+FROM trip_data;
+```
+
