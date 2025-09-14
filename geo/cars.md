@@ -10,6 +10,10 @@ Earth is not flat—it's a sphere (approximately). When you have two GPS coordin
 
 ## The Formula
 
+The haversine function is defined as:
+```
+haversin(θ) = sin²(θ/2) = (1 - cos(θ))/2
+```
 The Haversine formula calculates the **great-circle distance** (shortest path along Earth's surface):
 
 ```
