@@ -83,9 +83,9 @@ The Haversine formula gives you the theoretical minimum distance between two poi
 
 ### There is  csv file in Databriks.
 It has following columns:
-car_id, travel_id, time, odometer, longitude, latitude.
+car_id, trip_id, time, odometer, longitude, latitude.
 Please write SQL to extract 
-for every  (car_id, travel_id)  the odometer, longitude, latitude at start and end points  only
+for every  (car_id, trip_id)  the odometer, longitude, latitude at start and end points  only
 
 ## Solution 1
 ```sql
@@ -108,7 +108,7 @@ ORDER BY car_id, trip_id;
 -- Alternative: Using MIN/MAX with CASE statements
 SELECT 
   car_id,
-  travel_id,
+  trip_id,
   MAX(CASE WHEN rn_first = 1 THEN odometer END) as start_odometer,
   MAX(CASE WHEN rn_first = 1 THEN longitude END) as start_longitude,
   MAX(CASE WHEN rn_first = 1 THEN latitude END) as start_latitude,
@@ -134,8 +134,8 @@ WITH ranked_data AS (
     odometer,
     longitude,
     latitude,
-    ROW_NUMBER() OVER (PARTITION BY car_id, travel_id ORDER BY time ASC) as rn_start,
-    ROW_NUMBER() OVER (PARTITION BY car_id, travel_id ORDER BY time DESC) as rn_end
+    ROW_NUMBER() OVER (PARTITION BY car_id, trip_id ORDER BY time ASC) as rn_start,
+    ROW_NUMBER() OVER (PARTITION BY car_id, trip_id ORDER BY time DESC) as rn_end
   FROM your_table_name
 ),
 start_points AS (
@@ -188,7 +188,7 @@ GPS distance in miles (converted using factor 0.621371)
 WITH start_end_points AS (
   SELECT DISTINCT
     car_id,
-    travel_id,
+    trip_id,
     FIRST_VALUE(odometer) OVER (PARTITION BY car_id, trip_id ORDER BY time) as start_odometer,
     FIRST_VALUE(longitude) OVER (PARTITION BY car_id, trip_id ORDER BY time) as start_longitude,
     FIRST_VALUE(latitude) OVER (PARTITION BY car_id, trip_id ORDER BY time) as start_latitude,
@@ -413,18 +413,18 @@ WITH state_bounds AS (
 travel_with_states AS (
   SELECT DISTINCT
     car_id,
-    travel_id,
-    FIRST_VALUE(latitude) OVER (PARTITION BY car_id, travel_id ORDER BY time) as start_latitude,
-    FIRST_VALUE(longitude) OVER (PARTITION BY car_id, travel_id ORDER BY time) as start_longitude,
-    LAST_VALUE(latitude) OVER (PARTITION BY car_id, travel_id ORDER BY time 
+    trip_id,
+    FIRST_VALUE(latitude) OVER (PARTITION BY car_id, trip_id ORDER BY time) as start_latitude,
+    FIRST_VALUE(longitude) OVER (PARTITION BY car_id, trip_id ORDER BY time) as start_longitude,
+    LAST_VALUE(latitude) OVER (PARTITION BY car_id, trip_id ORDER BY time 
       ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as end_latitude,
-    LAST_VALUE(longitude) OVER (PARTITION BY car_id, travel_id ORDER BY time 
+    LAST_VALUE(longitude) OVER (PARTITION BY car_id, trip_id ORDER BY time 
       ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as end_longitude
   FROM your_table_name
 )
 SELECT 
   t.car_id,
-  t.travel_id,
+  t.trip_id,
   t.start_latitude,
   t.start_longitude,
   t.end_latitude, 
@@ -453,7 +453,7 @@ LEFT JOIN state_bounds s2 ON (
   t.end_latitude BETWEEN s2.min_lat AND s2.max_lat 
   AND t.end_longitude BETWEEN s2.min_lng AND s2.max_lng
 )
-ORDER BY t.car_id, t.travel_id;
+ORDER BY t.car_id, t.trip_id;
 ```
 
 ## Generate a synthetic dataset with realistic GPS coordinates and trip data
@@ -529,12 +529,12 @@ base_data AS (
     state,
     min_lat, max_lat, min_lng, max_lng,
     -- Use hash for deterministic trip length between 10-20 miles
-    10 + (ABS(HASH(CONCAT(car_id, travel_id))) % 1000) / 100.0 as trip_length_miles
+    10 + (ABS(HASH(CONCAT(car_id, trip_id))) % 1000) / 100.0 as trip_length_miles
   FROM (
     SELECT car_id FROM VALUES ('CAR_001'), ('CAR_002'), ('CAR_003'), ('CAR_004'), ('CAR_005') AS t(car_id)
   ) cars
   CROSS JOIN (
-    SELECT travel_id FROM VALUES ('TRIP_001'), ('TRIP_002'), ('TRIP_003'), ('TRIP_004') AS t(travel_id)
+    SELECT trip_id FROM VALUES ('TRIP_001'), ('TRIP_002'), ('TRIP_003'), ('TRIP_004') AS t(trip_id)
   ) trips
   CROSS JOIN (
     SELECT point_num FROM VALUES (1), (2), (3), (4), (5) AS t(point_num)
@@ -544,21 +544,21 @@ base_data AS (
            ROW_NUMBER() OVER (ORDER BY state) as state_rank
     FROM state_bounds
   ) states
-  WHERE MOD(ABS(HASH(CONCAT(car_id, travel_id))), 5) + 1 = states.state_rank
+  WHERE MOD(ABS(HASH(CONCAT(car_id, trip_id))), 5) + 1 = states.state_rank
 ),
 
 -- Generate trip start points and calculate trip vectors
 trip_starts AS (
   SELECT DISTINCT
     car_id,
-    travel_id, 
+    trip_id, 
     state,
     trip_length_miles,
     -- Deterministic start coordinates using hash
-    min_lat + (ABS(HASH(CONCAT(car_id, travel_id, 'lat'))) % 1000) / 1000.0 * (max_lat - min_lat) as start_lat,
-    min_lng + (ABS(HASH(CONCAT(car_id, travel_id, 'lng'))) % 1000) / 1000.0 * (max_lng - min_lng) as start_lng,
+    min_lat + (ABS(HASH(CONCAT(car_id, trip_id, 'lat'))) % 1000) / 1000.0 * (max_lat - min_lat) as start_lat,
+    min_lng + (ABS(HASH(CONCAT(car_id, trip_id, 'lng'))) % 1000) / 1000.0 * (max_lng - min_lng) as start_lng,
     -- Deterministic direction (0-360 degrees)
-    (ABS(HASH(CONCAT(car_id, travel_id, 'dir'))) % 360) as direction_degrees
+    (ABS(HASH(CONCAT(car_id, trip_id, 'dir'))) % 360) as direction_degrees
   FROM base_data
 ),
 
@@ -576,7 +576,7 @@ trip_ends AS (
 trip_data AS (
   SELECT 
     bd.car_id,
-    bd.travel_id,
+    bd.trip_id,
     bd.point_num,
     bd.state,
     te.trip_length_miles,
@@ -590,23 +590,23 @@ trip_data AS (
     
     -- Generate realistic timestamps (15-minute intervals)
     TIMESTAMPADD(MINUTE, 
-                (ROW_NUMBER() OVER (ORDER BY bd.car_id, bd.travel_id, bd.point_num) - 1) * 15, 
+                (ROW_NUMBER() OVER (ORDER BY bd.car_id, bd.trip_id, bd.point_num) - 1) * 15, 
                 TIMESTAMP('2024-01-01 08:00:00')) as time_stamp,
     
     -- Generate odometer readings (starting from random base, increasing by trip distance)
     50000 + (ABS(HASH(bd.car_id)) % 100000) + 
-    (ROW_NUMBER() OVER (PARTITION BY bd.car_id ORDER BY bd.travel_id, bd.point_num) - 1) * 
+    (ROW_NUMBER() OVER (PARTITION BY bd.car_id ORDER BY bd.trip_id, bd.point_num) - 1) * 
     (te.trip_length_miles / 5.0) as odometer
 
   FROM base_data bd
-  JOIN trip_ends te ON bd.car_id = te.car_id AND bd.travel_id = te.travel_id
+  JOIN trip_ends te ON bd.car_id = te.car_id AND bd.trip_id = te.trip_id
 ),
 
 -- Add some realistic variation to make data more realistic
 final_data AS (
   SELECT 
     car_id,
-    travel_id as trip_id,
+    trip_id as trip_id,
     time_stamp as time,
     ROUND(odometer + (ABS(HASH(CONCAT(car_id, trip_id, CAST(point_num AS STRING)))) % 100) / 1000.0, 1) as odometer,
     ROUND(longitude + ((ABS(HASH(CONCAT(car_id, trip_id, CAST(point_num AS STRING), 'lng'))) % 1000) - 500) / 1000000.0, 6) as longitude,
