@@ -5,7 +5,7 @@ Please write SQL to extract
 for every  (car_id, travel_id)  the odometer, longitude, latitude at start and end points  only
 
 ## Solution 1
-```
+```sql
 -- Using FIRST_VALUE() and LAST_VALUE() approach
 SELECT DISTINCT
   car_id,
