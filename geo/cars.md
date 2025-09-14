@@ -104,8 +104,9 @@ SELECT DISTINCT
     ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as end_latitude
 FROM your_table_name
 ORDER BY car_id, trip_id;
-
+```
 -- Alternative: Using MIN/MAX with CASE statements
+```sql
 SELECT 
   car_id,
   trip_id,
