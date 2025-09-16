@@ -49,6 +49,32 @@ BEGIN
     END;
   END LOOP;
 END$$;
+
+
+--- ANOTHER WAY: shows elapsed time
+
+DO $$
+DECLARE
+    date_to_process DATE;
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
+    elapsed_interval INTERVAL;
+BEGIN
+    FOR date_to_process IN 
+        SELECT generate_series('2024-01-01'::date, '2024-01-31'::date, '1 day'::interval)::date
+    LOOP
+        start_time := clock_timestamp();
+        RAISE NOTICE '[%] Starting processing date: %', start_time, date_to_process;
+        
+        CALL gold.ptt_sent_by_channel_type_daily(date_to_process::text);
+        
+        end_time := clock_timestamp();
+        elapsed_interval := end_time - start_time;
+        RAISE NOTICE '[%] Completed processing: % (Duration: %)', end_time, date_to_process, elapsed_interval;
+    END LOOP;
+    
+    RAISE NOTICE '[%] All dates processed successfully', clock_timestamp();
+END $$;
 ```
 
 ### ON CONFLICT 
