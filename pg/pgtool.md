@@ -6,6 +6,18 @@ What is the best practice to archive the old records ( 90 days back from now) in
 and drop it from tables?
 Also it should be possible to restore archived data back to Postgres if required.
 
+
+
+```
+There is Postgres 16 on Azure Cloud Flexible service.
+There is Postgres table created with timescaledb extension.
+The chunk partition interval  is 1 day.
+Please write Postgres stored procedure which will be called daily by pg_cron extension.
+This stored procedure should backup the partition which is 30 days back from CURRENT_DATE
+into given ADLS Gen2 folder. 
+The backup file should have name table.YYYY-MM-DD.csv.
+After backup is completed the stored procedure should drop this partition.
+```
 ## Gemini
 
 Yes! While PostgreSQL itself doesn’t have a built-in extension to **automatically archive partitions to Azure Blob Storage and drop them**, you can achieve this using a combination of **TimescaleDB**, **PostgreSQL functions**, and **Azure tools**. Here’s how:
