@@ -18,6 +18,220 @@ into given ADLS Gen2 folder.
 The backup file should have name table.YYYY-MM-DD.csv.
 After backup is completed the stored procedure should drop this partition.
 ```
+### ChatGPT
+
+Got it. Here’s a working stored procedure that does exactly what you asked—**finds the 1-day TimescaleDB chunk that’s 30 days old, exports that day to CSV named `table.YYYY-MM-DD.csv`, then drops that chunk**—*using server-side `COPY … TO PROGRAM` and `curl` to upload directly to ADLS Gen2*.
+
+> Important Azure note (read this):
+> The procedure below **requires** the database role `pg_execute_server_program` and that the server host has a shell with `curl` available. On **Azure Database for PostgreSQL – Flexible Server**, these capabilities are usually **restricted/disabled**. If you don’t have them, use the **“client-side pattern”** I include after the procedure (psql + \copy + azcopy/curl), and call a tiny SQL proc to **drop the chunk only after a verified upload**.
+
+---
+
+# A) Server-side (works only if `COPY TO PROGRAM` is allowed)
+
+```sql
+-- Schema to keep admin routines
+CREATE SCHEMA IF NOT EXISTS admin;
+
+-- Procedure:
+--   - Figures out the target day: CURRENT_DATE - 30
+--   - Verifies exactly one 1-day chunk covers that day
+--   - Streams that day's rows to ADLS Gen2 via curl (Block Blob PUT)
+--   - Drops the single chunk only if the upload succeeds
+--
+-- Parameters:
+--   p_hypertable: regclass of your hypertable, e.g. 'weavix.silver.mytable'::regclass
+--   p_adls_base_url: e.g. 'https://<acct>.blob.core.windows.net/<container>/weavix/silver/mytable'
+--   p_sas_token:     the SAS string (either starting with '?' or empty if p_adls_base_url already includes it)
+--
+CREATE OR REPLACE PROCEDURE admin.archive_hypertable_day(
+  p_hypertable     regclass,
+  p_adls_base_url  text,
+  p_sas_token      text
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_schema   text;
+  v_table    text;
+  v_timecol  text;
+  v_day      date := CURRENT_DATE - INTERVAL '30 days';
+  v_from     timestamptz := v_day::timestamptz;
+  v_to       timestamptz := (v_day + 1)::timestamptz;
+
+  v_chunks   name[];
+  v_chunk    name;
+
+  v_blobname text;
+  v_url      text;
+  v_sql      text;
+BEGIN
+  -- Resolve schema/table
+  SELECT n.nspname, c.relname
+    INTO v_schema, v_table
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+  WHERE c.oid = p_hypertable;
+
+  IF v_schema IS NULL THEN
+    RAISE EXCEPTION 'Hypertable % not found', p_hypertable;
+  END IF;
+
+  -- Discover the time column from Timescale metadata
+  SELECT time_column_name
+    INTO v_timecol
+  FROM timescaledb_information.hypertables
+  WHERE hypertable_schema = v_schema
+    AND hypertable_name   = v_table;
+
+  IF v_timecol IS NULL THEN
+    RAISE EXCEPTION '%.% is not a TimescaleDB hypertable', v_schema, v_table;
+  END IF;
+
+  -- Find exactly the chunk that covers [v_from, v_to)
+  SELECT array_agg(chunk_name::name)
+    INTO v_chunks
+  FROM show_chunks(p_hypertable, newer_than => v_from, older_than => v_to);
+
+  IF v_chunks IS NULL OR array_length(v_chunks,1) <> 1 THEN
+    RAISE EXCEPTION 'Expected exactly one 1-day chunk for % on %, found %',
+      p_hypertable, v_day, COALESCE(array_length(v_chunks,1),0);
+  END IF;
+
+  v_chunk := v_chunks[1];
+
+  -- Build destination blob name and full SAS URL
+  v_blobname := format('%s.%s.csv', v_table, to_char(v_day, 'YYYY-MM-DD'));
+  IF p_sas_token IS NULL OR p_sas_token = '' THEN
+    v_url := p_adls_base_url || '/' || v_blobname;
+  ELSE
+    IF position('?' in p_sas_token) = 1 THEN
+      v_url := p_adls_base_url || '/' || v_blobname || p_sas_token;
+    ELSE
+      v_url := p_adls_base_url || '/' || v_blobname || '?' || p_sas_token;
+    END IF;
+  END IF;
+
+  -- Export that day only; COPY streams CSV to curl which PUTs a Block Blob
+  -- Requires: role has pg_execute_server_program; host has curl installed
+  v_sql := format($q$
+    COPY (
+      SELECT *
+      FROM   %I.%I
+      WHERE  %I >= %L::timestamptz
+         AND %I <  %L::timestamptz
+      ORDER BY 1
+    )
+    TO PROGRAM
+      'curl --fail --show-error --silent
+            -X PUT
+            --upload-file -
+            -H "x-ms-blob-type: BlockBlob"
+            -H "Content-Type: text/csv"
+            "%s"'
+    WITH (FORMAT csv, HEADER, FORCE_QUOTE *);
+  $q$, v_schema, v_table, v_timecol, v_from, v_timecol, v_to, v_url);
+
+  -- If upload fails, COPY raises and we never drop the chunk.
+  EXECUTE v_sql;
+
+  -- Upload succeeded; drop ONLY the exported chunk
+  EXECUTE format('DROP TABLE %s', v_chunk);
+
+  RAISE NOTICE 'Archived and dropped chunk % for %.% day %',
+    v_chunk, v_schema, v_table, v_day;
+END;
+$$;
+
+-- Example pg_cron schedule: every day at 02:10
+-- (Adjust schema/table and your ADLS container path + SAS)
+SELECT cron.schedule(
+  'archive_mytable_daily',
+  '10 2 * * *',
+  $$CALL admin.archive_hypertable_day(
+       'weavix.silver.mytable'::regclass,
+       'https://<account>.blob.core.windows.net/<container>/weavix/silver/mytable',
+       '?sv=2025-01-01&ss=b&srt=o&sp=rw...&sig=...');$$
+);
+```
+
+**What you must supply**:
+
+* The ADLS **container/folder URL** (Blob endpoint is simplest for single-PUT uploads).
+* A **SAS token** with write permission to that path (rw on the blob path is sufficient).
+* The server must allow `COPY TO PROGRAM` and have `curl`.
+
+---
+
+# B) If Azure blocks `COPY TO PROGRAM` (common)
+
+Use a **client-side exporter** and let Postgres only tell you *which day to export* and **drop the chunk after a verified upload**.
+
+1. Minimal helper proc (in DB) to return the target day & guard that exactly one chunk exists:
+
+```sql
+CREATE OR REPLACE FUNCTION admin.target_day_and_bounds(p_hypertable regclass, p_days_back int DEFAULT 30)
+RETURNS TABLE(target_date date, ts_from timestamptz, ts_to timestamptz, chunk name)
+LANGUAGE plpgsql AS $$
+DECLARE v_schema text; v_table text; v_timecol text; v_chunks name[];
+BEGIN
+  target_date := CURRENT_DATE - (p_days_back || ' days')::interval;
+  ts_from := target_date::timestamptz;
+  ts_to   := (target_date + 1)::timestamptz;
+
+  SELECT array_agg(chunk_name::name) INTO v_chunks
+  FROM show_chunks(p_hypertable, newer_than => ts_from, older_than => ts_to);
+
+  IF v_chunks IS NULL OR array_length(v_chunks,1) <> 1 THEN
+    RAISE EXCEPTION 'Expected exactly one 1-day chunk for %, found %', target_date, COALESCE(array_length(v_chunks,1),0);
+  END IF;
+  chunk := v_chunks[1];
+  RETURN NEXT;
+END;
+$$;
+```
+
+2. Your **external** job (VM/Container/Azure Function) runs daily:
+
+* Query bounds:
+
+  ```
+  psql "$PGURI" -At -c \
+   "SELECT target_date, ts_from, ts_to
+      FROM admin.target_day_and_bounds('weavix.silver.mytable'::regclass, 30);"
+  ```
+* Export with `\copy` (client-side) to CSV and upload to ADLS with `azcopy` or `curl`:
+
+  ```
+  psql "$PGURI" -c "\copy (SELECT * FROM weavix.silver.mytable
+                           WHERE event_ts >= '$TS_FROM' AND event_ts < '$TS_TO'
+                           ORDER BY 1)
+                    TO STDOUT WITH (FORMAT csv, HEADER, FORCE_QUOTE *)" \
+  | gzip \
+  | azcopy copy --from-to PipeBlob "https://<account>.blob.core.windows.net/<container>/weavix/silver/mytable/mytable.$DAY.csv.gz?<SAS>"
+  ```
+* Verify upload (size > 0, 200 OK, etc.).
+* **Then** drop the exact chunk:
+
+  ```
+  psql "$PGURI" -c "SELECT admin.target_day_and_bounds('weavix.silver.mytable'::regclass, 30)\gset
+                    SELECT format('DROP TABLE %s', :'chunk')\gexec"
+  ```
+
+This client-side pattern is robust on Azure managed Postgres because it **does not require** server-side file/OS access, yet still guarantees you only drop after a successful upload.
+
+---
+
+## Pick your path
+
+* If your Azure environment **does** allow `COPY TO PROGRAM` + `curl`: use **A** (single in-DB job).
+* If not (most common on managed PaaS): use **B** (external exporter + tiny SQL helpers) and keep the drop fully automated and safe.
+
+If you tell me which route you can use in your subscription, I’ll tailor the exact commands (including `azcopy` with SAS, directory structure in ADLS, and a ready pg\_cron schedule or external cron).
+
+
+
+
 ### Mistral
 Here’s a PostgreSQL stored procedure for your Azure Flexible Server setup. This procedure will:
 
