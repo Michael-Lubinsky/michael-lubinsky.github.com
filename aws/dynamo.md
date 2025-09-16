@@ -1,4 +1,79 @@
-To clean DynamoDB JSON records and remove the type qualifiers while maintaining valid JSON, you have several options:
+# PartiQL 
+In the DynamoDB console’s left navigation, select PartiQL editor.
+
+PartiQL lets you run SQL-like statements such as:
+
+SELECT * FROM "MyTable" WHERE id = '123';
+
+Here are quick PartiQL patterns you can paste into the **PartiQL editor** in the DynamoDB console to get distinct values—both for top-level attributes and JSON (map/list) fields.
+
+## 1) Top-level attribute
+
+```sql
+-- Distinct values of a top-level string/number attribute
+SELECT DISTINCT "status"
+FROM "Orders";
+```
+
+Optionally scope it (recommended) so you don’t scan the whole table:
+
+```sql
+SELECT DISTINCT "status"
+FROM "Orders"
+WHERE "pk" = 'CUSTOMER#123';
+```
+
+## 2) Nested JSON (map) attribute using dot path
+
+```sql
+-- Distinct values of a nested map attribute: product.info.category
+SELECT DISTINCT product.info.category
+FROM "Products" AS product
+WHERE attribute_exists(product.info.category);
+```
+
+## 3) Nested map when the key has spaces/special chars (bracket access)
+
+```sql
+-- If the map key needs quoting (e.g., "sub category")
+SELECT DISTINCT details['sub category']
+FROM "Products" AS p
+WHERE attribute_exists(p.details['sub category']);
+```
+
+## 4) Distinct elements from a list (UNNEST)
+
+```sql
+-- Each item has a list attribute tags: ["red","sale","outdoor"]
+-- Get distinct tag values across matching items
+SELECT DISTINCT tag
+FROM "Products" AS p
+UNNEST p.tags AS tag
+WHERE attribute_exists(p.tags);
+```
+
+# 5) Clean up missing/NULLs and limit results
+
+```sql
+SELECT DISTINCT p.info.category
+FROM "Products" AS p
+WHERE attribute_exists(p.info.category)
+LIMIT 100;
+```
+
+# Notes & tips
+
+* **DISTINCT** removes duplicates in the projection; there’s no need for `GROUP BY` (and DynamoDB PartiQL doesn’t support full SQL aggregation/grouping like a relational DB).
+* Use **dot paths** (`a.b.c`) for simple map keys; use **bracket paths** (`a['weird key']`) for keys with spaces/special characters.
+* Prefer adding a **key condition** (e.g., `WHERE pk = ...`) to avoid a full table scan whenever possible.
+* `attribute_exists(path)` helps exclude items where the field is missing.
+
+If you show me your table/attribute shape (top-level vs nested, map vs list), I’ll tailor the exact PartiQL for your case.
+
+
+
+
+# Clean DynamoDB JSON records and remove the type qualifiers while maintaining valid JSON, you have several options:
 
 ## Method 1: AWS SDK Unmarshalling (Recommended)
 
