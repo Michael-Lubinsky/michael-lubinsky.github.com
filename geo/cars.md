@@ -81,6 +81,174 @@ SQRT(
 The Haversine formula gives you the theoretical minimum distance between two points on Earth—useful for comparing against actual travel distances recorded by odometers or GPS tracking systems.
 
 
+## Please generate synthetic data set in Databricks SQL with following columns
+car_id, trip_id, time, odometer, fuel, longitude, latitude.
+The time  value should belong to August, 2025
+The longitude, latitude should be in one of the following states: California, Florida, Oregon, Nebraska, Washington.
+trip_id is the number which starts from 1 for every car_id.
+For every state should be 2 car_ids.
+For every car_id should be 2-3 trips ped day during August, 2025
+for every (car_id, trip_id) should be between 5-10 records with different time.
+Then time grows the odometer value should increase and fuel value should decrease during the trip.
+
+```sql 
+%sql
+WITH 
+-- Define state coordinate ranges and assign cars to states
+state_assignments AS (
+  SELECT * FROM VALUES
+    ('CA', 34.0, 37.0, -122.0, -117.0, 'CAR_001'),  -- California
+    ('CA', 34.0, 37.0, -122.0, -117.0, 'CAR_002'),  
+    ('FL', 25.5, 30.5, -84.0, -80.0, 'CAR_003'),    -- Florida
+    ('FL', 25.5, 30.5, -84.0, -80.0, 'CAR_004'),    
+    ('OR', 42.0, 46.0, -124.0, -120.0, 'CAR_005'),  -- Oregon
+    ('OR', 42.0, 46.0, -124.0, -120.0, 'CAR_006'),  
+    ('NE', 40.0, 43.0, -104.0, -96.0, 'CAR_007'),   -- Nebraska
+    ('NE', 40.0, 43.0, -104.0, -96.0, 'CAR_008'),   
+    ('WA', 47.0, 49.0, -124.0, -120.0, 'CAR_009'),  -- Washington
+    ('WA', 47.0, 49.0, -124.0, -120.0, 'CAR_010')   
+  AS t(state, min_lat, max_lat, min_lng, max_lng, car_id)
+),
+
+-- Generate August 2025 dates (31 days)
+august_dates AS (
+  SELECT date_add('2025-08-01', row_number() OVER (ORDER BY 1) - 1) as trip_date
+  FROM VALUES (1),(2),(3),(4),(5),(6),(7),(8),(9),(10),
+              (11),(12),(13),(14),(15),(16),(17),(18),(19),(20),
+              (21),(22),(23),(24),(25),(26),(27),(28),(29),(30),(31)
+  AS t(dummy)
+),
+
+-- Generate trip schedules: 2-3 trips per day per car
+trip_schedule AS (
+  SELECT 
+    sa.car_id,
+    sa.state,
+    sa.min_lat, sa.max_lat, sa.min_lng, sa.max_lng,
+    ad.trip_date,
+    trip_num,
+    -- Calculate trip_id as sequential number starting from 1 for each car
+    ROW_NUMBER() OVER (PARTITION BY sa.car_id ORDER BY ad.trip_date, trip_num) as trip_id,
+    -- Generate trip start times (morning, afternoon, evening)
+    CASE trip_num
+      WHEN 1 THEN TIMESTAMP(CONCAT(CAST(ad.trip_date AS STRING), ' ', 
+                   LPAD(CAST(8 + (ABS(HASH(sa.car_id, ad.trip_date, 1)) % 3) AS STRING), 2, '0'), ':',
+                   LPAD(CAST(ABS(HASH(sa.car_id, ad.trip_date, 2)) % 60 AS STRING), 2, '0'), ':00'))
+      WHEN 2 THEN TIMESTAMP(CONCAT(CAST(ad.trip_date AS STRING), ' ', 
+                   LPAD(CAST(13 + (ABS(HASH(sa.car_id, ad.trip_date, 3)) % 4) AS STRING), 2, '0'), ':',
+                   LPAD(CAST(ABS(HASH(sa.car_id, ad.trip_date, 4)) % 60 AS STRING), 2, '0'), ':00'))
+      WHEN 3 THEN TIMESTAMP(CONCAT(CAST(ad.trip_date AS STRING), ' ', 
+                   LPAD(CAST(18 + (ABS(HASH(sa.car_id, ad.trip_date, 5)) % 4) AS STRING), 2, '0'), ':',
+                   LPAD(CAST(ABS(HASH(sa.car_id, ad.trip_date, 6)) % 60 AS STRING), 2, '0'), ':00'))
+    END as trip_start_time
+  FROM state_assignments sa
+  CROSS JOIN august_dates ad
+  CROSS JOIN (
+    -- Randomly assign 2-3 trips per day
+    SELECT trip_num FROM VALUES (1), (2), (3) AS t(trip_num)
+  ) trips
+  WHERE (ABS(HASH(sa.car_id, ad.trip_date)) % 10) < 8  -- 80% chance of having all 3 trips
+     OR trip_num <= 2  -- Always have at least 2 trips
+),
+
+-- Generate trip waypoints (5-10 points per trip)
+trip_waypoints AS (
+  SELECT 
+    ts.*,
+    point_num,
+    -- Calculate trip duration in minutes (20-60 minutes)
+    20 + (ABS(HASH(ts.car_id, ts.trip_id, 'duration')) % 41) as trip_duration_minutes,
+    -- Calculate trip distance in miles (5-25 miles)
+    5 + (ABS(HASH(ts.car_id, ts.trip_id, 'distance')) % 21) as trip_distance_miles,
+    -- Number of points for this trip (5-10)
+    5 + (ABS(HASH(ts.car_id, ts.trip_id, 'points')) % 6) as total_points
+  FROM trip_schedule ts
+  CROSS JOIN (
+    SELECT point_num FROM VALUES (1), (2), (3), (4), (5), (6), (7), (8), (9), (10) AS t(point_num)
+  ) points
+  WHERE point_num <= (5 + (ABS(HASH(ts.car_id, ts.trip_id, 'points')) % 6))
+),
+
+-- Generate coordinates and calculate metrics
+trip_details AS (
+  SELECT 
+    tw.*,
+    -- Calculate time for each waypoint
+    TIMESTAMPADD(MINUTE, 
+                CAST((tw.point_num - 1) * (tw.trip_duration_minutes / CAST(tw.total_points - 1 AS DOUBLE)) AS INT),
+                tw.trip_start_time) as waypoint_time,
+    
+    -- Generate start coordinates for the trip
+    tw.min_lat + (ABS(HASH(tw.car_id, tw.trip_id, 'start_lat')) % 1000) / 1000.0 * (tw.max_lat - tw.min_lat) as start_lat,
+    tw.min_lng + (ABS(HASH(tw.car_id, tw.trip_id, 'start_lng')) % 1000) / 1000.0 * (tw.max_lng - tw.min_lng) as start_lng,
+    
+    -- Generate end coordinates for the trip
+    tw.min_lat + (ABS(HASH(tw.car_id, tw.trip_id, 'end_lat')) % 1000) / 1000.0 * (tw.max_lat - tw.min_lat) as end_lat,
+    tw.min_lng + (ABS(HASH(tw.car_id, tw.trip_id, 'end_lng')) % 1000) / 1000.0 * (tw.max_lng - tw.min_lng) as end_lng,
+    
+    -- Calculate progress through trip (0 to 1)
+    (tw.point_num - 1) / CAST(tw.total_points - 1 AS DOUBLE) as trip_progress
+  FROM trip_waypoints tw
+),
+
+-- Calculate final coordinates and vehicle metrics
+final_data AS (
+  SELECT 
+    td.car_id,
+    td.trip_id,
+    td.waypoint_time as time,
+    
+    -- Interpolate coordinates along the trip path
+    ROUND(td.start_lat + td.trip_progress * (td.end_lat - td.start_lat) + 
+          ((ABS(HASH(td.car_id, td.trip_id, td.point_num, 'lat_noise')) % 100) - 50) / 100000.0, 6) as latitude,
+    ROUND(td.start_lng + td.trip_progress * (td.end_lng - td.start_lng) + 
+          ((ABS(HASH(td.car_id, td.trip_id, td.point_num, 'lng_noise')) % 100) - 50) / 100000.0, 6) as longitude,
+    
+    -- Calculate odometer: starts from car-specific base, increases with each trip
+    ROUND(50000 + (ABS(HASH(td.car_id)) % 100000) + 
+          (ROW_NUMBER() OVER (PARTITION BY td.car_id ORDER BY td.trip_start_time, td.point_num) - 1) * 0.5 + 
+          td.trip_progress * (td.trip_distance_miles), 1) as odometer,
+    
+    -- Calculate fuel: starts full, decreases during trip based on distance
+    ROUND(GREATEST(5.0, 
+                  50.0 - (td.trip_progress * td.trip_distance_miles * 0.04) - 
+                  (ROW_NUMBER() OVER (PARTITION BY td.car_id, td.trip_date ORDER BY td.trip_start_time, td.point_num) - 1) * 0.3), 
+          1) as fuel,
+    
+    td.state
+  FROM trip_details td
+)
+
+-- Final SELECT with proper ordering
+SELECT 
+  car_id,
+  trip_id,
+  time,
+  odometer,
+  fuel,
+  longitude,
+  latitude
+FROM final_data
+ORDER BY car_id, trip_id, time;
+```
+##### Create trip_summary view with following columns
+- car_id,
+- trip_id,
+- start_time
+- end_time
+- start_fuel
+- end_fuel
+- start_long
+- end_long
+- start_lat
+- end_lat
+- trip_distance : calculated as difference between last and 1st odometer values
+- avg_speed :  as trip_distance / (end-time - start_time), in mph
+- time_gap_after_previous_trip in minutes ( NULL for 1st trip)
+
+
+
+
 ### There is  csv file in Databriks.
 It has following columns:
 car_id, trip_id, time, odometer, longitude, latitude.
