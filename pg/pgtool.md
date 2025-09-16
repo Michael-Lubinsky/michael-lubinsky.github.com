@@ -5,6 +5,150 @@ Some Postgres tables are created with timescaledb extension, but others are not 
 What is the best practice to archive the old records ( 90 days back from now) into Azure Blob Storage?
 Also it should be possible to restore archived data back to Postgres if required.
 
+## Gemini
+
+Yes! While PostgreSQL itself doesn’t have a built-in extension to **automatically archive partitions to Azure Blob Storage and drop them**, you can achieve this using a combination of **TimescaleDB**, **PostgreSQL functions**, and **Azure tools**. Here’s how:
+
+---
+
+### **Solution Overview**
+1. **TimescaleDB for Partitioning**: Use TimescaleDB to manage time-based partitions.
+2. **Custom Function for Archiving**: Write a PostgreSQL function to export old partitions to a file.
+3. **Azure Blob Storage Upload**: Use `azcopy` or Azure Storage SDK to upload the exported files.
+4. **Drop Old Partitions**: Use TimescaleDB’s `drop_chunks` function.
+5. **Automation**: Schedule the process with `pg_cron` or an external scheduler (e.g., Azure Functions).
+
+---
+
+### **Step-by-Step Implementation**
+
+#### **1. Set Up TimescaleDB**
+Ensure your hypertable is partitioned by time:
+```sql
+-- Convert a regular table to a hypertable
+SELECT create_hypertable(
+    'your_table',
+    'time_column',
+    chunk_time_interval => INTERVAL '1 month'  -- Adjust based on your retention policy
+);
+```
+
+---
+
+#### **2. Create a Function to Export Partitions**
+This function exports a chunk (partition) to a CSV file:
+
+```sql
+CREATE OR REPLACE FUNCTION export_chunk_to_file(chunk_name TEXT, file_path TEXT) RETURNS VOID AS $$
+DECLARE
+    query TEXT;
+BEGIN
+    query := format('COPY (SELECT * FROM %I) TO %L WITH CSV HEADER', chunk_name, file_path);
+    EXECUTE query;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+---
+
+#### **3. Upload to Azure Blob Storage**
+Use `azcopy` (Azure CLI tool) to upload the CSV file. You can call this from PostgreSQL using `pg_exec` (if available) or an external script.
+
+**Example Bash Script** (run outside PostgreSQL):
+```bash
+#!/bin/bash
+FILE_PATH="/tmp/old_chunk.csv"
+BLOB_PATH="https://yourstorageaccount.blob.core.windows.net/yourcontainer/old_chunk_$(date +%Y%m%d).csv?your_sas_token"
+
+# Export the chunk
+psql -U your_user -d your_db -c "SELECT export_chunk_to_file('your_chunk_name', '$FILE_PATH');"
+
+# Upload to Azure Blob Storage
+azcopy copy "$FILE_PATH" "$BLOB_PATH"
+```
+
+---
+
+#### **4. Drop Old Partitions**
+Use TimescaleDB’s `drop_chunks` function to remove old data after archiving:
+
+```sql
+-- Drop chunks older than a specific date
+SELECT drop_chunks(
+    interval '6 months',  -- Retention period
+    'your_hypertable',
+    older_than => NOW() - INTERVAL '6 months'
+);
+```
+
+---
+
+#### **5. Automate with `pg_cron`**
+Schedule the archiving and cleanup process using the `pg_cron` extension:
+
+```sql
+-- Enable pg_cron
+CREATE EXTENSION pg_cron;
+
+-- Schedule a job to run monthly
+SELECT cron.schedule(
+    'archive-and-drop-old-chunks',
+    '0 0 1 * *',  -- At 00:00 on the 1st day of every month
+    $$
+    SELECT your_archive_function();
+    SELECT drop_chunks(interval '6 months', 'your_hypertable', older_than => NOW() - INTERVAL '6 months');
+    $$
+);
+```
+
+---
+
+### **Alternative: Use Azure Data Factory**
+If you prefer a no-code solution:
+1. **Use Azure Data Factory (ADF)** to create a pipeline that:
+   - Queries old partitions from PostgreSQL.
+   - Uploads the data to Azure Blob Storage.
+   - Calls a stored procedure to drop the old partitions.
+
+---
+
+### **Example Workflow**
+1. **Identify Old Chunks**:
+   ```sql
+   SELECT show_chunks('your_hypertable', older_than => NOW() - INTERVAL '6 months');
+   ```
+
+2. **Export and Upload**:
+   - Use the `export_chunk_to_file` function to export each chunk.
+   - Upload the file to Azure Blob Storage using `azcopy`.
+
+3. **Drop Chunks**:
+   ```sql
+   SELECT drop_chunks(interval '6 months', 'your_hypertable', older_than => NOW() - INTERVAL '6 months');
+   ```
+
+---
+
+### **Key Tools and Extensions**
+| **Tool/Extension** | **Purpose**                                      |
+|--------------------|--------------------------------------------------|
+| TimescaleDB        | Manage time-series data and chunks.             |
+| `pg_cron`          | Schedule periodic tasks in PostgreSQL.          |
+| `azcopy`           | Upload files to Azure Blob Storage.             |
+| Azure Functions    | Automate the process with serverless functions.|
+| Azure Data Factory | No-code pipeline for data movement.            |
+
+---
+
+### **Notes**
+- **Permissions**: Ensure your PostgreSQL user has permissions to read, export, and drop chunks.
+- **Error Handling**: Add error handling to your function/script to manage failures.
+- **Testing**: Test the process on a non-production environment first.
+
+---
+**Let me know:**
+- Do you need help setting up any specific part of this workflow?
+- Are you using TimescaleDB, or do you need guidance on setting it up?
 ## claude.ai
 
 For archiving old records from PostgreSQL to Azure Blob Storage with restore capability, here's a comprehensive approach that handles both regular and TimescaleDB tables:
