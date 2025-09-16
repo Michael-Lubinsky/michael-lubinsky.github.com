@@ -2,6 +2,8 @@
 
 https://ru.algorithmica.org/
 
+https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
+
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
 https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf
