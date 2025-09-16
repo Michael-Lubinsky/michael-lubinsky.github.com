@@ -4,6 +4,8 @@
 
 <https://byteofdev.com/posts/tuning-postgres-intro/>
 
+<https://theperfparlor.com/2025/09/10/boost-postgresql-performance-with-effective-indexing/>
+
 <https://habr.com/ru/articles/931410/>
 
 <https://github.com/danolivo/conf/blob/main/2024-Postgres-Analytics/postgres-analytics.pdf>
