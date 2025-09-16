@@ -6,6 +6,8 @@
 
 <https://theperfparlor.com/2025/09/10/boost-postgresql-performance-with-effective-indexing/>
 
+<https://www.architecture-weekly.com/p/postgresql-partitioning-logical-replication>
+
 <https://habr.com/ru/articles/931410/>
 
 <https://github.com/danolivo/conf/blob/main/2024-Postgres-Analytics/postgres-analytics.pdf>
