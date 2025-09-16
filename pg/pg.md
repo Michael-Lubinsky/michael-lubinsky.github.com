@@ -66,7 +66,7 @@ BEGIN
         start_time := clock_timestamp();
         RAISE NOTICE '[%] Starting processing date: %', start_time, date_to_process;
         
-        CALL gold.ptt_sent_by_channel_type_daily(date_to_process::text);
+        CALL gold.ptt_sent_by_channel_type_daily(date_to_process);
         
         end_time := clock_timestamp();
         elapsed_interval := end_time - start_time;
