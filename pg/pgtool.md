@@ -18,6 +18,98 @@ into given ADLS Gen2 folder.
 The backup file should have name table.YYYY-MM-DD.csv.
 After backup is completed the stored procedure should drop this partition.
 ```
+### Mistral
+Here’s a PostgreSQL stored procedure for your Azure Flexible Server setup. This procedure will:
+
+1. Identify the chunk (partition) that is 30 days old from `CURRENT_DATE`.
+2. Export that chunk’s data to a CSV file in your ADLS Gen2 folder, named as `table.YYYY-MM-DD.csv`.
+3. Drop the chunk after successful backup.
+
+**Assumptions:**
+- You have the `azure_extension` or `pg_read_file`/`pg_write_file` capabilities (or use `azure_storage` extension if available).
+- You have the necessary permissions to write to ADLS Gen2.
+- The table name and schema are known and passed as parameters.
+
+```sql
+CREATE OR REPLACE PROCEDURE backup_and_drop_old_chunk(
+    p_schema_name TEXT,
+    p_table_name TEXT,
+    p_adls_path TEXT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_chunk_name TEXT;
+    v_backup_date DATE := CURRENT_DATE - 30;
+    v_file_name TEXT := format('%s.%s.csv', p_table_name, to_char(v_backup_date, 'YYYY-MM-DD'));
+    v_adls_full_path TEXT := format('%s/%s', p_adls_path, v_file_name);
+    v_query TEXT;
+    v_success BOOLEAN := FALSE;
+BEGIN
+    -- Find the chunk for the target date
+    SELECT chunk_schema || '.' || chunk_name INTO v_chunk_name
+    FROM timescaledb_information.chunks
+    WHERE hypertable_schema = p_schema_name
+      AND hypertable_name = p_table_name
+      AND range_start <= v_backup_date
+      AND range_end > v_backup_date;
+
+    IF v_chunk_name IS NULL THEN
+        RAISE NOTICE 'No chunk found for date %', v_backup_date;
+        RETURN;
+    END IF;
+
+    RAISE NOTICE 'Backing up chunk % to %', v_chunk_name, v_adls_full_path;
+
+    -- Export chunk data to ADLS Gen2 as CSV
+    -- NOTE: Replace with your actual ADLS export method (e.g., using azure_extension or COPY with credentials)
+    -- This is a placeholder for the export logic
+    v_query := format('COPY (SELECT * FROM %I) TO PROGRAM ''azcopy copy --from-to=LocalBlob ''%s'' --destination=%s'' WITH CSV HEADER',
+                      v_chunk_name, '/tmp/temp.csv', v_adls_full_path);
+
+    -- For Azure, you might use a different approach, such as:
+    -- v_query := format('SELECT azure_export_to_adls(%L, %L, %L)', v_chunk_name, v_adls_full_path, 'CSV');
+
+    BEGIN
+        EXECUTE v_query;
+        v_success := TRUE;
+        RAISE NOTICE 'Backup completed successfully';
+    EXCEPTION WHEN OTHERS THEN
+        RAISE EXCEPTION 'Backup failed: %', SQLERRM;
+    END;
+
+    -- Drop the chunk if backup was successful
+    IF v_success THEN
+        RAISE NOTICE 'Dropping chunk %', v_chunk_name;
+        EXECUTE format('SELECT drop_chunks(%L, older_than => %L);', v_chunk_name, v_backup_date);
+        -- Or, if you want to drop a specific chunk:
+        -- EXECUTE format('DROP TABLE %I', v_chunk_name);
+    END IF;
+END;
+$$;
+```
+
+---
+
+### **How to Use**
+- Replace the `COPY ... TO PROGRAM` or `azure_export_to_adls` logic with your actual method for exporting to ADLS Gen2.
+- If you use `azcopy` or another CLI tool, ensure it is installed and accessible from PostgreSQL.
+- For Azure-specific extensions, refer to [Azure Database for PostgreSQL documentation](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/).
+
+### **Scheduling with pg_cron**
+```sql
+SELECT cron.schedule(
+    'daily-backup-and-drop',
+    '0 3 * * *',  -- Every day at 3 AM
+    $$CALL backup_and_drop_old_chunk('your_schema', 'your_table', 'abfss://yourcontainer@yourstorage.dfs.core.windows.net/yourfolder')$$
+);
+```
+
+---
+
+**Let me know if you need help with the ADLS export logic or have any other requirements!**
+
+
 ## Gemini
 
 Yes! While PostgreSQL itself doesn’t have a built-in extension to **automatically archive partitions to Azure Blob Storage and drop them**, you can achieve this using a combination of **TimescaleDB**, **PostgreSQL functions**, and **Azure tools**. Here’s how:
