@@ -4,7 +4,7 @@
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
 <https://habr.com/ru/companies/otus/articles/941456/>  
 <https://habr.com/ru/companies/ppr/articles/947852/> Dynamic SQL
- 
+<https://learn.microsoft.com/en-us/azure/postgresql/extensions/how-to-allow-extensions>  Postgres on Azure Extensions
 https://habr.com/ru/articles/946274/  Regular Expressions, LIKE, SIMILAR TO
 
 
