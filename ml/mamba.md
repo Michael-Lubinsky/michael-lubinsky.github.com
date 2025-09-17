@@ -98,6 +98,9 @@ https://habr.com/ru/companies/yandex_praktikum/articles/901432/
 
 https://www.kaggle.com/discussions/getting-started/390402
 
+## AI Chip startups
+
+https://groq.com/careers
 
 
 ### Ads clicks prediction
