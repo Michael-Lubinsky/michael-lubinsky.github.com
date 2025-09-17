@@ -7,7 +7,7 @@
 
 ![](Spark_plan_building_steps.png)
 
-
+Spark connect: <https://habr.com/ru/companies/arenadata/articles/921246/>
 ### Reading files
 ```
 spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
