@@ -1213,7 +1213,115 @@ SELECT cron.schedule(
 
 ---
 
-**Let me know if you need help with the ADLS export logic or have any other requirements!**
+Here’s an updated stored procedure that:
+1. Exports the 30-day-old chunk to a **compressed CSV (`.csv.gz`)** file in ADLS Gen2.
+2. After backup, **drops the chunk**.
+3. Optionally, **re-inserts the data** from the compressed backup into the table (if needed for recovery or audit).
+
+This version uses `COPY ... TO PROGRAM` with `gzip` for compression, and `COPY ... FROM PROGRAM` with `gunzip` for re-insertion.
+**Assumptions:**
+- `gzip` and `gunzip` are available on the PostgreSQL server.
+- You have a way to write to ADLS Gen2 (e.g., using `azcopy` or a custom function).
+- You have the necessary permissions.
+
+---
+
+### **Stored Procedure**
+
+```sql
+CREATE OR REPLACE PROCEDURE backup_and_drop_old_chunk(
+    p_schema_name TEXT,
+    p_table_name TEXT,
+    p_adls_path TEXT,
+    p_reinsert BOOLEAN DEFAULT FALSE
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_chunk_name TEXT;
+    v_backup_date DATE := CURRENT_DATE - 30;
+    v_file_name TEXT := format('%s.%s.csv.gz', p_table_name, to_char(v_backup_date, 'YYYY-MM-DD'));
+    v_adls_full_path TEXT := format('%s/%s', p_adls_path, v_file_name);
+    v_local_temp_file TEXT := '/tmp/' || v_file_name;
+    v_query TEXT;
+    v_success BOOLEAN := FALSE;
+BEGIN
+    -- Find the chunk for the target date
+    SELECT chunk_schema || '.' || chunk_name INTO v_chunk_name
+    FROM timescaledb_information.chunks
+    WHERE hypertable_schema = p_schema_name
+      AND hypertable_name = p_table_name
+      AND range_start <= v_backup_date
+      AND range_end > v_backup_date;
+
+    IF v_chunk_name IS NULL THEN
+        RAISE NOTICE 'No chunk found for date %', v_backup_date;
+        RETURN;
+    END IF;
+
+    RAISE NOTICE 'Backing up chunk % to %', v_chunk_name, v_adls_full_path;
+
+    -- Step 1: Export chunk data to local temp file as CSV, then compress with gzip
+    v_query := format('COPY (SELECT * FROM %I) TO PROGRAM ''gzip > %s'' WITH CSV HEADER', v_chunk_name, v_local_temp_file);
+
+    BEGIN
+        EXECUTE v_query;
+        RAISE NOTICE 'Local backup completed: %', v_local_temp_file;
+
+        -- Step 2: Upload to ADLS Gen2 (replace with your actual upload command)
+        -- Example using azcopy (ensure azcopy is installed and configured)
+        v_query := format('SELECT pg_exec(''azcopy copy "%s" "%s" --recursive'')', v_local_temp_file, v_adls_full_path);
+        EXECUTE v_query;
+        RAISE NOTICE 'Uploaded to ADLS: %', v_adls_full_path;
+        v_success := TRUE;
+    EXCEPTION WHEN OTHERS THEN
+        RAISE EXCEPTION 'Backup failed: %', SQLERRM;
+    END;
+
+    -- Step 3: Drop the chunk if backup was successful
+    IF v_success THEN
+        RAISE NOTICE 'Dropping chunk %', v_chunk_name;
+        EXECUTE format('SELECT drop_chunks(%L, older_than => %L);', v_chunk_name, v_backup_date);
+    END IF;
+
+    -- Step 4: Optionally, re-insert data from the compressed backup
+    IF v_success AND p_reinsert THEN
+        RAISE NOTICE 'Re-inserting data from backup %', v_local_temp_file;
+        v_query := format('COPY %I FROM PROGRAM ''gunzip -c %s'' WITH CSV HEADER', v_chunk_name, v_local_temp_file);
+        BEGIN
+            EXECUTE v_query;
+            RAISE NOTICE 'Data re-inserted successfully';
+        EXCEPTION WHEN OTHERS THEN
+            RAISE EXCEPTION 'Re-insert failed: %', SQLERRM;
+        END;
+    END IF;
+
+    -- Clean up local temp file
+    EXECUTE format('SELECT pg_exec(''rm -f %s'')', v_local_temp_file);
+END;
+$$;
+```
+
+---
+
+### **Notes**
+- **`pg_exec`** is a placeholder for executing shell commands. If not available, use a custom function or extension.
+- For **ADLS upload**, replace the `azcopy` command with your actual method (e.g., using a custom function or extension).
+- If you want to **skip re-insertion**, set `p_reinsert` to `FALSE` when calling the procedure.
+
+---
+
+### **Scheduling with pg_cron**
+```sql
+SELECT cron.schedule(
+    'daily-backup-and-drop',
+    '0 3 * * *',  -- Every day at 3 AM
+    $$CALL backup_and_drop_old_chunk('your_schema', 'your_table', 'abfss://yourcontainer@yourstorage.dfs.core.windows.net/yourfolder', FALSE)$$
+);
+```
+
+---
+ 
 
 
 ## Gemini
