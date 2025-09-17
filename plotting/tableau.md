@@ -1,6 +1,6 @@
 # How to Learn Tableau for Free
 
----
+<https://habr.com/ru/companies/yandex_praktikum/articles/946994/>
 
 ## ✅ 1. Tableau's Official Free Resources
 
