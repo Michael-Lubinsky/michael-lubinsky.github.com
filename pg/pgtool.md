@@ -9,7 +9,7 @@ Also it should be possible to restore archived data back to Postgres if required
 
 
 ```
-There is Postgres 16 on Azure Cloud Flexible service.
+There is Postgres 16 on Azure Cloud Flexible Server.
 There is Postgres table created with timescaledb extension.
 The chunk partition interval  is 1 day.
 Please write Postgres stored procedure which will be called daily by pg_cron extension.
@@ -18,7 +18,14 @@ into given ADLS Gen2 folder.
 The backup file should have name table.YYYY-MM-DD.csv.
 After backup is completed the stored procedure should drop this partition.
 ```
+```
+ As of PostgreSQL 16 and TimescaleDB, there is no built-in pg_zip function in standard PostgreSQL or TimescaleDB. The pg_zip extension is not part of the core distribution and is not widely available on managed services like Azure Database for PostgreSQL Flexible Server.
+Why the Above Approach Uses gzip/gunzip
 
+gzip/gunzip are standard Unix utilities, almost always available on PostgreSQL servers (including Azure Flexible Server).
+COPY ... TO/FROM PROGRAM is a PostgreSQL feature that allows you to pipe data through shell commands, making it a reliable way to compress/decompress data on the fly.
+Managed services (like Azure) often restrict custom extensions, but allow shell commands via COPY ... PROGRAM if properly configured.
+```
 ### Claude
 I'll create a PostgreSQL stored procedure that backs up old TimescaleDB partitions to Azure Data Lake Storage Gen2 and then drops them. This requires using the `azure_storage` extension for ADLS Gen2 integration.I've created a comprehensive PostgreSQL stored procedure for backing up and dropping old TimescaleDB partitions. Here are the key features:
 
