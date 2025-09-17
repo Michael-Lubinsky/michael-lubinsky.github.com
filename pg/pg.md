@@ -12,8 +12,10 @@ https://habr.com/ru/articles/946274/  Regular Expressions, LIKE, SIMILAR TO
 ### 
 
 ```sql
-select current_schema() ƒ
+select current_schema()
 select current_database()
+select current_user
+
 show  search_path
 RAISE NOTICE 'Value of x = %', x;
 ```
