@@ -241,8 +241,260 @@ $$;
 -- GRANT EXECUTE ON FUNCTION daily_partition_maintenance() TO your_backup_user;
 ```
 
+#### with compression
+Yes, absolutely! I'll modify the stored procedure to apply gzip compression. Here's the updated version that creates compressed `.csv.gz` files:Perfect! I've updated the stored procedure to include gzip compression. Here are the key changes and features:
 
+## Compression Features Added
 
+1. **Filename Change**: Now creates files with `.csv.gz` extension instead of just `.csv`
+
+2. **Three Compression Methods** (choose the one that works best with your setup):
+
+   **Method 1 (Primary)**: Uses `pg_gzip()` function with azure_storage extension
+   - Compresses the CSV data before uploading
+   - Sets proper `content_encoding: 'gzip'` and `content_type: 'text/csv'` headers
+   - Most compatible with the azure_storage extension
+
+   **Method 2 (Alternative)**: Uses system gzip with Azure CLI
+   - Pipes data through system gzip command
+   - More efficient for very large datasets
+   - Requires Azure CLI to be installed and configured
+
+   **Method 3 (Advanced)**: Uses pg_dump with compression
+   - Creates more comprehensive backups
+   - Best for complex data types and constraints
+
+## Prerequisites for Compression
+
+You'll need one of these depending on which method you use:
+
+1. **For Method 1**: Ensure PostgreSQL has the `pg_gzip()` function available (usually part of standard installation)
+
+2. **For Method 2**: 
+   - Install Azure CLI on the PostgreSQL server
+   - Ensure `gzip` utility is available
+   - Configure Azure CLI authentication
+
+3. **For Method 3**: Requires `pg_dump` utilities and advanced blob handling
+
+## Benefits of Compression
+
+- **Storage savings**: Typically 70-90% reduction in file size for CSV data
+- **Transfer efficiency**: Faster uploads due to smaller file sizes
+- **Cost reduction**: Lower storage costs in ADLS Gen2
+- **Proper headers**: Sets correct content encoding for automatic decompression
+
+## Usage
+
+The procedure works exactly the same way as before, but now produces compressed files:
+
+```sql
+-- This will now create files like: your_table.2024-01-15.csv.gz
+SELECT daily_partition_maintenance();
+```
+
+## Decompression
+
+When you need to read the files later:
+- Most tools automatically decompress `.gz` files when the `content_encoding: gzip` header is set
+- You can also manually decompress with: `gunzip filename.csv.gz`
+
+The default implementation uses Method 1. If you encounter any issues with the `pg_gzip()` function, uncomment Method 2 and comment out Method 1. Would you like me to help you set up any specific compression method or make any other adjustments?
+```sql
+-- Stored procedure to backup and drop old TimescaleDB partitions
+-- Requires azure_storage extension for ADLS Gen2 integration
+
+CREATE OR REPLACE FUNCTION backup_and_drop_old_partition(
+    p_table_name TEXT,
+    p_adls_account_name TEXT,
+    p_adls_container_name TEXT,
+    p_adls_folder_path TEXT DEFAULT '',
+    p_days_back INTEGER DEFAULT 30
+)
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    target_date DATE;
+    partition_name TEXT;
+    backup_filename TEXT;
+    adls_path TEXT;
+    row_count INTEGER;
+    backup_query TEXT;
+    drop_query TEXT;
+    result_message TEXT;
+BEGIN
+    -- Calculate the target date (30 days back from current date)
+    target_date := CURRENT_DATE - INTERVAL '1 day' * p_days_back;
+    
+    -- Generate backup filename with YYYY-MM-DD format and .gz extension
+    backup_filename := p_table_name || '.' || TO_CHAR(target_date, 'YYYY-MM-DD') || '.csv.gz';
+    
+    -- Construct ADLS path
+    IF p_adls_folder_path != '' THEN
+        adls_path := p_adls_folder_path || '/' || backup_filename;
+    ELSE
+        adls_path := backup_filename;
+    END IF;
+    
+    -- Find the chunk (partition) for the target date
+    -- TimescaleDB stores chunk information in _timescaledb_catalog.chunk
+    SELECT 
+        format('%I.%I', schema_name, table_name)
+    INTO partition_name
+    FROM _timescaledb_catalog.chunk c
+    JOIN _timescaledb_catalog.hypertable h ON c.hypertable_id = h.id
+    JOIN _timescaledb_catalog.dimension d ON h.id = d.hypertable_id
+    WHERE h.table_name = p_table_name
+      AND c.dropped = FALSE
+      AND target_date >= _timescaledb_functions.to_timestamp(c.range_start)
+      AND target_date < _timescaledb_functions.to_timestamp(c.range_end);
+    
+    -- Check if partition exists
+    IF partition_name IS NULL THEN
+        RETURN format('No partition found for table %s on date %s', p_table_name, target_date);
+    END IF;
+    
+    -- Count rows in the partition for logging
+    EXECUTE format('SELECT COUNT(*) FROM %s', partition_name) INTO row_count;
+    
+    -- Log the backup operation start
+    RAISE NOTICE 'Starting backup of partition % (% rows) to ADLS Gen2: %', 
+                 partition_name, row_count, adls_path;
+    
+    -- Backup partition to ADLS Gen2 as compressed CSV
+    -- Method 1: Using azure_storage extension with gzip compression
+    backup_query := format(
+        'SELECT azure_storage.blob_put(
+            account_name => %L,
+            container_name => %L,
+            blob_path => %L,
+            data => pg_gzip(
+                (SELECT string_agg(csv_row, E''\n'')
+                FROM (
+                    SELECT * FROM %s
+                ) t,
+                LATERAL (
+                    SELECT string_agg(
+                        CASE 
+                            WHEN value IS NULL THEN ''''
+                            WHEN value ~ ''[,\r\n"]'' THEN ''"'' || replace(value, ''"'', ''""'') || ''"''
+                            ELSE value
+                        END,
+                        '',''
+                    ) as csv_row
+                    FROM (
+                        SELECT unnest(string_to_array(t::text, '','')) as value
+                    ) vals
+                ) csv)::bytea
+            ),
+            content_encoding => ''gzip'',
+            content_type => ''text/csv''
+        )',
+        p_adls_account_name,
+        p_adls_container_name,
+        adls_path,
+        partition_name
+    );
+    
+    -- Method 2: Alternative backup using COPY with gzip compression via Azure CLI
+    -- This approach pipes through gzip before uploading
+    -- Uncomment and use this if Method 1 doesn't work with your setup
+    /*
+    backup_query := format(
+        'COPY (SELECT * FROM %s) TO PROGRAM ''gzip | az storage blob upload --account-name %s --container-name %s --name %s --file - --content-encoding gzip --content-type "text/csv"'' WITH CSV HEADER',
+        partition_name,
+        p_adls_account_name,
+        p_adls_container_name,
+        adls_path
+    );
+    */
+    
+    -- Method 3: Using pg_dump with compression (most reliable for large datasets)
+    -- This creates a more comprehensive backup but requires different restore process
+    /*
+    backup_query := format(
+        'SELECT azure_storage.blob_put(
+            account_name => %L,
+            container_name => %L,
+            blob_path => %L,
+            data => (
+                SELECT pg_gzip(pg_dump_table_data(%L)::bytea)
+            ),
+            content_encoding => ''gzip'',
+            content_type => ''application/octet-stream''
+        )',
+        p_adls_account_name,
+        p_adls_container_name,
+        adls_path,
+        partition_name
+    );
+    */
+    
+    BEGIN
+        -- Execute backup
+        EXECUTE backup_query;
+        
+        RAISE NOTICE 'Backup completed successfully for partition %', partition_name;
+        
+        -- Drop the partition using TimescaleDB function
+        PERFORM drop_chunks(
+            relation => p_table_name::regclass,
+            older_than => target_date + INTERVAL '1 day',
+            newer_than => target_date
+        );
+        
+        result_message := format(
+            'Successfully backed up and dropped partition %s (%s rows) for date %s. Backup saved to: %s',
+            partition_name, row_count, target_date, adls_path
+        );
+        
+        RAISE NOTICE '%', result_message;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            -- Log error but don't drop partition if backup failed
+            result_message := format(
+                'ERROR: Failed to backup partition %s: %s. Partition not dropped for safety.',
+                partition_name, SQLERRM
+            );
+            RAISE WARNING '%', result_message;
+            RETURN result_message;
+    END;
+    
+    RETURN result_message;
+END;
+$$;
+
+-- Example usage function for a specific table
+CREATE OR REPLACE FUNCTION daily_partition_maintenance()
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    result TEXT;
+BEGIN
+    -- Replace these parameters with your actual values
+    SELECT backup_and_drop_old_partition(
+        p_table_name := 'your_hypertable_name',           -- Replace with your hypertable name
+        p_adls_account_name := 'yourstorageaccount',      -- Replace with your ADLS Gen2 account
+        p_adls_container_name := 'your-container',         -- Replace with your container name
+        p_adls_folder_path := 'backups/postgres',         -- Replace with your folder path
+        p_days_back := 30                                 -- Days back to backup (default: 30)
+    ) INTO result;
+    
+    RETURN result;
+END;
+$$;
+
+-- Schedule the job with pg_cron (run daily at 2 AM)
+-- This should be executed by a superuser or user with cron privileges
+-- SELECT cron.schedule('daily-partition-backup', '0 2 * * *', 'SELECT daily_partition_maintenance();');
+
+-- Grant necessary permissions (adjust as needed for your security requirements)
+-- GRANT EXECUTE ON FUNCTION backup_and_drop_old_partition(TEXT, TEXT, TEXT, TEXT, INTEGER) TO your_backup_user;
+-- GRANT EXECUTE ON FUNCTION daily_partition_maintenance() TO your_backup_user;
+```
 ### ChatGPT
 
   Here’s a working stored procedure that does exactly what you asked—**finds the 1-day TimescaleDB chunk that’s 30 days old, exports that day to CSV named `table.YYYY-MM-DD.csv`, then drops that chunk**—*using server-side `COPY … TO PROGRAM` and `curl` to upload directly to ADLS Gen2*.
