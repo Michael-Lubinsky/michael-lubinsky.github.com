@@ -1,3 +1,7 @@
+<https://commoncog.com/a-framework-for-putting-mental-models-to-practice/>
+
+<https://commoncog.com/how-note-taking-can-help-you-become-an-expert/>
+
 <https://habr.com/ru/companies/otus/articles/934318/>
 
 <https://habr.com/ru/companies/otus/articles/932792/>
