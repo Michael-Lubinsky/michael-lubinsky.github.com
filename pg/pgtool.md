@@ -495,7 +495,7 @@ $$;
 -- GRANT EXECUTE ON FUNCTION backup_and_drop_old_partition(TEXT, TEXT, TEXT, TEXT, INTEGER) TO your_backup_user;
 -- GRANT EXECUTE ON FUNCTION daily_partition_maintenance() TO your_backup_user;
 ```
-### ChatGPT
+## ChatGPT
 
   Here’s a working stored procedure that does exactly what you asked—**finds the 1-day TimescaleDB chunk that’s 30 days old, exports that day to CSV named `table.YYYY-MM-DD.csv`, then drops that chunk**—*using server-side `COPY … TO PROGRAM` and `curl` to upload directly to ADLS Gen2*.
 
@@ -504,7 +504,7 @@ $$;
 
 ---
 
-# A) Server-side (works only if `COPY TO PROGRAM` is allowed)
+### A) Server-side (works only if `COPY TO PROGRAM` is allowed)
 
 ```sql
 -- Schema to keep admin routines
@@ -640,7 +640,7 @@ SELECT cron.schedule(
 
 ---
 
-# B) If Azure blocks `COPY TO PROGRAM` (common)
+### B) If Azure blocks `COPY TO PROGRAM` (common)
 
 Use a **client-side exporter** and let Postgres only tell you *which day to export* and **drop the chunk after a verified upload**.
 
