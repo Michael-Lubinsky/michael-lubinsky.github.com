@@ -59,6 +59,8 @@ https://lptk.github.io/programming/2019/10/15/simple-essence-y-combinator.html
 
 ### Queue
 
+https://newsletter.scalablethread.com/p/why-event-driven-systems-are-hard
+
 https://blog.danslimmon.com/2016/08/26/the-most-important-thing-to-understand-about-queues/
 
 https://concerningquality.com/queue-simulations/
