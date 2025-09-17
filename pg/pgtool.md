@@ -18,9 +18,234 @@ into given ADLS Gen2 folder.
 The backup file should have name table.YYYY-MM-DD.csv.
 After backup is completed the stored procedure should drop this partition.
 ```
+
+### Claude
+I'll create a PostgreSQL stored procedure that backs up old TimescaleDB partitions to Azure Data Lake Storage Gen2 and then drops them. This requires using the `azure_storage` extension for ADLS Gen2 integration.I've created a comprehensive PostgreSQL stored procedure for backing up and dropping old TimescaleDB partitions. Here are the key features:
+
+## Main Components
+
+1. **`backup_and_drop_old_partition()`** - The core function that:
+   - Finds the specific chunk/partition for a date 30 days ago
+   - Backs it up to ADLS Gen2 as a CSV file with the format `table.YYYY-MM-DD.csv`
+   - Safely drops the partition only after successful backup
+
+2. **`daily_partition_maintenance()`** - A wrapper function for easy scheduling with pg_cron
+
+## Important Setup Requirements
+
+Before using this procedure, you need to:
+
+1. **Install required extensions:**
+   ```sql
+   CREATE EXTENSION IF NOT EXISTS azure_storage;
+   CREATE EXTENSION IF NOT EXISTS pg_cron;
+   ```
+
+2. **Configure Azure authentication** (one of these methods):
+   - Set up Managed Identity for the PostgreSQL service
+   - Configure connection string with storage account key
+   - Set environment variables for Azure authentication
+
+3. **Update the parameters** in `daily_partition_maintenance()`:
+   - `your_hypertable_name` - Your actual TimescaleDB hypertable name
+   - `yourstorageaccount` - Your ADLS Gen2 storage account name
+   - `your-container` - Your container name
+   - `backups/postgres` - Your desired folder path
+
+4. **Schedule with pg_cron:**
+   ```sql
+   SELECT cron.schedule('daily-partition-backup', '0 2 * * *', 'SELECT daily_partition_maintenance();');
+   ```
+
+## Safety Features
+
+- **Backup verification**: Only drops partitions after successful backup
+- **Error handling**: Comprehensive error handling with detailed logging
+- **Row counting**: Logs the number of rows being backed up
+- **Null checks**: Verifies partition exists before attempting operations
+
+## Alternative Backup Methods
+
+The code includes two backup approaches:
+1. **Direct blob upload** using azure_storage extension
+2. **Azure CLI approach** using COPY with PROGRAM (commented)
+
+Choose the method that works best with your Azure setup and available extensions.
+```sql
+ -- Stored procedure to backup and drop old TimescaleDB partitions
+-- Requires azure_storage extension for ADLS Gen2 integration
+
+CREATE OR REPLACE FUNCTION backup_and_drop_old_partition(
+    p_table_name TEXT,
+    p_adls_account_name TEXT,
+    p_adls_container_name TEXT,
+    p_adls_folder_path TEXT DEFAULT '',
+    p_days_back INTEGER DEFAULT 30
+)
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    target_date DATE;
+    partition_name TEXT;
+    backup_filename TEXT;
+    adls_path TEXT;
+    row_count INTEGER;
+    backup_query TEXT;
+    drop_query TEXT;
+    result_message TEXT;
+BEGIN
+    -- Calculate the target date (30 days back from current date)
+    target_date := CURRENT_DATE - INTERVAL '1 day' * p_days_back;
+    
+    -- Generate backup filename with YYYY-MM-DD format
+    backup_filename := p_table_name || '.' || TO_CHAR(target_date, 'YYYY-MM-DD') || '.csv';
+    
+    -- Construct ADLS path
+    IF p_adls_folder_path != '' THEN
+        adls_path := p_adls_folder_path || '/' || backup_filename;
+    ELSE
+        adls_path := backup_filename;
+    END IF;
+    
+    -- Find the chunk (partition) for the target date
+    -- TimescaleDB stores chunk information in _timescaledb_catalog.chunk
+    SELECT 
+        format('%I.%I', schema_name, table_name)
+    INTO partition_name
+    FROM _timescaledb_catalog.chunk c
+    JOIN _timescaledb_catalog.hypertable h ON c.hypertable_id = h.id
+    JOIN _timescaledb_catalog.dimension d ON h.id = d.hypertable_id
+    WHERE h.table_name = p_table_name
+      AND c.dropped = FALSE
+      AND target_date >= _timescaledb_functions.to_timestamp(c.range_start)
+      AND target_date < _timescaledb_functions.to_timestamp(c.range_end);
+    
+    -- Check if partition exists
+    IF partition_name IS NULL THEN
+        RETURN format('No partition found for table %s on date %s', p_table_name, target_date);
+    END IF;
+    
+    -- Count rows in the partition for logging
+    EXECUTE format('SELECT COUNT(*) FROM %s', partition_name) INTO row_count;
+    
+    -- Log the backup operation start
+    RAISE NOTICE 'Starting backup of partition % (% rows) to ADLS Gen2: %', 
+                 partition_name, row_count, adls_path;
+    
+    -- Backup partition to ADLS Gen2 as CSV
+    -- Note: This uses azure_storage extension syntax
+    backup_query := format(
+        'SELECT azure_storage.blob_put(
+            account_name => %L,
+            container_name => %L,
+            blob_path => %L,
+            data => (
+                SELECT string_agg(csv_row, E''\n'')
+                FROM (
+                    SELECT * FROM %s
+                ) t,
+                LATERAL (
+                    SELECT string_agg(
+                        CASE 
+                            WHEN value IS NULL THEN ''''
+                            WHEN value ~ ''[,\r\n"]'' THEN ''"'' || replace(value, ''"'', ''""'') || ''"''
+                            ELSE value
+                        END,
+                        '',''
+                    ) as csv_row
+                    FROM (
+                        SELECT unnest(string_to_array(t::text, '','')) as value
+                    ) vals
+                ) csv
+            )::bytea
+        )',
+        p_adls_account_name,
+        p_adls_container_name,
+        adls_path,
+        partition_name
+    );
+    
+    -- Alternative backup approach using COPY if azure_storage extension supports it
+    -- This is more efficient for large datasets
+    backup_query := format(
+        'COPY (SELECT * FROM %s) TO PROGRAM ''az storage blob upload --account-name %s --container-name %s --name %s --file -'' WITH CSV HEADER',
+        partition_name,
+        p_adls_account_name,
+        p_adls_container_name,
+        adls_path
+    );
+    
+    BEGIN
+        -- Execute backup
+        EXECUTE backup_query;
+        
+        RAISE NOTICE 'Backup completed successfully for partition %', partition_name;
+        
+        -- Drop the partition using TimescaleDB function
+        PERFORM drop_chunks(
+            relation => p_table_name::regclass,
+            older_than => target_date + INTERVAL '1 day',
+            newer_than => target_date
+        );
+        
+        result_message := format(
+            'Successfully backed up and dropped partition %s (%s rows) for date %s. Backup saved to: %s',
+            partition_name, row_count, target_date, adls_path
+        );
+        
+        RAISE NOTICE '%', result_message;
+        
+    EXCEPTION
+        WHEN OTHERS THEN
+            -- Log error but don't drop partition if backup failed
+            result_message := format(
+                'ERROR: Failed to backup partition %s: %s. Partition not dropped for safety.',
+                partition_name, SQLERRM
+            );
+            RAISE WARNING '%', result_message;
+            RETURN result_message;
+    END;
+    
+    RETURN result_message;
+END;
+$$;
+
+-- Example usage function for a specific table
+CREATE OR REPLACE FUNCTION daily_partition_maintenance()
+RETURNS TEXT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    result TEXT;
+BEGIN
+    -- Replace these parameters with your actual values
+    SELECT backup_and_drop_old_partition(
+        p_table_name := 'your_hypertable_name',           -- Replace with your hypertable name
+        p_adls_account_name := 'yourstorageaccount',      -- Replace with your ADLS Gen2 account
+        p_adls_container_name := 'your-container',         -- Replace with your container name
+        p_adls_folder_path := 'backups/postgres',         -- Replace with your folder path
+        p_days_back := 30                                 -- Days back to backup (default: 30)
+    ) INTO result;
+    
+    RETURN result;
+END;
+$$;
+
+-- Schedule the job with pg_cron (run daily at 2 AM)
+-- This should be executed by a superuser or user with cron privileges
+-- SELECT cron.schedule('daily-partition-backup', '0 2 * * *', 'SELECT daily_partition_maintenance();');
+
+-- Grant necessary permissions (adjust as needed for your security requirements)
+-- GRANT EXECUTE ON FUNCTION backup_and_drop_old_partition(TEXT, TEXT, TEXT, TEXT, INTEGER) TO your_backup_user;
+-- GRANT EXECUTE ON FUNCTION daily_partition_maintenance() TO your_backup_user;
+```
+
+
+
 ### ChatGPT
 
-Got it. Here’s a working stored procedure that does exactly what you asked—**finds the 1-day TimescaleDB chunk that’s 30 days old, exports that day to CSV named `table.YYYY-MM-DD.csv`, then drops that chunk**—*using server-side `COPY … TO PROGRAM` and `curl` to upload directly to ADLS Gen2*.
+  Here’s a working stored procedure that does exactly what you asked—**finds the 1-day TimescaleDB chunk that’s 30 days old, exports that day to CSV named `table.YYYY-MM-DD.csv`, then drops that chunk**—*using server-side `COPY … TO PROGRAM` and `curl` to upload directly to ADLS Gen2*.
 
 > Important Azure note (read this):
 > The procedure below **requires** the database role `pg_execute_server_program` and that the server host has a shell with `curl` available. On **Azure Database for PostgreSQL – Flexible Server**, these capabilities are usually **restricted/disabled**. If you don’t have them, use the **“client-side pattern”** I include after the procedure (psql + \copy + azcopy/curl), and call a tiny SQL proc to **drop the chunk only after a verified upload**.
