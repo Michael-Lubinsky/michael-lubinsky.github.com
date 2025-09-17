@@ -1,8 +1,9 @@
 ## Postgres
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
-<https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book
-<https://habr.com/ru/companies/otus/articles/941456/>
+<https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
+<https://habr.com/ru/companies/otus/articles/941456/>  
+<https://habr.com/ru/companies/ppr/articles/947852/> Dynamic SQL
  
 https://habr.com/ru/articles/946274/  Regular Expressions, LIKE, SIMILAR TO
 
