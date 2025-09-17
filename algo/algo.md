@@ -2,7 +2,10 @@
 
 https://ru.algorithmica.org/
 
+#### Algebraic data types
 https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
+
+https://news.ycombinator.com/item?id=45248043
 
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
