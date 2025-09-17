@@ -100,7 +100,15 @@ https://www.kaggle.com/discussions/getting-started/390402
 
 ## AI Chip startups
 
-https://groq.com/careers
+Cerebras Systems
+
+Tenstorrent
+
+SiMa.ai  
+
+https://groq.com/ 
+
+Lightmatter
 
 
 ### Ads clicks prediction
