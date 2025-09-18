@@ -68,6 +68,9 @@ func new --name "backup_timescale" --template "Timer trigger"
 ```
 The command `func new --name "backup_timescale" --template "Timer trigger"` created a new Azure Function with a **timer trigger**, and the output `Schedule: [0 */5 * * * *]` shows the default schedule for that trigger.
 
+Appending to /Users/michaellubinsky/CODE/AZURE_FUNCTION/michael-weavix-testing/function_app.py
+The function "backup_timescale" was created successfully from the "Timer trigger" template.
+
 ### What the Schedule Means
 
 The schedule is a **six-field CRON expression** that tells the function how often to run. Azure Functions uses a slightly different CRON format than a traditional Unix cron, as it includes a field for seconds.
