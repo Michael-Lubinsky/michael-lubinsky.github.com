@@ -66,6 +66,22 @@ func init . --python
 ```bash
 func new --name "backup_timescale" --template "Timer trigger"
 ```
+The command `func new --name "backup_timescale" --template "Timer trigger"` created a new Azure Function with a **timer trigger**, and the output `Schedule: [0 */5 * * * *]` shows the default schedule for that trigger.
+
+### What the Schedule Means
+
+The schedule is a **six-field CRON expression** that tells the function how often to run. Azure Functions uses a slightly different CRON format than a traditional Unix cron, as it includes a field for seconds.
+
+Here's the breakdown of `0 */5 * * * *`:
+
+1.  **Seconds (0-59)**: `0` means the function runs at the start of the minute.
+2.  **Minutes (0-59)**: `*/5` means the function runs every 5 minutes.
+3.  **Hours (0-23)**: `*` means every hour.
+4.  **Day of Month (1-31)**: `*` means every day of the month.
+5.  **Month (1-12)**: `*` means every month.
+6.  **Day of Week (0-6)**: `*` means every day of the week.
+
+So, in simple terms, the default schedule means the function will be triggered **every 5 minutes, every day, every month**. You can edit this schedule in the `function.json` file for your newly created function.
 
 ## Step 3: Update Project Files
 
