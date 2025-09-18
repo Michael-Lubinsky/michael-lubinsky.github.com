@@ -5,7 +5,260 @@ given  a Postgres table with timescaledb extension make a backup of table partit
 /pg_instance_name/schema_name/table_name/table_name.YYYY_MM_DD.csv.zip
 
 # Claude
+Here's an Azure Function implementation to backup TimescaleDB table partitions to ADLS Gen2:
 
+## 1. Function Configuration
+
+**requirements.txt:**
+```txt
+azure-functions
+azure-storage-file-datalake
+psycopg2-binary
+pandas
+```
+
+**function_app.py:**
+```python
+import azure.functions as func
+import logging
+import os
+import psycopg2
+import pandas as pd
+import zipfile
+import io
+from datetime import datetime, timedelta
+from azure.storage.filedatalake import DataLakeServiceClient
+from azure.identity import DefaultAzureCredential
+
+app = func.FunctionApp()
+
+@app.timer_trigger(schedule="0 0 2 * * *", arg_name="myTimer", run_on_startup=False)
+def backup_timescale_partition(myTimer: func.TimerRequest) -> None:
+    """
+    Daily backup function that runs at 2 AM
+    """
+    if myTimer.past_due:
+        logging.info('The timer is past due!')
+
+    try:
+        # Configuration from environment variables
+        pg_host = os.environ["POSTGRES_HOST"]
+        pg_database = os.environ["POSTGRES_DATABASE"] 
+        pg_user = os.environ["POSTGRES_USER"]
+        pg_password = os.environ["POSTGRES_PASSWORD"]
+        pg_instance_name = os.environ["PG_INSTANCE_NAME"]
+        
+        adls_account_name = os.environ["ADLS_ACCOUNT_NAME"]
+        adls_account_url = f"https://{adls_account_name}.dfs.core.windows.net"
+        
+        # Tables to backup (add your tables here)
+        tables_to_backup = [
+            {"schema": "public", "table": "sensor_data", "date_column": "timestamp"},
+            {"schema": "events", "table": "user_activity", "date_column": "created_at"}
+        ]
+        
+        # Backup date (30 days ago)
+        backup_date = datetime.now().date() - timedelta(days=30)
+        
+        for table_config in tables_to_backup:
+            backup_table_partition(
+                pg_host, pg_database, pg_user, pg_password,
+                adls_account_url, pg_instance_name,
+                table_config["schema"], table_config["table"], 
+                table_config["date_column"], backup_date
+            )
+            
+    except Exception as e:
+        logging.error(f"Backup function failed: {str(e)}")
+        raise
+
+def backup_table_partition(pg_host, pg_database, pg_user, pg_password,
+                          adls_account_url, pg_instance_name, 
+                          schema_name, table_name, date_column, backup_date):
+    """
+    Backup a specific table partition for a given date
+    """
+    
+    # Connect to PostgreSQL
+    conn = psycopg2.connect(
+        host=pg_host,
+        database=pg_database,
+        user=pg_user,
+        password=pg_password,
+        sslmode='require'
+    )
+    
+    try:
+        # Find TimescaleDB chunks for the target date
+        chunk_query = """
+        SELECT chunk_schema, chunk_name, hypertable_schema, hypertable_name
+        FROM timescaledb_information.chunks 
+        WHERE hypertable_schema = %s 
+          AND hypertable_name = %s
+          AND range_start <= %s::timestamp
+          AND range_end > %s::timestamp
+        """
+        
+        cursor = conn.cursor()
+        cursor.execute(chunk_query, (schema_name, table_name, backup_date, backup_date))
+        chunks = cursor.fetchall()
+        
+        if not chunks:
+            logging.info(f"No chunks found for {schema_name}.{table_name} on {backup_date}")
+            return
+            
+        for chunk_schema, chunk_name, hypertable_schema, hypertable_name in chunks:
+            logging.info(f"Backing up chunk: {chunk_schema}.{chunk_name}")
+            
+            # Export chunk data to DataFrame
+            chunk_table = f"{chunk_schema}.{chunk_name}"
+            query = f"SELECT * FROM {chunk_table} WHERE {date_column}::date = %s"
+            
+            df = pd.read_sql_query(query, conn, params=[backup_date])
+            
+            if df.empty:
+                logging.info(f"No data found in chunk {chunk_name} for date {backup_date}")
+                continue
+                
+            # Create CSV in memory
+            csv_buffer = io.StringIO()
+            df.to_csv(csv_buffer, index=False)
+            csv_data = csv_buffer.getvalue().encode('utf-8')
+            
+            # Compress CSV
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                filename = f"{table_name}.{backup_date.strftime('%Y_%m_%d')}.csv"
+                zip_file.writestr(filename, csv_data)
+            
+            zip_data = zip_buffer.getvalue()
+            
+            # Upload to ADLS Gen2
+            adls_path = f"{pg_instance_name}/{schema_name}/{table_name}/{table_name}.{backup_date.strftime('%Y_%m_%d')}.csv.zip"
+            upload_to_adls(adls_account_url, adls_path, zip_data)
+            
+            logging.info(f"Successfully backed up {len(df)} rows from {chunk_name} to {adls_path}")
+            
+    finally:
+        conn.close()
+
+def upload_to_adls(account_url, file_path, data):
+    """
+    Upload data to ADLS Gen2 using managed identity
+    """
+    try:
+        # Use managed identity for authentication
+        credential = DefaultAzureCredential()
+        service_client = DataLakeServiceClient(account_url=account_url, credential=credential)
+        
+        # Extract container and path
+        path_parts = file_path.split('/', 1)
+        container_name = path_parts[0] if len(path_parts) > 1 else 'backups'
+        blob_path = path_parts[1] if len(path_parts) > 1 else file_path
+        
+        # Get file system client
+        file_system_client = service_client.get_file_system_client(file_system=container_name)
+        
+        # Create file system if it doesn't exist
+        try:
+            file_system_client.create_file_system()
+        except Exception:
+            pass  # Already exists
+            
+        # Upload file
+        file_client = file_system_client.create_file(blob_path)
+        file_client.upload_data(data, overwrite=True)
+        
+        logging.info(f"Successfully uploaded to ADLS: {file_path}")
+        
+    except Exception as e:
+        logging.error(f"Failed to upload to ADLS: {str(e)}")
+        raise
+
+# HTTP trigger for manual execution
+@app.route(route="backup_manual", auth_level=func.AuthLevel.FUNCTION)
+def backup_manual(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Manual trigger for testing
+    """
+    try:
+        # Get parameters from query string
+        schema = req.params.get('schema', 'public')
+        table = req.params.get('table')
+        date_str = req.params.get('date')
+        
+        if not table:
+            return func.HttpResponse("Missing required parameter: table", status_code=400)
+            
+        if not date_str:
+            backup_date = datetime.now().date() - timedelta(days=30)
+        else:
+            backup_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            
+        # Run backup for specific table
+        pg_host = os.environ["POSTGRES_HOST"]
+        pg_database = os.environ["POSTGRES_DATABASE"]
+        pg_user = os.environ["POSTGRES_USER"] 
+        pg_password = os.environ["POSTGRES_PASSWORD"]
+        pg_instance_name = os.environ["PG_INSTANCE_NAME"]
+        adls_account_name = os.environ["ADLS_ACCOUNT_NAME"]
+        adls_account_url = f"https://{adls_account_name}.dfs.core.windows.net"
+        
+        backup_table_partition(
+            pg_host, pg_database, pg_user, pg_password,
+            adls_account_url, pg_instance_name,
+            schema, table, 'timestamp', backup_date
+        )
+        
+        return func.HttpResponse(f"Backup completed for {schema}.{table} on {backup_date}")
+        
+    except Exception as e:
+        logging.error(f"Manual backup failed: {str(e)}")
+        return func.HttpResponse(f"Backup failed: {str(e)}", status_code=500)
+```
+
+## 2. Application Settings
+
+Configure these environment variables in your Function App:
+
+```
+POSTGRES_HOST=your-postgres-server.postgres.database.azure.com
+POSTGRES_DATABASE=your_database  
+POSTGRES_USER=your_username
+POSTGRES_PASSWORD=your_password
+PG_INSTANCE_NAME=prod-pg-01
+ADLS_ACCOUNT_NAME=your_storage_account
+```
+
+## 3. Deployment
+
+**Deploy via Azure CLI:**
+```bash
+# Create Function App
+az functionapp create \
+  --resource-group myResourceGroup \
+  --consumption-plan-location eastus \
+  --runtime python \
+  --runtime-version 3.9 \
+  --functions-version 4 \
+  --name backup-function-app \
+  --storage-account mystorageaccount
+
+# Deploy function
+func azure functionapp publish backup-function-app
+```
+
+## 4. RBAC Permissions
+
+Grant the Function App managed identity access to ADLS Gen2:
+```bash
+az role assignment create \
+  --assignee <function-app-principal-id> \
+  --role "Storage Blob Data Contributor" \
+  --scope /subscriptions/<subscription>/resourceGroups/<rg>/providers/Microsoft.Storage/storageAccounts/<account>
+```
+
+This implementation provides a robust backup solution that runs daily, handles TimescaleDB chunks properly, compresses data, and stores it in the specified ADLS Gen2 hierarchy.
 
 # MISTRAL
 
