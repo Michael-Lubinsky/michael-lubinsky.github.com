@@ -332,6 +332,53 @@ $$;
 -- GRANT EXECUTE ON FUNCTION daily_partition_maintenance() TO your_backup_user;
 ```
 
+Looking at this stored procedure, there are several issues that will prevent it from working as written:
+
+## Major Problems
+
+**1. `azure_storage.blob_put()` syntax is incorrect**
+The procedure shows this function taking named parameters, but the actual azure_storage extension uses positional parameters with a different signature.
+
+**2. Complex CSV generation logic won't work**
+The nested query trying to manually format CSV data is overly complex and likely to fail. The string manipulation for CSV escaping is particularly problematic.
+
+**3. TimescaleDB catalog queries are incorrect**
+The queries against `_timescaledb_catalog` tables use functions and column references that don't exist or work as shown.
+
+**4. Mixed approaches**
+The procedure shows two different backup methods but doesn't properly implement either one.
+
+## What Would Actually Work
+
+**For azure_storage extension:**
+```sql
+-- Correct syntax (approximate)
+SELECT azure_storage.blob_put(
+    'account_name',
+    'container_name', 
+    'blob_path',
+    data_bytea
+);
+```
+
+**For TimescaleDB chunk queries:**
+```sql
+-- Better approach to find chunks
+SELECT chunk_schema, chunk_name 
+FROM timescaledb_information.chunks 
+WHERE hypertable_name = p_table_name
+  AND range_start <= target_date 
+  AND range_end > target_date;
+```
+
+## Recommended Fixes
+
+1. Use `COPY TO PROGRAM` with Azure CLI instead of the blob_put function
+2. Simplify the chunk discovery logic
+3. Test the azure_storage extension functions separately first
+4. Add proper error handling for each step
+
+The concept is sound, but the implementation needs significant corrections to actually function with real TimescaleDB and azure_storage extension APIs.
 #### with compression
 Yes, absolutely! I'll modify the stored procedure to apply gzip compression. Here's the updated version that creates compressed `.csv.gz` files:Perfect! I've updated the stored procedure to include gzip compression. Here are the key changes and features:
 
