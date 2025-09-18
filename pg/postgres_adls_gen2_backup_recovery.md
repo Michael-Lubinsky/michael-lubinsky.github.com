@@ -1,4 +1,97 @@
-Please implement the following logic using Azure Function:
+# On Azure cloud there us azure_storage extension for Postgres 16 Flexible Server. Can I use it in Postgres 16 to Read and write files directly from Azure ADLS Gen2 ?
+
+Short answer: **Yes**—on Azure Database for PostgreSQL **Flexible Server**, the `azure_storage` extension lets you **read from and write to Azure Storage (Blob)** directly from SQL, and that includes **ADLS Gen2** (which is Blob with hierarchical namespace). You use SQL functions to list blobs, `COPY FROM` to load, and `COPY TO` to export. ([Microsoft Learn][1])
+
+ 
+
+### What it can do (at a glance)
+
+* Works against **Blob service** in your Storage account (public or private), with **Shared Key** or **Microsoft Entra ID (Managed Identity)** auth. ([Microsoft Learn][1])
+* Supports **import/export** via `COPY FROM/TO` and helper functions (`blob_get`, `blob_put`, `blob_list`). ([Microsoft Learn][1])
+* ADLS Gen2 paths are just **containers/folders/files** under the same account (HN enabled) since it’s still Blob. ([Microsoft Learn][2])
+
+### One-time setup (Flexible Server)
+
+1. **Allow & preload** the extension (requires restart), then **CREATE EXTENSION**:
+
+```sql
+-- After allowlisting and adding to shared_preload_libraries at the server level
+CREATE EXTENSION azure_storage;
+```
+
+2. **Add your storage account** (Managed Identity recommended):
+
+```sql
+-- Using the server's System-Assigned Managed Identity (RBAC on the storage account required)
+SELECT azure_storage.account_add(
+  'acct1',                      -- nickname in Postgres
+  'mystorageacct',              -- Azure Storage account name
+  azure_storage.account_options_managed_identity()
+);
+```
+
+(You can also use Shared Key if needed.) ([Microsoft Learn][1])
+
+### Typical usage examples
+
+```sql
+-- List blobs under a container/prefix (ADLS Gen2 hierarchy works here)
+SELECT * 
+FROM azure_storage.blob_list('acct1', 'mycontainer/eventhub/2025/09/18/14/');
+
+-- Load CSV/TSV directly into a table
+COPY raw.events
+FROM azure_storage.blob_get('acct1','mycontainer/path/file.csv')
+WITH (FORMAT csv, HEADER true);
+
+-- Export query results to a new blob
+COPY (
+  SELECT * FROM raw.events WHERE event_time::date = CURRENT_DATE
+)
+TO azure_storage.blob_put('acct1','mycontainer/exports/today.csv')
+WITH (FORMAT csv, HEADER true);
+```
+
+Function names & flow per Microsoft Learn. ([Microsoft Learn][1])
+
+### Notes & limits (important)
+
+* This is **not** a filesystem mount; you interact via the **Blob API** (list/get/put, `COPY`). It’s ideal for landing zones and batch moves, not random appends. ([Microsoft Learn][1])
+* You must **allowlist** the extension and set `shared_preload_libraries`, then restart the server (Flexible Server requirement). ([Microsoft Learn][1])
+* For security, prefer **Managed Identity + RBAC** (e.g., *Storage Blob Data Contributor*) on the storage account/container. ([Microsoft Learn][1])
+
+If you want, I can give you the exact **Azure CLI** to (a) enable the extension parameters on your server and (b) assign RBAC on the storage account/container to your server’s Managed Identity.
+
+[1]: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/how-to-configure-azure-storage-extension "Configure the Azure Storage extension in Azure Database for PostgreSQL flexible server - Azure Database for PostgreSQL | Microsoft Learn"
+[2]: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-storage-extension "Azure storage extension in Azure Database for PostgreSQL flexible server - Azure Database for PostgreSQL | Microsoft Learn"
+
+
+This statement is **partially correct but needs clarification**.
+
+The `azure_storage` extension on PostgreSQL Flexible Server does provide blob storage functionality, but there are important limitations regarding ADLS Gen2:
+
+## What Works
+- **Blob Storage API access**: The extension can read/write to Azure Blob Storage endpoints
+- **ADLS Gen2 blob compatibility**: Since ADLS Gen2 provides blob API compatibility, you can access ADLS Gen2 data through `blob.core.windows.net` endpoints
+- **Basic operations**: Functions like `azure_storage.blob_put()` and `azure_storage.blob_get()` work for simple file operations
+
+## What Doesn't Work Well
+- **Native ADLS Gen2 features**: No direct support for `dfs.core.windows.net` endpoints or Data Lake-specific APIs
+- **Hierarchical namespace features**: Limited support for ADLS Gen2's directory operations, ACLs, and advanced permissions
+- **Performance optimization**: May not leverage ADLS Gen2's optimizations for big data workloads
+
+## More Accurate Statement
+"The azure_storage extension on PostgreSQL Flexible Server lets you read from and write to ADLS Gen2 through its blob storage compatibility layer, but doesn't support native Data Lake Storage features."
+
+For production use with ADLS Gen2, you're typically better off using:
+- Azure Data Factory for data movement
+- External applications (like the Azure Function we discussed)
+- Direct blob compatibility endpoints when the extension's limitations are acceptable
+
+The extension works for basic file operations but isn't a full ADLS Gen2 integration solution.
+
+
+## Please implement the following logic using Azure Function:
 
 given  a Postgres table with timescaledb extension make a backup of the table partition for specific date into following ADLS Gen2 folder  hierarchy: 
 
