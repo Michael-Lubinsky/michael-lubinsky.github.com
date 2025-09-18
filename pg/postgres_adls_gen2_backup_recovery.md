@@ -93,7 +93,6 @@ So, in simple terms, the default schedule means the function will be triggered *
 azure-functions
 azure-storage-file-datalake
 psycopg2-binary
-pandas
 azure-identity
 ```
 
@@ -303,21 +302,22 @@ Here's an Azure Function implementation to backup TimescaleDB table partitions t
 
 ## 1. Function Configuration
 
+ 
 **requirements.txt:**
 ```txt
 azure-functions
 azure-storage-file-datalake
 psycopg2-binary
-pandas
+azure-identity
 ```
+ Here's the complete Azure Function code without pandas dependency:
 
-**function_app.py:**
 ```python
 import azure.functions as func
 import logging
 import os
 import psycopg2
-import pandas as pd
+import csv
 import zipfile
 import io
 from datetime import datetime, timedelta
@@ -404,19 +404,30 @@ def backup_table_partition(pg_host, pg_database, pg_user, pg_password,
         for chunk_schema, chunk_name, hypertable_schema, hypertable_name in chunks:
             logging.info(f"Backing up chunk: {chunk_schema}.{chunk_name}")
             
-            # Export chunk data to DataFrame
+            # Export chunk data
             chunk_table = f"{chunk_schema}.{chunk_name}"
             query = f"SELECT * FROM {chunk_table} WHERE {date_column}::date = %s"
             
-            df = pd.read_sql_query(query, conn, params=[backup_date])
+            cursor.execute(query, [backup_date])
+            rows = cursor.fetchall()
             
-            if df.empty:
+            if not rows:
                 logging.info(f"No data found in chunk {chunk_name} for date {backup_date}")
                 continue
                 
+            # Get column names
+            columns = [desc[0] for desc in cursor.description]
+            
             # Create CSV in memory
             csv_buffer = io.StringIO()
-            df.to_csv(csv_buffer, index=False)
+            csv_writer = csv.writer(csv_buffer)
+            
+            # Write header
+            csv_writer.writerow(columns)
+            
+            # Write data rows
+            csv_writer.writerows(rows)
+            
             csv_data = csv_buffer.getvalue().encode('utf-8')
             
             # Compress CSV
@@ -431,7 +442,7 @@ def backup_table_partition(pg_host, pg_database, pg_user, pg_password,
             adls_path = f"{pg_instance_name}/{schema_name}/{table_name}/{table_name}.{backup_date.strftime('%Y_%m_%d')}.csv.zip"
             upload_to_adls(adls_account_url, adls_path, zip_data)
             
-            logging.info(f"Successfully backed up {len(df)} rows from {chunk_name} to {adls_path}")
+            logging.info(f"Successfully backed up {len(rows)} rows from {chunk_name} to {adls_path}")
             
     finally:
         conn.close()
@@ -480,6 +491,7 @@ def backup_manual(req: func.HttpRequest) -> func.HttpResponse:
         schema = req.params.get('schema', 'public')
         table = req.params.get('table')
         date_str = req.params.get('date')
+        date_column = req.params.get('date_column', 'timestamp')
         
         if not table:
             return func.HttpResponse("Missing required parameter: table", status_code=400)
@@ -501,7 +513,7 @@ def backup_manual(req: func.HttpRequest) -> func.HttpResponse:
         backup_table_partition(
             pg_host, pg_database, pg_user, pg_password,
             adls_account_url, pg_instance_name,
-            schema, table, 'timestamp', backup_date
+            schema, table, date_column, backup_date
         )
         
         return func.HttpResponse(f"Backup completed for {schema}.{table} on {backup_date}")
@@ -510,6 +522,15 @@ def backup_manual(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f"Manual backup failed: {str(e)}")
         return func.HttpResponse(f"Backup failed: {str(e)}", status_code=500)
 ```
+
+
+The key changes:
+- Removed `pandas` import and dependency
+- Replaced `pd.read_sql_query()` with direct `cursor.execute()` and `cursor.fetchall()`
+- Replaced `df.to_csv()` with native Python `csv.writer()`
+- Added manual column name extraction using `cursor.description`
+
+This version is more lightweight and efficient for Azure Functions deployment.
 
 ## 2. Application Settings
 
