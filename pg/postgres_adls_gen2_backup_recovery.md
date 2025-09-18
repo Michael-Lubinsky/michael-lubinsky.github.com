@@ -1,3 +1,12 @@
+Please implement the following logic using Azure Function:
+
+given  a Postgres table with timescaledb extension make a backup of table partition for specific date into following ADLS Gen2 folder  hierarchy: 
+
+/pg_instance_name/schema_name/table_name/table_name.YYYY_MM_DD.csv.zip
+
+# Claude
+
+
 # MISTRAL
 
 The stored procedure you provided has **several critical issues** that will prevent it from working as intended in **Azure Database for PostgreSQL Flexible Server**. Here's a detailed breakdown:
