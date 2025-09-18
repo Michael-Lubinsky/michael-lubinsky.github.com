@@ -439,6 +439,8 @@ This approach provides a complete deployment pipeline for your PostgreSQL backup
 
 # On Azure cloud there us azure_storage extension for Postgres 16 Flexible Server. Can I use it in Postgres 16 to Read and write files directly from Azure ADLS Gen2 ?
 
+GEMINI
+
 Short answer: **Yes**—on Azure Database for PostgreSQL **Flexible Server**, the `azure_storage` extension lets you **read from and write to Azure Storage (Blob)** directly from SQL, and that includes **ADLS Gen2** (which is Blob with hierarchical namespace). You use SQL functions to list blobs, `COPY FROM` to load, and `COPY TO` to export. ([Microsoft Learn][1])
 
  
