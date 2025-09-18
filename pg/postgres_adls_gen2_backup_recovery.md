@@ -260,6 +260,283 @@ az role assignment create \
 
 This implementation provides a robust backup solution that runs daily, handles TimescaleDB chunks properly, compresses data, and stores it in the specified ADLS Gen2 hierarchy.
 
+
+Here's how to restore the backup files created by the Azure Function back into PostgreSQL:
+
+## 1. Azure Function for Restoration
+
+```python
+import azure.functions as func
+import logging
+import os
+import psycopg2
+import pandas as pd
+import zipfile
+import io
+from datetime import datetime
+from azure.storage.filedatalake import DataLakeServiceClient
+from azure.identity import DefaultAzureCredential
+
+@app.route(route="restore_backup", auth_level=func.AuthLevel.FUNCTION)
+def restore_backup(req: func.HttpRequest) -> func.HttpResponse:
+    """
+    Restore backup from ADLS Gen2 to PostgreSQL
+    """
+    try:
+        # Get parameters
+        schema = req.params.get('schema', 'public')
+        table = req.params.get('table')
+        date_str = req.params.get('date')
+        pg_instance = req.params.get('pg_instance')
+        
+        if not all([table, date_str, pg_instance]):
+            return func.HttpResponse("Missing required parameters: table, date, pg_instance", status_code=400)
+            
+        restore_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        
+        # Download and restore
+        success = restore_table_backup(pg_instance, schema, table, restore_date)
+        
+        if success:
+            return func.HttpResponse(f"Successfully restored {schema}.{table} for {restore_date}")
+        else:
+            return func.HttpResponse("Restoration failed", status_code=500)
+            
+    except Exception as e:
+        logging.error(f"Restore failed: {str(e)}")
+        return func.HttpResponse(f"Restore failed: {str(e)}", status_code=500)
+
+def restore_table_backup(pg_instance_name, schema_name, table_name, restore_date):
+    """
+    Download backup from ADLS Gen2 and restore to PostgreSQL
+    """
+    
+    # ADLS Gen2 path
+    date_str = restore_date.strftime('%Y_%m_%d')
+    adls_path = f"{pg_instance_name}/{schema_name}/{table_name}/{table_name}.{date_str}.csv.zip"
+    
+    try:
+        # Download from ADLS Gen2
+        zip_data = download_from_adls(adls_path)
+        
+        # Extract CSV from zip
+        csv_data = extract_csv_from_zip(zip_data, f"{table_name}.{date_str}.csv")
+        
+        # Restore to PostgreSQL
+        restore_to_postgres(schema_name, table_name, csv_data)
+        
+        return True
+        
+    except Exception as e:
+        logging.error(f"Restoration failed: {str(e)}")
+        return False
+
+def download_from_adls(file_path):
+    """
+    Download file from ADLS Gen2
+    """
+    adls_account_name = os.environ["ADLS_ACCOUNT_NAME"]
+    adls_account_url = f"https://{adls_account_name}.dfs.core.windows.net"
+    
+    credential = DefaultAzureCredential()
+    service_client = DataLakeServiceClient(account_url=adls_account_url, credential=credential)
+    
+    # Extract container and path
+    path_parts = file_path.split('/', 1)
+    container_name = path_parts[0] if len(path_parts) > 1 else 'backups'
+    blob_path = path_parts[1] if len(path_parts) > 1 else file_path
+    
+    file_system_client = service_client.get_file_system_client(file_system=container_name)
+    file_client = file_system_client.get_file_client(blob_path)
+    
+    download = file_client.download_file()
+    return download.readall()
+
+def extract_csv_from_zip(zip_data, csv_filename):
+    """
+    Extract CSV data from zip file
+    """
+    with zipfile.ZipFile(io.BytesIO(zip_data), 'r') as zip_file:
+        return zip_file.read(csv_filename).decode('utf-8')
+
+def restore_to_postgres(schema_name, table_name, csv_data):
+    """
+    Restore CSV data to PostgreSQL table
+    """
+    pg_host = os.environ["POSTGRES_HOST"]
+    pg_database = os.environ["POSTGRES_DATABASE"]
+    pg_user = os.environ["POSTGRES_USER"]
+    pg_password = os.environ["POSTGRES_PASSWORD"]
+    
+    conn = psycopg2.connect(
+        host=pg_host,
+        database=pg_database,
+        user=pg_user,
+        password=pg_password,
+        sslmode='require'
+    )
+    
+    try:
+        cursor = conn.cursor()
+        
+        # Create temp table
+        temp_table = f"temp_restore_{table_name}_{int(datetime.now().timestamp())}"
+        
+        cursor.execute(f"CREATE TEMP TABLE {temp_table} (LIKE {schema_name}.{table_name})")
+        
+        # Copy data to temp table
+        csv_io = io.StringIO(csv_data)
+        cursor.copy_expert(f"COPY {temp_table} FROM STDIN WITH CSV HEADER", csv_io)
+        
+        # Insert into main table (with duplicate prevention)
+        cursor.execute(f"""
+            INSERT INTO {schema_name}.{table_name} 
+            SELECT * FROM {temp_table} t1
+            WHERE NOT EXISTS (
+                SELECT 1 FROM {schema_name}.{table_name} t2 
+                WHERE t2.id = t1.id  -- Adjust based on your primary key
+            )
+        """)
+        
+        rows_inserted = cursor.rowcount
+        conn.commit()
+        
+        logging.info(f"Restored {rows_inserted} rows to {schema_name}.{table_name}")
+        
+    finally:
+        conn.close()
+```
+
+## 2. Manual Restoration Script
+
+For command-line restoration:
+
+```python
+#!/usr/bin/env python3
+"""
+Manual backup restoration script
+Usage: python restore_backup.py --table sensor_data --date 2024-01-15 --schema public
+"""
+
+import argparse
+import psycopg2
+import pandas as pd
+import zipfile
+import io
+from azure.storage.filedatalake import DataLakeServiceClient
+from azure.identity import DefaultAzureCredential
+
+def main():
+    parser = argparse.ArgumentParser(description='Restore PostgreSQL backup from ADLS Gen2')
+    parser.add_argument('--table', required=True, help='Table name')
+    parser.add_argument('--date', required=True, help='Date (YYYY-MM-DD)')
+    parser.add_argument('--schema', default='public', help='Schema name')
+    parser.add_argument('--pg-instance', default='prod-pg-01', help='PostgreSQL instance name')
+    
+    args = parser.parse_args()
+    
+    # Configuration
+    config = {
+        'pg_host': 'your-postgres-server.postgres.database.azure.com',
+        'pg_database': 'your_database',
+        'pg_user': 'your_username',
+        'pg_password': 'your_password',
+        'adls_account': 'your_storage_account'
+    }
+    
+    # Build ADLS path
+    date_formatted = args.date.replace('-', '_')
+    adls_path = f"{args.pg_instance}/{args.schema}/{args.table}/{args.table}.{date_formatted}.csv.zip"
+    
+    print(f"Restoring {args.schema}.{args.table} from {adls_path}")
+    
+    try:
+        # Download from ADLS
+        zip_data = download_backup(config['adls_account'], adls_path)
+        
+        # Extract CSV
+        csv_filename = f"{args.table}.{date_formatted}.csv"
+        csv_data = extract_csv(zip_data, csv_filename)
+        
+        # Restore to PostgreSQL
+        restore_data(config, args.schema, args.table, csv_data)
+        
+        print("Restoration completed successfully")
+        
+    except Exception as e:
+        print(f"Restoration failed: {e}")
+
+def download_backup(account_name, file_path):
+    """Download backup file from ADLS Gen2"""
+    account_url = f"https://{account_name}.dfs.core.windows.net"
+    credential = DefaultAzureCredential()
+    service_client = DataLakeServiceClient(account_url=account_url, credential=credential)
+    
+    container_name = file_path.split('/')[0]
+    blob_path = '/'.join(file_path.split('/')[1:])
+    
+    file_system_client = service_client.get_file_system_client(container_name)
+    file_client = file_system_client.get_file_client(blob_path)
+    
+    return file_client.download_file().readall()
+
+def extract_csv(zip_data, csv_filename):
+    """Extract CSV from zip file"""
+    with zipfile.ZipFile(io.BytesIO(zip_data), 'r') as zip_file:
+        return zip_file.read(csv_filename).decode('utf-8')
+
+def restore_data(config, schema, table, csv_data):
+    """Restore CSV data to PostgreSQL"""
+    conn = psycopg2.connect(
+        host=config['pg_host'],
+        database=config['pg_database'],
+        user=config['pg_user'],
+        password=config['pg_password'],
+        sslmode='require'
+    )
+    
+    try:
+        cursor = conn.cursor()
+        
+        # Use COPY to load data efficiently
+        csv_io = io.StringIO(csv_data)
+        
+        # Option 1: Direct insert (if table structure matches exactly)
+        cursor.copy_expert(f"COPY {schema}.{table} FROM STDIN WITH CSV HEADER", csv_io)
+        
+        conn.commit()
+        print(f"Restored {cursor.rowcount} rows")
+        
+    finally:
+        conn.close()
+
+if __name__ == "__main__":
+    main()
+```
+
+## 3. Usage Examples
+
+**Via HTTP API:**
+```bash
+curl -X GET "https://your-function-app.azurewebsites.net/api/restore_backup?table=sensor_data&date=2024-01-15&schema=public&pg_instance=prod-pg-01"
+```
+
+**Via command line:**
+```bash
+python restore_backup.py --table sensor_data --date 2024-01-15 --schema public
+```
+
+## 4. Important Considerations
+
+**Data conflicts:** The restoration script includes duplicate prevention based on primary key. Adjust the WHERE clause in the INSERT statement based on your table's primary key structure.
+
+**Table structure:** Ensure the target table exists and has the same structure as when the backup was created.
+
+**Permissions:** The restoration process needs INSERT permissions on the target table.
+
+**TimescaleDB:** For TimescaleDB tables, you might need to temporarily disable compression or other features during restoration.
+
+This approach provides both automated (via Azure Function) and manual restoration capabilities for your PostgreSQL backups.
 # MISTRAL
 
 The stored procedure you provided has **several critical issues** that will prevent it from working as intended in **Azure Database for PostgreSQL Flexible Server**. Here's a detailed breakdown:
