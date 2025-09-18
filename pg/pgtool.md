@@ -8,6 +8,53 @@ Also it should be possible to restore archived data back to Postgres if required
 
 
 
+Azure PostgreSQL Flexible Server doesn't have direct, native connectivity to ADLS Gen2. You'll need to use one of these approaches:
+
+## Option 1: Azure Data Factory (Recommended)
+Create data pipelines to move data between PostgreSQL and ADLS Gen2:
+- Copy data from PostgreSQL to ADLS Gen2 on schedules
+- Transform data during the copy process
+- Handle authentication automatically through managed identities
+
+## Option 2: Application-Level Integration
+Build a service that connects to both:
+```python
+# Example Python approach
+import psycopg2
+from azure.storage.filedatalake import DataLakeServiceClient
+
+# Connect to PostgreSQL
+conn = psycopg2.connect(host="your-pg-server", database="db", user="user", password="pass")
+
+# Connect to ADLS Gen2
+service_client = DataLakeServiceClient(account_url="https://account.dfs.core.windows.net", credential="key")
+
+# Export data
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM your_table")
+# Write to ADLS Gen2
+```
+
+## Option 3: External Tools
+- **Azure CLI**: Export PostgreSQL data and upload to ADLS Gen2
+- **ETL tools**: Use tools like Talend, Informatica, or Apache Airflow
+
+## Option 4: PostgreSQL Extensions + Scripts
+Use `COPY` command with external scripts:
+```sql
+-- Export to local file
+COPY (SELECT * FROM table) TO '/tmp/data.csv' WITH CSV HEADER;
+-- Then use Azure CLI to upload
+```
+
+## Limitations
+PostgreSQL Flexible Server runs in a managed environment, so:
+- No direct file system access to Azure storage
+- Can't install arbitrary extensions
+- Network access is controlled
+
+Azure Data Factory is typically the most reliable approach for production data movement between these services.
+
 ```
 There is Postgres 16 on Azure Cloud Flexible Server.
 There is Postgres table created with timescaledb extension.
