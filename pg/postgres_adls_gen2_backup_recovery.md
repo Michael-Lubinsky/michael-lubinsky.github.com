@@ -1,3 +1,185 @@
+Here's a complete step-by-step guide to deploy your first Azure Function:
+
+## Prerequisites
+
+**Install required tools:**
+```bash
+# Install Azure CLI
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+# Install Azure Functions Core Tools
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
+# Install Python 3.9+ (if not already installed)
+python3 --version
+```
+
+## Step 1: Create Azure Resources
+
+**Login to Azure:**
+```bash
+az login
+az account set --subscription "your-subscription-name"
+```
+
+**Create resource group:**
+```bash
+az group create --name "rg-backup-function" --location "East US"
+```
+
+**Create storage account (required for Functions):**
+```bash
+az storage account create \
+  --name "backupfunctionstore" \
+  --resource-group "rg-backup-function" \
+  --location "East US" \
+  --sku "Standard_LRS"
+```
+
+**Create Function App:**
+```bash
+az functionapp create \
+  --resource-group "rg-backup-function" \
+  --consumption-plan-location "East US" \
+  --runtime "python" \
+  --runtime-version "3.9" \
+  --functions-version "4" \
+  --name "pg-backup-function-app" \
+  --storage-account "backupfunctionstore" \
+  --assign-identity
+```
+
+## Step 2: Set Up Local Development
+
+**Create project folder:**
+```bash
+mkdir pg-backup-function
+cd pg-backup-function
+```
+
+**Initialize Function project:**
+```bash
+func init . --python
+```
+
+**Create the function:**
+```bash
+func new --name "backup_timescale" --template "Timer trigger"
+```
+
+## Step 3: Update Project Files
+
+**Replace `requirements.txt`:**
+```txt
+azure-functions
+azure-storage-file-datalake
+psycopg2-binary
+pandas
+azure-identity
+```
+
+**Replace `backup_timescale/function_app.py` with the code I provided earlier.**
+
+**Update `host.json`:**
+```json
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[3.*, 4.0.0)"
+  }
+}
+```
+
+## Step 4: Configure Application Settings
+
+**Set environment variables:**
+```bash
+az functionapp config appsettings set \
+  --name "pg-backup-function-app" \
+  --resource-group "rg-backup-function" \
+  --settings \
+    POSTGRES_HOST="your-server.postgres.database.azure.com" \
+    POSTGRES_DATABASE="your_database" \
+    POSTGRES_USER="your_username" \
+    POSTGRES_PASSWORD="your_password" \
+    PG_INSTANCE_NAME="prod-pg-01" \
+    ADLS_ACCOUNT_NAME="your_storage_account"
+```
+
+## Step 5: Grant ADLS Gen2 Permissions
+
+**Get Function App's managed identity:**
+```bash
+az functionapp identity show \
+  --name "pg-backup-function-app" \
+  --resource-group "rg-backup-function" \
+  --query principalId --output tsv
+```
+
+**Grant Storage Blob Data Contributor role:**
+```bash
+az role assignment create \
+  --assignee "<principal-id-from-above>" \
+  --role "Storage Blob Data Contributor" \
+  --scope "/subscriptions/<your-subscription-id>/resourceGroups/<storage-rg>/providers/Microsoft.Storage/storageAccounts/<your-adls-account>"
+```
+
+## Step 6: Deploy the Function
+
+**Deploy from local:**
+```bash
+func azure functionapp publish pg-backup-function-app
+```
+
+## Step 7: Test the Function
+
+**Test timer function (it will run automatically based on schedule):**
+```bash
+# Check logs
+func azure functionapp logstream pg-backup-function-app
+```
+
+**Test manual HTTP endpoint:**
+```bash
+curl "https://pg-backup-function-app.azurewebsites.net/api/backup_manual?table=your_table&schema=public"
+```
+
+## Step 8: Monitor and Troubleshoot
+
+**View logs in Azure Portal:**
+1. Go to Azure Portal → Function Apps → pg-backup-function-app
+2. Click "Functions" → your function
+3. Click "Monitor" to see execution history
+
+**Common issues:**
+- **Package installation errors**: Check that all dependencies are in requirements.txt
+- **Permission errors**: Verify managed identity has proper RBAC roles
+- **Connection errors**: Check PostgreSQL firewall allows Azure services
+
+## Alternative: Deploy via VS Code
+
+**Install VS Code extensions:**
+- Azure Functions
+- Python
+
+**Deploy steps:**
+1. Open project folder in VS Code
+2. Press F1 → "Azure Functions: Deploy to Function App"
+3. Select your subscription and function app
+4. VS Code handles the deployment
+
+This approach provides a complete deployment pipeline for your PostgreSQL backup function.
+
+
 # On Azure cloud there us azure_storage extension for Postgres 16 Flexible Server. Can I use it in Postgres 16 to Read and write files directly from Azure ADLS Gen2 ?
 
 Short answer: **Yes**—on Azure Database for PostgreSQL **Flexible Server**, the `azure_storage` extension lets you **read from and write to Azure Storage (Blob)** directly from SQL, and that includes **ADLS Gen2** (which is Blob with hierarchical namespace). You use SQL functions to list blobs, `COPY FROM` to load, and `COPY TO` to export. ([Microsoft Learn][1])
