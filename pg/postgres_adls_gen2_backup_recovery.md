@@ -852,6 +852,8 @@ python restore_backup.py --table sensor_data --date 2024-01-15 --schema public
 **TimescaleDB:** For TimescaleDB tables, you might need to temporarily disable compression or other features during restoration.
 
 This approach provides both automated (via Azure Function) and manual restoration capabilities for your PostgreSQL backups.
+
+
 # MISTRAL
 
 Here's a complete implementation using **Azure Functions (Python)** to back up a TimescaleDB chunk for a specific date to ADLS Gen2 with the specified folder hierarchy:
@@ -862,14 +864,21 @@ Here's a complete implementation using **Azure Functions (Python)** to back up a
 #### **Prerequisites:**
 - Azure Function App with Python runtime
 - Managed Identity enabled for the Function App
-- Required Python packages: `psycopg2-binary`, `pandas`, `azure-storage-file-datalake`, `azure-identity`
+- Required Python packages: 
+requirements.txt
+```ini
+psycopg2-binary==2.9.6
+azure-storage-file-datalake==12.9.0
+azure-identity==1.12.0
+```
 
 #### **Function Code (`__init__.py`):**
 ```python
 import logging
 import os
 import zipfile
-import pandas as pd
+import csv
+import io
 import psycopg2
 from azure.storage.filedatalake import DataLakeServiceClient
 from azure.identity import DefaultAzureCredential
@@ -912,17 +921,24 @@ def main(req):
             chunk_schema, chunk_name = chunk
             full_chunk_name = f"{chunk_schema}.{chunk_name}"
 
-            # Export chunk data to DataFrame
+            # Export chunk data to CSV in memory
             cur.execute(f"SELECT * FROM {full_chunk_name}")
             rows = cur.fetchall()
             columns = [desc[0] for desc in cur.description]
-            df = pd.DataFrame(rows, columns=columns)
+
+            # Create CSV in memory
+            csv_buffer = io.StringIO()
+            writer = csv.writer(csv_buffer)
+            writer.writerow(columns)  # Write header
+            writer.writerows(rows)    # Write data
+            csv_data = csv_buffer.getvalue()
+            csv_buffer.close()
 
         # Create in-memory ZIP file
-        zip_buffer = zipfile.ZipFile('backup.zip', 'w', zipfile.ZIP_DEFLATED)
-        csv_filename = f"{table_name}.csv"
-        zip_buffer.writestr(csv_filename, df.to_csv(index=False))
-        zip_buffer.close()
+        zip_buffer = io.BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            csv_filename = f"{table_name}.csv"
+            zip_file.writestr(csv_filename, csv_data)
 
         # Upload to ADLS Gen2
         credential = DefaultAzureCredential()
@@ -940,12 +956,9 @@ def main(req):
         directory_client = file_system_client.get_directory_client(folder_path)
 
         # Upload the ZIP file
-        with open('backup.zip', 'rb') as data:
-            file_client = directory_client.create_file(file_name)
-            file_client.upload_data(data, overwrite=True)
-
-        # Clean up
-        os.remove('backup.zip')
+        zip_buffer.seek(0)  # Rewind the buffer
+        file_client = directory_client.create_file(file_name)
+        file_client.upload_data(zip_buffer, overwrite=True)
 
         return {
             "status": "success",
@@ -957,6 +970,7 @@ def main(req):
     except Exception as e:
         logging.error(f"Error: {str(e)}")
         return {"error": str(e)}
+
 ```
 
 ---
