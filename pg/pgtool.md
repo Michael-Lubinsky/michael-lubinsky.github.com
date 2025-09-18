@@ -26,6 +26,12 @@ COPY table_name TO 'azure://account.blob.core.windows.net/container/file.csv'
 WITH (FORMAT 'csv', azure_storage_account_name 'account', azure_storage_account_key 'key');
 ```
 
+## The azure_storage extension for PostgreSQL Flexible Server does indeed provide functions like:
+
+- azure_storage.blob_put()
+- azure_storage.blob_get()
+- Other blob operations
+
 ## What Doesn't Work Well
 - Direct access to dfs.core.windows.net endpoints
 - ADLS Gen2-specific features like ACLs and hierarchical permissions
