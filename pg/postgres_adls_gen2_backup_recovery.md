@@ -89,7 +89,243 @@ So, in simple terms, the default schedule means the function will be triggered *
 
 ## Step 3: Update Project Files
 
-The azure-functions package is only required if you're developing and testing functions locally using the Azure Functions Core Tools.
+The **azure-functions** package is only required if you're developing and testing functions locally using the Azure Functions Core Tools.
+
+
+
+Here's a comprehensive guide to developing and testing Azure Functions locally using **Azure Functions Core Tools**:
+
+---
+
+### **1. Prerequisites**
+Before you start, ensure you have:
+- **Node.js** (v14 or later) installed
+- **Python** (3.7+ for Python functions)
+- **Azure Functions Core Tools** (v4)
+- **Azure CLI** (optional but helpful)
+
+---
+
+### **2. Install Azure Functions Core Tools**
+Install the Core Tools globally using npm:
+```bash
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
+```
+
+Verify the installation:
+```bash
+func --version
+```
+
+---
+
+### **3. Create a New Function Project**
+Create a new directory for your project and initialize it:
+```bash
+mkdir MyFunctionProject
+cd MyFunctionProject
+func init --python
+```
+
+This creates a Python function project with the following structure:
+```
+MyFunctionProject/
+├── host.json
+├── local.settings.json
+├── requirements.txt
+├── myfunction/
+│   ├── __init__.py
+│   ├── function.json
+```
+
+---
+
+### **4. Create a New Function**
+Create a new HTTP-triggered function:
+```bash
+func new --name MyHttpTrigger --template "HTTP trigger" --authlevel "anonymous"
+```
+
+This creates a new function in a subdirectory with the necessary files.
+
+---
+
+### **5. Configure Local Settings**
+Edit the `local.settings.json` file to include your local configuration:
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "POSTGRES_HOST": "your_postgres_host",
+    "POSTGRES_DB": "your_db",
+    "POSTGRES_USER": "your_user",
+    "POSTGRES_PASSWORD": "your_password",
+    "ADLS_ACCOUNT_NAME": "your_adls_account",
+    "ADLS_FILE_SYSTEM": "your_container"
+  }
+}
+```
+
+---
+
+### **6. Install Python Dependencies**
+Edit the `requirements.txt` file to include all necessary packages:
+```
+azure-functions
+psycopg2-binary==2.9.6
+azure-storage-file-datalake==12.9.0
+azure-identity==1.12.0
+```
+
+Install the dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### **7. Run the Function Locally**
+Start the local Azure Functions runtime:
+```bash
+func start
+```
+
+This will start the function host and display the URL for your HTTP-triggered function.
+
+---
+
+### **8. Test the Function Locally**
+You can test your function using:
+- **curl** command:
+  ```bash
+  curl http://localhost:7071/api/MyHttpTrigger?name=Azure
+  ```
+- **Browser**: Open the URL displayed when you ran `func start`.
+- **Postman** or any HTTP client.
+
+For your specific function, you might test it like this:
+```bash
+curl "http://localhost:7071/api/backup_function?table_name=metrics&target_date=2023-01-15&schema_name=public"
+```
+
+---
+
+### **9. Debugging**
+For debugging, you can:
+- Use `print()` statements in your Python code.
+- Check the console output where you ran `func start`.
+- Use an IDE like VS Code with the Azure Functions extension for a better debugging experience.
+
+---
+
+### **10. Deploy to Azure**
+Once you've tested your function locally, you can deploy it to Azure:
+
+1. Log in to Azure:
+   ```bash
+   az login
+   ```
+
+2. Create a new Function App in Azure (if you haven't already):
+   ```bash
+   az functionapp create --resource-group MyResourceGroup --consumption-plan-location westus --runtime python --runtime-version 3.9 --functions-version 4 --name MyFunctionApp --storage-account mystorageaccount
+   ```
+
+3. Deploy your function:
+   ```bash
+   func azure functionapp publish MyFunctionApp
+   ```
+
+---
+
+### **11. Tips for Local Development**
+1. **Environment Variables**: Use `local.settings.json` for local environment variables.
+2. **Dependencies**: Always update `requirements.txt` when you add new packages.
+3. **Logging**: Use Python's `logging` module for better log output.
+4. **Testing**: Write unit tests for your function logic.
+5. **Configuration**: Keep sensitive information out of your code and use environment variables.
+
+---
+
+### **12. Example: Testing Your Backup Function Locally**
+For your specific backup function, you might want to:
+
+1. **Mock the PostgreSQL connection** for local testing:
+   ```python
+   import unittest
+   from unittest.mock import patch, MagicMock
+   import myfunction.__init__ as func
+
+   class TestBackupFunction(unittest.TestCase):
+       @patch('psycopg2.connect')
+       @patch('azure.storage.filedatalake.DataLakeServiceClient')
+       def test_backup_function(self, mock_datalake, mock_connect):
+           # Setup mocks
+           mock_conn = MagicMock()
+           mock_connect.return_value = mock_conn
+
+           mock_cursor = MagicMock()
+           mock_conn.cursor.return_value = mock_cursor
+           mock_cursor.fetchone.return_value = ('public', 'metrics_2023_01')
+
+           # Call the function
+           result = func.main(MagicMock(params={'table_name': 'metrics', 'target_date': '2023-01-15'}))
+
+           # Assertions
+           self.assertEqual(result['status'], 'success')
+           # Add more assertions as needed
+
+   if __name__ == '__main__':
+       unittest.main()
+   ```
+
+2. **Run the test**:
+   ```bash
+   python -m unittest discover
+   ```
+
+---
+
+### **13. Common Issues and Solutions**
+1. **Port already in use**: Change the port in `local.settings.json`:
+   ```json
+   "FUNCTIONS_HTTPWORKER_PORT": "7072"
+   ```
+
+2. **Missing dependencies**: Make sure all packages are in `requirements.txt` and installed.
+
+3. **Connection issues**: Verify your local settings and network connectivity.
+
+4. **Python version mismatch**: Ensure your local Python version matches the version specified in your function app.
+
+---
+
+### **14. Using VS Code for Development**
+For a better development experience, use VS Code with the **Azure Functions extension**:
+1. Install the Azure Functions extension.
+2. Open your function project in VS Code.
+3. Use the extension to create, run, and debug functions locally.
+4. Deploy directly from VS Code to Azure.
+
+---
+
+### **Summary**
+1. Install Azure Functions Core Tools
+2. Create a new function project
+3. Configure local settings
+4. Install dependencies
+5. Run and test locally
+6. Debug and iterate
+7. Deploy to Azure
+
+---
+ 
+
+
+
+
 
 **Replace `requirements.txt`:**
 ```txt
