@@ -7,6 +7,37 @@ and drop it from tables?
 Also it should be possible to restore archived data back to Postgres if required.
 
 
+The `azure_storage` extension for PostgreSQL Flexible Server has limitations when it comes to ADLS Gen2. Here's what you need to know:
+
+## Current Capabilities
+The `azure_storage` extension primarily supports:
+- **Azure Blob Storage** (blob.core.windows.net endpoints)
+- Basic read/write operations using `COPY` commands
+- SAS token authentication
+
+## ADLS Gen2 Limitations
+ADLS Gen2 uses the Data Lake Storage API (dfs.core.windows.net), which is different from the Blob Storage API. The `azure_storage` extension was designed for traditional Blob Storage, not the hierarchical namespace features of ADLS Gen2.
+
+## What Works
+You can access ADLS Gen2 files through the **Blob Storage compatibility layer**:
+```sql
+-- This might work using blob endpoint
+COPY table_name TO 'azure://account.blob.core.windows.net/container/file.csv'
+WITH (FORMAT 'csv', azure_storage_account_name 'account', azure_storage_account_key 'key');
+```
+
+## What Doesn't Work Well
+- Direct access to dfs.core.windows.net endpoints
+- ADLS Gen2-specific features like ACLs and hierarchical permissions
+- Advanced Data Lake operations
+
+## Recommended Approach
+For reliable ADLS Gen2 integration:
+1. Use Azure Data Factory for data movement
+2. Access ADLS Gen2 via the blob compatibility endpoint if you must use the extension
+3. Consider that the extension is primarily for simple blob operations, not full Data Lake functionality
+
+The extension exists but isn't optimized for ADLS Gen2's advanced features. Test thoroughly with your specific use case before relying on it in production.
 
 Azure PostgreSQL Flexible Server doesn't have direct, native connectivity to ADLS Gen2. You'll need to use one of these approaches:
 
