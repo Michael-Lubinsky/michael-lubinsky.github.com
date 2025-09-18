@@ -89,6 +89,8 @@ So, in simple terms, the default schedule means the function will be triggered *
 
 ## Step 3: Update Project Files
 
+The azure-functions package is only required if you're developing and testing functions locally using the Azure Functions Core Tools.
+
 **Replace `requirements.txt`:**
 ```txt
 azure-functions
