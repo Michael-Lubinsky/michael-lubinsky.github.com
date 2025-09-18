@@ -539,30 +539,193 @@ python restore_backup.py --table sensor_data --date 2024-01-15 --schema public
 This approach provides both automated (via Azure Function) and manual restoration capabilities for your PostgreSQL backups.
 # MISTRAL
 
-The stored procedure you provided has **several critical issues** that will prevent it from working as intended in **Azure Database for PostgreSQL Flexible Server**. Here's a detailed breakdown:
+Here's a complete implementation using **Azure Functions (Python)** to back up a TimescaleDB chunk for a specific date to ADLS Gen2 with the specified folder hierarchy:
 
 ---
 
-### **Major Issues**
+### **1. Azure Function Implementation**
+#### **Prerequisites:**
+- Azure Function App with Python runtime
+- Managed Identity enabled for the Function App
+- Required Python packages: `psycopg2-binary`, `pandas`, `azure-storage-file-datalake`, `azure-identity`
 
-#### **1. `pg_exec` Does Not Exist**
-- **Problem**: The function `pg_exec` is not a built-in PostgreSQL function. It's not available in Azure PostgreSQL Flexible Server.
-- **Fix**: Replace `pg_exec` calls with an external process or use a different approach.
+#### **Function Code (`__init__.py`):**
+```python
+import logging
+import os
+import zipfile
+import pandas as pd
+import psycopg2
+from azure.storage.filedatalake import DataLakeServiceClient
+from azure.identity import DefaultAzureCredential
+from datetime import datetime
 
-#### **2. Direct File System Access**
-- **Problem**: PostgreSQL in Azure Flexible Server **cannot access the local file system** (e.g., `/tmp/`). The `COPY TO PROGRAM` and `COPY FROM PROGRAM` commands will fail.
-- **Fix**: Use an external service (e.g., Azure Functions, VM) to handle file operations.
+def main(req):
+    try:
+        # Parse input parameters (or use defaults)
+        schema_name = req.params.get('schema_name') or os.environ.get('SCHEMA_NAME', 'public')
+        table_name = req.params.get('table_name') or os.environ.get('TABLE_NAME')
+        target_date = req.params.get('target_date') or os.environ.get('TARGET_DATE', datetime.now().strftime('%Y-%m-%d'))
 
-#### **3. `azcopy` Command**
-- **Problem**: The `azcopy` command is not available within PostgreSQL. Even if it were, PostgreSQL cannot execute shell commands directly.
-- **Fix**: Use an external process to handle the upload to ADLS Gen2.
+        if not table_name or not target_date:
+            return {"error": "Missing required parameters: table_name and target_date"}
 
-#### **4. `drop_chunks` Function**
-- **Problem**: The `drop_chunks` function is specific to TimescaleDB and requires the correct parameters. Your usage is incorrect.
-- **Fix**: Use the correct TimescaleDB function syntax:
-  ```sql
-  CALL drop_chunks(interval => '30 days', hypertable => format('%I.%I', p_schema_name, p_table_name));
-  ```
+        # Connect to PostgreSQL
+        conn = psycopg2.connect(
+            dbname=os.environ["POSTGRES_DB"],
+            user=os.environ["POSTGRES_USER"],
+            password=os.environ["POSTGRES_PASSWORD"],
+            host=os.environ["POSTGRES_HOST"]
+        )
+
+        # Find the chunk for the target date
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT chunk_schema, chunk_name
+                FROM timescaledb_information.chunks
+                WHERE hypertable_schema = %s
+                  AND hypertable_name = %s
+                  AND range_start <= %s
+                  AND range_end > %s
+            """, (schema_name, table_name, target_date, target_date))
+
+            chunk = cur.fetchone()
+
+            if not chunk:
+                return {"error": f"No chunk found for {schema_name}.{table_name} on {target_date}"}
+
+            chunk_schema, chunk_name = chunk
+            full_chunk_name = f"{chunk_schema}.{chunk_name}"
+
+            # Export chunk data to DataFrame
+            cur.execute(f"SELECT * FROM {full_chunk_name}")
+            rows = cur.fetchall()
+            columns = [desc[0] for desc in cur.description]
+            df = pd.DataFrame(rows, columns=columns)
+
+        # Create in-memory ZIP file
+        zip_buffer = zipfile.ZipFile('backup.zip', 'w', zipfile.ZIP_DEFLATED)
+        csv_filename = f"{table_name}.csv"
+        zip_buffer.writestr(csv_filename, df.to_csv(index=False))
+        zip_buffer.close()
+
+        # Upload to ADLS Gen2
+        credential = DefaultAzureCredential()
+        service_client = DataLakeServiceClient(
+            account_url=f"https://{os.environ['ADLS_ACCOUNT_NAME']}.dfs.core.windows.net",
+            credential=credential
+        )
+
+        # Create folder hierarchy: /pg_instance_name/schema_name/table_name/
+        instance_name = os.environ["POSTGRES_HOST"].split('.')[0]
+        folder_path = f"{instance_name}/{schema_name}/{table_name}"
+        file_name = f"{table_name}.{datetime.strptime(target_date, '%Y-%m-%d').strftime('%Y_%m_%d')}.csv.zip"
+
+        file_system_client = service_client.get_file_system_client(os.environ["ADLS_FILE_SYSTEM"])
+        directory_client = file_system_client.get_directory_client(folder_path)
+
+        # Upload the ZIP file
+        with open('backup.zip', 'rb') as data:
+            file_client = directory_client.create_file(file_name)
+            file_client.upload_data(data, overwrite=True)
+
+        # Clean up
+        os.remove('backup.zip')
+
+        return {
+            "status": "success",
+            "chunk": full_chunk_name,
+            "adls_path": f"{folder_path}/{file_name}",
+            "rows_exported": len(rows)
+        }
+
+    except Exception as e:
+        logging.error(f"Error: {str(e)}")
+        return {"error": str(e)}
+```
+
+---
+
+### **2. Function Configuration**
+#### **`function.json`:**
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get", "post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    }
+  ]
+}
+```
+
+---
+
+### **3. Required Application Settings**
+Add these to your Function App's **Configuration > Application settings**:
+
+| Setting Name          | Value Example                          | Description                          |
+|-----------------------|----------------------------------------|--------------------------------------|
+| `POSTGRES_HOST`       | `my-postgres.postgres.database.azure.com` | PostgreSQL server hostname          |
+| `POSTGRES_DB`         | `mydb`                                 | Database name                       |
+| `POSTGRES_USER`       | `myuser`                               | PostgreSQL username                 |
+| `POSTGRES_PASSWORD`   | `mypassword`                          | PostgreSQL password                 |
+| `ADLS_ACCOUNT_NAME`   | `mystorageaccount`                     | ADLS Gen2 account name               |
+| `ADLS_FILE_SYSTEM`    | `mycontainer`                          | ADLS Gen2 container name             |
+
+---
+
+### **4. Deployment Steps**
+1. **Create a Function App** in the Azure Portal.
+2. **Enable Managed Identity** for the Function App.
+3. **Grant Storage Blob Data Contributor role** to the Function App's managed identity on the ADLS Gen2 container.
+4. **Deploy the function** using VS Code, Azure CLI, or the Azure Portal.
+5. **Test the function** with a GET request:
+   ```
+   https://your-function-app.azurewebsites.net/api/backup_function?table_name=your_table&target_date=2023-01-15
+   ```
+
+---
+
+### **5. Security Considerations**
+1. **Managed Identity**: Use Managed Identity for secure authentication to ADLS Gen2.
+2. **PostgreSQL Connection**: Store PostgreSQL credentials in Azure Key Vault and reference them in your Function App.
+3. **Network Security**: Ensure your PostgreSQL server allows connections from the Function App's outbound IP addresses.
+
+---
+
+### **6. Error Handling and Logging**
+- The function includes basic error handling and logging.
+- For production use, consider adding more detailed logging and monitoring.
+
+---
+
+### **7. Example Usage**
+To back up a chunk for the table `metrics` on `2023-01-15`:
+```bash
+curl "https://your-function-app.azurewebsites.net/api/backup_function?table_name=metrics&target_date=2023-01-15&schema_name=public"
+```
+
+---
+
+### **8. Notes**
+- This function assumes your TimescaleDB chunks are partitioned by time.
+- The function creates a ZIP file in memory to avoid writing to disk.
+- The folder hierarchy follows the pattern: `/pg_instance_name/schema_name/table_name/`.
+
+---
+**Let me know:**
+- Do you need help setting up the Azure Function App?
+- Would you like to add any additional features to the function?
 
 ---
 
