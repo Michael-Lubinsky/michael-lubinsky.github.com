@@ -5,10 +5,11 @@ Here's a complete step-by-step guide to deploy your first Azure Function:
 **Install required tools:**
 ```bash
 # Install Azure CLI
-curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+brew install ...
 
 # Install Azure Functions Core Tools
-npm install -g azure-functions-core-tools@4 --unsafe-perm true
+brew tap azure/functions
+brew install azure-functions-core-tools@4
 
 # Install Python 3.9+ (if not already installed)
 python3 --version
