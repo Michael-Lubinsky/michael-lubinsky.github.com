@@ -1,4 +1,151 @@
-### Mistral
+#  Claude
+
+I'll create a Python Azure Function that writes files to Azure Data Lake Storage Gen2 every 5 minutes with the specified naming format.I've created a Python Azure Function that writes files to ADLS Gen2 every 5 minutes. Here are the key features:
+
+## Function Details:
+- **Timer Schedule**: `"0 */5 * * * *"` - runs every 5 minutes
+- **File Format**: `YYYY-MM-DD-HH_MI.txt` (e.g., `2025-09-19-14_35.txt`)
+- **Content**: The file content is the same as the filename
+
+## Two Implementation Options:
+
+### Option 1: Account Key Authentication
+Uses storage account key for authentication. Requires these environment variables:
+- `ADLS_ACCOUNT_NAME`: Your ADLS Gen2 storage account name
+- `ADLS_ACCOUNT_KEY`: Your storage account key
+- `ADLS_CONTAINER_NAME`: The container/file system name
+
+### Option 2: Managed Identity (Recommended)
+Uses Azure Managed Identity for more secure authentication. Requires:
+- `ADLS_ACCOUNT_NAME`: Your ADLS Gen2 storage account name  
+- `ADLS_CONTAINER_NAME`: The container/file system name
+- Managed Identity enabled on the Function App
+- Proper RBAC permissions on the storage account
+
+## Required Dependencies:
+Add these to your `requirements.txt`:
+```
+azure-functions
+azure-storage-file-datalake
+azure-identity  # Only needed for managed identity version
+```
+
+## Configuration Steps:
+1. Set up the required environment variables in your Function App settings
+2. Ensure your Function App has the necessary permissions to write to ADLS Gen2
+3. Deploy the function to Azure
+
+The function includes proper error handling and logging to help with troubleshooting. Choose the authentication method that best fits your security requirements!
+```python
+import azure.functions as func
+import logging
+from azure.storage.filedatalake import DataLakeServiceClient
+from datetime import datetime
+import os
+
+app = func.FunctionApp()
+
+@app.timer_trigger(schedule="0 */5 * * * *", arg_name="myTimer", run_on_startup=False,
+                   use_monitor=False) 
+def write_file_to_adls(myTimer: func.TimerRequest) -> None:
+    """
+    Azure Function that runs every 5 minutes and writes a timestamped file to ADLS Gen2
+    """
+    
+    if myTimer.past_due:
+        logging.info('The timer is past due!')
+
+    try:
+        # Get connection details from environment variables
+        account_name = os.environ["ADLS_ACCOUNT_NAME"]
+        account_key = os.environ["ADLS_ACCOUNT_KEY"]
+        container_name = os.environ["ADLS_CONTAINER_NAME"]
+        
+        # Alternative: use connection string instead of account name + key
+        # connection_string = os.environ["ADLS_CONNECTION_STRING"]
+        
+        # Create the DataLake service client
+        service_client = DataLakeServiceClient(
+            account_url=f"https://{account_name}.dfs.core.windows.net",
+            credential=account_key
+        )
+        
+        # Alternative initialization with connection string:
+        # service_client = DataLakeServiceClient.from_connection_string(connection_string)
+        
+        # Get the file system (container) client
+        file_system_client = service_client.get_file_system_client(file_system=container_name)
+        
+        # Generate filename in YYYY-MM-DD-HH_MI.txt format
+        now = datetime.utcnow()
+        filename = now.strftime("%Y-%m-%d-%H_%M.txt")
+        
+        # Content is the same as filename
+        file_content = filename
+        
+        # Create and upload the file
+        file_client = file_system_client.get_file_client(filename)
+        file_client.create_file()
+        file_client.append_data(data=file_content.encode('utf-8'), offset=0, length=len(file_content))
+        file_client.flush_data(len(file_content))
+        
+        logging.info(f'Successfully created file: {filename} in container: {container_name}')
+        
+    except Exception as e:
+        logging.error(f'Error writing file to ADLS Gen2: {str(e)}')
+        raise
+
+
+# Alternative version using Managed Identity (recommended for production)
+@app.timer_trigger(schedule="0 */5 * * * *", arg_name="myTimer", run_on_startup=False,
+                   use_monitor=False)
+def write_file_to_adls_managed_identity(myTimer: func.TimerRequest) -> None:
+    """
+    Azure Function using Managed Identity for authentication (recommended approach)
+    """
+    
+    if myTimer.past_due:
+        logging.info('The timer is past due!')
+
+    try:
+        from azure.identity import DefaultAzureCredential
+        
+        # Get configuration from environment variables
+        account_name = os.environ["ADLS_ACCOUNT_NAME"]
+        container_name = os.environ["ADLS_CONTAINER_NAME"]
+        
+        # Use DefaultAzureCredential for managed identity
+        credential = DefaultAzureCredential()
+        
+        # Create the DataLake service client with managed identity
+        service_client = DataLakeServiceClient(
+            account_url=f"https://{account_name}.dfs.core.windows.net",
+            credential=credential
+        )
+        
+        # Get the file system (container) client
+        file_system_client = service_client.get_file_system_client(file_system=container_name)
+        
+        # Generate filename in YYYY-MM-DD-HH_MI.txt format
+        now = datetime.utcnow()
+        filename = now.strftime("%Y-%m-%d-%H_%M.txt")
+        
+        # Content is the same as filename
+        file_content = filename
+        
+        # Create and upload the file
+        file_client = file_system_client.get_file_client(filename)
+        file_client.create_file()
+        file_client.append_data(data=file_content.encode('utf-8'), offset=0, length=len(file_content))
+        file_client.flush_data(len(file_content))
+        
+        logging.info(f'Successfully created file: {filename} in container: {container_name}')
+        
+    except Exception as e:
+        logging.error(f'Error writing file to ADLS Gen2: {str(e)}')
+        raise
+```
+# Mistral
 Here's a complete Python Azure Function that writes a file to Azure Data Lake Storage (ADLS) Gen2 every 5 minutes with the specified filename format and content:
 
 ```python
