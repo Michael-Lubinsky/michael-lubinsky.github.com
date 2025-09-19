@@ -1,4 +1,4 @@
-Here's a complete step-by-step guide to deploy your first Azure Function:
+# Here's a complete step-by-step guide to deploy your first Azure Function:
 
 ## Prerequisites
 
@@ -95,7 +95,47 @@ The **azure-functions** package is only required if you're developing and testin
 
 Here's a comprehensive guide to developing and testing Azure Functions locally using **Azure Functions Core Tools**:
 
----
+#### simplified example of how you might use an Azure Function to copy data from PostgreSQL to Azure Blob Storage:
+ 
+```python
+import psycopg2
+from azure.storage.blob import BlobServiceClient
+import io
+import csv
+
+def copy_postgres_to_blob():
+    # Connect to PostgreSQL
+    conn = psycopg2.connect(
+        dbname="your_db",
+        user="your_user",
+        password="your_password",
+        host="your_host"
+    )
+
+    # Fetch data
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM your_table")
+        rows = cur.fetchall()
+        columns = [desc[0] for desc in cur.description]
+
+    # Write to CSV in memory
+    csv_buffer = io.StringIO()
+    writer = csv.writer(csv_buffer)
+    writer.writerow(columns)
+    writer.writerows(rows)
+
+    # Connect to Azure Blob Storage
+    blob_service_client = BlobServiceClient.from_connection_string("your_connection_string")
+    container_client = blob_service_client.get_container_client("your_container")
+
+    # Upload CSV to Blob Storage
+    blob_client = container_client.get_blob_client("output.csv")
+    blob_client.upload(csv_buffer.getvalue().encode('utf-8'), overwrite=True)
+
+    conn.close()
+```
+
+ 
 
 ### **1. Prerequisites**
 Before you start, ensure you have:
