@@ -1,3 +1,70 @@
+No, `<function-app-name>` is **NOT** the name of your Python file. Let me clarify the difference:
+
+## What `<function-app-name>` Actually Is
+
+`<function-app-name>` refers to the **Azure Function App resource** that you create in Azure - it's a cloud service, not a file.
+
+## The Hierarchy:
+
+```
+Azure Subscription
+└── Resource Group
+    └── Function App (this is what <function-app-name> refers to)
+        └── Individual Functions (like your Python timer function)
+            └── Python files (function_app.py, etc.)
+```
+
+## Example to Illustrate:
+
+Let's say you create an Azure Function App called `my-adls-timer-app`:
+
+```bash
+# Creating the Function App resource in Azure
+az functionapp create \
+    --name my-adls-timer-app \        # <-- This is <function-app-name>
+    --resource-group my-resource-group \
+    --runtime python
+```
+
+Then you would enable managed identity like this:
+```bash
+az functionapp identity assign \
+    --name my-adls-timer-app \        # <-- Same name as above
+    --resource-group my-resource-group
+```
+
+## Your Python Files:
+
+The Python code I created above would typically be in files like:
+- `function_app.py` (contains your timer function)
+- `requirements.txt` (dependencies)
+- `host.json` (configuration)
+
+These files get **deployed to** the Function App, but the Function App itself has its own name that you choose when creating it.
+
+## How to Choose `<function-app-name>`:
+
+When creating your Function App, you pick a name that:
+- Must be **globally unique** across all of Azure
+- Can contain letters, numbers, and hyphens
+- Examples: `my-adls-writer-func`, `company-timer-app-prod`, `johndoe-adls-function`
+
+## Real-World Example:
+
+```bash
+# 1. Create the Function App (you choose this name)
+az functionapp create --name "acme-adls-writer-2024" --resource-group "production-rg" --runtime python
+
+# 2. Enable managed identity (use the same name)
+az functionapp identity assign --name "acme-adls-writer-2024" --resource-group "production-rg"
+
+# 3. Deploy your Python code TO this Function App
+func azure functionapp publish "acme-adls-writer-2024"
+```
+
+So `<function-app-name>` is the name of the Azure cloud resource that will host and run your Python code!
+
+
 #  Claude
 
 I'll create a Python Azure Function that writes files to Azure Data Lake Storage Gen2 every 5 minutes with the specified naming format.I've created a Python Azure Function that writes files to ADLS Gen2 every 5 minutes. Here are the key features:
