@@ -327,6 +327,232 @@ A few details:
 
 Do you want me to also show the same Azure Function implemented with the **`azure-storage-file-datalake`** SDK (so you can see the difference and have both options)?
 
+Here’s the same “write a file every 5 minutes” Azure Function, but using the **`azure-storage-file-datalake`** SDK (true ADLS Gen2, hierarchical namespace, directories, etc.).
+
+It writes a text file named `YYYY-MM-DD-HH_MI.txt` whose **content equals the file name** into your ADLS Gen2 filesystem (container). You can optionally set a subfolder (directory) path.
+
+---
+
+### Folder structure
+
+```
+.
+├── host.json
+├── local.settings.json         # local only (don’t check secrets in)
+└── TimerToAdlsDatalake
+    ├── __init__.py
+    └── function.json
+```
+
+---
+
+### `host.json`
+
+```json
+{
+  "version": "2.0"
+}
+```
+
+---
+
+### `local.settings.json` (local dev/testing)
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+
+    // One of the two auth options below:
+    // Option A: Connection string (works with datalake SDK)
+    "ADLS_CONN": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+
+    // Option B: Account URL (can also include a SAS), for MSI use ADLS_ACCOUNT_URL without SAS
+    // "ADLS_ACCOUNT_URL": "https://<account>.dfs.core.windows.net",
+    // "ADLS_SAS": "?sv=...&ss=...&srt=...&sp=...&sig=...",   // optional if using SAS-in-URL or MSI
+
+    "ADLS_FILESYSTEM": "my-filesystem",          // the ADLS Gen2 filesystem (container) name
+    "ADLS_DIR_PREFIX": "every-5-min",            // optional subdirectory; omit or leave empty to write at root
+    "TIMEZONE_UTC": "true"                       // keep UTC timestamps (recommended for cron-like jobs)
+  }
+}
+```
+
+> For **production**, put these settings in your Function App “Configuration” in Azure Portal.
+> If you want **Managed Identity**, omit `ADLS_CONN`/`ADLS_SAS` and use `ADLS_ACCOUNT_URL` with the Function App’s identity granted **Storage Blob Data Contributor** on the storage account.
+
+---
+
+### `TimerToAdlsDatalake/function.json`
+
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "mytimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"
+    }
+  ]
+}
+```
+
+Runs every 5 minutes at second 0.
+
+---
+
+### `TimerToAdlsDatalake/__init__.py`
+
+```python
+import os
+import datetime
+import azure.functions as func
+
+from azure.storage.filedatalake import (
+    DataLakeServiceClient,
+    FileSystemClient,
+    DataLakeDirectoryClient,
+    DataLakeFileClient,
+)
+from typing import Optional
+
+# Optional: for Managed Identity / Workload Identity
+# pip install azure-identity and uncomment below if you prefer MSI
+# from azure.identity import DefaultAzureCredential
+
+
+def _get_service_client() -> DataLakeServiceClient:
+    """
+    Return a DataLakeServiceClient using one of:
+      - ADLS_CONN (connection string), or
+      - ADLS_ACCOUNT_URL (+ optional ADLS_SAS in URL or DefaultAzureCredential)
+    """
+    conn = os.environ.get("ADLS_CONN")
+    if conn:
+        return DataLakeServiceClient.from_connection_string(conn)
+
+    account_url = os.environ.get("ADLS_ACCOUNT_URL")
+    if not account_url:
+        raise RuntimeError("Set ADLS_CONN or ADLS_ACCOUNT_URL")
+
+    sas = os.environ.get("ADLS_SAS", "").strip()
+    if sas:
+        # SAS appended to URL
+        if not account_url.endswith(sas):
+            sep = "&" if "?" in account_url else "?"
+            account_url = f"{account_url}{sep}{sas.lstrip('?')}"
+        return DataLakeServiceClient(account_url=account_url)
+
+    # Managed Identity / Workload Identity (grant RBAC: Storage Blob Data Contributor)
+    # cred = DefaultAzureCredential()
+    # return DataLakeServiceClient(account_url=account_url, credential=cred)
+
+    # If neither connection string nor SAS nor MSI credential is provided:
+    return DataLakeServiceClient(account_url=account_url)
+
+
+def _ensure_filesystem(svc: DataLakeServiceClient, fs_name: str) -> FileSystemClient:
+    try:
+        fs = svc.get_file_system_client(file_system=fs_name)
+        fs.create_file_system()  # no-op if exists (SDK will raise; catch & ignore)
+    except Exception:
+        pass
+    return svc.get_file_system_client(file_system=fs_name)
+
+
+def _ensure_directory(fs: FileSystemClient, dir_path: Optional[str]) -> Optional[DataLakeDirectoryClient]:
+    if not dir_path:
+        return None
+    # Normalize (no leading slash)
+    dir_path = dir_path.lstrip("/")
+    try:
+        dir_client = fs.get_directory_client(dir_path)
+        dir_client.create_directory()  # no-op if exists (SDK will raise; catch & ignore)
+    except Exception:
+        pass
+    return fs.get_directory_client(dir_path)
+
+
+def _upload_text_file(
+    fs: FileSystemClient,
+    dir_client: Optional[DataLakeDirectoryClient],
+    filename: str,
+    content: str,
+) -> str:
+    """
+    Create/overwrite <dir>/<filename> with provided text content.
+    Returns the ADLS path used.
+    """
+    adls_path = filename if dir_client is None else f"{dir_client.directory_path}/{filename}"
+    # Create a file client at that path
+    file_client: DataLakeFileClient = fs.get_file_client(adls_path)
+
+    # upload_data handles creation + overwrite=True
+    data = content.encode("utf-8")
+    file_client.upload_data(data, overwrite=True)  # small payloads: fine to buffer
+
+    return adls_path
+
+
+def main(mytimer: func.TimerRequest) -> None:
+    # 1) Build the timestamped name
+    utc = os.environ.get("TIMEZONE_UTC", "true").lower() == "true"
+    now = datetime.datetime.utcnow() if utc else datetime.datetime.now()
+    # Required format: YYYY-MM-DD-HH_MI.txt  (note underscore between hour and minute)
+    fname = now.strftime("%Y-%m-%d-%H_%M.txt")
+    body = fname  # content equals file name
+
+    # 2) Read env/config
+    filesystem = os.environ.get("ADLS_FILESYSTEM")
+    if not filesystem:
+        raise RuntimeError("ADLS_FILESYSTEM is required")
+
+    dir_prefix = os.environ.get("ADLS_DIR_PREFIX", "").strip()
+
+    # 3) Connect to ADLS Gen2 (hierarchical)
+    svc = _get_service_client()
+    fs_client = _ensure_filesystem(svc, filesystem)
+    dir_client = _ensure_directory(fs_client, dir_prefix)
+
+    # 4) Upload
+    adls_path = _upload_text_file(fs_client, dir_client, fname, body)
+
+    print(f"Uploaded {adls_path} at {now.isoformat()} ({'UTC' if utc else 'local'})")
+```
+
+---
+
+### `requirements.txt`
+
+```text
+azure-functions
+azure-storage-file-datalake
+# Optional if you want Managed Identity (uncomment in code too):
+# azure-identity
+```
+
+---
+
+## How it works
+
+* **Timer trigger** runs every 5 minutes.
+* Builds `YYYY-MM-DD-HH_MI.txt` from current time (UTC by default).
+* Ensures the **filesystem** and optional **directory** exist.
+* Writes the file to:
+
+  ```
+  <filesystem>/<ADLS_DIR_PREFIX>/<YYYY-MM-DD-HH_MI.txt>
+  ```
+* File **content equals the name**.
+
+If you prefer a nested hierarchy like `year=YYYY/month=MM/day=DD/`, set `ADLS_DIR_PREFIX` dynamically—or I can show a variant that computes the directory path from the current timestamp.
+
+Want me to switch this to **HTTP trigger** (so you can call it ad-hoc and pass a custom timestamp), or keep the timer schedule but write into a **date-partitioned directory tree**?
+
 
 
 # Here's a complete step-by-step guide to deploy your first Azure Function:
