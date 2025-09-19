@@ -1,3 +1,5 @@
+<https://habr.com/ru/companies/ru_mts/articles/947710/>
+
 **LightFM** is a **Python library** for building **hybrid recommendation systems**. It combines:
 
 - **Collaborative filtering** (e.g., matrix factorization)
