@@ -2701,8 +2701,61 @@ You can also use a combination of both:
 2. Write code to connect to PostgreSQL, fetch data, and upload it to ADLS Gen2.
 3. Deploy the function.
 
----
+# Function Deployment issues
 
-**Let me know:**
-- Which approach aligns better with your team's skills and requirements?
-- Do you need help setting up either Azure Data Factory or Azure Functions?
+Perfect! I can see the issue in your screenshot. You have an **existing Function App** (`michael-weavix-testing`) and you're in the **Deployment settings** section. The key problem I can identify is:
+
+## Main Issue: Managed Identity Permission Problem
+
+In the **Storage authentication** section, I can see this important message:
+
+> **"Managed identity is disabled because you do not have permission to assign roles for the storage account."**
+
+This is exactly the same permission issue we encountered with the CLI!
+
+## Solutions:
+
+### Option 1: Use Connection String Authentication (Immediate Fix)
+
+Since you can't use Managed Identity due to permissions, use **Connection string** instead:
+
+1. **Authentication type**: Select **"Connection string"** (it's currently showing as an option)
+2. **App setting name**: This will create an app setting with the storage account connection string
+3. Click **Save**
+
+This bypasses the role assignment requirement.
+
+### Option 2: Get Admin to Enable Managed Identity
+
+Ask your Azure admin to:
+1. Grant you **"User Access Administrator"** role on the storage account, OR
+2. Enable the managed identity themselves by selecting **"System assigned identity"** option
+
+### Option 3: For Your ADLS Gen2 Timer Function
+
+Even with connection string authentication for the Function App's internal storage, you'll still need to configure access to your **ADLS Gen2 storage** separately. You have two choices:
+
+**A) Use ADLS Connection String:**
+```bash
+# Get your ADLS Gen2 connection string and add it as environment variable
+az functionapp config appsettings set \
+    --name michael-weavix-testing \
+    --resource-group michael-function-testing-rg \
+    --settings "ADLS_CONNECTION_STRING=<your-adls-connection-string>"
+```
+
+**B) Ask admin to set up Managed Identity for ADLS Gen2:**
+Your admin would need to assign the Function App's managed identity the **"Storage Blob Data Contributor"** role on your ADLS Gen2 storage account.
+
+## Immediate Next Steps:
+
+1. **In the current screen**: Select **"Connection string"** for Authentication type
+2. **Click Save**
+3. **Deploy your Python code** using the methods I described earlier
+4. **Configure ADLS Gen2 access** using connection string or ask admin for managed identity setup
+
+Would you like me to guide you through getting the ADLS Gen2 connection string, or do you want to proceed with asking your admin to set up the managed identity properly?
+
+
+
+ 
