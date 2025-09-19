@@ -1,3 +1,185 @@
+Here’s a complete **Python Azure Function (Timer trigger)** that writes a text file to **ADLS Gen2** (Azure Blob Storage) **every 5 minutes**.
+
+The file:
+
+* Lives in a container you configure (`BLOB_CONTAINER`)
+* Is named `YYYY-MM-DD-HH_MI.txt`
+* Contains the same text as its file name
+
+---
+
+### 1. folder structure
+
+```
+.
+├── host.json
+├── local.settings.json
+└── TimerToAdls
+    ├── __init__.py
+    └── function.json
+```
+
+---
+
+### 2. `host.json`
+
+```json
+{
+  "version": "2.0"
+}
+```
+
+---
+
+### 3. `local.settings.json` (for local dev/testing)
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "BLOB_CONN": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
+    "BLOB_CONTAINER": "my-container"
+  }
+}
+```
+
+> Replace `BLOB_CONN` with your ADLS Gen2 storage account **connection string** (or configure managed identity in production).
+
+---
+
+### 4. `TimerToAdls/function.json`
+
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "mytimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"
+    }
+  ]
+}
+```
+
+`schedule` means run every 5 minutes at second 0.
+
+---
+
+### 5. `TimerToAdls/__init__.py`
+
+```python
+import datetime
+import os
+import azure.functions as func
+from azure.storage.blob import BlobServiceClient
+
+def main(mytimer: func.TimerRequest) -> None:
+    utc_now = datetime.datetime.utcnow()
+
+    # file name: YYYY-MM-DD-HH_MI.txt
+    file_name = utc_now.strftime("%Y-%m-%d-%H_%M.txt")
+    content = file_name.encode("utf-8")
+
+    # get env vars
+    conn_str = os.environ.get("BLOB_CONN")
+    container_name = os.environ.get("BLOB_CONTAINER")
+    if not conn_str or not container_name:
+        raise RuntimeError("BLOB_CONN and BLOB_CONTAINER must be set")
+
+    # create client
+    blob_service_client = BlobServiceClient.from_connection_string(conn_str)
+    container_client = blob_service_client.get_container_client(container_name)
+
+    # ensure container exists
+    try:
+        container_client.create_container()
+    except Exception:
+        pass  # already exists
+
+    # upload blob
+    blob_client = container_client.get_blob_client(file_name)
+    blob_client.upload_blob(content, overwrite=True)
+
+    logging_text = f"Uploaded blob {file_name} at {utc_now.isoformat()} UTC"
+    print(logging_text)
+```
+
+---
+
+### 6. requirements.txt
+
+```text
+azure-functions
+azure-storage-blob
+```
+
+---
+
+### Deployment Notes
+
+* Deploy with Azure Functions Core Tools (`func azure functionapp publish <app-name>`)
+* Configure `BLOB_CONN` and `BLOB_CONTAINER` in the Function App’s Application Settings (Portal or `az functionapp config appsettings set`)
+* The function will create a text blob every 5 minutes with its timestamp as name & content
+
+---
+
+✅ Example blob name:
+
+```
+2025-09-19-15_25.txt
+```
+
+✅ Example blob content:
+
+```
+2025-09-19-15_25.txt
+```
+
+---
+
+Do you also want me to show you the **variant using Managed Identity** instead of a connection string (so you don’t store keys)?
+
+
+`azure-storage-blob` **is the correct SDK for ADLS Gen2**.
+
+A few details:
+
+* **ADLS Gen2 = Blob Storage + Hierarchical Namespace (HNS)**
+  When you enable “Hierarchical namespace” on a storage account, it *becomes ADLS Gen2*. Under the covers it still uses the **Blob service API**. That’s why `azure-storage-blob` works fine: it talks to the Blob endpoint (`https://<account>.blob.core.windows.net/...`).
+
+* **Hierarchical operations** (like directories, renames, ACLs)
+  These are supported via the **`azure-storage-file-datalake`** package. It gives you `DataLakeServiceClient`, `FileSystemClient`, and `DirectoryClient` with real folder semantics and POSIX ACLs.
+
+* **For simple “write file to path” jobs** (like your function that drops a text file every 5 minutes):
+  You don’t *need* `azure-storage-file-datalake`.
+  You can safely use `azure-storage-blob`, treating the “path” as part of the blob name:
+
+  ```python
+  blob_client = container_client.get_blob_client("folder1/folder2/myfile.txt")
+  blob_client.upload_blob(content, overwrite=True)
+  ```
+
+  The “folders” are just prefixes in the blob name, but with HNS enabled they behave like directories when you browse in Azure Portal or `az storage fs ...`.
+
+---
+
+### Rule of thumb
+
+* **Use `azure-storage-blob`** if you just want to upload/download/delete objects and don’t care about ACLs or directory-level operations.
+* **Use `azure-storage-file-datalake`** if you need advanced ADLS features (true directory objects, POSIX ACLs, renames/moves, recursive ACL set).
+
+---
+
+👉 For your **“write file every 5 minutes with name YYYY-MM-DD-HH\_MI.txt”**, `azure-storage-blob` is totally fine and works on ADLS Gen2 hierarchical accounts.
+
+Do you want me to also show the same Azure Function implemented with the **`azure-storage-file-datalake`** SDK (so you can see the difference and have both options)?
+
+
+
 # Here's a complete step-by-step guide to deploy your first Azure Function:
 
 ## Prerequisites
