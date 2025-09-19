@@ -1,3 +1,131 @@
+Great questions! Let me explain both parameters and when to use them:
+
+## `--storage-account`
+
+**Should you specify it?** **YES** - but it depends on your scenario:
+
+### Option 1: Let Azure create one automatically (Easiest)
+```bash
+az functionapp create \
+    --name my-adls-writer \
+    --resource-group michael-function-testing-rg \
+    --runtime python \
+    --consumption-plan-location eastus
+    # No --storage-account specified - Azure creates one automatically
+```
+
+### Option 2: Use an existing storage account (More control)
+```bash
+# First create or use existing storage account
+az storage account create \
+    --name myfuncstorageaccount \
+    --resource-group my-rg \
+    --location eastus \
+    --sku Standard_LRS
+
+# Then reference it in functionapp create
+az functionapp create \
+    --name my-adls-writer \
+    --resource-group my-rg \
+    --runtime python \
+    --consumption-plan-location eastus \
+    --storage-account myfuncstorageaccount
+```
+
+**Important Note:** This storage account is for the **Function App's internal operations** (storing function metadata, triggers, etc.), NOT for your ADLS Gen2 data. Your ADLS Gen2 is separate.
+
+## `--assign-identity`
+
+**Should you specify it?** **Optional** - you can do it now or later:
+
+### Option 1: Enable during creation
+```bash
+az functionapp create \
+    --name my-adls-writer \
+    --resource-group my-rg \
+    --runtime python \
+    --consumption-plan-location eastus \
+    --assign-identity [system]  # Enable managed identity immediately
+```
+
+### Option 2: Enable after creation (what I showed earlier)
+```bash
+# Create function app first
+az functionapp create \
+    --name my-adls-writer \
+    --resource-group my-rg \
+    --runtime python \
+    --consumption-plan-location eastus
+
+# Then enable managed identity separately
+az functionapp identity assign \
+    --name my-adls-writer \
+    --resource-group my-rg
+```
+
+## Recommended Approach
+
+Here's what I recommend for your ADLS scenario:
+
+```bash
+# Create Function App with managed identity enabled from the start
+az functionapp create \
+    --name my-adls-writer-func \
+    --resource-group my-resource-group \
+    --runtime python \
+    --runtime-version 3.9 \
+    --functions-version 4 \
+    --consumption-plan-location eastus \
+    --assign-identity [system]
+    # Let Azure auto-create storage account for Function App operations
+```
+
+This approach:
+- ✅ Lets Azure handle the Function App's internal storage automatically
+- ✅ Enables managed identity immediately
+- ✅ Keeps things simple
+
+## Complete Example with All Steps
+
+```bash
+# 1. Create Function App with managed identity
+az functionapp create \
+    --name my-adls-writer-func \
+    --resource-group michael-function-testing-rg \
+    --runtime python \
+    --runtime-version 3.9 \
+    --functions-version 4 \
+    --consumption-plan-location eastus \
+    --assign-identity [system]
+
+# 2. Get the principal ID (returned from step 1, or query it)
+PRINCIPAL_ID=$(az functionapp identity show \
+    --name my-adls-writer-func \
+    --resource-group my-resource-group \
+    --query principalId --output tsv)
+
+# 3. Assign permissions to your ADLS Gen2 storage account
+az role assignment create \
+    --assignee $PRINCIPAL_ID \
+    --role "Storage Blob Data Contributor" \
+    --scope "/subscriptions/<subscription-id>/resourceGroups/<adls-resource-group>/providers/Microsoft.Storage/storageAccounts/<adls-storage-account-name>"
+
+# 4. Configure app settings
+az functionapp config appsettings set \
+    --name my-adls-writer-func \
+    --resource-group my-resource-group \
+    --settings \
+    "ADLS_ACCOUNT_NAME=<your-adls-storage-account>" \
+    "ADLS_CONTAINER_NAME=<your-container-name>"
+```
+
+## Summary
+
+- **`--storage-account`**: Optional, Azure can auto-create one for Function App operations
+- **`--assign-identity`**: Optional but recommended to include it during creation for convenience
+- The Function App's internal storage account is separate from your ADLS Gen2 storage account
+
+
 No, `<function-app-name>` is **NOT** the name of your Python file. Let me clarify the difference:
 
 ## What `<function-app-name>` Actually Is
