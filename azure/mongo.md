@@ -10,6 +10,8 @@
 | **Aggregation** | MongoDB’s equivalent of SQL GROUP BY and more                |
 
  <https://www.datacamp.com/tutorial/mongodb-query-api>
+
+ <https://habr.com/ru/articles/948942/> Mongo and Postgres Notes
  
 ## **MongoDB Atlas**
 - **Atlas** is MongoDB’s fully managed **Database-as-a-Service (DBaaS)**.  
