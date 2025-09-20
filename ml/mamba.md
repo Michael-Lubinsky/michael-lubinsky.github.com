@@ -194,6 +194,9 @@ https://arxiv.org/abs/2306.13549
 Multimodal deep learning
 https://arxiv.org/abs/2301.04856 
 
+Создание умных AI-агентов: полный курс по LangGraph от А до Я. Часть 2. Диалоговые агенты: память, сообщения и контекст
+https://habr.com/ru/companies/amvera/articles/948000/
+
 ### AIC (Akaike Information Criterion)  BIC ( Bayesian information criterion )
 ```
 What is AIC and BIC? How these helps in ML Model Selection? 
