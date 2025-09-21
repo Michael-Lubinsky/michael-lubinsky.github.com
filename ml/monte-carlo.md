@@ -1,3 +1,12 @@
+https://www.inference.org.uk/mackay/itila/book.html
+
+https://www.youtube.com/watch?v=nKCT-Cdk0xY
+
+https://archive.org/details/TheMonte-carloMethodlittleMathematicsLibrary
+
+https://artowen.su.domains/mc/
+
+
 ### markov chain monte carlo 
 — с помощью марковской цепи моделировался процесс распада ядра в виде последовательности состояний группы ядер. Вопрос, который интересовал физиков — 
 при каких исходных параметрах может быть запущена самоподдерживающаяся цепная реакция.
