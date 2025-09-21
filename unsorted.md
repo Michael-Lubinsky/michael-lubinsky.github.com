@@ -23,6 +23,8 @@ Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/
 
 ### GPU
  https://enccs.github.io/gpu-programming/2-gpu-ecosystem/
+
+ https://leetarxiv.substack.com/p/learning-cuda-on-a-budget-on-google
  
 ### Awesome
 https://github.com/sindresorhus/awesome
