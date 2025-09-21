@@ -6,6 +6,9 @@ https://www.understandingai.org/p/reinforcement-learning-explained
 ### Book with code: Understanding Deep Learning 
 https://udlbook.github.io/udlbook/
 
+Book:
+https://www.dataschool.io/master-machine-learning-book-preview/
+
 ###  Sebastian Rashka
 
 https://sebastianraschka.com/
