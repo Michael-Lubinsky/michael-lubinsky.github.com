@@ -20,6 +20,8 @@
 
 <https://www.cantorsparadise.com/an-amazing-geometric-technique-for-evaluating-integrals-48b68e9b4638>
 
+<https://mirtitles.org/category/little-mathematics-library/>
+
 ## Puzzles
 
 ### Question 
