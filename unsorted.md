@@ -19,6 +19,8 @@ https://www.oreilly.com/library/view/data-engineering-design/9781098165826/
 
 Free Books: https://github.com/EbookFoundation/free-programming-books/blob/main/books/free-programming-books-subjects.md
 
+### Kafka
+
 ### GPU
  https://enccs.github.io/gpu-programming/2-gpu-ecosystem/
  
