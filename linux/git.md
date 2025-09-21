@@ -10,4 +10,6 @@ git fetch --all --prune
 update the last commit without creating a new one.
 git commit --amend
 ```
+
+Git <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>  
 <https://medium.com/the-pythonworld/20-advanced-git-command-line-tricks-every-developer-should-know-03543884d3be>
