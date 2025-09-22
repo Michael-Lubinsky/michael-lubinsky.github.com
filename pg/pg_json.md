@@ -245,7 +245,7 @@ If you have a heavily nested document, the NESTED PATH subclause comes in handy 
 
 <https://medium.com/@richardhightower/jsonb-postgresqls-secret-weapon-for-flexible-data-modeling-cf2f5087168f>
 
-### Extract name and values from 1 jsonb row in format, conveniet for Confluence
+### Extract name and values from 1 jsonb row in table format  for Confluence
 ```sql
 
 SELECT '|| Key || Value ||' AS confluence_row
@@ -266,3 +266,85 @@ Notes:
 - COALESCE(e.value, 'null') ensures JSON null shows as null instead of becoming SQL NULL.  
 
 If you prefer to show empty string instead of null, change to COALESCE(e.value, '').
+
+
+## build  Confluence-ready rows for **every table in schema `events` that has a `jsonb` column named `properties`**. 
+
+It:
+
+* Picks **one row per table** (`LIMIT 1`).
+* Expands all `key : value` pairs.
+* Puts all pairs into **a single cell** separated by `<br/>` (works as line breaks in Confluence table cells).
+* Handles JSON `null` values as literal `null`.
+* Shows `"(no rows)"` if the table is empty or `properties` is null.
+
+### Step 1 — Create a helper function (returns two columns)
+
+```sql
+CREATE OR REPLACE FUNCTION events.properties_confluence()
+RETURNS TABLE (table_name text, properties_cell text)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  r RECORD;
+  kvs text;
+BEGIN
+  FOR r IN
+    SELECT n.nspname AS schema_name,
+           c.relname AS tbl
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    JOIN pg_attribute a ON a.attrelid = c.oid
+    WHERE n.nspname = 'events'
+      AND c.relkind = 'r'                 -- ordinary tables
+      AND a.attname = 'properties'
+      AND a.atttypid = 'jsonb'::regtype
+    ORDER BY c.relname
+  LOOP
+    -- Build <key : value> lines for one sample row from this table
+    SELECT string_agg(k || ' : ' || v, E'<br/>' ORDER BY k)
+      INTO kvs
+    FROM (
+      SELECT e.key AS k, COALESCE(e.value, 'null') AS v
+      FROM (
+        -- LIMIT 1: pick ONE row from each table (if any)
+        SELECT properties
+        FROM pg_catalog.format('%I.%I', r.schema_name, r.tbl)::regclass AS t
+        LIMIT 1
+      ) s
+      LEFT JOIN LATERAL jsonb_each_text(s.properties) AS e(key, value) ON TRUE
+    ) q;
+
+    IF kvs IS NULL THEN
+      kvs := '(no rows)';
+    END IF;
+
+    table_name     := r.schema_name || '.' || r.tbl;
+    properties_cell := kvs;
+    RETURN NEXT;
+  END LOOP;
+END;
+$$;
+```
+
+### Step 2 — Produce Confluence-ready table rows
+
+Copy the result of this query and paste into Confluence:
+
+```sql
+SELECT '|| Table || Properties ||' AS confluence_row
+UNION ALL
+SELECT '| ' || table_name || ' | ' || properties_cell || ' |'
+FROM events.properties_confluence()
+ORDER BY confluence_row;  -- header first, then tables (already ordered)
+```
+
+#### Notes / tweaks
+
+* If you want to **choose a specific row** per table (e.g., “most recent”), replace the `LIMIT 1` subquery with your own selector (for example, `ORDER BY timestamp DESC LIMIT 1`)—but only if all those tables have such a column.
+* To put each `key : value` on its own physical line (not `<br/>`), change the separator to `E'\n'` and ensure your Confluence preserves line breaks in cells:
+
+  ```sql
+  string_agg(k || ' : ' || v, E'\n' ORDER BY k)
+  ```
+* If some tables may have `properties` present but sometimes `NULL`, the `LEFT JOIN LATERAL` and the `(no rows)` fallback already cover that.
