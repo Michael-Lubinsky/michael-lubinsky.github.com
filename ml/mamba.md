@@ -1,3 +1,5 @@
+https://huggingface.co/learn
+
 https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
 
 ### Reinforcement learning: 
