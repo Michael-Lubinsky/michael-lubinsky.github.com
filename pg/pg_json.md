@@ -200,7 +200,7 @@ So with these operators you pick out pieces of a json document, but before we do
 To break up these rows, you can use jsonb_array_elements, which is a set returning element that only works with jsonb formatted arrays and returns each element of the array as a jsonb object.
 
 Your table should end up looking like this
-```
+```sql
 
 SELECT * FROM boston_public_schools LIMIT 3;
 id |     longitude      |     latitude      |       sch_name       |       address       |    city     | zipcode
@@ -245,3 +245,18 @@ If you have a heavily nested document, the NESTED PATH subclause comes in handy 
 
 <https://medium.com/@richardhightower/jsonb-postgresqls-secret-weapon-for-flexible-data-modeling-cf2f5087168f>
 
+### Extract name and values from 1 jsonb row in format, conveniet for Confluence
+```sql
+
+SELECT '|| Key || Value ||' AS confluence_row
+UNION ALL
+SELECT '| ' || e.key || ' | ' || COALESCE(e.value, 'null') || ' |' AS confluence_row
+FROM (
+  SELECT properties
+  FROM accessorydisconnected
+  ORDER BY timestamp DESC
+  LIMIT 1
+) t
+CROSS JOIN LATERAL jsonb_each_text(t.properties) AS e(key, value)
+ORDER BY confluence_row;
+```
