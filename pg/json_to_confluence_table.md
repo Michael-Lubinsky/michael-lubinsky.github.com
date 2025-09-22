@@ -134,6 +134,7 @@ SELECT
     attribute_value
 FROM events.extract_properties_for_confluence()
 ORDER BY table_name, attribute_name;
+```
 ## Clean Output (No Quotes):
 
 ### 1. **Direct Query (Clean Results)**
