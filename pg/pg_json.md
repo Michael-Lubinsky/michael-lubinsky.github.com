@@ -260,3 +260,9 @@ FROM (
 CROSS JOIN LATERAL jsonb_each_text(t.properties) AS e(key, value)
 ORDER BY confluence_row;
 ```
+Notes:
+
+- jsonb_each_text gives you unquoted text for strings (nice for Confluence).  
+- COALESCE(e.value, 'null') ensures JSON null shows as null instead of becoming SQL NULL.  
+
+If you prefer to show empty string instead of null, change to COALESCE(e.value, '').
