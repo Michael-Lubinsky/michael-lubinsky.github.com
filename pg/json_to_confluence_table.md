@@ -32,16 +32,20 @@ BEGIN
         table_full_name := r.schema_name || '.' || r.tbl;
         
         BEGIN
-            -- Build dynamic query to extract key-value pairs from properties
+            -- Build dynamic query to extract key-value pairs from properties of a SINGLE row
             query := format($query$
+                WITH single_row AS (
+                    SELECT properties
+                    FROM %I.%I
+                    WHERE properties IS NOT NULL 
+                      AND jsonb_typeof(properties) = 'object'
+                    LIMIT 1
+                )
                 SELECT key as attr_name, 
                        COALESCE(value, 'null') as attr_value
-                FROM %I.%I,
+                FROM single_row,
                      jsonb_each_text(properties)
-                WHERE properties IS NOT NULL 
-                  AND jsonb_typeof(properties) = 'object'
                 ORDER BY key
-                LIMIT 1000
             $query$, r.schema_name, r.tbl);
             
             -- Execute query and return each key-value pair as a separate row
