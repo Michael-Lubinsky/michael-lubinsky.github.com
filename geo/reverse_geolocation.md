@@ -312,6 +312,183 @@ LIMIT 20;
 
 # ChatGPT
 
+Short answer: your two files are reversed.
+
+* `cb_2020_us_state_500k.zip` = **US state boundaries** (generalized “cartographic boundary” polygons intended for mapping). ([Census.gov][1])
+* `2020_Gaz_zcta_national.zip` = a **Gazetteer table for ZCTAs** (tabular attributes like GEOID, land/water area, centroid coords) — not polygon boundaries. If you need *ZIP/ZCTA polygons*, download `cb_2020_us_zcta520_500k.zip`. ([Census.gov][2])
+
+Below is a Databricks-ready path that (1) uploads the files, (2) builds state + ZIP (ZCTA) lookup using polygons, and (3) creates a new view that enriches your point view (lon/lat) with `state` and `zip`.
+
+---
+
+# 0) Prereqs (Databricks Runtime & libs)
+
+This solution uses \[Databricks Mosaic] for fast point-in-polygon. Install once per cluster (or put in an init script):
+
+```python
+# In a Python notebook cell
+%pip install databricks-mosaic==0.4.0 shapely pyshp
+```
+
+Enable Mosaic in your session:
+
+```python
+from mosaic import enable_mosaic
+enable_mosaic(spark, dbutils)
+spark.sql("SET spark.databricks.labs.mosaic.enable=true")
+```
+
+Mosaic docs (point-in-polygon, geometry functions): ([Databricks][3])
+
+---
+
+# 1) Upload & unzip the Census files to DBFS
+
+Use a notebook `%sh` cell (easiest) to fetch the **state** polygons and the **ZCTA** polygons:
+
+```bash
+# create folders
+mkdir -p /dbfs/FileStore/geo/states
+mkdir -p /dbfs/FileStore/geo/zcta
+
+# download states (polygons)
+wget -O /dbfs/FileStore/geo/states/cb_2020_us_state_500k.zip \
+  https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_state_500k.zip
+
+# download ZCTA polygons (not the Gazetteer)
+wget -O /dbfs/FileStore/geo/zcta/cb_2020_us_zcta520_500k.zip \
+  https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_zcta520_500k.zip
+
+# unzip
+unzip -o /dbfs/FileStore/geo/states/cb_2020_us_state_500k.zip -d /dbfs/FileStore/geo/states
+unzip -o /dbfs/FileStore/geo/zcta/cb_2020_us_zcta520_500k.zip -d /dbfs/FileStore/geo/zcta
+```
+
+Why these files: cartographic boundary shapefiles are the Census’ generalized mapping layers (good for joins & maps). ZCTA shapefile contains the ZIP-like polygons; Gazetteer is tabular (no polygon geometry). ([Census.gov][4])
+
+---
+
+# 2) Read shapefiles (pure-Python) and register Delta tables
+
+Databricks clusters typically don’t ship with GDAL/Fiona; we’ll read shapefiles via `pyshp` (pure Python), convert to WKT, then let Mosaic handle geometry.
+
+```python
+import shapefile  # pyshp
+from shapely.geometry import shape as shapely_shape
+from pyspark.sql import Row
+from pyspark.sql import functions as F
+
+def shp_to_wkt_rows(shp_folder, id_fields):
+    """
+    Read a shapefile folder (containing .shp/.dbf/.shx) and yield Rows with:
+      - wkt: POLYGON/MULTIPOLYGON WKT in EPSG:4326
+      - attributes in id_fields (subset of .fields)
+    """
+    # find the .shp file in folder
+    import os
+    shp_path = [os.path.join(shp_folder, f) for f in os.listdir(shp_folder) if f.endswith(".shp")][0]
+    r = shapefile.Reader(shp_path)
+    field_names = [f[0] for f in r.fields[1:]]  # skip DeletionFlag
+
+    for sr in r.iterShapeRecords():
+        geom = shapely_shape(sr.shape.__geo_interface__)
+        wkt = geom.wkt
+        rec = dict(zip(field_names, sr.record))
+        yield Row(wkt=wkt, **{k: rec.get(k) for k in id_fields})
+
+# Read STATES
+state_rows = list(shp_to_wkt_rows(
+    "/dbfs/FileStore/geo/states",
+    id_fields=["STATEFP","STUSPS","NAME"]
+))
+df_states = spark.createDataFrame(state_rows)
+
+# Read ZCTAs
+zcta_rows = list(shp_to_wkt_rows(
+    "/dbfs/FileStore/geo/zcta",
+    id_fields=["ZCTA5CE20"]
+))
+df_zcta = spark.createDataFrame(zcta_rows)
+```
+
+Turn WKT into Mosaic geometries and save as Delta for repeated use:
+
+```python
+from mosaic import st_geomfromwkt
+
+states_geo = df_states.withColumn("geom", st_geomfromwkt("wkt"))
+zcta_geo   = df_zcta.withColumn("geom", st_geomfromwkt("wkt"))
+
+states_geo.select("STATEFP","STUSPS","NAME","geom").write.mode("overwrite").saveAsTable("geo.states_2020_cb500k")
+zcta_geo.select("ZCTA5CE20","geom").write.mode("overwrite").saveAsTable("geo.zcta_2020_cb500k")
+```
+
+---
+
+# 3) Enrich your points view with `state` and `zip`
+
+Assume your existing SQL view is named `points_view` with columns `longitude` and `latitude` (WGS84). We’ll build a new view that adds `state` and `zip` using point-in-polygon joins.
+
+```sql
+-- Create a temp view with a POINT geometry from lon/lat
+CREATE OR REPLACE TEMP VIEW points_with_geom AS
+SELECT
+  *,
+  mosaic.st_point(CAST(longitude AS DOUBLE), CAST(latitude AS DOUBLE)) AS geom
+FROM points_view;
+
+-- Enrich with STATE
+CREATE OR REPLACE TEMP VIEW points_plus_state AS
+SELECT
+  p.*,
+  s.STUSPS AS state,
+  s.NAME   AS state_name
+FROM points_with_geom p
+LEFT JOIN geo.states_2020_cb500k s
+  ON mosaic.st_contains(s.geom, p.geom);
+
+-- Enrich with ZCTA (ZIP)
+CREATE OR REPLACE VIEW points_plus_state_zip AS
+SELECT
+  ps.*,
+  z.ZCTA5CE20 AS zip
+FROM points_plus_state ps
+LEFT JOIN geo.zcta_2020_cb500k z
+  ON mosaic.st_contains(z.geom, ps.geom);
+```
+
+The resulting view `points_plus_state_zip` adds `state` (2-letter), `state_name`, and `zip` (ZCTA5CE20). Mosaic’s `st_contains`/`st_point` are designed for this pattern. ([Databricks Labs][5])
+
+---
+
+# 4) Notes, accuracy & performance
+
+* **CRS**: Census cartographic boundary shapefiles are in geographic coordinates (WGS84). The above uses lon/lat directly (EPSG:4326), which is correct for these layers. ([Census.gov][4])
+* **ZIP vs ZCTA**: The result is **ZCTA** (a Census ZIP-like area), not USPS ZIP routes. For analytics and mapping, ZCTAs are standard; for USPS mailing, use USPS data. ([Census.gov][6])
+* **Ambiguity edges**: For a tiny number of points near borders, `st_contains` vs `st_intersects` can differ. If you want “on the border counts,” replace `st_contains` with `st_intersects`.
+* **Speed**: If volume is big, pre-index with Mosaic’s H3 helpers (cover polygons → join on H3). See Mosaic quickstart for point-in-polygon via H3. ([Databricks Labs][7])
+
+---
+
+# 5) If you really want to use the Gazetteer ZCTA file
+
+The Gazetteer is a **table**, not polygons. You could do an *approximate* ZIP lookup by nearest ZCTA **centroid** (fast, but less accurate than polygon PIP). 
+Most folks prefer polygon PIP as shown above. Gazetteer record layout reference: ([Census.gov][2])
+
+---
+
+
+[1]: https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html?utm_source=chatgpt.com "Cartographic Boundary Files"
+[2]: https://www.census.gov/programs-surveys/geography/technical-documentation/records-layout/gaz-record-layouts.html?utm_source=chatgpt.com "Gazetteer File Record Layouts"
+[3]: https://www.databricks.com/blog/2022/05/02/high-scale-geospatial-processing-with-mosaic.html?utm_source=chatgpt.com "High Scale Geospatial Processing Mosaic"
+[4]: https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html?utm_source=chatgpt.com "Cartographic Boundary Files - Shapefile"
+[5]: https://databrickslabs.github.io/mosaic/api/spatial-functions.html?utm_source=chatgpt.com "Spatial functions — Mosaic - GitHub Pages"
+[6]: https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html?utm_source=chatgpt.com "ZIP Code Tabulation Areas (ZCTAs)"
+[7]: https://databrickslabs.github.io/mosaic/usage/quickstart.html?utm_source=chatgpt.com "Quickstart notebook — Mosaic - GitHub Pages"
+
+
+
+
 ### Option A: Use Census TIGER/Cartographic files directly
 
 * Download both:
