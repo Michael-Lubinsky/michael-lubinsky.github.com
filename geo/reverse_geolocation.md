@@ -1,6 +1,8 @@
 # Here's how to implement ZIP code detection in Databricks using static data files:
 
+<https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html>
 
+<https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_zcta_national.zip>
 
 You’ve got two pieces here:
 
