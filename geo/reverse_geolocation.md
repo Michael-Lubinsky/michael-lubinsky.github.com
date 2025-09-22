@@ -4,7 +4,16 @@
 
 <https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_state_500k.zip>  State code boundaries
 
+<https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_zcta520_500k.zip> 
+
 <https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_zcta_national.zip>  Zip boundaries
+
+Warning:
+2020_Gaz_zcta_national.zip = a Gazetteer table for ZCTAs (tabular attributes like GEOID, land/water area, centroid coords) — not polygon boundaries. 
+
+
+# If you need ZIP/ZCTA polygons, download cb_2020_us_zcta520_500k.zip. 
+
 
 You’ve got two pieces here:
 
