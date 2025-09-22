@@ -16,7 +16,7 @@
 
 <https://habr.com/ru/companies/tantor/articles/940752/> Performance Monitoring
 
-### how to save space
+### Save space by removing unused indexes
 
 https://habr.com/ru/articles/944704/ 
 
