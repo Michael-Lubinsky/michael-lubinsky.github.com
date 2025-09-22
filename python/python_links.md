@@ -1,3 +1,5 @@
+<https://habr.com/ru/articles/949314/>
+
 <https://pydevtools.com/handbook/>
 
 https://www.cosmicpython.com/book/preface.html  Book
