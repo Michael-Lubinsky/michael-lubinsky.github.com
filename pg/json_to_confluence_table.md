@@ -105,7 +105,7 @@ $$;
 CREATE OR REPLACE FUNCTION events.generate_properties_csv()
 RETURNS text
 LANGUAGE plpgsql
-AS $
+AS $$
 DECLARE
     result_text text := '';
     r RECORD;
@@ -128,7 +128,7 @@ BEGIN
     
     RETURN result_text;
 END;
-$;
+$$;
 
 -- Simple query version for direct copy-paste
 CREATE OR REPLACE VIEW events.properties_confluence_view AS
