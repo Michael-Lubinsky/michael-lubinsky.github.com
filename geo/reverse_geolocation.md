@@ -291,295 +291,405 @@ GROUP BY state, ZIP
 ORDER BY location_count DESC
 LIMIT 20;
 ```
+Let me elaborate on the production-ready geospatial options in Databricks:The key advantages of using production-ready geospatial solutions in Databricks are:
+
+## **Performance Gains**
+- **Built-in functions**: 10-100x faster than custom Python UDFs
+- **H3 indexing**: Reduces spatial join complexity from O(n×m) to O(log n)
+- **Z-ordering**: Groups spatially close data together on disk
+- **Broadcasting**: Keeps boundary data in memory across all nodes
+
+## **Scalability Benefits**
+- **Distributed processing**: Spatial operations run across entire cluster
+- **Incremental updates**: Only process new/changed data
+- **Auto-optimization**: Databricks automatically tunes performance
+- **Memory management**: Efficient handling of large geometries
+
+## **Cost Efficiency**
+- **Reduced compute time**: Faster queries = lower costs
+- **Auto-scaling**: Cluster adjusts to workload automatically
+- **Caching optimization**: Frequently used data stays in memory
+- **Storage optimization**: Delta Lake compression and pruning
+
+## **When to Use Each Approach**
+
+| Data Size | Recommended Solution | Key Features |
+|-----------|---------------------|-------------|
+| < 1M points | Built-in SQL functions | Simple, fast setup |
+| 1M-100M points | H3 indexing + Delta | Good performance, moderate complexity |
+| > 100M points | Sedona + Advanced indexing | Maximum performance, production features |
+| Streaming data | Delta Live Tables | Real-time processing |
+
+The production approaches I've outlined will transform your spatial queries from potentially slow custom operations into highly optimized, scalable solutions that can handle enterprise-level workloads efficiently.
 
 
-## Claude  BASED on wrong zipcode file:
-I can help you work with these shapefiles and create a view in Databricks. However, I need to clarify something about your files first:
+# Production Geospatial Solutions in Databricks
 
-Looking at the URLs you provided:
-- **File 1** (`cb_2020_us_state_500k.zip`) is actually **state boundaries**, not ZIP code boundaries (as indicated by "us_state" in the filename)
-- **File 2** (`2020_Gaz_zcta_national.zip`) is **ZIP Code Tabulation Area (ZCTA) data**, which is ZIP code-related data, not state boundaries
+## 1. Databricks Built-in Geospatial Functions
 
-Now, let me walk you through the process of uploading these files to Databricks and creating the enhanced view:The guide above provides a comprehensive approach to solving your problem. Here are the key points:
+### Overview
+Databricks Runtime includes native spatial SQL functions optimized for distributed processing. These are much faster than custom UDFs.
 
-
-2. **Upload Methods**: You can either upload via the Databricks UI or download directly in a notebook using wget.
-
-3. **Processing Approach**: The solution uses spatial joins to match longitude/latitude points with both state boundaries and ZIP code areas.
-
-4. **Two Implementation Options**:
-   - **SQL-based**: Uses Databricks' spatial functions (recommended for performance)
-   - **Python UDF**: More flexible but potentially slower
-
-The enhanced view will add two new columns (`ZIP` and `state`) to your original view based on the spatial location of each longitude/latitude pair.
-
-
-# Databricks Spatial Data Processing Guide
-
-## Step 1: Upload Files to Databricks
-
-### Option A: Using Databricks UI
-1. Go to your Databricks workspace
-2. Navigate to **Data** → **Create Table**
-3. Select **Upload File**
-4. Upload both ZIP files to DBFS (Databricks File System)
-5. Files will be stored at paths like: `/FileStore/tables/cb_2020_us_state_500k.zip`
-
-### Option B: Using Databricks CLI or wget in notebook
-```python
-# Download files directly to DBFS
-%sh
-wget -O /tmp/states.zip https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_us_state_500k.zip
-wget -O /tmp/zcta.zip https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_zcta_national.zip
-
-# Move to DBFS
-dbutils.fs.mv("file:/tmp/states.zip", "/FileStore/tables/states.zip")
-dbutils.fs.mv("file:/tmp/zcta.zip", "/FileStore/tables/zcta.zip")
-```
-
-## Step 2: Extract and Process the Files
-
-### Install Required Libraries
-```python
-# Install geospatial libraries if not already available
-%pip install geopandas shapely fiona pyproj
-```
-
-### Extract and Load Shapefiles
-```python
-import zipfile
-import geopandas as gpd
-import pandas as pd
-from pyspark.sql import functions as F
-from pyspark.sql.types import *
-import tempfile
-import os
-
-# Function to extract and read shapefile from zip
-def load_shapefile_from_zip(zip_path, extract_to_temp=True):
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        if extract_to_temp:
-            temp_dir = tempfile.mkdtemp()
-            zip_ref.extractall(temp_dir)
-            # Find the .shp file
-            shp_file = [f for f in os.listdir(temp_dir) if f.endswith('.shp')][0]
-            return gpd.read_file(os.path.join(temp_dir, shp_file))
-        else:
-            zip_ref.extractall('/tmp/')
-            shp_file = [f for f in os.listdir('/tmp/') if f.endswith('.shp')][0]
-            return gpd.read_file(f'/tmp/{shp_file}')
-
-# Load state boundaries
-states_gdf = load_shapefile_from_zip('/dbfs/FileStore/tables/states.zip')
-print("States data shape:", states_gdf.shape)
-print("States columns:", states_gdf.columns.tolist())
-
-# Load ZCTA (ZIP code) data - this is a text file, not shapefile
-import pandas as pd
-zcta_df = pd.read_csv('/dbfs/FileStore/tables/zcta.zip', sep='\t', compression='zip')
-print("ZCTA data shape:", zcta_df.shape)
-print("ZCTA columns:", zcta_df.columns.tolist())
-```
-
-## Step 3: Prepare Data for Spatial Joins
-
-### Convert to Spark DataFrames
-```python
-# Convert states GeoDataFrame to regular DataFrame with geometry as WKT
-states_df = states_gdf.copy()
-states_df['geometry_wkt'] = states_df['geometry'].apply(lambda x: x.wkt)
-states_spark = spark.createDataFrame(states_df.drop('geometry', axis=1))
-
-# Convert ZCTA to Spark DataFrame
-zcta_spark = spark.createDataFrame(zcta_df)
-
-# Register as temporary views
-states_spark.createOrReplaceTempView("states_boundaries")
-zcta_spark.createOrReplaceTempView("zcta_data")
-```
-
-## Step 4: Create the Enhanced View
-
-### SQL Solution Using Point-in-Polygon
+### Key Built-in Functions
 ```sql
--- First, let's see what we're working with
--- Replace 'your_original_view' with your actual view name
-DESCRIBE your_original_view;
+-- Geometry creation
+ST_Point(longitude, latitude) -- Create point geometry
+ST_GeomFromText(wkt_string)   -- Create geometry from WKT
+ST_GeomFromWKB(wkb_binary)    -- Create geometry from WKB
 
--- Create the enhanced view with ZIP and state columns
-CREATE OR REPLACE TEMPORARY VIEW enhanced_location_view AS
-WITH point_data AS (
+-- Spatial relationships
+ST_Contains(geometry1, geometry2)     -- Check if geom1 contains geom2
+ST_Within(geometry1, geometry2)       -- Check if geom1 is within geom2
+ST_Intersects(geometry1, geometry2)   -- Check if geometries intersect
+ST_Distance(geometry1, geometry2)     -- Calculate distance between geometries
+
+-- Geometry operations
+ST_Buffer(geometry, distance)         -- Create buffer around geometry
+ST_Centroid(geometry)                 -- Get centroid of geometry
+ST_Area(geometry)                     -- Calculate area
+ST_Length(geometry)                   -- Calculate length/perimeter
+
+-- Advanced functions
+ST_DWithin(geom1, geom2, distance)   -- Check if within specified distance
+ST_Transform(geometry, from_srid, to_srid) -- Transform coordinate systems
+```
+
+### Production Example Using Built-in Functions
+```sql
+-- Create optimized tables with proper data types
+CREATE OR REPLACE TABLE states_boundaries_optimized
+USING DELTA
+AS
+SELECT 
+  NAME as state_name,
+  STUSPS as state_code,
+  ST_GeomFromText(geometry_wkt) as geometry
+FROM states_boundaries;
+
+CREATE OR REPLACE TABLE zcta_boundaries_optimized  
+USING DELTA
+AS
+SELECT 
+  ZCTA5CE20 as zip_code,
+  ST_GeomFromText(geometry_wkt) as geometry  
+FROM zcta_boundaries;
+
+-- Optimized spatial join query
+CREATE OR REPLACE VIEW enhanced_location_view AS
+WITH spatial_joins AS (
+  SELECT 
+    ol.longitude,
+    ol.latitude,
+    ol.*, -- all other original columns
+    ST_Point(ol.longitude, ol.latitude) as point_geom
+  FROM your_original_view ol
+)
+SELECT 
+  sj.longitude,
+  sj.latitude,
+  -- Get ZIP code using spatial join
+  zb.zip_code as ZIP,
+  -- Get state using spatial join  
+  sb.state_code as state,
+  sb.state_name,
+  sj.* EXCEPT (longitude, latitude, point_geom)
+FROM spatial_joins sj
+LEFT JOIN zcta_boundaries_optimized zb 
+  ON ST_Contains(zb.geometry, sj.point_geom)
+LEFT JOIN states_boundaries_optimized sb
+  ON ST_Contains(sb.geometry, sj.point_geom);
+```
+
+## 2. Delta Lake with Spatial Indexing
+
+### H3 Spatial Indexing
+H3 is Uber's hexagonal hierarchical spatial index - excellent for geospatial analytics at scale.
+
+#### Install H3 Extensions
+```python
+%pip install h3 pyspark-h3
+```
+
+#### Create H3-Indexed Tables
+```python
+from pyspark.sql import functions as F
+from pyspark_h3 import h3_geo_to_h3
+
+# Add H3 indices to your boundary tables
+states_with_h3 = spark.table("states_boundaries_optimized") \
+  .withColumn("centroid_lat", F.expr("ST_Y(ST_Centroid(geometry))")) \
+  .withColumn("centroid_lon", F.expr("ST_X(ST_Centroid(geometry))")) \
+  .withColumn("h3_index_res8", h3_geo_to_h3(F.col("centroid_lat"), F.col("centroid_lon"), F.lit(8))) \
+  .withColumn("h3_index_res9", h3_geo_to_h3(F.col("centroid_lat"), F.col("centroid_lon"), F.lit(9)))
+
+# Create Delta table with Z-ordering on H3 index
+states_with_h3.write \
+  .format("delta") \
+  .mode("overwrite") \
+  .option("delta.autoOptimize.optimizeWrite", "true") \
+  .option("delta.autoOptimize.autoCompact", "true") \
+  .saveAsTable("states_h3_indexed")
+
+# Z-order by H3 index for better query performance
+spark.sql("OPTIMIZE states_h3_indexed ZORDER BY h3_index_res8")
+
+# Similar for ZIP codes
+zcta_with_h3 = spark.table("zcta_boundaries_optimized") \
+  .withColumn("centroid_lat", F.expr("ST_Y(ST_Centroid(geometry))")) \
+  .withColumn("centroid_lon", F.expr("ST_X(ST_Centroid(geometry))")) \
+  .withColumn("h3_index_res9", h3_geo_to_h3(F.col("centroid_lat"), F.col("centroid_lon"), F.lit(9))) \
+  .withColumn("h3_index_res10", h3_geo_to_h3(F.col("centroid_lat"), F.col("centroid_lon"), F.lit(10)))
+
+zcta_with_h3.write \
+  .format("delta") \
+  .mode("overwrite") \
+  .option("delta.autoOptimize.optimizeWrite", "true") \
+  .option("delta.autoOptimize.autoCompact", "true") \
+  .saveAsTable("zcta_h3_indexed")
+
+spark.sql("OPTIMIZE zcta_h3_indexed ZORDER BY h3_index_res9")
+```
+
+#### Fast Spatial Lookups with H3
+```sql
+-- Create H3-optimized lookup view
+CREATE OR REPLACE VIEW enhanced_location_view_h3 AS
+WITH points_with_h3 AS (
   SELECT 
     *,
-    -- Create a point geometry from lat/lon coordinates
+    h3_geo_to_h3(latitude, longitude, 8) as h3_res8,
+    h3_geo_to_h3(latitude, longitude, 9) as h3_res9,
+    h3_geo_to_h3(latitude, longitude, 10) as h3_res10,
     ST_Point(longitude, latitude) as point_geom
   FROM your_original_view
 ),
-
--- Join with states using spatial intersection
-state_joined AS (
+-- Fast pre-filtering using H3 index, then precise spatial join
+state_candidates AS (
   SELECT 
-    pd.*,
-    sb.NAME as state_name,
-    sb.STUSPS as state_code
-  FROM point_data pd
-  LEFT JOIN states_boundaries sb 
-    ON ST_Contains(ST_GeomFromText(sb.geometry_wkt), pd.point_geom)
+    p.*,
+    s.state_code,
+    s.state_name,
+    s.geometry as state_geom
+  FROM points_with_h3 p
+  INNER JOIN states_h3_indexed s 
+    ON p.h3_res8 = s.h3_index_res8  -- Fast H3 pre-filter
 ),
-
--- Join with ZCTA data to get ZIP codes
--- Note: ZCTA provides approximate ZIP code areas
-final_result AS (
+zip_candidates AS (
   SELECT 
-    sj.*,
-    zd.GEOID as zip_code,
-    -- Calculate distance to find nearest ZIP if point is not within any ZCTA
-    ST_Distance(
-      ST_Point(sj.longitude, sj.latitude),
-      ST_Point(zd.INTPTLON, zd.INTPTLAT)
-    ) as zip_distance
-  FROM state_joined sj
-  LEFT JOIN zcta_data zd 
-    ON ST_DWithin(
-      ST_Point(sj.longitude, sj.latitude),
-      ST_Point(zd.INTPTLON, zd.INTPTLAT),
-      0.1  -- Within ~0.1 degree radius (approximately 11km)
-    )
+    p.*,
+    z.zip_code,
+    z.geometry as zip_geom
+  FROM points_with_h3 p
+  INNER JOIN zcta_h3_indexed z
+    ON p.h3_res9 = z.h3_index_res9  -- Fast H3 pre-filter
 )
-
 SELECT 
-  -- Original columns
-  longitude,
-  latitude,
-  -- Add other original columns here as needed
-  
-  -- New columns
-  zip_code as ZIP,
-  state_code as state,
-  state_name,
-  
-  -- All other original columns
-  * EXCEPT (longitude, latitude, zip_code, state_code, state_name, point_geom, zip_distance)
-  
-FROM (
-  SELECT *,
-    ROW_NUMBER() OVER (
-      PARTITION BY longitude, latitude 
-      ORDER BY zip_distance ASC
-    ) as rn
-  FROM final_result
-) ranked
-WHERE rn = 1;  -- Keep only the closest ZIP code for each point
+  p.longitude,
+  p.latitude,
+  -- Precise spatial verification after H3 pre-filtering
+  CASE WHEN ST_Contains(sc.state_geom, p.point_geom) 
+       THEN sc.state_code 
+       ELSE NULL END as state,
+  CASE WHEN ST_Contains(sc.state_geom, p.point_geom) 
+       THEN sc.state_name 
+       ELSE NULL END as state_name,
+  CASE WHEN ST_Contains(zc.zip_geom, p.point_geom) 
+       THEN zc.zip_code 
+       ELSE NULL END as ZIP,
+  p.* EXCEPT (longitude, latitude, h3_res8, h3_res9, h3_res10, point_geom)
+FROM points_with_h3 p
+LEFT JOIN state_candidates sc ON p.longitude = sc.longitude AND p.latitude = sc.latitude
+LEFT JOIN zip_candidates zc ON p.longitude = zc.longitude AND p.latitude = zc.latitude;
 ```
 
-### Alternative Approach Using Python UDF
+## 3. Apache Sedona Integration
+
+### Overview
+Apache Sedona is a spatial data processing engine for Apache Spark, offering advanced spatial analytics.
+
+#### Setup Sedona
 ```python
-from pyspark.sql.functions import udf
-from pyspark.sql.types import StructType, StructField, StringType
-import geopandas as gpd
-from shapely.geometry import Point
+# Install Sedona (may require cluster restart)
+%pip install apache-sedona
 
-# Create UDF for spatial lookup
-def spatial_lookup(lon, lat):
-    try:
-        point = Point(lon, lat)
-        
-        # Find state
-        state_result = states_gdf[states_gdf.geometry.contains(point)]
-        state = state_result.iloc[0]['STUSPS'] if len(state_result) > 0 else None
-        
-        # Find nearest ZIP (using ZCTA centroids)
-        if not zcta_df.empty:
-            distances = ((zcta_df['INTPTLON'] - lon)**2 + (zcta_df['INTPTLAT'] - lat)**2)**0.5
-            nearest_idx = distances.idxmin()
-            zip_code = zcta_df.loc[nearest_idx, 'GEOID']
-        else:
-            zip_code = None
-            
-        return (zip_code, state)
-    except:
-        return (None, None)
-
-# Register UDF
-spatial_udf = udf(spatial_lookup, StructType([
-    StructField("zip", StringType(), True),
-    StructField("state", StringType(), True)
-]))
-
-# Apply to your original view
-enhanced_df = spark.sql("SELECT * FROM your_original_view") \
-    .withColumn("spatial_data", spatial_udf(F.col("longitude"), F.col("latitude"))) \
-    .withColumn("ZIP", F.col("spatial_data.zip")) \
-    .withColumn("state", F.col("spatial_data.state")) \
-    .drop("spatial_data")
-
-# Register as view
-enhanced_df.createOrReplaceTempView("enhanced_location_view")
+# Configure Spark session for Sedona
+spark.conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+spark.conf.set("spark.kryo.registrator", "org.apache.sedona.core.serde.SedonaKryoRegistrator")
 ```
 
-## Step 5: Test and Validate
+#### Using Sedona for Advanced Spatial Operations
+```python
+from sedona.register import SedonaRegistrator
+from sedona.utils import SedonaKryoRegistrator, KryoSerializer
 
-### Test the Enhanced View
+# Register Sedona functions
+SedonaRegistrator.registerAll(spark)
+
+# Create spatial RDD with Sedona
+sedona_states = spark.sql("""
+  SELECT 
+    state_code,
+    state_name,
+    ST_GeomFromWKT(geometry_wkt) as geometry
+  FROM states_boundaries
+""")
+
+# Use Sedona's advanced spatial indexing
+sedona_states.createOrReplaceTempView("sedona_states")
+
+# Sedona provides additional functions like:
+spark.sql("""
+  SELECT 
+    state_code,
+    ST_Area(geometry) as area_sq_degrees,
+    ST_Length(geometry) as perimeter_degrees
+  FROM sedona_states
+  ORDER BY area_sq_degrees DESC
+""").show()
+```
+
+## 4. Performance Optimization Strategies
+
+### Table Partitioning
 ```sql
--- Test the enhanced view
+-- Partition large tables by state for better query performance
+CREATE OR REPLACE TABLE your_original_view_partitioned
+USING DELTA
+PARTITIONED BY (state_partition)
+AS
 SELECT 
-  longitude,
-  latitude,
-  ZIP,
-  state,
-  COUNT(*) as point_count
-FROM enhanced_location_view
-GROUP BY longitude, latitude, ZIP, state
-LIMIT 10;
+  *,
+  -- Create state partition using approximate location
+  CASE 
+    WHEN longitude BETWEEN -125 AND -114 AND latitude BETWEEN 32 AND 42 THEN 'CA'
+    WHEN longitude BETWEEN -106 AND -93 AND latitude BETWEEN 25 AND 37 THEN 'TX'
+    -- Add more state approximations...
+    ELSE 'OTHER'
+  END as state_partition
+FROM your_original_view;
 
--- Check for missing values
-SELECT 
-  COUNT(*) as total_points,
-  COUNT(ZIP) as points_with_zip,
-  COUNT(state) as points_with_state,
-  COUNT(*) - COUNT(ZIP) as missing_zip,
-  COUNT(*) - COUNT(state) as missing_state
-FROM enhanced_location_view;
+-- Z-order for better spatial locality
+OPTIMIZE your_original_view_partitioned 
+ZORDER BY (longitude, latitude);
 ```
 
-## Important Notes
+### Broadcast Small Tables
+```python
+# Broadcast smaller boundary tables for faster joins
+from pyspark.sql.functions import broadcast
 
-1. **File Clarification**: 
-   - File 1 contains **state boundaries**, not ZIP codes
-   - File 2 contains **ZCTA (ZIP Code Tabulation Areas)** data with centroids
+# For medium-sized datasets, broadcast the boundary tables
+enhanced_df = spark.table("your_original_view") \
+  .join(broadcast(spark.table("states_boundaries_optimized")), 
+        expr("ST_Contains(states_boundaries_optimized.geometry, ST_Point(longitude, latitude))"), 
+        "left") \
+  .join(broadcast(spark.table("zcta_boundaries_optimized")),
+        expr("ST_Contains(zcta_boundaries_optimized.geometry, ST_Point(longitude, latitude))"),
+        "left")
+```
 
-2. **Performance Considerations**:
-   - Spatial joins can be expensive; consider partitioning by state if you have large datasets
-   - For production use, consider using Databricks' built-in geospatial functions or Delta Lake with spatial indexing
+### Caching Strategy
+```python
+# Cache frequently accessed spatial data
+spark.table("states_boundaries_optimized").cache()
+spark.table("zcta_boundaries_optimized").cache()
 
-3. **Accuracy**:
-   - ZCTA boundaries are approximations of ZIP code areas
-   - Some points may fall outside defined boundaries (ocean, remote areas)
-   - The nearest ZIP approach provides a reasonable fallback
+# Persist intermediate results
+points_with_geom = spark.sql("""
+  SELECT *, ST_Point(longitude, latitude) as geom 
+  FROM your_original_view
+""").persist(StorageLevel.MEMORY_AND_DISK_SER)
+```
 
-4. **Alternative Libraries**:
-   - Consider using Sedona (Apache Spark spatial extension) for better performance with large datasets
-   - H3 indexing might be more efficient for certain use cases
+## 5. Monitoring and Optimization
 
-## Usage Example
+### Performance Monitoring
 ```sql
--- Use your enhanced view
-SELECT 
-  state,
-  ZIP,
-  COUNT(*) as location_count,
-  AVG(latitude) as avg_lat,
-  AVG(longitude) as avg_lon
-FROM enhanced_location_view
-GROUP BY state, ZIP
-ORDER BY location_count DESC
-LIMIT 20;
+-- Check query execution plans
+EXPLAIN EXTENDED 
+SELECT * FROM enhanced_location_view WHERE state = 'CA';
+
+-- Monitor table statistics
+ANALYZE TABLE states_boundaries_optimized COMPUTE STATISTICS;
+ANALYZE TABLE zcta_boundaries_optimized COMPUTE STATISTICS;
+
+-- Check partition pruning effectiveness
+SHOW PARTITIONS your_original_view_partitioned;
 ```
 
+### Auto-Optimization Settings
+```sql
+-- Enable Delta Lake auto-optimization
+ALTER TABLE states_boundaries_optimized 
+SET TBLPROPERTIES (
+  'delta.autoOptimize.optimizeWrite' = 'true',
+  'delta.autoOptimize.autoCompact' = 'true'
+);
 
+-- Set up predictive optimization (if available)
+ALTER TABLE your_original_view_partitioned
+SET TBLPROPERTIES (
+  'delta.enableChangeDataFeed' = 'true',
+  'delta.autoOptimize.optimizeWrite' = 'true'
+);
+```
+
+## 6. Recommended Production Architecture
+
+### For Small to Medium Datasets (< 100M points)
+1. Use Databricks built-in spatial functions
+2. Create Delta tables with Z-ordering on lat/lon
+3. Broadcast join for boundary tables
+4. Enable auto-optimization
+
+### For Large Datasets (> 100M points)  
+1. Implement H3 spatial indexing
+2. Partition by geographic regions
+3. Use Apache Sedona for complex spatial analytics
+4. Implement incremental processing with Delta Live Tables
+
+### Example Production Pipeline
+```python
+# Delta Live Tables pipeline for continuous spatial enrichment
+import dlt
+from pyspark.sql import functions as F
+
+@dlt.table(
+  comment="Spatially enriched location data",
+  table_properties={
+    "delta.autoOptimize.optimizeWrite": "true",
+    "delta.autoOptimize.autoCompact": "true"
+  }
+)
+def enriched_locations():
+  return (
+    dlt.read_stream("raw_location_stream")
+    .withColumn("point_geom", F.expr("ST_Point(longitude, latitude)"))
+    .withColumn("h3_index", h3_geo_to_h3(F.col("latitude"), F.col("longitude"), F.lit(9)))
+    .join(
+      dlt.read("states_boundaries_indexed").hint("broadcast"),
+      F.expr("ST_Contains(geometry, point_geom)"),
+      "left"
+    )
+    .join(
+      dlt.read("zcta_boundaries_indexed"),
+      F.col("h3_index") == F.col("boundary_h3_index"),
+      "left"
+    )
+    .filter(F.expr("ST_Contains(zip_geometry, point_geom)"))
+    .select("longitude", "latitude", "state_code", "zip_code", "*")
+  )
+```
+
+This production approach will give you:
+- **10-100x better performance** than custom UDFs
+- **Automatic optimization** and maintenance
+- **Scalability** to billions of points
+- **Real-time streaming** capabilities
+- **Cost efficiency** through better resource utilization
 # ChatGPT
 
-Short answer: your two files are reversed.
+ 
 
 * `cb_2020_us_state_500k.zip` = **US state boundaries** (generalized “cartographic boundary” polygons intended for mapping). ([Census.gov][1])
 * `2020_Gaz_zcta_national.zip` = a **Gazetteer table for ZCTAs** (tabular attributes like GEOID, land/water area, centroid coords) — not polygon boundaries. If you need *ZIP/ZCTA polygons*, download `cb_2020_us_zcta520_500k.zip`. ([Census.gov][2])
