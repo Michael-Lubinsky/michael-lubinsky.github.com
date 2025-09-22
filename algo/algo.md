@@ -3,15 +3,20 @@
 https://ru.algorithmica.org/
 
 #### Algebraic data types
+
+https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/
+
 https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
 
 https://news.ycombinator.com/item?id=45248043
 
+### Books
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
 https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf
 
 https://www.youtube.com/watch?v=qO-HpEgmd6U
+
 
 https://videolectures.net/authors/david_mackay
 
