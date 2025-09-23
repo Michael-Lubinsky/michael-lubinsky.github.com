@@ -461,7 +461,9 @@ These systems support **horizontal scaling** and **long-term data retention**.
 | Changeable via flag      | ✅       | `--storage.tsdb.retention.time`    |
 | Long-term storage option | ✅       | Use Thanos, VictoriaMetrics, etc.  |
 
-## Prometheus and VictoriaMetrics <https://habr.com/ru/companies/t2/articles/922168/>
+## Prometheus and VictoriaMetrics 
+<https://habr.com/ru/companies/t2/articles/922168/>
+<https://habr.com/ru/companies/cinimex/articles/943772/>
 
 - **VictoriaMetrics is designed to be a drop-in replacement or long-term storage backend for Prometheus.**
 - **They can be used together**: Prometheus scrapes metrics and pushes them to VictoriaMetrics (via remote write).
