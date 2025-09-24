@@ -1,3 +1,25 @@
+## Prerequisites:  Install Azure CLI  
+```
+https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
+```
+```bash
+# Install Azure Functions Core Tools
+npm install -g azure-functions-core-tools@4 --unsafe-perm true
+
+```
+
+```bash
+# Install Azure CLI
+brew install ...
+
+# Install Azure Functions Core Tools
+brew tap azure/functions
+brew install azure-functions-core-tools@4
+
+# Install Python 3.9+ (if not already installed)
+python3 --version
+```
+
 
 ## `--storage-account`
 
@@ -385,14 +407,7 @@ az functionapp config appsettings set --name <function-app-name> --resource-grou
 
 ### Method 1: Using Azure Functions Core Tools (Recommended)
 
-**Prerequisites:**
-```bash
-# Install Azure Functions Core Tools
-npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
-# Install Azure CLI
-# https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
-```
 
 **Deployment Steps:**
 
@@ -670,12 +685,7 @@ azure-identity==1.12.0
 
 ### **Testing Locally:**
 
-1. Install Azure Functions Core Tools:
-   ```bash
-   npm install -g azure-functions-core-tools@4 --unsafe-perm true
-   ```
-
-2. Create a `local.settings.json` file:
+ Create a `local.settings.json` file:
    ```json
    {
      "IsEncrypted": false,
@@ -1119,20 +1129,7 @@ Want me to switch this to **HTTP trigger** (so you can call it ad-hoc and pass a
 
 # Here's a complete step-by-step guide to deploy your first Azure Function:
 
-## Prerequisites
 
-**Install required tools:**
-```bash
-# Install Azure CLI
-brew install ...
-
-# Install Azure Functions Core Tools
-brew tap azure/functions
-brew install azure-functions-core-tools@4
-
-# Install Python 3.9+ (if not already installed)
-python3 --version
-```
 
 ## Step 1: Create Azure Resources
 
