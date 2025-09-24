@@ -1,4 +1,4 @@
-I'll walk you through creating and deploying the simplest Azure Function using Python.## Step-by-Step Deployment:
+## Creating and deploying the simplest Azure Function using Python. 
 
 ### 1. **Prerequisites:**
 ```bash
