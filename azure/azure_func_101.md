@@ -719,3 +719,74 @@ For your use case, **Method 6** is probably the most useful as it gives you a cl
 - Any other Azure AD users or service principals
 
 This will help you see if there's already a suitable role you can use or if you need to create a new one for your Function App.
+
+
+This confirms that the `azure` extension isn't creating Azure AD authentication functionality. The extension is likely for other Azure services (storage, etc.), not for Azure AD authentication.
+
+## The Real Solution: Azure Portal Configuration
+
+Azure AD authentication for PostgreSQL Flexible Server is configured at the **server level** through the Azure Portal, not through PostgreSQL extensions. Here's what you need to do:
+
+### Step 1: Configure Azure AD in Azure Portal
+
+1. Go to **Azure Portal** → Your PostgreSQL Flexible Server (`weavix-dev-pg`)
+2. Navigate to **Settings** → **Authentication**
+3. You should see something like:
+   - **Password authentication**: Enabled/Disabled
+   - **Azure Active Directory authentication**: Enabled/Disabled
+   - **Azure AD admin**: Not configured / Configured
+
+4. **Enable Azure Active Directory authentication** if it's not already enabled
+5. **Set an Azure AD admin** - this could be your account (`mlubinsky_weavix.com#EXT#@weavix.onmicrosoft.com`)
+
+### Step 2: After Configuration, Reconnect as Azure AD Admin
+
+Once configured, connect using your Azure AD admin account:
+
+```bash
+psql -d "host=weavix-dev-pg.postgres.database.azure.com \
+      port=5432 \
+      dbname=weavix \
+      user=mlubinsky_weavix.com#EXT#@weavix.onmicrosoft.com \
+      password=$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv) \
+      sslmode=require"
+```
+
+### Step 3: Create Your Function App's Managed Identity User
+
+After connecting as Azure AD admin:
+
+```sql
+-- You may or may not need to create azure_ad_user - try this first
+CREATE ROLE azure_ad_user;
+
+-- Create your Function App's managed identity
+CREATE ROLE "your-function-app-name" WITH LOGIN IN ROLE azure_ad_user;
+
+-- OR if azure_ad_user doesn't work, create directly:
+CREATE ROLE "your-function-app-name" WITH LOGIN;
+
+-- Grant permissions
+GRANT CONNECT ON DATABASE weavix TO "your-function-app-name";
+GRANT USAGE ON SCHEMA public TO "your-function-app-name";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "your-function-app-name";
+```
+
+### Step 4: Test the Setup
+
+Update your Python code to use the Function App name as the username:
+
+```python
+# In your Function App's Application Settings, set:
+# PG_USER = "your-function-app-name"  # This should be your exact Function App name
+
+pg_user = os.environ.get('PG_USER', 'your-function-app-name')
+```
+
+## Key Point
+
+The `azure` PostgreSQL extension is **not** for Azure AD authentication. Azure AD authentication is a **server-level feature** that must be enabled in the Azure Portal. The extension is likely for other Azure integrations like Azure Storage or Azure AI services.
+
+**Please check your Azure Portal Authentication settings first** - that's where the real configuration needs to happen. Once Azure AD authentication is enabled at the server level, you'll be able to create and manage Azure AD users in PostgreSQL.
+
+What do you see in the Azure Portal under your PostgreSQL server's Authentication settings?
