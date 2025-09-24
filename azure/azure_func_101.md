@@ -1,5 +1,12 @@
 ## Creating and deploying the simplest Azure Function using Python. 
 
+
+```
+michael-weavix-testing $ func azure functionapp publish Michael
+Functions in Michael:
+    write_file_to_adls_managed_identity - [timerTrigger]
+```
+
 ### 1. **Prerequisites:**
 ```bash
 # Install Azure Functions Core Tools
@@ -226,3 +233,109 @@ result
 Functions in Michael:
     write_file_to_adls_managed_identity - [timerTrigger]
 ```    
+
+Based on your Azure Function logs, you're encountering authentication issues with Azure Data Lake Storage Gen2 (ADLS Gen2). The `DefaultAzureCredential` is failing to authenticate, and specifically the Managed Identity isn't working as expected.
+
+Here's what's happening and how to fix it:
+
+## Root Cause
+The function is trying multiple authentication methods in this order, and all are failing:
+1. **EnvironmentCredential** - Environment variables not configured
+2. **WorkloadIdentityCredential** - Missing tenant_id, client_id, token_file_path
+3. **ManagedIdentityCredential** - No response from IMDS endpoint (this is the key issue)
+4. Other credentials (VS Code, Azure CLI, PowerShell) - Not available in Azure Functions environment
+
+## Solutions
+
+### 1. Enable System-Assigned Managed Identity
+In the Azure Portal:
+1. Go to your Function App
+2. Navigate to **Identity** in the left menu
+3. Under **System assigned**, set Status to **On**
+4. Click **Save**
+
+### 2. Grant ADLS Gen2 Permissions
+After enabling the managed identity:
+1. Go to your ADLS Gen2 storage account
+2. Navigate to **Access Control (IAM)**
+3. Click **Add role assignment**
+4. Assign the **Storage Blob Data Contributor** role to your Function App's managed identity
+
+### 3. Verify Your Python Code
+Make sure your function code is using the correct authentication pattern:
+
+```python
+from azure.identity import DefaultAzureCredential
+from azure.storage.filedatalake import DataLakeServiceClient
+
+# This should work once managed identity is properly configured
+credential = DefaultAzureCredential()
+service_client = DataLakeServiceClient(
+    account_url="https://yourstorageaccount.dfs.core.windows.net",
+    credential=credential
+)
+```
+
+### 4. Alternative: Use Connection String
+If managed identity continues to fail, you can temporarily use a connection string stored in Application Settings:
+
+```python
+from azure.storage.filedatalake import DataLakeServiceClient
+import os
+
+# Add connection string to Function App Configuration
+connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
+service_client = DataLakeServiceClient.from_connection_string(connection_string)
+```
+
+### 5. Check Function App Configuration
+Verify in your Function App's **Configuration** section that you don't have conflicting environment variables that might interfere with authentication.
+
+The most likely fix is enabling the system-assigned managed identity and granting it proper permissions to your ADLS Gen2 storage account. Let me know if you need help with any of these steps!
+
+The "Add role assignment" being greyed out means you don't have sufficient permissions to assign roles on the storage account. Here are several ways to resolve this:
+
+## Solution Options
+
+### 1. Check Your Current Permissions
+You need one of these roles on the storage account to assign roles:
+- **Owner**
+- **User Access Administrator** 
+- **Role Based Access Control Administrator**
+
+### 2. Contact Your Azure Administrator
+If you don't have these permissions, ask someone who has **Owner** or **User Access Administrator** rights on the storage account (or subscription) to:
+
+1. Go to the ADLS Gen2 storage account
+2. Navigate to **Access Control (IAM)**
+3. Click **Add role assignment**
+4. Select **Storage Blob Data Contributor** role
+5. Assign it to your Function App's managed identity
+
+### 3. Use Azure CLI (if you have appropriate permissions)
+If you have permissions via Azure CLI but not the portal:
+
+```bash
+# Get your function app's managed identity principal ID
+az functionapp identity show --name <your-function-app-name> --resource-group <your-resource-group>
+
+# Assign the role (replace the placeholders)
+az role assignment create \
+  --assignee <managed-identity-principal-id> \
+  --role "Storage Blob Data Contributor" \
+  --scope "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Storage/storageAccounts/<storage-account-name>"
+```
+
+### 4. Request Elevated Permissions
+Ask your Azure administrator to temporarily grant you **User Access Administrator** role on the storage account, then you can assign the role yourself.
+
+### 5. Alternative: Use Access Keys (Less Secure)
+As a temporary workaround, you can use storage account access keys:
+
+1. Go to your storage account
+2. Navigate to **Security + networking** > **Access keys**
+3. Copy one of the connection strings
+4. Add it to your Function App's **Configuration** > **Application settings** as `AZURE_STORAGE_CONNECTION_STRING`
+5. Modify your Python code to use the connection string instead of managed identity
+
+The most secure long-term solution is still option 2 - having an administrator assign the proper role to your Function App's managed identity. Would you like help with any of these approaches?
