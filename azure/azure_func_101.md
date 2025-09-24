@@ -214,3 +214,15 @@ az functionapp list --query "[].{name:name, resourceGroup:resourceGroup, kind:ki
 **The "kind" field will tell you the hosting model differences.**
 
 Which function app would you like to deploy to? I'd recommend using `func azure functionapp publish` as it works for both types.
+
+```bash
+pwd
+/Users/michaellubinsky/code/AZURE_FUNCTION/michael-weavix-testing
+func azure functionapp publish Michael
+```
+
+result
+``` 
+Functions in Michael:
+    write_file_to_adls_managed_identity - [timerTrigger]
+```    
