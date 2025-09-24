@@ -809,6 +809,9 @@ MongoDB for GIS
 
 <https://www.matecdev.com/posts/geospatial-python-tutorial.html>
 
+	SedonaDB: A new geospatial DataFrame library written in Rust 
+<https://news.ycombinator.com/item?id=45362206>
+
 <https://opengeoai.org/>
 
 <https://github.com/marceloprates/prettymaps>
