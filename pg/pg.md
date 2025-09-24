@@ -443,6 +443,12 @@ cursor.close()
 conn.close()
 ```
 
+### Writing to Postgres using Python
+
+https://hakibenita.com/fast-load-data-python-postgresql
+
+https://habr.com/ru/articles/948854/
+
 ### Values
 ```sql
 SELECT * FROM (
