@@ -511,3 +511,82 @@ psycopg2-binary
 If you must use traditional connection strings, store them in **Azure Key Vault** and reference them in your Function App settings, but managed identity is the more secure and Azure-native approach.
 
 The first approach (simple token refresh) should work well for most use cases. Use the connection pool approach if you have high-throughput requirements.
+
+
+Yes, absolutely! You can use an existing PostgreSQL role instead of creating a new one. Here are your options:
+
+## Option 1: Use an Existing Custom Role
+
+If you already have a role with the appropriate permissions:
+
+```sql
+-- Grant the existing role to your Function App's managed identity
+GRANT existing_role_name TO "your-function-app-name";
+```
+
+But you still need to create the managed identity user first:
+```sql
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "your-function-app-name" WITH LOGIN PASSWORD NULL IN ROLE azure_ad_user;
+GRANT existing_role_name TO "your-function-app-name";
+```
+
+## Option 2: Use Built-in Azure Roles
+
+Azure Database for PostgreSQL has some built-in roles you can use:
+
+```sql
+SET aad_validate_oids_in_tenant = off;
+
+-- Create the managed identity user and assign to built-in roles
+CREATE ROLE "your-function-app-name" WITH LOGIN PASSWORD NULL IN ROLE azure_ad_user;
+
+-- Grant built-in roles (choose what you need)
+GRANT azure_pg_admin TO "your-function-app-name";           -- Full admin access
+-- OR
+GRANT pg_read_all_data TO "your-function-app-name";         -- Read-only access to all tables
+-- OR  
+GRANT pg_write_all_data TO "your-function-app-name";        -- Read/write access to all tables
+-- OR combine multiple roles
+GRANT pg_read_all_data, pg_write_all_data TO "your-function-app-name";
+```
+
+## Option 3: Use an Existing Application Role
+
+If you have an existing application role (like `app_user`, `api_user`, etc.):
+
+```sql
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "your-function-app-name" WITH LOGIN PASSWORD NULL IN ROLE azure_ad_user;
+GRANT app_user TO "your-function-app-name";  -- Replace 'app_user' with your existing role
+```
+
+## Option 4: Share the Same User (Not Recommended for Production)
+
+If you already have another Azure AD user/service principal in the database, you *could* use the same credentials, but this is not recommended for security and auditing purposes. Each service should have its own identity.
+
+## Recommended Approach
+
+I'd suggest **Option 2** or **Option 3** depending on your needs:
+
+- Use `pg_read_all_data` + `pg_write_all_data` if your function needs general database access
+- Use an existing application role if you have fine-grained permissions already set up
+- Use `azure_pg_admin` only if your function needs administrative capabilities
+
+## Example for Common Scenarios:
+
+**For a typical application function:**
+```sql
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "your-function-app-name" WITH LOGIN PASSWORD NULL IN ROLE azure_ad_user;
+GRANT pg_read_all_data, pg_write_all_data TO "your-function-app-name";
+```
+
+**For a read-only analytics function:**
+```sql
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "your-function-app-name" WITH LOGIN PASSWORD NULL IN ROLE azure_ad_user;
+GRANT pg_read_all_data TO "your-function-app-name";
+```
+
+The key point is that you still need to create the managed identity user with `IN ROLE azure_ad_user`, but you can then grant it any existing roles instead of manually granting individual permissions.
