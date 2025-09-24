@@ -2,6 +2,10 @@
 
 <https://news.ycombinator.com/item?id=45359604>
 
+https://chaoticgood.management/how-to-be-a-leader-when-the-vibes-are-off/
+
+https://news.ycombinator.com/item?id=45361394
+
 <https://commoncog.com/a-framework-for-putting-mental-models-to-practice/>
 
 <https://commoncog.com/how-note-taking-can-help-you-become-an-expert/>
