@@ -590,3 +590,132 @@ GRANT pg_read_all_data TO "your-function-app-name";
 ```
 
 The key point is that you still need to create the managed identity user with `IN ROLE azure_ad_user`, but you can then grant it any existing roles instead of manually granting individual permissions.
+
+You can query the PostgreSQL system catalogs to see which roles are members of `azure_ad_user`. Here are several ways to do this:
+
+## Method 1: Simple Query - Direct Members
+```sql
+SELECT 
+    r.rolname as role_name,
+    r.rolcanlogin as can_login,
+    r.rolsuper as is_superuser
+FROM pg_roles r
+JOIN pg_auth_members m ON r.oid = m.roleid
+JOIN pg_roles g ON m.grantor = g.oid OR m.member = g.oid
+WHERE g.rolname = 'azure_ad_user';
+```
+
+## Method 2: More Detailed Information
+```sql
+SELECT 
+    member.rolname as member_role,
+    member.rolcanlogin as can_login,
+    grantor.rolname as granted_by,
+    CASE WHEN member.rolcanlogin THEN 'User' ELSE 'Role' END as type
+FROM pg_auth_members m
+JOIN pg_roles member ON m.member = member.oid
+JOIN pg_roles grantor ON m.grantor = grantor.oid
+JOIN pg_roles target ON m.roleid = target.oid
+WHERE target.rolname = 'azure_ad_user'
+ORDER BY member.rolname;
+```
+
+## Method 3: Using Information Schema
+```sql
+SELECT 
+    grantee,
+    grantor,
+    is_grantable
+FROM information_schema.applicable_roles 
+WHERE role_name = 'azure_ad_user'
+ORDER BY grantee;
+```
+
+## Method 4: Show All Azure AD Users/Roles
+This query shows all roles that are part of the Azure AD authentication system:
+```sql
+SELECT 
+    r.rolname as role_name,
+    r.rolcanlogin as can_login,
+    CASE 
+        WHEN r.rolcanlogin THEN 'Azure AD User'
+        ELSE 'Azure AD Role'
+    END as type,
+    r.rolcreaterole,
+    r.rolcreatedb,
+    r.rolsuper
+FROM pg_roles r
+WHERE r.oid IN (
+    SELECT m.member 
+    FROM pg_auth_members m 
+    JOIN pg_roles target ON m.roleid = target.oid 
+    WHERE target.rolname = 'azure_ad_user'
+)
+ORDER BY r.rolname;
+```
+
+## Method 5: Comprehensive Role Hierarchy View
+This shows the complete role membership hierarchy including `azure_ad_user`:
+```sql
+WITH RECURSIVE role_tree AS (
+    -- Base case: direct members of azure_ad_user
+    SELECT 
+        target.rolname as parent_role,
+        member.rolname as member_role,
+        member.rolcanlogin as can_login,
+        1 as level
+    FROM pg_auth_members m
+    JOIN pg_roles member ON m.member = member.oid
+    JOIN pg_roles target ON m.roleid = target.oid
+    WHERE target.rolname = 'azure_ad_user'
+    
+    UNION ALL
+    
+    -- Recursive case: members of members
+    SELECT 
+        rt.member_role as parent_role,
+        member.rolname as member_role,
+        member.rolcanlogin as can_login,
+        rt.level + 1 as level
+    FROM role_tree rt
+    JOIN pg_auth_members m ON rt.member_role = (SELECT rolname FROM pg_roles WHERE oid = m.roleid)
+    JOIN pg_roles member ON m.member = member.oid
+    WHERE rt.level < 10  -- Prevent infinite recursion
+)
+SELECT 
+    parent_role,
+    member_role,
+    can_login,
+    level,
+    CASE WHEN can_login THEN 'User' ELSE 'Role' END as type
+FROM role_tree 
+ORDER BY level, parent_role, member_role;
+```
+
+## Method 6: Simple List of Azure AD Enabled Accounts
+For just a clean list of what you're probably looking for:
+```sql
+SELECT 
+    rolname as azure_ad_account,
+    CASE 
+        WHEN rolcanlogin THEN 'User (can login)'
+        ELSE 'Role (cannot login directly)'
+    END as account_type
+FROM pg_roles 
+WHERE oid IN (
+    SELECT member 
+    FROM pg_auth_members m 
+    JOIN pg_roles r ON m.roleid = r.oid 
+    WHERE r.rolname = 'azure_ad_user'
+)
+ORDER BY rolname;
+```
+
+## Most Practical Query
+For your use case, **Method 6** is probably the most useful as it gives you a clean list of all Azure AD-enabled accounts. You'll see entries like:
+
+- `your-function-app-name` (if already created)
+- `mlubinsky_weavix.com#EXT#@weavix.onmicrosoft.com` (your personal account)
+- Any other Azure AD users or service principals
+
+This will help you see if there's already a suitable role you can use or if you need to create a new one for your Function App.
