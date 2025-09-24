@@ -73,6 +73,7 @@ https://habr.com/ru/articles/849894/ Поиск соседей в двумерн
 
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
+https://javarevisited.substack.com/p/consistent-hashing-why-your-distributed
 
 https://habr.com/ru/companies/ruvds/articles/850474/ Сравнение хранилищ данных AoS и SoA
 
