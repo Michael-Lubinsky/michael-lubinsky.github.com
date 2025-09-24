@@ -7,7 +7,8 @@
 and read from **Azure Event Hubs** using an **Azure Functions (JavaScript)** **Timer Trigger**. The function uses **AAD (DefaultAzureCredential)** and a **Blob checkpoint store** so each hourly run resumes where the last one left off (no reprocessing).
 
 ---
-Got it 👍 — you already have a Node.js file (say `index.js`) and you want to run it as an **Azure Function** that executes every hour. Here’s the step-by-step:
+You already have a Node.js file (say `index.js`) and you want to run it as an **Azure Function** that executes every hour.  
+Here’s the step-by-step:
 
 ---
 
