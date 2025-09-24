@@ -412,6 +412,7 @@ az functionapp config appsettings set --name <function-app-name> --resource-grou
 **Deployment Steps:**
 
 1. **Initialize Function Project Locally:**
+   
 ```bash
 # Create new directory
 mkdir my-adls-function
@@ -427,6 +428,7 @@ func new --name WriteToADLS --template "Timer trigger" --language python
 2. **Create Required Files:**
 
 **requirements.txt:**
+
 ```txt
 azure-functions
 azure-storage-file-datalake
@@ -434,6 +436,7 @@ azure-identity
 ```
 
 **local.settings.json** (for local testing):
+
 ```json
 {
   "IsEncrypted": false,
@@ -468,6 +471,7 @@ func azure functionapp publish <function-app-name>
 ### Method 3: Using Azure CLI
 
 1. **Create Function App:**
+   
 ```bash
 # Create resource group
 az group create --name myResourceGroup --location eastus
@@ -491,6 +495,7 @@ az functionapp create \
 ```
 
 2. **Deploy Code:**
+   
 ```bash
 # Create deployment package
 zip -r function-app.zip .
@@ -505,6 +510,7 @@ az functionapp deployment source config-zip \
 ### Method 4: GitHub Actions (CI/CD)
 
 **Create `.github/workflows/deploy.yml`:**
+
 ```yaml
 name: Deploy Azure Function
 
@@ -538,6 +544,7 @@ jobs:
 ## 3. Post-Deployment Configuration
 
 **Set Application Settings:**
+
 ```bash
 az functionapp config appsettings set \
     --name <function-app-name> \
@@ -550,6 +557,7 @@ az functionapp config appsettings set \
 ## 4. Verify Deployment
 
 **Check Function Status:**
+
 ```bash
 # List functions
 az functionapp function list --name <function-app-name> --resource-group <resource-group-name>
