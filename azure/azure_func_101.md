@@ -851,3 +851,65 @@ Then in your Function App configuration:
 If you were using a **service principal** instead of managed identity, you could use any PostgreSQL username because you'd explicitly configure the service principal credentials. But with managed identity, Azure handles the mapping automatically based on the resource name.
 
 **What's your actual Function App name?** I can give you the exact commands with the correct name.
+
+Yes, both Azure Function App names and PostgreSQL role names are **case-sensitive**!
+
+## Case Sensitivity Details
+
+### PostgreSQL Roles
+PostgreSQL role names are **case-sensitive** when quoted:
+- `"Michael"` (with quotes) = exactly "Michael" 
+- `"michael"` (with quotes) = exactly "michael"
+- `Michael` (without quotes) = gets converted to lowercase "michael"
+
+### Azure Managed Identity Mapping
+Azure maps the managed identity using the **exact case** of your Function App name. Since your Function App is named "Michael", Azure will try to authenticate as exactly `"Michael"`.
+
+## Correct Commands for Your Setup
+
+```sql
+-- Create the role with exact case matching your Function App name
+CREATE ROLE "Michael" WITH LOGIN IN ROLE azure_ad_user;
+
+-- Grant permissions
+GRANT CONNECT ON DATABASE weavix TO "Michael";
+GRANT USAGE ON SCHEMA public TO "Michael";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "Michael";
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO "Michael";
+
+-- Future table permissions
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "Michael";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO "Michael";
+```
+
+## Python Code Configuration
+
+In your Function App's **Configuration** → **Application settings**, set:
+- `PG_USER` = `Michael` (without quotes in the environment variable)
+
+In your Python code:
+```python
+pg_user = os.environ.get('PG_USER', 'Michael')  # This will be "Michael"
+
+# When connecting, psycopg2 will use it as-is
+conn = psycopg2.connect(
+    host=pg_host,
+    database=pg_database,
+    user=pg_user,  # This becomes "Michael" 
+    password=token,
+    sslmode='require'
+)
+```
+
+## Test the Case Matching
+
+After creating the role, you can verify it exists with the correct case:
+```sql
+-- This should return "Michael"
+SELECT rolname FROM pg_roles WHERE rolname = 'Michael';
+
+-- This should return nothing (wrong case)
+SELECT rolname FROM pg_roles WHERE rolname = 'michael';
+```
+
+**Important**: Make sure you use the exact case "Michael" (capital M, lowercase rest) everywhere - in the PostgreSQL role creation and in your Function App configuration. 
