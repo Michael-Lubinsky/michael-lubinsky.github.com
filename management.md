@@ -1,3 +1,5 @@
+<https://idiallo.com/blog/how-to-lead-in-a-room-full-of-experts>
+
 <https://commoncog.com/a-framework-for-putting-mental-models-to-practice/>
 
 <https://commoncog.com/how-note-taking-can-help-you-become-an-expert/>
