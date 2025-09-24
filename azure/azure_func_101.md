@@ -478,7 +478,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 ### 4. Alternative: Connection Pool with Auto-Refresh
 
-For high-throughput applications, consider using a connection pool:### 5. Environment Variables Setup
+For high-throughput applications, consider using a connection pool:
+
+### 5. Environment Variables Setup
 
 Add these to your Function App's **Configuration** → **Application settings**:
 
