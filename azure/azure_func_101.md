@@ -790,3 +790,64 @@ The `azure` PostgreSQL extension is **not** for Azure AD authentication. Azure A
 **Please check your Azure Portal Authentication settings first** - that's where the real configuration needs to happen. Once Azure AD authentication is enabled at the server level, you'll be able to create and manage Azure AD users in PostgreSQL.
 
 What do you see in the Azure Portal under your PostgreSQL server's Authentication settings?
+
+
+You **can** use an arbitrary name for the PostgreSQL ROLE, but there's a specific reason why using the Azure Function App name is recommended for **managed identity authentication**.
+
+## Why the Function App Name is Recommended
+
+When using **Azure Managed Identity** authentication, Azure automatically maps the managed identity to a PostgreSQL user based on the **Function App's name**. Here's how it works:
+
+1. Your Function App has a **system-assigned managed identity**
+2. When the Function App connects to PostgreSQL using `DefaultAzureCredential`, Azure automatically uses the **Function App's name** as the PostgreSQL username
+3. PostgreSQL looks for a role with that exact name
+
+## What Happens with Different Names
+
+### If you use the Function App name (Recommended):
+```sql
+-- If your Function App is named "data-processor-func"
+CREATE ROLE "data-processor-func" WITH LOGIN IN ROLE azure_ad_user;
+```
+✅ **Result**: Managed identity authentication works automatically
+
+### If you use a different name:
+```sql
+-- Using arbitrary name
+CREATE ROLE "my_custom_db_user" WITH LOGIN IN ROLE azure_ad_user;
+```
+❌ **Result**: Authentication will fail because Azure will try to authenticate as "data-processor-func" but that role doesn't exist in PostgreSQL
+
+## Alternative: Override the Username
+
+If you want to use a different PostgreSQL username, you can override it in your Python code:
+
+```python
+# This won't work with managed identity - it will try to authenticate 
+# as the Function App name regardless
+conn = psycopg2.connect(
+    host=pg_host,
+    database=pg_database,
+    user="my_custom_db_user",  # This gets ignored with managed identity
+    password=token,  # Token is still for the Function App's identity
+    sslmode='require'
+)
+```
+
+## Best Practice
+
+**Use the Function App name** for the PostgreSQL role to keep things simple and follow Azure's managed identity conventions:
+
+```sql
+-- If your Function App is named "weavix-data-processor"
+CREATE ROLE "weavix-data-processor" WITH LOGIN IN ROLE azure_ad_user;
+```
+
+Then in your Function App configuration:
+- Set environment variable: `PG_USER` = `"weavix-data-processor"`
+
+## Exception: Service Principal Authentication
+
+If you were using a **service principal** instead of managed identity, you could use any PostgreSQL username because you'd explicitly configure the service principal credentials. But with managed identity, Azure handles the mapping automatically based on the resource name.
+
+**What's your actual Function App name?** I can give you the exact commands with the correct name.
