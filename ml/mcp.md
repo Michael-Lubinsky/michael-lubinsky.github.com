@@ -1,5 +1,7 @@
 https://modelcontextprotocol.io/
 
+https://realpython.com/python-mcp/
+
 https://github.com/punkpeye/awesome-mcp-clients
 
 https://mcp.so/
