@@ -128,3 +128,89 @@ app = func.FunctionApp()
 def main(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse("Hello from Azure Functions!", status_code=200)
 ```
+
+
+That's because the two Function Apps are using **different hosting models**:
+
+## Function App Hosting Models:
+
+**"michael-weavix-testing"** (has Deployment settings) = **Consumption Plan or App Service Plan**
+- Traditional Azure Functions
+- Has deployment slots, continuous deployment options
+- More configuration options
+
+**"Michael"** (no Deployment settings) = **Flex Consumption Plan** (newer model)
+- Simplified deployment model
+- Uses different deployment methods
+- More streamlined, fewer configuration options
+
+## To Deploy to Either Function App:
+
+### Option 1: Deploy to "michael-weavix-testing" (Traditional)
+
+You can use the **Deployment Center** in the portal:
+
+1. **Click on "michael-weavix-testing"**
+2. **Go to "Deployment settings" (or "Deployment Center")**
+3. **Choose deployment source:**
+   - **Local Git** (deploy from your local machine)
+   - **GitHub** (if your code is on GitHub)
+   - **ZIP Deploy** (upload a ZIP file)
+
+### Option 2: Deploy to "Michael" (Flex Consumption)
+
+Use Azure Functions Core Tools:
+
+```bash
+# Deploy using CLI (this should work for both types)
+func azure functionapp publish Michael
+
+# Or deploy to the other one
+func azure functionapp publish michael-weavix-testing
+```
+
+### Option 3: Deploy via ZIP (Works for Both)
+
+```bash
+# Create a ZIP of your function project
+zip -r myfunction.zip . -x "*.git*" "*.vscode*" "__pycache__*"
+
+# Deploy ZIP via CLI
+az functionapp deployment source config-zip \
+  --resource-group <RESOURCE_GROUP_NAME> \
+  --name michael-weavix-testing \
+  --src myfunction.zip
+
+# Or for the other function app
+az functionapp deployment source config-zip \
+  --resource-group <RESOURCE_GROUP_NAME> \
+  --name Michael \
+  --src myfunction.zip
+```
+
+## Recommended Approach:
+
+**Try the CLI deployment first** (it works for both types):
+
+```bash
+# Navigate to your function project directory
+cd /path/to/your/function/project
+
+# Deploy to whichever function app you prefer
+func azure functionapp publish michael-weavix-testing
+
+# Or
+func azure functionapp publish Michael
+```
+
+## Check Resource Groups:
+
+First, find out which resource groups these function apps are in:
+
+```bash
+az functionapp list --query "[].{name:name, resourceGroup:resourceGroup, kind:kind}" --output table
+```
+
+**The "kind" field will tell you the hosting model differences.**
+
+Which function app would you like to deploy to? I'd recommend using `func azure functionapp publish` as it works for both types.
