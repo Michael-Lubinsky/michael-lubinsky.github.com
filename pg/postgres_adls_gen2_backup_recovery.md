@@ -1,4 +1,3 @@
-Great questions! Let me explain both parameters and when to use them:
 
 ## `--storage-account`
 
@@ -32,7 +31,8 @@ az functionapp create \
     --storage-account myfuncstorageaccount
 ```
 
-**Important Note:** This storage account is for the **Function App's internal operations** (storing function metadata, triggers, etc.), NOT for your ADLS Gen2 data. Your ADLS Gen2 is separate.
+**Important Note:** This storage account is for the **Function App's internal operations**  
+(storing function metadata, triggers, etc.), NOT for your ADLS Gen2 data. Your ADLS Gen2 is separate.
 
 ## `--assign-identity`
 
@@ -193,9 +193,7 @@ func azure functionapp publish "acme-adls-writer-2024"
 So `<function-app-name>` is the name of the Azure cloud resource that will host and run your Python code!
 
 
-#  Claude
-
-I'll create a Python Azure Function that writes files to Azure Data Lake Storage Gen2 every 5 minutes with the specified naming format.I've created a Python Azure Function that writes files to ADLS Gen2 every 5 minutes. Here are the key features:
+#  Claude: Python Azure Function that writes files to ADLS Gen2 every 5 minutes.  
 
 ## Function Details:
 - **Timer Schedule**: `"0 */5 * * * *"` - runs every 5 minutes
@@ -434,11 +432,9 @@ azure-identity
 ```
 
 3. **Deploy to Azure:**
+   
 ```bash
-# Login to Azure
 az login
-
-# Deploy function
 func azure functionapp publish <function-app-name>
 ```
 
@@ -564,7 +560,8 @@ The Managed Identity approach is the most secure and recommended method for prod
 
 
 # Mistral
-Here's a complete Python Azure Function that writes a file to Azure Data Lake Storage (ADLS) Gen2 every 5 minutes with the specified filename format and content:
+Here's a complete Python Azure Function that writes a file to Azure Data Lake Storage (ADLS) Gen2 every 5 minutes   
+with the specified filename format and content:
 
 ```python
 import logging
