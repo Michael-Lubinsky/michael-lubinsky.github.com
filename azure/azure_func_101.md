@@ -991,3 +991,64 @@ pick TS when you want easy back-pressure/streaming pipelines and strong type saf
 ### Bottom line
 • You won’t get a magic 2× speedup just by switching languages. The real gain comes from adopting a stream-first design and gzip compression.
 • If you’re about to refactor anyway, TypeScript makes the streaming composition slightly easier and safer; otherwise, keep Python and refactor it to be fully streaming and gzip-based.
+
+
+## Are you suggesting that this Python code is not efficient, it does not use streaming: 
+```python
+# Compress CSV data 
+zip_buffer = io.BytesIO() with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file: csv_filename = f"{table_name}.{backup_date}.csv" zip_file.writestr(csv_filename, csv_data) zip_payload = zip_buffer.getvalue()
+```
+## The code snippet above  is **not streaming** and it’s **memory-heavy**.
+
+why:
+
+* `zipfile.ZipFile(...).writestr(csv_filename, csv_data)` takes the entire `csv_data` already in RAM and writes it into the zip container—still in RAM because you’re using `io.BytesIO()`.
+* `zip_buffer.getvalue()` makes another full copy of the zipped bytes.
+* net effect: at peak you can hold ≈ `len(csv_data)` (CSV) + zip overhead + another full copy from `getvalue()` → easily 2–3× the CSV size in memory.
+
+when this is fine:
+
+* small/medium files and generous memory headroom. Simpler code, acceptable latency.
+
+better Python patterns (keep Python, improve I/O):
+
+1. prefer gzip (single CSV) and stream/bound memory
+
+* gzip is truly streamable; ZIP generally wants to finalize a central directory.
+* simplest bounded-memory approach is a spooled temp file (uses RAM up to a limit, then spills to disk):
+
+```python
+import psycopg2, gzip, tempfile
+from azure.storage.blob import BlobClient
+
+def export_table_to_blob_gzip(conn, sql, blob_url):
+    blob = BlobClient.from_blob_url(blob_url)
+
+    with tempfile.SpooledTemporaryFile(max_size=100*1024*1024) as tmp:  # 100 MB in RAM, then disk
+        with gzip.GzipFile(fileobj=tmp, mode='wb') as gz:
+            with conn.cursor() as cur:
+                cur.copy_expert(f"COPY ({sql}) TO STDOUT WITH (FORMAT csv, HEADER true)", gz)
+        tmp.seek(0)
+        blob.upload_blob(tmp, overwrite=True)  # SDK streams from file-like object
+```
+
+* this avoids holding the whole CSV or GZIP in memory; at worst you spill to disk.
+
+2. fully streaming ZIP (only if you must zip)
+
+* use a streaming zip library (e.g., `zipstream`); write the CSV as a generator so `upload_blob` can consume an iterator. ZIP is trickier; prefer gzip unless multiple files per archive is required.
+
+3. pipe-based gzip (true streaming, no temp file)
+
+* set up an `os.pipe()`; a writer thread runs `copy_expert(..., gzip_writer)` and the main thread hands a file-like reader end directly to `blob.upload_blob()`. This is the most memory-efficient but a bit more code.
+
+bonus wins regardless of language:
+
+* push CSV formatting down to Postgres: `COPY (SELECT ...) TO STDOUT WITH (FORMAT csv, HEADER true)` is faster than row-by-row + `csv.writer`.
+* keep compression single-pass (gzip) and stream uploads (file-like to `upload_blob`, or use `max_concurrency` and chunk sizes if you have fast disks).
+
+so… TypeScript vs Python:
+
+* your current Python snippet is non-streaming; **that’s the main inefficiency**, not Python itself.
+* you can make Python just as memory-efficient with one of the patterns above.
+* TypeScript/Node does make streaming ergonomics a bit nicer (`pg-copy-streams → zlib.gzip → blob.uploadStream()`), but you don’t need to switch languages to get the big wins.
