@@ -1,5 +1,10 @@
-## CAN Bus protocol
-https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial
+## CAN (Controller Area Network) Bus protocol
+
+<https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial>
+
+<https://www.cartrack.co.za/blog/what-is-canbus-and-how-does-it-work>
+
+<https://www.cartrack.co.za/blog/can-bus-system-a-powerful-partnership-for-fleet-data-and-efficiency>
 
 
 Telemetry collected from cars via CAN bus is rich and multi-layered. 
