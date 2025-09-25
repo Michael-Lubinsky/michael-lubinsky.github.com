@@ -1,5 +1,7 @@
 ## CAN (Controller Area Network) Bus protocol
 
+<https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
+
 <https://www.autopi.io/blog/how-to-read-can-bus-data/>
 
 <https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial>
