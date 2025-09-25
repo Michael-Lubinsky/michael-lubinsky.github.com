@@ -1,4 +1,4 @@
-# CAN Bus
+## CAN Bus protocol
 https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial
 
 
@@ -6,7 +6,6 @@ Telemetry collected from cars via CAN bus is rich and multi-layered.
 
 Here are the main categories of **data analysis** you can perform with it:
 
----
 
 ## 1. **Descriptive Analytics**
 
@@ -61,7 +60,7 @@ Here are the main categories of **data analysis** you can perform with it:
 
 
 
-# CAN Bus Telemetry — Reference Pipeline (Raw on Amazon S3)
+## CAN Bus Telemetry — Reference Pipeline (Raw on Amazon S3)
 
 Below is a production-ready, cloud-agnostic blueprint that keeps your current source of truth on **Amazon S3** and cleanly separates concerns into **Bronze → Silver → Gold** layers, with governance, quality checks, and ML hooks. I tailor this toward **Databricks on AWS (Delta Lake)** because that’s closest to your stack, but I also call out **Snowflake** alternatives where relevant.
 
@@ -492,9 +491,332 @@ GROUP BY car_id, day_type, day_part;
 
 ---
 
-If you want, I can generate:
+Got it — assuming you meant **CAN bus** (typo “CN”). Here’s a practical, production-ready way to **detect EV charging events** from CAN signals, including robust rules, a finite-state machine, and example implementations (PySpark on Databricks and SQL on Snowflake/DB SQL).
 
-* Databricks **Jobs JSON** (Bronze/Silver/Gold) with parameters,
-* A ready-to-run **Airflow DAG** calling Databricks runs,
-* **Great Expectations** suites for key tables,
-* A **Snowflake** variant (stages + dynamic tables) side-by-side.
+# 1) What signals typically indicate charging?
+
+You may have some (not all) of these; use what you have.
+
+* **SoC / State of Charge**: `soc` (0–100%).
+  • Rises monotonically (after smoothing) when charging; may pause at plateau steps.
+* **Battery current / voltage**: `pack_current` (A), `pack_voltage` (V).
+  • **AC charging**: positive charge current into battery at low vehicle speed.
+  • **DC fast**: high current and usually higher/steady voltage.
+* **Charge power**: `charge_power_kw = pack_current * pack_voltage / 1000`.
+  • Above a threshold (e.g., ≥ 1.5–2.0 kW) signals active charging.
+* **Plug / inlet flags**: `plug_present`, `charging_enabled`, `charger_status`, `evse_pilot`, `ac_dc_mode`.
+  • Very strong evidence if present.
+* **Gear & speed**: `gear` = Park/Neutral; `speed` ≈ 0 km/h.
+* **Port / door**: `charge_port_open` helpful for start/end edges.
+* **Onboard charger state codes**: “charging”, “complete”, “fault”.
+
+# 2) Core detection logic (hierarchy of evidence)
+
+Use a hierarchical approach, falling back when richer signals don’t exist.
+
+**Tier A — Explicit flags (best):**
+Start when `plug_present=1 AND charging_enabled=1` (or `charger_status in ('charging','dc_fast')`).
+End when `charging_enabled=0` or `plug_present=0`.
+
+**Tier B — Electrical thresholds (reliable):**
+
+* Start when `charge_power_kw >= P_ON` (e.g., `P_ON=2.0`) **AND** `speed <= 1 km/h`.
+* End when `charge_power_kw <= P_OFF` (e.g., `P_OFF=0.8`) for ≥ `t_off` seconds.
+* Use **hysteresis**: `P_ON > P_OFF` to prevent flapping.
+
+**Tier C — SoC-only fallback (last resort):**
+
+* Start when **smoothed** `soc` shows sustained increase: `ΔSoC >= 0.3%` over `T` minutes (e.g., 5–10 min), speed ≈ 0.
+* End when `soc` stops rising for ≥ `t_off` or speed > threshold.
+* Guard against **regen** during downhill driving by requiring near-zero speed for SoC-based starts.
+
+# 3) State machine (recommended)
+
+Model as a simple FSM with debouncing:
+
+States: `IDLE → PLUGGED → CHARGING → TOPPING → COMPLETE/UNPLUGGED → IDLE`
+
+* **IDLE → PLUGGED:** `plug_present==1` or `charge_port_open==1`
+* **PLUGGED → CHARGING:** `charging_enabled==1` OR `charge_power_kw >= P_ON` (for ≥ `t_on`)
+* **CHARGING → TOPPING (optional):** power drops below `P_TOP` but still enabled; SoC ~ 80–100%
+* **CHARGING/TOPPING → COMPLETE:** `charging_enabled==0` OR `charge_power_kw <= P_OFF` for ≥ `t_off`, and SoC near prior peak
+* **Any → UNPLUGGED:** `plug_present==0`
+* **UNPLUGGED → IDLE:** stabilize for `t_idle` seconds
+
+**Debounce windows** (typical): `t_on=60–120s`, `t_off=180–300s`, sample period 1–5s.
+
+# 4) Event/sessionization outputs
+
+For each charging session, emit:
+
+* `car_id`, `charge_session_id`
+* `start_ts`, `end_ts`, `duration_sec`
+* **Energy added (kWh)**: integrate `max(pack_current*pack_voltage,0)/1000` over time.
+* **Max/avg power (kW)**, **final SoC**, **start/end SoC**, `ΔSoC`
+* `charging_mode` (“AC_L2”, “DC_Fast”, “Unknown”) heuristic by `max_power`:
+  • DC fast: `max_power >= 40 kW` (tune)
+  • AC L2: `2–19 kW`
+* **Location**: median(lat,lon) during the session; optional reverse-geocode to station.
+* **Quality flags**: missing data %, clock skew detected, gaps filled.
+
+# 5) PySpark (Databricks) reference implementation
+
+Assumes a tall silver table `silver.can_signals_clean`:
+
+```
+car_id STRING, sensor_name STRING, event_ts TIMESTAMP, value DOUBLE,
+unit STRING, event_date DATE, speed_kmh DOUBLE?, pack_current_a DOUBLE?, pack_voltage_v DOUBLE?, soc DOUBLE?,
+plug_present INT?, charging_enabled INT?, charge_port_open INT?
+```
+
+```python
+from pyspark.sql import functions as F, Window as W
+
+signals = spark.table("silver.can_signals_clean")
+
+# Pivot minimal sensors you have (speed, current, voltage, soc, flags)
+needed = (signals
+  .filter(F.col("sensor_name").isin("speed","pack_current","pack_voltage","soc",
+                                    "plug_present","charging_enabled","charge_port_open"))
+  .groupBy("car_id","event_ts")
+  .pivot("sensor_name")
+  .agg(F.first("value"))
+  .withColumnRenamed("pack_current","pack_current_a")
+  .withColumnRenamed("pack_voltage","pack_voltage_v")
+  .withColumnRenamed("speed","speed_kmh")
+)
+
+df = (needed
+  .withColumn("charge_power_kw",
+              (F.coalesce(F.col("pack_current_a"),F.lit(0.0)) *
+               F.coalesce(F.col("pack_voltage_v"),F.lit(0.0)))/1000.0)
+  .withColumn("speed_kmh", F.coalesce("speed_kmh", F.lit(0.0)))
+  .withColumn("soc", F.coalesce("soc", F.lit(None).cast("double")))
+  .withColumn("plug_present", F.col("plug_present").cast("int"))
+  .withColumn("charging_enabled", F.col("charging_enabled").cast("int"))
+  .withColumn("charge_port_open", F.col("charge_port_open").cast("int"))
+)
+
+# Parameters (tune per fleet)
+P_ON  = F.lit(2.0)   # kW
+P_OFF = F.lit(0.8)   # kW
+V_NEAR_ZERO = F.lit(1.0) # km/h
+T_ON  = 2*60         # seconds debounce
+T_OFF = 3*60         # seconds debounce
+
+# Sort by time per car
+w_time = W.partitionBy("car_id").orderBy("event_ts")
+
+# Basic “is_charging_evidence” signal (combine tiers)
+df1 = (df
+  .withColumn("flag_explicit",
+              (F.col("charging_enabled")==1) | (F.col("plug_present")==1))
+  .withColumn("flag_power",
+              (F.col("charge_power_kw") >= P_ON) & (F.col("speed_kmh") <= V_NEAR_ZERO))
+)
+
+# Debounce with running durations above/below thresholds
+# Convert to 1/0 and compute consecutive streak lengths
+def streak(colname):
+    return (F.when(F.col(colname), 1).otherwise(0)).alias(colname)
+
+df2 = (df1
+  .withColumn("evidence_on",  F.when(F.col("flag_explicit") | F.col("flag_power"), 1).otherwise(0))
+  .withColumn("evidence_off", F.when((F.col("charge_power_kw") <= P_OFF) | (F.col("charging_enabled")==0) | (F.col("plug_present")==0), 1).otherwise(0))
+)
+
+# Compute time deltas to approximate streak durations
+df2 = df2.withColumn("prev_ts", F.lag("event_ts").over(w_time)) \
+         .withColumn("dt_sec", (F.col("event_ts").cast("long")-F.col("prev_ts").cast("long")).cast("int")) \
+         .fillna({"dt_sec":0})
+
+# Accumulate evidence_on seconds until reset by evidence_off, and vice versa
+# (Simple approach: running sums with resets using stateful aggregation in a subsequent streaming job
+#  or use a Python UDF state machine for batch.)
+
+# For clarity, use a small Python state machine per car (pandas_udf):
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, LongType
+import pandas as pd
+
+schema = StructType([
+    StructField("car_id", StringType()),
+    StructField("event_ts", TimestampType()),
+    StructField("charge_session_id", StringType()),
+    StructField("state", StringType()),
+    StructField("charge_power_kw", DoubleType()),
+    StructField("soc", DoubleType())
+])
+
+@F.pandas_udf(schema, F.PandasUDFType.GROUPED_MAP)
+def detect_sessions(pdf: pd.DataFrame) -> pd.DataFrame:
+    pdf = pdf.sort_values("event_ts")
+    P_ON  = 2.0
+    P_OFF = 0.8
+    T_ON  = 120
+    T_OFF = 180
+
+    state = "IDLE"
+    on_secs = 0
+    off_secs = 0
+    last_ts = None
+    session_id = None
+    rows = []
+
+    for _, r in pdf.iterrows():
+        ts = r["event_ts"]
+        dt = 0 if last_ts is None else max(0, (ts - last_ts).total_seconds())
+        last_ts = ts
+
+        flag_explicit = bool(r.get("charging_enabled", 0) == 1 or r.get("plug_present", 0) == 1)
+        flag_power = (r.get("charge_power_kw", 0.0) or 0.0) >= P_ON and (r.get("speed_kmh", 0.0) or 0.0) <= 1.0
+        power_low = (r.get("charge_power_kw", 0.0) or 0.0) <= P_OFF
+        unplugged = (r.get("plug_present", 1) or 1) == 0
+
+        evidence_on = flag_explicit or flag_power
+        evidence_off = power_low or unplugged or (r.get("charging_enabled", 1) or 1)==0
+
+        if evidence_on:
+            on_secs += dt
+            off_secs = 0
+        elif evidence_off:
+            off_secs += dt
+            on_secs = 0
+        else:
+            on_secs = max(0, on_secs - dt)  # decay
+            off_secs = max(0, off_secs - dt)
+
+        if state in ("IDLE","PLUGGED"):
+            if on_secs >= T_ON:
+                state = "CHARGING"
+                session_id = f"{r['car_id']}_{int(ts.timestamp())}"
+        if state == "CHARGING":
+            if off_secs >= T_OFF:
+                state = "IDLE"
+                session_id = None
+
+        rows.append([r["car_id"], ts, session_id, state, r.get("charge_power_kw", None), r.get("soc", None)])
+
+    return pd.DataFrame(rows, columns=[c.name for c in schema.fields])
+
+sessions = (df2.groupBy("car_id").apply(detect_sessions).cache())
+
+# Materialize session boundaries + metrics
+w_sess = W.partitionBy("car_id","charge_session_id")
+
+charging_events = (sessions
+  .filter(F.col("state")=="CHARGING")
+  .groupBy("car_id","charge_session_id")
+  .agg(
+      F.min("event_ts").alias("start_ts"),
+      F.max("event_ts").alias("end_ts"),
+      (F.max("event_ts").cast("long")-F.min("event_ts").cast("long")).alias("duration_sec"),
+      F.max("charge_power_kw").alias("max_power_kw"),
+      F.expr("max_by(soc, event_ts)").alias("end_soc"),
+      F.expr("min_by(soc, event_ts)").alias("start_soc")
+  )
+  .withColumn("delta_soc", F.col("end_soc") - F.col("start_soc"))
+)
+
+charging_events.createOrReplaceTempView("charging_events_tmp")
+
+spark.sql("""
+CREATE OR REPLACE TABLE gold.charging_events AS
+SELECT
+  car_id, charge_session_id, start_ts, end_ts, duration_sec,
+  max_power_kw, start_soc, end_soc, delta_soc
+FROM charging_events_tmp
+WHERE duration_sec >= 120      -- prune spurious
+""")
+```
+
+**Energy added (kWh):** integrate within each session; for batch, join samples back to sessions and sum `power * dt`.
+
+```python
+samples = df2.select("car_id","event_ts","charge_power_kw")
+evt = charging_events.select("car_id","charge_session_id","start_ts","end_ts")
+
+joined = (samples.join(evt, ["car_id"])
+  .where((samples.event_ts >= evt.start_ts) & (samples.event_ts <= evt.end_ts))
+  .withColumn("prev_ts", F.lag("event_ts").over(W.partitionBy("car_id","charge_session_id").orderBy("event_ts")))
+  .withColumn("dt_h", (F.col("event_ts").cast("long")-F.col("prev_ts").cast("long"))/3600.0)
+  .fillna({"dt_h":0.0})
+  .withColumn("energy_kwh", F.greatest(F.col("charge_power_kw"),F.lit(0.0))*F.col("dt_h"))
+  .groupBy("car_id","charge_session_id")
+  .agg(F.sum("energy_kwh").alias("energy_kwh"))
+)
+
+final = charging_events.join(joined, ["car_id","charge_session_id"], "left") \
+                       .withColumn("mode",
+                         F.when(F.col("max_power_kw") >= 40, "DC_Fast")
+                          .when(F.col("max_power_kw") >= 2, "AC_L2")
+                          .otherwise("Unknown"))
+
+final.write.mode("overwrite").saveAsTable("gold.charging_events_enriched")
+```
+
+# 6) Pure SQL approach (Snowflake / Databricks SQL)
+
+If you’ve already computed `charge_power_kw`, `speed_kmh`, and flags into a tall table `signals_pivoted`:
+
+```sql
+-- 1) Evidence flags with hysteresis bands
+CREATE OR REPLACE VIEW silver.charge_evidence AS
+SELECT
+  car_id, event_ts, charge_power_kw, speed_kmh, soc,
+  plug_present, charging_enabled,
+  (charging_enabled = 1 OR plug_present = 1) AS flag_explicit,
+  (charge_power_kw >= 2.0 AND speed_kmh <= 1.0) AS flag_power,
+  (charge_power_kw <= 0.8 OR NVL(charging_enabled,0)=0 OR NVL(plug_present,1)=0) AS flag_off
+FROM silver.signals_pivoted;
+
+-- 2) Sessionization (simplified): mark starts/ends
+WITH evidence AS (
+  SELECT *,
+         CASE WHEN (flag_explicit OR flag_power) THEN 1 ELSE 0 END AS e_on,
+         CASE WHEN flag_off THEN 1 ELSE 0 END AS e_off
+  FROM silver.charge_evidence
+),
+marks AS (
+  SELECT *,
+         CASE WHEN e_on = 1 AND LAG(e_on) OVER (PARTITION BY car_id ORDER BY event_ts) = 0 THEN 1 ELSE 0 END AS start_mark,
+         CASE WHEN e_off = 1 AND LAG(e_off) OVER (PARTITION BY car_id ORDER BY event_ts) = 0 THEN 1 ELSE 0 END AS off_mark
+  FROM evidence
+),
+groups AS (
+  SELECT *,
+         SUM(CASE WHEN start_mark=1 THEN 1 ELSE 0 END)
+         OVER (PARTITION BY car_id ORDER BY event_ts
+               ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS grp
+  FROM marks
+)
+SELECT car_id,
+       CONCAT(car_id,'_',MIN(TO_CHAR(event_ts,'YYYYMMDDHH24MISS'))) AS charge_session_id,
+       MIN(event_ts) AS start_ts,
+       MAX(event_ts) AS end_ts
+FROM groups
+WHERE e_on = 1
+GROUP BY car_id, grp
+HAVING DATEDIFF('second', MIN(event_ts), MAX(event_ts)) >= 120;
+```
+
+(For strict hysteresis/debouncing in pure SQL, add rolling window counts on `e_on/e_off` ≥ N samples before confirming start/end.)
+
+# 7) Edge cases & hardening
+
+* **Regen braking**: rises in SoC while moving → require low speed for SoC-based start.
+* **Clock skew / drops**: fill small gaps; cap `dt` between samples to avoid energy spikes.
+* **Partial sessions**: if data starts mid-charge, mark `start_type='partial'`.
+* **Tapering**: long “top-off” at low power near 100% SoC; keep it inside session using `t_off` debounce.
+* **Home vs public**: cluster location by station centroid; label from POI lookup if available.
+* **AC vs DC**: decide based on `max_power_kw`, `ac_dc_mode`, or voltage/current signature.
+
+# 8) Minimal tests (sanity checks)
+
+* A: Synthetic trace: `plug_present=1`, `power=7kW` for 45 min, speed 0 → **one** session; `ΔSoC` ≈ expected.
+* B: Add 2-minute power dip to 0.5 kW → session **continues** (debounce).
+* C: SoC increases 1% while speed 60 km/h → **no** session (regen).
+* D: DC fast profile at 120 kW for 15 min → mode “DC_Fast”.
+
+---
+
+If you share what exact signals you have (names/units), I can plug them into the templates above and hand you a drop-in notebook (bronze→silver transforms + charging detector + gold event table).
