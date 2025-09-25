@@ -1052,3 +1052,69 @@ so… TypeScript vs Python:
 * your current Python snippet is non-streaming; **that’s the main inefficiency**, not Python itself.
 * you can make Python just as memory-efficient with one of the patterns above.
 * TypeScript/Node does make streaming ergonomics a bit nicer (`pg-copy-streams → zlib.gzip → blob.uploadStream()`), but you don’t need to switch languages to get the big wins.
+
+
+### Claude
+The code reviewer is absolutely right! Your current approach loads everything into memory multiple times. Here are both suggested optimizations:## Key Optimizations Made:
+
+### 1. **PostgreSQL COPY Command**
+- **Before**: Python fetches all rows, then formats them into CSV row-by-row
+- **After**: PostgreSQL handles CSV formatting natively with `COPY (SELECT ...) TO STDOUT WITH (FORMAT csv, HEADER true)`
+- **Benefit**: Much faster, less memory usage
+
+### 2. **GZIP instead of ZIP**
+- **Before**: Creates full CSV in memory, then compresses to ZIP
+- **After**: Streams directly to GZIP compression
+- **Benefit**: Better compression ratio, streaming capability
+
+### 3. **Two Memory-Efficient Approaches**
+
+#### Approach 1: SpooledTemporaryFile (Simpler)
+```python
+export_table_to_adls_gzip_spooled()
+```
+- Keeps data in memory up to 100MB, then spills to disk
+- Simple to implement and debug
+- Good for most use cases
+
+#### Approach 2: True Streaming with Pipes (Most Efficient)
+```python
+export_table_to_adls_gzip_streaming()
+```
+- Uses OS pipes for true streaming
+- Never holds full dataset in memory
+- More complex but most memory-efficient
+
+### 4. **Memory Usage Comparison**
+
+**Original Code:**
+```
+Memory = Raw Data + CSV String + ZIP Buffer
+```
+
+**Optimized Code:**
+```
+Memory = Small streaming buffer only
+```
+
+### 5. **File Format Changes**
+- **Before**: `table.2024-01-01.csv.zip`
+- **After**: `table.2024-01-01.csv.gz`
+- GZIP is more standard for data backups and has better tooling support
+
+## Usage
+
+The optimized version is backward compatible. You can:
+1. **Replace your existing function** with this optimized version
+2. **Test with manual trigger**: `https://your-function-app.azurewebsites.net/api/backup_manual?table=events.bannerclicked&date=2024-01-01`
+
+## Performance Benefits
+
+- **Memory**: Constant small memory usage regardless of table size
+- **Speed**: PostgreSQL COPY is much faster than Python row processing  
+- **Compression**: GZIP typically achieves better compression than ZIP
+- **Streaming**: Can handle tables larger than available memory
+
+The **SpooledTemporaryFile** approach is probably the best balance of simplicity and efficiency for your use case. Use the streaming pipe approach only if you're dealing with extremely large tables (multi-GB).
+
+
