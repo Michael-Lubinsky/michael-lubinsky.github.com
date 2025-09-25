@@ -1,5 +1,15 @@
 ## CAN (Controller Area Network) Bus protocol
 
+https://en.wikipedia.org/wiki/CAN_bus
+
+https://github.com/ajouatom/canbus-tools
+
+https://github.com/iDoka/awesome-canbus
+
+https://youtu.be/v_y65h68z3U  Learn How The CAN Bus Works
+
+https://emqx.medium.com/can-bus-how-it-works-pros-and-cons-and-fast-local-processing-tutorial-a6543a8ef713
+
 <https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
 
 <https://www.autopi.io/blog/how-to-read-can-bus-data/>
@@ -15,9 +25,23 @@
  
 https://ruptela.com/decode-can-bus-messages-guide/
 
+
+<https://www.picotech.com/library/knowledge-bases/oscilloscopes/can-bus-serial-protocol-decoding>
+
 ## Data analysis
 
 <https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
+
+Driving Behavior Analysis through CAN Bus
+Data
+
+<https://senseable.mit.edu/papers/pdf/20181105_Fugiglando-etal_DrivingBehavior_IEEE-TITS.pdf>
+
+Traffic anomaly detection algorithm for CAN bus using similarity analysis
+(PDF)
+
+https://www.sciencedirect.com/science/article/pii/S2667295224000102
+
 
 ## 1. **Descriptive Analytics**
 
