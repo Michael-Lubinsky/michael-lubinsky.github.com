@@ -913,3 +913,72 @@ SELECT rolname FROM pg_roles WHERE rolname = 'michael';
 ```
 
 **Important**: Make sure you use the exact case "Michael" (capital M, lowercase rest) everywhere - in the PostgreSQL role creation and in your Function App configuration. 
+
+
+## TypeScript vs Python for Azure Function
+```
+If your function is I/O-bound (read rows from Postgres, serialize to CSV, compress, upload to Blob), TypeScript can give you practical benefits mainly around streaming and concurrency ergonomics.
+If you already have solid Python code, the raw throughput difference will usually be small;
+pick TS when you want easy back-pressure/streaming pipelines and strong type safety, pick Python when you prefer its data/CSV ergonomics and you’re not pushing the limits of concurrency or memory.
+```
+Where TypeScript (Node.js) can be better
+• Streaming all the way: Node streams make it straightforward to build a true zero-copy pipeline:
+  Postgres (COPY/cursor stream) → CSV stream → gzip stream → Azure Blob uploadStream()
+  This avoids buffering the whole file in memory and scales cleanly with large exports.
+• Concurrency model: Single-threaded, event-loop I/O is very efficient for many concurrent exports. Back-pressure is built in (pipe/pipeline).
+• Mature streaming libs:
+  - pg + pg-query-stream or pg-copy-streams (server-side COPY TO STDOUT)
+  - fast-csv (CSV transform) or Papaparse (if needed)
+  - zlib (built-in) or archiver (ZIP) for stream compression
+  - @azure/storage-blob BlockBlobClient.uploadStream() with configurable highWaterMark/concurrency
+• Cold starts (Consumption): Node/TS generally has equal or slightly faster cold starts than Python for similar package sizes.
+• DX & safety: Types, ESLint, esbuild, good local debugging; easy to keep interfaces stable across functions.
+
+Where Python can be better
+• Simplicity for CSV logic: csv module + psycopg2.copy_expert() is dead simple and very fast. Great when you don’t need lots of concurrent pipelines.
+• Data wrangling: If you ever need light transforms, Python’s stdlib/itertools (or even pandas in a dedicated plan) can be quicker to author and reason about.
+• Existing code: You already use psycopg2/csv/zipfile/io. If it works and meets SLOs, re-write risk may outweigh gains.
+• ZIP files: Python’s zipfile is simple for small/medium outputs. (Note: true streaming ZIP is trickier in Python; consider gzip for a single CSV file.)
+
+Performance & memory notes (for your use case)
+• The biggest win is streaming, not language. If you currently build the whole CSV in memory or write temp files, moving to a stream-first design will matter far more than switching languages.
+• Prefer gzip (.csv.gz) over ZIP for a single file:
+  - Gzip streams cleanly (no central directory), so you can upload as you compress.
+  - ZIP typically needs random access/final central directory; in Node “archiver” handles this as a stream; in Python you often end up buffering or using 3rd-party “zipstream” libraries.
+• Use server-side COPY when you can:
+  - Node: pg-copy-streams: `COPY (SELECT …) TO STDOUT WITH (FORMAT csv, HEADER true)`
+  - Python: psycopg2.copy_expert() with the same COPY statement
+  This is faster than fetching rows and formatting CSV yourself.
+
+Operational considerations
+• Dependencies/packaging:
+  - Python: psycopg2 wheels must match the runtime (Linux build). Keep deployment on Linux to avoid build headaches.
+  - Node: pg is pure JS + native TLS; typically fewer platform issues.
+• Plans & hosting:
+  - For very large exports, consider Premium/Elastic plans to avoid Consumption timeouts.
+  - Both Python and Node support Durable Functions if you need fan-out/fan-in or resumable work.
+• Observability: App Insights works equally well. Node has great async stack traces now; Python logs are fine too.
+
+Recommended patterns (both languages)
+• Switch to gzip for single-file compression: name as `table.YYYY-MM-DD.csv.gz`.
+• Stream the whole pipeline; avoid in-memory buffers:
+  - Node/TS: pg-copy-streams → zlib.createGzip() → blobClient.uploadStream()
+  - Python: copy_expert() reading into an iterator → gzip.GzipFile(fileobj=PipeLike) → blob.upload_blob(data=iterator, overwrite=True)
+• If you must ZIP, in Node use `archiver` (stream); in Python consider `zipstream` or write to a SpooledTemporaryFile to cap memory.
+• Use Managed Identity for Blob auth (both SDKs support it).
+• Control Blob upload chunk sizes and parallelism (uploadStream in Node; `max_concurrency` in Python SDK).
+
+When I’d choose TypeScript for your function
+• You want maximum throughput with minimal memory via a clean streaming pipeline.
+• You foresee many concurrent exports and want simple back-pressure semantics.
+• Your team prefers typed APIs and Node tooling.
+• You plan to extend orchestration with Durable Functions (TS SDK is very polished).
+
+When I’d stay with Python
+• Current Python function meets latency/cost goals.
+• The logic is mostly straightforward CSV extraction with minimal concurrency.
+• Team prefers Python and wants the simplest code with psycopg2 COPY.
+
+Bottom line
+• You won’t get a magic 2× speedup just by switching languages. The real gain comes from adopting a stream-first design and gzip compression.
+• If you’re about to refactor anyway, TypeScript makes the streaming composition slightly easier and safer; otherwise, keep Python and refactor it to be fully streaming and gzip-based.
