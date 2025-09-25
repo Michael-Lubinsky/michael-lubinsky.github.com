@@ -2,6 +2,8 @@
 
 <https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial>
 
+<https://blog.prosig.com/2023/05/19/understanding-can-bus-the-nervous-system-of-a-modern-vehicle/>
+
 <https://www.cartrack.co.za/blog/what-is-canbus-and-how-does-it-work>
 
 <https://www.cartrack.co.za/blog/can-bus-system-a-powerful-partnership-for-fleet-data-and-efficiency>
