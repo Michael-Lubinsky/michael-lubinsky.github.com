@@ -12,11 +12,12 @@
 
 <https://www.cartrack.co.za/blog/can-bus-system-a-powerful-partnership-for-fleet-data-and-efficiency>
 
+ 
+https://ruptela.com/decode-can-bus-messages-guide/
 
-Telemetry collected from cars via CAN bus is rich and multi-layered. 
+## Data analysis
 
-Here are the main categories of **data analysis** you can perform with it:
-
+<https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
 
 ## 1. **Descriptive Analytics**
 
