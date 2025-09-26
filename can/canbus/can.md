@@ -31,6 +31,8 @@ https://ruptela.com/decode-can-bus-messages-guide/
 ## Data analysis
 <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2022/EECS-2022-151.pdf>
 
+<https://www.researchgate.net/publication/228936619_Analysis_and_Classification_of_Driver_Behavior_Using_in-Vehicle_CAN-BUS_Information>
+
 <https://deepblue.lib.umich.edu/bitstream/handle/2027.42/171757/Han_Thesis_Final.pdf?sequence=1>
 
 <https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
