@@ -479,3 +479,59 @@ TimescaleDB transparently decompresses chunks as needed for queries.
 Performance: For large datasets, ensure your timestamp column is used in WHERE clauses to leverage chunk exclusion, and consider adding secondary indexes if filtering on other columns.
 
 <https://medium.com/timescale/handling-billions-of-rows-in-postgresql-80d3bd24dabb>
+
+
+## DROP_CHUNKS
+```sql
+        PERFORM drop_chunks(
+            relation => p_table_name::regclass,
+            older_than => target_date + INTERVAL '1 day',
+            newer_than => target_date
+        );
+
+
+        PERFORM drop_chunks(
+            interval => (p_backup_date - (SELECT min(range_start) FROM timescaledb_information.chunks
+                                           WHERE hypertable_schema = p_schema_name AND hypertable_name = p_table_name)),
+            hypertable => format('%I.%I', p_schema_name, p_table_name),
+            older_than => p_backup_date
+        );
+
+-- Drop just the day’s chunk:
+
+ 
+-- Inspect the chunk(s) that cover the day first (optional but safe):
+SELECT * 
+FROM show_chunks('schema_name.t', 
+                 newer_than => '2025-01-01'::timestamptz, 
+                 older_than => '2025-01-02'::timestamptz);
+
+-- Drop only the chunk(s) for 2025-01-01 (keeps other days intact)
+SELECT drop_chunks('schema_name.t',
+                   newer_than => '2025-01-01'::timestamptz,
+                   older_than => '2025-01-02'::timestamptz,
+                   cascade_to_materializations => true);
+
+
+
+
+-- Find the chunk for the target date
+    SELECT chunk_schema || '.' || chunk_name INTO v_chunk_name
+    FROM timescaledb_information.chunks
+    WHERE hypertable_schema = p_schema_name
+      AND hypertable_name = p_table_name
+      AND range_start <= v_backup_date
+      AND range_end > v_backup_date;
+
+
+ -- Drop the chunk if backup was successful
+    IF v_success THEN
+        RAISE NOTICE 'Dropping chunk %', v_chunk_name;
+        EXECUTE format('SELECT drop_chunks(%L, older_than => %L);', v_chunk_name, v_backup_date);
+        -- Or, if you want to drop a specific chunk:
+        -- EXECUTE format('DROP TABLE %I', v_chunk_name);
+    END IF;
+```
+
+
+
