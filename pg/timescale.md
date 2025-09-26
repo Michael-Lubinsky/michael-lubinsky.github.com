@@ -557,3 +557,100 @@ SELECT drop_chunks('schema_name.t',
 
 
 
+Since you have data in that date range, the issue is likely that TimescaleDB chunks don't align exactly with your single-day range. Chunks are typically larger (e.g., weekly or monthly) and may span across multiple days.
+
+Here are the solutions:
+
+## Solution 1: Check your chunk interval and existing chunks
+
+```python
+# Check the chunk interval for your hypertable
+interval_query = f"""
+SELECT d.interval_length 
+FROM timescaledb_information.dimensions d
+JOIN timescaledb_information.hypertables h ON d.hypertable_name = h.hypertable_name
+WHERE h.hypertable_name = 'httperrorpost' AND h.hypertable_schema = 'events'
+"""
+
+# Check what chunks exist around your date
+chunks_query = f"""
+SELECT chunk_name, range_start, range_end 
+FROM timescaledb_information.chunks 
+WHERE hypertable_name = 'httperrorpost' 
+AND hypertable_schema = 'events'
+AND range_start <= '2024-11-15'::timestamptz
+AND range_end >= '2024-11-14'::timestamptz
+ORDER BY range_start
+"""
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(interval_query)
+    interval = cursor.fetchone()
+    print(f"Chunk interval: {interval}")
+    
+    cursor.execute(chunks_query)
+    chunks = cursor.fetchall()
+    print("Chunks overlapping your date range:")
+    for chunk in chunks:
+        print(f"  {chunk}")
+```
+
+## Solution 2: Use the chunk's actual boundaries
+
+Once you know the chunk boundaries, use them:
+
+```python
+# If your chunk spans 2024-11-01 to 2024-12-01, use those dates
+start_date = '2024-11-01'  # Use actual chunk start
+end_date = '2024-12-01'    # Use actual chunk end
+
+query = f"SELECT drop_chunks('{table}'::regclass, '{start_date}'::timestamptz, '{end_date}'::timestamptz)"
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(query)
+conn.commit()
+```
+
+## Solution 3: Drop by chunk name directly (safest)
+
+```python
+# Get the specific chunk name first
+chunk_query = f"""
+SELECT chunk_name 
+FROM timescaledb_information.chunks 
+WHERE hypertable_name = 'httperrorpost' 
+AND hypertable_schema = 'events'
+AND range_start <= '2024-11-15'::timestamptz
+AND range_end >= '2024-11-14'::timestamptz
+"""
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(chunk_query)
+    chunks = cursor.fetchall()
+    
+    for chunk in chunks:
+        chunk_name = chunk[0]
+        drop_query = f"DROP TABLE {chunk_name}"
+        cursor.execute(drop_query)
+        print(f"Dropped chunk: {chunk_name}")
+
+conn.commit()
+```
+
+## Solution 4: Use older_than (if you want to drop everything before that date)
+
+```python
+query = f"SELECT drop_chunks('{table}'::regclass, older_than => '2024-11-14'::timestamptz)"
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(query)
+conn.commit()
+```
+
+I recommend starting with **Solution 1** to understand your chunk structure, then using **Solution 3** for precise chunk dropping or **Solution 4** if you want to drop all old data.
+
+
