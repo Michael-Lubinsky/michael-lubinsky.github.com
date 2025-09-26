@@ -29,6 +29,7 @@ https://ruptela.com/decode-can-bus-messages-guide/
 <https://www.picotech.com/library/knowledge-bases/oscilloscopes/can-bus-serial-protocol-decoding>
 
 ## Data analysis
+<https://www2.eecs.berkeley.edu/Pubs/TechRpts/2022/EECS-2022-151.pdf>
 
 <https://deepblue.lib.umich.edu/bitstream/handle/2027.42/171757/Han_Thesis_Final.pdf?sequence=1>
 
