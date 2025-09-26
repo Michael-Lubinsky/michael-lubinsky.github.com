@@ -30,6 +30,8 @@ https://ruptela.com/decode-can-bus-messages-guide/
 
 ## Data analysis
 
+<https://deepblue.lib.umich.edu/bitstream/handle/2027.42/171757/Han_Thesis_Final.pdf?sequence=1>
+
 <https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
 
 Driving Behavior Analysis through CAN Bus
