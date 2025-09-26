@@ -564,13 +564,7 @@ Here are the solutions:
 ## Solution 1: Check your chunk interval and existing chunks
 
 ```python
-# Check the chunk interval for your hypertable
-interval_query = f"""
-SELECT d.interval_length 
-FROM timescaledb_information.dimensions d
-JOIN timescaledb_information.hypertables h ON d.hypertable_name = h.hypertable_name
-WHERE h.hypertable_name = 'httperrorpost' AND h.hypertable_schema = 'events'
-"""
+
 
 # Check what chunks exist around your date
 chunks_query = f"""
@@ -654,3 +648,69 @@ conn.commit()
 I recommend starting with **Solution 1** to understand your chunk structure, then using **Solution 3** for precise chunk dropping or **Solution 4** if you want to drop all old data.
 
 
+The column name is different in your TimescaleDB version. Let's use the correct query:
+
+## Check chunk interval (corrected):
+
+```python
+# Check the chunk interval - try different column names based on TimescaleDB version
+interval_query = f"""
+SELECT d.interval_length_ms, d.interval_length
+FROM timescaledb_information.dimensions d
+JOIN timescaledb_information.hypertables h ON d.hypertable_name = h.hypertable_name
+WHERE h.hypertable_name = 'httperrorpost' AND h.hypertable_schema = 'events'
+"""
+
+# Alternative query if above doesn't work
+interval_query_alt = f"""
+SELECT d.*
+FROM timescaledb_information.dimensions d
+JOIN timescaledb_information.hypertables h ON d.hypertable_name = h.hypertable_name
+WHERE h.hypertable_name = 'httperrorpost' AND h.hypertable_schema = 'events'
+"""
+```
+
+## Or just check what chunks exist directly:
+
+```python
+chunks_query = f"""
+SELECT chunk_schema, chunk_name, range_start, range_end 
+FROM timescaledb_information.chunks 
+WHERE hypertable_name = 'httperrorpost' 
+AND hypertable_schema = 'events'
+ORDER BY range_start
+"""
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(chunks_query)
+    chunks = cursor.fetchall()
+    print("All chunks for this table:")
+    for chunk in chunks:
+        print(f"  Schema: {chunk[0]}, Name: {chunk[1]}, Start: {chunk[2]}, End: {chunk[3]}")
+```
+
+## Find chunks containing your specific date:
+
+```python
+target_date = '2024-11-14'
+chunks_query = f"""
+SELECT chunk_schema, chunk_name, range_start, range_end 
+FROM timescaledb_information.chunks 
+WHERE hypertable_name = 'httperrorpost' 
+AND hypertable_schema = 'events'
+AND range_start <= '{target_date}'::timestamptz
+AND range_end > '{target_date}'::timestamptz
+ORDER BY range_start
+"""
+
+conn = get_postgres_connection()
+with conn.cursor() as cursor:
+    cursor.execute(chunks_query)
+    chunks = cursor.fetchall()
+    print(f"Chunks containing data for {target_date}:")
+    for chunk in chunks:
+        print(f"  {chunk[1]}: {chunk[2]} to {chunk[3]}")
+```
+
+This will show you the exact chunks and their time ranges, so you can then use the correct boundaries in your `drop_chunks` call or drop the chunks by name directly.
