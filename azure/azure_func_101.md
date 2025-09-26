@@ -1226,3 +1226,151 @@ VACUUM (ANALYZE) schema_name.t;      -- reclaim visibility map
 * Only fall back to `DELETE ... WHERE ts >= day AND ts < next_day` when chunk boundaries don’t match or constraints prevent chunk drops.
 
 
+Here’s the same answer, rendered in Markdown:
+
+---
+
+# Restoring a TimescaleDB Chunk from `csv.gz`
+
+## Short answer
+
+* Use **`COPY ... FROM PROGRAM`** if the server allows it (requires superuser).
+* Otherwise, use **`psql \copy ... FROM PROGRAM`** from your client — works without superuser.
+* TimescaleDB will automatically route rows into the correct chunk(s).
+
+---
+
+## Assumptions
+
+* Your CSV has a header row.
+* Column order matches the hypertable schema.
+* The time column is named `ts`.
+* Table is `schema_name.t`.
+* File contains only data for the dropped day.
+
+---
+
+## Option A — Server-side load (requires superuser)
+
+Fastest if your server allows:
+
+```sql
+BEGIN;
+SET LOCAL timescaledb.restoring = on;  -- suppress CAGG invalidations
+COPY schema_name.t (col1, col2, ..., ts)
+FROM PROGRAM 'gzip -dc /path/to/table.2025-01-01.csv.gz'
+WITH (FORMAT csv, HEADER true);
+COMMIT;
+```
+
+---
+
+## Option B — Client-side load (no superuser needed)
+
+```bash
+psql "host=... dbname=... user=... sslmode=require" -c "\
+BEGIN; \
+SET LOCAL timescaledb.restoring = on; \
+\copy schema_name.t (col1, col2, ..., ts) \
+  FROM PROGRAM 'gzip -dc /local/path/table.2025-01-01.csv.gz' \
+  WITH (FORMAT csv, HEADER true); \
+COMMIT;"
+```
+
+---
+
+## Important notes
+
+### 1. Always specify columns
+
+```sql
+COPY schema_name.t (col1, col2, col3, ts) ...
+```
+
+### 2. CSV options
+
+Adjust if needed:
+
+```sql
+WITH (FORMAT csv, HEADER true, DELIMITER ',', NULL '', QUOTE '"')
+```
+
+### 3. Performance knobs
+
+Set inside the session:
+
+```sql
+SET LOCAL synchronous_commit = off;
+SET LOCAL maintenance_work_mem = '1GB';
+```
+
+### 4. Compression & CAGGs
+
+* If the chunk is compressed, decompress it first:
+
+  ```sql
+  SELECT decompress_chunk(c)
+  FROM show_chunks('schema_name.t',
+       newer_than => '2025-01-01', older_than => '2025-01-02') c;
+  ```
+* After load, recompress:
+
+  ```sql
+  SELECT compress_chunk(c) FROM show_chunks('schema_name.t',
+       newer_than => '2025-01-01', older_than => '2025-01-02') c;
+  ```
+* Refresh continuous aggregates:
+
+  ```sql
+  CALL refresh_continuous_aggregate('schema_name.my_cagg',
+       '2025-01-01', '2025-01-02');
+  ```
+
+### 5. Staging (optional)
+
+```sql
+CREATE UNLOGGED TABLE staging_t (LIKE schema_name.t INCLUDING ALL);
+
+\copy staging_t FROM PROGRAM 'gzip -dc file.csv.gz' WITH (FORMAT csv, HEADER true);
+
+INSERT INTO schema_name.t (col1, col2, ..., ts)
+SELECT col1, col2, ..., ts
+FROM staging_t
+ON CONFLICT DO NOTHING;
+
+DROP TABLE staging_t;
+```
+
+### 6. Object storage (S3, ADLS)
+
+* Requires server superuser:
+
+```sql
+COPY schema_name.t (...)
+FROM PROGRAM 'aws s3 cp s3://bucket/path/file.csv.gz - | gzip -dc'
+WITH (FORMAT csv, HEADER true);
+```
+
+If not superuser, first download the file locally and then use `\copy`.
+
+### 7. Verify
+
+```sql
+SELECT count(*)
+FROM schema_name.t
+WHERE ts >= '2025-01-01'::date AND ts < '2025-01-02'::date;
+```
+
+---
+
+## Minimal working example (client-side)
+
+```bash
+\copy schema_name.t (col1, col2, ..., ts)
+  FROM PROGRAM 'gzip -dc ./table.2025-01-01.csv.gz'
+  WITH (FORMAT csv, HEADER true);
+```
+
+---
+
+Would you like me to also draft a **step-by-step “restore procedure”** (like a runbook with preparation, load, verify, recompress) that you can reuse every time you restore a chunk?
