@@ -996,11 +996,16 @@ pick TS when you want easy back-pressure/streaming pipelines and strong type saf
 ## Are you suggesting that this Python code is not efficient, it does not use streaming: 
 ```python
 # Compress CSV data 
-zip_buffer = io.BytesIO() with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file: csv_filename = f"{table_name}.{backup_date}.csv" zip_file.writestr(csv_filename, csv_data) zip_payload = zip_buffer.getvalue()
+zip_buffer = io.BytesIO()
+with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+  csv_filename = f"{table_name}.{backup_date}.csv"
+  zip_file.writestr(csv_filename, csv_data)
+
+zip_payload = zip_buffer.getvalue()
 ```
 ## The code snippet above  is **not streaming** and it’s **memory-heavy**.
 
-why:
+Why:
 
 * `zipfile.ZipFile(...).writestr(csv_filename, csv_data)` takes the entire `csv_data` already in RAM and writes it into the zip container—still in RAM because you’re using `io.BytesIO()`.
 * `zip_buffer.getvalue()` makes another full copy of the zipped bytes.
@@ -1116,5 +1121,108 @@ The optimized version is backward compatible. You can:
 - **Streaming**: Can handle tables larger than available memory
 
 The **SpooledTemporaryFile** approach is probably the best balance of simplicity and efficiency for your use case. Use the streaming pipe approach only if you're dealing with extremely large tables (multi-GB).
+
+
+### Drop chunk from timescaldb tables
+
+Short answer: if you’re on a TimescaleDB hypertable, **use TimescaleDB’s chunk‐aware drop**, not a row-by-row `DELETE`. It’s dramatically faster, writes far less WAL, avoids index bloat, and immediately frees space—**provided your chunk interval aligns with one day**.
+
+---
+
+## What to use
+
+### Best case (chunk interval = 1 day)
+
+Drop just the day’s chunk:
+
+```sql
+-- Inspect the chunk(s) that cover the day first (optional but safe):
+SELECT * 
+FROM show_chunks('schema_name.t', 
+                 newer_than => '2025-01-01'::timestamptz, 
+                 older_than => '2025-01-02'::timestamptz);
+
+-- Drop only the chunk(s) for 2025-01-01 (keeps other days intact)
+SELECT drop_chunks('schema_name.t',
+                   newer_than => '2025-01-01'::timestamptz,
+                   older_than => '2025-01-02'::timestamptz,
+                   cascade_to_materializations => true);
+```
+
+Notes:
+
+* `cascade_to_materializations => true` keeps continuous aggregates in sync.
+* This is an O(1) metadata drop on the chunk; no vacuuming needed.
+
+### If your chunk interval ≠ 1 day
+
+`drop_chunks` removes **whole** chunks. If chunks are, say, 7 days, it would remove the entire 7-day chunk—not just Jan 1.
+
+Options:
+
+1. **Accept the coarser drop** (remove the full overlapping chunk).
+2. **Do a one-off `DELETE`** for that day (see below) knowing it’s slower and may require VACUUM.
+3. **(Future)** Recreate the hypertable (or adjust policies) to use 1-day chunks if day-level lifecycle ops are common.
+
+---
+
+## When to use `DELETE`
+
+Use only if you cannot drop an entire chunk (misaligned intervals or FK constraints you can’t refactor):
+
+```sql
+DELETE FROM schema_name.t
+WHERE ts >= '2025-01-01'::date
+  AND ts <  '2025-01-02'::date;
+```
+
+Then:
+
+```sql
+VACUUM (ANALYZE) schema_name.t;      -- reclaim visibility map
+-- Consider VACUUM FULL only if you must shrink the table file immediately (it rewrites the table and blocks).
+```
+
+**Trade-offs of `DELETE`:**
+
+* Touches every matching row, updates indexes, generates lots of WAL.
+* Doesn’t immediately shrink files; needs autovacuum or manual vacuum.
+* Can hold locks longer and contend with concurrent writes.
+
+---
+
+## Quick checklist
+
+1. **Confirm chunk size**
+
+   ```sql
+   SELECT chunk_interval
+   FROM timescaledb_information.hypertables
+   WHERE hypertable_schema = 'schema_name'
+     AND hypertable_name   = 't';
+   ```
+
+2. **Day-level delete needed often?**
+   Use **1-day chunk interval** so you can drop specific days instantly.
+
+3. **Continuous aggregates?**
+   Use `cascade_to_materializations => true` with `drop_chunks`.
+
+4. **Foreign keys to the hypertable?**
+   `drop_chunks` won’t cascade to arbitrary child tables; ensure no referencing rows (or delete those first) before dropping the chunk.
+
+---
+
+## Bottom line
+
+* If your operational unit is “a day,” set your **hypertable chunk interval to 1 day** and use:
+
+  ```sql
+  SELECT drop_chunks('schema_name.t',
+                     newer_than => '2025-01-01',
+                     older_than => '2025-01-02',
+                     cascade_to_materializations => true);
+  ```
+* Only fall back to `DELETE ... WHERE ts >= day AND ts < next_day` when chunk boundaries don’t match or constraints prevent chunk drops.
 
 
