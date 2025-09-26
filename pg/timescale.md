@@ -482,7 +482,29 @@ Performance: For large datasets, ensure your timestamp column is used in WHERE c
 
 
 ## DROP_CHUNKS
+
 ```sql
+
+--Confirm chunk size
+
+SELECT chunk_interval
+FROM timescaledb_information.hypertables
+WHERE hypertable_schema = 'your_schema_name'
+  AND hypertable_name   = 'your_table_name';
+
+
+-- Inspect the chunk(s) that cover the day first (optional but safe):
+SELECT * 
+FROM show_chunks('schema_name.t', 
+                 newer_than => '2025-01-01'::timestamptz, 
+                 older_than => '2025-01-02'::timestamptz);
+
+-- Drop only the chunk(s) for 2025-01-01 (keeps other days intact)
+SELECT drop_chunks('schema_name.t',
+                   newer_than => '2025-01-01'::timestamptz,
+                   older_than => '2025-01-02'::timestamptz,
+                   cascade_to_materializations => true);
+
         PERFORM drop_chunks(
             relation => p_table_name::regclass,
             older_than => target_date + INTERVAL '1 day',
