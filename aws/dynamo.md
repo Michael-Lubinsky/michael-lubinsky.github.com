@@ -7,7 +7,7 @@ SELECT * FROM "MyTable" WHERE id = '123';
 
 Here are quick PartiQL patterns you can paste into the **PartiQL editor** in the DynamoDB console to get distinct values—both for top-level attributes and JSON (map/list) fields.
 
-## 1) Top-level attribute
+### 1) Top-level attribute
 
 ```sql
 -- Distinct values of a top-level string/number attribute
@@ -23,7 +23,7 @@ FROM "Orders"
 WHERE "pk" = 'CUSTOMER#123';
 ```
 
-## 2) Nested JSON (map) attribute using dot path
+### 2) Nested JSON (map) attribute using dot path
 
 ```sql
 -- Distinct values of a nested map attribute: product.info.category
@@ -32,7 +32,7 @@ FROM "Products" AS product
 WHERE attribute_exists(product.info.category);
 ```
 
-## 3) Nested map when the key has spaces/special chars (bracket access)
+### 3) Nested map when the key has spaces/special chars (bracket access)
 
 ```sql
 -- If the map key needs quoting (e.g., "sub category")
@@ -41,7 +41,7 @@ FROM "Products" AS p
 WHERE attribute_exists(p.details['sub category']);
 ```
 
-## 4) Distinct elements from a list (UNNEST)
+### 4) Distinct elements from a list (UNNEST)
 
 ```sql
 -- Each item has a list attribute tags: ["red","sale","outdoor"]
@@ -52,7 +52,7 @@ UNNEST p.tags AS tag
 WHERE attribute_exists(p.tags);
 ```
 
-# 5) Clean up missing/NULLs and limit results
+### 5) Clean up missing/NULLs and limit results
 
 ```sql
 SELECT DISTINCT p.info.category
@@ -61,7 +61,7 @@ WHERE attribute_exists(p.info.category)
 LIMIT 100;
 ```
 
-# Notes & tips
+## Notes & tips
 
 * **DISTINCT** removes duplicates in the projection; there’s no need for `GROUP BY` (and DynamoDB PartiQL doesn’t support full SQL aggregation/grouping like a relational DB).
 * Use **dot paths** (`a.b.c`) for simple map keys; use **bracket paths** (`a['weird key']`) for keys with spaces/special characters.
@@ -73,9 +73,9 @@ If you show me your table/attribute shape (top-level vs nested, map vs list), I�
 
 
 
-# Clean DynamoDB JSON records and remove the type qualifiers while maintaining valid JSON, you have several options:
+## Clean DynamoDB JSON records and remove the type qualifiers while maintaining valid JSON, you have several options:
 
-## Method 1: AWS SDK Unmarshalling (Recommended)
+### Method 1: AWS SDK Unmarshalling (Recommended)
 
 Most AWS SDKs provide built-in methods to convert DynamoDB JSON to standard JSON:
 
@@ -117,7 +117,7 @@ print(clean_json)
 # Output: {'name': 'John Doe', 'age': 30, 'active': True}
 ```
 
-## Method 2: Custom Parsing Function
+### Method 2: Custom Parsing Function
 
 If you need a custom solution:
 
@@ -182,7 +182,7 @@ const cleaned = cleanDynamoDbJson(dynamoRecord);
 console.log(JSON.stringify(cleaned, null, 2));
 ```
 
-## Method 3: Using jq (Command Line)
+### Method 3: Using jq (Command Line)
 
 For processing JSON files with jq:
 
