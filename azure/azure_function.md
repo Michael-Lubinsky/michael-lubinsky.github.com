@@ -805,10 +805,271 @@ export default timerTrigger;
 
 
 ```
+## TypeScript/JavaScript Azure Functions have their own evolution,
+but it's somewhat different from Python's V1/V2 progression.
+
+## **JavaScript/TypeScript Azure Functions Structure**
+
+### **Current Recommended: Programming Model v4 (Similar to Python V2)**
+
+```
+my-function-app/
+├─ package.json                   # Dependencies and scripts
+├─ tsconfig.json                  # TypeScript configuration
+├─ host.json                      # Function app configuration
+├─ local.settings.json           # Local environment variables
+├─ src/
+│  ├─ functions/                 # All functions (decorator-based)
+│  │  ├─ httpTrigger.ts
+│  │  ├─ timerTrigger.ts
+│  │  └─ restoreTable.ts
+│  └─ index.ts                   # App registration
+├─ dist/                         # Compiled JavaScript output
+└─ .funcignore                   # Files to exclude from deployment
+```
+
+### **Example Code Structure:**
+
+#### **src/index.ts** (App Registration)
+```typescript
+import { app } from '@azure/functions';
+import * as httpTrigger from './functions/httpTrigger';
+import * as timerTrigger from './functions/timerTrigger';
+import * as restoreTable from './functions/restoreTable';
+
+// Functions are automatically registered through decorators
+export default app;
+```
+
+#### **src/functions/restoreTable.ts** (Individual Function)
+```typescript
+import { app, HttpRequest, HttpResponseInit, InvocationContext } from '@azure/functions';
+
+// Decorator-based configuration (like Python V2)
+app.http('restoreTable', {
+    methods: ['GET', 'POST'],
+    authLevel: 'function',
+    route: 'restore-table',
+    handler: restoreTableHandler
+});
+
+export async function restoreTableHandler(
+    request: HttpRequest, 
+    context: InvocationContext
+): Promise<HttpResponseInit> {
+    context.log(`Http function processed request for url "${request.url}"`);
+    
+    const filePath = request.query.get('file_path');
+    
+    if (!filePath) {
+        return {
+            status: 400,
+            body: 'Missing required parameter: file_path'
+        };
+    }
+
+    try {
+        // Your restore logic here
+        const result = await performRestore(filePath);
+        
+        return {
+            status: 200,
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                status: 'success',
+                message: 'Restore completed',
+                rows_restored: result.rowCount
+            })
+        };
+    } catch (error) {
+        context.log.error('Restore failed:', error);
+        return {
+            status: 500,
+            body: JSON.stringify({
+                status: 'error',
+                message: error.message
+            })
+        };
+    }
+}
+
+async function performRestore(filePath: string) {
+    // Implementation details
+    return { rowCount: 1000 };
+}
+```
+
+#### **src/functions/timerTrigger.ts** (Timer Function)
+```typescript
+import { app, InvocationContext, Timer } from '@azure/functions';
+
+app.timer('backupDaily', {
+    schedule: '0 0 2 * * *', // 2 AM daily
+    handler: backupDailyHandler
+});
+
+export async function backupDailyHandler(
+    myTimer: Timer, 
+    context: InvocationContext
+): Promise<void> {
+    context.log('Timer function processed request.');
+    
+    if (myTimer.isPastDue) {
+        context.log('Timer function is running late!');
+    }
+    
+    // Your backup logic here
+    await performDailyBackup();
+}
+
+async function performDailyBackup() {
+    // Implementation
+}
+```
+
+### **package.json**
+```json
+{
+  "name": "azure-functions-typescript-app",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prestart": "npm run build",
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.x",
+    "typescript": "^4.0.0"
+  }
+}
+```
+
+### **tsconfig.json**
+```json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  }
+}
+```
+
+## **Legacy Structure: Programming Model v3 (Like Python V1)**
+
+```
+my-function-app/
+├─ package.json
+├─ host.json
+├─ local.settings.json
+├─ HttpTrigger/                   # One folder per function
+│  ├─ index.ts                    # Function implementation  
+│  └─ function.json               # Function metadata
+├─ TimerTrigger/
+│  ├─ index.ts
+│  └─ function.json
+└─ RestoreTable/
+   ├─ index.ts
+   └─ function.json
+```
+
+### **Legacy Example:**
+
+#### **RestoreTable/function.json**
+```json
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get", "post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    }
+  ],
+  "scriptFile": "../dist/RestoreTable/index.js"
+}
+```
+
+#### **RestoreTable/index.ts**
+```typescript
+import { AzureFunction, Context, HttpRequest } from "@azure/functions"
+
+const httpTrigger: AzureFunction = async function (
+    context: Context, 
+    req: HttpRequest
+): Promise<void> {
+    context.log('HTTP trigger function processed a request.');
+    
+    const filePath = req.query.file_path;
+    
+    context.res = {
+        status: 200,
+        body: `Processing file: ${filePath}`
+    };
+};
+
+export default httpTrigger;
+```
+
+## **Comparison: TypeScript vs Python Models**
+
+| Aspect | TypeScript v4 | Python V2 | TypeScript v3 (Legacy) | Python V1 (Legacy) |
+|--------|---------------|-----------|----------------------|-------------------|
+| **Configuration** | Decorators | Decorators | JSON files | JSON files |
+| **Structure** | Centralized functions | Single file | One folder per function | One folder per function |
+| **Type Safety** | Full TypeScript | Python hints | Full TypeScript | Python hints |
+| **Hot Reload** | ✅ Better | ✅ Good | ❌ Limited | ❌ Limited |
+| **Testing** | ✅ Easier | ✅ Easier | ❌ Harder | ❌ Harder |
+| **IntelliSense** | ✅ Excellent | ✅ Good | ✅ Good | ❌ Limited |
+
+## **Key Differences from Python:**
+
+### **1. Compilation Step**
+- **TypeScript**: Requires `tsc` compilation to JavaScript
+- **Python**: Interpreted, no compilation needed
+
+### **2. File Organization**
+- **TypeScript v4**: Functions in separate files under `src/functions/`
+- **Python V2**: All functions in `function_app.py`
+
+### **3. Import System**
+- **TypeScript**: Explicit imports/exports with modules
+- **Python**: Single file or module imports
+
+## **Recommendation for TypeScript/JS**
+
+**Use Programming Model v4** (the decorator-based approach) because:
+
+✅ **Better Developer Experience**: Hot reload, better testing  
+✅ **Type Safety**: Full TypeScript intellisense and error checking  
+✅ **Modern Patterns**: Similar to Express.js, Next.js patterns  
+✅ **Easier Testing**: Functions are just TypeScript functions  
+✅ **Future-Proof**: Microsoft's recommended approach  
+
+The structure is **conceptually similar to Python V2** (decorators, centralized configuration) but with TypeScript-specific patterns (compilation, module system, separate function files).
+
+So yes, TypeScript v4 is the equivalent of Python V2 - both use decorators and modern, developer-friendly patterns!
 
 
-
-Great question! Azure Functions in Python supports two different project structures, and the choice affects how you organize and deploy your functions.
+## Azure Functions in Python
+supports two different project structures, and the choice affects how you organize and deploy your functions.
 
 ## 1. **V1 Model - Folder-based Structure (Traditional)**
 
