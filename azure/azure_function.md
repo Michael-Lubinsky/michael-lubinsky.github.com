@@ -805,3 +805,159 @@ export default timerTrigger;
 
 
 ```
+
+
+
+Great question! Azure Functions in Python supports two different project structures, and the choice affects how you organize and deploy your functions.
+
+## 1. **V1 Model - Folder-based Structure (Traditional)**
+
+```
+functions-restore-chunk/
+├─ host.json                      # Function app configuration
+├─ local.settings.json           # Local environment variables
+├─ requirements.txt              # Python dependencies
+├─ RestoreChunk/                 # Function folder
+│  ├─ __init__.py               # Function implementation
+│  └─ function.json             # Function metadata (triggers, bindings)
+├─ BackupTable/                 # Another function
+│  ├─ __init__.py
+│  └─ function.json
+└─ ListBackups/                 # Third function
+   ├─ __init__.py
+   └─ function.json
+```
+
+### **Characteristics:**
+- **One function per folder**
+- Each function has its own `function.json` with trigger/binding configuration
+- Function code goes in `__init__.py`
+- **Declarative configuration** via JSON files
+
+### **Example function.json:**
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get", "post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "$return"
+    }
+  ]
+}
+```
+
+### **Example __init__.py:**
+```python
+import azure.functions as func
+import logging
+
+def main(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    return func.HttpResponse("Hello World!")
+```
+
+## 2. **V2 Model - Flat Structure with Decorators (Modern)**
+
+```
+functions-restore-chunk/
+├─ host.json                      # Function app configuration  
+├─ local.settings.json           # Local environment variables
+├─ requirements.txt              # Python dependencies
+└─ function_app.py               # All functions in one file
+```
+
+### **Characteristics:**
+- **All functions in a single Python file** (or split across multiple modules)
+- **Decorator-based configuration** - no JSON files needed
+- Uses `@app.route()`, `@app.timer_trigger()`, etc.
+- More **Pythonic** and similar to Flask/FastAPI
+
+### **Example function_app.py:**
+```python
+import azure.functions as func
+
+app = func.FunctionApp()
+
+@app.route(route="restore_table", auth_level=func.AuthLevel.FUNCTION)
+def restore_table(req: func.HttpRequest) -> func.HttpResponse:
+    return func.HttpResponse("Restore function!")
+
+@app.timer_trigger(schedule="0 0 2 * * *", arg_name="myTimer")
+def backup_daily(myTimer: func.TimerRequest) -> None:
+    logging.info("Timer triggered!")
+
+@app.route(route="list_backups")
+def list_backups(req: func.HttpRequest) -> func.HttpResponse:
+    return func.HttpResponse("List backups!")
+```
+
+## **Key Differences Summary:**
+
+| Aspect | V1 (Folder-based) | V2 (Flat/Decorator) |
+|--------|------------------|---------------------|
+| **Structure** | One folder per function | Single file(s) |
+| **Configuration** | JSON files (`function.json`) | Python decorators |
+| **Deployment** | Multiple folders + JSON | Single Python file |
+| **Maintenance** | Scattered across folders | Centralized |
+| **Learning Curve** | More Azure-specific | More Python-native |
+| **Migration** | Harder to refactor | Easier to reorganize |
+| **IDE Support** | Limited IntelliSense | Full Python support |
+
+## **Which Should You Use?**
+
+### **Choose V2 (Flat/Decorator) if:**
+- ✅ You prefer Python-native development
+- ✅ You want better IDE support and debugging
+- ✅ You have multiple related functions (like backup/restore)
+- ✅ You want easier testing and local development
+- ✅ You're starting a new project
+
+### **Choose V1 (Folder-based) if:**
+- ✅ You have existing V1 functions to maintain
+- ✅ You need very complex binding configurations
+- ✅ Your team is already familiar with V1
+- ✅ You're working with legacy Azure Functions tooling
+
+## **Your Current Code Uses V2**
+
+The restore function I provided uses the **V2 decorator model**:
+
+```python
+app = func.FunctionApp()
+
+@app.route(route="restore_table", auth_level=func.AuthLevel.FUNCTION, methods=['POST', 'GET'])
+def restore_table(req: func.HttpRequest) -> func.HttpResponse:
+    # Function implementation
+    
+@app.route(route="list_backups", auth_level=func.AuthLevel.FUNCTION, methods=['GET'])
+def list_backups(req: func.HttpRequest) -> func.HttpResponse:
+    # Function implementation
+```
+
+This means your project structure should be:
+
+```
+your-function-app/
+├─ host.json
+├─ local.settings.json
+├─ requirements.txt
+└─ function_app.py              # Contains all your functions
+```
+
+## **Migration Note**
+
+If you have existing V1 functions, you can gradually migrate them to V2 by:
+1. Moving function logic from `__init__.py` to `function_app.py`
+2. Converting `function.json` configurations to decorators
+3. Removing the individual function folders
+
+**Microsoft recommends V2 for new projects** as it's more maintainable and provides better developer experience.
