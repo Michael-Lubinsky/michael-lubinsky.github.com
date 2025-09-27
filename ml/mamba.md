@@ -5,6 +5,9 @@ https://ma-lab-berkeley.github.io/deep-representation-learning-book/
 ### Reinforcement learning: 
 https://www.understandingai.org/p/reinforcement-learning-explained
 
+### Book
+https://www.manning.com/books/deep-learning-with-python-third-edition 
+
 ### Book with code: Understanding Deep Learning 
 https://udlbook.github.io/udlbook/
 
