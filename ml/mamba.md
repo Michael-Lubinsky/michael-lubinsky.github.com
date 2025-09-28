@@ -1,3 +1,5 @@
+https://github.com/Saivineeth147/awesome-llm-resources
+
 https://huggingface.co/learn
 
 https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
