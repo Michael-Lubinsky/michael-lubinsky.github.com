@@ -68,7 +68,17 @@ https://github.com/navig-me/telert sends notifications when your terminal comman
 гайд по настройке рабочего окружения: Linux, VScode, Python  
 <https://habr.com/ru/companies/timeweb/articles/916040/>
 
-### <https://devtoys.app/>
+### Others
+
+https://tools.simonwillison.net/
+
+<https://toolbrew.co/>
+
+https://cobalt.tools
+
+https://www.thateasy.me/ 
+
+<https://devtoys.app/>
 ```
 30 tools by default, and many more to be downloaded
 #### Converters
