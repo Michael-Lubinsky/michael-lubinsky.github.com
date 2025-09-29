@@ -2,6 +2,8 @@ https://github.com/Saivineeth147/awesome-llm-resources
 
 https://stepik.org/course/231306/promo
 
+https://habr.com/ru/articles/951428/
+
 https://huggingface.co/learn
 
 https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
