@@ -88,6 +88,8 @@ https://github.com/derekeder/csv-to-html-table
 
 ## Customer analysis
 
+<https://habr.com/ru/articles/951324/>
+
 ### сегментация и кластеризация клиентской базы
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
