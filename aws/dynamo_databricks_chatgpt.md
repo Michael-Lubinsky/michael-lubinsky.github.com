@@ -1,7 +1,7 @@
  
-# DynamoDB → Databricks (every few minutes): Recommended pipelines
+## DynamoDB → Databricks (every few minutes) 
 
-Below are three proven patterns. Pick the one that best fits your constraints. 
+Below are three pipeline  patterns. Pick the one that best fits your constraints. 
 
 ## Option A (default): DynamoDB Streams → Kinesis Firehose → S3 → Databricks Auto Loader → Delta
 **When to use:** You want near-real-time (1–5 min) with simple ops and strong exactly-once semantics in Databricks.
