@@ -613,6 +613,52 @@ You now have a complete direct polling solution that:
 
 For production use, consider upgrading to the DynamoDB Streams + Lambda architecture for true real-time processing and lower costs.
 
+### databricks json config
+
+```json
+{
+  "name": "DynamoDB Polling Job",
+  "email_notifications": {
+    "on_failure": ["your-email@example.com"]
+  },
+  "timeout_seconds": 0,
+  "max_concurrent_runs": 1,
+  "tasks": [
+    {
+      "task_key": "poll_dynamodb",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/your-user/dynamodb_poller",
+        "source": "WORKSPACE"
+      },
+      "job_cluster_key": "polling_cluster",
+      "timeout_seconds": 0,
+      "email_notifications": {}
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "polling_cluster",
+      "new_cluster": {
+        "spark_version": "13.3.x-scala2.12",
+        "node_type_id": "i3.xlarge",
+        "num_workers": 2,
+        "aws_attributes": {
+          "instance_profile_arn": "arn:aws:iam::YOUR_ACCOUNT:instance-profile/databricks-dynamodb-role",
+          "availability": "SPOT_WITH_FALLBACK"
+        },
+        "spark_conf": {
+          "spark.databricks.delta.preview.enabled": "true"
+        }
+      }
+    }
+  ],
+  "schedule": {
+    "quartz_cron_expression": "0 * * * * ?",
+    "timezone_id": "UTC",
+    "pause_status": "UNPAUSED"
+  }
+}
+```
 
 """
 DynamoDB Direct Polling to Databricks Delta Lake
