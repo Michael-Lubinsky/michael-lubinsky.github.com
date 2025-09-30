@@ -1,3 +1,210 @@
+
+## Yes, you *can* poll DynamoDB directly from a Databricks job with boto3, 
+but it’s usually only a good idea for **small/medium** tables and **simple** needs.   
+For anything high-volume or near-real-time, Streams/Firehose or DMS → S3 → Auto Loader is far more robust.
+
+Why polling is “simpler” but risky
+- scan() is easy to write, but:
+  - It reads in 1 MB pages (you must loop with LastEvaluatedKey).
+  - It burns RCUs and can throttle; FilterExpression doesn’t reduce RCU cost (it filters after read).
+  - There’s no built-in CDC; you must track a **watermark** yourself (e.g., updated_at).
+  - Single-driver Python loops don’t scale like Spark streaming.
+- query() is better than scan() if (and only if) you have a **GSI on updated_at** (or another monotonic change key) so you can pull “only new since T”.
+
+
+### What is a GSI?
+
+In DynamoDB, a **Global Secondary Index (GSI)** is an *alternate way to query a table* using a different key than the table’s primary key.
+
+---
+
+### DynamoDB Basics
+- Every table has a **primary key**:
+  - Partition key (hash key), or
+  - Partition key + Sort key (composite).
+- All queries are normally limited to this key schema.
+
+If you want to query by another attribute (say `updated_at`), you need an **index**.
+
+---
+
+### What a GSI is
+- A **Global Secondary Index** lets you define a **different partition/sort key** from the base table.
+- It’s “global” because it spans all partitions of the table (not restricted like Local Secondary Indexes).
+- You can project all or only some attributes into the index.
+- After creation, DynamoDB automatically keeps the GSI in sync with the base table.
+
+---
+
+### Example
+Suppose you have a table:
+
+```text
+Table: Orders
+Primary Key: order_id (partition key)
+Attributes: order_id, customer_id, updated_at, status
+````
+
+If you want to query “all orders where `updated_at > 2025-09-01`” → not possible efficiently, because `updated_at` is not part of the primary key.
+
+**Solution**: Create a GSI.
+
+```text
+Index: updated_at_index
+Partition key: dummy_hash (e.g., constant value or bucketed value)
+Sort key: updated_at
+Projected attributes: order_id, status, customer_id
+```
+
+Then you can `Query` by:
+
+```python
+table.query(
+  IndexName="updated_at_index",
+  KeyConditionExpression=Key("dummy_hash").eq("X") & Key("updated_at").gt("2025-09-01")
+)
+```
+
+This lets you pull *only new items* since the last watermark.
+
+---
+
+## Why it matters for polling
+
+If you rely on boto3 `scan()`:
+
+* Reads everything (expensive, slow, throttling risk).
+
+If you create a GSI on `updated_at`:
+
+* You can `query()` for just “records after last checkpoint”.
+* Much cheaper and scalable for incremental ingestion into Databricks.
+
+---
+
+👉 Do you want me to show you the **exact DynamoDB console + CLI steps** to create a GSI on `updated_at` so you can make your direct polling approach efficient?
+
+If you still want polling, do this:
+1) **Ensure a change key** exists on each table (e.g., `updated_at` ISO8601 or epoch seconds) that updates on every insert/update.
+2) **Create a GSI** on `updated_at` (HASH or RANGE depending on design; commonly make it the sort key with a dummy/hash partition key so you can `Query` by a time window).
+3) In Databricks, run a job every N minutes that:
+   - Reads the last watermark from a small Delta checkpoint table.
+   - Queries DynamoDB by `updated_at > watermark` (via the GSI), paginating with `LastEvaluatedKey`.
+   - Writes results to **Delta Bronze** (append), then MERGE into **Silver**.
+
+Minimal Databricks (Python) example using boto3 + GSI
+(works for small/moderate rates; you can later pivot to Streams/Firehose without changing Bronze→Silver logic)
+
+```python
+# Databricks cluster needs: boto3 installed and AWS creds via instance profile / assumed role
+import boto3, os, time
+from datetime import datetime, timezone
+from boto3.dynamodb.conditions import Key
+from pyspark.sql import functions as F
+
+TABLE_NAME = "your-table"
+UPDATED_GSI = "updated_at_gsi"  # <- create this in DynamoDB
+WATERMARK_TABLE = "chk.dynamodb_watermarks"  # small Delta table: (table STRING, watermark TIMESTAMP)
+BRONZE_TABLE = "bronze.dynamodb_your_table"
+
+# 1) Get last watermark
+spark.sql(f"""
+CREATE TABLE IF NOT EXISTS {WATERMARK_TABLE} (table STRING, watermark TIMESTAMP) USING DELTA
+""")
+wm = (spark.table(WATERMARK_TABLE)
+        .filter(F.col("table")==TABLE_NAME)
+        .agg(F.max("watermark").alias("wm"))
+        .collect()[0]["wm"])
+
+# Default start watermark if none yet
+if wm is None:
+    # backfill a little, or set to epoch
+    wm = datetime(1970,1,1,tzinfo=timezone.utc)
+
+# 2) Query DynamoDB for items > watermark (via GSI)
+session = boto3.Session()
+dynamodb = session.resource("dynamodb")
+table = dynamodb.Table(TABLE_NAME)
+
+items = []
+last_evaluated_key = None
+now_ts = datetime.now(timezone.utc)  # end watermark for this run
+# Use a time window (wm, now_ts]; adapt KeyConditionExpression to your GSI schema
+while True:
+    kwargs = {
+        "IndexName": UPDATED_GSI,
+        "KeyConditionExpression": Key("updated_at").gt(wm.isoformat()),
+        "Limit": 1000,  # tune
+        "ConsistentRead": False,  # set True if you need it and can afford RCUs
+    }
+    if last_evaluated_key:
+        kwargs["ExclusiveStartKey"] = last_evaluated_key
+    resp = table.query(**kwargs)
+    items.extend(resp.get("Items", []))
+    last_evaluated_key = resp.get("LastEvaluatedKey")
+    if not last_evaluated_key:
+        break
+
+# 3) Write to Bronze (append) if anything arrived
+if items:
+    # Convert to Spark DataFrame (schema inference for JSON-ish dicts is OK at small scale)
+    df = spark.createDataFrame(items)
+    df = (df
+          .withColumn("_ingest_ts", F.current_timestamp())
+          .withColumn("_source", F.lit(TABLE_NAME)))
+    df.write.mode("append").format("delta").saveAsTable(BRONZE_TABLE)
+
+# 4) Advance watermark (idempotent: use the "now" we captured at start)
+spark.sql(f"""
+MERGE INTO {WATERMARK_TABLE} t
+USING (SELECT '{TABLE_NAME}' AS table, TIMESTAMP('{now_ts.isoformat()}') AS watermark) s
+ON t.table = s.table
+WHEN MATCHED THEN UPDATE SET t.watermark = s.watermark
+WHEN NOT MATCHED THEN INSERT (table, watermark) VALUES (s.table, s.watermark)
+""")
+````
+
+Silver merge (example)
+
+```sql
+-- assumes Bronze has a stable primary key column pk and updated_at
+CREATE TABLE IF NOT EXISTS silver.your_table USING DELTA AS
+SELECT * FROM (SELECT NULL AS pk) WHERE 1=0;
+
+MERGE INTO silver.your_table s
+USING (
+  SELECT
+    b.pk,
+    b.*,
+    b._ingest_ts
+  FROM bronze.dynamodb_your_table b
+) c
+ON s.pk = c.pk
+WHEN MATCHED THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *
+;
+```
+
+### When is this okay?
+
+* Tables are modest in size and write rate.
+* You control/guarantee an `updated_at` you can index and query by time.
+* You accept occasional duplicates and resolve with upserts (MERGE).
+* You’re fine managing backoff, pagination, and RCUs.
+
+### When to avoid direct polling
+
+* High write rates, large tables, or many tables → scanning/querying every few minutes will be costly, slow, and brittle.
+* You need robust CDC, replay, and ordering semantics → use **DynamoDB Streams → Firehose/DMS → S3 → Auto Loader**.
+
+If you want, I can:
+
+* Show how to set up the **updated_at GSI** (key schema + throughput).
+* Add **parallelism** (Segment/TotalSegments) for faster scans if you must scan.
+* Swap the direct write to Bronze for **writing JSONL to S3**, then let **Auto Loader** ingest (more scalable).
+
+ 
+
 ## Implementation of the direct polling approach :
 
 
