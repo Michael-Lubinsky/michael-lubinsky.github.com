@@ -983,3 +983,289 @@ if __name__ == "__main__":
     # Option 2: Run once (useful for scheduled jobs)
     # poller.poll_once()
 ```    
+### Advanced polling
+```python
+"""
+Advanced features for DynamoDB polling including:
+- Query-based incremental load (more efficient than Scan)
+- Deduplication
+- Data transformation
+- Error handling and retry logic
+"""
+
+from pyspark.sql.functions import col, max as spark_max, sha2, concat_ws
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, TimestampType
+from decimal import Decimal
+import boto3
+from datetime import datetime
+
+
+class AdvancedDynamoDBPoller:
+    """
+    Advanced DynamoDB poller with query-based incremental load
+    Assumes your DynamoDB table has a GSI on timestamp column
+    """
+    
+    def __init__(self, spark, dynamodb_table_name, region, delta_table_path, 
+                 checkpoint_table_path, timestamp_column='created_at',
+                 partition_key=None, sort_key=None, gsi_name=None):
+        """
+        Args:
+            partition_key: Primary partition key name (if using Query)
+            sort_key: Primary sort key name (if using Query)
+            gsi_name: Global Secondary Index name that has timestamp as sort key
+        """
+        self.spark = spark
+        self.dynamodb_table_name = dynamodb_table_name
+        self.region = region
+        self.delta_table_path = delta_table_path
+        self.checkpoint_table_path = checkpoint_table_path
+        self.timestamp_column = timestamp_column
+        self.partition_key = partition_key
+        self.sort_key = sort_key
+        self.gsi_name = gsi_name
+        
+        self.dynamodb = boto3.resource('dynamodb', region_name=region)
+        self.table = self.dynamodb.Table(dynamodb_table_name)
+    
+    def query_by_timestamp(self, last_timestamp):
+        """
+        Query DynamoDB using GSI on timestamp (more efficient than Scan)
+        
+        This assumes you have a GSI with:
+        - Partition key: A status field or constant value
+        - Sort key: Your timestamp field
+        """
+        items = []
+        
+        if not self.gsi_name:
+            raise ValueError("GSI name required for query-based polling")
+        
+        try:
+            # Convert timestamp to appropriate format
+            last_ts_value = int(last_timestamp.timestamp())
+            
+            # Query using GSI
+            response = self.table.query(
+                IndexName=self.gsi_name,
+                KeyConditionExpression=f'#ts > :last_ts',
+                ExpressionAttributeNames={'#ts': self.timestamp_column},
+                ExpressionAttributeValues={':last_ts': last_ts_value}
+            )
+            
+            items.extend(response.get('Items', []))
+            
+            # Handle pagination
+            while 'LastEvaluatedKey' in response:
+                response = self.table.query(
+                    IndexName=self.gsi_name,
+                    KeyConditionExpression=f'#ts > :last_ts',
+                    ExpressionAttributeNames={'#ts': self.timestamp_column},
+                    ExpressionAttributeValues={':last_ts': last_ts_value},
+                    ExclusiveStartKey=response['LastEvaluatedKey']
+                )
+                items.extend(response.get('Items', []))
+            
+            return items
+            
+        except Exception as e:
+            print(f"Error querying DynamoDB: {e}")
+            return []
+
+
+def convert_dynamodb_types(item):
+    """
+    Convert DynamoDB specific types to Python types
+    Handles Decimal, Set types, etc.
+    """
+    def convert_value(value):
+        if isinstance(value, Decimal):
+            # Convert Decimal to float or int
+            return float(value) if value % 1 else int(value)
+        elif isinstance(value, set):
+            # Convert set to list
+            return list(value)
+        elif isinstance(value, dict):
+            # Recursively convert nested dicts
+            return {k: convert_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            # Recursively convert lists
+            return [convert_value(v) for v in value]
+        else:
+            return value
+    
+    return {k: convert_value(v) for k, v in item.items()}
+
+
+def deduplicate_records(spark, df, primary_keys):
+    """
+    Deduplicate records based on primary keys
+    Keeps the latest version of each record
+    
+    Args:
+        df: Spark DataFrame
+        primary_keys: List of column names that form the primary key
+    """
+    from pyspark.sql.window import Window
+    from pyspark.sql.functions import row_number, desc
+    
+    # Create window partitioned by primary keys, ordered by timestamp
+    window = Window.partitionBy(*primary_keys).orderBy(desc("_ingestion_timestamp"))
+    
+    # Add row number and filter to keep only the first row in each partition
+    deduped_df = (df
+                  .withColumn("_row_num", row_number().over(window))
+                  .filter(col("_row_num") == 1)
+                  .drop("_row_num"))
+    
+    return deduped_df
+
+
+def merge_to_delta(spark, new_df, delta_table_path, primary_keys):
+    """
+    Merge new records into Delta table (upsert operation)
+    
+    Args:
+        new_df: DataFrame with new records
+        delta_table_path: Path to Delta table
+        primary_keys: List of columns that form the primary key
+    """
+    from delta.tables import DeltaTable
+    
+    # Check if Delta table exists
+    if DeltaTable.isDeltaTable(spark, delta_table_path):
+        delta_table = DeltaTable.forPath(spark, delta_table_path)
+        
+        # Build merge condition
+        merge_condition = " AND ".join([f"target.{key} = source.{key}" for key in primary_keys])
+        
+        # Perform merge (upsert)
+        (delta_table.alias("target")
+         .merge(new_df.alias("source"), merge_condition)
+         .whenMatchedUpdateAll()
+         .whenNotMatchedInsertAll()
+         .execute())
+        
+        print(f"Merged records into {delta_table_path}")
+    else:
+        # Create new table if it doesn't exist
+        new_df.write.format("delta").mode("overwrite").save(delta_table_path)
+        print(f"Created new Delta table at {delta_table_path}")
+
+
+def transform_data(df):
+    """
+    Apply transformations to the data
+    Add your custom business logic here
+    """
+    from pyspark.sql.functions import to_timestamp, current_timestamp
+    
+    # Example transformations
+    transformed_df = df
+    
+    # Convert timestamp column if needed
+    if 'created_at' in df.columns:
+        transformed_df = transformed_df.withColumn(
+            'created_at_ts',
+            to_timestamp(col('created_at'))
+        )
+    
+    # Add processing timestamp
+    transformed_df = transformed_df.withColumn(
+        '_processing_timestamp',
+        current_timestamp()
+    )
+    
+    # Add data quality checks
+    # Example: Flag records with missing required fields
+    required_fields = ['id', 'created_at']
+    for field in required_fields:
+        if field in df.columns:
+            transformed_df = transformed_df.withColumn(
+                f'_{field}_is_null',
+                col(field).isNull()
+            )
+    
+    return transformed_df
+
+
+def poll_with_retry(poller_func, max_retries=3, retry_delay=5):
+    """
+    Execute polling function with retry logic
+    
+    Args:
+        poller_func: Function to execute
+        max_retries: Maximum number of retries
+        retry_delay: Delay between retries in seconds
+    """
+    import time
+    
+    for attempt in range(max_retries):
+        try:
+            return poller_func()
+        except Exception as e:
+            print(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < max_retries - 1:
+                print(f"Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+            else:
+                print("Max retries reached. Raising exception.")
+                raise
+
+
+# ============================================================================
+# USAGE EXAMPLE WITH ADVANCED FEATURES
+# ============================================================================
+
+def main():
+    from pyspark.sql import SparkSession
+    
+    spark = SparkSession.builder.getOrCreate()
+    
+    # Initialize poller with Query support
+    poller = AdvancedDynamoDBPoller(
+        spark=spark,
+        dynamodb_table_name="your-table",
+        region="us-east-1",
+        delta_table_path="/mnt/delta/dynamodb_data",
+        checkpoint_table_path="/mnt/delta/dynamodb_checkpoint",
+        timestamp_column="created_at",
+        gsi_name="timestamp-index"  # Your GSI name
+    )
+    
+    # Get last timestamp
+    last_ts = datetime(2024, 1, 1)  # Get from checkpoint
+    
+    # Query with retry
+    items = poll_with_retry(
+        lambda: poller.query_by_timestamp(last_ts),
+        max_retries=3
+    )
+    
+    if items:
+        # Convert DynamoDB types
+        converted_items = [convert_dynamodb_types(item) for item in items]
+        
+        # Create DataFrame
+        df = spark.createDataFrame(converted_items)
+        
+        # Transform data
+        transformed_df = transform_data(df)
+        
+        # Deduplicate
+        deduped_df = deduplicate_records(spark, transformed_df, primary_keys=['id'])
+        
+        # Merge to Delta Lake (upsert)
+        merge_to_delta(
+            spark,
+            deduped_df,
+            "/mnt/delta/dynamodb_data",
+            primary_keys=['id']
+        )
+        
+        print(f"Successfully processed {len(items)} records")
+
+
+if __name__ == "__main__":
+    main()
+```
