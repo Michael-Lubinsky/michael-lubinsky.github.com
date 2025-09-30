@@ -539,3 +539,88 @@ else:
 ✅ If you’re planning to use **direct polling**, confirming there’s a GSI on `updated_at` (or another change key) is critical—otherwise you’ll be stuck doing expensive `Scan()` operations.
 
 Do you want me to also show you how to **add a GSI on `updated_at`** (both Console steps and CLI command)?
+
+
+
+## How to add a Global Secondary Index (GSI) on `updated_at`
+
+You can add a GSI either in the **AWS Console** or via the **AWS CLI**.  
+⚠️ Reminder: You must provision a new index carefully — it can take time to build if the table is large, and you’ll be billed for its capacity (or it will consume write/read capacity if the table is on provisioned mode).
+
+---
+
+### 1. AWS Console
+
+1. Go to **DynamoDB** in the AWS Management Console.
+2. Select your **table**.
+3. In the left menu, click **Indexes**.
+4. Click **Create index**.
+5. Fill out:
+   - **Partition key**:  
+     - If you want all items in one partition (common for time-range queries), use a dummy value (e.g., an attribute called `gsi_pk` that always has value `"X"` or hash-bucketed like `"bucket_0" ... "bucket_15"`).  
+     - If you already have a natural partition key that works for your use case, use that instead.
+   - **Sort key**: `updated_at`
+6. **Projected attributes**: choose *All* if you want the whole item in the index, or *Include* if you just need a subset.
+7. **Index name**: e.g. `updated_at_index`.
+8. **Provisioned capacity**:
+   - If the base table uses On-Demand, the GSI will also be On-Demand.
+   - If provisioned, pick read/write capacity units.
+9. Click **Create index**.
+
+You’ll see the index being created; status changes from *CREATING* → *ACTIVE* when done.
+
+---
+
+## 2. AWS CLI
+
+### Command
+```bash
+aws dynamodb update-table \
+  --table-name YourTableName \
+  --attribute-definitions \
+      AttributeName=gsi_pk,AttributeType=S \
+      AttributeName=updated_at,AttributeType=S \
+  --global-secondary-index-updates \
+      "[{\"Create\":{\"IndexName\": \"updated_at_index\",
+                     \"KeySchema\":[
+                       {\"AttributeName\":\"gsi_pk\",\"KeyType\":\"HASH\"},
+                       {\"AttributeName\":\"updated_at\",\"KeyType\":\"RANGE\"}
+                     ],
+                     \"Projection\":{\"ProjectionType\":\"ALL\"},
+                     \"ProvisionedThroughput\": {\"ReadCapacityUnits\": 5, \"WriteCapacityUnits\": 5}
+      }}]"
+````
+
+### Explanation
+
+* `--attribute-definitions`: defines new attributes that aren’t already part of the table schema (`gsi_pk` and `updated_at` in this case).
+* `--global-secondary-index-updates`: tells DynamoDB to create a new GSI.
+* `KeySchema`: defines the partition (`HASH`) and sort (`RANGE`) key of the GSI.
+* `ProjectionType=ALL`: copies all attributes into the index (simpler for ingestion).
+* `ProvisionedThroughput`: only needed if your table is not using on-demand.
+
+---
+
+### 3. Usage after creation
+
+Once the GSI is active, you can query like this in boto3:
+
+```python
+from boto3.dynamodb.conditions import Key
+import boto3
+
+dynamodb = boto3.resource("dynamodb")
+table = dynamodb.Table("YourTableName")
+
+resp = table.query(
+    IndexName="updated_at_index",
+    KeyConditionExpression=Key("gsi_pk").eq("X") & Key("updated_at").gt("2025-09-01T00:00:00Z")
+)
+for item in resp["Items"]:
+    print(item)
+```
+
+---
+
+👉 Question for you: Do you want me to assume a **dummy constant partition key** (`gsi_pk="X"`) in the index, or do you already have a natural partition key you’d prefer to use (like `customer_id`)? This changes how I’d tailor the CLI/Console steps.
+
