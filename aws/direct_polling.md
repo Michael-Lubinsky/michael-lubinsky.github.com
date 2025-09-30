@@ -613,6 +613,77 @@ You now have a complete direct polling solution that:
 
 For production use, consider upgrading to the DynamoDB Streams + Lambda architecture for true real-time processing and lower costs.
 
+### IAM Policies
+```json
+{
+  "iam_role_trust_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "ec2.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  },
+  
+  "iam_permission_policy": {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "DynamoDBReadAccess",
+        "Effect": "Allow",
+        "Action": [
+          "dynamodb:DescribeTable",
+          "dynamodb:Scan",
+          "dynamodb:Query",
+          "dynamodb:GetItem",
+          "dynamodb:BatchGetItem"
+        ],
+        "Resource": [
+          "arn:aws:dynamodb:us-east-1:YOUR_ACCOUNT_ID:table/your-dynamodb-table",
+          "arn:aws:dynamodb:us-east-1:YOUR_ACCOUNT_ID:table/your-dynamodb-table/index/*"
+        ]
+      },
+      {
+        "Sid": "S3AccessForDeltaLake",
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::your-databricks-bucket",
+          "arn:aws:s3:::your-databricks-bucket/*"
+        ]
+      }
+    ]
+  },
+
+  "setup_instructions": {
+    "step_1": "Create IAM Role",
+    "commands": [
+      "aws iam create-role --role-name databricks-dynamodb-role --assume-role-policy-document file://trust-policy.json",
+      "aws iam put-role-policy --role-name databricks-dynamodb-role --policy-name DynamoDBAccess --policy-document file://permission-policy.json"
+    ],
+    
+    "step_2": "Create Instance Profile",
+    "commands_2": [
+      "aws iam create-instance-profile --instance-profile-name databricks-dynamodb-role",
+      "aws iam add-role-to-instance-profile --instance-profile-name databricks-dynamodb-role --role-name databricks-dynamodb-role"
+    ],
+    
+    "step_3": "Add to Databricks",
+    "instructions": "In Databricks Admin Console -> Instance Profiles -> Add the ARN: arn:aws:iam::YOUR_ACCOUNT_ID:instance-profile/databricks-dynamodb-role"
+  }
+}
+```
+
+
 ### databricks json config
 
 ```json
