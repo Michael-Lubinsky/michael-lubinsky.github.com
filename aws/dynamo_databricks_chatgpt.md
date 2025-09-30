@@ -227,5 +227,35 @@ If you tell me:
 * whether Streams/TTL are enabled,
 * your desired SLA (e.g., <5 min),
   I’ll drop in exact Terraform + Databricks code for your setup.
-
  
+# What is DMS?
+**AWS Database Migration Service (DMS)** is a managed service from AWS that helps you move data between databases and other data stores.  
+- It supports migrations from **DynamoDB → S3**, **RDS → Snowflake**, etc.  
+- You can configure DMS to do a **full load** (copy all data once) and then apply **ongoing replication (CDC)** so that new changes (inserts, updates, deletes) keep flowing.  
+- For DynamoDB specifically, DMS reads from **DynamoDB Streams** under the hood and writes to your target (often S3 in JSON/Parquet).  
+- Latency is typically **seconds to a few minutes**, making it useful for near-real-time pipelines into a lakehouse (like Databricks).
+
+---
+
+# What is PITR Export?
+**Point-in-Time Recovery (PITR) Export** is a DynamoDB feature that lets you **export your entire table at a specific point in time** to **Amazon S3**.  
+- You first enable **PITR backups** on your DynamoDB table.  
+- Then you can request an export, for example “give me the table exactly as it was at 2025-09-01 12:00 UTC.”  
+- DynamoDB will dump the full dataset into S3 (usually as Parquet files).  
+- This is good for **full historical snapshots** but **not for streaming CDC**, since it always exports the full table rather than just new records.  
+- Typical use: load a full snapshot into Databricks for backfill, then switch to Streams/DMS for incremental updates.
+
+---
+
+# How they differ
+- **DMS** → continuous **incremental replication** (new records every few minutes). Best for ongoing pipeline.  
+- **PITR Export** → full **snapshot at a point in time**. Best for one-time historical load or recovery.
+
+In practice, people often use:
+1. **PITR Export → Databricks** for the initial bulk load.  
+2. **DMS (or Streams→Firehose→S3)** for incremental updates.  
+This combo keeps Databricks always in sync with DynamoDB.
+
+Would you like me to sketch a combined **“backfill + incremental” design** that shows exactly how to use PITR Export once and then switch over to DMS/Firehose for continuous sync?
+```
+
