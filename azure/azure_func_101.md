@@ -1225,3 +1225,191 @@ VACUUM (ANALYZE) schema_name.t;      -- reclaim visibility map
   ```
 * Only fall back to `DELETE ... WHERE ts >= day AND ts < next_day` when chunk boundaries don’t match or constraints prevent chunk drops.
 
+Great question! The **"Deployment slot setting"** checkbox is an important feature for managing environment variables across different deployment slots.
+
+## What Are Deployment Slots?
+
+Deployment slots are separate instances of your Azure Function App that allow you to:
+- Deploy to a **staging** environment first
+- Test changes before production
+- **Swap** staging → production with zero downtime
+- Run A/B testing or blue-green deployments
+
+Common slots:
+- **Production** (default slot)
+- **Staging** (common secondary slot)
+- **Dev**, **Test**, etc. (custom slots)
+
+## What Does "Deployment Slot Setting" Checkbox Do?
+
+### ✅ **Checked (Sticky Setting)**
+The environment variable **stays with the slot** and does NOT swap:
+
+```
+Production Slot:
+  DATABASE_URL = "prod-database.com"  [✅ Sticky]
+
+Staging Slot:  
+  DATABASE_URL = "staging-database.com"  [✅ Sticky]
+
+After Swap:
+  Production Slot: DATABASE_URL = "prod-database.com"  (unchanged)
+  Staging Slot: DATABASE_URL = "staging-database.com"  (unchanged)
+```
+
+### ❌ **Unchecked (Non-Sticky Setting)**
+The environment variable **moves with your code** during swap:
+
+```
+Production Slot:
+  FEATURE_FLAG = "disabled"  [❌ Not Sticky]
+
+Staging Slot:
+  FEATURE_FLAG = "enabled"  [❌ Not Sticky]
+
+After Swap:
+  Production Slot: FEATURE_FLAG = "enabled"  (swapped!)
+  Staging Slot: FEATURE_FLAG = "disabled"  (swapped!)
+```
+
+## When to Use Each:
+
+### ✅ **CHECK the box (Sticky)** for:
+
+**Environment-specific settings that should NEVER swap:**
+- `POSTGRES_HOST` = Different database per environment
+- `ADLS_ACCOUNT_NAME` = Different storage accounts
+- `POSTGRES_PASSWORD` = Different credentials
+- `API_ENDPOINT` = Different service endpoints
+- `LOG_LEVEL` = Production: ERROR, Staging: DEBUG
+
+**Example:**
+```
+Production:
+  POSTGRES_HOST = "prod-db.postgres.azure.com"  [✅ Sticky]
+  
+Staging:
+  POSTGRES_HOST = "staging-db.postgres.azure.com"  [✅ Sticky]
+  
+# After swap, each slot keeps its own database connection
+```
+
+### ❌ **UNCHECK the box (Non-Sticky)** for:
+
+**Application settings that should move with your code:**
+- `APP_VERSION` = Version number
+- `FEATURE_TOGGLES` = Feature flags for your code
+- `MAX_RETRY_COUNT` = Application configuration
+- `CACHE_TIMEOUT` = Code-related settings
+
+**Example:**
+```
+Production:
+  APP_VERSION = "1.2.3"  [❌ Not Sticky]
+  
+Staging:
+  APP_VERSION = "1.3.0"  [❌ Not Sticky]
+  
+# After swap, new version moves to production
+```
+
+## Visual Example:
+
+### Scenario: Deploying New Version
+
+**Before Swap:**
+```
+┌─────────────────────────────────────────┐
+│ PRODUCTION SLOT (active users)          │
+├─────────────────────────────────────────┤
+│ Code: v1.0                              │
+│ DB_HOST = "prod-db" [✅ STICKY]         │
+│ FEATURE_X = "off" [❌ NOT STICKY]       │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│ STAGING SLOT (testing)                  │
+├─────────────────────────────────────────┤
+│ Code: v2.0                              │
+│ DB_HOST = "staging-db" [✅ STICKY]      │
+│ FEATURE_X = "on" [❌ NOT STICKY]        │
+└─────────────────────────────────────────┘
+```
+
+**After Swap:**
+```
+┌─────────────────────────────────────────┐
+│ PRODUCTION SLOT (active users)          │
+├─────────────────────────────────────────┤
+│ Code: v2.0 ← Swapped                   │
+│ DB_HOST = "prod-db" ← Stayed (STICKY)   │
+│ FEATURE_X = "on" ← Swapped              │
+└─────────────────────────────────────────┘
+
+┌─────────────────────────────────────────┐
+│ STAGING SLOT (old production)           │
+├─────────────────────────────────────────┤
+│ Code: v1.0 ← Swapped                   │
+│ DB_HOST = "staging-db" ← Stayed (STICKY)│
+│ FEATURE_X = "off" ← Swapped             │
+└─────────────────────────────────────────┘
+```
+
+## Common Patterns:
+
+### Infrastructure Settings (CHECK ✅ Sticky):
+```
+POSTGRES_HOST               [✅] Sticky
+POSTGRES_DATABASE           [✅] Sticky  
+POSTGRES_PASSWORD           [✅] Sticky
+ADLS_ACCOUNT_NAME           [✅] Sticky
+ADLS_CONNECTION_STRING      [✅] Sticky
+REDIS_HOST                  [✅] Sticky
+EXTERNAL_API_ENDPOINT       [✅] Sticky
+```
+
+### Application Settings (UNCHECK ❌ Non-Sticky):
+```
+APP_VERSION                 [❌] Not Sticky
+FEATURE_FLAG_NEW_UI         [❌] Not Sticky
+MAX_CONNECTIONS             [❌] Not Sticky
+CACHE_DURATION_SECONDS      [❌] Not Sticky
+DEBUG_MODE                  [❌] Not Sticky (usually)
+```
+
+## In Azure Portal:
+
+When you configure settings, you'll see:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ Name                    Value                  [ ] Slot  │
+├──────────────────────────────────────────────────────────┤
+│ POSTGRES_HOST           prod-db.com            [✅]      │
+│ POSTGRES_PASSWORD       ********               [✅]      │
+│ ADLS_ACCOUNT_NAME       mystorage              [✅]      │
+│ APP_VERSION             2.0.1                  [❌]      │
+│ FEATURE_NEW_EXPORT      enabled                [❌]      │
+└──────────────────────────────────────────────────────────┘
+```
+
+## Best Practice:
+
+**For your ADLS Gen2 function, these should be STICKY (checked ✅):**
+```
+ADLS_ACCOUNT_NAME          [✅] Sticky - Different storage per environment
+ADLS_FILE_SYSTEM           [✅] Sticky - Different containers per environment
+POSTGRES_HOST              [✅] Sticky - Different databases per environment
+POSTGRES_DATABASE          [✅] Sticky - Production vs staging database
+POSTGRES_PASSWORD          [✅] Sticky - Different credentials
+```
+
+This ensures that when you swap from staging to production, your production slot always connects to the **production database and storage**, not the staging ones!
+
+## Summary:
+
+- **✅ Checked (Sticky)** = Setting stays with the slot (use for infrastructure/environment)
+- **❌ Unchecked (Non-Sticky)** = Setting swaps with code (use for app config)
+- **Default for most infra settings**: **Checked ✅**
+
+The checkbox helps prevent the nightmare scenario where you accidentally deploy to production but it's still pointing at your staging database!
