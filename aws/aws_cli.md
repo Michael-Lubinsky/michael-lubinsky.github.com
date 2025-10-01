@@ -49,6 +49,60 @@ aws dynamodb list-tables
 - If you sign in to AWS via SSO (IAM Identity Center), you do NOT use long-term “Access Key ID / Secret Access Key”.
 - You can’t “get” those keys from the console unless you have an IAM *user* with programmatic access. SSO users don’t have access keys.
 
+#### Claude
+--------------
+Ah, that changes things! If you're using **AWS SSO (IAM Identity Center)**, you should **NOT** use `aws configure` with long-term access keys. Instead, you should use AWS SSO authentication, which is more secure.
+
+## Setting Up AWS CLI with SSO
+
+1. **Configure AWS CLI for SSO**:
+   ```bash
+   aws configure sso
+   ```
+
+2. **Answer the prompts**:
+   - **SSO session name**: Give it a name (e.g., `my-sso`)
+   - **SSO start URL**: This is your SSO portal URL (looks like `https://d-xxxxxxxxxx.awsapps.com/start` or your custom domain)
+   - **SSO Region**: The region where your SSO is configured (e.g., `us-east-1`)
+   - **SSO registration scopes**: Just press Enter for default (`sso:account:access`)
+
+3. **Browser authentication**:
+   - A browser window will open
+   - Sign in with your SSO credentials
+   - Authorize the AWS CLI
+
+4. **Select your account and role**:
+   - Choose the AWS account you want to use
+   - Choose the IAM role you want to assume
+   - Set default region (e.g., `us-east-1`)
+   - Set default output format (e.g., `json`)
+
+5. **Profile name**: Give your profile a name (e.g., `default` or `work`)
+
+## Using Your SSO Profile
+
+After configuration, use your profile with:
+```bash
+aws dynamodb list-tables --profile your-profile-name
+```
+
+Or if you named it `default`, you can just use:
+```bash
+aws dynamodb list-tables
+```
+
+## Getting Your SSO Start URL
+
+If you don't know your SSO start URL:
+- Check your browser bookmarks (you probably use it to sign in)
+- Ask your AWS administrator
+- Look in your email for the SSO invitation
+
+This approach is much more secure than long-term access keys and is the recommended way when using SSO!
+
+
+#### Gemini
+---------------
 What to do instead (CLI with SSO)
 1) Ensure CLI v2:
 ```
