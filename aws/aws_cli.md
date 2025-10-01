@@ -1,4 +1,4 @@
-Yes, you can get your AWS Access Key ID and Secret Access Key from the AWS Console! Here's how:
+How to get your AWS Access Key ID and Secret Access Key from the AWS Console 
 
 ## Getting Your Access Keys from AWS Console
 
@@ -44,4 +44,3 @@ After configuration, you can test your connection with:
 aws dynamodb list-tables
 ```
 
-This should list your DynamoDB tables if everything is configured correctly!
