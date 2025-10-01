@@ -40,6 +40,15 @@ It’s all about **authentication (who you are)** and **authorization (what you 
 ---
 
 ### **Policies**
+```
+Policies are JSON documents that define permissions. They specify what actions are allowed or denied on which resources. Policies are attached to users, groups, or roles to grant permissions.
+
+ There are two main types:
+
+- Managed policies: Standalone policies you can attach to multiple entities
+- Inline policies: Policies directly embedded into a single user, group, or role
+```
+
 
 * JSON documents that **define permissions**.
 * Attached to **users, groups, or roles**.
