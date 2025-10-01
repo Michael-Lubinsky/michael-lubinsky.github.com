@@ -51,10 +51,12 @@ aws dynamodb list-tables
 
 What to do instead (CLI with SSO)
 1) Ensure CLI v2:
+```
    aws --version
    # should show aws-cli/2.x
-
-2) Configure an SSO profile:
+```
+3) Configure an SSO profile:
+```
    aws configure sso
    # enter:
    # - SSO start URL (from your org’s Identity Center portal)
@@ -62,18 +64,21 @@ What to do instead (CLI with SSO)
    # - Select the AWS account & role
    # - Profile name (e.g. weavix-dev)
    # - Default region (your DynamoDB region, for N. Virginia use us-east-1)
-
-3) Log in to SSO:
+```
+4) Log in to SSO:
+```
    aws sso login --profile weavix-dev
-
-4) Test:
+```
+5) Test:
+```
    aws sts get-caller-identity --profile weavix-dev
    aws dynamodb list-tables --region us-east-1 --profile weavix-dev
-
+```
 Tip: set env vars so you don’t have to pass --profile/--region each time:
+```
    export AWS_PROFILE=weavix-dev
    export AWS_DEFAULT_REGION=us-east-1
-
+```
 When you WOULD use access keys
 - Only if your admin gives you an IAM user with programmatic access.
 - Console path (if allowed): IAM > Users > Your user > Security credentials > “Create access key”.
