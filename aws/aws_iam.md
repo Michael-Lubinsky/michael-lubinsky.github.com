@@ -122,8 +122,81 @@ Example trust policy (for EC2 role):
 * **Rotate credentials** if you must use access keys.
 
 ---
+Great — here’s a **diagram-style explanation** of AWS IAM concepts and how they connect. I’ll represent it in plain markdown with arrows and boxes:
 
-👉 Do you want me to also give you a **diagram-style explanation** showing how users, roles, and policies connect (like a flow of who assumes what)?
+```text
+                +------------------+
+                |   IAM User       |
+                |  (person/app)    |
+                +------------------+
+                         |
+                         | belongs to
+                         v
+                +------------------+
+                |   IAM Group      |
+                |  (optional)      |
+                +------------------+
+                         |
+                         | has
+                         v
+                +------------------+
+                |  Policy (JSON)   |
+                | permissions list |
+                +------------------+
+
+-------------------------------------------------------
+
+                +------------------+
+                |   IAM Role       |
+                |  (no password,   |
+                |   assumed temp)  |
+                +------------------+
+                         ^
+          assumes        | has trust policy
+-------------------------+------------------------------
+|                        |
+|                        |
+v                        v
++------------------+     +------------------+
+|  IAM User/App    |     |  AWS Service     |
+|  (via STS Assume |     |  (EC2, Lambda,   |
+|   Role API)      |     |   Databricks)    |
++------------------+     +------------------+
+
+-------------------------------------------------------
+
+                +------------------+
+                | Policy (JSON)    |
+                |  - Effect        |
+                |  - Action        |
+                |  - Resource      |
+                |  - Condition     |
+                +------------------+
+```
+
+### How this flows in practice:
+
+1. **User signs in** with their identity (console or CLI).
+2. They may directly have policies or belong to a **group** with policies.
+3. Sometimes, instead of permanent policies, they **assume a role** to get **temporary credentials**.
+4. Roles use a **trust policy** to decide *who* can assume them.
+5. Policies attached to roles define *what* they can do on resources.
+
+---
+
+### Example Walkthrough
+
+* Michael logs into AWS Console as an **IAM user**.
+* His user account belongs to the **Developers group**, which has a policy to read DynamoDB.
+* He wants to run an export job to S3.
+* He assumes the **DynamoDBExportRole**, which trusts Michael’s account and has a policy allowing full DynamoDB + `s3:PutObject`.
+* AWS STS gives him **temporary keys** valid for a few hours.
+* He uses those keys to run the job → DynamoDB writes to S3.
+
+---
+
+👉 Do you want me to extend this with a **real-world policy + trust policy pair** (e.g., the exact JSON for the DynamoDB-to-S3 role)? That way you can see how the pieces connect end-to-end.
+
 
 
 ### AWS IAM for Databrick
