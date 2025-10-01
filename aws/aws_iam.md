@@ -194,8 +194,103 @@ v                        v
 * He uses those keys to run the job → DynamoDB writes to S3.
 
 ---
+ let’s walk through a **real-world example** where you want to export data from **DynamoDB to S3**.
+This requires a **role with two parts**:
 
-👉 Do you want me to extend this with a **real-world policy + trust policy pair** (e.g., the exact JSON for the DynamoDB-to-S3 role)? That way you can see how the pieces connect end-to-end.
+1. **Trust policy** (who can assume the role)
+2. **Permission policy** (what the role can do once assumed)
+
+---
+
+## 1. Trust Policy (who can assume the role)
+
+Here we say that **DynamoDB service** is allowed to assume the role, so it can perform the export job.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "dynamodb.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+* **Principal** = who can use this role (here it’s DynamoDB service).
+* **Action** = `sts:AssumeRole` → standard way to take on a role.
+* This means **only DynamoDB** can use this role.
+
+---
+
+## 2. Permission Policy (what the role can do)
+
+This policy allows DynamoDB to write exported data into your S3 bucket.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-export-bucket",
+        "arn:aws:s3:::my-export-bucket/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "arn:aws:kms:us-east-1:123456789012:key/abcd-efgh-1234-5678"
+    }
+  ]
+}
+```
+
+* First block: lets DynamoDB write objects into your S3 bucket.
+* Second block: if your bucket is encrypted with a **KMS key**, this grants encryption permissions.
+
+---
+
+## 3. How it Works in Practice
+
+1. You create this IAM role (say `DynamoDBExportRole`).
+2. DynamoDB service assumes it when you run an **Export to S3** job.
+3. The trust policy confirms *DynamoDB* is allowed to assume it.
+4. The permission policy confirms *what actions* it can perform (write to S3, use KMS).
+5. The job runs and DynamoDB writes the exported data into your S3 bucket.
+
+---
+
+### Flow in diagram form:
+
+```text
+DynamoDB Service -----> [Assume Role: DynamoDBExportRole]
+                              |
+                              v
+                  +------------------------+
+                  | Permission Policy      |
+                  | - s3:PutObject         |
+                  | - s3:ListBucket        |
+                  | - kms:Encrypt/Decrypt  |
+                  +------------------------+
+                              |
+                              v
+                         S3 Bucket
+```
+
 
 
 
