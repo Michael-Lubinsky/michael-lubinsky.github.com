@@ -290,3 +290,253 @@ Encryption: Consider enabling server-side encryption (SSE-S3, SSE-KMS, SSE-C) fo
 
 <https://github.com/michaelthomasletts/boto3-refresh-session>
 
+The issue is that **boto3 doesn't automatically use your AWS CLI SSO profile**. You need to explicitly tell boto3 which profile to use.
+
+---
+
+## Solution: Specify the Profile in boto3
+
+### Option 1: Pass Profile to boto3 Session (Recommended)
+
+```python
+import boto3
+
+# Use the same profile name from your AWS CLI
+session = boto3.Session(
+    profile_name='PowerUserAccess-592210015395',
+    region_name='us-east-1'
+)
+
+dynamodb = session.client('dynamodb')
+response = dynamodb.describe_table(TableName='t')
+print(response)
+```
+
+### Option 2: Set Environment Variable
+
+Before running your Python code:
+
+```bash
+# In terminal
+export AWS_PROFILE=PowerUserAccess-592210015395
+
+# Then run your Python script
+python your_script.py
+```
+
+In Python:
+```python
+import os
+import boto3
+
+# Set programmatically
+os.environ['AWS_PROFILE'] = 'PowerUserAccess-592210015395'
+
+session = boto3.Session(region_name='us-east-1')
+dynamodb = session.client('dynamodb')
+response = dynamodb.describe_table(TableName='t')
+```
+
+---
+
+## For Databricks Usage
+
+If you're running this code in **Databricks**, SSO profiles won't work because Databricks doesn't have access to your local `~/.aws/config` file.
+
+### Solution for Databricks:
+
+**Option A: Use IAM Role (Best Practice)**
+
+Attach an IAM role to your Databricks cluster (the one we discussed earlier):
+
+```python
+import boto3
+
+# No credentials needed - uses cluster's IAM role
+dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+response = dynamodb.describe_table(TableName='t')
+```
+
+**Option B: Use AWS Secrets in Databricks**
+
+Store your credentials in Databricks secrets:
+
+```bash
+# In Databricks CLI or notebook
+databricks secrets create-scope --scope aws-credentials
+databricks secrets put --scope aws-credentials --key aws-access-key-id
+databricks secrets put --scope aws-credentials --key aws-secret-access-key
+```
+
+Then in your code:
+```python
+import boto3
+
+# Retrieve from Databricks secrets
+aws_access_key = dbutils.secrets.get(scope="aws-credentials", key="aws-access-key-id")
+aws_secret_key = dbutils.secrets.get(scope="aws-credentials", key="aws-secret-access-key")
+
+session = boto3.Session(
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key,
+    region_name='us-east-1'
+)
+
+dynamodb = session.client('dynamodb')
+response = dynamodb.describe_table(TableName='t')
+```
+
+**Option C: Assume Role with SSO Credentials**
+
+If you need to assume a role from your SSO session:
+
+```python
+import boto3
+
+# First, get temporary credentials from your SSO session
+session = boto3.Session(profile_name='PowerUserAccess-592210015395')
+sts = session.client('sts')
+
+# Assume a role (if needed)
+assumed_role = sts.assume_role(
+    RoleArn='arn:aws:iam::592210015395:role/YourRoleName',
+    RoleSessionName='databricks-session'
+)
+
+credentials = assumed_role['Credentials']
+
+# Use temporary credentials
+dynamodb = boto3.client(
+    'dynamodb',
+    region_name='us-east-1',
+    aws_access_key_id=credentials['AccessKeyId'],
+    aws_secret_access_key=credentials['SecretAccessKey'],
+    aws_session_token=credentials['SessionToken']
+)
+
+response = dynamodb.describe_table(TableName='t')
+```
+
+---
+
+## Complete Working Example for Local Testing
+
+```python
+import boto3
+
+def get_dynamodb_client(profile_name='PowerUserAccess-592210015395', region='us-east-1'):
+    """
+    Create a DynamoDB client using AWS SSO profile
+    """
+    try:
+        session = boto3.Session(
+            profile_name=profile_name,
+            region_name=region
+        )
+        dynamodb = session.client('dynamodb')
+        
+        # Test connection
+        dynamodb.list_tables(Limit=1)
+        print(f"✅ Successfully connected using profile: {profile_name}")
+        
+        return dynamodb
+        
+    except Exception as e:
+        print(f"❌ Error connecting to DynamoDB: {str(e)}")
+        print("\nTroubleshooting:")
+        print(f"1. Ensure your SSO session is active: aws sso login --profile {profile_name}")
+        print(f"2. Check your profile exists: aws configure list-profiles")
+        raise
+
+# Usage
+dynamodb = get_dynamodb_client()
+response = dynamodb.describe_table(TableName='t')
+print(f"\nTable name: {response['Table']['TableName']}")
+print(f"Item count: {response['Table']['ItemCount']}")
+```
+
+---
+
+## Quick Checklist
+
+Before running your code, verify:
+
+```bash
+# 1. Check your SSO session is active
+aws sso login --profile PowerUserAccess-592210015395
+
+# 2. Verify profile works
+aws sts get-caller-identity --profile PowerUserAccess-592210015395
+
+# 3. List your profiles
+aws configure list-profiles
+
+# 4. Test DynamoDB access
+aws dynamodb list-tables --profile PowerUserAccess-592210015395
+```
+
+---
+
+## For Your Databricks Code
+
+Update your incremental load function:
+
+```python
+from datetime import datetime
+from pyspark.sql import SparkSession
+import boto3
+
+def incremental_load_dynamodb(table_name, profile_name=None):
+    """
+    Load incremental data from DynamoDB to Delta Lake
+    
+    Args:
+        table_name: DynamoDB table name
+        profile_name: AWS profile name (only for local testing)
+    """
+    # For Databricks: uses cluster IAM role
+    # For local: uses specified profile
+    if profile_name:
+        session = boto3.Session(
+            profile_name=profile_name,
+            region_name='us-east-1'
+        )
+        dynamodb = session.resource('dynamodb')
+    else:
+        # Databricks will use cluster's IAM role
+        dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    
+    table = dynamodb.Table(table_name)
+    
+    # ... rest of your code
+```
+
+**Usage:**
+```python
+# Local testing
+incremental_load_dynamodb('t', profile_name='PowerUserAccess-592210015395')
+
+# In Databricks (with IAM role)
+incremental_load_dynamodb('t')
+```
+
+---
+
+## Summary
+
+**For local development:**
+```python
+session = boto3.Session(
+    profile_name='PowerUserAccess-592210015395',
+    region_name='us-east-1'
+)
+dynamodb = session.client('dynamodb')
+```
+
+**For Databricks:**
+Use IAM role attached to cluster (no profile needed):
+```python
+dynamodb = boto3.client('dynamodb', region_name='us-east-1')
+```
+
+Does this solve your issue?
