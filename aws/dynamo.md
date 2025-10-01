@@ -1,4 +1,73 @@
-# PartiQL 
+aws dynamodb list-tables
+
+Here are the AWS CLI commands to get detailed information about a specific DynamoDB table:
+
+## 1. Get Complete Table Description
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME
+```
+
+This returns comprehensive information including:
+- Primary key (partition key and sort key if exists)
+- Global Secondary Indexes (GSI)
+- Local Secondary Indexes (LSI)
+- Table status, creation date
+- Provisioned/on-demand capacity settings
+- Stream settings
+
+## 2. Get Just the Key Schema (Primary & Sort Keys)
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME --query 'Table.KeySchema'
+```
+
+Example output:
+```json
+[
+    {
+        "AttributeName": "userId",
+        "KeyType": "HASH"
+    },
+    {
+        "AttributeName": "timestamp",
+        "KeyType": "RANGE"
+    }
+]
+```
+- `HASH` = Partition Key (Primary Key)
+- `RANGE` = Sort Key
+
+## 3. Get Global Secondary Indexes (GSI)
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME --query 'Table.GlobalSecondaryIndexes'
+```
+
+## 4. Get Approximate Item Count
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME --query 'Table.ItemCount'
+```
+
+**Note**: This count is updated approximately every 6 hours, so it may not be real-time accurate.
+
+## 5. One-Liner for Key Info
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME \
+  --query '{Keys:Table.KeySchema, ItemCount:Table.ItemCount, GSI:Table.GlobalSecondaryIndexes[*].IndexName}'
+```
+
+## 6. Pretty Output with JQ (if you have jq installed)
+```bash
+aws dynamodb describe-table --table-name YOUR_TABLE_NAME | jq '{
+  TableName: .Table.TableName,
+  Keys: .Table.KeySchema,
+  ItemCount: .Table.ItemCount,
+  GSI: .Table.GlobalSecondaryIndexes // []
+}'
+```
+
+Replace `YOUR_TABLE_NAME` with your actual table name!
+
+
+### PartiQL 
 In the DynamoDB console’s left navigation, select PartiQL editor.
 
 PartiQL lets you run SQL-like statements such as:
