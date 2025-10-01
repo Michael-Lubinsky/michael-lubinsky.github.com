@@ -1412,4 +1412,96 @@ This ensures that when you swap from staging to production, your production slot
 - **❌ Unchecked (Non-Sticky)** = Setting swaps with code (use for app config)
 - **Default for most infra settings**: **Checked ✅**
 
-The checkbox helps prevent the nightmare scenario where you accidentally deploy to production but it's still pointing at your staging database!
+After creating and deploying your Azure timer-triggered function, you should verify a few things:
+
+## 1. Check Timer Trigger Configuration
+
+Verify the timer schedule in your function code:
+```python
+@app.timer_trigger(schedule="0 */5 * * * *", arg_name="myTimer", run_on_startup=False)
+def write_file_to_adls(myTimer: func.TimerRequest) -> None:
+```
+
+The schedule uses **CRON expression** format: `{second} {minute} {hour} {day} {month} {day-of-week}`
+
+## 2. Enable the Function (if disabled)
+
+Check in Azure Portal:
+1. Go to your Function App
+2. Click on **Functions** in left menu
+3. Find your timer function
+4. Make sure it shows **Enabled** (not disabled)
+
+If disabled:
+```bash
+az functionapp config appsettings set \
+    --name <function-app-name> \
+    --resource-group <resource-group-name> \
+    --settings "AzureWebJobs.<function-name>.Disabled=false"
+```
+
+## 3. Check Function App is Running
+
+In Azure Portal:
+- Function App → **Overview**
+- Status should be **Running** (not Stopped)
+
+If stopped:
+```bash
+az functionapp start --name <function-app-name> --resource-group <resource-group-name>
+```
+
+## 4. Verify Required Settings
+
+Ensure all environment variables are configured:
+```bash
+az functionapp config appsettings list \
+    --name <function-app-name> \
+    --resource-group <resource-group-name>
+```
+
+Check for:
+- `ADLS_ACCOUNT_NAME`
+- `ADLS_FILE_SYSTEM`
+- Any other required settings
+
+## 5. Monitor Function Execution
+
+**Check if it's running:**
+
+Azure Portal → Your Function → **Monitor** tab
+
+Or use CLI:
+```bash
+az functionapp log tail \
+    --name <function-app-name> \
+    --resource-group <resource-group-name>
+```
+
+## 6. Test Manually (Optional)
+
+You can trigger it manually without waiting:
+
+Azure Portal → Your Function → **Code + Test** → **Test/Run**
+
+## Common Issues:
+
+**Timer not firing?**
+- Check the CRON expression is valid
+- Verify timezone settings (Azure uses UTC by default)
+- Check if `run_on_startup=False` (won't run immediately on deployment)
+
+**Function disabled automatically?**
+- Check for errors in previous runs
+- Azure may disable functions that fail repeatedly
+
+## Minimum Required Steps:
+
+If you've already deployed, usually **nothing else is needed**. The timer will start automatically. Just verify:
+
+1. Function App is **Running**
+2. Function is **Enabled**
+3. Environment variables are set
+4. Check logs after the expected trigger time
+
+The timer should start working automatically once deployed. Wait for the next scheduled time and check the logs to confirm it executed.
