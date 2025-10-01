@@ -1,3 +1,131 @@
+ **AWS IAM (Identity and Access Management)** concepts 
+
+## 1. What is IAM?
+
+IAM is the **security and identity management system** for AWS. It controls:
+
+* **Who** (users, apps, services) can access AWS resources
+* **What actions** they can perform
+* **On which resources** they can perform them
+* **Under what conditions** (e.g., from specific IPs, MFA required)
+
+It’s all about **authentication (who you are)** and **authorization (what you can do)**.
+
+---
+
+## 2. Main Concepts in IAM
+
+### **Users**
+
+* Represent **individual people or applications** that need to access AWS.
+* They have **credentials** (username/password for AWS Console or access keys for CLI/API).
+* Best practice: avoid long-lived users with keys. Prefer roles.
+
+---
+
+### **Groups**
+
+* A way to **organize users** and attach permissions collectively.
+* Example: a “Developers” group might allow read-only access to S3 and write access to DynamoDB.
+
+---
+
+### **Roles**
+
+* Think of a **role as a “temporary identity” with permissions**.
+* Roles don’t have passwords or permanent keys.
+* Instead, a user, AWS service, or application can **assume a role** to gain its permissions for a limited time.
+* Example: An EC2 instance can assume a role to read/write to S3 without embedding access keys.
+
+---
+
+### **Policies**
+
+* JSON documents that **define permissions**.
+* Attached to **users, groups, or roles**.
+* Structure:
+
+  * **Effect**: `Allow` or `Deny`
+  * **Action**: Which API calls are allowed (e.g., `s3:PutObject`)
+  * **Resource**: Which resources it applies to (e.g., `arn:aws:s3:::my-bucket/*`)
+  * **Condition**: Optional rules (e.g., only if MFA is enabled, or request comes from a certain IP)
+
+Example policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::my-bucket/*"
+    }
+  ]
+}
+```
+
+---
+
+### **Identity Providers (IdPs) & Federation**
+
+* Allow users from outside AWS (like your company’s Active Directory, or Google/Microsoft login) to access AWS **without creating IAM users**.
+* They authenticate via SSO (single sign-on), then assume roles in AWS.
+
+---
+
+### **Service-Linked Roles**
+
+* Special roles that AWS services create automatically to perform actions on your behalf.
+* Example: Lambda needs a service role to write logs to CloudWatch.
+
+---
+
+### **Trust Policy vs. Permission Policy**
+
+* **Permission policy** → what actions/resources are allowed.
+* **Trust policy** → who/what can assume the role.
+
+Example trust policy (for EC2 role):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "ec2.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+---
+
+## 3. Putting It All Together
+
+* **User**: Michael (developer at Weavix)
+* **Group**: Developers (can read/write DynamoDB, read S3)
+* **Role**: `DynamoDBExportRole` (allows full DynamoDB access + write to S3)
+* **Policy**: Attached to the role (allow `dynamodb:ExportTableToPointInTime`, `s3:PutObject`)
+* **Trust policy**: Allows Databricks service to assume `DynamoDBExportRole`
+
+---
+
+## 4. Best Practices
+
+* **Least privilege**: Only give the minimum permissions needed.
+* **Use roles instead of long-lived access keys**.
+* **Enable MFA** for users with console access.
+* **Use IAM Access Analyzer** to find risky permissions.
+* **Rotate credentials** if you must use access keys.
+
+---
+
+👉 Do you want me to also give you a **diagram-style explanation** showing how users, roles, and policies connect (like a flow of who assumes what)?
+
+
 ### AWS IAM for Databrick
 
 There  are several ways to check which IAM role is attached to your Databricks cluster:
