@@ -1,3 +1,15 @@
+### Throttling
+<https://vladholubiev.com/articles/five-ways-to-deal-with-aws-dynamodb-gsi-throttling>
+```
+Throttling occurs when requests to DynamoDB exceed the provisioned throughput capacity. 
+When this happens, database performance may be affected, and the service returns HTTP 400 status codes 
+with an error type of ProvisionedThroughputExceededException.
+
+Global Secondary Indexes (GSIs) are a powerful feature allowing you to create additional access patterns for your data.
+They have their own read and write capacity provisioned separately from the base table. 
+DynamoDB offers two types of capacity modes: provisioned and on-demand.  
+```
+
 ## Global Secondary Index (GSI)
 
 <https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html>
