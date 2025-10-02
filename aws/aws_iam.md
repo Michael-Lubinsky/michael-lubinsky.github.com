@@ -305,6 +305,127 @@ DynamoDB Service -----> [Assume Role: DynamoDBExportRole]
 
 ### AWS IAM for Databrick
 
+
+
+To access S3 and DynamoDB from a Databricks notebook, you have several options depending on your setup:
+
+## Option 1: Instance Profile (Recommended for AWS Databricks)
+
+This is the most secure and common approach for Databricks on AWS.
+
+**Steps:**
+
+1. **Create an IAM Role** with the necessary permissions:
+   - Go to AWS IAM Console → Roles → Create Role
+   - Select "AWS Service" → "EC2" as the trusted entity
+   - Attach or create policies for S3 and DynamoDB access
+
+2. **Create/Attach Policies** to the role. Here's an example policy:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-bucket-name",
+        "arn:aws:s3:::your-bucket-name/*"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:Scan",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:BatchGetItem"
+      ],
+      "Resource": "arn:aws:dynamodb:region:account-id:table/your-table-name"
+    }
+  ]
+}
+```
+
+3. **Create an Instance Profile** from this role in Databricks:
+   - In Databricks workspace → Admin Settings → Instance Profiles
+   - Add the IAM role ARN
+   
+4. **Attach to Cluster**:
+   - When creating/editing a cluster, select this instance profile
+
+5. **Access Resources** in your notebook:
+
+```python
+# Read from S3
+df = spark.read.parquet("s3://your-bucket-name/path/to/data")
+
+# Read from DynamoDB
+df = spark.read \
+    .format("dynamodb") \
+    .option("tableName", "your-table-name") \
+    .option("region", "us-east-1") \
+    .load()
+```
+
+## Option 2: AWS Access Keys (Not Recommended for Production)
+
+You can use access keys directly, but this is less secure:
+
+```python
+spark.conf.set("fs.s3a.access.key", "YOUR_ACCESS_KEY")
+spark.conf.set("fs.s3a.secret.key", "YOUR_SECRET_KEY")
+
+# For DynamoDB, use boto3
+import boto3
+
+dynamodb = boto3.resource('dynamodb',
+    aws_access_key_id='YOUR_ACCESS_KEY',
+    aws_secret_access_key='YOUR_SECRET_KEY',
+    region_name='us-east-1'
+)
+```
+
+## Option 3: Databricks Secrets (Recommended if not using Instance Profiles)
+
+Store credentials securely in Databricks secrets:
+
+```python
+# Set up secrets first via Databricks CLI
+# Then access them:
+access_key = dbutils.secrets.get(scope="aws-scope", key="access-key")
+secret_key = dbutils.secrets.get(scope="aws-scope", key="secret-key")
+
+spark.conf.set("fs.s3a.access.key", access_key)
+spark.conf.set("fs.s3a.secret.key", secret_key)
+```
+
+## For DynamoDB Polling
+
+If you need to continuously poll DynamoDB, you might use boto3:
+
+```python
+import boto3
+from pyspark.sql import Row
+
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+table = dynamodb.Table('your-table-name')
+
+# Scan the table
+response = table.scan()
+items = response['Items']
+
+# Convert to Spark DataFrame
+df = spark.createDataFrame([Row(**item) for item in items])
+```
+
+
+
 There  are several ways to check which IAM role is attached to your Databricks cluster:
 
 ## Method 1: From Databricks Workspace UI (Easiest)
