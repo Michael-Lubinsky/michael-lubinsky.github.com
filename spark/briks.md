@@ -38,7 +38,7 @@ Streaming + Batch: Supports both in the same pipeline using the same Delta table
 
 [DTL - Delta Live Tables](DeltaLiveTables-DLT.pdf)
 
-[Delta Live Tables](Apache Spark and Delta Table .pdf)
+[Delta Live Tables](Apache%20Spark%20and%20Delta%20Table%20.pdf)
 
 - **Definition**: Delta Lake is the **storage layer technology** that brings **ACID transactions**, **schema enforcement**, **time travel**, and **efficient metadata handling** to **Apache Spark** and **big data platforms**.
 - **Scope**: It's a **general-purpose storage format** and **engine** that can be used in **Databricks**, **Apache Spark**, **EMR**, or other platforms.
