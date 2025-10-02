@@ -670,7 +670,7 @@ df.writeStream \
 
 ---
 
-## ⚠️ Important Notes
+##  Important Notes
 
 - `mergeSchema` must be explicitly set to `true` to allow evolution.
 - Schema evolution **does not allow removing columns** — you must use a table rewrite or `ALTER TABLE`.
@@ -915,6 +915,15 @@ df_postgres = spark.read.format("jdbc") \
 - Use **Auto Loader** or **Delta Live Tables** if your sources are ingested to a landing zone (e.g., Kafka -> Bronze → Silver).
 - For **CDC** or **incremental load** from Postgres, use a `WHERE` clause with a timestamp column and/or use **Z-Ordering** for performance.
 
+#### Real-Time Grafana Dashboard for HSL Transport Data
+
+<https://datatribe.substack.com/p/building-a-real-time-transport-lakehouse>
+
+<https://www.youtube.com/watch?v=lOgl7OtgE1o>
+
+<https://github.com/oiivantsov/transport-streaming-lakehouse>
+
+### Databricks Links
 
 <https://blog.devgenius.io/databricks-platform-basics-de00317bbf2c>
 
