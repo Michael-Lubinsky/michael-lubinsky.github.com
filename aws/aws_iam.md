@@ -424,7 +424,235 @@ items = response['Items']
 df = spark.createDataFrame([Row(**item) for item in items])
 ```
 
+## Policy 1: DynamoDB Streaming to S3
 
+For DynamoDB streaming to S3, you'll need a role for **AWS Lambda** (or Kinesis Data Firehose) that acts as the intermediary, since DynamoDB Streams don't write directly to S3.
+
+### Using Lambda to Stream DynamoDB to S3:
+
+**IAM Role with Two Policies:**
+
+**Policy 1 - DynamoDB Stream Read Permission:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:ListStreams"
+      ],
+      "Resource": "arn:aws:dynamodb:region:account-id:table/your-table-name/stream/*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:ListStreams"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+**Policy 2 - S3 Write Permission:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:PutObjectAcl"
+      ],
+      "Resource": "arn:aws:s3:::your-target-bucket/*"
+    }
+  ]
+}
+```
+
+**Policy 3 - CloudWatch Logs (for Lambda logging):**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:region:account-id:*"
+    }
+  ]
+}
+```
+
+**Trust Relationship for the Role:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+---
+
+## Policy 2: Lambda to Read from S3 and Write to Databricks
+
+For Lambda to read from S3 and write to Databricks, you'll need:
+
+### IAM Role with Policies:
+
+**Policy 1 - S3 Read Permission:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::your-source-bucket",
+        "arn:aws:s3:::your-source-bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+**Policy 2 - CloudWatch Logs:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:region:account-id:*"
+    }
+  ]
+}
+```
+
+**For Writing to Databricks:**
+
+Databricks doesn't use IAM policies directly. Instead, you'll need to:
+
+1. **Store Databricks credentials securely** using AWS Secrets Manager or SSM Parameter Store
+2. **Grant Lambda access** to retrieve these secrets
+
+**Policy 3 - Secrets Manager Access (if storing Databricks token):**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue"
+      ],
+      "Resource": "arn:aws:secretsmanager:region:account-id:secret:databricks-token-*"
+    }
+  ]
+}
+```
+
+**Trust Relationship for Lambda Role:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+### Lambda Code Example (Python):
+
+```python
+import boto3
+import json
+import requests
+
+def lambda_handler(event, context):
+    # Initialize S3 client
+    s3 = boto3.client('s3')
+    secrets = boto3.client('secretsmanager')
+    
+    # Get Databricks credentials from Secrets Manager
+    secret = secrets.get_secret_value(SecretId='databricks-token')
+    databricks_config = json.loads(secret['SecretString'])
+    
+    # Read from S3
+    bucket = event['Records'][0]['s3']['bucket']['name']
+    key = event['Records'][0]['s3']['object']['key']
+    
+    response = s3.get_object(Bucket=bucket, Key=key)
+    data = response['Body'].read()
+    
+    # Write to Databricks via REST API
+    databricks_url = databricks_config['host']
+    databricks_token = databricks_config['token']
+    
+    headers = {
+        'Authorization': f'Bearer {databricks_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    # Example: Upload to DBFS
+    api_endpoint = f"{databricks_url}/api/2.0/dbfs/put"
+    payload = {
+        'path': f'/mnt/data/{key}',
+        'contents': data.decode('utf-8'),
+        'overwrite': 'true'
+    }
+    
+    response = requests.post(api_endpoint, headers=headers, json=payload)
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Successfully processed')
+    }
+```
+
+---
+
+## Summary of Steps:
+
+1. **Create IAM roles** with the appropriate policies
+2. **Attach policies** to the roles (you can use AWS managed policies or create custom ones)
+3. **Assign the role** to your Lambda function
+4. **Store Databricks credentials** in AWS Secrets Manager
+5. **Configure Lambda triggers** (DynamoDB Stream or S3 event notifications)
+
+Would you like help with setting up the Lambda functions or configuring the DynamoDB Stream trigger?
 
 There  are several ways to check which IAM role is attached to your Databricks cluster:
 
