@@ -1,5 +1,8 @@
-Global Secondary Index (GSI)
-https://dynobase.dev/dynamodb-gsi/
+## Global Secondary Index (GSI)
+
+<https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html>
+
+<https://dynobase.dev/dynamodb-gsi/>
 
 ```
 aws dynamodb list-tables
