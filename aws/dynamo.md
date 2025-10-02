@@ -1,5 +1,9 @@
-aws dynamodb list-tables
+Global Secondary Index (GSI)
+https://dynobase.dev/dynamodb-gsi/
 
+```
+aws dynamodb list-tables
+```
 Here are the AWS CLI commands to get detailed information about a specific DynamoDB table:
 
 ## 1. Get Complete Table Description
