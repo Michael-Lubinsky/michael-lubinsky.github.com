@@ -32,6 +32,7 @@ Data Compaction (OPTIMIZE): Merges small files into larger ones to improve perfo
 
 Streaming + Batch: Supports both in the same pipeline using the same Delta table.
 
+[Delta Table](DeltaTabl.pdf)
 
 - **Definition**: Delta Lake is the **storage layer technology** that brings **ACID transactions**, **schema enforcement**, **time travel**, and **efficient metadata handling** to **Apache Spark** and **big data platforms**.
 - **Scope**: It's a **general-purpose storage format** and **engine** that can be used in **Databricks**, **Apache Spark**, **EMR**, or other platforms.
