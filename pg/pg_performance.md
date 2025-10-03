@@ -16,6 +16,33 @@
 
 <https://habr.com/ru/companies/tantor/articles/940752/> Performance Monitoring
 
+<https://habr.com/ru/articles/953264/> 
+
+```sql
+ALTER SYSTEM SET shared_preload_libraries = 'pg_stat_statements';
+SELECT pg_reload_conf();
+
+-- Смотрим самые тяжелые запросы
+SELECT query, calls, total_time, mean_time, rows
+FROM pg_stat_statements 
+ORDER BY total_time DESC 
+LIMIT 10;
+```
+
+```sql
+-- before:
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_orders_created_at ON orders(created_at);
+
+-- Стало:
+-- Составной индекс, покрывающий фильтрацию и джойны
+CREATE INDEX idx_orders_covering ON orders(user_id, created_at, status)
+WHERE status = 'completed';
+
+-- Частичный индекс для активных пользователей
+CREATE INDEX idx_users_active ON users(id, name) 
+WHERE is_active = true;
+```
 ### Save space by removing unused indexes
 
 https://habr.com/ru/articles/944704/ 
