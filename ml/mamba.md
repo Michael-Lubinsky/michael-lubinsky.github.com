@@ -15,6 +15,11 @@ https://www.understandingai.org/p/reinforcement-learning-explained
 
 https://habr.com/ru/companies/otus/articles/951412/ Q-learning
 
+https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse Data
+
+## Casual Inference
+
+https://matheusfacure.github.io/python-causality-handbook/landing-page.html
 ### Book
 https://www.manning.com/books/deep-learning-with-python-third-edition 
 
