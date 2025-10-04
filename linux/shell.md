@@ -24,7 +24,8 @@ Your command:
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
 ```
 
-is **more robust** than the simpler solutions I provided earlier, especially for long-running or real-time scripts. Here’s why it’s better and what each part does:
+It is **more robust** than the simpler solutions provided above, especially for long-running or real-time scripts.   
+Here’s why it’s better and what each part does:
 
 ---
 
