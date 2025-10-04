@@ -13,6 +13,8 @@ https://ma-lab-berkeley.github.io/deep-representation-learning-book/
 ### Reinforcement learning: 
 https://www.understandingai.org/p/reinforcement-learning-explained
 
+https://habr.com/ru/companies/otus/articles/951412/ Q-learning
+
 ### Book
 https://www.manning.com/books/deep-learning-with-python-third-edition 
 
