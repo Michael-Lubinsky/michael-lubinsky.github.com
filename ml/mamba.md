@@ -2,7 +2,7 @@ https://github.com/Saivineeth147/awesome-llm-resources
 
 https://stepik.org/course/231306/promo
 
-https://habr.com/ru/articles/951428/
+https://habr.com/ru/articles/951428/ Что такое AI-агент и из каких основных частей он состоит
 
 https://habr.com/ru/articles/951390/
 
