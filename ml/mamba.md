@@ -4,7 +4,7 @@ https://stepik.org/course/231306/promo
 
 https://habr.com/ru/articles/951428/ Что такое AI-агент и из каких основных частей он состоит
 
-https://habr.com/ru/articles/951390/
+https://habr.com/ru/articles/951390/ AI-движки на примере Knowledge Distillation, GAN, Reinforcement learning
 
 https://huggingface.co/learn
 
