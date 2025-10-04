@@ -1,8 +1,15 @@
 ## Linux shell scripting
 
 echo $?
-
+```
+runs it immune to hangups (nohup) so it keeps running after you log out/SSH drops;
+sends stdout to output.log, truncating the file first (> output.log);
+sends stderr to the same place as stdout (2>&1), so both go into output.log;
+runs it in the background (&), returning you to the shell immediately.
+```
 nohup python3 app.py > output.log 2>&1 &
+
+nohup and see output in console:
 
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
 
