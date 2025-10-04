@@ -4,6 +4,8 @@ echo $?
 
 nohup python3 app.py > output.log 2>&1 &
 
+nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
+
 sort myfile.log | uniq -c | sort -n -r
 
 comm file1.txt file2.txt
