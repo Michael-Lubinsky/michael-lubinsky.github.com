@@ -1,5 +1,7 @@
 https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
 
+https://habr.com/ru/articles/953154/
+
 https://habr.com/ru/articles/949062/ Chronos и AutoGluon-TimeSeries — мощный инструмент прогнозирования временных рядов
 
 https://autognosi.medium.com/advanced-techniques-and-practical-aspects-in-anomaly-detection-for-time-series-f9b30e4e8760
