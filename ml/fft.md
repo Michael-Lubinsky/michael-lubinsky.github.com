@@ -1,8 +1,10 @@
 ### DFT
 Дискретное преобразование Фурье 
 
-https://nima101.github.io/dft
+<https://www.youtube.com/watch?v=h7apO7q16V0>
 
-https://connorboyle.io/2025/09/11/fft-cooley-tukey.html
+<https://nima101.github.io/dft>
 
- https://news.ycombinator.com/item?id=45132810  Fourier Transform 
+<https://connorboyle.io/2025/09/11/fft-cooley-tukey.html>
+
+<https://news.ycombinator.com/item?id=45132810>  Fourier Transform 
