@@ -11,6 +11,8 @@ nohup python3 app.py > output.log 2>&1 &
 
 nohup and see output in console:
 
+nohup python your_script.py 2025-10-01 2025-10-31 | tee -a nohup.out &
+
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
 
 sort myfile.log | uniq -c | sort -n -r
