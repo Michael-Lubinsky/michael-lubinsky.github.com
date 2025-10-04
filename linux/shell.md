@@ -18,13 +18,13 @@ nohup python your_script.py 2025-10-01 2025-10-31 | tee -a nohup.out &
 ```bash
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
 ```
-Your command:
+This command:
 
 ```bash
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
 ```
 
-It is **more robust** than the simpler solutions provided above, especially for long-running or real-time scripts.   
+ is **more robust** than the simpler solutions provided above, especially for long-running or real-time scripts.   
 Here’s why it’s better and what each part does:
 
 ---
