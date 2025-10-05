@@ -1,5 +1,407 @@
 Here are advanced best practices for using `psycopg2`:
 
+Here are comprehensive examples of `psycopg2.extras` module usage:
+
+## 1. DictCursor & RealDictCursor
+
+Access rows as dictionaries instead of tuples:
+
+```python
+from psycopg2.extras import DictCursor, RealDictCursor
+
+# DictCursor - supports both dict and tuple access
+cursor = conn.cursor(cursor_factory=DictCursor)
+cursor.execute("SELECT id, name, email FROM users WHERE id = %s", (1,))
+row = cursor.fetchone()
+
+print(row['name'])    # Dict-style access
+print(row[1])         # Tuple-style access still works
+print(dict(row))      # Convert to dict
+
+# RealDictCursor - true dict, no tuple access
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("SELECT id, name, email FROM users")
+rows = cursor.fetchall()
+
+for row in rows:
+    print(row['name'])  # Only dict access
+    # row[0] would fail - not a tuple
+```
+
+## 2. NamedTupleCursor
+
+Access columns as named tuple attributes:
+
+```python
+from psycopg2.extras import NamedTupleCursor
+
+cursor = conn.cursor(cursor_factory=NamedTupleCursor)
+cursor.execute("SELECT id, name, email FROM users WHERE id = %s", (1,))
+user = cursor.fetchone()
+
+print(user.id)      # Attribute access
+print(user.name)    # Clear and readable
+print(user.email)   # Type-safe
+
+# Still a tuple
+print(user[0])      # Also works
+```
+
+## 3. execute_batch - Batch Execution
+
+Much faster than loop for multiple inserts/updates:
+
+```python
+from psycopg2.extras import execute_batch
+
+# Data to insert
+data = [
+    (1, 'Alice', 'alice@example.com'),
+    (2, 'Bob', 'bob@example.com'),
+    (3, 'Charlie', 'charlie@example.com'),
+    # ... 10,000 more rows
+]
+
+# Slow way
+for row in data:
+    cursor.execute("INSERT INTO users (id, name, email) VALUES (%s, %s, %s)", row)
+
+# Fast way - batched
+execute_batch(
+    cursor,
+    "INSERT INTO users (id, name, email) VALUES (%s, %s, %s)",
+    data,
+    page_size=100  # Execute 100 at a time
+)
+
+# Works with any SQL
+updates = [(25, 1), (30, 2), (35, 3)]
+execute_batch(
+    cursor,
+    "UPDATE users SET age = %s WHERE id = %s",
+    updates,
+    page_size=50
+)
+```
+
+## 4. execute_values - Fastest Bulk Insert
+
+Uses PostgreSQL's multi-row VALUES syntax:
+
+```python
+from psycopg2.extras import execute_values
+
+data = [
+    ('Alice', 'alice@example.com', 25),
+    ('Bob', 'bob@example.com', 30),
+    ('Charlie', 'charlie@example.com', 35),
+]
+
+# Fastest bulk insert
+execute_values(
+    cursor,
+    "INSERT INTO users (name, email, age) VALUES %s",
+    data
+)
+
+# With RETURNING clause
+execute_values(
+    cursor,
+    "INSERT INTO users (name, email) VALUES %s RETURNING id",
+    [('Alice', 'alice@example.com'), ('Bob', 'bob@example.com')],
+    fetch=True  # Fetch returned values
+)
+inserted_ids = cursor.fetchall()
+
+# Custom template for complex inserts
+execute_values(
+    cursor,
+    "INSERT INTO users (name, email, created_at) VALUES %s",
+    [('Alice', 'alice@example.com'), ('Bob', 'bob@example.com')],
+    template="(%s, %s, NOW())",  # Add NOW() for each row
+    page_size=1000
+)
+```
+
+## 5. LoggingConnection & LoggingCursor
+
+Debug SQL queries:
+
+```python
+from psycopg2.extras import LoggingConnection, LoggingCursor
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('psycopg2')
+
+# Create logging connection
+conn = psycopg2.connect(
+    ...,
+    connection_factory=LoggingConnection
+)
+conn.initialize(logger)
+
+# All queries are logged
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM users WHERE id = %s", (1,))
+# Logs: SELECT * FROM users WHERE id = 1
+```
+
+## 6. Json & Jsonb Adapters
+
+Handle JSON data types:
+
+```python
+from psycopg2.extras import Json, register_default_json
+
+# Insert Python dict as JSON
+data = {'name': 'Alice', 'tags': ['user', 'admin'], 'score': 95}
+
+cursor.execute(
+    "INSERT INTO records (data) VALUES (%s)",
+    (Json(data),)  # Converts dict to JSON
+)
+
+# Register default JSON handling
+register_default_json(conn)
+
+# Now dicts are automatically converted
+cursor.execute(
+    "INSERT INTO records (data) VALUES (%s)",
+    ({'key': 'value'},)  # No Json() wrapper needed
+)
+
+# Query JSON data
+cursor.execute("SELECT data FROM records WHERE id = %s", (1,))
+row = cursor.fetchone()
+print(row[0])  # Automatically decoded to Python dict
+```
+
+## 7. register_hstore - PostgreSQL hstore Type
+
+Work with hstore key-value pairs:
+
+```python
+from psycopg2.extras import register_hstore
+
+# Enable hstore support
+register_hstore(conn)
+
+# Insert Python dict as hstore
+tags = {'color': 'red', 'size': 'large', 'material': 'cotton'}
+cursor.execute(
+    "INSERT INTO products (tags) VALUES (%s)",
+    (tags,)
+)
+
+# Query returns Python dict
+cursor.execute("SELECT tags FROM products WHERE id = %s", (1,))
+product_tags = cursor.fetchone()[0]
+print(product_tags['color'])  # 'red'
+```
+
+## 8. register_uuid - Handle UUIDs
+
+```python
+from psycopg2.extras import register_uuid
+import uuid
+
+register_uuid()
+
+# Use Python UUID objects
+user_id = uuid.uuid4()
+cursor.execute(
+    "INSERT INTO users (id, name) VALUES (%s, %s)",
+    (user_id, 'Alice')
+)
+
+# Query returns UUID objects
+cursor.execute("SELECT id FROM users WHERE name = %s", ('Alice',))
+retrieved_id = cursor.fetchone()[0]
+print(type(retrieved_id))  # <class 'uuid.UUID'>
+```
+
+## 9. register_composite - Custom Composite Types
+
+```python
+from psycopg2.extras import register_composite
+
+# Create composite type in PostgreSQL
+cursor.execute("""
+    CREATE TYPE address AS (
+        street TEXT,
+        city TEXT,
+        zip TEXT
+    )
+""")
+
+# Register it
+register_composite('address', cursor)
+
+# Use named tuples
+from collections import namedtuple
+Address = namedtuple('Address', ['street', 'city', 'zip'])
+
+addr = Address('123 Main St', 'New York', '10001')
+cursor.execute(
+    "INSERT INTO users (name, address) VALUES (%s, %s)",
+    ('Alice', addr)
+)
+```
+
+## 10. wait_select - Async Query Handling
+
+```python
+from psycopg2.extras import wait_select
+from psycopg2 import extensions
+
+conn.set_session(autocommit=True)
+cursor = conn.cursor()
+
+# Start long-running query asynchronously
+cursor.execute("SELECT pg_sleep(5)")
+
+# Poll until complete
+while True:
+    state = conn.poll()
+    
+    if state == extensions.POLL_OK:
+        print("Query complete")
+        break
+    elif state == extensions.POLL_READ:
+        wait_select(conn)  # Wait for read ready
+    elif state == extensions.POLL_WRITE:
+        wait_select(conn)  # Wait for write ready
+    
+    # Do other work here
+    print("Doing other work...")
+```
+
+## 11. MinTimeLoggingConnection - Log Slow Queries
+
+```python
+from psycopg2.extras import MinTimeLoggingConnection
+import logging
+
+logger = logging.getLogger('slow_queries')
+logger.setLevel(logging.INFO)
+
+# Log queries taking > 100ms
+conn = psycopg2.connect(
+    ...,
+    connection_factory=MinTimeLoggingConnection
+)
+conn.initialize(logger, mintime=0.1)  # 100ms threshold
+
+cursor = conn.cursor()
+cursor.execute("SELECT pg_sleep(0.2)")  # This will be logged
+cursor.execute("SELECT 1")  # This won't (too fast)
+```
+
+## 12. ReplicationCursor - Logical Replication
+
+```python
+from psycopg2.extras import ReplicationCursor, LogicalReplicationConnection
+
+# Connect as replication connection
+conn = psycopg2.connect(
+    ...,
+    connection_factory=LogicalReplicationConnection
+)
+
+cursor = conn.cursor(cursor_factory=ReplicationCursor)
+
+# Create replication slot
+cursor.create_replication_slot('my_slot', output_plugin='test_decoding')
+
+# Start consuming changes
+cursor.start_replication(slot_name='my_slot')
+
+# Process changes
+for msg in cursor:
+    print(f"Change: {msg.payload}")
+    cursor.send_feedback(flush_lsn=msg.data_start)
+```
+
+## 13. execute_mogrify - See Generated SQL
+
+```python
+from psycopg2.extras import execute_values
+
+# See what SQL execute_values generates
+cursor = conn.cursor()
+sql = "INSERT INTO users (name, email) VALUES %s"
+data = [('Alice', 'a@test.com'), ('Bob', 'b@test.com')]
+
+# Generate SQL without executing
+template = execute_values(
+    cursor,
+    sql,
+    data,
+    fetch=False
+)
+# Returns the actual VALUES clause that would be executed
+```
+
+## 14. Inet Adapter - Network Addresses
+
+```python
+from psycopg2.extras import register_inet
+import ipaddress
+
+register_inet()
+
+# Use Python ipaddress objects
+ip = ipaddress.ip_address('192.168.1.1')
+network = ipaddress.ip_network('10.0.0.0/24')
+
+cursor.execute(
+    "INSERT INTO servers (ip, network) VALUES (%s, %s)",
+    (ip, network)
+)
+
+# Query returns ipaddress objects
+cursor.execute("SELECT ip FROM servers")
+server_ip = cursor.fetchone()[0]
+print(type(server_ip))  # <class 'ipaddress.IPv4Address'>
+```
+
+## Practical Combined Example:
+
+```python
+from psycopg2.extras import (
+    RealDictCursor, execute_values, Json, 
+    LoggingConnection, register_default_json
+)
+
+# Logging connection with dict cursor
+conn = psycopg2.connect(..., connection_factory=LoggingConnection)
+conn.initialize(logger)
+register_default_json(conn)
+
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+# Bulk insert with JSON
+users = [
+    ('Alice', {'role': 'admin', 'permissions': ['read', 'write']}),
+    ('Bob', {'role': 'user', 'permissions': ['read']}),
+]
+
+execute_values(
+    cursor,
+    "INSERT INTO users (name, metadata) VALUES %s RETURNING id, name, metadata",
+    users,
+    fetch=True
+)
+
+# Get results as dicts
+for user in cursor.fetchall():
+    print(f"User {user['name']} has permissions: {user['metadata']['permissions']}")
+```
+
+These `psycopg2.extras` utilities significantly improve productivity, performance, and code clarity when working with PostgreSQL.
+
 ## 1. Connection Pooling
 
 Use connection pools instead of creating connections repeatedly:
