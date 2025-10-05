@@ -2,6 +2,8 @@
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
 
+<https://habr.com/ru/articles/953338/>
+
 <https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
 
 <https://www2.math.upenn.edu/~ghrist/preprints/LAEF.pdf>  Linear Algebra
