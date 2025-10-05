@@ -1,3 +1,326 @@
+Here are advanced best practices for using `psycopg2`:
+
+## 1. Connection Pooling
+
+Use connection pools instead of creating connections repeatedly:
+
+```python
+from psycopg2 import pool
+
+# Create pool once (module level)
+connection_pool = psycopg2.pool.ThreadedConnectionPool(
+    minconn=1,
+    maxconn=10,
+    host='...',
+    database='...',
+    user='...',
+    password='...'
+)
+
+# Get/return connections
+def get_conn():
+    return connection_pool.getconn()
+
+def return_conn(conn):
+    connection_pool.putconn(conn)
+
+# Always return connections
+try:
+    conn = get_conn()
+    # use connection
+finally:
+    return_conn(conn)
+```
+
+## 2. Server-Side Cursors for Large Result Sets
+
+Avoid loading millions of rows into memory:
+
+```python
+# Client-side cursor (default) - loads ALL rows into memory
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM huge_table")  # Loads everything!
+rows = cursor.fetchall()  # Memory exhausted
+
+# Server-side cursor - fetches in batches
+cursor = conn.cursor(name='my_cursor')  # Named cursor = server-side
+cursor.execute("SELECT * FROM huge_table")
+
+# Iterate without loading everything
+for row in cursor:
+    process(row)  # Fetches in batches
+
+# Or fetch in chunks
+while True:
+    rows = cursor.fetchmany(1000)
+    if not rows:
+        break
+    process_batch(rows)
+```
+
+## 3. Execute Batch for Bulk Inserts
+
+Much faster than individual inserts:
+
+```python
+from psycopg2.extras import execute_batch, execute_values
+
+# Slow - one transaction per row
+for row in data:
+    cursor.execute("INSERT INTO table VALUES (%s, %s)", row)
+
+# Fast - batched execution
+execute_batch(
+    cursor,
+    "INSERT INTO table VALUES (%s, %s)",
+    data,
+    page_size=1000
+)
+
+# Fastest - VALUES clause (PostgreSQL 8.2+)
+execute_values(
+    cursor,
+    "INSERT INTO table (col1, col2) VALUES %s",
+    data,
+    page_size=1000
+)
+```
+
+## 4. Connection Context Managers
+
+Automatic commit/rollback:
+
+```python
+# Manual management (error-prone)
+conn = psycopg2.connect(...)
+try:
+    cursor = conn.cursor()
+    cursor.execute(...)
+    conn.commit()
+except:
+    conn.rollback()
+    raise
+finally:
+    cursor.close()
+    conn.close()
+
+# Better - context managers
+with psycopg2.connect(...) as conn:
+    with conn.cursor() as cursor:
+        cursor.execute(...)
+        # Auto-commit on success, auto-rollback on exception
+```
+
+## 5. Use execute_mogrify for Debugging
+
+See the actual SQL being executed:
+
+```python
+query = cursor.mogrify("SELECT * FROM users WHERE id = %s", (user_id,))
+print(query.decode('utf-8'))  # See exact SQL with values
+
+# Useful for debugging
+cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+```
+
+## 6. Prepared Statements
+
+For repeated queries with different parameters:
+
+```python
+# Prepare once
+cursor.execute("PREPARE user_query AS SELECT * FROM users WHERE id = $1")
+
+# Execute many times (faster)
+for user_id in user_ids:
+    cursor.execute("EXECUTE user_query (%s)", (user_id,))
+    
+# Cleanup
+cursor.execute("DEALLOCATE user_query")
+```
+
+## 7. Use DictCursor for Named Access
+
+Access columns by name instead of index:
+
+```python
+from psycopg2.extras import RealDictCursor
+
+# Regular cursor - access by index
+cursor = conn.cursor()
+cursor.execute("SELECT id, name FROM users")
+row = cursor.fetchone()
+print(row[0], row[1])  # Fragile
+
+# DictCursor - access by name
+cursor = conn.cursor(cursor_factory=RealDictCursor)
+cursor.execute("SELECT id, name FROM users")
+row = cursor.fetchone()
+print(row['id'], row['name'])  # Clear
+```
+
+## 8. Proper Error Handling
+
+Distinguish different error types:
+
+```python
+import psycopg2
+from psycopg2 import errorcodes
+
+try:
+    cursor.execute(...)
+except psycopg2.IntegrityError as e:
+    if e.pgcode == errorcodes.UNIQUE_VIOLATION:
+        # Handle duplicate key
+        pass
+    elif e.pgcode == errorcodes.FOREIGN_KEY_VIOLATION:
+        # Handle FK violation
+        pass
+except psycopg2.OperationalError as e:
+    # Connection issues, retry logic
+    pass
+except psycopg2.DatabaseError as e:
+    # Other DB errors
+    pass
+```
+
+## 9. COPY for Bulk Operations
+
+Fastest way to import/export data:
+
+```python
+# Export to CSV
+with open('output.csv', 'w') as f:
+    cursor.copy_expert(
+        "COPY table TO STDOUT WITH CSV HEADER",
+        f
+    )
+
+# Import from CSV
+with open('input.csv', 'r') as f:
+    cursor.copy_expert(
+        "COPY table FROM STDIN WITH CSV HEADER",
+        f
+    )
+
+# Copy with StringIO (in-memory)
+import io
+buffer = io.StringIO()
+buffer.write("col1,col2\n1,2\n3,4\n")
+buffer.seek(0)
+cursor.copy_expert("COPY table FROM STDIN WITH CSV HEADER", buffer)
+```
+
+## 10. Savepoints for Nested Transactions
+
+Partial rollbacks:
+
+```python
+cursor.execute("BEGIN")
+try:
+    cursor.execute("INSERT INTO users ...")
+    
+    cursor.execute("SAVEPOINT sp1")
+    try:
+        cursor.execute("INSERT INTO orders ...")
+    except:
+        cursor.execute("ROLLBACK TO SAVEPOINT sp1")
+        # First insert still valid
+    
+    cursor.execute("COMMIT")
+except:
+    cursor.execute("ROLLBACK")
+```
+
+## 11. Connection String with SSL/Security
+
+```python
+conn = psycopg2.connect(
+    host='...',
+    sslmode='require',  # Force SSL
+    sslrootcert='/path/to/ca.crt',
+    sslcert='/path/to/client.crt',
+    sslkey='/path/to/client.key',
+    connect_timeout=10,
+    keepalives=1,
+    keepalives_idle=30,
+    keepalives_interval=10,
+    keepalives_count=5
+)
+```
+
+## 12. Use Asynchronous Operations (psycopg2.extras)
+
+For concurrent operations:
+
+```python
+from psycopg2.extras import wait_select
+
+# Start async query
+conn.set_session(autocommit=True)
+cursor = conn.cursor()
+cursor.execute("SELECT pg_sleep(10)")  # Long query
+
+# Do other work while waiting
+while True:
+    state = conn.poll()
+    if state == psycopg2.extensions.POLL_OK:
+        break
+    elif state == psycopg2.extensions.POLL_READ:
+        wait_select(conn)
+    elif state == psycopg2.extensions.POLL_WRITE:
+        wait_select(conn)
+```
+
+## 13. Register Custom Type Adapters
+
+```python
+from psycopg2.extensions import register_adapter, AsIs
+import json
+
+# Adapt Python dict to PostgreSQL JSON
+def adapt_dict(d):
+    return AsIs(f"'{json.dumps(d)}'::json")
+
+register_adapter(dict, adapt_dict)
+
+# Now you can insert dicts directly
+cursor.execute(
+    "INSERT INTO table (data) VALUES (%s)",
+    ({'key': 'value'},)
+)
+```
+
+## 14. LISTEN/NOTIFY for Pub/Sub
+
+```python
+conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
+cursor = conn.cursor()
+
+# Subscribe
+cursor.execute("LISTEN my_channel")
+
+# Wait for notifications
+while True:
+    conn.poll()
+    while conn.notifies:
+        notify = conn.notifies.pop(0)
+        print(f"Received: {notify.payload}")
+```
+
+## 15. Query Timeouts
+
+```python
+# Set statement timeout
+cursor.execute("SET statement_timeout = 5000")  # 5 seconds
+cursor.execute("SELECT pg_sleep(10)")  # Will timeout
+
+# Or at connection level
+conn = psycopg2.connect(..., options="-c statement_timeout=5000")
+```
+
+These practices significantly improve performance, security, and reliability when working with PostgreSQL through psycopg2.
+
 The `psycopg2.sql` module is used for **safe SQL composition** to prevent SQL injection. Here are the main use cases:
 
 ## 1. `sql.Identifier` - Table/Column Names
