@@ -16,7 +16,9 @@
  
 <https://news.ycombinator.com/item?id=45132810> Fourier Transform
 
-https://habr.com/ru/articles/949084/ Matrix theory
+<https://www.youtube.com/watch?v=-j8PzkZ70Lg>  Laplace Transform
+
+<https://habr.com/ru/articles/949084/> Matrix theory
 
 <https://vk.com/mathhedgehog>
 
