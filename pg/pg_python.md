@@ -1,3 +1,69 @@
+`copy_expert()` is a psycopg2 method that executes PostgreSQL's `COPY` command with a file-like object.
+
+## What it does:
+
+```python
+cursor.copy_expert(sql, file_object)
+```
+
+Executes a COPY SQL command and reads/writes data from/to the `file_object`.
+
+## Two main uses:
+
+### 1. Export (COPY TO):
+```python
+# Export table to file
+with open('output.csv', 'w') as f:
+    cursor.copy_expert("COPY my_table TO STDOUT WITH CSV HEADER", f)
+```
+
+### 2. Import (COPY FROM):
+```python
+# Import file to table  
+with open('input.csv', 'r') as f:
+    cursor.copy_expert("COPY my_table FROM STDIN WITH CSV HEADER", f)
+```
+
+## In your code:
+
+```python
+cursor.copy_expert(copy_sql, gz_file)
+```
+
+This executes a COPY command that:
+1. Runs the SELECT query (the subquery in your COPY statement)
+2. Formats results as CSV with headers
+3. Writes the CSV output directly to `gz_file` (which compresses it)
+
+## Why use it instead of regular queries?
+
+**Much faster** than fetching rows in Python:
+
+```python
+# Slow - Python processes each row
+cursor.execute("SELECT * FROM table")
+for row in cursor.fetchall():
+    write_to_file(row)
+
+# Fast - PostgreSQL writes directly to file
+cursor.copy_expert("COPY table TO STDOUT WITH CSV", file)
+```
+
+PostgreSQL handles all the CSV formatting and writing internally, avoiding the Python overhead.
+
+## Key difference from copy_to/copy_from:
+
+- `copy_to()` / `copy_from()` - simpler but less flexible
+- `copy_expert()` - accepts any COPY SQL including subqueries
+
+Your code uses `copy_expert()` because you need a subquery with WHERE clause:
+
+```python
+COPY (SELECT * FROM table WHERE date = '2024-01-01') TO STDOUT
+```
+
+Regular `copy_to()` can't handle subqueries.
+
 The bottleneck is likely the temporary file I/O and the sequential nature of: write to temp file → compress → upload. Here are faster approaches:
 
 ## Option 1: Stream Directly to ADLS (Fastest)
