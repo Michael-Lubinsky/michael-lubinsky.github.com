@@ -1,3 +1,6 @@
+### detroit is a Python implementation of d3js.
+https://detroit.readthedocs.io/en/latest/
+
 ### LabPlot
 <https://labplot.org/>
 <https://invent.kde.org/education/labplot>
