@@ -355,3 +355,227 @@ fires at **07:00 in `cron.timezone`**, or **07:00 UTC** if that setting isn’t 
 [1]: https://github.com/citusdata/pg_cron?utm_source=chatgpt.com "citusdata/pg_cron: Run periodic jobs in PostgreSQL"
 [2]: https://neon.com/docs/extensions/pg_cron?utm_source=chatgpt.com "The pg_cron extension - Neon Docs"
 [3]: https://www.scaleway.com/en/docs/managed-databases-for-postgresql-and-mysql/api-cli/using-pgcron/?utm_source=chatgpt.com "Setting up and using the pg_cron extension"
+
+
+
+Correct — **pg_cron can only be installed in the `postgres` database** (it uses a shared background worker tied to that DB).
+This means **all scheduled jobs execute in the context of the `postgres` database**, not others — unless you explicitly connect elsewhere via `dblink`, `postgres_fdw`, or similar.
+
+So your logic is right that you can’t move the cron job itself to `weavix`, but your proposed code still needs a small correction:
+
+---
+
+### ✅ Corrected version (works under pg_cron-in-postgres restriction)
+
+```sql
+-- Step 1: Drop the unused proxy procedure if it exists in 'postgres'
+DROP PROCEDURE IF EXISTS proxy_seats_used_last_month();
+
+-- Step 2: Schedule a job that runs dblink_exec directly
+-- Remember: PERFORM is invalid outside PL/pgSQL, use SELECT instead
+SELECT cron.schedule(
+    'Run Calculate Gold Seats Used Monthly',
+    '0 15 1 * *',
+    $$
+      SELECT dblink_exec(
+        'host=localhost dbname=weavix user=cron_runner password=<the cron_runner password>',
+        'CALL gold.seats_used_monthly(' ||
+        'date_trunc(''month'', now() - interval ''1 month'')::date, ' ||
+        'date_trunc(''month'', now())::date);'
+      );
+    $$
+);
+```
+
+---
+
+### 🔍 Key details
+
+1. **`PERFORM` → `SELECT`**
+   `pg_cron` executes SQL, not PL/pgSQL, so `PERFORM` will cause:
+
+   ```
+   ERROR: syntax error at or near "PERFORM"
+   ```
+
+   Use `SELECT dblink_exec(...)` instead.
+
+2. **Ensure `dblink` is installed in the `postgres` DB**
+
+   ```sql
+   \c postgres
+   CREATE EXTENSION IF NOT EXISTS dblink;
+   ```
+
+3. **Secure credentials**
+   Instead of hardcoding the password, consider:
+
+   * a `FOREIGN SERVER` + `USER MAPPING` using `postgres_fdw`, or
+   * a `.pgpass` file for `cron_runner` if your hosting platform allows local loopback auth.
+
+4. **Confirm local connectivity**
+   Some managed services (like Azure Database for PostgreSQL) **don’t allow `localhost` connections**, even internally.
+   In that case, replace `'host=localhost'` with the full server name:
+
+   ```
+   'host=weavix-dev-pg.postgres.database.azure.com ...'
+   ```
+
+5. **Time zone**
+   The cron time `'0 15 1 * *'` is **15:00 UTC**, which executes at 8 AM Pacific / 10 AM Central, depending on DST.
+
+---
+
+### ✅ Final recommendation
+
+Your corrected and safe final setup (minimal privileges):
+
+```sql
+CREATE EXTENSION IF NOT EXISTS dblink;
+
+SELECT cron.schedule(
+  'Run Calculate Gold Seats Used Monthly',
+  '0 15 1 * *',
+  $$
+    SELECT public.dblink_exec(
+      'host=weavix-dev-pg.postgres.database.azure.com dbname=weavix user=cron_runner password=<secret>',
+      'CALL gold.seats_used_monthly(' ||
+      'date_trunc(''month'', now() - interval ''1 month'')::date, ' ||
+      'date_trunc(''month'', now())::date);'
+    );
+  $$
+);
+```
+
+✅ This version:
+
+* runs safely from `postgres` (the only pg_cron-compatible DB),
+* uses plain SQL (no PL/pgSQL),
+* directly executes your monthly stored procedure in the correct target DB.
+
+
+  Since you’ve executed that `cron.schedule(...)`, here’s how to quickly verify it’s correct, test it immediately, and fix the most common issues (especially on Azure Postgres).
+
+1. Confirm the job was created and capture the job id
+
+```sql
+SELECT jobid, schedule, command
+FROM cron.job
+WHERE jobname = 'Run Calculate Gold Seats Used Monthly';
+```
+
+2. Dry-run the statement once, right now (no waiting for the cron tick)
+
+```sql
+-- replace :jobid with the value from step 1
+SELECT cron.run_job(:jobid);
+```
+
+3. Inspect the result/any errors
+
+```sql
+SELECT *
+FROM cron.job_run_details
+WHERE jobid = :jobid
+ORDER BY start_time DESC
+LIMIT 5;
+```
+
+If it failed, the most common culprits are below, with fixes.
+
+---
+
+Common fixes (Azure Postgres friendly)
+
+A) Make sure `dblink` exists in the **postgres** database (where pg_cron runs)
+
+```sql
+\c postgres
+CREATE EXTENSION IF NOT EXISTS dblink;
+```
+
+B) Use a single literal (no need for `||`) and add Azure flags (port + SSL).
+Azure Flexible/Single Server typically requires `sslmode=require` and often uses the `user@servername` username format.
+
+```sql
+SELECT cron.schedule(
+  'Run Calculate Gold Seats Used Monthly',
+  '0 15 1 * *',
+  $$
+    SELECT public.dblink_exec(
+      'host=weavix-dev-pg.postgres.database.azure.com port=5432 dbname=weavix user=cron_runner@weavix-dev-pg password=<secret> sslmode=require',
+      'CALL gold.seats_used_monthly('''
+        || 'date_trunc(''month'', now() - interval ''1 month'')::date'
+        || ',' 
+        || 'date_trunc(''month'', now())::date'
+        || ');'
+    );
+  $$
+);
+```
+
+Or, simpler (single literal entirely; same effect):
+
+```sql
+SELECT cron.schedule(
+  'Run Calculate Gold Seats Used Monthly',
+  '0 15 1 * *',
+  $$
+    SELECT public.dblink_exec(
+      'host=weavix-dev-pg.postgres.database.azure.com port=5432 dbname=weavix user=cron_runner@weavix-dev-pg password=<secret> sslmode=require',
+      'CALL gold.seats_used_monthly(''date_trunc(''''month'''', now() - interval ''''1 month'''')::date'',''date_trunc(''''month'''', now())::date'');'
+    );
+  $$
+);
+```
+
+Notes:
+
+* If you installed `dblink` into a schema other than `public`, call it as `that_schema.dblink_exec(...)`.
+* If your server requires an SSL root cert, you may also need `sslrootcert=/path/to/BaltimoreCyberTrustRoot.crt.pem`.
+
+C) Verify the target procedure exists in `weavix.gold` and has `(date,date)` signature
+
+```sql
+SELECT n.nspname AS schema, p.proname, pg_get_function_identity_arguments(p.oid) AS args
+FROM pg_proc p
+JOIN pg_namespace n ON n.oid = p.pronamespace
+WHERE p.prokind = 'p'
+  AND n.nspname = 'gold'
+  AND p.proname = 'seats_used_monthly';
+```
+
+You should see a row with `args = 'date, date'`.
+
+D) Make sure the `pg_cron` role (the user you used to create the job; often your admin role) can execute:
+
+```sql
+GRANT USAGE ON SCHEMA gold TO weavix_admin;
+GRANT EXECUTE ON PROCEDURE gold.seats_used_monthly(date, date) TO weavix_admin;
+```
+
+E) Quick connectivity sanity-check (run in `postgres`)
+
+```sql
+SELECT dblink_connect(
+  'wconn',
+  'host=weavix-dev-pg.postgres.database.azure.com port=5432 dbname=weavix user=cron_runner@weavix-dev-pg password=<secret> sslmode=require'
+);
+SELECT dblink_exec('wconn', 'SELECT 1');
+SELECT dblink_disconnect('wconn');
+```
+
+If `dblink_connect` fails, check the username format, password, firewall rules, and SSL settings.
+
+---
+
+Run it now to confirm end-to-end
+
+```sql
+-- after (re)scheduling:
+SELECT jobid FROM cron.job WHERE jobname = 'Run Calculate Gold Seats Used Monthly';
+SELECT cron.run_job(:jobid);
+SELECT * FROM cron.job_run_details WHERE jobid = :jobid ORDER BY start_time DESC LIMIT 5;
+```
+
+If you paste any error text you see in `job_run_details.return_message`, I’ll pinpoint the exact fix (escaping, auth, SSL, or permissions).
