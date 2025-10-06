@@ -1,3 +1,5 @@
+<https://www.youtube.com/watch?v=NKgCZUiHh68> Bible
+
 <https://www.youtube.com/watch?v=CzI2CKrnZsw> БИБЛИЯ. Ветхий Завет. Синодальный перевод. Часть 1.
 
 ## Unsorted
