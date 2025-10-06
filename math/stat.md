@@ -217,15 +217,18 @@ https://medium.com/data-bistrot/poisson-distribution-with-python-791d7afad014
 https://tracyrenee61.medium.com/use-python-to-understand-the-poisson-distribution-and-the-functions-associated-with-it-605a0bc31375
 
 
-### EDA
+###  Tools for assessing normality of distribution: 
+
+<https://agency.blastim.ru/media/tpost/me02yfomi1-nuzhno-li-proveryat-dannie-na-normalnost>
 Tools for assessing normality of distribution: 
-Shapiro-Wilk test   
-Kolmogorov-Smirnov test  
-Anderson-Darling test  
-Lilliefors test  
-Jarque-Bera test  
+- Shapiro-Wilk test   
+- Kolmogorov-Smirnov test  
+- Anderson-Darling test  
+- Lilliefors test  
+- Jarque-Bera test  
  
- https://medium.com/@data-overload/the-shapiro-wilk-test-a-guide-to-normality-testing-d730e820d1a8 
+<https://medium.com/@data-overload/the-shapiro-wilk-test-a-guide-to-normality-testing-d730e820d1a8>
+ 
 ```python
 from scipy.stats import shapiro
 
@@ -238,7 +241,7 @@ else:
     print("Data does not look normal (reject H₀)")
 ```
  
-
+### EDA
 https://github.com/ydataai/ydata-profiling
 
 https://realpython.com/python-for-data-analysis/
