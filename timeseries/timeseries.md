@@ -10,6 +10,8 @@ https://habr.com/ru/companies/otus/articles/919156/
 
 https://habr.com/ru/companies/otus/articles/918832/
 
+https://habr.com/ru/companies/sberbank/articles/954636/
+
 https://habr.com/ru/companies/otus/articles/894754/  TSFresh
 
 Monte Carlo
