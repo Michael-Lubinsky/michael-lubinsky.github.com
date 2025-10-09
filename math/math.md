@@ -4,7 +4,10 @@
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
-<https://fluids.ac.uk/files/meetings/KoopmanNotes.1575558616.pdf>
+### Koopman Operator
+<https://fluids.ac.uk/files/meetings/KoopmanNotes.1575558616.pdf>  
+<https://www.annualreviews.org/content/journals/10.1146/annurev-control-071020-010108>  
+<https://www.annualreviews.org/docserver/fulltext/control/4/1/annurev-control-071020-010108.pdf>  
 
 <https://habr.com/ru/articles/953338/>
 
