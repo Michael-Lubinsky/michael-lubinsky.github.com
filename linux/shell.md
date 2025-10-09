@@ -9,14 +9,22 @@ runs it in the background (&), returning you to the shell immediately.
 ```
 
 ### nohup 
+```bash
 nohup python3 app.py > output.log 2>&1 &
+tail -f output.log
 
 nohup and see output in console:
 
 nohup python your_script.py 2025-10-01 2025-10-31 | tee -a nohup.out &
 
-```bash
+nohup python pg_timescaledb_backup.py 2025-01-15 2025-02-01 bronze.walts_history 2>&1 | tee -a myfile.log &
+
+nohup python pg_timescaledb_backup.py 2025-01-15 2025-02-01 bronze.walts_history > myfile.log 2>&1 &
+tail -f myfile.log
+
 nohup bash -lc 'stdbuf -oL -eL python3 -u /path/to/your_script.py 2>&1 | tee -a nohup.out' &
+
+nohup python pg_timescaledb_backup.py 2025-01-15 2025-02-01 bronze.walts_history > myfile.log 2>&1 &
 ```
 This command:
 
