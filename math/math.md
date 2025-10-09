@@ -4,6 +4,8 @@
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
+<https://fluids.ac.uk/files/meetings/KoopmanNotes.1575558616.pdf>
+
 <https://habr.com/ru/articles/953338/>
 
 <https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
