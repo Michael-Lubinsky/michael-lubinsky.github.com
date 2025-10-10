@@ -530,6 +530,11 @@ https://lnkd.in/ggqBu-Vj
 
 <https://caylent.com/blog/mocking-aws-calls-using-moto>
 
+
+## lambda
+
+<https://habr.com/ru/companies/otus/articles/954920/>
+
 <https://aws.amazon.com/blogs/devops/unit-testing-aws-lambda-with-python-and-mock-aws-services/>
 
 <https://asrathore08.medium.com/running-spark-on-aws-cloud-297f5aed70eb>
