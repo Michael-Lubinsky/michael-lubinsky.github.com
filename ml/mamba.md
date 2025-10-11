@@ -78,6 +78,10 @@ https://github.com/gavinkhung/machine-learning-visualized   ML visualized
 
 https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL
 
+https://habr.com/ru/articles/955636/ Топ вопросов с Data Science собеседований
+
+https://habr.com/ru/articles/926398/
+
 https://habr.com/ru/articles/926160/
  
 https://datasecrets.ru/articles
