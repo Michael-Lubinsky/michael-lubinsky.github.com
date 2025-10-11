@@ -110,3 +110,9 @@ Using advanced SQL functions without rewriting for DuckDB.
 
 Enabling exploratory data analysis on local DuckDB with PostgreSQL idioms.
 
+### GigAPI 
+<https://github.com/gigapi/gigapi>
+
+DuckDB + Parquet, чтение из локального диска или S3, запросы через FlightSQL (gRPC) и HTTP, режимы writeonly/readonly/compaction, один контейнер для старта и понятная философия «делай просто, делай быстро».   
+Проект обещает суб-секундные аналитические запросы, компактизацию и дружбу с FDAP-миром (Arrow/DataFusion/Parquet/Flight) 
+<https://habr.com/ru/articles/955560/>
