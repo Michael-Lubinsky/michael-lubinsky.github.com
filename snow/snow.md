@@ -1389,6 +1389,8 @@ Snowflake is not optimized for:
 
 <https://asrathore08.medium.com/snowflake-tables-decluttered-71cda9b38b75>
 
+<https://www.linkedin.com/pulse/snowflake-data-engineers-vincent-rainardi-uz5fe/>
+
 ### Python Snowflake connector
 
 <https://habr.com/ru/companies/otus/articles/843522/>
