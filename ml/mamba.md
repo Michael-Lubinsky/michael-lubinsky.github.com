@@ -1,5 +1,7 @@
 https://github.com/Saivineeth147/awesome-llm-resources
 
+https://github.com/mohamedrxo/simplegrad
+
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
 
 https://stepik.org/course/231306/promo
