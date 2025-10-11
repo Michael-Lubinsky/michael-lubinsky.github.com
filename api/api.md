@@ -1,5 +1,7 @@
 ### Rest API
 
+<https://habr.com/ru/articles/955574/>
+
 <https://lukasniessen.medium.com/simple-checklist-what-are-rest-apis-755b7565aa8e>
 
 <https://habr.com/ru/companies/sberbank/articles/937218/>
