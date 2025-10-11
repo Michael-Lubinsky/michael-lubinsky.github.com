@@ -2,6 +2,8 @@
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
 
+<https://www.kvant.digital/>
+
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
 ### Koopman Operator
