@@ -116,3 +116,8 @@ Enabling exploratory data analysis on local DuckDB with PostgreSQL idioms.
 DuckDB + Parquet, чтение из локального диска или S3, запросы через FlightSQL (gRPC) и HTTP, режимы writeonly/readonly/compaction, один контейнер для старта и понятная философия «делай просто, делай быстро».   
 Проект обещает суб-секундные аналитические запросы, компактизацию и дружбу с FDAP-миром (Arrow/DataFusion/Parquet/Flight) 
 <https://habr.com/ru/articles/955560/>
+
+### Arc: Убийца ClickHouse на стероидах из DuckDB и Parquet - новый движок для time-series
+<https://habr.com/ru/articles/955536/>  
+<https://github.com/Basekick-Labs/arc>
+Time-series data warehouse built for speed. 2.01M records/sec on native deployment. DuckDB + Parquet + MinIO.
