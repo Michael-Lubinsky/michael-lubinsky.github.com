@@ -1,3 +1,5 @@
+https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
+
 Writing an LLM from scratch:
 https://www.gilesthomas.com/python
 
