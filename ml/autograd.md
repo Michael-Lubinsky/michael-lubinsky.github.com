@@ -179,6 +179,7 @@ print(f"dy/dx3 = {x3.grad}")  # 5.0
 | Gradients         | Propagated from output to inputs   |
 
 
+https://www.youtube.com/watch?v=ZGSUrfJcXmA
 
 <https://rlhick.people.wm.edu/posts/mle-autograd.html>
 
