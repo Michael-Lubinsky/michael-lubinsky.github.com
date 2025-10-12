@@ -1,5 +1,7 @@
 <https://github.com/Sharashchandra/s3ranger>
 
+<https://medium.com/@milinangalia/from-boto3-to-batch-copy-our-s3-ingestion-revolution-3899d8546aaa>
+
 <https://github.com/stelviodev/stelvio>
 
 Stelvio is a Python framework that simplifies AWS cloud infrastructure management and deployment. It lets you define your cloud infrastructure using pure Python, with smart defaults that handle complex configuration automatically.
