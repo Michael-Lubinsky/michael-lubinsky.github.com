@@ -452,4 +452,80 @@ This identity will authenticate as the PostgreSQL user with the same name as you
 3. ✅ Set `PG_USER` environment variable
 4. ✅ Use the Python code above
 
-The authentication flow is identical to your Kubernetes setup! 🔐
+The authentication flow is identical to your Kubernetes setup! 
+
+Yes — to drop a TimescaleDB partition (chunk) using `drop_chunks()`, **you must be the owner of the hypertable**, or a superuser.
+
+Here’s the breakdown:
+
+---
+
+### 🔒 Ownership Requirement
+
+* **`drop_chunks()`** enforces ownership at the hypertable level.
+* Only:
+
+  * The **hypertable owner**, or
+  * A **superuser**
+
+  can execute `drop_chunks()` successfully.
+
+Even if another role has been granted **ALL PRIVILEGES** or **EXECUTE** on the function, it will still fail unless that role **owns the hypertable** (or the session has assumed that role via `SET ROLE hypertable_owner;`).
+
+---
+
+### 🧩 Why This Restriction Exists
+
+`drop_chunks()` physically deletes partitioned data and underlying storage.
+Postgres’ privilege system treats that as a DDL-level operation, and DDL operations require table ownership.
+
+TimescaleDB checks the owner to prevent accidental or unauthorized partition deletions.
+
+---
+
+### ✅ Workarounds
+
+1. **Execute as the hypertable owner**:
+
+   ```sql
+   SET ROLE weavix_admins;  -- or the hypertable’s owner role
+   SELECT drop_chunks('schema.table', older_than => '2025-10-01');
+   ```
+
+2. **Create a wrapper function owned by the hypertable owner**:
+
+   ```sql
+   CREATE OR REPLACE FUNCTION admin_drop_chunks(_table regclass, _older_than interval)
+   RETURNS void
+   LANGUAGE plpgsql
+   SECURITY DEFINER
+   AS $$
+   BEGIN
+     PERFORM drop_chunks(_table, older_than => _older_than);
+   END;
+   $$;
+   ```
+
+   Then grant EXECUTE to other users:
+
+   ```sql
+   GRANT EXECUTE ON FUNCTION admin_drop_chunks(regclass, interval) TO your_user;
+   ```
+
+   This lets non-owner roles call it indirectly.
+
+---
+
+### 🧠 Summary
+
+| Role                                    | Can Call `drop_chunks()`? | Notes                                |
+| --------------------------------------- | ------------------------- | ------------------------------------ |
+| Hypertable owner                        | ✅                         | Full control                         |
+| Superuser                               | ✅                         | Overrides ownership                  |
+| Other user with privileges              | ❌                         | Fails due to ownership check         |
+| Role executing SECURITY DEFINER wrapper | ✅                         | If wrapper owned by hypertable owner |
+
+---
+
+Would you like me to show a secure pattern for scheduling chunk drops via `pg_cron` when your cron job user is **not** the hypertable owner?
+
