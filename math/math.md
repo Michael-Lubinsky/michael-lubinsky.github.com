@@ -39,7 +39,7 @@
 <https://mirtitles.org/category/little-mathematics-library/>
 
 ## Puzzles
-
+<https://habr.com/ru/articles/954802/>
 ### Question 
 There are 3 ants at 3 corners of a triangle, they randomly start moving towards another corner.  
 What is the probability that they don't collide>
