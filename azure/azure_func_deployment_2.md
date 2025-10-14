@@ -527,5 +527,379 @@ TimescaleDB checks the owner to prevent accidental or unauthorized partition del
 
 ---
 
-Would you like me to show a secure pattern for scheduling chunk drops via `pg_cron` when your cron job user is **not** the hypertable owner?
+ 
+### your Managed Identity role needs *ownership* of the hypertable (not just privileges), or you must call `drop_chunks()` **through a SECURITY DEFINER wrapper owned by the hypertable owner**. 
 
+Grants like CONNECT/USAGE/SELECT/INSERT/UPDATE are not enough.
+
+Below is a clean, production-safe pattern that works on Azure Database for PostgreSQL (no superuser) and keeps ownership with a controlled role.
+
+---
+
+### 1) Make/confirm a dedicated owner for the hypertable(s)
+
+Pick a role that will “own” the hypertable(s), e.g. `ts_owner` (this can be an existing owner such as `weavix_admins`).
+
+```sql
+-- Optional: create an explicit owner role
+CREATE ROLE ts_owner NOLOGIN;
+
+-- Make the hypertable owned by ts_owner (repeat per table)
+ALTER TABLE events.pttpressed OWNER TO ts_owner;
+-- (Owning the hypertable is what matters; Timescale manages its chunks.)
+```
+
+If `weavix_admins` is already the owner, you can use it instead of `ts_owner`.
+
+---
+
+### 2) Create a locked-down SECURITY DEFINER wrapper
+
+Create the wrapper in a separate schema (e.g. `admin`), owned by the hypertable owner. Set a safe `search_path` to avoid hijacking.
+
+```sql
+-- Schema owned by the hypertable owner
+CREATE SCHEMA IF NOT EXISTS admin AUTHORIZATION ts_owner;
+
+-- Wrapper: drop older than a relative interval (common case)
+CREATE OR REPLACE FUNCTION admin.drop_chunks_older_than(_tbl regclass, _older_than interval)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, admin
+AS $$
+BEGIN
+  PERFORM drop_chunks(_tbl, older_than => _older_than);
+END;
+$$;
+
+-- Optional: wrapper for an explicit time window
+CREATE OR REPLACE FUNCTION admin.drop_chunks_between(_tbl regclass, _newer_than timestamptz, _older_than timestamptz)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, admin
+AS $$
+BEGIN
+  PERFORM drop_chunks(_tbl, newer_than => _newer_than, older_than => _older_than);
+END;
+$$;
+
+-- Lock down and grant only EXECUTE
+REVOKE ALL ON FUNCTION admin.drop_chunks_older_than(regclass, interval) FROM PUBLIC;
+REVOKE ALL ON FUNCTION admin.drop_chunks_between(regclass, timestamptz, timestamptz) FROM PUBLIC;
+
+-- Grant EXECUTE to your AAD role that maps to the Function App’s Managed Identity
+GRANT EXECUTE ON FUNCTION admin.drop_chunks_older_than(regclass, interval) TO "<your-function-app-name>";
+GRANT EXECUTE ON FUNCTION admin.drop_chunks_between(regclass, timestamptz, timestamptz) TO "<your-function-app-name>";
+```
+
+Notes:
+
+* The **function owner must be the hypertable owner** (here `ts_owner`). If you created the function as another role, run `ALTER FUNCTION ... OWNER TO ts_owner;`.
+* Don’t rely on `azure_pg_admin`—it isn’t superuser and does not bypass ownership checks.
+
+---
+
+### 3) Map your Managed Identity to a database role (AAD)
+
+For a system-assigned MI, create a DB role that matches its AAD principal (display name or object id). You already did:
+
+```sql
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "<your-function-app-name>" WITH LOGIN IN ROLE azure_ad_user;
+
+-- Minimal grants for connecting + executing wrapper
+GRANT CONNECT ON DATABASE weavix TO "<your-function-app-name>";
+GRANT USAGE ON SCHEMA admin TO "<your-function-app-name>";
+GRANT EXECUTE ON FUNCTION admin.drop_chunks_older_than(regclass, interval) TO "<your-function-app-name>";
+```
+
+(Your earlier `USAGE`/`SELECT` on `events` are not required for the drop unless you also read/write data; the wrapper performs the privileged action.)
+
+If you use a **user-assigned** MI, you’ll typically want the DB role named by its object id GUID, and you must request a token specifically for that client id in your app. The database `ROLE` name must exactly match the AAD principal you authenticate as.
+
+---
+
+### 4) Azure Function (Python) connection and call
+
+Acquire an AAD token for the PostgreSQL resource and pass it as the password. Use the MI-mapped DB user name for `user=`.
+
+```python
+import psycopg2
+from azure.identity import DefaultAzureCredential
+
+PG_HOST = "weavix-dev-pg.postgres.database.azure.com"
+PG_DB   = "weavix"
+PG_USER = "<your-function-app-name>"  # must match the DB ROLE you created
+RESOURCE = "https://ossrdbms-aad.database.windows.net/.default"
+
+cred = DefaultAzureCredential()
+token = cred.get_token(RESOURCE).token  # pass this as password
+
+conn = psycopg2.connect(
+    host=PG_HOST,
+    dbname=PG_DB,
+    user=PG_USER,
+    password=token,
+    sslmode="require",
+)
+
+with conn, conn.cursor() as cur:
+    # Drop chunks older than 30 days on a given hypertable
+    cur.execute("SELECT admin.drop_chunks_older_than(%s, %s);",
+                ("events.pttpressed", "30 days"))
+```
+
+Tips:
+
+* For **user-assigned MI**, ensure your Function App has `AZURE_CLIENT_ID` set, so `DefaultAzureCredential` picks the correct identity.
+* You don’t need to pass any special libpq `options` when using psycopg2 for AAD tokens.
+
+---
+
+### 5) If you really want the MI to own the hypertable
+
+You could transfer ownership to the MI role:
+
+```sql
+ALTER TABLE events.pttpressed OWNER TO "<your-function-app-name>";
+```
+
+But that can complicate admin/maintenance; most teams prefer keeping ownership with a dedicated owner role and exposing a **SECURITY DEFINER** wrapper.
+
+---
+
+### Why your current grants aren’t enough
+
+`drop_chunks()` performs DDL-like destructive operations under TimescaleDB’s authority. Postgres requires **table ownership** (or superuser, which you don’t have in Azure) for such operations. Plain GRANTs don’t satisfy that requirement. The **SECURITY DEFINER** wrapper executes with the owner’s privileges, solving the problem safely.
+
+---
+
+ 
+## pg_cron and chunk drop
+Here’s a secure, least-privilege pattern to schedule TimescaleDB chunk drops with `pg_cron` when the **cron job user is not the hypertable owner**.
+
+---
+
+## Roles and ownership
+
+1. Pick/confirm a dedicated owner for the hypertables, e.g. `ts_owner` (this role owns the hypertables).
+
+```sql
+-- Optional: create an explicit owner role (no login)
+CREATE ROLE ts_owner NOLOGIN;
+
+-- Make sure each hypertable is owned by ts_owner
+ALTER TABLE events.pttpressed OWNER TO ts_owner;
+-- repeat for other hypertables you will manage
+```
+
+2. Create a minimal “job runner” role (the identity that will schedule/own the cron jobs). It does **not** need table ownership.
+
+```sql
+-- The role that will schedule/own pg_cron jobs
+CREATE ROLE cron_runner LOGIN;
+
+GRANT CONNECT ON DATABASE weavix TO cron_runner;
+```
+
+---
+
+## SECURITY DEFINER wrapper (owned by the hypertable owner)
+
+Put privileged logic in a `SECURITY DEFINER` function owned by `ts_owner`. Lock down search_path and add timeouts inside the function body to avoid long blocks.
+
+```sql
+-- Schema to hold admin functions; owned by ts_owner
+CREATE SCHEMA IF NOT EXISTS admin AUTHORIZATION ts_owner;
+
+-- Optional: simple log table for observability
+CREATE TABLE IF NOT EXISTS admin.chunk_maintenance_log (
+  id              bigserial PRIMARY KEY,
+  ts              timestamptz NOT NULL DEFAULT now(),
+  table_regclass  regclass    NOT NULL,
+  older_than      interval    NOT NULL,
+  rows_dropped    bigint      NULL,       -- if you later capture stats
+  note            text        NULL
+);
+ALTER TABLE admin.chunk_maintenance_log OWNER TO ts_owner;
+
+-- Strict wrapper. Runs with ts_owner privileges.
+CREATE OR REPLACE FUNCTION admin.drop_chunks_older_than(_tbl regclass, _older_than interval)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, admin
+AS $$
+DECLARE
+  _schema text := split_part(_tbl::text, '.', 1);
+  _owner  name;
+BEGIN
+  -- Defensive checks: only allow specific schema(s)
+  IF _schema NOT IN ('events', 'metrics', 'silver', 'gold') THEN
+    RAISE EXCEPTION 'Forbidden schema for drop_chunks(): %', _schema;
+  END IF;
+
+  -- Make sure ts_owner actually owns the hypertable (or adjust as needed)
+  SELECT rolname INTO _owner
+  FROM pg_class c JOIN pg_roles r ON r.oid = c.relowner
+  WHERE c.oid = _tbl;
+  IF _owner <> 'ts_owner' THEN
+    RAISE EXCEPTION 'Hypertable % is not owned by ts_owner (owner=%)', _tbl, _owner;
+  END IF;
+
+  -- Keep operations snappy; avoid blocking prod workloads
+  PERFORM set_config('lock_timeout', '5s', true);
+  PERFORM set_config('statement_timeout', '2min', true);
+
+  -- Actual drop
+  PERFORM drop_chunks(_tbl, older_than => _older_than);
+
+  -- Lightweight audit trail
+  INSERT INTO admin.chunk_maintenance_log(table_regclass, older_than, note)
+  VALUES (_tbl, _older_than, 'pg_cron run');
+END;
+$$;
+
+-- Lock down permissions and grant only EXECUTE to the job runner
+REVOKE ALL ON FUNCTION admin.drop_chunks_older_than(regclass, interval) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION admin.drop_chunks_older_than(regclass, interval) TO cron_runner;
+
+-- Ensure function owner is ts_owner (very important for SECURITY DEFINER)
+ALTER FUNCTION admin.drop_chunks_older_than(regclass, interval) OWNER TO ts_owner;
+```
+
+Notes:
+
+* The function executes with `ts_owner`’s privileges regardless of who calls it.
+* We defensively whitelist schemas and verify the actual owner to prevent misuse.
+* We set `lock_timeout`/`statement_timeout` inside the function so callers don’t have to.
+
+---
+
+## `pg_cron` setup and scheduling
+
+Make sure `pg_cron` extension is installed in the target database:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pg_cron;
+```
+
+Log in as `cron_runner` (or `SET ROLE cron_runner`) and schedule jobs that call the wrapper. Jobs run with the privileges of the user who schedules them.
+
+Option A (run in the current database):
+
+```sql
+SET ROLE cron_runner;
+
+-- Daily at 03:05 server time: keep 30 days for events.pttpressed
+SELECT cron.schedule(
+  'drop_chunks_events_pttpressed_keep30d',
+  '5 3 * * *',
+  $$SELECT admin.drop_chunks_older_than('events.pttpressed'::regclass, '30 days'::interval);$$
+);
+```
+
+Option B (be explicit about database):
+
+```sql
+SET ROLE cron_runner;
+
+SELECT cron.schedule_in_database(
+  'drop_chunks_events_pttpressed_keep30d',
+  '5 3 * * *',
+  'weavix',
+  $$SELECT admin.drop_chunks_older_than('events.pttpressed'::regclass, '30 days'::interval);$$
+);
+```
+
+Good hygiene:
+
+* Give each job a unique, descriptive name.
+* Create one job per hypertable/retention, or build a multi-table wrapper that loops across a curated list.
+
+To list or change jobs:
+
+```sql
+-- See jobs
+SELECT * FROM cron.job;
+
+-- Update schedule
+SELECT cron.alter_job('drop_chunks_events_pttpressed_keep30d', '10 3 * * *');
+
+-- Remove job
+SELECT cron.unschedule('drop_chunks_events_pttpressed_keep30d');
+```
+
+---
+
+## Why this is secure
+
+* The cron user (`cron_runner`) has no destructive table privileges.
+* The destructive operation happens only inside a `SECURITY DEFINER` function owned by the hypertable owner (`ts_owner`).
+* The function validates schema and ownership before acting.
+* Tight `search_path` prevents function hijacking.
+* Timeouts reduce lock contention risk.
+* Optional audit table records each execution.
+
+---
+
+## Using Managed Identity (AAD) for the cron user (optional)
+
+If you want an Azure Function (Managed Identity) to create/maintain the cron jobs:
+
+1. Map the MI to a DB role (e.g., `CREATE ROLE "<mi-name-or-oid>" WITH LOGIN IN ROLE azure_ad_user;`).
+2. Grant that role what `cron_runner` has (CONNECT + EXECUTE on the wrapper, and rights to call `cron.schedule*` which live in `pg_cron` schema).
+3. From your Function, connect with the MI token and run the `cron.schedule*` statements once at deployment time.
+
+If you prefer, keep a human `cron_runner` for job management and let the Function only call the wrapper ad-hoc.
+
+---
+
+## Optional: one wrapper to manage multiple tables
+
+If you have many hypertables, you can curate a list in a table and loop:
+
+```sql
+CREATE TABLE IF NOT EXISTS admin.retention_policy (
+  table_regclass regclass PRIMARY KEY,
+  keep_interval  interval NOT NULL
+);
+ALTER TABLE admin.retention_policy OWNER TO ts_owner;
+
+-- Example entries:
+INSERT INTO admin.retention_policy VALUES
+('events.pttpressed', '30 days'),
+('events.pttjitter',  '14 days')
+ON CONFLICT DO NOTHING;
+
+CREATE OR REPLACE FUNCTION admin.enforce_retention_all()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, admin
+AS $$
+DECLARE r record;
+BEGIN
+  PERFORM set_config('lock_timeout', '5s', true);
+  PERFORM set_config('statement_timeout', '5min', true);
+  FOR r IN SELECT * FROM admin.retention_policy LOOP
+    PERFORM admin.drop_chunks_older_than(r.table_regclass, r.keep_interval);
+  END LOOP;
+END;
+$$;
+ALTER FUNCTION admin.enforce_retention_all() OWNER TO ts_owner;
+REVOKE ALL ON FUNCTION admin.enforce_retention_all() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION admin.enforce_retention_all() TO cron_runner;
+
+-- Then a single cron job:
+SET ROLE cron_runner;
+SELECT cron.schedule(
+  'enforce_timescale_retention_all',
+  '0 3 * * *',
+  $$SELECT admin.enforce_retention_all();$$
+);
+```
+
+This keeps all retention policy in data, not code, and still preserves the same security guarantees.
