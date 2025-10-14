@@ -267,3 +267,189 @@ Want me to add a tiny health-check function (runs `SELECT 1`) and a retry wrappe
 [1]: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/security-connect-with-managed-identity "Connect with Managed Identity - Azure Database for PostgreSQL | Microsoft Learn"
 [2]: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/security-entra-configure "Use Microsoft Entra ID Authentication - Azure Database for PostgreSQL | Microsoft Learn"
 [3]: https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/connect-python?utm_source=chatgpt.com "Connect Using Python - Azure Database for PostgreSQL"
+
+
+## Under Function App -> Settings -> Identity there are 2 tabs.
+System Assigned: On
+Object (principal) ID : 04a9fcc9-de20-4078-a327-cf935088b0bb
+
+It means: Your Azure Function already has a System-assigned Managed Identity enabled.
+
+Object (principal) ID: 04a9fcc9-de20-4078-a327-cf935088b0bb
+
+Now you need to grant this identity access to PostgreSQL:
+ 
+
+**Object (principal) ID**: `04a9fcc9-de20-4078-a327-cf935088b0bb`
+
+Now you need to grant this identity access to PostgreSQL:
+
+## Step 1: Grant PostgreSQL Access to the Managed Identity
+
+Connect to PostgreSQL as admin:
+
+```bash
+psql "host=weavix-dev-pg.postgres.database.azure.com \
+      port=5432 \
+      dbname=weavix \
+      user=mlubinsky_weavix.com#EXT#@weavix.onmicrosoft.com \
+      password=$(az account get-access-token --resource https://ossrdbms-aad.database.windows.net --query accessToken --output tsv) \
+      sslmode=require"
+```
+
+Then run these SQL commands:
+
+```sql
+-- Get your Function App name (it's the identity username)
+-- You can find it in: Portal → Function App → Overview → Name
+
+-- Create Azure AD role for the managed identity
+-- Replace <your-function-app-name> with actual name
+SET aad_validate_oids_in_tenant = off;
+CREATE ROLE "<your-function-app-name>" WITH LOGIN IN ROLE azure_ad_user;
+
+-- Grant necessary permissions
+GRANT CONNECT ON DATABASE weavix TO "<your-function-app-name>";
+GRANT USAGE ON SCHEMA public TO "<your-function-app-name>";
+GRANT USAGE ON SCHEMA events TO "<your-function-app-name>";
+
+-- Grant table permissions (adjust as needed)
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "<your-function-app-name>";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA events TO "<your-function-app-name>";
+
+-- Grant future table permissions
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "<your-function-app-name>";
+ALTER DEFAULT PRIVILEGES IN SCHEMA events GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "<your-function-app-name>";
+
+-- Verify the role was created
+\du
+```
+
+## Step 2: Update Your Python Code
+
+```python
+import psycopg2
+from azure.identity import DefaultAzureCredential
+import os
+import logging
+
+def get_postgres_connection():
+    """Connect to PostgreSQL using Managed Identity"""
+    try:
+        # Get access token using managed identity
+        credential = DefaultAzureCredential()
+        token_response = credential.get_token("https://ossrdbms-aad.database.windows.net/.default")
+        access_token = token_response.token
+        
+        # Connection parameters
+        pg_host = os.environ.get('PG_HOST', 'weavix-dev-pg.postgres.database.azure.com')
+        pg_database = os.environ.get('PG_DB', 'weavix')
+        pg_user = os.environ.get('PG_USER')  # Your function app name
+        
+        if not pg_user:
+            raise ValueError("PG_USER environment variable not set")
+        
+        logging.info(f"Connecting to PostgreSQL as user: {pg_user}")
+        
+        # Connect
+        conn = psycopg2.connect(
+            host=pg_host,
+            database=pg_database,
+            user=pg_user,
+            password=access_token,  # Token as password
+            sslmode='require',
+            port=5432,
+            connect_timeout=10
+        )
+        
+        logging.info("Successfully connected to PostgreSQL")
+        return conn
+        
+    except Exception as e:
+        logging.error(f"Failed to connect to PostgreSQL: {e}")
+        raise
+
+# Your function
+def main(timer):
+    logging.info('Timer triggered - starting CSV export')
+    
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
+        
+        # Your query
+        cursor.execute("SELECT * FROM your_table LIMIT 10")
+        results = cursor.fetchall()
+        
+        logging.info(f"Retrieved {len(results)} rows")
+        
+        cursor.close()
+        conn.close()
+        
+    except Exception as e:
+        logging.error(f"Error in main function: {e}")
+        raise
+```
+
+## Step 3: Set Environment Variables
+
+In your Function App settings (Portal → Configuration → Application settings):
+
+Add these settings:
+
+```
+PG_HOST = weavix-dev-pg.postgres.database.azure.com
+PG_DB = weavix
+PG_USER = <your-function-app-name>
+```
+
+To find your function app name:
+```bash
+# It's shown in the portal, or:
+az functionapp list --query "[].name" -o table
+```
+
+## Step 4: Verify in PostgreSQL
+
+After creating the role, verify it exists:
+
+```sql
+-- Check if role exists
+SELECT rolname FROM pg_roles WHERE rolname = '<your-function-app-name>';
+
+-- Check permissions
+\du <your-function-app-name>
+```
+
+## Step 5: Test the Connection
+
+Add this test to your function:
+
+```python
+def test_connection():
+    """Test PostgreSQL connection"""
+    try:
+        conn = get_postgres_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT version();")
+        version = cursor.fetchone()
+        logging.info(f"PostgreSQL version: {version[0]}")
+        cursor.close()
+        conn.close()
+        return True
+    except Exception as e:
+        logging.error(f"Connection test failed: {e}")
+        return False
+```
+
+## Summary
+
+Your managed identity Object ID is: `04a9fcc9-de20-4078-a327-cf935088b0bb`
+
+This identity will authenticate as the PostgreSQL user with the same name as your Function App. Just need to:
+1. ✅ Create the role in PostgreSQL
+2. ✅ Grant permissions
+3. ✅ Set `PG_USER` environment variable
+4. ✅ Use the Python code above
+
+The authentication flow is identical to your Kubernetes setup! 🔐
