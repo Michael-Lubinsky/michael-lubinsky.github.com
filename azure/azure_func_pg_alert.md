@@ -1,6 +1,5 @@
-Ah, excellent! You're right - using **token-based authentication with Managed Identity** is much more secure. This is actually the **Azure best practice**.
-
-Let's set this up properly!
+Use  **token-based authentication with Managed Identity** is much more secure. 
+ 
 
 ---
 
@@ -428,4 +427,354 @@ DB_USER = "dataplatform"  # Function App name
 
 ---
 
-**Ready to set this up?** Let me know if you need help with any specific step!
+Here’s a ready-to-run Azure Function (Python) that runs on a schedule, queries Postgres, and emails if the recent row count is below a threshold.
+
+---
+
+# 1) Folder layout
+
+```
+pg-freshness-func/
+├─ function_app.py
+├─ freshness/__init__.py
+├─ freshness/function.json
+├─ requirements.txt
+└─ local.settings.json         # (local dev only)
+```
+
+---
+
+# 2) The timer-triggered function
+
+`freshness/__init__.py`
+
+```python
+import os
+import json
+import logging
+from datetime import timezone, datetime
+import azure.functions as func
+import psycopg2
+from azure.identity import DefaultAzureCredential
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
+def _aad_token():
+    # Azure AD token for Azure Database for PostgreSQL
+    # Resource: https://ossrdbms-aad.database.windows.net/.default
+    cred = DefaultAzureCredential()
+    token = cred.get_token("https://ossrdbms-aad.database.windows.net/.default")
+    return token.token
+
+
+def _pg_connect():
+    """
+    Supports two modes:
+      AAD (recommended): set PG_AUTH=AAD and provide PGHOST, PGDATABASE, PGUSER
+      Password: set PG_AUTH=PASSWORD and provide PGHOST, PGDATABASE, PGUSER, PGPASSWORD
+    """
+    host = os.environ["PGHOST"]
+    db = os.environ["PGDATABASE"]
+    user = os.environ["PGUSER"]
+    sslmode = os.environ.get("PGSSLMODE", "require")
+    auth_mode = os.environ.get("PG_AUTH", "AAD").upper()
+
+    if auth_mode == "AAD":
+        password = _aad_token()
+    else:
+        password = os.environ["PGPASSWORD"]
+
+    return psycopg2.connect(
+        host=host,
+        dbname=db,
+        user=user,
+        password=password,
+        sslmode=sslmode,
+        connect_timeout=15,
+    )
+
+
+def _send_email(stale_msg: str):
+    api_key = os.environ["SENDGRID_API_KEY"]
+    to_emails = [e.strip() for e in os.environ["ALERT_TO"].split(",") if e.strip()]
+    from_email = os.environ.get("ALERT_FROM", "alerts@no-reply.local")
+
+    sg = SendGridAPIClient(api_key)
+    mail = Mail(
+        from_email=from_email,
+        to_emails=to_emails,
+        subject=os.environ.get("ALERT_SUBJECT", "Postgres freshness alert"),
+        plain_text_content=stale_msg,
+    )
+    sg.send(mail)
+
+
+def _check_one(conn, table_fqn: str, ts_column: str, window_hours: int, min_rows: int):
+    """Returns (ok: bool, details: dict)"""
+    schema, table = table_fqn.split(".", 1)
+    with conn.cursor() as cur:
+        # Count rows in the recent window
+        cur.execute(
+            f"""
+            select
+              count(*) as rows_window,
+              max({psycopg2.sql.Identifier(ts_column).string}) as last_ts
+            from {psycopg2.sql.Identifier(schema).string}.{psycopg2.sql.Identifier(table).string}
+            where {psycopg2.sql.Identifier(ts_column).string} >= now() - make_interval(hours => %s)
+            """,
+            (window_hours,),
+        )
+        rows_window, last_ts = cur.fetchone()
+
+    lag_hours = None
+    if last_ts is not None:
+        lag_hours = (datetime.now(timezone.utc) - last_ts).total_seconds() / 3600.0
+
+    ok = rows_window >= min_rows
+    return ok, {
+        "table": table_fqn,
+        "ts_column": ts_column,
+        "rows_window": int(rows_window),
+        "min_rows": int(min_rows),
+        "window_hours": int(window_hours),
+        "last_ts": None if last_ts is None else last_ts.isoformat(),
+        "lag_hours": lag_hours,
+    }
+
+
+def load_targets():
+    """
+    Targets are provided via env var TARGETS_JSON for flexibility, e.g.:
+
+    [
+      {"table": "events.pttreceive", "ts_column": "created_at", "window_hours": 6, "min_rows": 10},
+      {"table": "events.gpsstart",   "ts_column": "created_at", "window_hours": 6, "min_rows": 10}
+    ]
+    """
+    raw = os.environ.get("TARGETS_JSON", "").strip()
+    if not raw:
+        # Single-table fallback using simple env vars
+        return [{
+            "table": os.environ["TABLE"],
+            "ts_column": os.environ["TS_COLUMN"],
+            "window_hours": int(os.environ.get("WINDOW_HOURS", "6")),
+            "min_rows": int(os.environ.get("MIN_ROWS", "10")),
+        }]
+    return json.loads(raw)
+
+
+def format_alert(stales):
+    lines = []
+    lines.append("One or more Postgres sources look stale (below min_rows in the recent window):\n")
+    for s in stales:
+        lh = "n/a" if s["lag_hours"] is None else f"{s['lag_hours']:.2f}h"
+        lines.append(
+            f"- {s['table']} | rows_in_{s['window_hours']}h={s['rows_window']} "
+            f"(min {s['min_rows']}) | last_ts={s['last_ts']} | lag={lh}"
+        )
+    return "\n".join(lines)
+
+
+def main(mytimer: func.TimerRequest) -> None:
+    logging.info("freshness: timer fired")
+    targets = load_targets()
+    stales = []
+
+    try:
+        with _pg_connect() as conn:
+            for t in targets:
+                ok, details = _check_one(
+                    conn,
+                    table_fqn=t["table"],
+                    ts_column=t["ts_column"],
+                    window_hours=int(t["window_hours"]),
+                    min_rows=int(t["min_rows"]),
+                )
+                logging.info("freshness: %s => %s", details["table"], "OK" if ok else "STALE")
+                if not ok:
+                    stales.append(details)
+    except Exception as e:
+        # If the health check itself fails, send an operator email
+        msg = f"freshness: failed to execute check: {e}"
+        logging.exception(msg)
+        _send_email(msg)
+        return
+
+    if stales:
+        _send_email(format_alert(stales))
+    else:
+        logging.info("freshness: all targets OK")
+```
+
+`freshness/function.json`
+
+```json
+{
+  "scriptFile": "__init__.py",
+  "bindings": [
+    {
+      "name": "mytimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */15 * * * *"
+    }
+  ]
+}
+```
+
+> The schedule above runs every 15 minutes. Adjust as needed.
+
+---
+
+# 3) Host entry point
+
+`function_app.py`
+
+```python
+import azure.functions as func
+
+app = func.FunctionApp()
+
+# The folder "freshness" contains the timer function.
+# For v4.x Python model, discovery is automatic if you prefer;
+# Keeping this file minimal for clarity.
+```
+
+---
+
+# 4) Dependencies
+
+`requirements.txt`
+
+```
+azure-functions
+psycopg2-binary
+azure-identity
+sendgrid
+```
+
+---
+
+# 5) Local settings (for dev only)
+
+`local.settings.json` (do not commit secrets)
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+
+    "PGHOST": "your-flexible-server.postgres.database.azure.com",
+    "PGDATABASE": "weavix",
+    "PGUSER": "your-aad-user-or-managed-identity-upn",
+    "PGSSLMODE": "require",
+    "PG_AUTH": "AAD",
+
+    "TABLE": "events.pttreceive",
+    "TS_COLUMN": "created_at",
+    "WINDOW_HOURS": "6",
+    "MIN_ROWS": "10",
+
+    "TARGETS_JSON": "",
+
+    "SENDGRID_API_KEY": "<your-sendgrid-api-key>",
+    "ALERT_TO": "alice@example.com,bob@example.com",
+    "ALERT_FROM": "alerts@example.com",
+    "ALERT_SUBJECT": "Postgres freshness alert"
+  }
+}
+```
+
+> For multiple tables, leave `TABLE/TS_COLUMN/WINDOW_*` blank and set `TARGETS_JSON` to a JSON array (see docstring in code).
+
+---
+
+# 6) Postgres permissions (AAD recommended)
+
+In your Postgres (Flexible Server) session as an admin:
+
+```sql
+-- Create a Postgres role mapped to your Function App's managed identity (or your AAD user)
+-- From an AAD admin session:
+SET aad_validate_oids_in_tenant = off;
+
+CREATE ROLE "your-function-mi-name" WITH LOGIN IN ROLE azure_ad_user;
+GRANT CONNECT ON DATABASE weavix TO "your-function-mi-name";
+GRANT USAGE ON SCHEMA events TO "your-function-mi-name";
+GRANT SELECT ON ALL TABLES IN SCHEMA events TO "your-function-mi-name";
+-- (If you watch tables in other schemas, grant similarly.)
+```
+
+Then set `PGUSER` to that AAD principal (UPN-style or the exact role name you created). The code fetches an AAD token automatically.
+
+---
+
+# 7) Deploy
+
+If you created the Function App in the Azure Portal already, the easiest path is Zip Deploy from your machine:
+
+```
+# From the project root (pg-freshness-func/)
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+# Zip the app
+zip -r app.zip .
+
+# Deploy (replace placeholders)
+az functionapp deployment source config-zip \
+  -g <your-rg> -n <your-funcapp-name> \
+  --src app.zip
+```
+
+Now set the app settings (environment variables) on the Function App:
+
+```
+az functionapp config appsettings set -g <your-rg> -n <your-funcapp-name> --settings \
+  PGHOST=your-flexible-server.postgres.database.azure.com \
+  PGDATABASE=weavix \
+  PGUSER="your-function-mi-name" \
+  PGSSLMODE=require \
+  PG_AUTH=AAD \
+  TABLE=events.pttreceive \
+  TS_COLUMN=created_at \
+  WINDOW_HOURS=6 \
+  MIN_ROWS=10 \
+  SENDGRID_API_KEY=<key> \
+  ALERT_TO="alice@example.com,bob@example.com" \
+  ALERT_FROM="alerts@example.com" \
+  ALERT_SUBJECT="Postgres freshness alert"
+```
+
+If you enabled **Managed Identity** on the Function App, you don’t need any password—AAD token auth is used.
+
+---
+
+# 8) Using Microsoft Graph instead of SendGrid (optional)
+
+If you prefer sending email via Microsoft 365:
+
+* Grant your Function’s **managed identity** the **Mail.Send** application permission in Entra ID for Microsoft Graph, and **admin-consent** it.
+* Use `azure-identity` + `msgraph-sdk` (or raw `requests`) to call `POST https://graph.microsoft.com/v1.0/users/{sender}/sendMail`.
+
+If you want this variant, say the word and I’ll drop in the Graph-based `send_email()` function.
+
+---
+
+# 9) Operational tips
+
+* Index the timestamp column(s) you query:
+
+  ```
+  create index concurrently on events.pttreceive (created_at desc);
+  ```
+* If you monitor several tables, use `TARGETS_JSON` to list them all and send a single consolidated email.
+* To avoid alert spam, you can add simple deduping: keep a small blob or App Setting `LAST_ALERT_HASH` and only send if the payload changed; or throttle to once per hour while stale.
+
+---
+
+If you tell me the exact table(s) and timestamp column(s), I can pre-fill `TARGETS_JSON` for you.
+
