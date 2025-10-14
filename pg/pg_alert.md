@@ -522,3 +522,166 @@ Quick start checklist
 4. Add a “maintenance mode” switch (e.g., a monitor.settings flag) so you can pause alerts during planned outages.
 
 If you tell me which exact tables and timestamp columns you want to watch, I’ll fill in the INSERTs and, if you like, wire either pattern end-to-end for your environment.
+
+
+
+## Short Answer: **No**
+
+Azure PostgreSQL Flexible Server does not support the plpython3u extension, which would be needed to send emails directly from the database. Additionally, Azure blocks outbound SMTP connections on port 25 for security reasons.
+
+## Azure-Specific Solutions
+
+Since you're on Azure PostgreSQL Flexible Server, here are the best approaches:
+
+### **Option 1: Azure Logic Apps (Recommended)**
+Perfect for managed Azure environments - no code needed:
+
+```
+PostgreSQL → Logic App → Email
+```
+
+**Setup:**
+1. Create a Logic App with **Recurrence trigger** (every 6 hours)
+2. Add **PostgreSQL connector** action to query your tables:
+```sql
+SELECT 
+    table_name,
+    MAX(created_at) as last_record,
+    CASE 
+        WHEN MAX(created_at) < DATEADD(hour, -6, GETDATE()) THEN 'STALE'
+        ELSE 'OK'
+    END as status
+FROM (
+    SELECT 'table1' as table_name, created_at FROM table1
+    UNION ALL
+    SELECT 'table2', created_at FROM table2
+) t
+GROUP BY table_name
+HAVING MAX(created_at) < DATEADD(hour, -6, GETDATE())
+```
+3. Add **Condition** to check if any rows returned
+4. Add **Office 365 Outlook** or **SendGrid** action to send email
+
+**Pros:** No infrastructure, visual designer, built-in monitoring, easy to modify
+
+### **Option 2: Azure Function (Python/C#)**
+More flexible, serverless approach:
+
+```python
+import logging
+import psycopg2
+import os
+from azure.communication.email import EmailClient
+import azure.functions as func
+
+def main(mytimer: func.TimerTrigger) -> None:
+    conn_string = os.environ['POSTGRESQL_CONNECTION_STRING']
+    email_connection_string = os.environ['COMMUNICATION_SERVICES_CONNECTION_STRING']
+    
+    conn = psycopg2.connect(conn_string)
+    cur = conn.cursor()
+    
+    tables_to_check = ['table1', 'table2', 'table3']
+    alerts = []
+    
+    for table in tables_to_check:
+        cur.execute(f"""
+            SELECT MAX(created_at) 
+            FROM {table}
+            WHERE created_at > NOW() - INTERVAL '6 hours'
+        """)
+        result = cur.fetchone()
+        
+        if result[0] is None:
+            alerts.append(f"⚠️ {table}: No new records in last 6 hours")
+    
+    if alerts:
+        email_client = EmailClient.from_connection_string(email_connection_string)
+        
+        message = {
+            "senderAddress": "alerts@yourdomain.com",
+            "recipients": {
+                "to": [
+                    {"address": "admin1@company.com"},
+                    {"address": "admin2@company.com"}
+                ]
+            },
+            "content": {
+                "subject": "Database Alert: Stale Data Detected",
+                "plainText": "\n".join(alerts)
+            }
+        }
+        
+        email_client.begin_send(message)
+    
+    cur.close()
+    conn.close()
+```
+
+**function.json** (Timer trigger - runs every 6 hours):
+```json
+{
+  "bindings": [
+    {
+      "name": "mytimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 0 */6 * * *"
+    }
+  ]
+}
+```
+
+### **Option 3: Azure Monitor + Action Groups**
+Use Azure's native monitoring:
+
+1. **Enable Query Performance Insights** on your Flexible Server
+2. Create **Log Analytics Workspace**
+3. Set up **Metric Alert** with custom log query
+4. Configure **Action Group** to send emails
+
+### **Option 4: pg_cron + External Service**
+Use pg_cron (which IS supported) to write to a log table, then have external service check it:
+
+```sql
+-- Enable pg_cron
+CREATE EXTENSION pg_cron;
+
+-- Create alert table
+CREATE TABLE data_freshness_alerts (
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(100),
+    last_record_time TIMESTAMP,
+    check_time TIMESTAMP DEFAULT NOW(),
+    status VARCHAR(20)
+);
+
+-- Function to log stale data
+CREATE OR REPLACE FUNCTION check_data_freshness()
+RETURNS void AS $$
+BEGIN
+    INSERT INTO data_freshness_alerts (table_name, last_record_time, status)
+    SELECT 'table1', MAX(created_at), 
+           CASE WHEN MAX(created_at) < NOW() - INTERVAL '6 hours' 
+           THEN 'STALE' ELSE 'OK' END
+    FROM table1;
+    
+    -- Repeat for other tables
+END;
+$$ LANGUAGE plpgsql;
+
+-- Schedule every hour
+SELECT cron.schedule('freshness-check', '0 * * * *', 'SELECT check_data_freshness()');
+```
+
+Then have a simple Azure Function query this table and send alerts.
+
+### **Recommended Approach**
+For Azure PostgreSQL Flexible Server, I'd recommend **Azure Logic Apps** because:
+- ✅ Fully managed, no infrastructure
+- ✅ Native PostgreSQL connector
+- ✅ Built-in email actions (Office 365, SendGrid, Gmail)
+- ✅ Easy to configure and modify
+- ✅ Built-in monitoring and logging
+- ✅ Low cost for periodic checks
+
