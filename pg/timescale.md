@@ -714,3 +714,113 @@ with conn.cursor() as cursor:
 ```
 
 This will show you the exact chunks and their time ranges, so you can then use the correct boundaries in your `drop_chunks` call or drop the chunks by name directly.
+
+
+
+To count how many records are stored in a specific **TimescaleDB chunk**, use a query that targets the physical chunk table directly.
+Each TimescaleDB chunk is an actual Postgres table stored under the `_timescaledb_internal` schema.
+
+Here’s a step-by-step method:
+
+---
+
+### 1. Identify the chunk name(s)
+
+```sql
+SELECT chunk_name, range_start, range_end
+FROM timescaledb_information.chunks
+WHERE hypertable_name = 'your_table'
+  AND hypertable_schema = 'your_schema';
+```
+
+Example output:
+
+| chunk_name           | range_start         | range_end           |
+| -------------------- | ------------------- | ------------------- |
+| _hyper_94_1922_chunk | 2025-09-01 00:00:00 | 2025-09-02 00:00:00 |
+| _hyper_94_1923_chunk | 2025-09-02 00:00:00 | 2025-09-03 00:00:00 |
+
+---
+
+### 2. Count rows in one specific chunk
+
+```sql
+SELECT count(*) AS row_count
+FROM _timescaledb_internal._hyper_94_1922_chunk;
+```
+
+This directly counts rows physically stored in that partition.
+
+---
+
+### 3. Count rows in all chunks for a hypertable
+
+If you want to see record counts per chunk in a single query:
+
+```sql
+SELECT
+  c.chunk_name,
+  c.range_start,
+  c.range_end,
+  (SELECT count(*) FROM format('%I.%I', '_timescaledb_internal', c.chunk_name)::regclass) AS row_count
+FROM timescaledb_information.chunks c
+WHERE c.hypertable_schema = 'your_schema'
+  AND c.hypertable_name = 'your_table'
+ORDER BY c.range_start;
+```
+
+However, since `count(*)` cannot be parameterized directly in SQL text, the idiomatic way is to use dynamic SQL in PL/pgSQL:
+
+```sql
+DO $$
+DECLARE
+  r record;
+  sql text;
+BEGIN
+  FOR r IN
+    SELECT chunk_name
+    FROM timescaledb_information.chunks
+    WHERE hypertable_schema = 'your_schema'
+      AND hypertable_name = 'your_table'
+  LOOP
+    sql := format('SELECT count(*) AS row_count FROM _timescaledb_internal.%I;', r.chunk_name);
+    RAISE NOTICE '%', sql;
+    EXECUTE sql;
+  END LOOP;
+END$$;
+```
+
+This will print counts for each chunk.
+
+---
+
+### 4. (Optional) Estimate row counts for speed
+
+If the table is large and you want a faster (approximate) count, use `pg_class.reltuples`:
+
+```sql
+SELECT
+  c.chunk_name,
+  pg_class.reltuples::bigint AS estimated_rows
+FROM timescaledb_information.chunks c
+JOIN pg_class ON relname = c.chunk_name
+WHERE c.hypertable_schema = 'your_schema'
+  AND c.hypertable_name = 'your_table';
+```
+
+This uses Postgres’ internal statistics for each chunk and avoids a full scan.
+
+---
+
+### ✅ Summary
+
+| Purpose                  | Query                                                          |
+| ------------------------ | -------------------------------------------------------------- |
+| Identify chunks          | `SELECT * FROM timescaledb_information.chunks`                 |
+| Exact count (slow)       | `SELECT count(*) FROM _timescaledb_internal._hyper_xxx_chunk;` |
+| Approximate count (fast) | `SELECT reltuples FROM pg_class WHERE relname = chunk_name;`   |
+
+ 
+
+ 
+
