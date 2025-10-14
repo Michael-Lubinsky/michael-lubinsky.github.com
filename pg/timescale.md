@@ -822,5 +822,108 @@ This uses Postgres’ internal statistics for each chunk and avoids a full scan.
 
  
 
+ Good — that’s a common setup (1-day chunks).
+Since each **TimescaleDB chunk** is a physical PostgreSQL table under the internal schema `_timescaledb_internal`, you can directly `SELECT` from it by name.
+
+---
+
+## ✅ Option 1: Query a specific chunk directly
+
+If you know the chunk name (e.g. `_hyper_94_1922_chunk`):
+
+```sql
+SELECT *
+FROM _timescaledb_internal._hyper_94_1922_chunk;
+```
+
+That returns all rows physically stored in that day’s partition.
+
+> ⚠️ Note: You must include the `_timescaledb_internal` schema prefix — these are real Postgres tables managed by TimescaleDB.
+
+---
+
+## ✅ Option 2: Find the chunk name for a given date
+
+If your chunks are 1 day wide and partitioned by a `time` column (e.g., `ts`), you can locate the right chunk:
+
+```sql
+SELECT chunk_name, range_start, range_end
+FROM timescaledb_information.chunks
+WHERE hypertable_schema = 'events'
+  AND hypertable_name = 'pttpressed'
+  AND '2025-10-12'::date >= range_start::date
+  AND '2025-10-12'::date < range_end::date;
+```
+
+Example result:
+
+| chunk_name           | range_start         | range_end           |
+| -------------------- | ------------------- | ------------------- |
+| _hyper_94_1922_chunk | 2025-10-12 00:00:00 | 2025-10-13 00:00:00 |
+
+Then query it:
+
+```sql
+SELECT * 
+FROM _timescaledb_internal._hyper_94_1922_chunk;
+```
+
+---
+
+## ✅ Option 3: Select all chunks for a date range
+
+If you want *multiple consecutive chunks* (e.g., one week):
+
+```sql
+DO $$
+DECLARE
+  r record;
+  sql text;
+BEGIN
+  FOR r IN
+    SELECT chunk_name
+    FROM timescaledb_information.chunks
+    WHERE hypertable_schema = 'events'
+      AND hypertable_name = 'pttpressed'
+      AND range_start >= '2025-10-06'::timestamptz
+      AND range_end <= '2025-10-13'::timestamptz
+  LOOP
+    sql := format('SELECT * FROM _timescaledb_internal.%I;', r.chunk_name);
+    RAISE NOTICE 'Querying chunk: %', sql;
+    EXECUTE sql;
+  END LOOP;
+END$$;
+```
+
+---
+
+## ✅ Option 4: Regular SELECT via time filter (simpler, preferred)
+
+Usually you don’t need to query the chunk table directly.
+TimescaleDB automatically routes queries on the hypertable to the right chunk(s):
+
+```sql
+SELECT *
+FROM events.pttpressed
+WHERE ts >= '2025-10-12'::timestamptz
+  AND ts <  '2025-10-13'::timestamptz;
+```
+
+This is safer and future-proof, since chunks may be renamed, compressed, or dropped.
+
+---
+
+### 🔍 Summary
+
+| Task                              | SQL                                                                                 |
+| --------------------------------- | ----------------------------------------------------------------------------------- |
+| Find which chunk covers a date    | `SELECT chunk_name FROM timescaledb_information.chunks WHERE ...`                   |
+| Query that chunk                  | `SELECT * FROM _timescaledb_internal._hyper_xxx_chunk;`                             |
+| Query multiple chunks dynamically | PL/pgSQL loop with `EXECUTE`                                                        |
+| Recommended way                   | Query the **hypertable** with a time filter — Timescale will route it automatically |
+
+---
+
  
+
 
