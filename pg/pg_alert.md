@@ -163,7 +163,7 @@ WHERE status = 'STALE';
 " | mail -s "Database Stale Data Alert" admin@company.com
 ```
 
-**Which approach would you prefer?** I can provide more detailed implementation for any of these options based on your infrastructure and requirements.
+ 
 
 
 ## check “freshness” every N minutes and email if any table hasn’t received new rows within the last 6 hours.
@@ -524,47 +524,13 @@ Quick start checklist
 If you tell me which exact tables and timestamp columns you want to watch, I’ll fill in the INSERTs and, if you like, wire either pattern end-to-end for your environment.
 
 
-
-## Short Answer: **No**
-
-Azure PostgreSQL Flexible Server does not support the plpython3u extension, which would be needed to send emails directly from the database. Additionally, Azure blocks outbound SMTP connections on port 25 for security reasons.
+ 
 
 ## Azure-Specific Solutions
 
 Since you're on Azure PostgreSQL Flexible Server, here are the best approaches:
-
-### **Option 1: Azure Logic Apps (Recommended)**
-Perfect for managed Azure environments - no code needed:
-
-```
-PostgreSQL → Logic App → Email
-```
-
-**Setup:**
-1. Create a Logic App with **Recurrence trigger** (every 6 hours)
-2. Add **PostgreSQL connector** action to query your tables:
-```sql
-SELECT 
-    table_name,
-    MAX(created_at) as last_record,
-    CASE 
-        WHEN MAX(created_at) < DATEADD(hour, -6, GETDATE()) THEN 'STALE'
-        ELSE 'OK'
-    END as status
-FROM (
-    SELECT 'table1' as table_name, created_at FROM table1
-    UNION ALL
-    SELECT 'table2', created_at FROM table2
-) t
-GROUP BY table_name
-HAVING MAX(created_at) < DATEADD(hour, -6, GETDATE())
-```
-3. Add **Condition** to check if any rows returned
-4. Add **Office 365 Outlook** or **SendGrid** action to send email
-
-**Pros:** No infrastructure, visual designer, built-in monitoring, easy to modify
-
-### **Option 2: Azure Function (Python/C#)**
+ 
+### **Option: Azure Function (Python/C#)**
 More flexible, serverless approach:
 
 ```python
@@ -632,7 +598,7 @@ def main(mytimer: func.TimerTrigger) -> None:
 }
 ```
 
-### **Option 3: Azure Monitor + Action Groups**
+### **Option: Azure Monitor + Action Groups**
 Use Azure's native monitoring:
 
 1. **Enable Query Performance Insights** on your Flexible Server
@@ -640,7 +606,7 @@ Use Azure's native monitoring:
 3. Set up **Metric Alert** with custom log query
 4. Configure **Action Group** to send emails
 
-### **Option 4: pg_cron + External Service**
+### **Option: pg_cron + External Service**
 Use pg_cron (which IS supported) to write to a log table, then have external service check it:
 
 ```sql
@@ -676,16 +642,7 @@ SELECT cron.schedule('freshness-check', '0 * * * *', 'SELECT check_data_freshnes
 
 Then have a simple Azure Function query this table and send alerts.
 
-### **Recommended Approach**
-For Azure PostgreSQL Flexible Server, I'd recommend **Azure Logic Apps** because:
-- ✅ Fully managed, no infrastructure
-- ✅ Native PostgreSQL connector
-- ✅ Built-in email actions (Office 365, SendGrid, Gmail)
-- ✅ Easy to configure and modify
-- ✅ Built-in monitoring and logging
-- ✅ Low cost for periodic checks
-
-Excellent monitoring requirement! Let me design a comprehensive solution for you. I'll provide **both options**: pg_cron and Azure Function.
+ 
 
 ---
 
