@@ -1505,3 +1505,28 @@ If you've already deployed, usually **nothing else is needed**. The timer will s
 4. Check logs after the expected trigger time
 
 The timer should start working automatically once deployed. Wait for the next scheduled time and check the logs to confirm it executed.
+
+
+## Connecting from Azure Funct to Postgres
+
+oid below is function OID
+```sql
+ CREATE ROLE "dataplatform" WITH LOGIN;
+ SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 'aadauth,oid=988e2325-7bbf-4f08-8a59-ec6a443db156,type=service';
+ select * from pg_catalog.pgaadauth_list_principals(false);
+
+GRANT CONNECT ON DATABASE weavix TO "dataplatform";
+GRANT CONNECT ON DATABASE postgres TO "dataplatform";
+
+GRANT USAGE ON SCHEMA  events TO "dataplatform";
+GRANT USAGE ON SCHEMA  bronze TO "dataplatform";
+GRANT USAGE ON SCHEMA  silver TO "dataplatform";
+GRANT USAGE ON SCHEMA  gold TO "dataplatform";
+
+GRANT SELECT ON ALL TABLES IN SCHEMA events TO "dataplatform";
+GRANT SELECT ON ALL TABLES IN SCHEMA bronze TO "dataplatform";
+GRANT SELECT ON ALL TABLES IN SCHEMA silver TO "dataplatform";
+GRANT SELECT ON ALL TABLES IN SCHEMA gold TO "dataplatform";
+
+
+```
