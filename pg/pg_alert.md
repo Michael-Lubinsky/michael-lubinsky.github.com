@@ -685,272 +685,783 @@ For Azure PostgreSQL Flexible Server, I'd recommend **Azure Logic Apps** because
 - ✅ Built-in monitoring and logging
 - ✅ Low cost for periodic checks
 
-## Azure logic App
-
-
-**Azure Logic Apps** is a **serverless workflow automation service** in Azure — think of it as “if-this-then-that for the cloud.”
-You design visual workflows that connect services like Outlook, SendGrid, SQL, Event Hubs, Teams, and hundreds of others.
+Excellent monitoring requirement! Let me design a comprehensive solution for you. I'll provide **both options**: pg_cron and Azure Function.
 
 ---
 
-### 🧩 Core idea
+# **Solution Overview**
 
-Logic Apps let you define an automated workflow (called a **Logic App**) composed of **triggers** and **actions**:
-
-* **Trigger:** what starts the workflow — e.g.
-
-  * a schedule (“every 15 minutes”),
-  * an HTTP request (webhook from Postgres listener),
-  * a new file in storage, etc.
-
-* **Actions:** what to do next — e.g.
-
-  * run an Azure Function,
-  * send an email,
-  * post to Teams or Slack,
-  * call a REST API,
-  * write to a database.
-
-Everything is configured visually in the Azure Portal or via JSON (“Logic App Definition”).
+We'll create a monitoring system that:
+1. **Tracks which tables to monitor** (configuration table)
+2. **Detects missing dates** based on cadence
+3. **Reports results** in a structured format
+4. **Sends alerts** when issues are found
 
 ---
 
-### 💡 Using Logic Apps for alert emails
+# **Option 1: PostgreSQL Solution (pg_cron)**
 
-Yes — it’s a *great* fit for your use case.
-You can make a Logic App that sends alert emails when your Postgres freshness check detects a stale table.
+## **Step 1: Create Monitoring Configuration Table**
 
-#### Option 1 — Trigger on a **schedule**
+```sql
+-- Table to configure which tables to monitor
+CREATE TABLE IF NOT EXISTS data_monitoring_config (
+    id SERIAL PRIMARY KEY,
+    table_name VARCHAR(100) NOT NULL,
+    schema_name VARCHAR(100) DEFAULT 'public',
+    date_column VARCHAR(100) NOT NULL,  -- Column that contains the date
+    cadence VARCHAR(20) NOT NULL,  -- 'daily', 'weekly', 'monthly'
+    is_active BOOLEAN DEFAULT true,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(schema_name, table_name)
+);
 
-1. Create a Logic App (Consumption or Standard plan).
-2. Add a **Recurrence trigger** — e.g., every 15 minutes.
-3. Add an **Azure Database for PostgreSQL** connector (or an HTTP action calling a Function that queries Postgres).
-4. Evaluate whether any table is stale (e.g., no new rows in 6 hours).
-5. If true, add an **Email action**:
+-- Table to store monitoring results
+CREATE TABLE IF NOT EXISTS data_monitoring_results (
+    id SERIAL PRIMARY KEY,
+    check_timestamp TIMESTAMP DEFAULT NOW(),
+    table_name VARCHAR(100) NOT NULL,
+    schema_name VARCHAR(100) NOT NULL,
+    cadence VARCHAR(20) NOT NULL,
+    missing_dates JSONB,  -- Array of missing dates
+    missing_count INTEGER,
+    status VARCHAR(20),  -- 'OK', 'WARNING', 'CRITICAL'
+    message TEXT
+);
 
-   * “Send an email (V2)” using your Microsoft 365 connection, **or**
-   * “SendGrid – Send Email” connector (for SendGrid API key).
-6. Configure recipients, subject, and body (you can include dynamic data from the query result).
-
-#### Option 2 — Trigger on **Postgres notification**
-
-1. Let Postgres run `NOTIFY freshness_alert` inside your `pg_cron` job.
-2. Expose an **HTTP trigger** Logic App (gives you a URL).
-3. Create a small listener (Python Function or tiny service) that listens for the `NOTIFY` event and calls that Logic App’s URL with the payload.
-4. The Logic App then sends the email.
-
----
-
-### ✉️ Email connectors available
-
-| Connector                | Typical use                          | Auth                |
-| ------------------------ | ------------------------------------ | ------------------- |
-| **Outlook / Office 365** | Send from your Microsoft 365 mailbox | OAuth               |
-| **SendGrid**             | Simple transactional alerts          | API Key             |
-| **SMTP**                 | Custom SMTP server                   | Username + Password |
-
----
-
-### 🛠 Example workflow summary
-
-**Trigger:** Recurrence (every 15 min)
-**Action 1:** Run query in Postgres (via Azure Function HTTP call)
-**Action 2:** Condition: if “stale_tables > 0”
-**Action 3:** Send email with list of stale tables
-
-All of this is done without writing infrastructure code — just configure blocks visually.
-
----
-
-### ✅ Why use Logic Apps
-
-* Fully managed and serverless (no VM or cron needed)
-* Visual designer for non-developers
-* Native email/Teams connectors
-* Easy to integrate with Azure Monitor, Postgres, ADLS, etc.
-* Cheap (pay per run)
-
----
-
-If you’d like, I can draft the exact Logic App workflow (JSON definition or portal click-by-click) for your Postgres freshness alert — do you prefer sending email through **Outlook (M365)** or **SendGrid**?
-
-
-
-
-## Azure Logic Apps - Simple Explanation
-
-**Azure Logic Apps is a cloud service that helps you automate workflows and integrate apps, data, and services without writing much (or any) code.**
-
-Think of it as a **visual automation tool** - like connecting LEGO blocks where each block represents an action (send email, query database, call API, etc.).
-
-## How It Works
-
-```
-Trigger (When) → Actions (Then) → More Actions
+-- Index for faster queries
+CREATE INDEX idx_monitoring_results_timestamp ON data_monitoring_results(check_timestamp);
+CREATE INDEX idx_monitoring_results_status ON data_monitoring_results(status);
 ```
 
-**Example workflow:**
-1. **Trigger**: Every 6 hours (schedule)
-2. **Action 1**: Query PostgreSQL database
-3. **Action 2**: Check if results exist
-4. **Action 3**: If yes, send email
-5. **Action 4**: Log to monitoring
+## **Step 2: Add Your Tables to Monitor**
 
-## Visual Designer
+```sql
+-- Add tables to monitor
+INSERT INTO data_monitoring_config (table_name, schema_name, date_column, cadence, description)
+VALUES
+    ('orders', 'public', 'created_at', 'daily', 'Daily order transactions'),
+    ('sales_summary', 'public', 'report_date', 'weekly', 'Weekly sales reports'),
+    ('monthly_revenue', 'public', 'month_date', 'monthly', 'Monthly revenue aggregation'),
+    ('user_activity', 'public', 'activity_date', 'daily', 'Daily user activity logs'),
+    ('inventory_snapshots', 'public', 'snapshot_date', 'weekly', 'Weekly inventory counts');
 
-You build workflows in a **drag-and-drop designer**:
-
-```
-┌─────────────────────┐
-│   Recurrence        │  ← Run every 6 hours
-│   Every 6 hours     │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   PostgreSQL        │  ← Query your database
-│   Execute Query     │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   Condition         │  ← If stale data found?
-│   Rows > 0          │
-└──────────┬──────────┘
-           │
-┌──────────▼──────────┐
-│   Send Email        │  ← Alert recipients
-│   Office 365        │
-└─────────────────────┘
+-- View configuration
+SELECT * FROM data_monitoring_config WHERE is_active = true;
 ```
 
-## Built-in Connectors
+## **Step 3: Create Monitoring Function**
 
-Logic Apps has **400+ pre-built connectors** for common services:
-
-**Databases:**
-- Azure SQL, PostgreSQL, MySQL
-- MongoDB, Oracle, IBM DB2
-
-**Email:**
-- Office 365 Outlook
-- Gmail
-- SendGrid
-- SMTP
-
-**Messaging:**
-- Slack, Teams
-- Twilio (SMS)
-
-**Cloud Services:**
-- Azure Blob Storage
-- SharePoint
-- Salesforce
-- Dynamics 365
-
-**And many more:** HTTP/REST APIs, FTP, SAP, ServiceNow, etc.
-
-## Your Use Case Example
-
-For your PostgreSQL monitoring:
-
-**Traditional way (requires coding):**
-- Write Python/C# script
-- Set up server/container to run it
-- Configure SMTP settings
-- Handle errors and logging
-- Deploy and maintain
-
-**Logic Apps way (no code):**
-1. Open Azure Portal
-2. Create Logic App
-3. Click "Add Recurrence trigger"
-4. Click "Add PostgreSQL action"
-5. Paste your SQL query
-6. Click "Add Email action"
-7. Enter recipients
-8. Click "Save"
-
-Done! It runs automatically and Azure handles everything.
-
-## Real Example Configuration
-
-```json
-{
-  "Recurrence": {
-    "interval": 6,
-    "frequency": "Hour"
-  },
-  "PostgreSQL_Query": {
-    "connectionString": "@parameters('connectionString')",
-    "query": "SELECT table_name FROM ... WHERE last_record < NOW() - INTERVAL '6 hours'"
-  },
-  "Condition": {
-    "expression": "@greater(length(body('PostgreSQL_Query')?['resultSets']?[0]?['rows']), 0)"
-  },
-  "Send_Email": {
-    "to": "admin1@company.com;admin2@company.com",
-    "subject": "Database Alert",
-    "body": "@body('PostgreSQL_Query')"
-  }
-}
+```sql
+CREATE OR REPLACE FUNCTION check_data_freshness()
+RETURNS TABLE(
+    table_name VARCHAR,
+    schema_name VARCHAR,
+    cadence VARCHAR,
+    missing_dates JSONB,
+    missing_count INTEGER,
+    status VARCHAR,
+    message TEXT
+) 
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    config_record RECORD;
+    missing_list JSONB;
+    expected_dates DATE[];
+    existing_dates DATE[];
+    missing_date_list DATE[];
+    check_start_date DATE;
+    check_end_date DATE;
+    current_date_iter DATE;
+    date_exists BOOLEAN;
+    result_status VARCHAR;
+    result_message TEXT;
+BEGIN
+    -- Loop through each active configuration
+    FOR config_record IN 
+        SELECT * FROM data_monitoring_config WHERE is_active = true
+    LOOP
+        -- Determine date range based on cadence
+        check_end_date := CURRENT_DATE;
+        
+        CASE config_record.cadence
+            WHEN 'daily' THEN
+                check_start_date := CURRENT_DATE - INTERVAL '7 days';
+            WHEN 'weekly' THEN
+                check_start_date := CURRENT_DATE - INTERVAL '1 month';
+            WHEN 'monthly' THEN
+                check_start_date := CURRENT_DATE - INTERVAL '3 months';
+            ELSE
+                check_start_date := CURRENT_DATE - INTERVAL '7 days';
+        END CASE;
+        
+        -- Build expected dates list based on cadence
+        missing_date_list := ARRAY[]::DATE[];
+        
+        IF config_record.cadence = 'daily' THEN
+            -- Check each day
+            current_date_iter := check_start_date;
+            WHILE current_date_iter <= check_end_date LOOP
+                -- Check if data exists for this date
+                EXECUTE format(
+                    'SELECT EXISTS(SELECT 1 FROM %I.%I WHERE DATE(%I) = $1)',
+                    config_record.schema_name,
+                    config_record.table_name,
+                    config_record.date_column
+                ) INTO date_exists USING current_date_iter;
+                
+                IF NOT date_exists THEN
+                    missing_date_list := array_append(missing_date_list, current_date_iter);
+                END IF;
+                
+                current_date_iter := current_date_iter + INTERVAL '1 day';
+            END LOOP;
+            
+        ELSIF config_record.cadence = 'weekly' THEN
+            -- Check each Monday (or first day of week)
+            current_date_iter := date_trunc('week', check_start_date)::DATE;
+            WHILE current_date_iter <= check_end_date LOOP
+                -- Check if data exists for this week
+                EXECUTE format(
+                    'SELECT EXISTS(SELECT 1 FROM %I.%I WHERE DATE(%I) BETWEEN $1 AND $1 + INTERVAL ''6 days'')',
+                    config_record.schema_name,
+                    config_record.table_name,
+                    config_record.date_column
+                ) INTO date_exists USING current_date_iter;
+                
+                IF NOT date_exists THEN
+                    missing_date_list := array_append(missing_date_list, current_date_iter);
+                END IF;
+                
+                current_date_iter := current_date_iter + INTERVAL '1 week';
+            END LOOP;
+            
+        ELSIF config_record.cadence = 'monthly' THEN
+            -- Check each month (first day)
+            current_date_iter := date_trunc('month', check_start_date)::DATE;
+            WHILE current_date_iter <= check_end_date LOOP
+                -- Check if data exists for this month
+                EXECUTE format(
+                    'SELECT EXISTS(SELECT 1 FROM %I.%I WHERE DATE_TRUNC(''month'', %I) = $1)',
+                    config_record.schema_name,
+                    config_record.table_name,
+                    config_record.date_column
+                ) INTO date_exists USING current_date_iter;
+                
+                IF NOT date_exists THEN
+                    missing_date_list := array_append(missing_date_list, current_date_iter);
+                END IF;
+                
+                current_date_iter := current_date_iter + INTERVAL '1 month';
+            END LOOP;
+        END IF;
+        
+        -- Convert array to JSONB
+        missing_list := to_jsonb(missing_date_list);
+        
+        -- Determine status
+        IF array_length(missing_date_list, 1) IS NULL OR array_length(missing_date_list, 1) = 0 THEN
+            result_status := 'OK';
+            result_message := 'All expected dates have data';
+        ELSIF array_length(missing_date_list, 1) <= 2 THEN
+            result_status := 'WARNING';
+            result_message := format('%s missing date(s)', array_length(missing_date_list, 1));
+        ELSE
+            result_status := 'CRITICAL';
+            result_message := format('%s missing date(s) - requires attention', array_length(missing_date_list, 1));
+        END IF;
+        
+        -- Insert results
+        INSERT INTO data_monitoring_results (
+            table_name,
+            schema_name,
+            cadence,
+            missing_dates,
+            missing_count,
+            status,
+            message
+        ) VALUES (
+            config_record.table_name,
+            config_record.schema_name,
+            config_record.cadence,
+            missing_list,
+            COALESCE(array_length(missing_date_list, 1), 0),
+            result_status,
+            result_message
+        );
+        
+        -- Return row
+        table_name := config_record.table_name;
+        schema_name := config_record.schema_name;
+        cadence := config_record.cadence;
+        missing_dates := missing_list;
+        missing_count := COALESCE(array_length(missing_date_list, 1), 0);
+        status := result_status;
+        message := result_message;
+        
+        RETURN NEXT;
+    END LOOP;
+END;
+$$;
 ```
 
-## Pricing
+## **Step 4: Create View for Easy Reporting**
 
-**Consumption Plan** (pay per execution):
-- First 4,000 actions/month: FREE
-- After that: ~$0.000025 per action
+```sql
+CREATE OR REPLACE VIEW v_data_monitoring_latest AS
+SELECT DISTINCT ON (table_name, schema_name)
+    id,
+    check_timestamp,
+    table_name,
+    schema_name,
+    cadence,
+    missing_dates,
+    missing_count,
+    status,
+    message
+FROM data_monitoring_results
+ORDER BY table_name, schema_name, check_timestamp DESC;
 
-**For your use case:**
-- Run every 6 hours = 4 times/day = 120 times/month
-- Each run = ~5 actions (trigger + query + condition + email + log)
-- Total = ~600 actions/month
-- **Cost: FREE** (well under 4,000 actions)
+-- View for problems only
+CREATE OR REPLACE VIEW v_data_monitoring_issues AS
+SELECT 
+    check_timestamp,
+    table_name,
+    schema_name,
+    cadence,
+    missing_dates,
+    missing_count,
+    status,
+    message
+FROM v_data_monitoring_latest
+WHERE status IN ('WARNING', 'CRITICAL')
+ORDER BY 
+    CASE status 
+        WHEN 'CRITICAL' THEN 1
+        WHEN 'WARNING' THEN 2
+    END,
+    missing_count DESC;
+```
 
-## When to Use Logic Apps
+## **Step 5: Schedule with pg_cron**
 
-✅ **Good for:**
-- Scheduled tasks (like your monitoring)
-- Integrating multiple services
-- Business process automation
-- Event-driven workflows
-- Prototyping quickly
-- When you don't want to manage infrastructure
+```sql
+-- Enable pg_cron extension if not already enabled
+CREATE EXTENSION IF NOT EXISTS pg_cron;
 
-❌ **Not ideal for:**
-- Complex business logic (use Azure Functions)
-- Heavy data processing
-- Real-time, high-performance scenarios
-- Sub-second latency requirements
+-- Schedule monitoring to run daily at 6 AM
+SELECT cron.schedule(
+    'data-freshness-check',
+    '0 6 * * *',  -- Every day at 6 AM
+    $$SELECT check_data_freshness()$$
+);
 
-## Alternatives Comparison
+-- View scheduled jobs
+SELECT * FROM cron.job WHERE jobname = 'data-freshness-check';
 
-| Solution | Complexity | Cost | Maintenance | Flexibility |
-|----------|-----------|------|-------------|-------------|
-| **Logic Apps** | Low | Free-Low | None | Medium |
-| **Azure Functions** | Medium | Low | Low | High |
-| **Python Script + VM** | Medium | Medium | High | Very High |
-| **AKS + Container** | High | High | High | Very High |
+-- To run manually for testing
+SELECT * FROM check_data_freshness();
+```
 
-## Getting Started
+## **Step 6: Query Results**
 
-1. Go to Azure Portal
-2. Search "Logic Apps"
-3. Click "Create"
-4. Choose "Consumption" plan
-5. Use the visual designer
+```sql
+-- View latest results for all tables
+SELECT 
+    table_name,
+    cadence,
+    missing_dates,
+    missing_count,
+    status,
+    message,
+    check_timestamp
+FROM v_data_monitoring_latest
+ORDER BY status DESC, missing_count DESC;
 
-Or use the **Logic Apps Designer in VS Code** for a better experience.
+-- View only issues
+SELECT * FROM v_data_monitoring_issues;
+
+-- View history for specific table
+SELECT 
+    check_timestamp,
+    missing_count,
+    status,
+    message
+FROM data_monitoring_results
+WHERE table_name = 'orders'
+ORDER BY check_timestamp DESC
+LIMIT 10;
+
+-- Summary by status
+SELECT 
+    status,
+    COUNT(*) as table_count,
+    SUM(missing_count) as total_missing
+FROM v_data_monitoring_latest
+GROUP BY status
+ORDER BY 
+    CASE status 
+        WHEN 'CRITICAL' THEN 1
+        WHEN 'WARNING' THEN 2
+        WHEN 'OK' THEN 3
+    END;
+```
 
 ---
 
-**For your specific case**, Logic Apps is probably the easiest solution because:
-- No code to write or maintain
-- PostgreSQL connector is built-in
-- Email sending is built-in
-- Scheduling is built-in
-- Free for your usage level
-- Takes ~15 minutes to set up
+# **Option 2: Azure Function Solution (Python)**
 
-Would you like me to walk you through the specific steps to create a Logic App for your database monitoring?
+## **Complete Azure Function Code**
+
+```python
+import azure.functions as func
+import logging
+import os
+import json
+from datetime import datetime, timedelta, date
+from dateutil.relativedelta import relativedelta
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from azure.identity import DefaultAzureCredential
+
+app = func.FunctionApp()
+
+# Schedule: Run daily at 6 AM UTC
+@app.schedule(schedule="0 0 6 * * *", arg_name="myTimer", run_on_startup=False)
+def data_freshness_monitor(myTimer: func.TimerRequest) -> None:
+    """Monitor data freshness across multiple tables"""
+    logging.info('=' * 60)
+    logging.info('Starting data freshness monitoring...')
+    logging.info('=' * 60)
+    
+    try:
+        results = check_all_tables()
+        
+        # Log summary
+        issues = [r for r in results if r['status'] in ['WARNING', 'CRITICAL']]
+        
+        if issues:
+            logging.warning(f'Found {len(issues)} table(s) with issues!')
+            send_alert_email(issues)
+        else:
+            logging.info('✓ All tables have current data')
+        
+        # Log details
+        for result in results:
+            if result['status'] == 'OK':
+                logging.info(f"✓ {result['table_name']} ({result['cadence']}): OK")
+            else:
+                logging.warning(
+                    f"⚠️ {result['table_name']} ({result['cadence']}): "
+                    f"{result['missing_count']} missing dates"
+                )
+        
+    except Exception as e:
+        logging.error(f'Monitoring failed: {str(e)}')
+        import traceback
+        logging.error(traceback.format_exc())
 
 
+# HTTP endpoint for manual testing
+@app.route(route="check-data-freshness", methods=["GET"], auth_level=func.AuthLevel.FUNCTION)
+def check_data_freshness_http(req: func.HttpRequest) -> func.HttpResponse:
+    """HTTP endpoint to manually trigger data freshness check"""
+    logging.info('HTTP trigger - data freshness check')
+    
+    try:
+        results = check_all_tables()
+        
+        # Format response
+        response = {
+            "check_timestamp": datetime.utcnow().isoformat(),
+            "summary": {
+                "total_tables": len(results),
+                "ok": len([r for r in results if r['status'] == 'OK']),
+                "warning": len([r for r in results if r['status'] == 'WARNING']),
+                "critical": len([r for r in results if r['status'] == 'CRITICAL'])
+            },
+            "results": results
+        }
+        
+        return func.HttpResponse(
+            json.dumps(response, indent=2, default=str),
+            status_code=200,
+            mimetype="application/json"
+        )
+        
+    except Exception as e:
+        logging.error(f'Error: {str(e)}')
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json"
+        )
+
+
+def get_db_connection():
+    """Get database connection using Managed Identity"""
+    from azure.identity import DefaultAzureCredential
+    
+    db_host = os.environ.get('DB_HOST')
+    db_name = os.environ.get('DB_NAME')
+    db_user = os.environ.get('DB_USER')
+    
+    # Get token for PostgreSQL
+    credential = DefaultAzureCredential()
+    token_response = credential.get_token(
+        "https://ossrdbms-aad.database.windows.net/.default"
+    )
+    
+    conn = psycopg2.connect(
+        host=db_host,
+        database=db_name,
+        user=db_user,
+        password=token_response.token,
+        sslmode='require',
+        cursor_factory=RealDictCursor
+    )
+    
+    return conn
+
+
+def get_monitoring_config():
+    """Get list of tables to monitor from database or configuration"""
+    
+    # Option 1: From database table
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT table_name, schema_name, date_column, cadence, description
+            FROM data_monitoring_config
+            WHERE is_active = true
+        """)
+        
+        config = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        return config
+        
+    except Exception as e:
+        logging.warning(f'Could not read config from database: {e}')
+        
+        # Option 2: Fallback to environment variable or hardcoded config
+        return get_default_config()
+
+
+def get_default_config():
+    """Default configuration if database config table doesn't exist"""
+    
+    # This can be loaded from environment variable as JSON
+    config_json = os.environ.get('MONITORING_CONFIG')
+    
+    if config_json:
+        return json.loads(config_json)
+    
+    # Hardcoded fallback
+    return [
+        {
+            'table_name': 'orders',
+            'schema_name': 'public',
+            'date_column': 'created_at',
+            'cadence': 'daily',
+            'description': 'Daily order transactions'
+        },
+        {
+            'table_name': 'sales_summary',
+            'schema_name': 'public',
+            'date_column': 'report_date',
+            'cadence': 'weekly',
+            'description': 'Weekly sales reports'
+        },
+        {
+            'table_name': 'monthly_revenue',
+            'schema_name': 'public',
+            'date_column': 'month_date',
+            'cadence': 'monthly',
+            'description': 'Monthly revenue'
+        }
+    ]
+
+
+def check_all_tables():
+    """Check all configured tables for missing data"""
+    
+    config = get_monitoring_config()
+    results = []
+    
+    for table_config in config:
+        try:
+            result = check_single_table(table_config)
+            results.append(result)
+        except Exception as e:
+            logging.error(f"Error checking {table_config['table_name']}: {e}")
+            results.append({
+                'table_name': table_config['table_name'],
+                'schema_name': table_config.get('schema_name', 'public'),
+                'cadence': table_config['cadence'],
+                'missing_dates': [],
+                'missing_count': 0,
+                'status': 'ERROR',
+                'message': f'Error: {str(e)}'
+            })
+    
+    return results
+
+
+def check_single_table(config):
+    """Check a single table for missing data"""
+    
+    table_name = config['table_name']
+    schema_name = config.get('schema_name', 'public')
+    date_column = config['date_column']
+    cadence = config['cadence']
+    
+    logging.info(f"Checking {schema_name}.{table_name} ({cadence})...")
+    
+    # Get expected date range
+    end_date = date.today()
+    
+    if cadence == 'daily':
+        start_date = end_date - timedelta(days=7)
+        expected_dates = generate_daily_dates(start_date, end_date)
+    elif cadence == 'weekly':
+        start_date = end_date - relativedelta(months=1)
+        expected_dates = generate_weekly_dates(start_date, end_date)
+    elif cadence == 'monthly':
+        start_date = end_date - relativedelta(months=3)
+        expected_dates = generate_monthly_dates(start_date, end_date)
+    else:
+        raise ValueError(f"Unknown cadence: {cadence}")
+    
+    # Query database for existing dates
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    if cadence == 'daily':
+        query = f"""
+            SELECT DISTINCT DATE({date_column}) as date_value
+            FROM {schema_name}.{table_name}
+            WHERE {date_column} >= %s AND {date_column} <= %s
+            ORDER BY date_value
+        """
+    elif cadence == 'weekly':
+        query = f"""
+            SELECT DISTINCT DATE_TRUNC('week', {date_column})::DATE as date_value
+            FROM {schema_name}.{table_name}
+            WHERE {date_column} >= %s AND {date_column} <= %s
+            ORDER BY date_value
+        """
+    else:  # monthly
+        query = f"""
+            SELECT DISTINCT DATE_TRUNC('month', {date_column})::DATE as date_value
+            FROM {schema_name}.{table_name}
+            WHERE {date_column} >= %s AND {date_column} <= %s
+            ORDER BY date_value
+        """
+    
+    cur.execute(query, (start_date, end_date))
+    existing_dates = {row['date_value'] for row in cur.fetchall()}
+    
+    cur.close()
+    conn.close()
+    
+    # Find missing dates
+    missing_dates = [d for d in expected_dates if d not in existing_dates]
+    
+    # Determine status
+    missing_count = len(missing_dates)
+    
+    if missing_count == 0:
+        status = 'OK'
+        message = 'All expected dates have data'
+    elif missing_count <= 2:
+        status = 'WARNING'
+        message = f'{missing_count} missing date(s)'
+    else:
+        status = 'CRITICAL'
+        message = f'{missing_count} missing date(s) - requires attention'
+    
+    return {
+        'table_name': table_name,
+        'schema_name': schema_name,
+        'cadence': cadence,
+        'missing_dates': [d.isoformat() for d in missing_dates],
+        'missing_count': missing_count,
+        'status': status,
+        'message': message
+    }
+
+
+def generate_daily_dates(start_date, end_date):
+    """Generate list of daily dates"""
+    dates = []
+    current = start_date
+    while current <= end_date:
+        dates.append(current)
+        current += timedelta(days=1)
+    return dates
+
+
+def generate_weekly_dates(start_date, end_date):
+    """Generate list of weekly dates (Mondays)"""
+    dates = []
+    # Start from the Monday of the start week
+    current = start_date - timedelta(days=start_date.weekday())
+    while current <= end_date:
+        dates.append(current)
+        current += timedelta(weeks=1)
+    return dates
+
+
+def generate_monthly_dates(start_date, end_date):
+    """Generate list of monthly dates (first day of month)"""
+    dates = []
+    # Start from first day of start month
+    current = date(start_date.year, start_date.month, 1)
+    while current <= end_date:
+        dates.append(current)
+        # Move to first day of next month
+        if current.month == 12:
+            current = date(current.year + 1, 1, 1)
+        else:
+            current = date(current.year, current.month + 1, 1)
+    return dates
+
+
+def send_alert_email(issues):
+    """Send email alert for issues found"""
+    
+    try:
+        from azure.communication.email import EmailClient
+        
+        connection_string = os.environ.get('COMMUNICATION_SERVICES_CONNECTION_STRING')
+        sender_address = os.environ.get('SENDER_EMAIL')
+        recipient_address = os.environ.get('ALERT_EMAIL')
+        
+        if not all([connection_string, sender_address, recipient_address]):
+            logging.warning('Email not configured, skipping alert')
+            return
+        
+        # Build email content
+        email_body = "Data Freshness Issues Detected\n"
+        email_body += "=" * 60 + "\n\n"
+        
+        for issue in issues:
+            email_body += f"Table: {issue['table_name']}\n"
+            email_body += f"Cadence: {issue['cadence']}\n"
+            email_body += f"Status: {issue['status']}\n"
+            email_body += f"Missing Count: {issue['missing_count']}\n"
+            email_body += f"Missing Dates: {', '.join(issue['missing_dates'][:10])}"
+            if len(issue['missing_dates']) > 10:
+                email_body += f" ... and {len(issue['missing_dates']) - 10} more"
+            email_body += "\n\n" + "-" * 60 + "\n\n"
+        
+        email_body += f"\nCheck timestamp: {datetime.utcnow()} UTC\n"
+        
+        # Send email
+        email_client = EmailClient.from_connection_string(connection_string)
+        
+        message = {
+            "senderAddress": sender_address,
+            "recipients": {
+                "to": [{"address": recipient_address}]
+            },
+            "content": {
+                "subject": f"⚠️ Data Freshness Alert: {len(issues)} Table(s) Missing Data",
+                "plainText": email_body
+            }
+        }
+        
+        poller = email_client.begin_send(message)
+        result = poller.result()
+        
+        logging.info(f'✓ Alert email sent. Message ID: {result["id"]}')
+        
+    except Exception as e:
+        logging.error(f'Failed to send alert email: {e}')
+```
+
+## **Environment Variables for Azure Function**
+
+Add to Function App configuration:
+
+```
+DB_HOST = your-server.postgres.database.azure.com
+DB_NAME = your_database
+DB_USER = dataplatform
+DB_TABLE = (not needed for this function)
+
+COMMUNICATION_SERVICES_CONNECTION_STRING = endpoint=https://...
+SENDER_EMAIL = DoNotReply@....azurecomm.net
+ALERT_EMAIL = admin@company.com
+
+# Optional: JSON configuration if not using database table
+MONITORING_CONFIG = [{"table_name":"orders","schema_name":"public","date_column":"created_at","cadence":"daily"}]
+```
+
+## **requirements.txt for Azure Function**
+
+```txt
+azure-functions
+psycopg2-binary
+azure-identity
+azure-communication-email
+python-dateutil
+```
+
+---
+
+# **Comparison: pg_cron vs Azure Function**
+
+| Feature | pg_cron | Azure Function |
+|---------|---------|----------------|
+| **Setup Complexity** | Medium | Medium |
+| **Maintenance** | Low | Low |
+| **Alerting** | Need additional setup | Built-in email |
+| **Flexibility** | SQL only | Python - very flexible |
+| **Cost** | Free | Free tier available |
+| **Monitoring** | PostgreSQL logs | Azure Monitor |
+| **Best For** | Database-centric | Cloud-native, integrations |
+
+---
+
+# **My Recommendation**
+
+**Start with PostgreSQL (pg_cron)** for:
+- ✅ Simpler setup if you're comfortable with SQL
+- ✅ Everything in one place (database)
+- ✅ No external dependencies
+- ✅ Direct access to data
+
+**Use Azure Function** for:
+- ✅ Better integration with Azure services
+- ✅ Easier email alerting
+- ✅ More flexible logic (Python)
+- ✅ Better monitoring and logs
+
+---
+
+# **Quick Start Guide**
+
+## **For pg_cron approach:**
+
+1. Run Step 1 SQL (create tables)
+2. Run Step 2 SQL (add your tables to monitor)
+3. Run Step 3 SQL (create function)
+4. Run Step 4 SQL (create views)
+5. Run Step 5 SQL (schedule with pg_cron)
+6. Test: `SELECT * FROM check_data_freshness();`
+
+## **For Azure Function approach:**
+
+1. Create new Azure Function or add to existing
+2. Copy the Python code
+3. Update requirements.txt
+4. Add environment variables
+5. Deploy
+6. Test via HTTP endpoint
