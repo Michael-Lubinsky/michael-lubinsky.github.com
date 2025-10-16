@@ -1986,4 +1986,532 @@ The code is functional and follows a solid approach for incremental data loading
 - Optimizing performance with partitioning and batch processing.
 - Adding metrics and security best practices.
 
-If you have specific requirements (e.g., schema details, performance constraints, or logging preferences), please provide them, and I can tailor the recommendations further!
+Great question! Let me show you how to securely access DynamoDB from Databricks. There are several approaches depending on where your Databricks is hosted.
+
+---
+
+# **Solution Overview**
+
+You need to:
+1. **Create AWS IAM credentials** (Role or User) with DynamoDB read permissions
+2. **Configure Databricks** to use these credentials
+3. **Read DynamoDB data** using Spark in Databricks
+
+---
+
+# **Option 1: IAM User with Access Keys (Simplest)**
+
+This works for any Databricks deployment (AWS, Azure, or GCP).
+
+## **Step 1: Create IAM Policy for DynamoDB Read Access**
+
+In AWS Console:
+
+1. Go to **IAM** → **Policies** → **Create policy**
+2. Click **JSON** tab
+3. Paste this policy:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DynamoDBReadAccess",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:BatchGetItem",
+                "dynamodb:DescribeStream",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:ListStreams"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:us-east-1:123456789012:table/YourTableName",
+                "arn:aws:dynamodb:us-east-1:123456789012:table/YourTableName/stream/*"
+            ]
+        },
+        {
+            "Sid": "ListTables",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+**Customize:**
+- Replace `us-east-1` with your region
+- Replace `123456789012` with your AWS account ID
+- Replace `YourTableName` with your table name
+- For all tables, use: `"Resource": "arn:aws:dynamodb:*:*:table/*"`
+
+4. Click **Next**
+5. **Name**: `DatabricksDynamoDBReadPolicy`
+6. **Description**: "Read-only access to DynamoDB tables for Databricks"
+7. Click **Create policy**
+
+## **Step 2: Create IAM User**
+
+1. Go to **IAM** → **Users** → **Create user**
+2. **User name**: `databricks-dynamodb-reader`
+3. Click **Next**
+4. **Attach policies directly**
+5. Search and select: `DatabricksDynamoDBReadPolicy`
+6. Click **Next** → **Create user**
+
+## **Step 3: Create Access Keys**
+
+1. Click on the user you just created
+2. Go to **Security credentials** tab
+3. Scroll to **Access keys** section
+4. Click **Create access key**
+5. Select use case: **Application running outside AWS**
+6. Click **Next**
+7. Description: "Databricks DynamoDB access"
+8. Click **Create access key**
+9. **⚠️ Copy both:**
+   - **Access Key ID** (e.g., `AKIAIOSFODNN7EXAMPLE`)
+   - **Secret Access Key** (e.g., `wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY`)
+10. **Download .csv file** (you won't see the secret again!)
+
+## **Step 4: Configure Databricks Secret Scope**
+
+### **Create Secret Scope (Databricks-backed):**
+
+```python
+# In Databricks notebook
+from databricks.sdk.runtime import *
+
+# Create secret scope (run once)
+# Note: Use Databricks CLI or UI for this
+```
+
+**Better: Use Databricks UI or CLI:**
+
+#### **Via Databricks UI:**
+1. Go to your Databricks workspace
+2. Navigate to: `https://<databricks-instance>/#secrets/createScope`
+3. **Scope Name**: `aws-dynamodb`
+4. **Manage Principal**: Choose who can manage
+5. Click **Create**
+
+#### **Via Databricks CLI:**
+
+```bash
+# Install Databricks CLI
+pip install databricks-cli
+
+# Configure
+databricks configure --token
+
+# Create secret scope
+databricks secrets create-scope --scope aws-dynamodb
+
+# Add secrets
+databricks secrets put --scope aws-dynamodb --key aws-access-key-id
+# (Opens editor, paste the Access Key ID, save and exit)
+
+databricks secrets put --scope aws-dynamodb --key aws-secret-access-key
+# (Opens editor, paste the Secret Access Key, save and exit)
+```
+
+## **Step 5: Read DynamoDB from Databricks**
+
+### **Method A: Using AWS SDK (boto3)**
+
+```python
+# Install boto3 if not available
+%pip install boto3
+
+import boto3
+from pyspark.sql import SparkSession
+
+# Get credentials from Databricks secrets
+aws_access_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-access-key-id")
+aws_secret_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-secret-access-key")
+region = "us-east-1"  # Your AWS region
+
+# Create DynamoDB client
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name=region,
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
+
+# Read table
+table = dynamodb.Table('YourTableName')
+
+# Scan table (for small tables)
+response = table.scan()
+items = response['Items']
+
+# Handle pagination for large tables
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+
+# Convert to Spark DataFrame
+from pyspark.sql import Row
+
+spark_data = [Row(**item) for item in items]
+df = spark.createDataFrame(spark_data)
+
+display(df)
+```
+
+### **Method B: Using Spark DynamoDB Connector**
+
+```python
+# Configure Spark to use AWS credentials
+spark.conf.set("spark.hadoop.fs.s3a.access.key", 
+               dbutils.secrets.get(scope="aws-dynamodb", key="aws-access-key-id"))
+spark.conf.set("spark.hadoop.fs.s3a.secret.key", 
+               dbutils.secrets.get(scope="aws-dynamodb", key="aws-secret-access-key"))
+
+# Read DynamoDB using Spark connector
+# Note: Requires DynamoDB connector JAR
+
+df = spark.read \
+    .format("dynamodb") \
+    .option("tableName", "YourTableName") \
+    .option("region", "us-east-1") \
+    .load()
+
+display(df)
+```
+
+### **Method C: Export to S3 then Read (Best for Large Tables)**
+
+```python
+import boto3
+from datetime import datetime
+
+# Get credentials
+aws_access_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-access-key-id")
+aws_secret_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-secret-access-key")
+
+# DynamoDB client
+dynamodb = boto3.client(
+    'dynamodb',
+    region_name='us-east-1',
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
+
+# Export table to S3 (requires additional IAM permissions)
+s3_bucket = "your-bucket"
+s3_prefix = f"dynamodb-exports/{datetime.now().strftime('%Y%m%d')}"
+
+response = dynamodb.export_table_to_point_in_time(
+    TableArn='arn:aws:dynamodb:us-east-1:123456789012:table/YourTableName',
+    S3Bucket=s3_bucket,
+    S3Prefix=s3_prefix,
+    ExportFormat='DYNAMODB_JSON'  # or 'ION'
+)
+
+export_arn = response['ExportDescription']['ExportArn']
+print(f"Export started: {export_arn}")
+
+# Wait for export to complete (check status)
+# Then read from S3
+df = spark.read.json(f"s3a://{s3_bucket}/{s3_prefix}/")
+display(df)
+```
+
+---
+
+# **Option 2: IAM Role (Best Practice - for Databricks on AWS)**
+
+If your Databricks is running on AWS, use IAM Roles instead of access keys.
+
+## **Step 1: Create IAM Role**
+
+1. **IAM** → **Roles** → **Create role**
+2. **Trusted entity type**: Custom trust policy
+3. **Custom trust policy**:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::414351767826:role/databricks-cross-account-role"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "StringEquals": {
+                    "sts:ExternalId": "your-databricks-external-id"
+                }
+            }
+        }
+    ]
+}
+```
+
+**Note:** Get the correct External ID from your Databricks workspace settings.
+
+4. Click **Next**
+5. Attach policy: `DatabricksDynamoDBReadPolicy`
+6. **Role name**: `databricks-dynamodb-read-role`
+7. Click **Create role**
+
+## **Step 2: Configure Instance Profile in Databricks**
+
+1. In Databricks workspace, go to **Admin Console**
+2. **Instance Profiles** → **Add Instance Profile**
+3. Enter the role ARN: `arn:aws:iam::123456789012:role/databricks-dynamodb-read-role`
+4. Click **Add**
+
+## **Step 3: Use Role in Cluster**
+
+When creating/editing a cluster:
+1. **Advanced Options** → **Instances**
+2. **Instance Profile**: Select `databricks-dynamodb-read-role`
+3. Start the cluster
+
+Now your cluster has automatic access to DynamoDB!
+
+## **Step 4: Read DynamoDB (No Explicit Credentials)**
+
+```python
+import boto3
+
+# boto3 automatically uses instance profile credentials
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+table = dynamodb.Table('YourTableName')
+response = table.scan()
+
+# Convert to DataFrame
+items = response['Items']
+df = spark.createDataFrame(items)
+display(df)
+```
+
+---
+
+# **Complete Example: Read DynamoDB Table**
+
+```python
+# ============================================
+# Complete Example: Read DynamoDB in Databricks
+# ============================================
+
+# Install required libraries
+%pip install boto3
+
+import boto3
+from pyspark.sql import Row
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+# Configuration
+TABLE_NAME = "your-table-name"
+AWS_REGION = "us-east-1"
+
+# Get credentials from Databricks secrets
+# (Skip this if using IAM Role)
+aws_access_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-access-key-id")
+aws_secret_key = dbutils.secrets.get(scope="aws-dynamodb", key="aws-secret-access-key")
+
+# Create DynamoDB resource
+dynamodb = boto3.resource(
+    'dynamodb',
+    region_name=AWS_REGION,
+    aws_access_key_id=aws_access_key,
+    aws_secret_access_key=aws_secret_key
+)
+
+table = dynamodb.Table(TABLE_NAME)
+
+print(f"Reading from table: {TABLE_NAME}")
+print(f"Table status: {table.table_status}")
+print(f"Item count: {table.item_count}")
+
+# Function to scan entire table with pagination
+def scan_table(dynamodb_table):
+    """Scan entire DynamoDB table handling pagination"""
+    items = []
+    response = dynamodb_table.scan()
+    items.extend(response['Items'])
+    
+    # Handle pagination
+    while 'LastEvaluatedKey' in response:
+        print(f"Fetching more items... (current count: {len(items)})")
+        response = dynamodb_table.scan(
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
+        items.extend(response['Items'])
+    
+    print(f"Total items fetched: {len(items)}")
+    return items
+
+# Scan table
+items = scan_table(table)
+
+# Convert to Spark DataFrame
+if items:
+    # Convert DynamoDB items to Spark Rows
+    spark_rows = [Row(**item) for item in items]
+    df = spark.createDataFrame(spark_rows)
+    
+    print("\nDataFrame Schema:")
+    df.printSchema()
+    
+    print("\nSample Data:")
+    display(df.limit(10))
+    
+    # Save to Delta Lake (optional)
+    df.write.format("delta").mode("overwrite").saveAsTable("dynamodb_table_data")
+    print("Data saved to Delta table: dynamodb_table_data")
+else:
+    print("No items found in table")
+```
+
+---
+
+# **Query Operations (Instead of Scan)**
+
+For better performance, use Query instead of Scan:
+
+```python
+# Query with partition key
+response = table.query(
+    KeyConditionExpression=boto3.dynamodb.conditions.Key('userId').eq('user123')
+)
+
+# Query with partition key and sort key
+from boto3.dynamodb.conditions import Key
+
+response = table.query(
+    KeyConditionExpression=Key('userId').eq('user123') & Key('timestamp').between(
+        '2025-01-01', '2025-01-31'
+    )
+)
+
+# Query with filter
+response = table.query(
+    KeyConditionExpression=Key('userId').eq('user123'),
+    FilterExpression='attribute_exists(email) AND #status = :status',
+    ExpressionAttributeNames={'#status': 'status'},
+    ExpressionAttributeValues={':status': 'active'}
+)
+
+items = response['Items']
+```
+
+---
+
+# **Best Practices**
+
+## **Security**
+
+✅ **Use IAM Roles** instead of access keys when possible  
+✅ **Store credentials in Databricks Secrets**, never in code  
+✅ **Use least privilege** - only grant necessary permissions  
+✅ **Rotate access keys** regularly if using IAM users  
+✅ **Enable CloudTrail** to audit DynamoDB access
+
+## **Performance**
+
+✅ **Use Query instead of Scan** when possible  
+✅ **Use parallel scans** for large tables:
+
+```python
+from concurrent.futures import ThreadPoolExecutor
+
+def scan_segment(segment, total_segments):
+    response = table.scan(
+        Segment=segment,
+        TotalSegments=total_segments
+    )
+    items = response['Items']
+    
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(
+            Segment=segment,
+            TotalSegments=total_segments,
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
+        items.extend(response['Items'])
+    
+    return items
+
+# Parallel scan with 4 segments
+with ThreadPoolExecutor(max_workers=4) as executor:
+    futures = [executor.submit(scan_segment, i, 4) for i in range(4)]
+    all_items = []
+    for future in futures:
+        all_items.extend(future.result())
+```
+
+✅ **Export to S3 for large datasets** (> 100K items)  
+✅ **Use DynamoDB Streams** for incremental updates  
+✅ **Cache data in Delta Lake** for repeated queries
+
+## **Cost Optimization**
+
+✅ **Minimize scans** - they consume read capacity units  
+✅ **Use ProjectionExpression** to read only needed attributes:
+
+```python
+response = table.scan(
+    ProjectionExpression='userId, email, createdAt'
+)
+```
+
+✅ **Consider DynamoDB on-demand pricing** for sporadic access  
+✅ **Export to S3 for analytics** - cheaper than repeated scans
+
+---
+
+# **Troubleshooting**
+
+### **Error: "Access Denied"**
+
+Check:
+- IAM policy allows `dynamodb:Scan` or `dynamodb:Query`
+- Table ARN in policy matches your table
+- Credentials are correct
+
+### **Error: "Rate Exceeded"**
+
+- DynamoDB has read/write capacity limits
+- Use exponential backoff
+- Consider increasing provisioned capacity
+
+### **Error: "Module not found: boto3"**
+
+```python
+%pip install boto3
+dbutils.library.restartPython()
+```
+
+---
+
+# **Summary: Quick Start**
+
+1. ✅ Create IAM policy with DynamoDB read permissions
+2. ✅ Create IAM user and generate access keys
+3. ✅ Store keys in Databricks secrets
+4. ✅ Use boto3 to read DynamoDB
+5. ✅ Convert to Spark DataFrame
+
+**Estimated setup time: 15-20 minutes**
+
+---
+
+Would you like help with:
+1. Setting up the IAM policy for specific tables?
+2. Configuring Databricks secrets?
+3. Writing more efficient query code?
+4. Setting up incremental loading from DynamoDB?
