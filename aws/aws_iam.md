@@ -405,7 +405,25 @@ spark.conf.set("fs.s3a.access.key", access_key)
 spark.conf.set("fs.s3a.secret.key", secret_key)
 ```
 
-## For DynamoDB Polling
+
+## To access S3 from Databrick Your Admin Needs To:
+
+1. Create Storage Credential (using the IAM role you created)
+2. Create External Location (pointing to s3://chargeminder-v2/)
+3. Grant you permissions on that external location
+```sql
+CREATE STORAGE CREDENTIAL chargeminder_prod_credential
+WITH (AWS_IAM_ROLE = 'arn:aws:iam::592210015395:role/chargeminder-databricks-s3-access-prod')
+COMMENT 'Storage credential for ChargeMinderV2 production S3 access';
+
+CREATE EXTERNAL LOCATION chargeminder_v2_prod
+URL 's3://chargeminder-v2/'
+WITH (STORAGE CREDENTIAL chargeminder_prod_credential)
+COMMENT 'ChargeMinderV2 production S3 bucket';
+
+GRANT READ FILES, WRITE FILES ON EXTERNAL LOCATION chargeminder_v2_prod TO michael.lubinsky.ctr@tri.global;
+```
+# For DynamoDB Polling
 
 If you need to continuously poll DynamoDB, you might use boto3:
 
