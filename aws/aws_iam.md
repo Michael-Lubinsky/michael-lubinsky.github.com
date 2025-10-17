@@ -461,6 +461,56 @@ You'll be able to access the S3 bucket from **any cluster** in your workspace - 
 
 **Bottom line:** With Unity Catalog, your S3 access travels with your user account, not with specific clusters. 🎉
 
+# Databricks  Serverless Compute
+
+ With **Serverless Compute**, you don't need to worry about clusters or instance profiles at all.
+
+## **How Serverless Compute Works with S3:**
+
+Serverless automatically uses **Unity Catalog Storage Credentials** - no cluster configuration needed. Once your admin sets up the Unity Catalog external location, it will work automatically.
+
+## **What Still Needs to Happen:**
+
+Your admin needs to configure Unity Catalog (same as before):
+
+### **1. Create Storage Credential:**
+```sql
+CREATE STORAGE CREDENTIAL chargeminder_prod_credential
+WITH (AWS_IAM_ROLE = 'arn:aws:iam::592210015395:role/chargeminder-databricks-s3-access-prod')
+COMMENT 'Storage credential for ChargeMinderV2 production S3 access';
+```
+
+### **2. Create External Location:**
+```sql
+CREATE EXTERNAL LOCATION chargeminder_v2_prod
+URL 's3://chargeminder-v2/'
+WITH (STORAGE CREDENTIAL chargeminder_prod_credential)
+COMMENT 'ChargeMinderV2 production S3 bucket';
+```
+
+### **3. Grant You Access:**
+```sql
+GRANT READ FILES, WRITE FILES ON EXTERNAL LOCATION chargeminder_v2_prod TO `<your-email@domain.com>`;
+```
+
+## **After Setup, You Can Access S3:**
+
+```python
+# List files
+dbutils.fs.ls("s3://chargeminder-v2/")
+
+# Read data
+df = spark.read.format("parquet").load("s3://chargeminder-v2/your-path/")
+df.show()
+```
+
+## **Action Item:**
+
+Contact **#ie Slack channel** and tell them:
+
+> "I'm using Serverless Compute and need Unity Catalog external location configured for `s3://chargeminder-v2/` using storage credential with IAM role `chargeminder-databricks-s3-access-prod`. Please grant me access."
+
+**With Serverless + Unity Catalog, it's cluster-independent by design!** ✨
 
 # For DynamoDB Polling
 
