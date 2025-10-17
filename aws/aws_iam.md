@@ -423,6 +423,45 @@ COMMENT 'ChargeMinderV2 production S3 bucket';
 
 GRANT READ FILES, WRITE FILES ON EXTERNAL LOCATION chargeminder_v2_prod TO michael.lubinsky.ctr@tri.global;
 ```
+
+# Is ability to access s3 from Databricks depends on which cluster I am using  ?
+ The answer depends on which approach you're using:
+
+## **With Unity Catalog (Your Current Setup): NO** ✅
+
+Once your admin sets up the **Storage Credential** and **External Location**, your S3 access is **user-based, not cluster-based**. This means:
+
+- ✅ You can access `s3://chargeminder-v2/` from **any cluster** (as long as Unity Catalog is enabled)
+- ✅ Permissions follow your user account
+- ✅ No need to configure anything on individual clusters
+- ✅ Centralized access control
+
+Example:
+```python
+# This will work on ANY cluster once external location is configured
+df = spark.read.parquet("s3://chargeminder-v2/data/")
+```
+
+## **With Instance Profiles (Old Approach): YES** ⚠️
+
+If you were using cluster instance profiles (the old way), then S3 access **would** depend on your cluster:
+
+- ⚠️ Each cluster needs the instance profile attached
+- ⚠️ Different clusters could have different permissions
+- ⚠️ Cluster-based access control (not user-based)
+
+## **For Your Situation:**
+
+Since you're using **Unity Catalog**, once your admin configures:
+1. Storage Credential (with your IAM role)
+2. External Location for `s3://chargeminder-v2/`
+3. Grants you permissions
+
+You'll be able to access the S3 bucket from **any cluster** in your workspace - you can switch clusters freely without losing access.
+
+**Bottom line:** With Unity Catalog, your S3 access travels with your user account, not with specific clusters. 🎉
+
+
 # For DynamoDB Polling
 
 If you need to continuously poll DynamoDB, you might use boto3:
