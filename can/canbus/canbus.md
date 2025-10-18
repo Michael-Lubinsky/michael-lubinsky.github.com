@@ -1288,3 +1288,135 @@ df_min.createOrReplaceTempView("canbus_minute")
   ```
 
 Want me to wrap these into a **single Databricks notebook** with parameters (`start_date`, `end_date`, `table`) and nice displays?
+
+# Spark Config
+
+## Quick Verdict on Your Settings:
+
+**Your Proposed Config:**
+- ✅ `spark.shuffle.io.retryWait = 60` → **GOOD!** Keep this.
+- ✅ `spark.shuffle.io.maxRetries = 12` → **GOOD!** Keep this.
+- ⚠️ `spark.sql.shuffle.partitions = 1280` → **TOO RIGID!** May be too small or too large depending on query.
+- ⚠️ `spark.sql.files.maxPartitionBytes = 128MB` → **TOO SMALL** for 613T records. Use 256MB.
+
+## Better Approach - Use AQE (Adaptive Query Execution):
+
+Instead of hardcoding partition counts, let Spark **automatically optimize** based on your actual data:
+
+```python
+# 🔴 CRITICAL - This is the game-changer!
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
+spark.conf.set("spark.sql.adaptive.advisoryPartitionSizeInBytes", "256MB")
+spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
+
+# Set STARTING shuffle partitions (3-4x your total cores)
+# AQE will auto-adjust from here
+spark.conf.set("spark.sql.shuffle.partitions", 2400)  # Example: 800 cores * 3
+
+# Larger partition size for massive datasets
+spark.conf.set("spark.sql.files.maxPartitionBytes", "268435456")  # 256 MB
+
+# Your retry settings - keep these!
+spark.conf.set("spark.shuffle.io.retryWait", "60s")
+spark.conf.set("spark.shuffle.io.maxRetries", 12)
+
+# Additional reliability
+spark.conf.set("spark.network.timeout", "600s")
+```
+
+## Why AQE is Better:
+
+**Without AQE (your approach):**
+- 1280 partitions for EVERY query (whether processing 1 day or 1 year of data)
+- Can be too many (waste) or too few (slow) depending on query
+- Data skew causes stragglers
+
+**With AQE (recommended):**
+- Small query (1 day): Auto-reduces from 2400 → 100 partitions ✨
+- Large query (1 year): Keeps all 2400+ partitions ✨
+- Automatically handles data skew ✨
+- **Free 20-40% performance improvement** ✨
+
+## What You Need to Know:
+
+1. **Your cluster size matters!** Replace `2400` with `your_total_cores × 3`
+2. **AQE requires Spark 3.0+** (Databricks has this)
+3. **Always filter on `source_date` first** for partition pruning (10-1000x speedup!)
+
+The artifact I created has the complete configuration with explanations. Would you like me to help you calculate the optimal settings based on your specific cluster configuration?
+
+
+
+Short answer: those exact settings aren’t bad, but they’re not the first knobs I’d reach for on Databricks—especially with Photon + AQE. Here’s how I’d tune, and why.
+
+### What you proposed
+
+* `spark.sql.shuffle.partitions = 1280`
+  • OK only if you truly have lots of cores. As a rule of thumb set this to ~**2–3× total cores** available to the job. If you have 256 cores, 1280 is fine; if you have 32 cores, it’s overkill and adds shuffle overhead. With **AQE**, this is just a starting point and will be coalesced, so oversized isn’t fatal—but it still increases shuffle planning & task overhead.
+* `spark.sql.files.maxPartitionBytes = 134217728 (128MB)`
+  • That’s already the Spark default. Reasonable for typical Delta files. If rows are very wide or CPU-heavy UDFs (ideally none), you might lower to 64 MB; if narrow & CPU-light, 256 MB can reduce task count.
+* `spark.shuffle.io.retryWait = 60` and `spark.shuffle.io.maxRetries = 12`
+  • Generally leave defaults unless you’re seeing **shuffle fetch failures** (unstable network/IO). Higher values don’t speed things up; they just wait longer/retry more.
+
+### What I recommend first (Databricks/Photon)
+
+1. **Use Photon & SQL/AQE**
+
+   * Photon SQL Warehouse or Photon cluster; keep logic in SQL / built-in functions (no Python UDFs).
+   * `spark.sql.adaptive.enabled = true` (default on Databricks)
+   * `spark.sql.adaptive.coalescePartitions.enabled = true` (default)
+   * `spark.sql.adaptive.skewJoin.enabled = true` (helps big skewed keys like “rpm” or a hot VIN)
+2. **Right-size shuffle partitions**
+
+   * Start with `spark.sql.shuffle.partitions ≈ 2–3 × total cores`.
+     Example: 128 cores → 256–384. Let AQE coalesce down.
+3. **Leverage partition pruning**
+
+   * Always filter by `source_date` (your partition column) to avoid full-table scans.
+   * Keep **dynamic partition pruning** on (default).
+4. **Delta layout hygiene (bigger wins than Spark knobs)**
+
+   * Periodically `OPTIMIZE <table>` to compact small files (target ~128–256 MB).
+   * Consider `ZORDER BY (MASKED-VIN, label, source_date)` if you frequently filter on those—improves data skipping.
+   * Enable:
+
+     * `spark.databricks.delta.optimizeWrite.enabled = true`
+     * `spark.databricks.delta.autoCompact.enabled = true`
+5. **Broadcast joins (for dimensions/lookup tables)**
+
+   * Let the optimizer auto-broadcast small tables (`spark.sql.autoBroadcastJoinThreshold` default usually fine). Avoid disabling it.
+6. **Approximate functions for EDA**
+
+   * Use `approx_count_distinct`, `percentile_approx` to cut shuffle and memory for global stats.
+
+### When to change your four settings
+
+* **Raise `shuffle.partitions`** only if tasks are too “fat” (long runtime per task) and you have idle cores. Lower it if you see too many tiny tasks and scheduling overhead.
+* **Change `files.maxPartitionBytes`** if each task is either too slow (too large input split) → lower to 64 MB, or too fast/too many tasks → raise to 256 MB.
+* **Bump shuffle retries/waits** only if you see recurring `FetchFailedException`/network blips.
+
+### Quick checklist you can paste into a notebook
+
+```python
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
+spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
+
+# Size with cluster cores (example for ~128 cores)
+spark.conf.set("spark.sql.shuffle.partitions", "320")  # start ~2.5x cores
+
+# Input split sizing: 128–256 MB typical
+spark.conf.set("spark.sql.files.maxPartitionBytes", str(256 * 1024 * 1024))
+
+# Delta write hygiene
+spark.conf.set("spark.databricks.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.databricks.delta.autoCompact.enabled", "true")
+```
+
+### Final take
+
+* Biggest wins come from **Photon + AQE**, **partition pruning**, and **healthy Delta file layout**, not from aggressive shuffle/retry tweaks.
+* Tune `shuffle.partitions` relative to **available cores**; let AQE do the rest.
+* Only touch shuffle retry knobs if you actually see fetch failures.
+
