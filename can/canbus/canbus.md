@@ -194,9 +194,10 @@ display(result_df.select("MASKED-VIN", "dateTime", "TBDC-Correlationid", "trip_n
 Would you like me to modify this so that each trip’s **start and end timestamps** (and duration) are also output per VIN?
 
 ## Syntetic dataset
-
+ Databricks / PySpark: generate ~10k synthetic CANBUS rows for 2 VINs
+ 
 ```python
-# Databricks / PySpark: generate ~10k synthetic CANBUS rows for 2 VINs
+
 from pyspark.sql import functions as F, types as T
 
 # ---------- knobs ----------
@@ -334,4 +335,202 @@ print("Total rows (should be ~10,800):", synthetic_df.count())
 display(synthetic_df.orderBy("MASKED-VIN", "dateTime").limit(20))
 ```
 
+# Syntetic dataset apprach 2
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType, TimestampType, DateType
+from datetime import datetime, timedelta
+import random
+import uuid
 
+# Initialize Spark session
+spark = SparkSession.builder.appName("CANBUS_Synthetic_Data").getOrCreate()
+
+# Define schema
+ 
+schema = StructType([
+    StructField("vehicleName", StringType(), True),
+    StructField("DispatchModelType", StringType(), True),
+    StructField("year", StringType(), True),
+    StructField("month", IntegerType(), True),
+    StructField("day", IntegerType(), True),
+    StructField("hour", IntegerType(), True),
+    StructField("MASKED-VIN", StringType(), True),
+    StructField("TBDC-Correlationid", StringType(), True),
+    StructField("NaviModel", StringType(), True),
+    StructField("ModelYear", StringType(), True),
+    StructField("dateTime", TimestampType(), True),
+    StructField("label", StringType(), True),
+    StructField("value", FloatType(), True),
+    StructField("unit", StringType(), True),
+    StructField("insert_date_time", TimestampType(), True),
+    StructField("record_version", IntegerType(), True),
+    StructField("schema_version", StringType(), True),
+    StructField("original_table", StringType(), True),
+    StructField("source_date", DateType(), True)
+])
+
+# Configuration
+NUM_RECORDS = 10000
+VINS = ["VIN123XXXXX456789", "VIN987XXXXX654321"]
+VEHICLE_CONFIGS = {
+    "VIN123XXXXX456789": {
+        "vehicleName": "Camry",
+        "DispatchModelType": "AXVH70",
+        "NaviModel": "7",
+        "ModelYear": "2024"
+    },
+    "VIN987XXXXX654321": {
+        "vehicleName": "RAV4",
+        "DispatchModelType": "AXAH54",
+        "NaviModel": "9",
+        "ModelYear": "2023"
+    }
+}
+
+# Sensor labels with typical ranges
+LABELS = {
+    "VehicleSpeed": {"range": (0, 120), "unit": "km/h"},
+    "EngineRPM": {"range": (600, 6000), "unit": "rpm"},
+    "FuelLevel": {"range": (10, 100), "unit": "%"},
+    "EngineTemp": {"range": (80, 105), "unit": "C"},
+    "ThrottlePosition": {"range": (0, 100), "unit": "%"},
+    "BatteryVoltage": {"range": (12.0, 14.5), "unit": "V"},
+    "OdometerReading": {"range": (10000, 50000), "unit": "km"},
+    "AmbientTemp": {"range": (15, 35), "unit": "C"}
+}
+
+def generate_trip_data(vin, start_time, duration_minutes, records_per_vin):
+    """Generate data for a single trip"""
+    data = []
+    current_time = start_time
+    correlation_id = None
+    last_correlation_time = None
+    
+    # Trip characteristics
+    vehicle_config = VEHICLE_CONFIGS[vin]
+    num_labels = len(LABELS)
+    records_per_timestamp = num_labels  # One record per label per timestamp
+    
+    # Calculate number of timestamps needed
+    num_timestamps = records_per_vin // records_per_timestamp
+    interval_ms = (duration_minutes * 60 * 1000) / num_timestamps  # milliseconds between readings
+    
+    for i in range(num_timestamps):
+        # Update correlation ID every minute (60000ms)
+        if last_correlation_time is None or (current_time - last_correlation_time).total_seconds() >= 60:
+            correlation_id = str(uuid.uuid4())
+            last_correlation_time = current_time
+        
+        # Generate one record for each label at this timestamp
+        for label_name, label_config in LABELS.items():
+            min_val, max_val = label_config["range"]
+            
+            # Add some realistic variation based on label
+            if label_name == "VehicleSpeed":
+                # Speed varies more during trip
+                value = random.uniform(20, 80) if i > 10 and i < num_timestamps - 10 else random.uniform(0, 30)
+            elif label_name == "EngineRPM":
+                # RPM correlates with speed
+                value = random.uniform(1500, 3500) if i > 10 else random.uniform(800, 1200)
+            elif label_name == "FuelLevel":
+                # Fuel decreases slowly over trip
+                value = max_val - (i / num_timestamps) * 10
+            elif label_name == "OdometerReading":
+                # Odometer increases
+                value = min_val + (i / num_timestamps) * 50
+            else:
+                value = random.uniform(min_val, max_val)
+            
+            row = (
+                vehicle_config["vehicleName"],
+                vehicle_config["DispatchModelType"],
+                str(current_time.year),
+                current_time.month,
+                current_time.day,
+                current_time.hour,
+                vin,
+                correlation_id,
+                vehicle_config["NaviModel"],
+                vehicle_config["ModelYear"],
+                current_time,
+                label_name,
+                round(value, 2),
+                label_config["unit"],
+                datetime.now(),  # insert_date_time
+                1,  # record_version
+                "1.1",  # schema_version
+                "canbus.telemetry.signals",  # original_table
+                current_time.date()  # source_date
+            )
+            data.append(row)
+        
+        # Increment time by interval
+        current_time += timedelta(milliseconds=interval_ms)
+    
+    return data
+
+# Generate data for both VINs with multiple trips
+all_data = []
+records_per_vin = NUM_RECORDS // 2
+
+# VIN 1: 3 trips
+vin1 = VINS[0]
+base_date = datetime(2025, 10, 15, 8, 0, 0)
+
+# Trip 1: Morning commute
+trip1_data = generate_trip_data(vin1, base_date, 25, records_per_vin // 3)
+all_data.extend(trip1_data)
+
+# Gap of 8 hours (at work)
+# Trip 2: Evening commute
+trip2_start = base_date + timedelta(hours=8, minutes=30)
+trip2_data = generate_trip_data(vin1, trip2_start, 30, records_per_vin // 3)
+all_data.extend(trip2_data)
+
+# Gap of 12 hours (overnight)
+# Trip 3: Next day morning
+trip3_start = base_date + timedelta(days=1, hours=7, minutes=45)
+trip3_data = generate_trip_data(vin1, trip3_start, 20, records_per_vin // 3)
+all_data.extend(trip3_data)
+
+# VIN 2: 2 trips
+vin2 = VINS[1]
+base_date2 = datetime(2025, 10, 15, 9, 15, 0)
+
+# Trip 1: Mid-morning drive
+trip4_data = generate_trip_data(vin2, base_date2, 35, records_per_vin // 2)
+all_data.extend(trip4_data)
+
+# Gap of 5 hours
+# Trip 2: Afternoon drive
+trip5_start = base_date2 + timedelta(hours=5, minutes=20)
+trip5_data = generate_trip_data(vin2, trip5_start, 40, records_per_vin // 2)
+all_data.extend(trip5_data)
+
+# Create DataFrame
+df = spark.createDataFrame(all_data, schema=schema)
+
+# Show summary
+print(f"Total records generated: {df.count()}")
+print(f"\nRecords per VIN:")
+df.groupBy("MASKED-VIN").count().show()
+
+print(f"\nSample data:")
+df.orderBy("MASKED-VIN", "dateTime").show(20, truncate=False)
+
+print(f"\nUnique correlation IDs per VIN:")
+df.groupBy("MASKED-VIN").agg({"TBDC-Correlationid": "approx_count_distinct"}).show()
+
+print(f"\nTime range per VIN:")
+df.groupBy("MASKED-VIN").agg(
+    {"dateTime": "min", "dateTime": "max"}
+).show(truncate=False)
+
+print(f"\nLabel distribution:")
+df.groupBy("label").count().orderBy("label").show()
+
+# Display schema
+print("\nDataFrame Schema:")
+df.printSchema()
+```
