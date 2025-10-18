@@ -1034,3 +1034,257 @@ print("\n" + "="*80)
 print("ANALYSIS COMPLETE")
 print("="*80)
 ```
+
+# Quick “data sketch” of  CANBUS Delta table (partitioned by `source_date`)
+
+Below are **ready-to-run** options in both **Spark SQL** and **PySpark**. 
+They’re designed for scale (use partition pruning, approximations, and summaries) and you can optionally 
+add a date filter to avoid a full scan.
+
+Assumptions:
+
+* Table name placeholder: `mycatalog.myschema.canbus` (change as needed).
+* Timestamp column: `dateTime`
+* Partitions: `source_date` (DATE)
+* Vehicle id: `MASKED-VIN`
+* Label column: `label`
+* Value column: `value`
+
+Tip: if you only want a recent window, add:
+
+```
+WHERE source_date >= date_sub(current_date(), 30)
+```
+
+to the queries.
+
+---
+
+## Spark SQL (Databricks SQL cells)
+
+### 0) Table/partition basics (no full scan)
+
+```sql
+-- Table metadata
+DESCRIBE DETAIL mycatalog.myschema.canbus;
+
+-- Partition listing (quick sanity check of coverage)
+SHOW PARTITIONS mycatalog.myschema.canbus;
+
+-- Optional: compute/refresh stats (helps the optimizer)
+-- ANALYZE TABLE mycatalog.myschema.canbus COMPUTE STATISTICS FOR COLUMNS(MASKED-VIN, label, value, source_date);
+```
+
+### 1) How many vehicles?
+
+```sql
+SELECT approx_count_distinct(`MASKED-VIN`) AS vehicles_est
+FROM mycatalog.myschema.canbus;
+```
+
+### 2) Which labels exist? (global & per car type)
+
+```sql
+-- Global label list + how many vehicles have each label
+SELECT
+  label,
+  approx_count_distinct(`MASKED-VIN`) AS vehicles_with_label,
+  count(*) AS rows_with_label
+FROM mycatalog.myschema.canbus
+GROUP BY label
+ORDER BY rows_with_label DESC;
+
+-- Are labels consistent per car type (DispatchModelType)?
+-- For each (car type, label): how many vehicles see it
+SELECT
+  DispatchModelType,
+  label,
+  approx_count_distinct(`MASKED-VIN`) AS vins_with_label
+FROM mycatalog.myschema.canbus
+GROUP BY DispatchModelType, label
+ORDER BY DispatchModelType, vins_with_label DESC, label;
+```
+
+(If you prefer a wide view, pivot the label presence to 0/1 columns, but that can get very wide.)
+
+### 3) Value distribution per label (mean, min, max, percentiles)
+
+```sql
+SELECT
+  label,
+  count(*)                                            AS n,
+  avg(value)                                          AS avg_value,
+  stddev_samp(value)                                  AS stddev_value,
+  min(value)                                          AS min_value,
+  max(value)                                          AS max_value,
+  percentile_approx(value, 0.50)                      AS p50,
+  percentile_approx(value, 0.95)                      AS p95,
+  percentile_approx(value, 0.99)                      AS p99
+FROM mycatalog.myschema.canbus
+GROUP BY label
+ORDER BY n DESC;
+```
+
+### 4) Date coverage: min/max partition and daily volume
+
+```sql
+-- Min/Max source_date (fast via partition column)
+SELECT min(source_date) AS min_source_date,
+       max(source_date) AS max_source_date
+FROM mycatalog.myschema.canbus;
+
+-- Daily record counts (limit output)
+SELECT source_date, count(*) AS rows
+FROM mycatalog.myschema.canbus
+GROUP BY source_date
+ORDER BY source_date DESC
+LIMIT 90;
+```
+
+### 5) Top vehicles by volume & label coverage per VIN
+
+```sql
+-- Top N vehicles by row count
+SELECT `MASKED-VIN`, count(*) AS rows
+FROM mycatalog.myschema.canbus
+GROUP BY `MASKED-VIN`
+ORDER BY rows DESC
+LIMIT 100;
+
+-- How many distinct labels each VIN actually sees
+SELECT `MASKED-VIN`,
+       approx_count_distinct(label) AS distinct_labels
+FROM mycatalog.myschema.canbus
+GROUP BY `MASKED-VIN`
+ORDER BY distinct_labels DESC
+LIMIT 100;
+```
+
+### 6) Sanity: null/missing data rates for key columns
+
+```sql
+SELECT
+  SUM(CASE WHEN `MASKED-VIN` IS NULL THEN 1 ELSE 0 END) / COUNT(*) AS null_rate_vin,
+  SUM(CASE WHEN label       IS NULL THEN 1 ELSE 0 END) / COUNT(*) AS null_rate_label,
+  SUM(CASE WHEN value       IS NULL THEN 1 ELSE 0 END) / COUNT(*) AS null_rate_value,
+  SUM(CASE WHEN dateTime    IS NULL THEN 1 ELSE 0 END) / COUNT(*) AS null_rate_datetime
+FROM mycatalog.myschema.canbus;
+```
+
+### 7) Minute-level compaction (optional, much smaller to explore)
+
+If your `TBDC-Correlationid` is one-per-minute per VIN, summarize to minute granularity first:
+
+```sql
+CREATE OR REPLACE TEMP VIEW canbus_minute AS
+SELECT
+  `MASKED-VIN`,
+  `TBDC-Correlationid`,
+  min(dateTime)                AS minute_start_ts,
+  max(dateTime)                AS minute_end_ts,
+  any_value(DispatchModelType) AS DispatchModelType,
+  any_value(vehicleName)       AS vehicleName,
+  any_value(source_date)       AS source_date
+FROM mycatalog.myschema.canbus
+GROUP BY `MASKED-VIN`, `TBDC-Correlationid`;
+```
+
+Then profile at the **minute** level (counts per day, per VIN, gaps, etc.) without touching every raw row.
+
+---
+
+## PySpark equivalents
+
+```python
+from pyspark.sql import functions as F
+
+tbl = "mycatalog.myschema.canbus"
+df  = spark.table(tbl)
+
+# 1) vehicles
+df.select(F.approx_count_distinct("MASKED-VIN").alias("vehicles_est")).display()
+
+# 2) labels
+df.groupBy("label").agg(
+    F.approx_count_distinct("MASKED-VIN").alias("vehicles_with_label"),
+    F.count(F.lit(1)).alias("rows_with_label")
+).orderBy(F.desc("rows_with_label")).display()
+
+# 2b) per car type (DispatchModelType) label coverage
+df.groupBy("DispatchModelType", "label").agg(
+    F.approx_count_distinct("MASKED-VIN").alias("vins_with_label")
+).orderBy("DispatchModelType", F.desc("vins_with_label"), "label").display()
+
+# 3) value distribution per label
+df.groupBy("label").agg(
+    F.count("*").alias("n"),
+    F.avg("value").alias("avg_value"),
+    F.stddev_samp("value").alias("stddev_value"),
+    F.min("value").alias("min_value"),
+    F.max("value").alias("max_value"),
+    F.expr("percentile_approx(value, 0.50)").alias("p50"),
+    F.expr("percentile_approx(value, 0.95)").alias("p95"),
+    F.expr("percentile_approx(value, 0.99)").alias("p99"),
+).orderBy(F.desc("n")).display()
+
+# 4) min/max source_date (partition col) + daily counts
+df.select(F.min("source_date").alias("min_source_date"),
+          F.max("source_date").alias("max_source_date")).display()
+
+df.groupBy("source_date").count().orderBy(F.desc("source_date")).limit(90).display()
+
+# 5) top vehicles by volume & label breadth
+df.groupBy("MASKED-VIN").count().orderBy(F.desc("count")).limit(100).display()
+
+df.groupBy("MASKED-VIN").agg(
+    F.approx_count_distinct("label").alias("distinct_labels")
+).orderBy(F.desc("distinct_labels")).limit(100).display()
+
+# 6) null rates
+total = df.count()
+df.select(
+    (F.sum(F.when(F.col("MASKED-VIN").isNull(), 1).otherwise(0)) / F.lit(total)).alias("null_rate_vin"),
+    (F.sum(F.when(F.col("label").isNull(),       1).otherwise(0)) / F.lit(total)).alias("null_rate_label"),
+    (F.sum(F.when(F.col("value").isNull(),       1).otherwise(0)) / F.lit(total)).alias("null_rate_value"),
+    (F.sum(F.when(F.col("dateTime").isNull(),    1).otherwise(0)) / F.lit(total)).alias("null_rate_datetime"),
+).display()
+
+# 7) minute-level compaction view
+df_min = (df.groupBy("MASKED-VIN", "TBDC-Correlationid")
+  .agg(
+    F.min("dateTime").alias("minute_start_ts"),
+    F.max("dateTime").alias("minute_end_ts"),
+    F.first("DispatchModelType", ignorenulls=True).alias("DispatchModelType"),
+    F.first("vehicleName", ignorenulls=True).alias("vehicleName"),
+    F.first("source_date", ignorenulls=True).alias("source_date"),
+  ))
+df_min.createOrReplaceTempView("canbus_minute")
+```
+
+---
+
+## Extra “big-data-friendly” ideas
+
+* **Scope by date** first (partition pruning): `WHERE source_date BETWEEN 'YYYY-MM-DD' AND 'YYYY-MM-DD'`.
+* **Use approximations** for global distincts: `approx_count_distinct` and `percentile_approx`.
+* **Downsample**: analyze a **recent 7–30 day window** first; then widen.
+* **Materialize helpers**: create a compact **minute-level** (or 1-sec) summary table for repeated EDA.
+* **Skew checks**:
+
+  ```sql
+  -- Rows per label (top 50) to detect extreme skew
+  SELECT label, count(*) AS rows
+  FROM mycatalog.myschema.canbus
+  GROUP BY label ORDER BY rows DESC LIMIT 50;
+  ```
+* **VIN × day density**:
+
+  ```sql
+  SELECT `MASKED-VIN`, source_date, count(*) AS rows
+  FROM mycatalog.myschema.canbus
+  GROUP BY `MASKED-VIN`, source_date
+  ORDER BY rows DESC
+  LIMIT 1000;
+  ```
+
+Want me to wrap these into a **single Databricks notebook** with parameters (`start_date`, `end_date`, `table`) and nice displays?
