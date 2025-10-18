@@ -77,12 +77,10 @@ trips = df.filter(col("source_date") >= "2025-10-01") \
     .withColumn("trip_number", sum("is_new_trip").over(window_spec.rowsBetween(-sys.maxsize, 0)))
 ```
 
-**Bottom line**: C
-
-hoose based on readability and team preference, not performance. 
+**Bottom line**: 
 Both are fine if you avoid the performance killers I outlined!
 
-
+```python
 # ============================================================================
 # SQL vs PySpark PERFORMANCE COMPARISON FOR MASSIVE DATASETS
 # Dataset: 613+ Trillion Records
@@ -483,3 +481,4 @@ print("""
 ║                                                                        ║
 ╚════════════════════════════════════════════════════════════════════════╝
 """)
+```
