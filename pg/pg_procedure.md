@@ -1,3 +1,46 @@
+## Run Stored Procedure In The Loop
+```sql
+DO $$
+DECLARE
+  d date;
+BEGIN
+  FOR d IN
+    SELECT generate_series(date '2025-01-01', date '2025-08-20', interval '1 day')::date
+  LOOP
+    BEGIN
+      CALL schema_name.proc_name(d);
+    EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE 'Failed for %: [%] %', d, SQLSTATE, SQLERRM;
+    END;
+  END LOOP;
+END$$;
+
+
+--- ANOTHER WAY: shows elapsed time
+
+DO $$
+DECLARE
+    date_to_process DATE;
+    start_time TIMESTAMP;
+    end_time TIMESTAMP;
+    elapsed_interval INTERVAL;
+BEGIN
+    FOR date_to_process IN 
+        SELECT generate_series('2024-01-01'::date, '2024-01-31'::date, '1 day'::interval)::date
+    LOOP
+        start_time := clock_timestamp();
+        RAISE NOTICE '[%] Starting processing date: %', start_time, date_to_process;
+        
+        CALL gold.ptt_sent_by_channel_type_daily(date_to_process);
+        
+        end_time := clock_timestamp();
+        elapsed_interval := end_time - start_time;
+        RAISE NOTICE '[%] Completed processing: % (Duration: %)', end_time, date_to_process, elapsed_interval;
+    END LOOP;
+    
+    RAISE NOTICE '[%] All dates processed successfully', clock_timestamp();
+END $$;
+```
 
 ## There is postgres pg_cron job which runs in UTC timezone.
 This job calls stored procedure which accepts  the date argument.
