@@ -1,4 +1,5 @@
-Great question! For trip identification from CANBUS data, you'll want to detect when there are gaps in the data that indicate the vehicle was turned off or parked. Here's how to approach this:
+# Trip identification from CANBUS data, 
+you'll want to detect when there are gaps in the data that indicate the vehicle was turned off or parked. Here's how to approach this:
 
 ## Recommended Approach
 
@@ -107,7 +108,8 @@ df_with_trips = df_with_trips.repartition("MASKED-VIN")
 
 Which approach would work best depends on your data characteristics. I'd recommend starting with **Method 3** as it's the most robust!
 
-Yes — you can derive a **trip_number** per vehicle using `TBDC-Correlationid`, because each unique correlation ID represents a distinct one-minute CAN message “session.” To group those into contiguous *trips* (continuous driving segments), you’ll want to detect **gaps in correlation or time** for each VIN.
+# Derive a **trip_number** per vehicle using `TBDC-Correlationid`, 
+because each unique correlation ID represents a distinct one-minute CAN message “session.” To group those into contiguous *trips* (continuous driving segments), you’ll want to detect **gaps in correlation or time** for each VIN.
 
 Here’s the reasoning and a ready-to-run PySpark (Databricks) implementation.
 
@@ -190,4 +192,146 @@ display(result_df.select("MASKED-VIN", "dateTime", "TBDC-Correlationid", "trip_n
 ---
 
 Would you like me to modify this so that each trip’s **start and end timestamps** (and duration) are also output per VIN?
+
+## Syntetic dataset
+
+```python
+# Databricks / PySpark: generate ~10k synthetic CANBUS rows for 2 VINs
+from pyspark.sql import functions as F, types as T
+
+# ---------- knobs ----------
+minutes_per_vin = 9                 # 9 minutes @ 100ms → 9*60*10 = 5400 rows per VIN
+rows_per_minute = 60 * 10           # 600 rows per minute at 100ms
+seed = 42                           # reproducible randoms
+start_ts = F.to_timestamp(F.lit("2025-01-01 08:00:00"))  # base start for VIN A
+start_ts_b = F.to_timestamp(F.lit("2025-01-01 09:30:00"))# base start for VIN B
+
+vin_a = "VINXXXXXXXXXXXXXA"
+vin_b = "VINXXXXXXXXXXXXXB"
+
+# vehicle metadata to make things a bit realistic
+vehicleA = {
+  "vehicleName": "Falcon X",
+  "DispatchModelType": "DM-1234",
+  "NaviModel": "7",
+  "ModelYear": "2022",
+}
+vehicleB = {
+  "vehicleName": "Ranger Pro",
+  "DispatchModelType": "DM-8877",
+  "NaviModel": "8",
+  "ModelYear": "2023",
+}
+
+# Labels & units (array is 1-indexed in Spark for element_at)
+labels = F.array(
+    F.lit("speed"),
+    F.lit("rpm"),
+    F.lit("throttle"),
+    F.lit("coolant_temp"),
+    F.lit("fuel_rate")
+)
+def unit_for(label_col):
+    return (F.when(label_col=="speed",        F.lit("km/h"))
+             .when(label_col=="rpm",          F.lit("rpm"))
+             .when(label_col=="throttle",     F.lit("%"))
+             .when(label_col=="coolant_temp", F.lit("°C"))
+             .when(label_col=="fuel_rate",    F.lit("L/h"))
+             .otherwise(F.lit("")))
+
+def value_for(label_col, r):
+    # simple synthetic ranges; tweak as needed
+    return (F.when(label_col=="speed",        120.0*r)                                  # 0..120
+             .when(label_col=="rpm",          600.0 + r*3400.0)                         # 600..4000
+             .when(label_col=="throttle",     r*100.0)                                  # 0..100
+             .when(label_col=="coolant_temp", 70.0 + r*40.0)                            # 70..110
+             .when(label_col=="fuel_rate",    r*25.0)                                   # 0..25
+             .otherwise(r*10.0))
+
+def build_vin_df(vin, meta, base_ts):
+    total_rows = minutes_per_vin * rows_per_minute
+    base = spark.range(0, total_rows).withColumnRenamed("id", "row_id")
+
+    # 100ms ticks
+    df = base.withColumn("dateTime", base_ts + F.expr("INTERVAL 100 milliseconds") * F.col("row_id"))
+
+    # one-minute correlation grouping (unique per minute per VIN)
+    minute_ts = F.date_trunc("minute", F.col("dateTime"))
+    df = df.withColumn("minute_ts", minute_ts)
+    df = df.withColumn(
+        "TBDC-Correlationid",
+        F.concat_ws("-", F.lit("corr"), F.lit(vin), F.date_format(F.col("minute_ts"), "yyyyMMddHHmm"))
+    )
+
+    # per-row label chosen cyclically
+    label = F.element_at(labels, (F.col("row_id") % F.size(labels)) + F.lit(1))
+    df = df.withColumn("label", label)
+
+    # deterministic random by minute + row_id
+    rnd = F.rand(seed) * 0.7 + F.rand(seed+7) * 0.3  # mix for variety
+    df = df.withColumn("value", value_for(F.col("label"), rnd).cast("double"))
+    df = df.withColumn("unit", unit_for(F.col("label")))
+
+    # date parts
+    df = df.withColumn("year",  F.date_format("dateTime", "yyyy")) \
+           .withColumn("month", F.month("dateTime")) \
+           .withColumn("day",   F.dayofmonth("dateTime")) \
+           .withColumn("hour",  F.hour("dateTime"))
+
+    # static / metadata columns
+    df = (df
+        .withColumn("vehicleName",        F.lit(meta["vehicleName"]))
+        .withColumn("DispatchModelType",  F.lit(meta["DispatchModelType"]))
+        .withColumn("MASKED-VIN",         F.lit(vin))
+        .withColumn("NaviModel",          F.lit(meta["NaviModel"]))
+        .withColumn("ModelYear",          F.lit(meta["ModelYear"]))
+        .withColumn("insert_date_time",   F.current_timestamp())
+        .withColumn("record_version",     F.lit(1).cast("int"))
+        .withColumn("schema_version",     F.lit("1.1"))
+        .withColumn("original_table",     F.lit("bronze.canbus"))
+        .withColumn("source_date",        F.to_date("dateTime"))
+        .withColumn("original_table",     F.lit("bronze.canbus"))
+        .withColumn("TBDC-Correlationid", F.col("TBDC-Correlationid").cast("string"))
+    )
+
+    # reorder/select to exactly match requested schema & names
+    cols = [
+        "vehicleName",                # string
+        "DispatchModelType",          # string
+        "year",                       # string
+        "month",                      # int
+        "day",                        # int
+        "hour",                       # int
+        "MASKED-VIN",                 # string
+        "TBDC-Correlationid",         # string
+        "NaviModel",                  # string
+        "ModelYear",                  # string
+        "dateTime",                   # timestamp
+        "label",                      # string
+        "value",                      # float/double
+        "unit",                       # string
+        "insert_date_time",           # timestamp
+        "record_version",             # int
+        "schema_version",             # string
+        "original_table",             # string
+        "source_date"                 # date
+    ]
+    return df.select(*cols)
+
+df_a = build_vin_df(vin_a, vehicleA, start_ts)
+df_b = build_vin_df(vin_b, vehicleB, start_ts_b)
+
+synthetic_df = df_a.unionByName(df_b)
+
+synthetic_df = synthetic_df.cache()
+
+print("Rows per VIN:")
+display(synthetic_df.groupBy("MASKED-VIN").count().orderBy("MASKED-VIN"))
+
+print("Total rows (should be ~10,800):", synthetic_df.count())
+
+# Peek
+display(synthetic_df.orderBy("MASKED-VIN", "dateTime").limit(20))
+```
+
 
