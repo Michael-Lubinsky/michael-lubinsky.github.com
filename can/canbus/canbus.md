@@ -1420,3 +1420,144 @@ spark.conf.set("spark.databricks.delta.autoCompact.enabled", "true")
 * Tune `shuffle.partitions` relative to **available cores**; let AQE do the rest.
 * Only touch shuffle retry knobs if you actually see fetch failures.
 
+# FIX Spark config
+
+## Cloude
+I'll analyze your configuration and cluster setup. I see several **typos** and some settings that need adjustment for your massive 613T dataset!## Quick Answer: You have **typos** that will cause settings to fail silently! ❌
+
+**Your Issues:**
+1. ❌ `spark.sq]` → should be `spark.sql`
+2. ❌ `spark.5q1` → should be `spark.sql`  
+3. ❌ `spark-5q1` → should be `spark.sql` (wrong separator)
+4. ❌ `spark.shuffle.io.retryWaitMs., "685"` → should be `"60s"` (not 685ms!)
+5. ❌ `spark.io-maxRetries` → should be `spark.shuffle.io.maxRetries`
+6. ❌ Missing **dynamic partition pruning** (10-100x speedup for your partitioned table!)
+
+## Optimized Configuration for Your Cluster:
+
+Your cluster has **128-512 cores** with **Photon** enabled. Here's the corrected config:
+
+```python
+# ✅ CORRECTED & OPTIMIZED FOR YOUR CLUSTER
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.getOrCreate()
+
+# 1. Adaptive Query Execution (you had typos here)
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
+spark.conf.set("spark.sql.adaptive.advisoryPartitionSizeInBytes", "268435456")  # 256MB
+spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
+
+# 2. Shuffle Partitions (optimized for 512 max cores)
+spark.conf.set("spark.sql.shuffle.partitions", "2048")  # 4x max cores, AQE will reduce
+
+# 3. File Reading
+spark.conf.set("spark.sql.files.maxPartitionBytes", "268435456")  # 256MB
+
+# 4. CRITICAL: Dynamic Partition Pruning (you were missing this!)
+spark.conf.set("spark.sql.optimizer.dynamicPartitionPruning.enabled", "true")
+# This gives 10-100x speedup when filtering by source_date!
+
+# 5. Reliability (corrected from your config)
+spark.conf.set("spark.shuffle.io.retryWait", "60s")  # Not 685ms!
+spark.conf.set("spark.shuffle.io.maxRetries", "12")
+spark.conf.set("spark.network.timeout", "800s")
+
+# 6. Photon Optimizations
+spark.conf.set("spark.databricks.photon.enabled", "true")
+spark.conf.set("spark.sql.parquet.enableVectorizedReader", "true")
+
+print("✅ Configuration optimized for 613T records!")
+```
+
+## Why These Changes Matter:
+
+| Setting | Your Value | Optimal Value | Impact |
+|---------|-----------|---------------|--------|
+| shuffle.partitions | 1500 | **2048** | Better parallelism for 512 cores |
+| retryWait | 685ms ❌ | **60s** | Prevents false failures on large shuffles |
+| Partition pruning | Missing ❌ | **Enabled** | **10-100x faster** queries on source_date! |
+| Typos | Many ❌ | **Fixed** | Settings actually work now |
+
+## Most Important Addition:
+
+**Dynamic Partition Pruning** - You were missing this! It's critical for your `source_date` partitioned table:
+
+```python
+spark.conf.set("spark.sql.optimizer.dynamicPartitionPruning.enabled", "true")
+```
+
+This alone can give you **10-100x speedup** when you filter by date ranges!
+
+The artifact I created has the complete optimized configuration with detailed explanations. Would you like me to help you test if the configuration is working correctly?
+ 
+ 
+## ChatGPT 
+ several keys are **misspelled/invalid** and won’t take effect. Here’s a corrected, sane baseline for your autoscaling Photon cluster (2–8 workers, 128–512 cores).
+
+```python
+# --- ADAPTIVE QUERY EXECUTION (AQE) ---
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
+spark.conf.set("spark.sql.adaptive.skewJoin.enabled", "true")
+
+# Target size for post-shuffle partitions (AQE will coalesce to ~this size)
+spark.conf.set("spark.sql.adaptive.advisoryPartitionSizeInBytes", "256m")
+
+# --- SHUFFLE PARALLELISM ---
+# Rule of thumb: ~2–3× max cores; with 512 cores → ~1024–1536
+# Start a bit high; AQE will coalesce down.
+spark.conf.set("spark.sql.shuffle.partitions", "1400")
+
+# --- FILE SPLITTING (INPUT) ---
+# 128–256 MB are typical for Delta on Photon. Bump to 256 MB for narrower rows.
+spark.conf.set("spark.sql.files.maxPartitionBytes", "256m")
+
+# --- DELTA WRITE HYGIENE (reduces small files) ---
+spark.conf.set("spark.databricks.delta.optimizeWrite.enabled", "true")
+spark.conf.set("spark.databricks.delta.autoCompact.enabled", "true")
+
+# --- SHUFFLE RETRIES (only change if you see FetchFailed/network issues) ---
+spark.conf.set("spark.shuffle.io.retryWait", "60s")     # seconds
+spark.conf.set("spark.shuffle.io.maxRetries", "12")
+```
+
+What was wrong in your draft:
+
+* Typos: `spark.sq]`, `spark.5q1`, `spark.sq1`, `spark.sql.shuffle-partitions`, `spark-5q1.files.maxPartitionBytes`, `spark.shuffle.io.retryWaitMs`, `spark.io-maxRetries`. None of these apply.
+* Correct keys are:
+
+  * `spark.sql.adaptive.enabled`
+  * `spark.sql.adaptive.advisoryPartitionSizeInBytes`
+  * `spark.sql.shuffle.partitions`
+  * `spark.sql.files.maxPartitionBytes`
+  * `spark.shuffle.io.retryWait` (in **seconds**)
+  * `spark.shuffle.io.maxRetries`
+
+Tuning notes (quick):
+
+* With autoscaling (128→512 cores), keep `spark.sql.shuffle.partitions` on the **high side** (e.g., 1400–1600). AQE will aggressively coalesce.
+* Prefer SQL / built-ins on **Photon**; avoid Python UDFs.
+* Always predicate on the partition column (`source_date`) to prune.
+* Bigger wins than Spark knobs: regular `OPTIMIZE` compaction and, if you filter by VIN/label often, **`ZORDER BY (MASKED-VIN, label, source_date)`** on the table.
+
+Sanity check in a cell:
+
+```python
+for k in [
+  "spark.sql.adaptive.enabled",
+  "spark.sql.adaptive.coalescePartitions.enabled",
+  "spark.sql.adaptive.skewJoin.enabled",
+  "spark.sql.adaptive.advisoryPartitionSizeInBytes",
+  "spark.sql.shuffle.partitions",
+  "spark.sql.files.maxPartitionBytes",
+  "spark.shuffle.io.retryWait",
+  "spark.shuffle.io.maxRetries",
+  "spark.databricks.delta.optimizeWrite.enabled",
+  "spark.databricks.delta.autoCompact.enabled",
+]:
+    print(k, "=", spark.conf.get(k))
+```
+
+If tasks still run “fat” (slow, long), nudge `shuffle.partitions` up; if you see many sub-second tasks/scheduler overhead, nudge it down.
+
