@@ -1,5 +1,6 @@
-# Trip identification from CANBUS data, 
-you'll want to detect when there are gaps in the data that indicate the vehicle was turned off or parked. Here's how to approach this:
+# Trip identification from CANBUS data
+
+detect when there are gaps in the data that indicate the vehicle was turned off or parked. Here's how to approach this:
 
 ## Recommended Approach
 
@@ -193,7 +194,8 @@ display(result_df.select("MASKED-VIN", "dateTime", "TBDC-Correlationid", "trip_n
 
 Would you like me to modify this so that each trip’s **start and end timestamps** (and duration) are also output per VIN?
 
-## Syntetic dataset
+## Syntetic dataset generation - approach 1
+
  Databricks / PySpark: generate ~10k synthetic CANBUS rows for 2 VINs
  
 ```python
@@ -335,7 +337,7 @@ print("Total rows (should be ~10,800):", synthetic_df.count())
 display(synthetic_df.orderBy("MASKED-VIN", "dateTime").limit(20))
 ```
 
-# Syntetic dataset apprach 2
+# Syntetic dataset generation - approach 2
 ```python
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType, TimestampType, DateType
@@ -533,4 +535,502 @@ df.groupBy("label").count().orderBy("label").show()
 # Display schema
 print("\nDataFrame Schema:")
 df.printSchema()
+```
+
+
+# set of queries to analyze this massive dataset (613+ trillion records!).
+Given the size, these queries are optimized to leverage the `source_date` partition.
+
+
+
+## Performance Recommendations:
+
+### 1. **Use Sampling for Exploratory Analysis**
+```python
+# For initial exploration, sample the data
+sample_df = df.sample(fraction=0.001, seed=42)  # 0.1% sample
+
+# Run expensive queries on sample first
+sample_df.groupBy("label").agg({"value": "avg"}).show()
+```
+
+### 2. **Leverage Partition Pruning**
+```python
+# Always filter by source_date when possible
+recent_data = df.filter(col("source_date") >= "2025-10-01")
+
+# Or use SQL
+spark.sql("""
+    SELECT * FROM canbus_table
+    WHERE source_date >= '2025-10-01'
+    AND source_date <= '2025-10-17'
+""")
+```
+
+### 3. **Cache Key Summary Tables**
+```python
+# Cache frequently used aggregations
+vehicle_summary = df.groupBy("MASKED-VIN", "vehicleName").count()
+vehicle_summary.cache()
+vehicle_summary.count()  # Force caching
+```
+
+### 4. **Use Approximate Aggregations**
+```python
+# Instead of COUNT(DISTINCT ...), use approx_count_distinct
+df.agg(approx_count_distinct("MASKED-VIN", rsd=0.05)).show()
+
+# Instead of PERCENTILE, use PERCENTILE_APPROX
+```
+
+### 5. **Create Materialized Summary Tables**
+```sql
+-- Create pre-aggregated tables for common queries
+CREATE TABLE vehicle_daily_summary AS
+SELECT 
+    source_date,
+    `MASKED-VIN`,
+    label,
+    MIN(value) as min_value,
+    MAX(value) as max_value,
+    AVG(value) as avg_value,
+    COUNT(*) as record_count
+FROM canbus_table
+GROUP BY source_date, `MASKED-VIN`, label;
+```
+
+### 6. **Monitor Query Performance**
+```python
+# Enable query execution metrics
+spark.conf.set("spark.sql.adaptive.enabled", "true")
+spark.conf.set("spark.sql.adaptive.coalescePartitions.enabled", "true")
+```
+```python
+# ============================================================================
+# COMPREHENSIVE CANBUS DATASET ANALYSIS
+# Dataset: 613,550,490,015,862 records, partitioned by source_date
+# ============================================================================
+
+# Assuming your dataframe is named 'df'
+# df = spark.table("your_canbus_table")
+
+# ============================================================================
+# 1. BASIC DATASET OVERVIEW
+# ============================================================================
+
+print("="*80)
+print("BASIC DATASET STATISTICS")
+print("="*80)
+
+# Total record count (if you don't already have it)
+# total_records = df.count()  # Warning: expensive on 613T records
+# print(f"Total Records: {total_records:,}")
+
+# Date range
+date_range = df.agg(
+    {"source_date": "min", "source_date": "max"}
+).collect()[0]
+
+print(f"Date Range: {date_range['min(source_date)']} to {date_range['max(source_date)']}")
+
+# Alternative SQL
+spark.sql("""
+    SELECT 
+        MIN(source_date) as earliest_date,
+        MAX(source_date) as latest_date,
+        DATEDIFF(MAX(source_date), MIN(source_date)) as days_span
+    FROM canbus_table
+""").show()
+
+
+# ============================================================================
+# 2. VEHICLE ANALYSIS
+# ============================================================================
+
+print("\n" + "="*80)
+print("VEHICLE ANALYSIS")
+print("="*80)
+
+# Number of unique vehicles
+num_vehicles = df.select("MASKED-VIN").distinct().count()
+print(f"\nTotal Unique Vehicles: {num_vehicles:,}")
+
+# Vehicle models and dispatch types
+df.groupBy("vehicleName", "DispatchModelType", "ModelYear") \
+    .agg({"MASKED-VIN": "approx_count_distinct"}) \
+    .withColumnRenamed("approx_count_distinct(MASKED-VIN)", "vehicle_count") \
+    .orderBy("vehicleName", "ModelYear") \
+    .show(50, truncate=False)
+
+# SQL version
+spark.sql("""
+    SELECT 
+        vehicleName,
+        DispatchModelType,
+        ModelYear,
+        COUNT(DISTINCT `MASKED-VIN`) as vehicle_count
+    FROM canbus_table
+    GROUP BY vehicleName, DispatchModelType, ModelYear
+    ORDER BY vehicleName, ModelYear
+""").show(50)
+
+# Records per vehicle (top 20 most active)
+df.groupBy("MASKED-VIN", "vehicleName") \
+    .count() \
+    .orderBy("count", ascending=False) \
+    .show(20, truncate=False)
+
+
+# ============================================================================
+# 3. LABEL ANALYSIS
+# ============================================================================
+
+print("\n" + "="*80)
+print("LABEL ANALYSIS")
+print("="*80)
+
+# All available labels with record counts
+label_summary = df.groupBy("label", "unit") \
+    .count() \
+    .orderBy("label") \
+    .cache()
+
+print("\nAll Available Labels:")
+label_summary.show(100, truncate=False)
+
+# Number of unique labels
+num_labels = df.select("label").distinct().count()
+print(f"\nTotal Unique Labels: {num_labels}")
+
+# Labels per vehicle type
+print("\nLabels by Vehicle Type:")
+df.groupBy("vehicleName", "label") \
+    .agg({"value": "count"}) \
+    .groupBy("vehicleName") \
+    .agg({"label": "approx_count_distinct"}) \
+    .withColumnRenamed("approx_count_distinct(label)", "unique_labels") \
+    .show(50, truncate=False)
+
+# SQL: Check if labels are consistent across vehicles
+spark.sql("""
+    SELECT 
+        vehicleName,
+        DispatchModelType,
+        COUNT(DISTINCT label) as unique_labels,
+        COUNT(*) as record_count
+    FROM canbus_table
+    GROUP BY vehicleName, DispatchModelType
+    ORDER BY vehicleName
+""").show(50)
+
+# Check label consistency per vehicle (are all vehicles recording the same labels?)
+spark.sql("""
+    SELECT 
+        label,
+        COUNT(DISTINCT vehicleName) as vehicle_types_with_label,
+        COUNT(DISTINCT DispatchModelType) as dispatch_models_with_label
+    FROM canbus_table
+    GROUP BY label
+    ORDER BY vehicle_types_with_label DESC, label
+""").show(100)
+
+
+# ============================================================================
+# 4. LABEL VALUE STATISTICS
+# ============================================================================
+
+print("\n" + "="*80)
+print("LABEL VALUE STATISTICS (MIN, MAX, AVG, STDDEV)")
+print("="*80)
+
+# Statistics per label
+label_stats = df.groupBy("label", "unit") \
+    .agg(
+        {"value": "min", 
+         "value": "max", 
+         "value": "avg", 
+         "value": "stddev"}
+    ) \
+    .withColumnRenamed("min(value)", "min_value") \
+    .withColumnRenamed("max(value)", "max_value") \
+    .withColumnRenamed("avg(value)", "avg_value") \
+    .withColumnRenamed("stddev_samp(value)", "stddev_value") \
+    .orderBy("label")
+
+label_stats.show(100, truncate=False)
+
+# SQL version with more details
+spark.sql("""
+    SELECT 
+        label,
+        unit,
+        MIN(value) as min_value,
+        MAX(value) as max_value,
+        AVG(value) as avg_value,
+        STDDEV(value) as stddev_value,
+        PERCENTILE_APPROX(value, 0.5) as median_value,
+        COUNT(*) as record_count,
+        COUNT(DISTINCT `MASKED-VIN`) as vehicles_reporting
+    FROM canbus_table
+    GROUP BY label, unit
+    ORDER BY label
+""").show(100, truncate=False)
+
+
+# ============================================================================
+# 5. TEMPORAL ANALYSIS
+# ============================================================================
+
+print("\n" + "="*80)
+print("TEMPORAL ANALYSIS")
+print("="*80)
+
+# Records per date (partitioned column - very efficient)
+records_per_date = df.groupBy("source_date") \
+    .count() \
+    .orderBy("source_date")
+
+print("\nRecords per Date (first/last 10 days):")
+records_per_date.show(10)
+print("...")
+records_per_date.orderBy("source_date", ascending=False).show(10)
+
+# Records per year-month
+spark.sql("""
+    SELECT 
+        year,
+        month,
+        COUNT(*) as record_count,
+        COUNT(DISTINCT `MASKED-VIN`) as active_vehicles,
+        COUNT(DISTINCT label) as unique_labels
+    FROM canbus_table
+    GROUP BY year, month
+    ORDER BY year, month
+""").show(100)
+
+# Hourly distribution (to understand data collection patterns)
+spark.sql("""
+    SELECT 
+        hour,
+        COUNT(*) as record_count,
+        AVG(value) as avg_value
+    FROM canbus_table
+    GROUP BY hour
+    ORDER BY hour
+""").show(24)
+
+# Day of week pattern (if you have date functions)
+spark.sql("""
+    SELECT 
+        DAYOFWEEK(source_date) as day_of_week,
+        COUNT(*) as record_count,
+        COUNT(DISTINCT `MASKED-VIN`) as active_vehicles
+    FROM canbus_table
+    GROUP BY DAYOFWEEK(source_date)
+    ORDER BY day_of_week
+""").show()
+
+
+# ============================================================================
+# 6. DATA QUALITY CHECKS
+# ============================================================================
+
+print("\n" + "="*80)
+print("DATA QUALITY CHECKS")
+print("="*80)
+
+# Null value analysis
+from pyspark.sql.functions import col, sum as _sum, count, when
+
+null_analysis = df.select([
+    _sum(when(col(c).isNull(), 1).otherwise(0)).alias(c)
+    for c in df.columns
+])
+
+print("\nNull Value Counts by Column:")
+null_analysis.show(vertical=True)
+
+# Records with null VIN or label
+spark.sql("""
+    SELECT 
+        'Null VIN' as check_type,
+        COUNT(*) as count
+    FROM canbus_table
+    WHERE `MASKED-VIN` IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        'Null Label' as check_type,
+        COUNT(*) as count
+    FROM canbus_table
+    WHERE label IS NULL
+    
+    UNION ALL
+    
+    SELECT 
+        'Null Value' as check_type,
+        COUNT(*) as count
+    FROM canbus_table
+    WHERE value IS NULL
+""").show()
+
+# Duplicate check on correlation ID
+spark.sql("""
+    SELECT 
+        `MASKED-VIN`,
+        `TBDC-Correlationid`,
+        COUNT(*) as record_count
+    FROM canbus_table
+    GROUP BY `MASKED-VIN`, `TBDC-Correlationid`
+    HAVING COUNT(*) > 1000  -- Adjust threshold
+    ORDER BY record_count DESC
+    LIMIT 20
+""").show(truncate=False)
+
+
+# ============================================================================
+# 7. CORRELATION ID ANALYSIS (for trip detection)
+# ============================================================================
+
+print("\n" + "="*80)
+print("CORRELATION ID ANALYSIS")
+print("="*80)
+
+# Average correlation IDs per vehicle
+spark.sql("""
+    SELECT 
+        `MASKED-VIN`,
+        vehicleName,
+        COUNT(DISTINCT `TBDC-Correlationid`) as unique_correlation_ids,
+        MIN(dateTime) as first_message,
+        MAX(dateTime) as last_message
+    FROM canbus_table
+    GROUP BY `MASKED-VIN`, vehicleName
+    ORDER BY unique_correlation_ids DESC
+    LIMIT 50
+""").show(truncate=False)
+
+# Records per correlation ID (should be around 60 for 1-minute window at 100ms interval)
+spark.sql("""
+    SELECT 
+        COUNT(*) as records_per_correlation_id,
+        COUNT(DISTINCT `TBDC-Correlationid`) as correlation_id_count
+    FROM (
+        SELECT 
+            `TBDC-Correlationid`,
+            COUNT(*) as record_count
+        FROM canbus_table
+        GROUP BY `TBDC-Correlationid`
+    )
+    GROUP BY record_count
+    ORDER BY records_per_correlation_id
+""").show(50)
+
+
+# ============================================================================
+# 8. VEHICLE ACTIVITY PATTERNS
+# ============================================================================
+
+print("\n" + "="*80)
+print("VEHICLE ACTIVITY PATTERNS")
+print("="*80)
+
+# Active days per vehicle
+spark.sql("""
+    SELECT 
+        `MASKED-VIN`,
+        vehicleName,
+        COUNT(DISTINCT source_date) as active_days,
+        MIN(source_date) as first_seen,
+        MAX(source_date) as last_seen,
+        DATEDIFF(MAX(source_date), MIN(source_date)) as day_span
+    FROM canbus_table
+    GROUP BY `MASKED-VIN`, vehicleName
+    ORDER BY active_days DESC
+    LIMIT 50
+""").show(truncate=False)
+
+# Navigation model distribution
+spark.sql("""
+    SELECT 
+        NaviModel,
+        COUNT(DISTINCT `MASKED-VIN`) as vehicle_count,
+        COUNT(*) as record_count
+    FROM canbus_table
+    GROUP BY NaviModel
+    ORDER BY NaviModel
+""").show()
+
+
+# ============================================================================
+# 9. PARTITION ANALYSIS (Important for optimization)
+# ============================================================================
+
+print("\n" + "="*80)
+print("PARTITION ANALYSIS (source_date)")
+print("="*80)
+
+# Records per partition
+partition_stats = df.groupBy("source_date") \
+    .agg(
+        count("*").alias("record_count"),
+        countDistinct("MASKED-VIN").alias("unique_vehicles"),
+        countDistinct("label").alias("unique_labels")
+    ) \
+    .orderBy("source_date")
+
+print("\nPartition Statistics (first 20 dates):")
+partition_stats.show(20, truncate=False)
+
+print("\nPartition Statistics Summary:")
+partition_stats.agg(
+    {"record_count": "min", 
+     "record_count": "max", 
+     "record_count": "avg"}
+).show()
+
+
+# ============================================================================
+# 10. EXPORT SUMMARY STATISTICS
+# ============================================================================
+
+print("\n" + "="*80)
+print("CREATING SUMMARY TABLES")
+print("="*80)
+
+# Create a summary table for quick reference
+summary_df = spark.sql("""
+    SELECT 
+        'Total Vehicles' as metric,
+        CAST(COUNT(DISTINCT `MASKED-VIN`) AS STRING) as value
+    FROM canbus_table
+    
+    UNION ALL
+    
+    SELECT 
+        'Total Labels' as metric,
+        CAST(COUNT(DISTINCT label) AS STRING) as value
+    FROM canbus_table
+    
+    UNION ALL
+    
+    SELECT 
+        'Date Range' as metric,
+        CONCAT(CAST(MIN(source_date) AS STRING), ' to ', CAST(MAX(source_date) AS STRING)) as value
+    FROM canbus_table
+    
+    UNION ALL
+    
+    SELECT 
+        'Total Days' as metric,
+        CAST(COUNT(DISTINCT source_date) AS STRING) as value
+    FROM canbus_table
+""")
+
+summary_df.show(truncate=False)
+
+print("\n" + "="*80)
+print("ANALYSIS COMPLETE")
+print("="*80)
 ```
