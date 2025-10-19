@@ -61,3 +61,5 @@ https://medium.com/puzzle-sphere/egg-dropping-interview-recursive-coding-optimiz
 <https://www.mathpages.com/home/iprobabi.htm>
 
 <https://cain.math.gatech.edu/textbooks/onlinebooks.html>
+
+<https://no-idle.github.io/conspecta/>
