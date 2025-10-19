@@ -1,5 +1,7 @@
 <https://dbml.dbdiagram.io/home/>
 
+<https://datamethods.substack.com/p/sql-anti-patterns-you-should-avoid>
+
 <https://habr.com/ru/companies/otus/articles/942044/> PIVOT/UNPIVOT, CROSS APPLY/LATERAL , partial indexes
 
 <https://dbfiddle.uk/>   <https://sqlfiddle.com/>     <https://rextester.com/>   <https://schemaspy.org/>
