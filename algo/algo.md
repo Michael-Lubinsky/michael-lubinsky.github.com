@@ -10,6 +10,8 @@ https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
 
 https://news.ycombinator.com/item?id=45248043
 
+https://habr.com/ru/articles/957848/ Monads
+
 ### Books
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
@@ -38,7 +40,9 @@ https://habr.com/ru/articles/924828/
 
 https://news.ycombinator.com/item?id=45065705
 
-### компактных структур данных  succinct data structure
+
+
+### компактные структуры данных - succinct data structure
 
 https://habr.com/ru/companies/ruvds/articles/890232/
 
@@ -62,6 +66,7 @@ https://habr.com/ru/companies/ruvds/articles/864354/
 
 #### Алгоритмы поиска путей
 
+https://habr.com/ru/articles/957050/ Binary tree traversing Python
 
 https://habr.com/ru/articles/856138/ Поиск в ширину Bread First Search
 
@@ -71,7 +76,7 @@ https://habr.com/ru/articles/904508/ dejkstra
 
 https://habr.com/ru/articles/849894/ Поиск соседей в двумерном массиве
 
-### Hasing
+### Hashing
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
 https://javarevisited.substack.com/p/consistent-hashing-why-your-distributed
