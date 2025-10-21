@@ -3,6 +3,16 @@ https://www.prestd.com/
 
 https://docs.postgrest.org/
 
+## Time Zone
+
+Best practice - Store times in UTC, display in user's local timezone
+
+Summary: GMT is the time at 0° longitude with no DST adjustments. It's effectively the same as UTC for practical purposes, and it's the reference point for all other timezones worldwide. When working with databases and scheduling, using GMT/UTC helps avoid timezone-related bugs.
+
+SET timezone = 'GMT';
+-- or
+SET timezone = 'UTC';
+
 
 ### postgres_fdw  
 
