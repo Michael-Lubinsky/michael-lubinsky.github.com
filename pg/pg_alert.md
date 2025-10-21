@@ -13,6 +13,63 @@ GRANT USAGE ON SCHEMA events TO "your-function-app-name";
 GRANT SELECT ON ALL TABLES IN SCHEMA events TO "your-function-app-name";
 ```
 
+```
+ 
+Use the built-in Azure Postgres function `pgaadauth_create_principal` (or the OID variant) to create a Microsoft Entra (AAD)–mapped Postgres role for your Azure Function’s **managed identity**. If you need to explicitly mark it as a “service” principal, use the OID variant or a SECURITY LABEL with `type=service`.
+
+You must:
+1) be connected as the Entra Admin for the server,
+2) run these on the `postgres` database.
+
+Option A — by display name (works if the MI’s display name matches the Function App name exactly):
+-----------------------------------------------------------------
+SELECT * 
+FROM pg_catalog.pgaadauth_create_principal('<FunctionAppName>', false, false);
+
+-- creates a non-admin AAD-mapped role for the managed identity
+
+
+Option B — explicit OID + principal type “service” (recommended; avoids name ambiguity):
+---------------------------------------------------------------------------------------
+SELECT * 
+FROM pg_catalog.pgaadauth_create_principal_with_oid(
+  '<FunctionAppName>',        -- the Postgres role name you want
+  '<OBJECT_ID_OF_MANAGED_ID>', 
+  'service',                  -- user | group | service
+  false,                      -- isAdmin
+  false                       -- isMfa
+);
+
+
+Option C — convert an existing role to AAD-managed-identity with type=service:
+-------------------------------------------------------------------------------
+-- If you already created the role:
+CREATE ROLE "<FunctionAppName>" WITH LOGIN;
+
+-- Then map it to the MI (service principal) explicitly:
+SECURITY LABEL FOR "pgaadauth" 
+ON ROLE "<FunctionAppName>" 
+IS 'aadauth,oid=<OBJECT_ID_OF_MANAGED_ID>,type=service';
+
+
+Follow-up grants (principle of least privilege):
+------------------------------------------------
+GRANT CONNECT ON DATABASE weavix TO "<FunctionAppName>";
+GRANT USAGE ON SCHEMA events TO "<FunctionAppName>";
+GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA events TO "<FunctionAppName>";
+-- plus future privileges as needed
+
+
+Notes:
+- For managed identities, the Entra object name is usually the **Function App name**; slots can have names like `appname/slots/<slotname>`. Using the OID avoids any naming mismatch.
+- Run `pgaadauth_create_principal*` as the Entra Admin; only that role can create Entra-mapped principals.
+- After this, the Function connects using a token (password field = AAD access token).
+
+Docs:
+- Managed identity setup + example showing `pgaadauth_create_principal(...)` (run on `postgres` DB). :contentReference[oaicite:0]{index=0}
+- Managing Entra users via SQL, including `pgaadauth_create_principal_with_oid` and SECURITY LABEL with `type=service`. :contentReference[oaicite:1]{index=1}
+```
+
 ## Recommended Solution
 
 ### 1. **SQL Query to Check for New Records**
