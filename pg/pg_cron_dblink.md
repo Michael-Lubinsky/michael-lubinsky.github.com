@@ -132,8 +132,17 @@ SELECT jobid, schedule, command, nodename, nodeport, database, username, active
 FROM cron.job
 ORDER BY jobid;
 ```
+pg_cron argument explained
+```
+0  0  *  *  *
+│  │  │  │  │
+│  │  │  │  └── Day of week (0-7, * = every day)
+│  │  │  └───── Month (1-12, * = every month)
+│  │  └──────── Day of month (1-31, * = every day)
+│  └──────────── Hour (0-23, 0 = midnight/12 AM)
+└─────────────── Minute (0-59, 0 = top of hour)
 
-
+```
 
 Show failed jobs:
 ```sql
