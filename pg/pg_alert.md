@@ -1,4 +1,17 @@
-Here's a comprehensive approach to building this alert mechanism:
+### Connect from Azure Funct to Postgres
+
+```sql
+SET aad_validate_oids_in_tenant = off;
+
+-- Create a role mapped to your AAD identity (user/SP/Managed Identity)
+-- Name it to match the AAD principal you’ll connect as.
+CREATE ROLE dataplatform WITH LOGIN IN ROLE azure_ad_user;
+
+-- Grant least-privilege access:
+GRANT CONNECT ON DATABASE weavix TO "your-function-app-name";
+GRANT USAGE ON SCHEMA events TO "your-function-app-name";
+GRANT SELECT ON ALL TABLES IN SCHEMA events TO "your-function-app-name";
+```
 
 ## Recommended Solution
 
@@ -1719,8 +1732,393 @@ ORDER BY frequency DESC;
 4. ✅ **Type-safe** (enforces valid dates)
 5. ✅ **Good query capabilities**
 
-**You were right to question it!** JSONB was probably overkill for this use case. DATE[] is the sweet spot.
 
----
+```python
+import azure.functions as func
+import datetime
+import json
+import logging
+import os
+import sys
+import html
+import psycopg2
+from azure.identity import DefaultAzureCredential
+# using SendGrid's Python Library
+# https://github.com/sendgrid/sendgrid-python
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
+
+db_host = 'weavix-prod-pg.postgres.database.azure.com'
+db_name = 'weavix'
+db_user = 'dataplatform'
+
+app = func.FunctionApp()
+
+
+@app.route(route="check-database", methods=["GET", "POST"], auth_level=func.AuthLevel.FUNCTION)
+def check_db(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('HTTP trigger - checking database records...')
+
+    try:
+        result = perform_database_check()
+
+        return func.HttpResponse(
+            result,
+            status_code=200,
+            mimetype="application/json"
+        )
+    except Exception as e:
+        logging.error(f'Error: {str(e)}')
+        return func.HttpResponse(
+            f'{{"error": "{str(e)}"}}',
+            status_code=500,
+            mimetype="application/json"
+        )
+
+def perform_database_check():
+  """The actual database checking logic"""
+  table_name = 'gold.agg_tables_monitor_results'
+  conn = None
+  cur = None
+  try:
+    # Get token
+    logging.info('Getting access token...')
+    credential = DefaultAzureCredential()
+    token_response = credential.get_token(
+        "https://ossrdbms-aad.database.windows.net/.default"
+    )
+
+    # Connect to database
+    logging.info('Connecting to database...')
+    conn = psycopg2.connect(
+        host=db_host,
+        database=db_name,
+        user=db_user,
+        password=token_response.token,
+        sslmode='require'
+    )
+
+    cur = conn.cursor()
+    query = f"SELECT schema_name, table_name, max_lag_hours, missing_dates, message FROM {table_name} WHERE status ='OK'"
+    cur.execute(query)
+    records = cur.fetchall()
+    column_names = [desc[0] for desc in cur.description]
+
+    record_count = len(records)
+    logging.info(f'Record count: {record_count}')
+
+    # Check threshold
+    status = "OK" if record_count == 0 else "ALERT"
+
+    result = {
+        "status": status,
+        "record_count": record_count,
+        "threshold": 10,
+        "table": table_name,
+        "timestamp": datetime.datetime.now(datetime.UTC).isoformat()
+    }
+
+    # Send alert if needed
+    if record_count > 0:
+        logging.warning('Sending alert...')
+        send_email_alert(records, column_names)
+        result["alert_sent"] = True
+    else:
+        result["alert_sent"] = False
+
+    return json.dumps(result, indent=2)
+
+  except Exception as e:
+    logging.error(f'Database check error: {str(e)}')
+    raise
+  finally:
+      # Clean up connections
+      if cur:
+        cur.close()
+      if conn:
+        conn.close()
+
+################################################
+
+# Timer trigger - runs every 6 hours
+@app.schedule(schedule="0 0 */6 * * *", arg_name="myTimer", run_on_startup=False)
+def check_database_records(myTimer: func.TimerRequest) -> None:
+    logging.info('=' * 50)
+    logging.info('Starting database check with Managed Identity...')
+    logging.info('=' * 50)
+
+    try:
+      perform_database_check()
+    except Exception as e:
+     logging.info(e)
+
+
+def _normalize_records(records):
+    """
+    Accepts:
+      - a single row (list/tuple/Sequence of scalars), OR
+      - a list of rows (iterable of iterables)
+    Returns: list of tuples (rows)
+    """
+    if records is None:
+        return []
+    # If it's a mapping, try common shapes like {"records":[...]}
+    if isinstance(records, dict) and "records" in records:
+        records = records["records"]
+
+    # Treat a single flat row (e.g., ["gold", ...]) as one-row input
+    is_row_like = isinstance(records, (list, tuple)) and all(
+        not isinstance(x, (list, tuple)) for x in records
+    )
+    if is_row_like:
+        return [tuple(records)]
+
+    # Otherwise assume it's an iterable of rows
+    return [tuple(r) for r in records]
+
+
+def email_body2(records, column_names=None):
+    # Default column names (6 cols, includes Status to match your sample row)
+    if not column_names:
+        column_names = ['Schema', 'Table', 'Lag Hours', 'Missing Dates', 'Message', 'Status']
+
+    # Normalize records so both a single flat row or many rows just work
+    rows = _normalize_records(records)
+
+    html_content = f"""
+    <html>
+    <head>
+        <style>
+            table {{
+                border-collapse: collapse;
+                width: 100%;
+                font-family: Arial, sans-serif;
+            }}
+            th {{
+                background-color: #4CAF50;
+                color: white;
+                padding: 12px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }}
+            td {{
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }}
+            tr:nth-child(even) {{
+                background-color: #f2f2f2;
+            }}
+            .alert-header {{
+                color: #d32f2f;
+                font-size: 24px;
+                margin-bottom: 20px;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2 class="alert-header">⚠️ Database Monitoring Alert</h2>
+        <p>The following tables have issues that require attention:</p>
+        <p><strong>Total Issues Found:</strong> {len(rows)}</p>
+        <p><strong>Check Time (UTC):</strong> {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    {''.join(f'<th>{html.escape(str(col))}</th>' for col in column_names)}
+                </tr>
+            </thead>
+            <tbody>
+    """
+
+    for row in rows:
+        html_content += "<tr>"
+        for value in row:
+            display_value = "N/A" if value is None else html.escape(str(value))
+            html_content += f"<td>{display_value}</td>"
+        html_content += "</tr>"
+
+    html_content += """
+            </tbody>
+        </table>
+        <p style="margin-top: 20px; color: #666;">
+            This is an automated alert from the Azure Data Platform monitoring system.
+        </p>
+    </body>
+    </html>
+    """
+
+    return html_content
+
+
+def email_body(records, column_names=None):
+
+        # Default column names if not provided
+        if not column_names:
+            column_names = ['Schema', 'Table', 'Lag Hours', 'Missing Dates', 'Message']
+
+        # Build proper HTML table
+        html_content = f"""
+        <html>
+        <head>
+            <style>
+                table {{
+                    border-collapse: collapse;
+                    width: 100%;
+                    font-family: Arial, sans-serif;
+                }}
+                th {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 12px;
+                    text-align: left;
+                    border: 1px solid #ddd;
+                }}
+                td {{
+                    padding: 8px;
+                    text-align: left;
+                    border: 1px solid #ddd;
+                }}
+                tr:nth-child(even) {{
+                    background-color: #f2f2f2;
+                }}
+                .alert-header {{
+                    color: #d32f2f;
+                    font-size: 24px;
+                    margin-bottom: 20px;
+                }}
+            </style>
+        </head>
+        <body>
+            <h2 class="alert-header">⚠️ Database Monitoring Alert</h2>
+            <p>The following tables have issues that require attention:</p>
+            <p><strong>Total Issues Found:</strong> {len(records)}</p>
+            <p><strong>Check Time (UTC):</strong> {datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        {''.join(f'<th>{col}</th>' for col in column_names)}
+                    </tr>
+                </thead>
+                <tbody>
+        """
+        
+        # Add data rows
+        for record in records:
+            html_content += "<tr>"
+            for value in record:
+                # Handle None values
+                display_value = str(value) if value is not None else "N/A"
+                html_content += f"<td>{display_value}</td>"
+            html_content += "</tr>"
+        
+        html_content += """
+                </tbody>
+            </table>
+            <p style="margin-top: 20px; color: #666;">
+                This is an automated alert from the Azure Data Platform monitoring system.
+            </p>
+        </body>
+        </html>
+        """
+
+        return html_content
+
+def send_email_alert(records, column_names=None, test_mode=False):
+
+    try:
+        content =  email_body(records, column_names)
+
+
+        SENDGRID_API_KEY = 'XYZ'
+        message = Mail(
+          from_email='mlubinsky@weavix.com',
+          to_emails='mlubinsky@weavix.com',
+          subject=f'Database Monitoring Alert - {len(records)} Issues Found',
+          html_content = content
+        )
+
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        logging.info(response.status_code)
+        logging.info(response.body)
+        logging.info(response.headers)
+
+        return {
+            "status": "success",
+            "status_code": response.status_code,
+            "message": "Email sent successfully"
+        }
+
+    except Exception as e:
+        logging.error(f'Failed to send email: {str(e)}')
+        import traceback
+        logging.error(traceback.format_exc())
+
+        return {
+            "status": "error",
+            "message": str(e),
+            "traceback": traceback.format_exc()
+        }
+
+@app.route(route="test-email", auth_level=func.AuthLevel.FUNCTION)
+def test_email_http(req: func.HttpRequest) -> func.HttpResponse:
+    """HTTP trigger for testing email functionality"""
+    logging.info('HTTP trigger for email test received.')
+
+    try:
+        # Get optional parameters from request
+        #req_body = req.get_json() if req.get_body() else {}
+        #records = req_body.get('records', 10)
+
+        records=[["gold", "agg_tables_monitor_results", 8, "2025-10-19", "lag over threshold", "ALERT"]]
+        column_names=['Schema','Table','Lag Hours','Missing Dates','Message','Status']
+        # Send test email
+        result = send_email_alert(records, column_names, test_mode=True)
+
+        return func.HttpResponse(
+            json.dumps(result),
+            status_code=200 if result["status"] == "success" else 500,
+            headers={"Content-Type": "application/json"}
+        )
+    except Exception as e:
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            headers={"Content-Type": "application/json"}
+        )
+
+@app.route(route="trigger-check", auth_level=func.AuthLevel.FUNCTION)
+def trigger_manual_check(req: func.HttpRequest) -> func.HttpResponse:
+    """HTTP trigger to manually run the database check"""
+    logging.info('Manual database check triggered via HTTP.')
+
+    try:
+        record_count = perform_database_check()
+
+        if record_count > 0:
+            email_result = send_email_alert(record_count, test_mode=True)
+        else:
+            email_result = {"status": "skipped", "message": "No records found"}
+
+        return func.HttpResponse(
+            json.dumps({
+                "records_found": record_count,
+                "email_result": email_result
+            }),
+            status_code=200,
+            headers={"Content-Type": "application/json"}
+        )
+    except Exception as e:
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            headers={"Content-Type": "application/json"}
+        )
+
+```
 
 Would you like me to provide the complete updated code using DATE[] instead of JSONB?
