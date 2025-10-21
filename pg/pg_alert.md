@@ -70,6 +70,268 @@ Docs:
 - Managing Entra users via SQL, including `pgaadauth_create_principal_with_oid` and SECURITY LABEL with `type=service`. :contentReference[oaicite:1]{index=1}
 ```
 
+Perfect! We're very close! The issue is with the **security label** - it's set to `type=user` but it should be `type=service` for a Managed Identity.
+
+---
+
+## **The Problem**
+
+Your security label says:
+```sql
+type=user
+```
+
+But for a **Managed Identity** (which is what your Function App uses), it should be:
+```sql
+type=service
+```
+
+Also, the **OID** (Object ID) must match your **Function App's Managed Identity Object ID**, not a user's OID.
+
+---
+
+## **Solution: Update the Security Label**
+
+### **Step 1: Get Your Function App's Managed Identity Object ID**
+
+In Azure Portal:
+
+1. Go to your **Function App** (`dataplatform`)
+2. Go to **Settings** → **Identity**
+3. Under **System assigned** tab
+4. Copy the **Object (principal) ID**
+
+It will look like: `12345678-1234-1234-1234-123456789abc`
+
+**OR** via Azure CLI:
+
+```bash
+az functionapp identity show \
+  --resource-group move \
+  --name dataplatform \
+  --query principalId -o tsv
+```
+
+### **Step 2: Update the Security Label in PostgreSQL**
+
+Connect to PostgreSQL and run:
+
+```sql
+-- Remove the old security label
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS NULL;
+
+-- Apply the correct security label with type=service
+-- Replace YOUR_FUNCTION_APP_OBJECT_ID with the actual Object ID from Step 1
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=YOUR_FUNCTION_APP_OBJECT_ID,type=service';
+```
+
+**Example:**
+```sql
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=12345678-1234-1234-1234-123456789abc,type=service';
+```
+
+### **Step 3: Verify the Security Label**
+
+```sql
+-- Check the security label
+SELECT 
+    r.rolname,
+    pg_catalog.shobj_description(r.oid, 'pg_authid') as description,
+    (SELECT label FROM pg_seclabel WHERE objoid = r.oid AND provider = 'pgaadauth') as security_label
+FROM pg_roles r
+WHERE r.rolname = 'dataplatform';
+```
+
+Should show:
+```
+rolname      | security_label
+-------------+----------------------------------------------------------
+dataplatform | aadauth,oid=12345678-...,type=service
+```
+
+---
+
+## **Step 4: Test Your Function Again**
+
+Now try running your Azure Function again. It should work!
+
+---
+
+## **Alternative: Drop and Recreate the Role (Clean Slate)**
+
+If updating doesn't work, start fresh:
+
+```sql
+-- Drop the existing role
+DROP ROLE IF EXISTS "dataplatform";
+
+-- Create the role again
+CREATE ROLE "dataplatform" WITH LOGIN;
+
+-- Apply the correct security label (use your Function App's Object ID)
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=YOUR_FUNCTION_APP_OBJECT_ID,type=service';
+
+-- Grant permissions
+GRANT CONNECT ON DATABASE your_database TO "dataplatform";
+GRANT USAGE ON SCHEMA public TO "dataplatform";
+GRANT SELECT ON public.your_table_name TO "dataplatform";
+```
+
+---
+
+## **Common Mistakes**
+
+❌ **Wrong:**
+```sql
+-- Using type=user (for human users)
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=...,type=user';
+
+-- Using a user's Object ID instead of Managed Identity's Object ID
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=0afa8d05-7d72-44fc-b77e-4d6b53a022d4,type=service';  -- Wrong OID
+```
+
+✅ **Correct:**
+```sql
+-- Using type=service (for service principals and managed identities)
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=<FUNCTION_APP_MANAGED_IDENTITY_OBJECT_ID>,type=service';
+```
+
+---
+
+## **Types Explained**
+
+| Type | Used For | Example |
+|------|----------|---------|
+| `type=user` | Human users authenticating with Microsoft Entra | Your personal account |
+| `type=service` | Service Principals, Managed Identities | Function Apps, VMs, Apps |
+| `type=group` | Microsoft Entra groups | Security groups |
+
+---
+
+## **Complete Working Example**
+
+Here's the complete SQL to set up the role correctly:
+
+```sql
+-- 1. Drop existing role if needed
+DROP ROLE IF EXISTS "dataplatform";
+
+-- 2. Create the role
+CREATE ROLE "dataplatform" WITH LOGIN;
+
+-- 3. Apply security label with Function App's Managed Identity Object ID
+-- GET THIS ID FROM: Function App → Settings → Identity → Object (principal) ID
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=YOUR_FUNCTION_APP_OBJECT_ID_HERE,type=service';
+
+-- 4. Grant database access
+GRANT CONNECT ON DATABASE postgres TO "dataplatform";  -- Replace 'postgres' with your DB name
+
+-- 5. Grant schema access
+GRANT USAGE ON SCHEMA public TO "dataplatform";
+
+-- 6. Grant table access
+GRANT SELECT ON public.your_table_name TO "dataplatform";  -- Replace with your table name
+
+-- 7. Verify
+SELECT 
+    rolname,
+    (SELECT label FROM pg_seclabel WHERE objoid = r.oid AND provider = 'pgaadauth') as security_label
+FROM pg_roles r
+WHERE rolname = 'dataplatform';
+```
+
+---
+
+## **Quick Verification Checklist**
+
+Before testing your Function:
+
+✅ **1. Correct Object ID**
+```bash
+# Get Function App's Managed Identity Object ID
+az functionapp identity show \
+  --resource-group move \
+  --name dataplatform \
+  --query principalId -o tsv
+```
+
+✅ **2. Security label uses `type=service`**
+```sql
+-- Check security label
+SELECT label FROM pg_seclabel 
+WHERE objoid = (SELECT oid FROM pg_roles WHERE rolname = 'dataplatform')
+AND provider = 'pgaadauth';
+```
+
+Should show: `aadauth,oid=<CORRECT_ID>,type=service`
+
+✅ **3. Role has necessary permissions**
+```sql
+-- Check permissions
+SELECT 
+    grantee, 
+    table_schema, 
+    table_name, 
+    privilege_type
+FROM information_schema.table_privileges
+WHERE grantee = 'dataplatform';
+```
+
+✅ **4. Function App has Managed Identity enabled**
+- Function App → Identity → System assigned → Status: On
+
+---
+
+## **Your Function Code Should Work With**
+
+```python
+from azure.identity import DefaultAzureCredential
+import psycopg2
+import os
+
+credential = DefaultAzureCredential()
+token_response = credential.get_token(
+    "https://ossrdbms-aad.database.windows.net/.default"
+)
+
+conn = psycopg2.connect(
+    host=os.environ.get('DB_HOST'),        # weavix-prod-pg.postgres.database.azure.com
+    database=os.environ.get('DB_NAME'),     # your database name
+    user='dataplatform',                    # exact role name in PostgreSQL
+    password=token_response.token,          # token from Managed Identity
+    sslmode='require'
+)
+```
+
+---
+
+## **Summary**
+
+**The issue:** Security label has `type=user` (wrong for Managed Identity)
+
+**The fix:** 
+1. Get Function App's Object ID from Azure Portal
+2. Update security label to use `type=service` and the correct Object ID
+
+**Command:**
+```sql
+SECURITY LABEL FOR "pgaadauth" ON ROLE "dataplatform" IS 
+'aadauth,oid=<FUNCTION_APP_OBJECT_ID>,type=service';
+```
+
+---
+
+**Get your Function App's Object ID from the Identity page, update the security label with `type=service`, and try your Function again!** 
+
+Let me know if it works or if you get a different error! 🚀
+
 ## Recommended Solution
 
 ### 1. **SQL Query to Check for New Records**
