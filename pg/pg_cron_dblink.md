@@ -152,6 +152,16 @@ pg_cron argument explained
 │  └──────────── Hour (0-23, 0 = midnight/12 AM)
 └─────────────── Minute (0-59, 0 = top of hour)
 
+
+'0 0 * * *'    -- Daily at midnight (12:00 AM)
+'0 1 * * *'    -- Daily at 1:00 AM
+'0 2 * * *'    -- Daily at 2:00 AM
+'0 3 * * *'    -- Daily at 3:00 AM
+'30 2 * * *'   -- Daily at 2:30 AM
+'0 */6 * * *'  -- Every 6 hours (midnight, 6 AM, noon, 6 PM)
+'0 12 * * *'   -- Daily at noon (12:00 PM)
+
+Note: Remember that this runs at midnight in whatever timezone pg_cron is configured to use (server timezone or cron.timezone setting).
 ```
 
 Show failed jobs:
