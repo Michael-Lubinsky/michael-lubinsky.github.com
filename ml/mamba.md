@@ -54,12 +54,15 @@ https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125
 ### Book: Forecasting: Principles and Practice, the Pythonic Way
 https://otexts.com/fpppy
 
-### Book: Information Theory, Inference, and Learning Algorithms
+### Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
 https://www.inference.org.uk/itprnn/book.pdf
 
+
+От промтов к агентам: как мы дошли до трансформеров, что LLM умеют уже сейчас и что нас ждёт в 2027 году
 https://habr.com/ru/companies/netologyru/articles/926776/
 
-
+Антон Бойцев
+https://www.youtube.com/@%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%91%D0%BE%D0%B9%D1%86%D0%B5%D0%B2-%D1%8C9%D0%BE/videos
 
 https://github.com/Dyakonov/DL
 
