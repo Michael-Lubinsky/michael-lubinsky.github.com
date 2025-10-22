@@ -125,17 +125,27 @@ if current_count < threshold:
 - **Error Handling**: Implement retries and error handling for robustness.
 - **Dynamic Thresholds**: Fetch the threshold from a configuration file or database.
 
-````markdown
-# Goal
-Monitor Azure Database for PostgreSQL – Flexible Server by counting rows in one or more tables for a target date (e.g., “today” and “yesterday”) and open/resolve New Relic incidents via the **Incident event REST API** when counts fall below a threshold.
+ 
+ 
 
-New Relic’s Incident event API ingests **custom incident trigger/resolve events** (it does not directly “create” incidents; incident creation is triggered by the event). You POST JSON (optionally gzipped) to the Event API endpoint with `eventType: "NrAiIncidentExternal"` and use `state: "trigger"` or `state: "resolve"`. Include `aggregationTag.*` fields to dedupe/aggregate updates to the same incident. :contentReference[oaicite:0]{index=0}
+New Relic’s Incident event API ingests **custom incident trigger/resolve events** (it does not directly “create” incidents; incident creation is triggered by the event).  
+
+You POST JSON (optionally gzipped) to the Event API endpoint with `eventType: "NrAiIncidentExternal"` and use `state: "trigger"` or `state: "resolve"`. 
+
+Include `aggregationTag.*` fields to dedupe/aggregate updates to the same incident. :contentReference[oaicite:0]{index=0}
 
 Key bits from the docs you’ll rely on:
 - Use the Event API endpoint, License (a.k.a. ingest) key, and your account id when posting events. :contentReference[oaicite:1]{index=1}
-- Required fields: `eventType = NrAiIncidentExternal`, `state` (`trigger` or `resolve`), plus a `title` and `source` on trigger; use `aggregationTag.*` consistently so multiple triggers/resolve updates roll up to the same incident. :contentReference[oaicite:2]{index=2}
+ 
+- Required fields:   
+  `eventType = NrAiIncidentExternal`,   
+  `state` (`trigger` or `resolve`),   
+   plus a `title` and `source` on trigger;   
+   use `aggregationTag.*` consistently so multiple triggers/resolve updates roll up to the same incident.
+  
+  :contentReference[oaicite:2]{index=2}
 
----
+
 
 ## Architecture (simple & robust)
 
@@ -165,7 +175,7 @@ WITH tz AS (
 SELECT
   (SELECT COUNT(*) FROM your_schema.your_table WHERE source_date = (SELECT today_pt FROM tz)) AS today_count,
   (SELECT COUNT(*) FROM your_schema.your_table WHERE source_date = (SELECT today_pt - 1 FROM tz)) AS yesterday_count;
-````
+```
 
 ```sql
 -- Option B: UTC calendar dates
@@ -199,7 +209,7 @@ pg_rowcount_to_newrelic/
 
 **requirements.txt**
 
-```
+```ini
 psycopg2-binary==2.9.9
 azure-identity==1.17.1
 requests==2.32.3
