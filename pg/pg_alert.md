@@ -2091,7 +2091,7 @@ def check_db(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f'Error: {str(e)}')
         return func.HttpResponse(
-            f'{{"error": "{str(e)}"}}',
+            err=str(e),
             status_code=500,
             mimetype="application/json"
         )
