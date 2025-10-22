@@ -2,6 +2,10 @@
 
 https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation
 
+https://en.wikipedia.org/wiki/Anatol_Rapoport
+
+https://en.wikipedia.org/wiki/Tit_for_tat
+
 <https://idiallo.com/blog/how-to-lead-in-a-room-full-of-experts>
 
 <https://news.ycombinator.com/item?id=45359604>
