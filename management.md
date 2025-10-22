@@ -1,3 +1,5 @@
+<https://vknight.org/2025/10/21/rrr.html> Axelrod tournament
+
 <https://idiallo.com/blog/how-to-lead-in-a-room-full-of-experts>
 
 <https://news.ycombinator.com/item?id=45359604>
