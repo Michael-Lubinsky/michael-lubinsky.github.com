@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/928948/> 
 
+<https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
+
 <https://theremoteengineer.substack.com/p/availability-in-system-design>
 
 ## Monitoring
