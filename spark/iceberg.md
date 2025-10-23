@@ -1,8 +1,12 @@
 ### Iceberg catalog
 
+Iceberg’s documentation: apache.iceberg.io  
+Delta Lake’s documentation: delta.io  
+<https://habr.com/ru/companies/vktech/articles/959398/>
+
 **Iceberg catalog** is a **metadata management system** used by **Apache Iceberg**, a high-performance table format designed for large-scale analytic datasets.
 
-### What is Apache Iceberg?
+ 
 
 Apache Iceberg is an open table format for huge analytic datasets, designed to work with engines like:
 
@@ -395,6 +399,3 @@ High-volume jobs will reveal practical differences (e.g., Iceberg’s metadata e
 If you’re starting fresh and prioritize openness, Iceberg’s momentum (e.g., AWS S3 Tables, Snowflake Polaris) makes it a strong contender for 2025 and beyond.
 If you’re in Databricks, Delta’s optimizations and UniForm provide immediate value with future Iceberg compatibility.
 
-
-Iceberg’s documentation: apache.iceberg.io
-Delta Lake’s documentation: delta.io
