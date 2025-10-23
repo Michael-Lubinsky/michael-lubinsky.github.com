@@ -34,13 +34,13 @@ https://habr.com/ru/articles/879914/ interview
 
 https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 
-https://neetcode.io/roadmap
+<https://neetcode.io/roadmap>
 
-https://habr.com/ru/articles/924828/
+<https://habr.com/ru/articles/924828/>
 
-https://news.ycombinator.com/item?id=45065705
+<https://news.ycombinator.com/item?id=45065705>
 
-
+<https://www.instantdb.com/essays/count_min_sketch>  COUNT MIN SKETCH
 
 ### компактные структуры данных - succinct data structure
 
