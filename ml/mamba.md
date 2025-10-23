@@ -17,6 +17,8 @@ https://ma-lab-berkeley.github.io/deep-representation-learning-book/
 ### Reinforcement learning: 
 https://www.understandingai.org/p/reinforcement-learning-explained
 
+https://habr.com/ru/articles/958062/
+
 https://habr.com/ru/companies/otus/articles/951412/ Q-learning
 
 https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse Data
