@@ -1,3 +1,8 @@
+
+<https://lcamtuf.substack.com/p/radios-how-do-they-work>
+
+book   by Paul Nahin, 'The Science of Radio'.
+
 <https://habr.com/ru/companies/yadro/articles/921236/>
 
 ## 📡 Wireless KPI Metrics and Events
