@@ -43,6 +43,8 @@ https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
 
 https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
 
+https://habr.com/ru/articles/958880/
+
 https://sebastianraschka.com/notebooks/ml-notebooks/
 
 ###  Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
