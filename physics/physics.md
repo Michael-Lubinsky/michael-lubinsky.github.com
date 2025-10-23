@@ -8,6 +8,7 @@ https://habr.com/ru/articles/945102/
 
 https://teach-in.ru/course/quantum-electrodynamics  QED
 
+ https://habr.com/ru/articles/958088/ Geometric Algebra
 
 https://www.sciencejournals.ru/catalog/rubrics/
 
