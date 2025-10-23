@@ -1,4 +1,5 @@
 ## Decorators
+<https://habr.com/ru/articles/957052/>  
 
 If d is decorator it means:  
 x = d(x)
