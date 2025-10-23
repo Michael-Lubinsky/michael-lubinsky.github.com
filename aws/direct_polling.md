@@ -1,5 +1,131 @@
 
-## Polling DynamoDB directly from a Databricks job with boto3, 
+# Is polling DynamoDB tables  from Databricks   using DynamoDB Streams?
+
+**It depends on the implementation** - the policies allow for both approaches:
+
+## Two Ways to "Poll" DynamoDB from Databricks:
+
+### 1. **Direct Table Access (Batch Reads)**
+- Uses: `Scan`, `Query`, `GetItem`, `BatchGetItem`
+- How it works: Databricks periodically reads data directly from the DynamoDB table
+- Use case: Full table scans, point-in-time queries, batch ETL jobs
+- **Not using DynamoDB Streams**
+
+### 2. **DynamoDB Streams (Change Data Capture)**
+- Uses: `DescribeStream`, `GetRecords`, `GetShardIterator`
+- How it works: Databricks reads the stream of changes (inserts, updates, deletes) from DynamoDB
+- Use case: Real-time or near-real-time data ingestion, incremental updates
+- **This IS using DynamoDB Streams**
+
+## What Your Policies Support:
+Both policies grant permissions for **both approaches**:
+- ✅ Direct table reads (`Query`, `Scan`, etc.)
+- ✅ DynamoDB Streams reads (`GetRecords`, `GetShardIterator`, etc.)
+
+## Determining Which is Used:
+To know which approach Databricks is actually using, you'd need to check:
+- The Databricks connector configuration
+- The Spark code/notebooks being executed
+- CloudTrail logs showing which API calls are being made
+
+**Common pattern**: Many Databricks implementations use **DynamoDB Streams** for incremental/streaming workloads because it's more efficient than repeatedly scanning entire tables.
+
+
+
+
+
+Excellent question — and the short answer is:
+
+> **No, polling DynamoDB tables directly is *not* the same as consuming DynamoDB Streams.**
+> They’re two distinct access patterns — often used together, but for different purposes.
+
+Here’s the detailed breakdown:
+
+---
+
+### 1. **Polling DynamoDB tables**
+
+**What it means:**
+Your Databricks job periodically queries the table itself — for example, using `Query`, `Scan`, or `BatchGetItem` — to fetch data.
+
+**Use case:**
+
+* Periodic batch ingestion (e.g., every 5 min / 1 hour).
+* When you don’t have Streams enabled or don’t care about near-real-time updates.
+* You might filter on `updated_at` or a sequence key to pick up new records since the last run.
+
+**Access required:**
+
+* `dynamodb:GetItem`, `dynamodb:Query`, `dynamodb:Scan`, etc.
+* No need for any `DescribeStream` / `GetRecords` permissions.
+* Reads go directly to the base table and consume standard **RCU** (Read Capacity Units).
+
+**Pros / Cons:**
+
+| Pros                          | Cons                                            |
+| ----------------------------- | ----------------------------------------------- |
+| Simpler setup                 | Inefficient — you re-scan or query large ranges |
+| Works even if Streams are off | Higher cost for frequent polling                |
+| Easy to schedule as batch     | Higher latency (not real time)                  |
+
+---
+
+### 2. **Consuming DynamoDB Streams**
+
+**What it means:**
+Instead of reading the table directly, you subscribe to **change events** emitted by DynamoDB whenever items are inserted, modified, or deleted.
+
+**Use case:**
+
+* Near-real-time CDC (Change Data Capture).
+* Trigger downstream pipelines or Lambda functions.
+* Stream ingestion into Databricks / Kinesis / S3 / Snowflake.
+
+**Access required:**
+
+* `dynamodb:DescribeStream`, `dynamodb:GetShardIterator`, `dynamodb:GetRecords`, and `dynamodb:ListStreams`.
+* Streams must be **enabled** on each table.
+* Reads consume **stream read capacity** (not RCU).
+
+**Pros / Cons:**
+
+| Pros                               | Cons                                  |
+| ---------------------------------- | ------------------------------------- |
+| Real-time incremental updates      | Requires enabling Streams per table   |
+| Much lower data volume             | Can expire after 24 h if not consumed |
+| Perfect for event-driven ingestion | More complex to integrate             |
+
+---
+
+### 3. **Typical Databricks Patterns**
+
+In Databricks, you can implement either:
+
+* **Batch polling** via `boto3` (Python) or the `spark-dynamodb` connector — simple, but periodic.
+* **Stream consumption** using an intermediary:
+
+  * AWS Lambda → Kinesis → S3 → Databricks Autoloader
+  * or AWS DMS (Change Data Capture) → S3 → Delta ingestion
+
+Databricks itself doesn’t natively subscribe to DynamoDB Streams directly — you’d usually integrate via **Kinesis** or **S3**.
+
+---
+
+### ✅ Recommendation for you
+
+If your goal is:
+
+* **Periodic table sync:** you only need the **read actions** (`GetItem`, `Query`, `Scan`).
+* **Near-real-time incremental ingestion:** you need **Streams** (`DescribeStream`, `GetRecords`, etc.), but Databricks will probably read them indirectly via another AWS service (Lambda → Kinesis → S3).
+
+---
+
+Would you like me to show you an example **Databricks ingestion architecture** for DynamoDB Streams (CDC → S3 → Delta table)?
+It’s a common production pattern and would clarify where Streams fit in.
+
+
+
+# Polling DynamoDB directly from a Databricks job with boto3, 
 but it’s usually only a good idea for **small/medium** tables and **simple** needs.   
 For anything high-volume or near-real-time, Streams/Firehose or DMS → S3 → Auto Loader is far more robust.
 
