@@ -8,6 +8,7 @@
 <https://habr.com/ru/articles/946274/>  Regular Expressions, LIKE, SIMILAR TO  
 <https://giulianopz.github.io/pg.html>  
 <https://boringsql.com/posts/postgresql-predefined-roles/>
+<https://habr.com/ru/companies/beget/articles/920772/>
 
 
 ### 
