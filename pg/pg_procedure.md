@@ -20,7 +20,7 @@ BEGIN
 END;
 $$;
 ```
-### pass procedure name as parameter
+### Pass procedure name as parameter
 ```sql
 CREATE OR REPLACE PROCEDURE public.process_date_range(
     p_start DATE,
@@ -101,6 +101,23 @@ BEGIN
     RAISE NOTICE '[%] All dates processed successfully', clock_timestamp();
 END $$;
 ```
+
+### Generate  code from code using FORMAT
+```sql
+SELECT format('SELECT gold.backfill_day(''%s''::timestamptz);', day_start)
+FROM generate_series(
+  '2025-09-11 14:45:00.000 -0700'::timestamptz,
+  '2025-10-22 14:45:00.000 -0700'::timestamptz,
+  '1 day'::interval
+) as day_start
+ORDER BY day_start;
+```
+code above generates:
+```
+SELECT gold.backfill_day('2025-09-11 14:45:00.000-07'::timestamptz);
+SELECT gold.backfill_day('2025-09-12 14:45:00.000-07'::timestamptz);
+```
+
 
 ## There is postgres pg_cron job which runs in UTC timezone.
 This job calls stored procedure which accepts  the date argument.
