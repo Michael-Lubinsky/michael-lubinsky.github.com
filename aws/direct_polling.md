@@ -1,5 +1,5 @@
 
-## Yes, you *can* poll DynamoDB directly from a Databricks job with boto3, 
+## Polling DynamoDB directly from a Databricks job with boto3, 
 but it’s usually only a good idea for **small/medium** tables and **simple** needs.   
 For anything high-volume or near-real-time, Streams/Firehose or DMS → S3 → Auto Loader is far more robust.
 
@@ -80,13 +80,14 @@ If you create a GSI on `updated_at`:
 * You can `query()` for just “records after last checkpoint”.
 * Much cheaper and scalable for incremental ingestion into Databricks.
 
----
 
-👉 Do you want me to show you the **exact DynamoDB console + CLI steps** to create a GSI on `updated_at` so you can make your direct polling approach efficient?
 
-If you still want polling, do this:
+Steps:
+
 1) **Ensure a change key** exists on each table (e.g., `updated_at` ISO8601 or epoch seconds) that updates on every insert/update.
+    
 2) **Create a GSI** on `updated_at` (HASH or RANGE depending on design; commonly make it the sort key with a dummy/hash partition key so you can `Query` by a time window).
+   
 3) In Databricks, run a job every N minutes that:
    - Reads the last watermark from a small Delta checkpoint table.
    - Queries DynamoDB by `updated_at > watermark` (via the GSI), paginating with `LastEvaluatedKey`.
@@ -253,25 +254,21 @@ update the configuration parameters,
 and run it!
 
 
-# DynamoDB Direct Polling Setup Guide
-
-## Overview
-This guide walks through setting up direct polling from DynamoDB to Databricks with 1-minute intervals.
-
+  
+ 
 ## Prerequisites
 - DynamoDB table with a timestamp column (e.g., `created_at`)
 - Databricks workspace on AWS
 - AWS credentials with appropriate permissions
 
----
 
 ## Step 1: Configure AWS IAM
 
 ### 1.1 Create IAM Role
 
-```bash
-# Create trust policy file
-cat > trust-policy.json << EOF
+trust-policy.json
+
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -284,19 +281,19 @@ cat > trust-policy.json << EOF
     }
   ]
 }
-EOF
+```
 
-# Create the role
+### Create the role
+```
 aws iam create-role \
   --role-name databricks-dynamodb-role \
   --assume-role-policy-document file://trust-policy.json
 ```
 
-### 1.2 Attach Permissions
+###  Attach Permissions
 
-```bash
-# Create permission policy file
-cat > permission-policy.json << EOF
+permission-policy.json
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -329,16 +326,17 @@ cat > permission-policy.json << EOF
     }
   ]
 }
-EOF
+```
 
-# Attach policy to role
+### Attach policy to role
+```
 aws iam put-role-policy \
   --role-name databricks-dynamodb-role \
   --policy-name DynamoDBAccess \
   --policy-document file://permission-policy.json
 ```
 
-### 1.3 Create Instance Profile
+### Create Instance Profile
 
 ```bash
 # Create instance profile
@@ -354,8 +352,6 @@ aws iam add-role-to-instance-profile \
 aws iam get-instance-profile \
   --instance-profile-name databricks-dynamodb-role
 ```
-
----
 
 ## Step 2: Configure Databricks
 
@@ -445,8 +441,6 @@ df.count()
 checkpoint_df = spark.read.format("delta").table("main.default.dynamodb_checkpoint")
 checkpoint_df.show()
 ```
-
----
 
 ## Step 4: Deploy Continuous Polling
 
@@ -890,8 +884,7 @@ For production use, consider upgrading to the DynamoDB Streams + Lambda architec
 }
 ```
 
-
-### databricks json config
+### Databricks json config
 
 ```json
 {
@@ -938,10 +931,8 @@ For production use, consider upgrading to the DynamoDB Streams + Lambda architec
 }
 ```
 
-"""
-DynamoDB Direct Polling to Databricks Delta Lake
-Polls DynamoDB table every 1 minute and ingests new records into Delta Lake
-"""
+## Polls DynamoDB table every 1 minute and ingests new records into Delta Lake
+ 
 ```python
 import boto3
 from datetime import datetime, timedelta
@@ -1773,6 +1764,7 @@ The code is well-structured and follows a logical flow for incremental data load
 2. **Validate Table Existence**:
    - Check if the Delta table exists before querying it in `get_last_processed_timestamp`.
    - Example:
+     
      ```python
      def get_last_processed_timestamp(table_name):
          try:
@@ -1801,6 +1793,7 @@ The code is well-structured and follows a logical flow for incremental data load
 4. **Optimize DynamoDB Queries**:
    - Add a `FilterExpression` to reduce the amount of data scanned if possible.
    - Example:
+     
      ```python
      response = table.query(
          IndexName='all-records-by-time-index',
@@ -1990,16 +1983,16 @@ Great question! Let me show you how to securely access DynamoDB from Databricks.
 
 ---
 
-# **Solution Overview**
+### **Solution Overview**
 
 You need to:
 1. **Create AWS IAM credentials** (Role or User) with DynamoDB read permissions
 2. **Configure Databricks** to use these credentials
 3. **Read DynamoDB data** using Spark in Databricks
 
----
+ 
 
-# **Option 1: IAM User with Access Keys (Simplest)**
+### **Option 1: IAM User with Access Keys (Simplest)**
 
 This works for any Databricks deployment (AWS, Azure, or GCP).
 
@@ -2228,7 +2221,7 @@ display(df)
 
 ---
 
-# **Option 2: IAM Role (Best Practice - for Databricks on AWS)**
+### **Option 2: IAM Role (Best Practice - for Databricks on AWS)**
 
 If your Databricks is running on AWS, use IAM Roles instead of access keys.
 
@@ -2300,7 +2293,7 @@ display(df)
 
 ---
 
-# **Complete Example: Read DynamoDB Table**
+### **Complete Example: Read DynamoDB Table**
 
 ```python
 # ============================================
@@ -2379,7 +2372,7 @@ else:
 
 ---
 
-# **Query Operations (Instead of Scan)**
+### **Query Operations (Instead of Scan)**
 
 For better performance, use Query instead of Scan:
 
@@ -2408,10 +2401,6 @@ response = table.query(
 
 items = response['Items']
 ```
-
----
-
-# **Best Practices**
 
 ## **Security**
 
@@ -2472,9 +2461,7 @@ response = table.scan(
 ✅ **Consider DynamoDB on-demand pricing** for sporadic access  
 ✅ **Export to S3 for analytics** - cheaper than repeated scans
 
----
 
-# **Troubleshooting**
 
 ### **Error: "Access Denied"**
 
@@ -2496,9 +2483,7 @@ Check:
 dbutils.library.restartPython()
 ```
 
----
-
-# **Summary: Quick Start**
+### **Summary: Quick Start**
 
 1. ✅ Create IAM policy with DynamoDB read permissions
 2. ✅ Create IAM user and generate access keys
@@ -2506,12 +2491,4 @@ dbutils.library.restartPython()
 4. ✅ Use boto3 to read DynamoDB
 5. ✅ Convert to Spark DataFrame
 
-**Estimated setup time: 15-20 minutes**
-
----
-
-Would you like help with:
-1. Setting up the IAM policy for specific tables?
-2. Configuring Databricks secrets?
-3. Writing more efficient query code?
-4. Setting up incremental loading from DynamoDB?
+ 
