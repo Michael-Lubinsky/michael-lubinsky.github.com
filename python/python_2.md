@@ -18,6 +18,95 @@ for row in rez:
 [1, 3, 5]
 [2, 4, 6]
 ```
+
+### Matrix
+
+```python
+class SparseMatrix2D:
+    """
+    A simple sparse 2D matrix backed by dict-of-dicts:
+      storage[row][col] = value
+    - set(r, c, v): sets/overwrites an entry; if v == 0, deletes the entry.
+    - mul(vec): returns the dense result of (self * vec) as a Python list.
+    """
+    __slots__ = ("rows", "cols", "_data")
+
+    def __init__(self, rows, cols):
+        if not isinstance(rows, int) or not isinstance(cols, int):
+            raise TypeError("rows and cols must be integers")
+        if rows <= 0 or cols <= 0:
+            raise ValueError("rows and cols must be positive")
+        self.rows = rows
+        self.cols = cols
+        self._data = {}  # row_index -> {col_index: value}
+
+    def _check_indices(self, row, col):
+        if not (0 <= row < self.rows):
+            raise IndexError(f"row {row} out of range [0, {self.rows})")
+        if not (0 <= col < self.cols):
+            raise IndexError(f"col {col} out of range [0, {self.cols})")
+
+    def set(self, row, col, value):
+        self._check_indices(row, col)
+        if value == 0 or value == 0.0:
+            # Remove entry if it exists to keep sparsity
+            if row in self._data and col in self._data[row]:
+                del self._data[row][col]
+                if not self._data[row]:
+                    del self._data[row]
+            return
+        # Insert / overwrite
+        row_map = self._data.get(row)
+        if row_map is None:
+            self._data[row] = {col: float(value)}
+        else:
+            row_map[col] = float(value)
+
+    def mul(self, vec):
+        # Basic validation
+        try:
+            n = len(vec)
+        except Exception as e:
+            raise TypeError("vec must be a sequence supporting len() and indexing") from e
+        if n != self.cols:
+            raise ValueError(f"vector length {n} does not match matrix cols {self.cols}")
+
+        # Compute y = A * x
+        out = [0.0] * self.rows
+        # Iterate only stored non-zeros
+        for r, row_map in self._data.items():
+            acc = 0.0
+            for c, val in row_map.items():
+                acc += val * vec[c]
+            out[r] = acc
+        return out
+
+
+# ----------------------------
+# Example usage (from prompt):
+if __name__ == "__main__":
+    v = [1.] * 8  # vector
+
+    m = SparseMatrix2D(rows=10, cols=8)
+
+    m.set(row=0, col=0, value=1.)
+    m.set(2, 0, 1.)
+    m.set(3, 4, 1.5)
+    m.set(3, 3, 1.)
+    m.set(7, 6, 1.)
+    m.set(5, 2, 5.)
+    m.set(0, 0, 2.)  # overwrite
+
+    o = m.mul(v)
+    print(o)        # expected: [2.0, 0.0, 1.0, 2.5, 0.0, 5.0, 0.0, 1.0, 0.0, 0.0]
+    print(sum(o))   # expected: 11.5
+```
+
+
+
+
+### Zip 
+
 Python Zip returns an iterator of tuples, where the i-th tuple contains the i-th element from each of the argument sequences or iterables. 
 
 In follwing code *m unpacks the list of lists so that it's as if you wrote:  
