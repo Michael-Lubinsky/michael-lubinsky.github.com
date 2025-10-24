@@ -19,7 +19,61 @@ for row in rez:
 [2, 4, 6]
 ```
 
-### Matrix
+### Sparse Matrix
+
+```python
+class SparseMatrix2D:
+    def __init__(self, rows, cols):
+        """Initialize a sparse matrix with given dimensions."""
+        self.rows = rows
+        self.cols = cols
+        self.data = {}  # Dictionary to store non-zero values: {(row, col): value}
+    
+    def set(self, row, col, value):
+        """Set a value at the specified row and column."""
+        if row < 0 or row >= self.rows or col < 0 or col >= self.cols:
+            raise IndexError(f"Index out of bounds: ({row}, {col})")
+        
+        if value != 0:
+            self.data[(row, col)] = value
+        elif (row, col) in self.data:
+            # Remove entry if setting to zero
+            del self.data[(row, col)]
+    
+    def mul(self, vec):
+        """Multiply sparse matrix by a dense vector."""
+        if len(vec) != self.cols:
+            raise ValueError(f"Vector length {len(vec)} doesn't match matrix columns {self.cols}")
+        
+        # Initialize result vector with zeros
+        result = [0.0] * self.rows
+        
+        # For each non-zero entry in the sparse matrix
+        for (row, col), value in self.data.items():
+            result[row] += value * vec[col]
+        
+        return result
+
+
+# Usage:
+# Sparse Matrix * Dense Vector
+v = [1.] * 8  # vector
+m = SparseMatrix2D(rows=10, cols=8)
+m.set(row=0, col=0, value=1.)
+m.set(2, 0, 1.)
+m.set(3, 4, 1.5)
+m.set(3, 3, 1.)
+m.set(7, 6, 1.)
+m.set(5, 2, 5.)
+m.set(0, 0, 2.)  # Overwrites the previous value at (0, 0)
+o = m.mul(v)
+print(o)
+print(sum(o))
+# "should be 11.5"
+```
+
+
+#### Another implementation of SparseMatrix2D
 
 ```python
 class SparseMatrix2D:
