@@ -4,11 +4,13 @@ https://ru.algorithmica.org/
 
 #### Algebraic data types
 
-https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/
+<https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
 
 https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
 
 https://news.ycombinator.com/item?id=45248043
+
+<https://iacgm.com/articles/adts/>
 
 https://habr.com/ru/articles/957848/ Monads
 
