@@ -31,6 +31,8 @@ https://matheusfacure.github.io/python-causality-handbook/landing-page.html
 ### Book
 https://www.manning.com/books/deep-learning-with-python-third-edition 
 
+https://www.manning.com/books/deep-learning-with-python-third-edition 
+
 ### Book with code: Understanding Deep Learning 
 https://udlbook.github.io/udlbook/
 
