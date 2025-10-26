@@ -1,4 +1,6 @@
-## DB notes
+## DB Internals
+
+<https://www.nan.fyi/database> Build Your Own Database
 
 https://jack-vanlightly.com/blog/2025/10/8/beyond-indexes-how-open-table-formats-optimize-query-performance
 
