@@ -1,4 +1,195 @@
+Here's how to read content from a DynamoDB table:
 
+## **Option 1: Scan entire table (small tables)**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+
+# Replace with your table name
+table = dynamodb.Table('your-table-name')
+
+# Scan all items
+response = table.scan()
+items = response['Items']
+
+print(f"Found {len(items)} items")
+for item in items:
+    print(item)
+```
+
+## **Option 2: Scan with pagination (large tables)**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Scan with pagination
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+# Handle pagination
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+
+print(f"Total items: {len(items)}")
+for item in items[:10]:  # Show first 10
+    print(item)
+```
+
+## **Option 3: Query by partition key (more efficient)**
+
+```python
+import boto3
+from boto3.dynamodb.conditions import Key
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Query by partition key
+response = table.query(
+    KeyConditionExpression=Key('partition_key_name').eq('some_value')
+)
+
+items = response['Items']
+for item in items:
+    print(item)
+```
+
+## **Option 4: Get single item by primary key**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Get single item
+response = table.get_item(
+    Key={
+        'partition_key_name': 'value1',
+        'sort_key_name': 'value2'  # If you have a sort key
+    }
+)
+
+if 'Item' in response:
+    item = response['Item']
+    print(item)
+else:
+    print("Item not found")
+```
+
+## **Option 5: Convert to Pandas DataFrame (best for analysis)**
+
+```python
+import boto3
+import pandas as pd
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Scan and collect all items
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+
+# Convert to DataFrame
+df = pd.DataFrame(items)
+display(df)  # Use display() in Databricks
+```
+
+## **Option 6: Convert to Spark DataFrame**
+
+```python
+import boto3
+import pandas as pd
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Scan all items
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+
+# Convert to Spark DataFrame
+df_pandas = pd.DataFrame(items)
+df_spark = spark.createDataFrame(df_pandas)
+display(df_spark)
+```
+
+## **Option 7: Get table info first**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('your-table-name')
+
+# Get table metadata
+print(f"Table name: {table.table_name}")
+print(f"Item count: {table.item_count}")
+print(f"Table status: {table.table_status}")
+print(f"Creation date: {table.creation_date_time}")
+print(f"Key schema: {table.key_schema}")
+print(f"Attributes: {table.attribute_definitions}")
+```
+
+**Choose based on your needs:**
+- **Small table** → Option 1 (simple scan)
+- **Large table** → Option 2 (scan with pagination)
+- **Know the key** → Option 3 (query) or Option 4 (get_item)
+- **Data analysis** → Option 5 (Pandas) or Option 6 (Spark)
+
+Replace `'your-table-name'`, `'partition_key_name'`, and key values with your actual table details!
 # Is polling DynamoDB tables  from Databricks   using DynamoDB Streams?
 
 **It depends on the implementation** - the policies allow for both approaches:
