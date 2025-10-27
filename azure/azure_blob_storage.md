@@ -1,3 +1,6 @@
+npm i @azure/identity@^4.5.0 @azure/storage-file-datalake@^12.17.0
+
+
 # Azure Data Lake Storage
 
 az storage fs
