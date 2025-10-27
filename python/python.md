@@ -133,6 +133,53 @@ Since lists are mutable, list methods such as .sort() modify the original list r
 
 <https://www.thepythoncodingstack.com/p/the-key-to-the-key-parameter-in-python>
 
+## Sorting Dictionary
+
+Here’s how to sort a Python dictionary both by **value** and by **key** 👇
+
+---
+
+### ✅ Sort by **value**
+
+```python
+data = {'b': 3, 'a': 1, 'c': 2}
+
+# ascending by value
+sorted_by_value = dict(sorted(data.items(), key=lambda item: item[1]))
+print(sorted_by_value)   # {'a': 1, 'c': 2, 'b': 3}
+
+# descending by value
+sorted_by_value_desc = dict(sorted(data.items(), key=lambda item: item[1], reverse=True))
+print(sorted_by_value_desc)  # {'b': 3, 'c': 2, 'a': 1}
+```
+
+---
+
+### ✅ Sort by **key**
+
+```python
+data = {'b': 3, 'a': 1, 'c': 2}
+
+# ascending by key
+sorted_by_key = dict(sorted(data.items()))
+print(sorted_by_key)  # {'a': 1, 'b': 3, 'c': 2}
+
+# descending by key
+sorted_by_key_desc = dict(sorted(data.items(), reverse=True))
+print(sorted_by_key_desc)  # {'c': 2, 'b': 3, 'a': 1}
+```
+
+
+* `dict(sorted(...))` returns a new dictionary (Python 3.7+ preserves insertion order).
+* You can also get just the sorted list of keys/values if needed:
+
+  ```python
+  sorted_keys = sorted(data.keys())
+  sorted_values = sorted(data.values())
+  ```
+
+
+
 ### Context manager
 
 ```python
