@@ -2,6 +2,8 @@
 
 <https://jvns.ca/blog/2024/02/01/dealing-with-diverged-git-branches/>
 
+<https://dangitgit.com/>
+
 ```git
 # undo the last commit
 git reset --soft HEAD~1
