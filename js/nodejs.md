@@ -1,3 +1,10 @@
+https://learn.microsoft.com/en-us/azure/developer/javascript/
+```
+yarn why @azure/storage-file-datalake
+├─ @weavix/change-stream-consumer@workspace:packages/change-stream-consumer
+│  └─ @azure/storage-file-datalake@npm:12.28.1 (via npm:^12.28.1)
+│
+```
 ##  YARN
 ```
 cd packages/telemetry-stream-consumer
