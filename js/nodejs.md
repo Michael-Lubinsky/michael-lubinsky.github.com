@@ -2,6 +2,7 @@
 ```
 cd packages/telemetry-stream-consumer
 yarn add -D @azure/identity@^4.5.0 @azure/storage-file-datalake@^12.17.0
+yarn workspace @weavix/telemetry-stream-consumer add @azure/storage-file-datalake@^12.17.0
 ```
 Your root package.json file explicitly states:
 ```
