@@ -1,3 +1,265 @@
+## GSI
+
+Great! Now let's add a Global Secondary Index (GSI) to enable efficient querying by `record_type` and `recorded_at`.
+
+## **Option 1: Create GSI via AWS Console**
+
+### **For `chargeminder-car-telemetry` table:**
+
+1. Go to **AWS Console** → **DynamoDB** → **Tables**
+2. Click on `chargeminder-car-telemetry`
+3. Go to **Indexes** tab
+4. Click **Create index**
+5. Fill in:
+   - **Partition key**: `record_type` (String)
+   - **Sort key**: `recorded_at` (String)
+   - **Index name**: `record_type-recorded_at-index` (or `recorded_at_index`)
+   - **Projected attributes**: 
+     - Choose "All" (recommended for flexibility) or
+     - Choose specific attributes you need
+   - **Capacity**: Choose based on your table settings (on-demand or provisioned)
+6. Click **Create index**
+
+### **For `chargeminder-users` table:**
+
+1. Same steps as above
+2. Add:
+   - **Partition key**: `record_type` (String)
+   - **Sort key**: You need another attribute for sort key (maybe `created_at` or `user_id`?)
+   - If you don't have a good sort key, you can create GSI with just partition key
+
+## **Option 2: Create GSI using boto3 from Databricks**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb_client = boto3_session.client('dynamodb')
+
+# Create GSI for chargeminder-car-telemetry
+response = dynamodb_client.update_table(
+    TableName='chargeminder-car-telemetry',
+    AttributeDefinitions=[
+        {
+            'AttributeName': 'record_type',
+            'AttributeType': 'S'  # String
+        },
+        {
+            'AttributeName': 'recorded_at',
+            'AttributeType': 'S'  # String
+        }
+    ],
+    GlobalSecondaryIndexUpdates=[
+        {
+            'Create': {
+                'IndexName': 'record_type-recorded_at-index',
+                'KeySchema': [
+                    {
+                        'AttributeName': 'record_type',
+                        'KeyType': 'HASH'  # Partition key
+                    },
+                    {
+                        'AttributeName': 'recorded_at',
+                        'KeyType': 'RANGE'  # Sort key
+                    }
+                ],
+                'Projection': {
+                    'ProjectionType': 'ALL'  # Include all attributes
+                },
+                'ProvisionedThroughput': {
+                    'ReadCapacityUnits': 5,
+                    'WriteCapacityUnits': 5
+                }
+                # OR if using on-demand mode, use:
+                # 'BillingMode': 'PAY_PER_REQUEST'
+            }
+        }
+    ]
+)
+
+print("GSI creation initiated. Status:", response['TableDescription']['TableStatus'])
+print("Wait for table to be ACTIVE again...")
+```
+
+## **Option 3: Create GSI using Infrastructure as Code (Terraform/CDKTF)**
+
+Since you're using CDKTF, add this to your DynamoDB table definition:
+
+```python
+# In your CDKTF code
+from cdktf_cdktf_provider_aws.dynamodb_table import DynamodbTable, DynamodbTableGlobalSecondaryIndex
+
+# For chargeminder-car-telemetry table
+table = DynamodbTable(self, "chargeminder_car_telemetry",
+    name="chargeminder-car-telemetry",
+    # ... existing configuration ...
+    
+    global_secondary_index=[
+        DynamodbTableGlobalSecondaryIndex(
+            name="record_type-recorded_at-index",
+            hash_key="record_type",
+            range_key="recorded_at",
+            projection_type="ALL",
+            # If on-demand mode:
+            # (no read/write capacity needed)
+            # If provisioned mode:
+            read_capacity=5,
+            write_capacity=5
+        )
+    ],
+    
+    # Make sure these attributes are defined
+    attribute=[
+        {"name": "smartcar_user_id", "type": "S"},
+        {"name": "recorded_at", "type": "S"},
+        {"name": "record_type", "type": "S"}  # Add this
+    ]
+)
+```
+
+## **Wait for GSI Creation to Complete**
+
+GSI creation is **asynchronous** and can take several minutes. Check status:
+
+```python
+import boto3
+import time
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb_client = boto3_session.client('dynamodb')
+
+# Check GSI status
+while True:
+    response = dynamodb_client.describe_table(TableName='chargeminder-car-telemetry')
+    
+    table_status = response['Table']['TableStatus']
+    print(f"Table status: {table_status}")
+    
+    if 'GlobalSecondaryIndexes' in response['Table']:
+        for gsi in response['Table']['GlobalSecondaryIndexes']:
+            print(f"  GSI '{gsi['IndexName']}' status: {gsi['IndexStatus']}")
+            if gsi['IndexStatus'] == 'ACTIVE':
+                print("✓ GSI is ready to use!")
+                break
+    
+    if table_status == 'ACTIVE':
+        break
+    
+    print("Waiting 30 seconds...")
+    time.sleep(30)
+```
+
+## **Use the GSI in Queries from Databricks**
+
+Once the GSI is ACTIVE:
+
+```python
+import boto3
+from boto3.dynamodb.conditions import Key
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+# Query using the GSI
+response = table.query(
+    IndexName='record_type-recorded_at-index',
+    KeyConditionExpression=Key('record_type').eq('ALL') & Key('recorded_at').gt('2025-09-01')
+)
+
+items = response['Items']
+print(f"Found {len(items)} items")
+
+# Handle pagination if needed
+while 'LastEvaluatedKey' in response:
+    response = table.query(
+        IndexName='record_type-recorded_at-index',
+        KeyConditionExpression=Key('record_type').eq('ALL') & Key('recorded_at').gt('2025-09-01'),
+        ExclusiveStartKey=response['LastEvaluatedKey']
+    )
+    items.extend(response['Items'])
+
+print(f"Total items: {len(items)}")
+```
+
+## **⚠️ Important Considerations**
+
+### **1. record_type = 'ALL' Problem**
+
+If `record_type` is always 'ALL' for every record, this creates a **hot partition** in your GSI! All queries will hit the same partition, which defeats the purpose of DynamoDB's distribution.
+
+**Better alternatives:**
+
+**Option A: Use a different partition key**
+- Partition key: `year-month` (e.g., "2025-09")
+- Sort key: `recorded_at`
+
+**Option B: Add variety to record_type**
+- If you have different types of records, use actual types
+- Examples: "TELEMETRY", "USER", "SESSION", etc.
+
+**Option C: Use composite key**
+- Partition key: `smartcar_user_id#record_type`
+- Sort key: `recorded_at`
+
+### **2. Permissions**
+
+Make sure your IAM policy allows GSI operations:
+
+```json
+{
+  "Action": [
+    "dynamodb:Query",
+    "dynamodb:Scan"
+  ],
+  "Effect": "Allow",
+  "Resource": [
+    "arn:aws:dynamodb:us-east-1:447759255101:table/chargeminder*/index/*"
+  ]
+}
+```
+
+Your policy already has this! ✓
+
+### **3. Costs**
+
+- GSI consumes additional read/write capacity
+- GSI storage counts toward total table storage
+- On-demand mode: Pay per request
+- Provisioned mode: Pay for provisioned capacity
+
+## **Recommended Approach**
+
+Since all records have `record_type='ALL'`, I recommend:
+
+```python
+# Better GSI design using date-based partitioning
+# Add a computed attribute like "year_month" to your items
+
+# Then create GSI:
+# Partition key: year_month (e.g., "2025-10")
+# Sort key: recorded_at
+
+# This distributes load across multiple partitions
+```
+
+Would you like help implementing a better partitioning strategy? 🚀
+
+
+
+
 Here's how to read content from a DynamoDB table:
 
 ## **Option 1: Scan entire table (small tables)**
