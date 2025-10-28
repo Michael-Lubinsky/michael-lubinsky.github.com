@@ -1,5 +1,7 @@
 ### Physics
 
+https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html
+
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf
