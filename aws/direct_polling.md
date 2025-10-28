@@ -1,6 +1,6 @@
 ## GSI
 
-Great! Now let's add a Global Secondary Index (GSI) to enable efficient querying by `record_type` and `recorded_at`.
+Add a Global Secondary Index (GSI) to enable efficient querying by `record_type` and `recorded_at`.
 
 ## **Option 1: Create GSI via AWS Console**
 
