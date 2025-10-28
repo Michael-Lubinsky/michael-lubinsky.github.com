@@ -428,12 +428,384 @@ Since all records have `record_type='ALL'`, I recommend:
 # This distributes load across multiple partitions
 ```
 
-Would you like help implementing a better partitioning strategy? 🚀
+
+ Here are several methods to scan all records from a DynamoDB table into Databricks:
+
+## **Option 1: Basic Scan with Pagination → Pandas → Spark**
+
+```python
+import boto3
+import pandas as pd
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+# Scan all items with pagination
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+# Handle pagination (DynamoDB returns max 1MB per scan)
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+    print(f"Scanned {len(items)} items so far...")
+
+print(f"Total items scanned: {len(items)}")
+
+# Convert to Pandas DataFrame
+df_pandas = pd.DataFrame(items)
+
+# Convert to Spark DataFrame
+df_spark = spark.createDataFrame(df_pandas)
+
+# Display results
+display(df_spark)
+
+# Optional: Save to Delta table
+df_spark.write.format("delta").mode("overwrite").saveAsTable("chargeminder_car_telemetry")
+```
+
+## **Option 2: Parallel Scan (Faster for Large Tables)**
+
+```python
+import boto3
+import pandas as pd
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+def scan_segment(segment, total_segments, table_name):
+    """Scan a single segment of the table"""
+    dynamodb = boto3_session.resource('dynamodb')
+    table = dynamodb.Table(table_name)
+    
+    items = []
+    response = table.scan(
+        Segment=segment,
+        TotalSegments=total_segments
+    )
+    items.extend(response['Items'])
+    
+    # Pagination within this segment
+    while 'LastEvaluatedKey' in response:
+        response = table.scan(
+            Segment=segment,
+            TotalSegments=total_segments,
+            ExclusiveStartKey=response['LastEvaluatedKey']
+        )
+        items.extend(response['Items'])
+    
+    print(f"Segment {segment} complete: {len(items)} items")
+    return items
+
+# Parallel scan with 4 segments (adjust based on table size)
+table_name = 'chargeminder-car-telemetry'
+total_segments = 4
+all_items = []
+
+with ThreadPoolExecutor(max_workers=total_segments) as executor:
+    futures = [
+        executor.submit(scan_segment, segment, total_segments, table_name) 
+        for segment in range(total_segments)
+    ]
+    
+    for future in as_completed(futures):
+        all_items.extend(future.result())
+
+print(f"Total items scanned: {len(all_items)}")
+
+# Convert to Spark DataFrame
+df_pandas = pd.DataFrame(all_items)
+df_spark = spark.createDataFrame(df_pandas)
+display(df_spark)
+```
+
+## **Option 3: Stream to Spark (Memory Efficient for Very Large Tables)**
+
+```python
+import boto3
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+# Define schema (adjust based on your table structure)
+schema = StructType([
+    StructField("smartcar_user_id", StringType(), True),
+    StructField("recorded_at", StringType(), True),
+    StructField("record_type", StringType(), True),
+    # Add more fields as needed
+])
+
+# Scan in batches and create DataFrame incrementally
+batch_size = 10000
+items_batch = []
+response = table.scan()
+
+dataframes = []
+
+while True:
+    items_batch.extend(response['Items'])
+    
+    # Process batch when it reaches batch_size
+    if len(items_batch) >= batch_size:
+        df_batch = spark.createDataFrame(items_batch, schema=schema)
+        dataframes.append(df_batch)
+        print(f"Processed batch: {len(dataframes) * batch_size} items")
+        items_batch = []
+    
+    # Check if more data to scan
+    if 'LastEvaluatedKey' not in response:
+        break
+    
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+
+# Process remaining items
+if items_batch:
+    df_batch = spark.createDataFrame(items_batch, schema=schema)
+    dataframes.append(df_batch)
+
+# Union all batches
+from functools import reduce
+from pyspark.sql import DataFrame
+
+df_spark = reduce(DataFrame.union, dataframes)
+print(f"Total rows: {df_spark.count()}")
+display(df_spark)
+```
+
+## **Option 4: With Rate Limiting (Avoid Throttling)**
+
+```python
+import boto3
+import pandas as pd
+import time
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+scan_count = 1
+start_time = time.time()
+
+while 'LastEvaluatedKey' in response:
+    # Add delay to avoid throttling (adjust based on your RCUs)
+    time.sleep(0.1)  # 100ms delay between scans
+    
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+    scan_count += 1
+    
+    if scan_count % 10 == 0:
+        elapsed = time.time() - start_time
+        print(f"Scanned {len(items)} items in {elapsed:.1f}s ({len(items)/elapsed:.1f} items/sec)")
+
+print(f"Total items: {len(items)}")
+
+# Convert to Spark
+df_pandas = pd.DataFrame(items)
+df_spark = spark.createDataFrame(df_pandas)
+display(df_spark)
+```
+
+## **Option 5: Scan with Filters (More Efficient)**
+
+```python
+import boto3
+import pandas as pd
+from boto3.dynamodb.conditions import Attr
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+# Scan with filter expression
+items = []
+response = table.scan(
+    FilterExpression=Attr('recorded_at').gt('2025-09-01')
+    # Note: Filters are applied AFTER scan, so still consumes full RCUs
+)
+items.extend(response['Items'])
+
+while 'LastEvaluatedKey' in response:
+    response = table.scan(
+        FilterExpression=Attr('recorded_at').gt('2025-09-01'),
+        ExclusiveStartKey=response['LastEvaluatedKey']
+    )
+    items.extend(response['Items'])
+
+print(f"Filtered items: {len(items)}")
+
+df_pandas = pd.DataFrame(items)
+df_spark = spark.createDataFrame(df_pandas)
+display(df_spark)
+```
+
+## **Option 6: Complete Production-Ready Example**
+
+```python
+import boto3
+import pandas as pd
+from datetime import datetime
+
+def scan_dynamodb_table_to_spark(table_name, filter_expression=None):
+    """
+    Scan entire DynamoDB table and return Spark DataFrame
+    
+    Args:
+        table_name: Name of DynamoDB table
+        filter_expression: Optional boto3 FilterExpression
+    
+    Returns:
+        Spark DataFrame
+    """
+    boto3_session = boto3.Session(
+        botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+        region_name="us-east-1"
+    )
+    
+    dynamodb = boto3_session.resource('dynamodb')
+    table = dynamodb.Table(table_name)
+    
+    print(f"Starting scan of table: {table_name}")
+    print(f"Table item count (approximate): {table.item_count}")
+    
+    items = []
+    scan_kwargs = {}
+    if filter_expression:
+        scan_kwargs['FilterExpression'] = filter_expression
+    
+    start_time = datetime.now()
+    response = table.scan(**scan_kwargs)
+    items.extend(response['Items'])
+    
+    scan_count = 1
+    consumed_capacity = response.get('ConsumedCapacity', {}).get('CapacityUnits', 0)
+    
+    while 'LastEvaluatedKey' in response:
+        scan_kwargs['ExclusiveStartKey'] = response['LastEvaluatedKey']
+        response = table.scan(**scan_kwargs)
+        items.extend(response['Items'])
+        scan_count += 1
+        
+        consumed_capacity += response.get('ConsumedCapacity', {}).get('CapacityUnits', 0)
+        
+        if scan_count % 10 == 0:
+            elapsed = (datetime.now() - start_time).total_seconds()
+            print(f"Progress: {len(items)} items | {scan_count} scans | {elapsed:.1f}s")
+    
+    elapsed_total = (datetime.now() - start_time).total_seconds()
+    print(f"\n✓ Scan complete!")
+    print(f"  Total items: {len(items)}")
+    print(f"  Total scans: {scan_count}")
+    print(f"  Time elapsed: {elapsed_total:.1f}s")
+    print(f"  Rate: {len(items)/elapsed_total:.1f} items/sec")
+    
+    # Convert to Spark DataFrame
+    if items:
+        df_pandas = pd.DataFrame(items)
+        df_spark = spark.createDataFrame(df_pandas)
+        print(f"  Spark DataFrame shape: {df_spark.count()} rows × {len(df_spark.columns)} columns")
+        return df_spark
+    else:
+        print("  No items found!")
+        return None
+
+# Use the function
+df = scan_dynamodb_table_to_spark('chargeminder-car-telemetry')
+
+if df:
+    display(df)
+    
+    # Optional: Save to Delta table
+    df.write.format("delta").mode("overwrite").saveAsTable("chargeminder_car_telemetry")
+    print("✓ Saved to Delta table: chargeminder_car_telemetry")
+```
+
+## **Best Practices & Recommendations:**
+
+### **1. Choose the Right Method:**
+
+| Table Size | Best Method | Why |
+|-----------|-------------|-----|
+| Small (<10K items) | Option 1 (Simple scan) | Fast and simple |
+| Medium (10K-100K) | Option 2 (Parallel scan) | 4x faster |
+| Large (>100K) | Option 2 or 6 | Parallel + monitoring |
+| Very Large (>1M) | Consider export to S3 | More efficient |
+
+### **2. Use Query Instead of Scan (When Possible):**
+
+```python
+# If you have a GSI, use query instead!
+from boto3.dynamodb.conditions import Key
+
+response = table.query(
+    IndexName='record_type-recorded_at-index',
+    KeyConditionExpression=Key('record_type').eq('ALL')
+)
+# Query is MUCH faster and cheaper than scan
+```
+
+### **3. Export to S3 (Best for Large Tables):**
+
+```python
+# Export table to S3 (more efficient for large datasets)
+dynamodb_client = boto3_session.client('dynamodb')
+
+response = dynamodb_client.export_table_to_point_in_time(
+    TableArn=f'arn:aws:dynamodb:us-east-1:447759255101:table/chargeminder-car-telemetry',
+    S3Bucket='your-bucket-name',
+    S3Prefix='dynamodb-exports/',
+    ExportFormat='DYNAMODB_JSON'  # or 'ION'
+)
+
+export_arn = response['ExportDescription']['ExportArn']
+print(f"Export started: {export_arn}")
+
+# Then read from S3 in Databricks
+df = spark.read.json("s3://your-bucket-name/dynamodb-exports/")
+```
+
+### **4. Monitor Consumed Capacity:**
+
+```python
+response = table.scan(ReturnConsumedCapacity='TOTAL')
+print(f"Consumed RCUs: {response['ConsumedCapacity']['CapacityUnits']}")
+```
+
+**My recommendation:** 
+Start with **Option 6** (production-ready) for most use cases,  
+or **Option 2** (parallel scan) for large tables.  
+Use **Query with GSI** when possible instead of full table scans! 🚀
 
 
-
-
-Here's how to read content from a DynamoDB table:
+# Here's how to read content from a DynamoDB table:
 
 ## **Option 1: Scan entire table (small tables)**
 
