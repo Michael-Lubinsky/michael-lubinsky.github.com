@@ -157,7 +157,180 @@ while True:
     time.sleep(30)
 ```
 
-## **Use the GSI in Queries from Databricks**
+
+Great question! This relates to DynamoDB's **capacity modes** and how your GSI handles traffic.
+
+## **What "Read capacity: 10" means:**
+
+**Read Capacity Units (RCUs) = 10** means:
+- Your GSI can handle **10 strongly consistent reads per second** 
+- OR **20 eventually consistent reads per second** (the default for queries)
+- Each RCU = 1 read of up to **4 KB** of data per second
+
+### **Examples:**
+
+**Scenario 1: Small items (1 KB each)**
+- 10 RCUs = 10 reads/second × 4 KB = 40 KB/second
+- You can read ~10 items per second
+
+**Scenario 2: Large items (8 KB each)**
+- Each 8 KB item = 2 RCUs
+- 10 RCUs = 5 reads/second (5 items × 8 KB = 40 KB/second)
+
+**Scenario 3: Query returning multiple items**
+- Query returns 50 items totaling 40 KB
+- This consumes 10 RCUs (40 KB ÷ 4 KB = 10)
+- You can do ~1 such query per second
+
+## **What "Auto scaling is off" means:**
+
+**Auto scaling OFF** = **Fixed capacity**
+- Your GSI always has exactly 10 RCUs available
+- **If you exceed 10 RCUs/second**: You get `ProvisionedThroughputExceededException` errors
+- You pay for 10 RCUs constantly, whether you use them or not
+
+**Auto scaling ON** = **Dynamic capacity**
+- DynamoDB automatically adjusts RCUs between min/max based on traffic
+- Example: Scale from 10 to 100 RCUs when traffic increases
+- Better cost optimization and availability
+
+## **Cost Impact:**
+
+With **10 RCUs provisioned** in `us-east-1`:
+- Cost: ~$0.00065 per RCU-hour
+- Monthly cost: 10 RCUs × 730 hours × $0.00065 = **~$4.75/month**
+- This is charged **even if you never use the GSI**
+
+## **Recommendations:**
+
+### **Option 1: Enable Auto Scaling (Recommended)**
+
+1. Go to **AWS Console** → **DynamoDB** → `chargeminder-car-telemetry`
+2. Go to **Indexes** tab → Click your GSI
+3. Click **Manage throughput**
+4. **Enable auto scaling**:
+   - Minimum capacity: 1-5 RCUs
+   - Maximum capacity: 100+ RCUs (based on expected peak)
+   - Target utilization: 70%
+
+**Benefits:**
+- ✅ Automatically handles traffic spikes
+- ✅ Scales down when idle (saves money)
+- ✅ No throttling during bursts
+
+### **Option 2: Switch to On-Demand Mode (Easiest)**
+
+1. Go to table settings
+2. Change **Capacity mode** to **On-Demand**
+3. This applies to both base table and all GSIs
+
+**Benefits:**
+- ✅ Pay only for what you use
+- ✅ No capacity planning needed
+- ✅ Handles unlimited traffic (within AWS limits)
+- ✅ Better for unpredictable workloads
+
+**Costs:**
+- $1.25 per million read requests
+- No minimum charge
+
+### **Option 3: Keep Provisioned, Increase Capacity**
+
+If you know you'll exceed 10 RCUs/second:
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+dynamodb_client = boto3_session.client('dynamodb')
+
+# Update GSI capacity
+response = dynamodb_client.update_table(
+    TableName='chargeminder-car-telemetry',
+    GlobalSecondaryIndexUpdates=[
+        {
+            'Update': {
+                'IndexName': 'record_type-recorded_at-index',
+                'ProvisionedThroughput': {
+                    'ReadCapacityUnits': 50,  # Increase to 50
+                    'WriteCapacityUnits': 5
+                }
+            }
+        }
+    ]
+)
+
+print("Capacity updated!")
+```
+
+## **How to Monitor Your Usage:**
+
+### **Check if you're being throttled:**
+
+```python
+import boto3
+
+boto3_session = boto3.Session(
+    botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+    region_name="us-east-1"
+)
+
+cloudwatch = boto3_session.client('cloudwatch')
+
+# Get throttled read requests for the last hour
+response = cloudwatch.get_metric_statistics(
+    Namespace='AWS/DynamoDB',
+    MetricName='ReadThrottleEvents',
+    Dimensions=[
+        {'Name': 'TableName', 'Value': 'chargeminder-car-telemetry'},
+        {'Name': 'GlobalSecondaryIndexName', 'Value': 'record_type-recorded_at-index'}
+    ],
+    StartTime=datetime.utcnow() - timedelta(hours=1),
+    EndTime=datetime.utcnow(),
+    Period=300,  # 5 minutes
+    Statistics=['Sum']
+)
+
+throttle_count = sum([point['Sum'] for point in response['Datapoints']])
+print(f"Throttled requests in last hour: {throttle_count}")
+```
+
+### **Check consumed capacity in your queries:**
+
+```python
+from boto3.dynamodb.conditions import Key
+
+dynamodb = boto3_session.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+response = table.query(
+    IndexName='record_type-recorded_at-index',
+    KeyConditionExpression=Key('record_type').eq('ALL') & Key('recorded_at').gt('2025-09-01'),
+    ReturnConsumedCapacity='TOTAL'
+)
+
+print(f"Consumed capacity: {response['ConsumedCapacity']}")
+print(f"Read capacity units used: {response['ConsumedCapacity']['CapacityUnits']}")
+```
+
+## **Quick Decision Guide:**
+
+| Your Usage Pattern | Best Choice |
+|-------------------|-------------|
+| Unpredictable traffic | **On-Demand** |
+| Low, steady traffic (<10 RCUs/sec) | **Provisioned with 10 RCUs** (current setup) |
+| Variable traffic, some predictability | **Provisioned + Auto Scaling** |
+| High, steady traffic (>10 RCUs/sec) | **Increase provisioned capacity** |
+| Testing/development | **On-Demand** (easiest) |
+
+**My recommendation:** Switch to **On-Demand mode** for simplicity, or enable **Auto Scaling** if you want cost optimization with some predictability. 💡
+
+
+# **Use the GSI in Queries from Databricks**
 
 Once the GSI is ACTIVE:
 
