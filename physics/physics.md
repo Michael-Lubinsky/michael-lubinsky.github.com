@@ -4,6 +4,8 @@ https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/
 
+http://cleonis.nl/physics/phys256/physics.php
+
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf
 
 https://www.mathpages.com/home/iphysics.htm
