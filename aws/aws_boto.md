@@ -541,4 +541,74 @@ Use IAM role attached to cluster (no profile needed):
 dynamodb = boto3.client('dynamodb', region_name='us-east-1')
 ```
 
-Does this solve your issue?
+
+
+In **boto3**, both `.client()` and `.resource()` give you ways to interact with AWS services — but they operate at different **abstraction levels**:
+
+---
+
+### 🧩 1. `client()` — **Low-level API**
+
+```python
+dynamodb_client = boto3_session.client('dynamodb')
+```
+
+* **Purpose:** Gives direct access to the *raw AWS API* for DynamoDB.
+* **Returns:** A `botocore.client.DynamoDB` object.
+* **Style:** Explicit and procedural — you must build request dictionaries manually.
+* **Use case:** When you need *maximum control* or want to use advanced parameters exactly as in the AWS API.
+
+**Example:**
+
+```python
+response = dynamodb_client.get_item(
+    TableName='MyTable',
+    Key={'id': {'S': '123'}}
+)
+item = response['Item']
+```
+
+> Keys and attributes must include explicit DynamoDB types (`'S'`, `'N'`, `'BOOL'`, etc.).
+
+---
+
+### 🧱 2. `resource()` — **High-level Object API**
+
+```python
+dynamodb = boto3_session.resource('dynamodb')
+```
+
+* **Purpose:** Provides an *object-oriented abstraction* over the client.
+* **Returns:** A `boto3.resources.factory.dynamodb.ServiceResource` object.
+* **Style:** More Pythonic — works with native types (no `'S'`/`'N'` markers).
+* **Use case:** When you want *simpler, higher-level operations* for common patterns.
+
+**Example:**
+
+```python
+table = dynamodb.Table('MyTable')
+response = table.get_item(Key={'id': '123'})
+item = response['Item']
+```
+
+> You don’t specify data types — boto3 converts automatically.
+
+---
+
+### ⚖️ Summary Comparison
+
+| Feature     | `.client('dynamodb')`                    | `.resource('dynamodb')`                            |
+| ----------- | ---------------------------------------- | -------------------------------------------------- |
+| Level       | Low-level (raw API)                      | High-level (object abstraction)                    |
+| Data typing | Explicit (`{'S': 'abc'}`)                | Automatic (`'abc'`)                                |
+| Performance | Slightly faster (no wrapping)            | Slightly slower (adds abstraction)                 |
+| Ideal for   | Fine-grained control, advanced API calls | Clean code, common CRUD operations                 |
+| Return type | `botocore.client.DynamoDB`               | `boto3.resources.factory.dynamodb.ServiceResource` |
+
+---
+
+**In short:**
+
+* Use **`client()`** when you need **precision and control** (e.g., managing streams, capacity, backups).
+* Use **`resource()`** when you want **simplicity and readability** (e.g., CRUD operations on tables and items).
+
