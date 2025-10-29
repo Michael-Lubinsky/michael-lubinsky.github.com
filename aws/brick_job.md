@@ -174,4 +174,4 @@ You have several options:
 * [ ] Ensure IAM role/instance profile grants DynamoDB read + S3 write
 * [ ] (Optional but recommended) Convert to a single **streaming** job instead of per-minute batch
 
-If you want, paste a snippet of how you’re reading DynamoDB and writing to S3/Delta, and I’ll turn it into a ready-to-run `job_logic.py` and `main.py` for you.
+ 
