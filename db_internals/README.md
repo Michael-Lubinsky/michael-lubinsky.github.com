@@ -1,8 +1,10 @@
 ## DB Internals
 
+<https://github.com/avalokkumar/database-deep-dive>
+
 <https://www.nan.fyi/database> Build Your Own Database
 
-https://jack-vanlightly.com/blog/2025/10/8/beyond-indexes-how-open-table-formats-optimize-query-performance
+<https://jack-vanlightly.com/blog/2025/10/8/beyond-indexes-how-open-table-formats-optimize-query-performance>
 
 ### Locking
 
