@@ -1,5 +1,7 @@
 https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
 
+https://habr.com/ru/articles/961088/ 
+
 https://habr.com/ru/articles/947216/
 
 https://news.ycombinator.com/item?id=45169624/ Will Amazon S3 Vectors kill vector databases or save them? (zilliz.com)
