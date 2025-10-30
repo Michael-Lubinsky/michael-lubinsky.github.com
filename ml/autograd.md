@@ -1,3 +1,5 @@
+https://habr.com/ru/articles/960970/  gradient decent
+
 ## Auto-differentiation
 
 Auto-differentiation is neither symbolic differentiation nor numerical approximations using finite difference methods.   
