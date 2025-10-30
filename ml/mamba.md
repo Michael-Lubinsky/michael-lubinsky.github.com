@@ -1,5 +1,7 @@
 https://github.com/Saivineeth147/awesome-llm-resources
 
+https://habr.com/ru/companies/kryptonite/articles/961128/
+
 https://www.lotas.ai/erdos  IDE for ML
 
 https://github.com/mohamedrxo/simplegrad
