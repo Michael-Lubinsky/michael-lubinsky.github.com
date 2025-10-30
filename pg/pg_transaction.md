@@ -1,3 +1,5 @@
+https://habr.com/ru/articles/961134/
+
 ```sql
 CREATE OR REPLACE PROCEDURE gold.backfill_all()
 LANGUAGE plpgsql
