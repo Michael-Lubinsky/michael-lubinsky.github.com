@@ -292,4 +292,21 @@ If Databricks isn’t strict about scheduling precision:
 
 ---
 
-Would you like me to show the **exact Databricks UI steps and cron syntax** for creating the every-minute job?
+There is DynamoDB table populated by external process.
+Goal is to build almost real-time pipeline which 
+reads the new records from DynamoDB, transform it  using PySpark and append transformed records into DataBricks Unity catalog table.
+
+I consider following options:
+
+Option 1:  Direct DynamoDB Table Access (Batch Reads)
+---------------------------------------------------
+Direct polling from DynamoDB table to Databricks using GSI global secondry index on column updated_at
+Create Global Secondary Index (GSI) on updated_at column.
+Periodically call table.query() 
+Store max(updated_at) of already processed records in persistent storage, in order to read
+only new recors:   max(updated_at) will be passed as argument to  tab.query() 
+
+
+Option 2: DynamoDB Streams (Change Data Capture)
+----------------------------------------------
+AWS Lambda ->  S3 -> Databricks
