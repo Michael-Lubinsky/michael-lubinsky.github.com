@@ -175,3 +175,122 @@ You have several options:
 * [ ] (Optional but recommended) Convert to a single **streaming** job instead of per-minute batch
 
  
+Excellent question — this is a **very common limitation** in Databricks.
+You’re right that **Databricks notebook scheduling (via the UI)** only supports hourly, daily, or weekly intervals — not per-minute execution.
+However, you can achieve **every-minute runs** using one of several supported patterns depending on how flexible you want the setup to be.
+
+---
+
+## 🧭 1. Use a Databricks **Job** with a cron schedule
+
+Databricks **Jobs** (not the simple “Schedule” in a notebook) can use **custom cron expressions**.
+
+**Steps:**
+
+1. Open **Workflows → Jobs** in the left sidebar.
+2. Click **Create Job**.
+3. Under **Task**, select your notebook.
+4. In **Schedule**, click **Advanced** and enter this cron expression:
+
+   ```
+   * * * * *    → every minute
+   ```
+5. Save and run.
+
+✅ Runs every minute
+✅ Fully managed by Databricks
+✅ Viewable in the Job Runs history
+⚠️ But: a new cluster may start for each run — use a **“Continuous job” cluster** or **existing job cluster** to minimize overhead.
+
+---
+
+## ⚙️ 2. Use **Databricks REST API** to trigger the job every minute
+
+You can have an external scheduler (like Azure Function, AWS Lambda, or a local cron job) call:
+
+```
+POST /api/2.1/jobs/run-now
+```
+
+Example Python script:
+
+```python
+import time
+import requests
+
+DATABRICKS_INSTANCE = "https://<your-instance>.cloud.databricks.com"
+JOB_ID = "<your-job-id>"
+TOKEN = "<your-personal-access-token>"
+
+while True:
+    response = requests.post(
+        f"{DATABRICKS_INSTANCE}/api/2.1/jobs/run-now",
+        headers={"Authorization": f"Bearer {TOKEN}"},
+        json={"job_id": JOB_ID}
+    )
+    print(response.json())
+    time.sleep(60)  # wait 1 minute
+```
+
+✅ Fine control over timing
+✅ Can handle retries or conditions
+⚠️ Requires an always-on process somewhere
+
+---
+
+## 🔁 3. Loop inside the notebook itself
+
+You can make your notebook run continuously, executing the code every minute inside a loop:
+
+```python
+import time
+
+while True:
+    print("Running task...")
+    # your PySpark or Python logic here
+    time.sleep(60)
+```
+
+✅ Simplest approach
+⚠️ Runs forever — must keep the notebook/cluster alive manually
+⚠️ No job-level monitoring or retries
+
+---
+
+## 🪶 4. Use **Databricks Workflows → Continuous jobs (Streaming mode)**
+
+If your code reads from streaming sources or can be adapted to a long-running pattern, you can enable **continuous execution**.
+That’s ideal for incremental ingestion or minute-based aggregation.
+
+In Job settings:
+
+* Toggle **“Run continuously”**
+* The code runs non-stop instead of restarting every minute.
+
+✅ Ideal for event processing or streaming data
+⚠️ Not good for batch-style jobs that must start/finish each time
+
+---
+
+## 🧰 5. Alternative external schedulers
+
+If Databricks isn’t strict about scheduling precision:
+
+* Use **Azure Function (Timer Trigger)** every minute to call your Databricks job.
+* Or use **Apache Airflow** DAG with `schedule_interval="@minutely"`.
+
+---
+
+### ✅ Summary
+
+| Method                    | Granularity  | Recommended for       | Notes                 |
+| ------------------------- | ------------ | --------------------- | --------------------- |
+| Databricks Job (cron)     | Every minute | Standard automation   | Use `* * * * *`       |
+| REST API loop             | Every minute | Custom orchestration  | Flexible, external    |
+| Infinite loop in notebook | Every minute | Quick tests           | No retries            |
+| Continuous job            | Real-time    | Streaming tasks       | Keeps cluster running |
+| External scheduler        | Every minute | Integration pipelines | Use Function/Airflow  |
+
+---
+
+Would you like me to show the **exact Databricks UI steps and cron syntax** for creating the every-minute job?
