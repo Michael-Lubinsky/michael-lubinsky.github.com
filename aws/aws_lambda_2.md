@@ -361,4 +361,343 @@ Odometer_TraveledDistance_value: 12345.67
 3. Deploy Lambda → Deploy Databricks → Test
 4. Start processing real data!
 
-Everything is ready to deploy - just update the configuration values (workspace URLs, tokens, bucket names) and run the deployment scripts! 🚀
+# Quick Start Guide
+
+# Quick Start Guide - 15 Minutes to Production
+
+Follow these steps to deploy the complete pipeline in ~15 minutes.
+
+## Prerequisites Checklist
+
+- [ ] AWS CLI configured
+- [ ] Databricks CLI installed: `pip install databricks-cli`
+- [ ] DynamoDB table `chargeminder-car-telemetry` with streams enabled
+- [ ] S3 bucket `chargeminder-telemetry-raw` created
+- [ ] Databricks workspace URL and token ready
+
+## Step-by-Step Deployment
+
+### Step 1: Deploy DynamoDB Stream Lambda (5 minutes)
+
+```bash
+cd lambda
+
+# 1. Create IAM role
+chmod +x setup_iam.sh
+./setup_iam.sh
+# Copy the Role ARN from output
+
+# 2. Update deploy.sh
+nano deploy.sh
+# Update line 10: ROLE_ARN="<paste ARN from step 1>"
+# Save and exit (Ctrl+X, Y, Enter)
+
+# 3. Deploy
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**Verify**:
+```bash
+# Check Lambda function
+aws lambda get-function --function-name chargeminder-dynamodb-stream-processor
+
+# Test by inserting data into DynamoDB
+# Files should appear in S3 within seconds
+aws s3 ls s3://chargeminder-telemetry-raw/telemetry/ --recursive
+```
+
+### Step 2: Deploy Databricks Job (5 minutes)
+
+```bash
+cd ../databricks
+
+# 1. Configure Databricks CLI
+databricks configure --token
+# Enter your workspace URL: https://YOUR_WORKSPACE.cloud.databricks.com
+# Enter your token: YOUR_TOKEN
+
+# 2. Update configuration (if needed)
+nano telemetry_pipeline.py
+# Lines 31-33: Update catalog/schema/table names if needed
+# Save and exit
+
+# 3. Deploy
+chmod +x deploy_job.sh
+nano deploy_job.sh
+# Update lines 7-8 with your workspace details
+# Save and exit
+
+./deploy_job.sh
+# Copy the Job ID from output
+```
+
+**Verify**:
+```bash
+# Run job manually to test
+databricks jobs run-now --job-id YOUR_JOB_ID
+
+# Check table in Databricks
+# Go to: https://YOUR_WORKSPACE.cloud.databricks.com/#/data
+# Navigate to: main.telemetry.car_telemetry_flattened
+```
+
+### Step 3: Choose Trigger Method (5 minutes)
+
+**Option A: Use Scheduled Job (Default - Already Configured)**
+
+The job runs every 5 minutes automatically. You're done! ✅
+
+**Option B: Event-Driven with S3 Trigger**
+
+For near-realtime processing:
+
+```bash
+cd ../lambda
+
+# 1. Update deploy_s3_trigger.sh
+nano deploy_s3_trigger.sh
+# Update lines 7-11:
+# - ROLE_ARN (from Step 1)
+# - DATABRICKS_HOST
+# - DATABRICKS_TOKEN
+# - DATABRICKS_JOB_ID (from Step 2)
+# Save and exit
+
+# 2. Deploy
+chmod +x deploy_s3_trigger.sh
+./deploy_s3_trigger.sh
+```
+
+## Testing the Pipeline
+
+### 1. Insert Test Data into DynamoDB
+
+```python
+import boto3
+import json
+from datetime import datetime
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('chargeminder-car-telemetry')
+
+# Test record
+test_item = {
+    'event_id': f'test-{int(datetime.now().timestamp())}',
+    'recorded_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+    'record_type': 'ALL',
+    'smartcar_user_id': 'test-user-123',
+    'car_timezone': 'America/Los_Angeles',
+    'meta': {
+        'mode': 'TEST',
+        'deliveryId': 'test-delivery-123',
+        'webhookId': 'test-webhook-123',
+        'signalCount': 2,
+        'webhookName': 'TestWebhook',
+        'version': '4.0',
+        'deliveredAt': int(datetime.now().timestamp() * 1000)
+    },
+    'user': {'id': 'test-user-123'},
+    'vehicle': {
+        'model': 'Model 3',
+        'id': 'test-vehicle-123',
+        'make': 'Tesla',
+        'year': 2023
+    },
+    'signals': [
+        {
+            'name': 'IsCharging',
+            'code': 'charge-ischarging',
+            'group': 'Charge',
+            'body': json.dumps({'value': True}),
+            'meta': {
+                'retrievedAt': int(datetime.now().timestamp() * 1000),
+                'oemUpdatedAt': int(datetime.now().timestamp() * 1000)
+            }
+        },
+        {
+            'name': 'TraveledDistance',
+            'code': 'odometer-traveleddistance',
+            'group': 'Odometer',
+            'body': json.dumps({'value': 12345.67, 'unit': 'km'}),
+            'meta': {
+                'retrievedAt': int(datetime.now().timestamp() * 1000),
+                'oemUpdatedAt': int(datetime.now().timestamp() * 1000)
+            }
+        }
+    ],
+    'triggers': []
+}
+
+table.put_item(Item=test_item)
+print("✅ Test data inserted!")
+```
+
+### 2. Verify Each Stage
+
+**Stage 1: Lambda → S3** (should take < 10 seconds)
+```bash
+# Wait 10 seconds, then check S3
+sleep 10
+aws s3 ls s3://chargeminder-telemetry-raw/telemetry/ --recursive
+```
+
+**Stage 2: S3 → Databricks** (depends on trigger method)
+- **Scheduled**: Wait up to 5 minutes
+- **Event-driven**: Wait ~30 seconds
+
+Check Databricks:
+```sql
+SELECT * FROM main.telemetry.car_telemetry_flattened 
+WHERE event_id LIKE 'test-%'
+ORDER BY pipeline_processed_at DESC 
+LIMIT 5;
+```
+
+## Monitoring
+
+### CloudWatch Logs
+
+```bash
+# Lambda 1 (DynamoDB → S3)
+aws logs tail /aws/lambda/chargeminder-dynamodb-stream-processor --follow
+
+# Lambda 2 (S3 → Databricks trigger, if deployed)
+aws logs tail /aws/lambda/chargeminder-s3-databricks-trigger --follow
+```
+
+### Databricks Job
+
+```bash
+# List recent runs
+databricks jobs runs list --job-id YOUR_JOB_ID --limit 5
+
+# Get logs for specific run
+databricks jobs runs get-output --run-id RUN_ID
+```
+
+### Quick Health Check
+
+```bash
+# Check all components
+echo "=== Lambda Functions ==="
+aws lambda list-functions --query 'Functions[?starts_with(FunctionName, `chargeminder`)].FunctionName'
+
+echo "=== S3 Files (last 24 hours) ==="
+aws s3 ls s3://chargeminder-telemetry-raw/telemetry/ --recursive | grep $(date +%Y/%m/%d)
+
+echo "=== Databricks Job Status ==="
+databricks jobs get --job-id YOUR_JOB_ID | jq '.settings.name, .settings.schedule.pause_status'
+```
+
+## Common Issues & Quick Fixes
+
+### Issue 1: No files in S3
+
+**Check**:
+```bash
+# Is Lambda function deployed?
+aws lambda get-function --function-name chargeminder-dynamodb-stream-processor
+
+# Is stream enabled on DynamoDB?
+aws dynamodb describe-table --table-name chargeminder-car-telemetry | grep StreamEnabled
+
+# Check Lambda logs
+aws logs tail /aws/lambda/chargeminder-dynamodb-stream-processor --since 10m
+```
+
+**Fix**: Re-run `lambda/deploy.sh`
+
+### Issue 2: Files in S3 but not in Databricks table
+
+**Check**:
+```bash
+# Is job running?
+databricks jobs runs list --job-id YOUR_JOB_ID --limit 1 --active-only
+
+# Check job logs
+databricks jobs runs get-output --run-id <latest-run-id>
+```
+
+**Fix**: Run job manually: `databricks jobs run-now --job-id YOUR_JOB_ID`
+
+### Issue 3: Permission errors
+
+**Lambda**:
+```bash
+# Check IAM role
+aws iam get-role --role-name lambda-dynamodb-stream-role
+```
+
+**Databricks**:
+- Check instance profile has S3 access
+- Verify Unity Catalog permissions
+
+## Production Checklist
+
+Before going to production:
+
+- [ ] Replace hardcoded credentials with AWS Secrets Manager
+- [ ] Set up CloudWatch alarms for Lambda errors
+- [ ] Configure Databricks job notifications (email/Slack)
+- [ ] Enable S3 versioning and lifecycle policies
+- [ ] Add DLQ (Dead Letter Queue) to Lambdas
+- [ ] Test failover and recovery procedures
+- [ ] Document runbooks for on-call team
+- [ ] Set up cost monitoring and budgets
+
+## Architecture Diagram
+
+```
+┌─────────────────┐
+│   DynamoDB      │
+│  chargeminder-  │
+│ car-telemetry   │
+└────────┬────────┘
+         │ Stream
+         ▼
+┌─────────────────┐
+│   Lambda 1      │ ──┐
+│  Stream Reader  │   │ Writes JSON
+└─────────────────┘   │
+                      ▼
+                ┌──────────┐
+                │    S3    │
+                │   Raw    │
+                └────┬─────┘
+                     │
+         ┌───────────┴──────────┐
+         │                      │
+    Event/Schedule         Archives
+         │                      │
+         ▼                      ▼
+┌─────────────────┐      ┌──────────┐
+│ Databricks Job  │      │    S3    │
+│   Processing    │      │ Archive  │
+└────────┬────────┘      └──────────┘
+         │ Writes
+         ▼
+┌─────────────────┐
+│ Unity Catalog   │
+│car_telemetry_   │
+│   flattened     │
+└─────────────────┘
+```
+
+## Next Steps
+
+1. Monitor for 24 hours to ensure stability
+2. Review CloudWatch metrics and logs
+3. Optimize batch sizes and schedules
+4. Set up data quality monitoring
+5. Document any custom configurations
+6. Train operations team
+
+## Support
+
+- **Lambda Issues**: Check CloudWatch Logs
+- **Databricks Issues**: Check job run logs and cluster logs
+- **S3 Issues**: Verify IAM permissions and bucket policies
+- **Data Quality**: Query Unity Catalog table directly
+
+For assistance, check the full documentation in `PIPELINE_README.md`
