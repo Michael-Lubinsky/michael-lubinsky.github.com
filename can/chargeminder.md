@@ -269,3 +269,95 @@ df_final.show(5, truncate=False)
 
 Copy the whole block into a **Databricks notebook**, replace the three placeholder names (`your_catalog`, `your_schema`, `vehicle_signals`) and you’re done.
   
+Here’s a robust PySpark pattern that flattens your `signals` array and promotes selected fields to **top-level columns** named like `<group>.<name>.<field>` (not nested). It also computes the `status` as you specified.
+
+```python
+from pyspark.sql import functions as F
+
+# --- Helpers --------------------------------------------------------------
+
+def get_sig(group: str, name: str):
+    """
+    Return the first struct in `signals` where s.group==group and s.name==name.
+    If none exists, returns null.
+    """
+    # filter(...) returns an array; element_at(...,1) gets the first element (1-based).
+    return F.element_at(
+        F.expr(f"filter(signals, s -> s.group = '{group}' AND s.name = '{name}')"),
+        1
+    )
+
+def sig_body(sig_col, field: str):
+    return sig_col.getField("body").getField(field)
+
+def sig_meta(sig_col, field: str):
+    return sig_col.getField("meta").getField(field)
+
+def sig_status(sig_col):
+    """
+    If status.value == 'ERROR' -> concat error.type and error.code (skip nulls).
+    If no status or not ERROR -> 'OK'.
+    """
+    status_val = sig_col.getField("status").getField("value")
+    err = sig_col.getField("status").getField("error")
+    err_text = F.concat_ws(":", err.getField("type"), err.getField("code"))
+    return F.when(F.lower(status_val) == F.lit("error"), err_text).otherwise(F.lit("OK"))
+
+# --- Locate the specific signals you care about --------------------------
+
+loc_precise   = get_sig("Location",  "PreciseLocation")
+chg_isCharging = get_sig("Charge",    "IsCharging")
+chg_ttc       = get_sig("Charge",    "TimeToComplete")
+odo_travel    = get_sig("Odometer",  "TraveledDistance")
+
+# --- Build the flattened DataFrame ---------------------------------------
+
+df_flat = df.select(
+    "event_id",
+
+    # Location.PreciseLocation.*
+    sig_body(loc_precise, "locationType").alias("Location.PreciseLocation.locationType"),
+    sig_body(loc_precise, "heading").alias("Location.PreciseLocation.heading"),
+    sig_body(loc_precise, "latitude").alias("Location.PreciseLocation.latitude"),
+    sig_body(loc_precise, "longitude").alias("Location.PreciseLocation.longitude"),
+    sig_body(loc_precise, "direction").alias("Location.PreciseLocation.direction"),
+    sig_meta(loc_precise, "retrievedAt").alias("Location.PreciseLocation.retrievedAt"),
+    sig_meta(loc_precise, "oemUpdatedAt").alias("Location.PreciseLocation.oemUpdatedAt"),
+    sig_status(loc_precise).alias("Location.PreciseLocation.status"),
+
+    # Charge.isCharging (from body.value)
+    sig_body(chg_isCharging, "value").alias("Charge.isCharging"),
+
+    # Charge.TimeToComplete.*
+    sig_body(chg_ttc, "value").alias("Charge.TimeToComplete.value"),
+    sig_body(chg_ttc, "unit").alias("Charge.TimeToComplete.unit"),
+    sig_meta(chg_ttc, "retrievedAt").alias("Charge.TimeToComplete.retrievedAt"),
+    sig_meta(chg_ttc, "oemUpdatedAt").alias("Charge.TimeToComplete.oemUpdatedAt"),
+    sig_status(chg_ttc).alias("Charge.TimeToComplete.status"),
+
+    # Odometer.TraveledDistance.*
+    sig_body(odo_travel, "value").alias("Odometer.TraveledDistance.value"),
+    sig_body(odo_travel, "unit").alias("Odometer.TraveledDistance.unit"),
+    sig_meta(odo_travel, "retrievedAt").alias("Odometer.TraveledDistance.retrievedAt"),
+    sig_meta(odo_travel, "oemUpdatedAt").alias("Odometer.TraveledDistance.oemUpdatedAt"),
+    sig_status(odo_travel).alias("Odometer.TraveledDistance.status"),
+)
+
+# df_flat now has the requested top-level columns.
+```
+
+Notes / gotchas:
+
+* Columns with dots in their names are **top-level** here (not nested). When referencing them later in Spark SQL, you’ll need to quote with backticks, e.g.:
+
+  ```
+  select `Charge.isCharging` from some_table
+  ```
+
+  If you’d rather avoid quoting, replace dots with underscores in the `alias(...)`.
+* The code tolerates missing signals: missing fields become `null`, and `status` defaults to `"OK"` unless `status.value == 'ERROR'`.
+* Your `retrievedAt`/`oemUpdatedAt` remain as `LongType` (ms epoch). If you want timestamps:
+
+  ```python
+  F.to_timestamp((sig_meta(loc_precise,"retrievedAt")/1000).cast("double")).alias("Location.PreciseLocation.retrievedAt_ts")
+  ```
