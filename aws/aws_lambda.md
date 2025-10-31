@@ -1,7 +1,6 @@
 
-### DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
+## DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
  
-──────────────────────────────────────────────────────────────────────────────
 1) High-level flow
 
 DynamoDB table (Streams = NEW_AND_OLD_IMAGES)
