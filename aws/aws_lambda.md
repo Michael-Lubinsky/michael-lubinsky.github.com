@@ -721,4 +721,79 @@ Tips
 [ ] Create Unity table and validate dedupe/idempotency  
 [ ] Add DLQ + CloudWatch alarms + cost/logging dashboards
 ```
+Short answer: NO, you don’t have to use 2 Lambdas — one Lambda right off the DynamoDB Stream can write straight to S3 and that’s enough for Databricks Auto Loader.
+
+But… sometimes people deliberately split it into 2. Here’s when.
+
+──────────────────────────────────────────────────────────────────────────────
+Pattern A (most common): 1 Lambda is enough
+DynamoDB Stream → (event source mapping) → Lambda → S3 → Databricks
+
+What Lambda does:
+1. Read stream batch (INSERT/MODIFY/REMOVE)
+2. Normalize/flatten to your target JSON shape
+3. Buffer N records / M seconds
+4. Write 1 object to S3 (ndjson.gz or parquet)
+5. Done
+
+Databricks then:
+- Auto Loader reads S3
+- foreachBatch MERGE into Unity
+- Handles deletes based on `_eventName` or `is_deleted`
+
+Use this if:
+- Transform is light (rename fields, make sure pk/sk/updated_at exist)
+- You don’t need to call other services per record
+- You’re fine with the stream → S3 latency that this single Lambda gives
+
+This is the design I described in the previous message.
+
+──────────────────────────────────────────────────────────────────────────────
+Pattern B (sometimes better): 2 Lambdas
+1) DynamoDB Stream → Lambda #1 → S3 (raw-ish, minimal, lossless)
+2) S3 (PutObject event) → Lambda #2 → S3 (curated) or → something else
+
+Why do 2?
+- You want Lambda #1 to be ultra-simple and **never fail** (just dump the stream to S3 as-is).
+- You want a **separate place** to do heavier or more fragile logic (schema mapping, enrichment, calling APIs) so that stream consumption doesn’t get stuck.
+- You want **raw immutable** S3 (landing) + **processed** S3 (curated) like a mini data lake:
+  - s3://bucket/landing/ddb/...
+  - s3://bucket/curated/ddb/...
+- You want to **reprocess** older files without replaying the DynamoDB Stream (just re-trigger Lambda #2 on S3 objects).
+- You need **different IAM** or **different timeout/memory** for the heavy part.
+
+So:
+- Lambda #1: tiny, fast, 128–256 MB, 3–5s timeout → “just write the file”
+- Lambda #2: bigger, can run longer, can call other services, can produce Parquet / normalized schema
+
+Databricks can then read either:
+- directly from curated/ (Lambda #2 output), or
+- directly from landing/ (if the raw format is already fine)
+
+──────────────────────────────────────────────────────────────────────────────
+Pattern C (no second Lambda, let Databricks do all transforms)
+DynamoDB Stream → Lambda → S3 (raw) → Databricks (all transforms, MERGE)
+
+This is also perfectly fine. In fact, if your Databricks job is already doing business transforms in PySpark, keeping Lambda thin is a good idea. That’s probably the best fit for you, since you already plan to “transform it using PySpark”.
+
+──────────────────────────────────────────────────────────────────────────────
+How to decide
+
+Use 1 Lambda if:
+- You control the stream schema
+- You only need light normalization
+- You trust Databricks to do all business logic
+- You want fewer moving parts
+
+Consider 2 Lambdas if:
+- You want a guaranteed raw copy in S3
+- You expect schema to change often and want to reprocess old files
+- You need heavier logic than is comfortable in the stream Lambda
+- You need to fan out (write to S3 + send to SNS, etc.)
+
+──────────────────────────────────────────────────────────────────────────────
+What I’d tell your team
+“We can start with **one** Lambda (DDB Stream → S3). If later we see we need a stable raw zone or heavier transforms we can add a **second** Lambda that’s triggered by S3. Databricks stays the same.”
+
+If you show me the exact DDB item shape (pk/sk or id + updated_at) I can give you the minimal single-Lambda code that lands exactly what Auto Loader wants.
 
