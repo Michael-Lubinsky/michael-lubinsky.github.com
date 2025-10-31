@@ -175,11 +175,10 @@ You have several options:
 * [ ] (Optional but recommended) Convert to a single **streaming** job instead of per-minute batch
 
  
-Excellent question — this is a **very common limitation** in Databricks.
-You’re right that **Databricks notebook scheduling (via the UI)** only supports hourly, daily, or weekly intervals — not per-minute execution.
-However, you can achieve **every-minute runs** using one of several supported patterns depending on how flexible you want the setup to be.
+  **Databricks notebook scheduling (via the UI)** only supports hourly, daily, or weekly intervals — not per-minute execution.
 
----
+# How to achieve **every-minute runs** :  several  patterns  
+ 
 
 ## 🧭 1. Use a Databricks **Job** with a cron schedule
 
