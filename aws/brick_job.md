@@ -310,3 +310,278 @@ only new recors:   max(updated_at) will be passed as argument to  tab.query()
 Option 2: DynamoDB Streams (Change Data Capture)
 ----------------------------------------------
 AWS Lambda ->  S3 -> Databricks
+
+
+ 
+Here’s a pragmatic comparison + a concrete reference design for a near-real-time (sub-minute to a few minutes) DynamoDB → PySpark → Unity Catalog pipeline. I’ll keep it punchy and actionable.
+
+──────────────────────────────────────────────────────────────────────────────
+- If you want “robust + low-ops + ~1–2 min latency”: **Use DynamoDB Streams → (EventBridge Pipes or Kinesis Firehose) → S3 → Databricks Auto Loader → Delta/Unity**. This is the sweet spot for cost, reliability, and simplicity.
+- If volume is small and you need a quick start with minute polling: **Use a GSI on (tenant, updated_at)** and batch pull with a persisted cursor + idempotent MERGE into Delta.
+- If you truly need sub-second to tens-of-seconds latency without an S3 landing zone: **Streams → Kinesis Data Streams → Databricks Structured Streaming**, but this adds complexity.
+
+──────────────────────────────────────────────────────────────────────────────
+Option 1 — Direct DynamoDB table access (batch pulls via GSI)
+Good for: low/medium volume, simple ops, minute-level cadence.
+
+Design
+1) Model your GSI carefully:
+   - **Partition key (HASH)**: something selective you can query per batch, e.g. tenant/account/org_id (or a fixed bucket key if global).
+   - **Sort key (RANGE)**: updated_at (ISO-8601 or epoch millis).
+   - If you have many tenants, you’ll query per tenant; otherwise shard into a small set of buckets (e.g. pk = “bucket#00..99”) so queries are bounded.
+
+2) Pull pattern:
+   - Keep a persistent cursor per (partition key) = **last_processed_updated_at** in a tiny Delta “state” table.
+   - Query GSI with `KeyConditionExpression: pk=:tenant AND updated_at BETWEEN :cursor AND :cursor + window`.
+   - **Paginate** (1 MB limit/page) and **backoff** on throttling (RCU).
+   - Allow **overlap** (e.g., re-read last 1–2 minutes) to tolerate clock skew & eventual consistency; dedupe with MERGE on primary keys.
+
+3) Write pattern (idempotent):
+   - Stage incoming micro-batch to a temp Delta table / view, then **MERGE** into your Unity table on (pk, sort_key) or a true unique id.
+
+Pros
+- Simple to reason about, no extra AWS infra required.
+- Easy to backfill: just move the cursor back.
+
+Cons & gotchas
+- You must manage cursor, retries, and dedupe yourself.
+- Hot partitions possible if updated_at is monotonically increasing and the GSI partition key is too coarse (watch RCU).
+- Deletes and TTL expirations won’t be seen unless you model soft-deletes or do periodic reconciliations.
+
+Code sketch (Databricks notebook, using your provided credential handle)
+- Assumes your admin exposed AWS creds via `dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds")`.
+- Replace `TENANT_IDS` with your partition keys or iterate all tenants you own.
+
+from pyspark.sql import functions as F
+
+# 1) Read state (last processed updated_at per tenant)
+state_tbl = "hcai_databricks_dev.chargeminder2.ddb_state"   # tenant, last_ts
+spark.sql(f"""
+CREATE TABLE IF NOT EXISTS {state_tbl} (
+  tenant STRING,
+  last_ts BIGINT
+) USING DELTA
+""")
+
+def get_boto3():
+    import boto3
+    sess = boto3.Session(
+        botocore_session=dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds"),
+        region_name="us-east-1"
+    )
+    return sess.resource("dynamodb"), sess.client("dynamodb")
+
+table_name = "your_ddb_table"
+gsi_name   = "tenant_updated_at_gsi"   # HASH = tenant, RANGE = updated_at
+
+TENANT_IDS = ["tenantA","tenantB"]     # or discover/maintain this list elsewhere
+MAX_LAG_MS = 120000                    # re-read last 2 minutes for overlap
+
+ddb_resource, ddb_client = get_boto3()
+tbl = ddb_resource.Table(table_name)
+
+import time, decimal
+now_ms = int(time.time() * 1000)
+
+rows = []
+for tenant in TENANT_IDS:
+    last = spark.table(state_tbl).where(F.col("tenant")==tenant).limit(1).collect()
+    last_ts = last[0]["last_ts"] if last else (now_ms - 3600_000)  # default: 1 hour back for first run
+    start_ts = max(0, last_ts - MAX_LAG_MS)
+    kwargs = {
+        "IndexName": gsi_name,
+        "KeyConditionExpression": "#t = :tenant AND #u BETWEEN :from AND :to",
+        "ExpressionAttributeNames": {"#t":"tenant", "#u":"updated_at"},
+        "ExpressionAttributeValues": {":tenant": tenant, ":from": start_ts, ":to": now_ms},
+        "Limit": 1000
+    }
+    while True:
+        resp = tbl.query(**kwargs)
+        for item in resp.get("Items", []):
+            rows.append(item)
+        if "LastEvaluatedKey" not in resp:
+            break
+        kwargs["ExclusiveStartKey"] = resp["LastEvaluatedKey"]
+
+# Convert to Spark (handle Decimal)
+def to_native(o):
+    import decimal
+    if isinstance(o, decimal.Decimal):
+        return float(o)
+    if isinstance(o, dict):
+        return {k: to_native(v) for k,v in o.items()}
+    if isinstance(o, list):
+        return [to_native(v) for v in o]
+    return o
+
+clean = [to_native(r) for r in rows]
+df = spark.createDataFrame(clean) if clean else spark.createDataFrame([], "tenant STRING")  # empty safe
+
+# 2) Transform with PySpark
+transformed = (
+    df
+    # .withColumn(...)  # your business transforms
+)
+
+# 3) Upsert into UC Delta table
+target_tbl = "hcai_databricks_dev.chargeminder2.fact_events"
+
+spark.sql(f"""
+CREATE TABLE IF NOT EXISTS {target_tbl} (
+  tenant STRING,
+  id STRING,
+  updated_at BIGINT,
+  -- other columns...
+  _ingest_ts TIMESTAMP
+) USING DELTA TBLPROPERTIES (delta.enableChangeDataFeed = true)
+""")
+
+transformed = transformed.withColumn("_ingest_ts", F.current_timestamp())
+
+transformed.createOrReplaceTempView("stage_incoming")
+
+spark.sql(f"""
+MERGE INTO {target_tbl} t
+USING (SELECT * FROM stage_incoming) s
+ON t.tenant = s.tenant AND t.id = s.id
+WHEN MATCHED AND s.updated_at >= t.updated_at THEN UPDATE SET *
+WHEN NOT MATCHED THEN INSERT *
+""")
+
+# 4) Advance state cautiously (set to the max obs updated_at in this batch)
+if clean:
+    import numpy as np
+    by_tenant = (
+        spark.table("stage_incoming")
+        .groupBy("tenant").agg(F.max("updated_at").alias("max_ts"))
+        .collect()
+    )
+    for r in by_tenant:
+        spark.sql(f"""
+        MERGE INTO {state_tbl} dst
+        USING (SELECT '{r['tenant']}' AS tenant, {int(r['max_ts'])} AS last_ts) s
+        ON dst.tenant = s.tenant
+        WHEN MATCHED THEN UPDATE SET dst.last_ts = GREATEST(dst.last_ts, s.last_ts)
+        WHEN NOT MATCHED THEN INSERT *
+        """)
+
+Notes
+- If you have deletes, propagate a tombstone flag and handle it in MERGE (DELETE WHEN MATCHED AND s.is_deleted = true).
+- Batch schedule: Databricks Job every 1–5 minutes is reasonable. Avoid per-minute if you expect large scans—tune to your RCU & batch size.
+
+──────────────────────────────────────────────────────────────────────────────
+Option 2 — DynamoDB Streams (CDC) → S3 → Databricks Auto Loader
+Good for: “hands-off” CDC with ordered updates per partition key (+ low ops).
+
+Design
+1) Enable **DynamoDB Streams** on the table with **New and old images** (or at least New image).
+2) Wire up one of:
+   A) **EventBridge Pipes**: Source= DynamoDB Streams → Target= Kinesis Firehose (or S3) with optional input transform (Lambda or Enrichment).  
+   B) **Lambda consumer** for Streams → batch to S3 (Parquet/JSON) in small files (e.g., 5–50 MB).
+   C) Streams → **Kinesis Data Streams** (via adapter) → **Kinesis Data Firehose** → S3.
+
+3) Land to **S3** with sensible partitioning: `s3://bucket/ddb/table_name/dt=YYYY-MM-dd/HH=HH/` and gzip/snappy parquet if you can.
+4) **Databricks Auto Loader** reads the S3 path continuously and appends to a Delta table in Unity Catalog.
+5) Do your PySpark transforms inline (Structured Streaming) and **MERGE for upserts** (using foreachBatch with MERGE).
+
+Pros
+- At-least-once CDC with built-in ordering per partition key from Streams.
+- No cursor management in your code; retries handled by AWS service (Lambda/Firehose).
+- Auto Loader handles schema inference/evolution + backpressure + exactly-once sink semantics (with Delta).
+
+Cons & gotchas
+- Slightly more AWS wiring (Streams + Pipes/Firehose or Lambda).
+- You still need to MERGE to handle upserts (new images) & deletes (remove from Delta).
+
+Auto Loader sketch (S3 JSON payloads with “Image”)
+from pyspark.sql import functions as F
+
+source_path = "s3://your-bucket/ddb/your-table/"
+checkpoint = "s3://your-bucket/_checkpoints/your-table-stream"
+schema_loc = "s3://your-bucket/_schemas/your-table-stream"
+
+raw = (
+  spark.readStream
+       .format("cloudFiles")
+       .option("cloudFiles.format", "json")
+       .option("cloudFiles.inferColumnTypes", "true")
+       .option("cloudFiles.schemaLocation", schema_loc)
+       .load(source_path)
+)
+
+# Unwrap DDB stream record if needed (structure depends on your Lambda/Firehose transform)
+# Example assumes payload like: {"eventName":"INSERT","dynamodb":{"NewImage": {...}, "Keys": {...}, "ApproximateCreationDateTime": 169...}}
+df = raw  # apply select/transform to flatten NewImage → columns
+
+# Your business transform(s)
+tx = (
+  df
+  # .withColumn(...)
+  .withColumn("_ingest_ts", F.current_timestamp())
+)
+
+target_tbl = "hcai_databricks_dev.chargeminder2.fact_events"
+
+def upsert_batch(micro_batch_df, batch_id: int):
+    micro_batch_df.createOrReplaceTempView("incoming")
+    spark.sql(f"""
+    MERGE INTO {target_tbl} t
+    USING (SELECT * FROM incoming) s
+    ON t.tenant = s.tenant AND t.id = s.id
+    WHEN MATCHED AND s.updated_at >= t.updated_at THEN UPDATE SET *
+    WHEN NOT MATCHED THEN INSERT *
+    """)
+    # Optional: handle DELETE records: issue DELETE WHERE pk IN (...) for those eventName='REMOVE'
+
+(
+  tx.writeStream
+    .option("checkpointLocation", checkpoint)
+    .trigger(processingTime="30 seconds")   # adjust: “availableNow” for catch-ups or “continuous” for low latency
+    .foreachBatch(upsert_batch)
+    .start()
+)
+
+Notes
+- For deletions (`eventName='REMOVE'`), either land a tombstone record (is_deleted=true) in S3 and handle in MERGE, or run a post-upsert DELETE step for those keys inside `foreachBatch`.
+- Use **DLT** (Delta Live Tables) if you want managed expectations/quality & lineage.
+
+──────────────────────────────────────────────────────────────────────────────
+Option 3 — DMS (full + CDC) → S3 → Auto Loader / DLT
+- DMS supports DynamoDB → S3 with CDC. Good for full backfills + ongoing changes with minimal code.
+- Trade-offs: DMS operational overhead and cost; still end at S3 → Delta with same downstream transform.
+
+──────────────────────────────────────────────────────────────────────────────
+Option 4 — Streams → Kinesis Data Streams → Databricks streaming (no S3)
+- Lowest latency (seconds), but you’ll need the Spark Kinesis connector + KCL adapter for DynamoDB Streams or a Lambda bridge to Kinesis.
+- More moving parts; often not necessary unless strict real-time is required.
+
+──────────────────────────────────────────────────────────────────────────────
+Security & credentials (Databricks on AWS)
+- For **Serverless** compute, your workspace typically has a **Serverless Access Role**. To call DynamoDB directly (Option 1) from a notebook:
+  - If your admin gave you **“chargeminder-dynamodb-creds”**, use `dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds")` with `boto3.Session(botocore_session=..., region_name=...)` exactly as in the sketch above.
+  - Make sure that role grants: `dynamodb:DescribeTable`, `Query` (and/or `Scan` if used), and if Streams path: `dynamodb:DescribeStream`, `GetShardIterator`, `GetRecords`.
+- For **S3 landing** (Options 2–3), prefer **Kinesis Firehose** or **Lambda** to write into an S3 prefix that your Unity Catalog external location / storage credential can read. Auto Loader needs `s3:GetObject`, `ListBucket` on that prefix.
+
+──────────────────────────────────────────────────────────────────────────────
+Data modeling & correctness checklist
+- **Primary key**: have a deterministic id (pk, sk) or a composite key you can use in MERGE.
+- **Event time**: keep source `updated_at` and a `_ingest_ts`. Use watermarks if you do any time-based aggregates later.
+- **Idempotency**: ALL sinks must be idempotent. Always MERGE on keys with `updated_at` guard.
+- **Ordering**: Streams preserve order per partition key; batch pulls do not—MERGE with a “latest-wins” rule.
+- **Deletes**: Either soft-delete in DynamoDB and propagate a tombstone, or consume `REMOVE` from Streams and translate to Delta DELETE.
+- **Schema evolution**: With Auto Loader, use `cloudFiles.schemaLocation` and set `spark.databricks.cloudFiles.schemaEvolutionMode` = “addNewColumns” if needed.
+- **Backfills**: For Option 2, drop historical exports in S3 under the same prefix and run Auto Loader with `availableNow`. For Option 1, rewind the cursor and reprocess (MERGE makes it safe).
+
+──────────────────────────────────────────────────────────────────────────────
+What I recommend for you
+Given your stack (Unity Catalog, PySpark, minute-ish SLAs, desire to keep ops light):
+1) **Enable DynamoDB Streams** with New Images.  
+2) **EventBridge Pipes → Kinesis Firehose → S3 (Parquet, snappy, 64–256 MB)**, partitioned by date/hour.  
+3) **Databricks Auto Loader (Structured Streaming)** to transform and **MERGE** into `hcai_databricks_dev.chargeminder2.<your_table>`.  
+4) Use a **DLT pipeline** if you want managed expectations and cleaner ops.  
+5) Keep a tiny “dead-letter” S3 prefix for records that fail transformation and alert on it.
+
+If you need to start today and test quickly with small volumes, begin with **Option 1 (GSI pull)** using the sample code, then graduate to Streams → S3 → Auto Loader once you’re happy with the transform and table contract.
+
+If you want, tell me your expected TPS, item size, tenants/partitioning model, and latency goal, and I’ll size the RCU/Throughput, Firehose buffer hints, and Auto Loader trigger/checkpoint settings precisely.
+```
