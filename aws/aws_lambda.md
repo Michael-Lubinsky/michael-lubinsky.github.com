@@ -1,4 +1,352 @@
 
+## DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
+ 
+```
+----------------------------------------------------------------------
+HIGH-LEVEL FLOW
+----------------------------------------------------------------------
+1) DynamoDB Stream (on chargeminder-car-telemetry) emits INSERT/MODIFY/REMOVE.
+2) Lambda (Python) is triggered by the stream, converts records to JSON Lines.
+3) Lambda writes gzip’d batches to S3 in a partitioned layout:
+   s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/ingest_dt=YYYY-MM-DD/hour=HH/part-<ts>-<uuid>.json.gz
+4) Databricks Auto Loader continuously ingests from that prefix into a Bronze Delta table.
+5) Optional: add a DLQ (SQS) and CloudWatch alarms.
+
+----------------------------------------------------------------------
+PREREQS
+----------------------------------------------------------------------
+A) Stream enabled on the table (view type often: NEW_AND_OLD_IMAGES).
+B) An IAM role for Lambda with:
+   - dynamodb:DescribeStream, GetShardIterator, GetRecords, ListStreams (read the stream)
+   - s3:PutObject (+ s3:AbortMultipartUpload, s3:PutObjectAcl if needed) into your bucket/prefix
+   - logs:* for CloudWatch logging
+
+C) S3 bucket policy allowing that role to PutObject to the target prefix (least privilege).
+
+----------------------------------------------------------------------
+IAM: LAMBDA EXECUTION ROLE (TRUST POLICY)
+----------------------------------------------------------------------
+```
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LambdaAssume",
+      "Effect": "Allow",
+      "Principal": { "Service": "lambda.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+----------------------------------------------------------------------
+IAM: LAMBDA PERMISSIONS POLICY (ATTACH TO THE ROLE ABOVE)
+----------------------------------------------------------------------
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DdbStreamRead",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:DescribeStream",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:ListStreams"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3WriteRaw",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::chargeminder-2",
+        "arn:aws:s3:::chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/*"
+      ]
+    },
+    {
+      "Sid": "Logs",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+----------------------------------------------------------------------
+OPTIONAL: S3 BUCKET POLICY (IF YOU WANT TO LIMIT PUTS TO THE LAMBDA ROLE)
+----------------------------------------------------------------------
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowLambdaPutsToRaw",
+      "Effect": "Allow",
+      "Principal": { "AWS": "arn:aws:iam::<ACCOUNT_ID>:role/<YourLambdaRoleName>" },
+      "Action": ["s3:PutObject","s3:AbortMultipartUpload"],
+      "Resource": "arn:aws:s3:::chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/*"
+    }
+  ]
+}
+```
+----------------------------------------------------------------------
+LAMBDA: PYTHON RUNTIME (3.11+), HANDLER: app.lambda_handler
+----------------------------------------------------------------------
+
+# file: app.py
+```python
+import base64
+import gzip
+import io
+import json
+import os
+import time
+import uuid
+from datetime import datetime, timezone
+
+import boto3
+from boto3.dynamodb.types import TypeDeserializer
+
+S3_BUCKET = os.environ.get("S3_BUCKET", "chargeminder-2")
+S3_PREFIX = os.environ.get(
+    "S3_PREFIX",
+    "raw/dynamodb/chargeminder-car-telemetry"
+)
+
+s3 = boto3.client("s3")
+deser = TypeDeserializer()
+
+def _ddb_val_to_py(attr):
+    # Convert DynamoDB AttributeValue to native Python via TypeDeserializer
+    # attr is like {"S":"x"} or {"N":"1"} or {"M":{...}} etc.
+    return deser.deserialize(attr)
+
+def _record_to_json_line(rec):
+    # Build a CDC-like envelope for downstream processing
+    event_name = rec["eventName"]  # INSERT | MODIFY | REMOVE
+    event_id = rec["eventID"]
+    approx_ts_ms = rec["dynamodb"].get("ApproximateCreationDateTime")
+    # AWS provides seconds as float; normalize to ms int if present
+    if isinstance(approx_ts_ms, (int, float)):
+        approx_ts_ms = int(approx_ts_ms * 1000)
+
+    new_image = rec["dynamodb"].get("NewImage")
+    old_image = rec["dynamodb"].get("OldImage")
+
+    new_obj = {k: _ddb_val_to_py(v) for k, v in (new_image or {}).items()}
+    old_obj = {k: _ddb_val_to_py(v) for k, v in (old_image or {}).items()}
+
+    out = {
+        "event_name": event_name,
+        "event_id": event_id,
+        "approx_creation_time_ms": approx_ts_ms,
+        "keys": {k: _ddb_val_to_py(v) for k, v in rec["dynamodb"].get("Keys", {}).items()},
+        "new_image": new_obj if new_obj else None,
+        "old_image": old_obj if old_obj else None,
+        "sequence_number": rec["dynamodb"].get("SequenceNumber"),
+        "size_bytes": rec["dynamodb"].get("SizeBytes"),
+        "source_table": os.environ.get("TABLE_NAME", "chargeminder-car-telemetry")
+    }
+    return json.dumps(out, separators=(",", ":"), ensure_ascii=False)
+
+def lambda_handler(event, context):
+    # event["Records"] is a batch from a single shard
+    lines = []
+    for r in event.get("Records", []):
+        # Kinesis-style records have base64; DynamoDB Streams already decoded body is in r["dynamodb"]
+        if r.get("eventSource") != "aws:dynamodb":
+            continue
+        lines.append(_record_to_json_line(r))
+
+    if not lines:
+        return {"status": "empty"}
+
+    # Partition by UTC date/hour of Lambda write time (ingest time partitioning)
+    now = datetime.now(timezone.utc)
+    dstr = now.strftime("%Y-%m-%d")
+    hstr = now.strftime("%H")
+
+    body_bytes = ("\n".join(lines)).encode("utf-8")
+    buf = io.BytesIO()
+    with gzip.GzipFile(fileobj=buf, mode="wb") as gz:
+        gz.write(body_bytes)
+    gz_bytes = buf.getvalue()
+
+    key = f"{S3_PREFIX}/ingest_dt={dstr}/hour={hstr}/part-{int(time.time()*1000)}-{uuid.uuid4().hex}.json.gz"
+
+    s3.put_object(
+        Bucket=S3_BUCKET,
+        Key=key,
+        Body=gz_bytes,
+        ContentEncoding="gzip",
+        ContentType="application/json"
+    )
+
+    return {"status": "ok", "count": len(lines), "s3_key": key}
+```
+
+----------------------------------------------------------------------
+LAMBDA ENV VARS
+----------------------------------------------------------------------
+TABLE_NAME=chargeminder-car-telemetry
+S3_BUCKET=chargeminder-2
+S3_PREFIX=raw/dynamodb/chargeminder-car-telemetry
+
+----------------------------------------------------------------------
+EVENT SOURCE MAPPING (CONNECT LAMBDA TO THE STREAM)
+----------------------------------------------------------------------
+```bash
+# 1) Get the stream ARN (example CLI)
+aws dynamodb describe-table \
+  --table-name chargeminder-car-telemetry \
+  --query "Table.LatestStreamArn" \
+  --output text
+
+# 2) Create mapping
+aws lambda create-event-source-mapping \
+  --function-name <YourLambdaName> \
+  --event-source <LATEST_STREAM_ARN_FROM_ABOVE> \
+  --starting-position LATEST \
+  --batch-size 100 \
+  --maximum-batching-window-in-seconds 1
+```
+# Notes:
+# - Batch size up to 1000 is allowed; 100–500 is typical.
+# - maximum-batching-window-in-seconds (0–300) can trade latency vs. S3 object count.
+
+----------------------------------------------------------------------
+RELIABILITY / OPERATIONS
+----------------------------------------------------------------------
+• Retries & DLQ:
+  - Configure Lambda on-failure destination to SQS or use an SQS DLQ.
+  - Set maximum retry attempts on the event source mapping (bisect on function error if needed).
+
+• Idempotency:
+  - Downstream is at-least-once. The Lambda writes new object names (timestamp + uuid) so S3 side is naturally idempotent for append-only raw.
+  - Deduplicate later using a stable key (e.g., event_id or primary key + sequence_number) in Silver.
+
+• Ordering:
+  - Ordering is guaranteed per shard; not across shards. Auto Loader should not assume global order.
+
+• Re-sharding:
+  - Streams can re-shard; Lambda mapping handles this automatically.
+
+----------------------------------------------------------------------
+DATABRICKS: AUTO LOADER (BRONZE INGEST)
+----------------------------------------------------------------------
+-- Python in a Databricks notebook (Serverless or classic cluster)
+
+```python
+from pyspark.sql.functions import col, to_timestamp, from_unixtime
+
+raw_path = "s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry"
+checkpoint = "s3://chargeminder-2/_checkpoints/auto-loader/chargeminder-car-telemetry-bronze"
+
+df = (spark.readStream
+      .format("cloudFiles")
+      .option("cloudFiles.format", "json")
+      .option("cloudFiles.inferColumnTypes", "true")
+      .option("cloudFiles.includeExistingFiles", "true")
+      .option("cloudFiles.validateOptions", "false")
+      .load(raw_path))
+
+# Optional: normalize time fields
+# df = df.withColumn("approx_creation_time",
+#                    to_timestamp(from_unixtime((col("approx_creation_time_ms")/1000).cast("double"))))
+
+(df.writeStream
+   .option("checkpointLocation", checkpoint)
+   .option("mergeSchema", "true")
+   .trigger(processingTime="1 minute")
+   .format("delta")
+   .outputMode("append")
+   .toTable("hcai_databricks_dev.chargeminder2.bronze_car_telemetry_cdc"))
+```
+# Notes:
+# - Ensure your workspace/cluster has access to the S3 bucket (instance profile / assumed role).
+# - If you prefer to keep it entirely path-based instead of Unity catalog table, use .start("s3://.../delta/bronze/...").
+
+----------------------------------------------------------------------
+TYPICAL SILVER TRANSFORM (DEDUP + LATEST IMAGE PER KEY)
+----------------------------------------------------------------------
+-- Example idea (Delta SQL), adjust keys/columns to your table
+-- Deduplicate CDC events by (keys, sequence_number) and pick latest per key.
+-- For MODIFY/INSERT, prefer new_image; for REMOVE, you can tombstone.
+
+-- Pseudocode sketch:
+
+```sql
+
+CREATE OR REPLACE TABLE hcai_databricks_dev.chargeminder2.silver_car_telemetry AS
+SELECT * FROM (
+  SELECT
+    COALESCE(new_image.pk, old_image.pk) AS pk,  -- replace with your primary key(s)
+    event_name,
+    event_id,
+    sequence_number,
+    approx_creation_time_ms,
+    new_image,
+    old_image,
+    ROW_NUMBER() OVER (PARTITION BY COALESCE(new_image.pk, old_image.pk)
+                       ORDER BY CAST(sequence_number AS BIGINT) DESC) AS rn
+  FROM hcai_databricks_dev.chargeminder2.bronze_car_telemetry_cdc
+)
+WHERE rn = 1;
+```
+----------------------------------------------------------------------
+VALIDATION / SMOKE TESTS
+----------------------------------------------------------------------
+• Put a test item into the table and confirm a new object arrives in:
+  s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/ingest_dt=YYYY-MM-DD/hour=HH/
+
+• In Databricks:  
+  SELECT COUNT(*) FROM hcai_databricks_dev.chargeminder2.bronze_car_telemetry_cdc;
+
+• CloudWatch Logs for Lambda should show batch counts and s3_key.
+
+----------------------------------------------------------------------
+KNOBS YOU CAN TUNE
+----------------------------------------------------------------------
+• Lambda batch-size: 100–500 strikes a balance between latency and S3 object overhead.
+• Maximum batching window: 0–5s for “near real-time”; increase for fewer objects.
+• Compression: gzip (default here). You can switch to snappy or write Parquet in Lambda if you want schema-on-write (requires pyarrow).
+• Partitioning: ingest time (as shown) is robust; if you have a stable “event time” field, you can partition on that instead.
+
+----------------------------------------------------------------------
+ALTERNATIVES (WHEN THROUGHPUT OR SCHEMA EVOLUTION DEMANDS GROW)
+----------------------------------------------------------------------
+• Streams → Kinesis Data Streams → Kinesis Data Firehose → S3 (managed fan-out, buffering, Parquet conversion).
+• DynamoDB TTL + Export to S3 (bulk, not streaming).
+• Direct Databricks Autoloader on S3 (this design) vs. pushing into Kafka/MSK if you need multi-consumer fan-out.
+
+----------------------------------------------------------------------
+NEXT STEPS (SPECIFIC TO YOUR RESOURCES)
+----------------------------------------------------------------------
+1) Create/confirm the Lambda role using the JSON above (replace <ACCOUNT_ID>, <YourLambdaRoleName>).
+2) Deploy the Lambda with app.py and set ENV:
+   TABLE_NAME=chargeminder-car-telemetry
+   S3_BUCKET=chargeminder-2
+   S3_PREFIX=raw/dynamodb/chargeminder-car-telemetry
+3) Create the event source mapping to the table’s LatestStreamArn (starting-position LATEST).
+4) In Databricks, run the Auto Loader cell and confirm the Bronze table starts growing.
+
+If you want, paste your current IAM role names/ARNs and I’ll tailor the policy documents exactly to your account and your Databricks access pattern (serverless vs. classic cluster).
+```
+
 ## DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
 ``` 
 1) High-level flow
