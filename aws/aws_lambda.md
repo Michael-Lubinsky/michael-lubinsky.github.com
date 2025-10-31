@@ -1,6 +1,6 @@
 
 ## DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
- 
+``` 
 1) High-level flow
 
 DynamoDB table (Streams = NEW_AND_OLD_IMAGES)
@@ -45,7 +45,7 @@ Lambda execution role needs:
 - CloudWatch Logs
 - Read from the stream (granted automatically via event source mapping on the table or explicitly)
 - Write to S3 prefix
-
+```
 Example policy statements to attach to the Lambda role (adjust ARNs):
 ```json
 {
@@ -82,7 +82,7 @@ Example policy statements to attach to the Lambda role (adjust ARNs):
 ```
 ──────────────────────────────────────────────────────────────────────────────
 5) Lambda: Python handler (Streams → S3)
-
+```
 Two common file formats:
 
 (A) **NDJSON.gz** (newline-delimited JSON, gzipped)
@@ -94,8 +94,8 @@ Two common file formats:
 - Requires schema control; good once your schema stabilizes.
 
 Below is **NDJSON.gz** variant with robust deserialization, batching, partitioning and minimal transform:
-
-# lambda_function.py
+```
+### File lambda_function.py
 ```python
 import base64
 import boto3
@@ -226,13 +226,15 @@ def handler(event, context):
     return {"status": "ok"}
 ```
 Environment variables to set on Lambda:
+```
 - S3_BUCKET=your-bucket
 - S3_PREFIX=ddb/your_table
 - MAX_RECORDS=2000
 - MAX_PAYLOAD_BYTES=8000000
 - MAX_SECONDS=15
-
+```
 Notes
+```
 - This writes GZIPed NDJSON. If you prefer Parquet, use pyarrow fastparquet (bundle as Lambda layer or container image) and write .parquet with robust schema mapping.
 - NDJSON works great with Auto Loader; you can later switch to Parquet after schema stabilizes.
 
@@ -256,6 +258,7 @@ The NDJSON above encodes `_eventName`. In Databricks you can branch on it.
 7) Databricks Auto Loader (Structured Streaming)
 
 Spark (Python) sketch consuming NDJSON.gz:
+```
 ```python
 from pyspark.sql import functions as F
 
@@ -324,6 +327,7 @@ def upsert_batch(micro_df, batch_id: int):
 )
 ```
 Tips
+```
 - If you want simpler logic, store upserts and deletes in two separate prefixes from Lambda (e.g., ddb/your_table/upserts/..., ddb/your_table/deletes/...) and have two streams.
 - Use `availableNow` to catch up large backfills without leaving a running cluster.
 
@@ -368,5 +372,5 @@ Tips
 [ ] Create Auto Loader notebook/Job with foreachBatch MERGE+DELETE  
 [ ] Create Unity table and validate dedupe/idempotency  
 [ ] Add DLQ + CloudWatch alarms + cost/logging dashboards
-
+```
 
