@@ -16,6 +16,7 @@
 
 Book: how to build API <https://habr.com/ru/articles/921008/>
 
+https://habr.com/ru/companies/bhv_publishing/articles/961570/
 
 https://habr.com/ru/companies/psb/articles/949246/
 
