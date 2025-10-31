@@ -224,9 +224,9 @@ aws lambda create-event-source-mapping \
   --batch-size 100 \
   --maximum-batching-window-in-seconds 1
 ```
-# Notes:
-# - Batch size up to 1000 is allowed; 100–500 is typical.
-# - maximum-batching-window-in-seconds (0–300) can trade latency vs. S3 object count.
+### Notes:
+ - Batch size up to 1000 is allowed; 100–500 is typical.  
+ - maximum-batching-window-in-seconds (0–300) can trade latency vs. S3 object count.  
 
 ----------------------------------------------------------------------
 RELIABILITY / OPERATIONS
@@ -276,9 +276,9 @@ df = (spark.readStream
    .outputMode("append")
    .toTable("hcai_databricks_dev.chargeminder2.bronze_car_telemetry_cdc"))
 ```
-# Notes:
-# - Ensure your workspace/cluster has access to the S3 bucket (instance profile / assumed role).
-# - If you prefer to keep it entirely path-based instead of Unity catalog table, use .start("s3://.../delta/bronze/...").
+### Notes:
+ - Ensure your workspace/cluster has access to the S3 bucket (instance profile / assumed role).  
+ - If you prefer to keep it entirely path-based instead of Unity catalog table, use .start("s3://.../delta/bronze/...").
 
 ----------------------------------------------------------------------
 TYPICAL SILVER TRANSFORM (DEDUP + LATEST IMAGE PER KEY)
@@ -345,7 +345,7 @@ NEXT STEPS (SPECIFIC TO YOUR RESOURCES)
 4) In Databricks, run the Auto Loader cell and confirm the Bronze table starts growing.
 
 If you want, paste your current IAM role names/ARNs and I’ll tailor the policy documents exactly to your account and your Databricks access pattern (serverless vs. classic cluster).
-```
+ 
 
 ## DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
 ``` 
