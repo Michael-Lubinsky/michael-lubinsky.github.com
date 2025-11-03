@@ -1,5 +1,7 @@
 
 ## DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
+
+<https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html>
  
 ```
 ----------------------------------------------------------------------
