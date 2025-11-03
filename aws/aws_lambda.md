@@ -2,6 +2,11 @@
 ## DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
 
 <https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html>
+
+<https://us-east-1.console.aws.amazon.com/lambda/home?region=us-east-1#/create/function?intent=authorFromScratch>  Create Lambda
+
+<https://docs.aws.amazon.com/lambda/latest/dg/testing-functions.html> Testing Lambda
+
  
 ```
 ----------------------------------------------------------------------
