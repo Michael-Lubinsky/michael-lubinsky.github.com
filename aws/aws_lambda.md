@@ -806,3 +806,148 @@ What I’d tell your team
 
 If you show me the exact DDB item shape (pk/sk or id + updated_at) I can give you the minimal single-Lambda code that lands exactly what Auto Loader wants.
 
+
+
+
+You can absolutely **deploy with SAM without creating any new roles**. Two separate roles are involved—don’t mix them up:
+
+1. **CloudFormation deploy role** (optional).
+   • This is what the SAM CLI is asking about: a role **for CloudFormation** to assume while creating resources.
+   • Trust policy must allow `cloudformation.amazonaws.com`.
+   • If you say **No**, SAM will just use your current AWS credentials (from your profile) to deploy.
+
+2. **Lambda execution role** (required for your function at runtime).
+   • This is the role your Lambda *runs as*.
+   • Trust policy must allow `lambda.amazonaws.com`.
+   • This is the role you want to reuse: `chargeminder-lambda-processing-production`.
+
+---
+
+## A) Answering the prompt during `sam deploy --guided`
+
+When prompted:
+
+```
+Allow SAM CLI IAM role creation [Y/n]:
+```
+
+choose **n**.
+
+From there, you have two options:
+
+* **No dedicated CloudFormation deploy role**: let SAM/CFN use your current profile credentials (requires your user/role to have permissions to create/update the stack and resources, including `CAPABILITY_IAM`/`CAPABILITY_NAMED_IAM` if your template manages IAM).
+* **Provide your own CloudFormation deploy role** (if you’ve created one with `cloudformation.amazonaws.com` in its trust policy):
+
+  ```
+  sam deploy --guided --role-arn arn:aws:iam::<ACCOUNT_ID>:role/Your-CloudFormation-Deploy-Role
+  ```
+
+  (This role is different from your Lambda execution role.)
+
+You’ll also need to acknowledge capabilities if your template touches IAM:
+
+```
+Capabilities: CAPABILITY_NAMED_IAM
+```
+
+If you want to make this persistent, set it in `samconfig.toml` (see example below).
+
+---
+
+## B) Reusing your existing **Lambda execution role** in the template
+
+In `template.yaml`, point your function to the **existing role ARN** (and **remove** `Policies:` from that function, because when `Role` is set, SAM won’t attach inline policies):
+
+```yaml
+Resources:
+  TelemetryStreamProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: TelemetryStreamProcessor
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Handler: app.lambda_handler
+      CodeUri: src/
+      Role: arn:aws:iam::<ACCOUNT_ID>:role/chargeminder-lambda-processing-production
+      # DO NOT include "Policies:" here since you're supplying Role directly
+      Timeout: 30
+      MemorySize: 512
+```
+
+> Your role file `chargeminder-lambda-dynamodb-s3-prod-role.yaml` looks like a **Lambda execution role** (it includes `AWSLambdaBasicExecutionRole`). Keep using that as the `Role` above.
+
+---
+
+## C) Optional: provide a **CloudFormation deploy role** (if org requires it)
+
+Only if your org mandates CFN to assume a deploy role, create one with this **trust** (note: *not* the Lambda trust):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": { "Service": "cloudformation.amazonaws.com" },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+Attach permissions so CFN can create/update all resources in your stack (IAM, Lambda, S3, Logs, etc.). Then deploy with:
+
+```bash
+sam deploy --guided \
+  --role-arn arn:aws:iam::<ACCOUNT_ID>:role/Your-CloudFormation-Deploy-Role \
+  --capabilities CAPABILITY_NAMED_IAM
+```
+
+---
+
+## D) Example `samconfig.toml` (so you don’t have to retype)
+
+```toml
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "chargeminder-lambda-processing"
+region = "us-east-1"
+s3_bucket = "your-sam-artifacts-bucket"      # or let SAM create one the first time
+capabilities = "CAPABILITY_NAMED_IAM"
+confirm_changeset = true
+resolve_s3 = true
+# If you have a CFN deploy role, uncomment:
+# role_arn = "arn:aws:iam::<ACCOUNT_ID>:role/Your-CloudFormation-Deploy-Role"
+```
+
+Run:
+
+```bash
+sam deploy
+```
+
+---
+
+## E) Quick role sanity checks
+
+* **Lambda execution role** (your existing role):
+
+  * Trust: `lambda.amazonaws.com`
+  * Policies: `AWSLambdaBasicExecutionRole` + your DynamoDB/S3 permissions
+
+* **CloudFormation deploy role** (only if you choose to use one):
+
+  * Trust: `cloudformation.amazonaws.com`
+  * Policies: permissions to create/update/delete the resources in your template
+
+---
+
+### TL;DR
+
+* When `sam deploy --guided` asks “Allow SAM CLI IAM role creation?”, answer **No**.
+* Keep using your **existing Lambda execution role** by setting `Properties.Role` with its ARN in `template.yaml`.
+* Only supply `--role-arn` (a **CloudFormation** deploy role) if your org requires CFN to assume a specific role; otherwise your current AWS profile is fine.
+
+
