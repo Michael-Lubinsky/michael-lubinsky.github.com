@@ -4,6 +4,8 @@ https://habr.com/ru/companies/kryptonite/articles/961128/
 
 https://www.lotas.ai/erdos  IDE for ML
 
+https://www.skills.google/paths/183  Free cource from Google
+
 https://github.com/mohamedrxo/simplegrad
 
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
