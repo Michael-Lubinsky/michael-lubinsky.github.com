@@ -654,6 +654,70 @@ It is purely for **schema inference + evolution tracking** for Auto Loader.
 
 ---
 
+Short answer: **yes**, that will work—just do it cleanly and in the right order.
+
+## **Reprocess all existing .jsonl files**:
+
+1. **Stop any running stream**
+
+* Make sure no active query is using that checkpoint.
+* In notebooks: `q.stop()` if you kept the handle, or use the UI to stop the stream.
+
+2. **Clear the target table**
+
+```sql
+USE CATALOG hcai_databricks_dev;
+USE SCHEMA chargeminder2;
+TRUNCATE TABLE fact_telemetry;
+```
+
+(If you also want to remove history to keep the Delta log tiny: `DELETE FROM fact_telemetry; VACUUM fact_telemetry RETAIN 0 HOURS;` — only if you know what you’re doing.)
+
+3. **Reset the checkpoint (recommended: delete the whole directory)**
+
+```python
+dbutils.fs.rm("s3://chargeminder-2/_checkpoints/fact_telemetry", recurse=True)
+```
+
+* Deleting only `commits/`, `offsets/`, `sources/` is usually fine, but wiping the **entire** checkpoint folder avoids stray state files.
+* Alternatively, point your job to a **new checkpoint path** (e.g., add a datestamp suffix). This is the least error-prone.
+
+4. **Leave `schema_path` alone**
+
+* You can keep `s3://chargeminder-2/_schemas/fact_telemetry` as-is. It’s for schema evolution metadata and doesn’t control reprocessing.
+* If you provided an explicit schema in code, that folder may stay empty—totally fine.
+
+5. **Run your Python stream again**
+
+* With an **empty/nonexistent checkpoint**, Auto Loader treats the run as first-time and will pick up **all existing files** under your `s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry` prefix.
+* Using `availableNow` trigger is perfect for a one-shot backfill:
+
+```python
+writer = writer.trigger(availableNow=True)
+q = writer.start()
+q.awaitTermination()
+```
+
+Notes / gotchas:
+
+* Make sure your source files are still present in S3 (not expired/overwritten).
+* If your Lambda is still writing new files while you backfill, you’ll ingest **both** old and new—usually fine, but just be aware.
+* You do **not** need to touch `schema_path` to force reprocessing. That path doesn’t control file progress.
+* If you want to reprocess **only a subset**, temporarily change `SOURCE_PATH` to a narrower S3 prefix, run `availableNow`, then switch back.
+
+Optional quick sanity checks before/after:
+
+```python
+# How many source files do we see?
+print(spark.read.format("json").load(SOURCE_PATH).count())
+
+# Checkpoint exists?
+display(dbutils.fs.ls("s3://chargeminder-2/_checkpoints/"))
+```
+
+If you want, I can give you a tiny cell that flips your job to a **new checkpoint path** automatically (e.g., `_checkpoints/fact_telemetry_reprocess_2025-11-04`) so you don’t have to delete anything.
+
+
 ### ✅ Recommendation
 
 Keep both schema and checkpoint paths persistent and unique per stream:
