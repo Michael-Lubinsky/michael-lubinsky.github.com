@@ -656,7 +656,7 @@ It is purely for **schema inference + evolution tracking** for Auto Loader.
 
 Short answer: **yes**, that will work—just do it cleanly and in the right order.
 
-## **Reprocess all existing .jsonl files**:
+#  **Reprocess all existing .jsonl files**:
 
 1. **Stop any running stream**
 
