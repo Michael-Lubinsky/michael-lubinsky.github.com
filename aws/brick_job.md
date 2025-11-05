@@ -585,3 +585,87 @@ If you need to start today and test quickly with small volumes, begin with **Opt
 
 If you want, tell me your expected TPS, item size, tenants/partitioning model, and latency goal, and I’ll size the RCU/Throughput, Firehose buffer hints, and Auto Loader trigger/checkpoint settings precisely.
 ```
+
+
+
+
+---
+
+## 2️⃣ How the pipeline avoids reprocessing already processed JSONL files
+
+This is handled automatically by **Auto Loader** using its **checkpoint** mechanism and internal **file notification logs**.
+
+### Key configs in your code:
+
+```python
+.option("cloudFiles.format", "json")
+.option("cloudFiles.schemaLocation", SCHEMA_LOC)
+.option("checkpointLocation", CHECKPOINT)
+```
+
+Here’s what happens behind the scenes:
+
+| Component                               | Path                                              | Purpose                                                                                                                       |
+| --------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **`schemaLocation`** (`SCHEMA_LOC`)     | `s3://chargeminder-2/_schemas/fact_telemetry`     | Auto Loader stores its **inferred schema** and evolution metadata. It’s used to track JSON field types and changes over time. |
+| **`checkpointLocation`** (`CHECKPOINT`) | `s3://chargeminder-2/_checkpoints/fact_telemetry` | Delta Streaming engine stores **progress state**, offsets, and a list of files already processed. This ensures idempotency.   |
+
+### How Auto Loader tracks files:
+
+* On first run, it lists or subscribes to S3 events.
+* For each file found, it records a unique **file ID and modification timestamp** in the checkpoint metadata.
+* On subsequent runs, Auto Loader queries S3 and **skips any file already recorded** in the checkpoint.
+* If a file is modified or re-uploaded with the same name, Auto Loader still ignores it because its internal file ID (ETag) hasn’t changed — unless you explicitly delete the checkpoint.
+
+So:
+
+> ✅ Even if your Lambda keeps writing new `batch_YYYY-MM-DD-HH-MM-SS_N.jsonl` files into S3,
+> only new files will be picked up by Databricks.
+
+If you ever **delete the checkpoint folder**, the pipeline will reprocess **everything** in that S3 path.
+
+---
+
+## 3️⃣ Purpose of `"schema_path": "s3://chargeminder-2/_schemas/fact_telemetry"`
+
+This directory has **nothing to do with incremental tracking**.
+It is purely for **schema inference + evolution tracking** for Auto Loader.
+
+### Specifically:
+
+* On the first read, Auto Loader inspects your JSONL files and infers schema.
+* It saves the schema as a **Delta JSON file** in the `_schemas/fact_telemetry` directory.
+* Next time you restart the stream, it reuses that schema — so you don’t have to infer it again.
+* If new fields appear later (say, your Lambda starts adding `battery_level`), Auto Loader detects them and **updates** the schema JSON in `_schemas/…`.
+
+> This prevents repeated full scans of historical data and avoids schema drift errors between batches.
+
+---
+
+## 4️⃣ TL;DR summary
+
+| Topic                                          | What It Does                                                      |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `spark.databricks.delta.optimizeWrite.enabled` | Optional optimization toggle; safe to remove.                     |
+| `checkpointLocation`                           | Tracks already processed files and offsets → prevents duplicates. |
+| `schemaLocation`                               | Stores JSON schema evolution → prevents re-inference.             |
+| Reprocessing old files                         | Prevented by checkpoint; files are logged as “seen”.              |
+| Deleting checkpoint                            | Reprocesses **all** files in S3 prefix.                           |
+
+---
+
+### ✅ Recommendation
+
+Keep both schema and checkpoint paths persistent and unique per stream:
+
+```python
+"schema_path": "s3://chargeminder-2/_schemas/fact_telemetry",
+"checkpoint_path": "s3://chargeminder-2/_checkpoints/fact_telemetry"
+```
+
+That ensures your stream is:
+
+* **Incremental** (processes only new batches),
+* **Idempotent** (no duplicates),
+* **Schema-aware** (adapts to new columns).
+
