@@ -352,9 +352,11 @@ Code sketch (Databricks notebook, using your provided credential handle)
 - Assumes your admin exposed AWS creds via `dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds")`.
 - Replace `TENANT_IDS` with your partition keys or iterate all tenants you own.
 
+```python
 from pyspark.sql import functions as F
 
 # 1) Read state (last processed updated_at per tenant)
+ 
 state_tbl = "hcai_databricks_dev.chargeminder2.ddb_state"   # tenant, last_ts
 spark.sql(f"""
 CREATE TABLE IF NOT EXISTS {state_tbl} (
@@ -449,6 +451,7 @@ WHEN NOT MATCHED THEN INSERT *
 """)
 
 # 4) Advance state cautiously (set to the max obs updated_at in this batch)
+
 if clean:
     import numpy as np
     by_tenant = (
@@ -464,7 +467,7 @@ if clean:
         WHEN MATCHED THEN UPDATE SET dst.last_ts = GREATEST(dst.last_ts, s.last_ts)
         WHEN NOT MATCHED THEN INSERT *
         """)
-
+```
 Notes
 - If you have deletes, propagate a tombstone flag and handle it in MERGE (DELETE WHEN MATCHED AND s.is_deleted = true).
 - Batch schedule: Databricks Job every 1–5 minutes is reasonable. Avoid per-minute if you expect large scans—tune to your RCU & batch size.
@@ -494,6 +497,8 @@ Cons & gotchas
 - You still need to MERGE to handle upserts (new images) & deletes (remove from Delta).
 
 Auto Loader sketch (S3 JSON payloads with “Image”)
+
+```python
 from pyspark.sql import functions as F
 
 source_path = "s3://your-bucket/ddb/your-table/"
@@ -540,8 +545,10 @@ def upsert_batch(micro_batch_df, batch_id: int):
     .foreachBatch(upsert_batch)
     .start()
 )
+```
+### Notes
 
-Notes
+```
 - For deletions (`eventName='REMOVE'`), either land a tombstone record (is_deleted=true) in S3 and handle in MERGE, or run a post-upsert DELETE step for those keys inside `foreachBatch`.
 - Use **DLT** (Delta Live Tables) if you want managed expectations/quality & lineage.
 
@@ -586,10 +593,6 @@ If you need to start today and test quickly with small volumes, begin with **Opt
 If you want, tell me your expected TPS, item size, tenants/partitioning model, and latency goal, and I’ll size the RCU/Throughput, Firehose buffer hints, and Auto Loader trigger/checkpoint settings precisely.
 ```
 
-
-
-
----
 
 ## 2️⃣ How the pipeline avoids reprocessing already processed JSONL files
 
@@ -733,7 +736,7 @@ That ensures your stream is:
 * **Idempotent** (no duplicates),
 * **Schema-aware** (adapts to new columns).
 
-Great question! The content type `application/x-ndjson` is actually correct for NDJSON format - the mismatch with `.jsonl` extension is just a naming convention thing (both `.jsonl` and `.ndjson` are valid). However, let's make this Lambda **much more robust** for production use:Perfect! Here's everything you need to make your Lambda production-ready:
+ The content type `application/x-ndjson` is actually correct for NDJSON format - the mismatch with `.jsonl` extension is just a naming convention thing (both `.jsonl` and `.ndjson` are valid). However, let's make this Lambda **much more robust** for production use:Perfect! Here's everything you need to make your Lambda production-ready:
 
 ## 📥 Download Links
 
@@ -967,7 +970,6 @@ aws cloudwatch get-metric-statistics \
 aws sqs receive-message --queue-url YOUR_DLQ_URL
 ```
 
----
 
 ## 💡 Bottom Line
 
