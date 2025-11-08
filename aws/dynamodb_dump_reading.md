@@ -1,4 +1,4 @@
-### Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
+## Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
 
 S: String
 N: Number
@@ -8,13 +8,16 @@ BOOL: Boolean
 NULL: Null
 B: Binary (base64-encoded)
 
- File Organization
+### File Organization
 
 - Multiple files: The export is split into multiple files (one per DynamoDB partition, by default).
 - Gzipped: Each file is compressed with GZIP (.gz extension).
 - Manifest file: There’s also a manifest file (manifest-files.json) listing all the data files.
-
-
+```
+AWSDynamoDB/01671980323456-7abcdef0/manifest-files.json
+AWSDynamoDB/01671980323456-7abcdef0/data/part-00000.gz
+AWSDynamoDB/01671980323456-7abcdef0/data/part-00001.gz
+```
 
 Tip: the export will include many shard files plus a manifest-files.json. Read the data files (e.g., .../AWSDynamoDB/.../data/) and ignore manifests in your Spark job.
 
@@ -137,3 +140,85 @@ Notes:
 * Point `ddb_export_s3_uri` at the **/data/** folder inside your DynamoDB export. The code auto-adjusts if you give the root.
 * Numbers (`"N"`) are parsed to `int` or `float`. If you need exact decimal precision, swap `_to_number` to return `Decimal` and provide an explicit Spark schema with `DecimalType`.
 * Binary types (`B`, `BS`) are left as base64 strings; decode if you need raw bytes.
+
+
+
+## Mistral
+Here’s a **PySpark code snippet** to read DynamoDB JSON export files (GZIP-compressed, DynamoDB-typed JSON) from S3 into a DataFrame, with type conversion to a flat schema:
+
+
+### **1. Setup and Dependencies**
+Make sure your Spark session has the `hadoop-aws` library and AWS credentials configured.
+
+### **2. PySpark Code**
+
+```python
+from pyspark.sql import SparkSession, functions as F
+from pyspark.sql.types import StructType, StructField, StringType, MapType, IntegerType, DoubleType, BooleanType, ArrayType
+import gzip
+import json
+
+# Initialize SparkSession with AWS config
+spark = SparkSession.builder \
+    .appName("ReadDynamoDBExport") \
+    .config("spark.hadoop.fs.s3a.access.key", "YOUR_AWS_ACCESS_KEY") \
+    .config("spark.hadoop.fs.s3a.secret.key", "YOUR_AWS_SECRET_KEY") \
+    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
+    .getOrCreate()
+
+# Path to your DynamoDB export data files (use wildcard to match all .gz files)
+s3_path = "s3a://your-bucket-name/AWSDynamoDB/01671980323456-7abcdef0/data/*.gz"
+
+# Read all .gz files as text
+df_text = spark.read.text(s3_path)
+
+# UDF to parse DynamoDB JSON and flatten types
+def parse_dynamodb_json(json_str):
+    try:
+        data = json.loads(json_str)
+        item = {}
+        for k, v in data.items():
+            # Handle each DynamoDB type
+            for typ, val in v.items():
+                if typ == "S":
+                    item[k] = str(val)
+                elif typ == "N":
+                    try:
+                        item[k] = int(val) if "." not in val else float(val)
+                    except:
+                        item[k] = val
+                elif typ == "BOOL":
+                    item[k] = bool(val)
+                elif typ == "NULL":
+                    item[k] = None
+                elif typ == "L":
+                    item[k] = [parse_dynamodb_json({"v": x})["v"] for x in val]
+                elif typ == "M":
+                    item[k] = parse_dynamodb_json(val)
+                elif typ == "B":
+                    item[k] = val  # base64-encoded binary
+        return item
+    except:
+        return None
+
+# Register UDF
+parse_dynamodb_udf = F.udf(parse_dynamodb_json, MapType(StringType(), StringType()))
+
+# Parse each line
+df_parsed = df_text.select(
+    parse_dynamodb_udf("value").alias("data")
+).select("data.*")
+
+# Show the DataFrame
+df_parsed.show(truncate=False)
+```
+
+### **3. Key Points**
+- **GZIP Handling:** Spark’s `.text()` method automatically decompresses `.gz` files.
+- **Type Conversion:** The UDF flattens DynamoDB-typed JSON into a map of native Python types.
+- **Schema Inference:** The resulting DataFrame will have columns for each top-level attribute in your DynamoDB items.
+
+
+### **4. Customization**
+- **Schema:** If you know your schema, replace the `MapType` with a `StructType` for better type safety.
+- **Nested Fields:** The UDF handles nested maps and lists, but you may want to flatten them further.
