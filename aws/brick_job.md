@@ -1,6 +1,6 @@
 How to run your PySpark code every minute **outside a notebook** and manage it end-to-end.
 
-# 1) Package your notebook logic as a Python entrypoint
+## Step 1) Package your notebook logic as a Python entrypoint
 
 Refactor your notebook into a tiny callable module plus a `main.py` runner. Put this in a Databricks Repo (recommended) or upload to DBFS.
 
@@ -12,9 +12,9 @@ repo-root/
     main.py           # entrypoint that calls your function
 ```
 
-`job_logic.py` (sketch)
+### File: job_logic.py (sketch)
 
-```
+```python
 from pyspark.sql import SparkSession
 
 def run_job():
@@ -29,9 +29,9 @@ def run_job():
     # df.write.format("delta").mode("append").saveAsTable("my_catalog.my_schema.my_table")
 ```
 
-`main.py`
+### File main.py
 
-```
+```python
 from ingest.job_logic import run_job
 
 if __name__ == "__main__":
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
 Push this repo to Git and use **Repos** in Databricks to keep it synced.
 
-# 2) Create a Databricks Job (non-interactive)
+## Step 2) Create a Databricks Job (non-interactive)
 
 You have three good compute choices:
 
@@ -50,7 +50,7 @@ You have three good compute choices:
 
 For a true **every-minute** cadence, prefer **Serverless** or an **Existing cluster kept warm**. A Job cluster spinning up every minute is usually too slow/expensive.
 
-## Create the Job (UI)
+### Create the Job (UI)
 
 * Workflows → Jobs → Create Job
 * Task type: **Python script**
@@ -65,13 +65,13 @@ For a true **every-minute** cadence, prefer **Serverless** or an **Existing clus
 * Add **Retry** policy (e.g., 3 attempts, 10s backoff)
 * Save
 
-## Create the Job (JSON + CLI)
+### Create the Job (JSON + CLI)
 
 If you automate with the new `databricks` CLI:
 
-`job.json` (example; adjust paths)
+### File: `job.json` (example; adjust paths)
 
-```
+```json
 {
   "name": "ddb-to-delta-every-minute",
   "max_concurrent_runs": 1,
@@ -108,7 +108,7 @@ If you automate with the new `databricks` CLI:
 }
 ```
 
-Create/update:
+### Create/update job :
 
 ```
 databricks jobs create --json-file job.json
@@ -118,7 +118,7 @@ databricks jobs reset --job-id <id> --json-file job.json
 
 **Tip:** In the UI, selecting “Every minute” will populate a correct Quartz cron; if you’re unsure about the expression, use the UI first.
 
-# 3) Credentials to DynamoDB/S3
+## Step 3) Credentials to DynamoDB/S3
 
 Because you’re on **Serverless/Jobs**, the clean path is an **instance profile / IAM role** that grants read to DynamoDB and write to your S3/Delta location. In the job’s compute settings:
 
@@ -126,7 +126,7 @@ Because you’re on **Serverless/Jobs**, the clean path is an **instance profile
 * For **Existing or Job clusters**: set the **Instance Profile / IAM role**.
   Then your Spark code can use the default provider chain (no hardcoded keys). In Python, `boto3` (if used) will pick up the role automatically.
 
-# 4) If you truly need “every minute,” consider streaming
+## Step  4) If you truly need “every minute,” consider streaming
 
 A Structured Streaming job is often better than cron-style runs. You can:
 
@@ -150,7 +150,7 @@ Minimal pattern:
 )
 ```
 
-# 5) How to stop the non-interactive job
+## Step 5) How to stop the non-interactive job
 
 You have several options:
 
@@ -165,7 +165,7 @@ You have several options:
   * Serverless: stopping the run is enough; there’s no cluster to manage.
   * Existing cluster: **Terminate** it in Compute if you used one for the job.
 
-# 6) Quick checklist for your case
+## Step 6) Quick checklist for your case
 
 * [ ] Move your notebook logic into `job_logic.run_job()`
 * [ ] Put code in a Repo (so Jobs → Python script can point to it)
@@ -290,16 +290,16 @@ If Databricks isn’t strict about scheduling precision:
 | Continuous job            | Real-time    | Streaming tasks       | Keeps cluster running |
 | External scheduler        | Every minute | Integration pipelines | Use Function/Airflow  |
 
----
-
+#  Problem statement
+```
 There is DynamoDB table populated by external process.
 Goal is to build almost real-time pipeline which 
 reads the new records from DynamoDB, transform it  using PySpark and append transformed records into DataBricks Unity catalog table.
-
+```
 I consider following options:
 
-Option 1:  Direct DynamoDB Table Access (Batch Reads)
----------------------------------------------------
+## Option 1:  Direct DynamoDB Table Access (Batch Reads)
+
 Direct polling from DynamoDB table to Databricks using GSI global secondry index on column updated_at
 Create Global Secondary Index (GSI) on updated_at column.
 Periodically call table.query() 
@@ -322,7 +322,7 @@ DynamoDB → PySpark → Unity Catalog pipeline.
 ```
 
  
-Option 1 — Direct DynamoDB table access (batch pulls via GSI)  
+## Option 1 — Direct DynamoDB table access (batch pulls via GSI)  
 Good for: low/medium volume, simple ops, minute-level cadence.
 
 Design  
@@ -474,8 +474,8 @@ Notes
 - If you have deletes, propagate a tombstone flag and handle it in MERGE (DELETE WHEN MATCHED AND s.is_deleted = true).
 - Batch schedule: Databricks Job every 1–5 minutes is reasonable. Avoid per-minute if you expect large scans—tune to your RCU & batch size.
 
-──────────────────────────────────────────────────────────────────────────────
-Option 2 — DynamoDB Streams (CDC) → S3 → Databricks Auto Loader
+
+## Option 2 — DynamoDB Streams (CDC) → S3 → Databricks Auto Loader
 Good for: “hands-off” CDC with ordered updates per partition key (+ low ops).
 
 Design
