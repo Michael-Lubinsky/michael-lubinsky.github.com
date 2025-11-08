@@ -29,7 +29,86 @@ Tip: the export will include many shard files plus a manifest-files.json. Read t
 
 - Optionally spark.read.json again on the normalized JSON to get a proper schema, or from_json with an explicit schema.
 
-### mistral How to convert DynamoDB JSON to standard JSON
+  Great questions! Let’s break down the differences and clarify the best practices for reading files from S3 in PySpark.
+
+---
+
+## 1. **`s3a://` vs `s3://`**
+
+### **Why use `s3a://` instead of `s3://`?**
+- **`s3a://`** is the recommended scheme for Spark to access S3 using the **Hadoop AWS library** (`hadoop-aws`).
+  - It supports features like:
+    - Parallel reads/writes
+    - Better performance and reliability
+    - Integration with Spark’s distributed file system APIs
+  - Requires `spark.hadoop.fs.s3a.impl` to be set to `org.apache.hadoop.fs.s3a.S3AFileSystem`.
+
+- **`s3://`** is the older scheme, typically used with the **S3 Native Filesystem** (`s3n://`), which is deprecated and less performant.
+
+**Best Practice:**
+Always use `s3a://` for Spark/S3 integration.
+
+---
+
+## 2. **`/data/*.gz` vs `/data/`**
+
+### **Why use `/data/*.gz`?**
+- **`/data/*.gz`** explicitly tells Spark to only read files ending with `.gz` in the `/data/` directory.
+  - This is useful if there are other files (like `_SUCCESS`, logs, or manifest files) in the directory that you want to skip.
+  - It’s more precise and avoids reading unnecessary files.
+
+### **Why use `/data/` (without `*.gz`)?**
+- **`/data/`** tells Spark to read all files in the `/data/` directory.
+  - Spark will automatically decompress `.gz` files if the file extension is recognized.
+  - This is simpler, but may include non-data files if they exist.
+
+**Best Practice:**
+Use `/data/*.gz` if you only want to read the GZIP files and avoid any extraneous files.
+
+---
+
+## 3. **`spark.read.text(s3_path)` vs `spark.read.text(ddb_export_s3_uri).select("value").rdd.map(lambda r: r[0])`**
+
+### **`spark.read.text(s3_path)`**
+- Returns a DataFrame with a single column named `"value"`, where each row is a line from the input files.
+- This is the standard way to read text files in Spark.
+
+### **`spark.read.text(ddb_export_s3_uri).select("value").rdd.map(lambda r: r[0])`**
+- Does the same as above, but then:
+  - Converts the DataFrame to an RDD.
+  - Extracts the `"value"` column (the text line) from each row.
+  - Returns an RDD of strings (just the text lines).
+
+**Why use the RDD approach?**
+- If you want to use RDD operations (like `map`, `filter`) for custom processing before creating a DataFrame.
+- If you need to integrate with legacy RDD-based code.
+
+**Best Practice:**
+Use `spark.read.text(s3_path)` if you plan to use DataFrame APIs. Use the RDD approach only if you need RDD-specific operations.
+
+---
+
+## **Summary Table**
+
+| Feature                | `s3a://.../data/*.gz` + `spark.read.text` | `s3a://.../data/` + RDD map         |
+|------------------------|------------------------------------------|--------------------------------------|
+| File selection         | Only `.gz` files                        | All files in directory              |
+| Output                 | DataFrame                                | RDD of strings                      |
+| Use case               | Standard DataFrame processing            | Custom RDD processing                |
+| Performance            | Optimized for DataFrame APIs             | Flexible for RDD ops                 |
+| File scheme            | `s3a://` (recommended)                   | `s3a://` (recommended)               |
+
+---
+
+## **Recommendation**
+- **Use `s3a://.../data/*.gz` with `spark.read.text`** for most use cases.
+- **Use the RDD approach** only if you need to perform custom RDD operations.
+
+---
+
+**Would you like a version of your code that combines the best of both approaches?**
+
+### Mistral - how to convert DynamoDB JSON to standard JSON
 ```python
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, ArrayType, MapType
