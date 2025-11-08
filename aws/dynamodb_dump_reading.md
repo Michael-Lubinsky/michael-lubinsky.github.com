@@ -1,5 +1,21 @@
 ### Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
 
+S: String
+N: Number
+M: Map (nested object)
+L: List
+BOOL: Boolean
+NULL: Null
+B: Binary (base64-encoded)
+
+ File Organization
+
+- Multiple files: The export is split into multiple files (one per DynamoDB partition, by default).
+- Gzipped: Each file is compressed with GZIP (.gz extension).
+- Manifest file: There’s also a manifest file (manifest-files.json) listing all the data files.
+
+
+
 Tip: the export will include many shard files plus a manifest-files.json. Read the data files (e.g., .../AWSDynamoDB/.../data/) and ignore manifests in your Spark job.
 
 - Read the exported objects from S3 as text (they’re gzip’d JSON lines).
