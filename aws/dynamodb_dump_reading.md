@@ -29,30 +29,12 @@ Tip: the export will include many shard files plus a manifest-files.json. Read t
 
 - Optionally spark.read.json again on the normalized JSON to get a proper schema, or from_json with an explicit schema.
 
-### mistral
+### mistral How to convert DynamoDB JSON to standard JSON
 ```python
 from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, ArrayType, MapType
 import json
 
-# Your schema definitions (as provided)
-# ... (keep your raw_schema and all nested structs as before) ...
-
-# Initialize SparkSession with AWS config
-spark = SparkSession.builder \
-    .appName("ReadDynamoDBExport") \
-    .config("spark.hadoop.fs.s3a.access.key", "YOUR_AWS_ACCESS_KEY") \
-    .config("spark.hadoop.fs.s3a.secret.key", "YOUR_AWS_SECRET_KEY") \
-    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
-    .getOrCreate()
-
-# Path to your DynamoDB export data files
-s3_path = "s3a://your-bucket-name/AWSDynamoDB/01671980323456-7abcdef0/data/*.gz"
-
-# Read all .gz files as text
-df_text = spark.read.text(s3_path)
-
-# UDF to convert DynamoDB JSON to standard JSON
 def convert_dynamodb_json(dynamodb_json_str):
     try:
         data = json.loads(dynamodb_json_str)
@@ -81,28 +63,42 @@ def convert_dynamodb_json(dynamodb_json_str):
     except Exception as e:
         print(f"Error converting JSON: {e}")
         return None
-
-# Register UDF
-convert_dynamodb_udf = F.udf(convert_dynamodb_json, StringType())
-
-# Convert DynamoDB JSON to standard JSON
-df_converted = df_text.withColumn(
-    "standard_json",
-    convert_dynamodb_udf(F.col("value"))
-)
-
-# Parse the standard JSON with your schema
-df_parsed = df_converted.select(
-    F.from_json(F.col("standard_json"), raw_schema).alias("data")
-).select("data.*")
-
-# Show the DataFrame schema and data
-df_parsed.printSchema()
-df_parsed.show(truncate=False)
-
 ```
 
 ### ChatGPT
+
+Main logic in following 3 lines:
+```python 
+raw_lines = spark.read.text(ddb_export_s3_uri).select("value").rdd.map(lambda r: r[0])
+clean_json_rdd = raw_lines.map(convert_dynamodb_json).filter(lambda s: s is not None)
+df_converted = spark.read.schema(raw_schema).json(ddbjson_to_python)
+```
+
+How It Works:
+
+```
+Step 1
+spark.read.text(...).select("value").rdd.map(lambda r: r[0])
+
+- Reads the GZIP files as text.
+- Extracts the JSON string from each row.
+- Converts to an RDD of strings.
+
+Step 2.
+.map(convert_dynamodb_json).filter(lambda s: s is not None)
+
+ - Applies your convert_dynamodb_json function to each string, converting  - DynamoDB JSON to standard JSON.
+ - Filters out any rows that failed conversion.
+
+Step 3. 
+ spark.read.schema(raw_schema).json(clean_json_rdd)
+
+- Reads the RDD of standard JSON strings into a DataFrame, enforcing your schema.
+```
+
+
+
+
 
 ```python
 # PySpark: Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
