@@ -307,30 +307,31 @@ Store max(updated_at) of already processed records in persistent storage, in ord
 only new recors:   max(updated_at) will be passed as argument to  tab.query() 
 
 
-Option 2: DynamoDB Streams (Change Data Capture)
-----------------------------------------------
-AWS Lambda ->  S3 -> Databricks
-
-
+## Option 2: DynamoDB Streams (Change Data Capture)
  
-Here’s a pragmatic comparison + a concrete reference design for a near-real-time (sub-minute to a few minutes) DynamoDB → PySpark → Unity Catalog pipeline. I’ll keep it punchy and actionable.
-
-──────────────────────────────────────────────────────────────────────────────
+AWS Lambda ->  S3 -> Databricks
+ 
+### Comparison and  reference design
+for a near-real-time (sub-minute to a few minutes)
+DynamoDB → PySpark → Unity Catalog pipeline. 
+ 
+```
 - If you want “robust + low-ops + ~1–2 min latency”: **Use DynamoDB Streams → (EventBridge Pipes or Kinesis Firehose) → S3 → Databricks Auto Loader → Delta/Unity**. This is the sweet spot for cost, reliability, and simplicity.
 - If volume is small and you need a quick start with minute polling: **Use a GSI on (tenant, updated_at)** and batch pull with a persisted cursor + idempotent MERGE into Delta.
 - If you truly need sub-second to tens-of-seconds latency without an S3 landing zone: **Streams → Kinesis Data Streams → Databricks Structured Streaming**, but this adds complexity.
+```
 
-──────────────────────────────────────────────────────────────────────────────
-Option 1 — Direct DynamoDB table access (batch pulls via GSI)
+ 
+Option 1 — Direct DynamoDB table access (batch pulls via GSI)  
 Good for: low/medium volume, simple ops, minute-level cadence.
 
-Design
+Design  
 1) Model your GSI carefully:
    - **Partition key (HASH)**: something selective you can query per batch, e.g. tenant/account/org_id (or a fixed bucket key if global).
    - **Sort key (RANGE)**: updated_at (ISO-8601 or epoch millis).
    - If you have many tenants, you’ll query per tenant; otherwise shard into a small set of buckets (e.g. pk = “bucket#00..99”) so queries are bounded.
 
-2) Pull pattern:
+2) Pull pattern:  
    - Keep a persistent cursor per (partition key) = **last_processed_updated_at** in a tiny Delta “state” table.
    - Query GSI with `KeyConditionExpression: pk=:tenant AND updated_at BETWEEN :cursor AND :cursor + window`.
    - **Paginate** (1 MB limit/page) and **backoff** on throttling (RCU).
@@ -351,6 +352,7 @@ Cons & gotchas
 Code sketch (Databricks notebook, using your provided credential handle)
 - Assumes your admin exposed AWS creds via `dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds")`.
 - Replace `TENANT_IDS` with your partition keys or iterate all tenants you own.
+```
 
 ```python
 from pyspark.sql import functions as F
