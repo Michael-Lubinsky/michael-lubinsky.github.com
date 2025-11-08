@@ -29,6 +29,25 @@ Tip: the export will include many shard files plus a manifest-files.json. Read t
 
 - Optionally spark.read.json again on the normalized JSON to get a proper schema, or from_json with an explicit schema.
 
+### mistral
+```python
+# Path to your DynamoDB export data files (use wildcard to match all .gz files)
+s3_path = "s3a://your-bucket-name/AWSDynamoDB/01671980323456-7abcdef0/data/*.gz"
+
+# Read all .gz files as text
+df_text = spark.read.text(s3_path)
+
+# Parse each line as JSON according to your schema
+df_parsed = df_text.select(
+    F.from_json(F.col("value"), raw_schema).alias("data")
+).select("data.*")
+
+# Show the DataFrame schema and data
+df_parsed.printSchema()
+df_parsed.show(truncate=False)
+```
+
+### Chatgpt
 
 ```python
 # PySpark: Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
