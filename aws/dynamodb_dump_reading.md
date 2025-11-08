@@ -1,4 +1,7 @@
 ### Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
+
+Tip: the export will include many shard files plus a manifest-files.json. Read the data files (e.g., .../AWSDynamoDB/.../data/) and ignore manifests in your Spark job.
+
 - Read the exported objects from S3 as text (they’re gzip’d JSON lines).
 
 - Parse each line, take the "Item" payload, and convert DynamoDB-JSON
@@ -108,7 +111,7 @@ df.show(20, truncate=False)
 # ])
 # df = spark.read.schema(target_schema).json(clean_json_rdd)
 
-# -------- (Optional) Write once to Parquet/Delta for faster downstream use --------
+# -- (Optional) Write once to Parquet/Delta for faster downstream use ---
 # df.write.mode("overwrite").parquet("s3a://YOUR-BUCKET/curated/your_table/")
 # df.write.format("delta").mode("overwrite").save("s3a://YOUR-BUCKET/delta/your_table/")
 ```
