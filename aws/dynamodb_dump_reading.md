@@ -222,3 +222,84 @@ df_parsed.show(truncate=False)
 ### **4. Customization**
 - **Schema:** If you know your schema, replace the `MapType` with a `StructType` for better type safety.
 - **Nested Fields:** The UDF handles nested maps and lists, but you may want to flatten them further.
+
+```
+   
+body_struct = StructType([
+    StructField("value", StringType(), True),
+    StructField("unit",  StringType(), True),
+    StructField("capacity",  StringType(), True),
+    StructField("locationType",  StringType(), True),
+    StructField("heading",  StringType(), True),
+    StructField("latitude",  StringType(), True),
+    StructField("longitude", StringType(), True),
+    StructField("direction",  StringType(), True),
+
+])
+
+signal_struct = StructType([
+    StructField("name",   StringType(), True),
+    StructField("code",   StringType(), True),
+    StructField("group",  StringType(), True),
+    StructField("status", StructType([
+        StructField("value", StringType(), True),
+        StructField("error", StructType([
+            StructField("type", StringType(), True),
+            StructField("code", StringType(), True),
+        ]), True),
+    ]), True),
+    StructField("body", body_struct, True),
+    StructField("meta", StructType([
+        StructField("retrievedAt", LongType(), True),
+        StructField("oemUpdatedAt", LongType(), True),
+    ]), True),
+])
+
+trigger_struct = StructType([
+    StructField("type", StringType(), True),
+    StructField("signal", StructType([
+        StructField("name", StringType(), True),
+        StructField("code", StringType(), True),
+        StructField("group", StringType(), True),
+    ]), True),
+])
+
+raw_schema = StructType([
+    StructField("event_id",         StringType(), True),
+    StructField("record_type",      StringType(), True),
+    StructField("recorded_at",      StringType(), True),
+    StructField("car_timezone",     StringType(), True),
+    StructField("smartcar_user_id", StringType(), True),
+
+    StructField("vehicle", StructType([
+        StructField("id",    StringType(), True),
+        StructField("make",  StringType(), True),
+        StructField("model", StringType(), True),
+        StructField("year",  IntegerType(), True),
+    ]), True),
+
+    StructField("user", StructType([
+        StructField("id", StringType(), True),
+    ]), True),
+
+    StructField("meta", StructType([
+        StructField("mode",        StringType(), True),
+        StructField("deliveryId",  StringType(), True),
+        StructField("webhookId",   StringType(), True),
+        StructField("signalCount", IntegerType(), True),
+        StructField("webhookName", StringType(), True),
+        StructField("version",     StringType(), True),
+        StructField("deliveredAt", StringType(), True),
+    ]), True),
+
+    StructField("signals",  ArrayType(signal_struct), True),
+    StructField("triggers", ArrayType(trigger_struct), True),
+
+    StructField("_processing_metadata", StructType([
+        StructField("processed_at", StringType(), True),
+        StructField("event_id", StringType(), True),
+        StructField("event_name", StringType(), True),
+        StructField("lambda_version", StringType(), True),
+    ]), True),
+])
+```
