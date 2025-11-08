@@ -31,23 +31,78 @@ Tip: the export will include many shard files plus a manifest-files.json. Read t
 
 ### mistral
 ```python
-# Path to your DynamoDB export data files (use wildcard to match all .gz files)
+from pyspark.sql import SparkSession, functions as F
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, LongType, ArrayType, MapType
+import json
+
+# Your schema definitions (as provided)
+# ... (keep your raw_schema and all nested structs as before) ...
+
+# Initialize SparkSession with AWS config
+spark = SparkSession.builder \
+    .appName("ReadDynamoDBExport") \
+    .config("spark.hadoop.fs.s3a.access.key", "YOUR_AWS_ACCESS_KEY") \
+    .config("spark.hadoop.fs.s3a.secret.key", "YOUR_AWS_SECRET_KEY") \
+    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
+    .getOrCreate()
+
+# Path to your DynamoDB export data files
 s3_path = "s3a://your-bucket-name/AWSDynamoDB/01671980323456-7abcdef0/data/*.gz"
 
 # Read all .gz files as text
 df_text = spark.read.text(s3_path)
 
-# Parse each line as JSON according to your schema
-df_parsed = df_text.select(
-    F.from_json(F.col("value"), raw_schema).alias("data")
+# UDF to convert DynamoDB JSON to standard JSON
+def convert_dynamodb_json(dynamodb_json_str):
+    try:
+        data = json.loads(dynamodb_json_str)
+        item = {}
+        for k, v in data.items():
+            # Handle each DynamoDB type
+            for typ, val in v.items():
+                if typ == "S":
+                    item[k] = str(val)
+                elif typ == "N":
+                    try:
+                        item[k] = int(val) if "." not in val else float(val)
+                    except:
+                        item[k] = val
+                elif typ == "BOOL":
+                    item[k] = bool(val)
+                elif typ == "NULL":
+                    item[k] = None
+                elif typ == "L":
+                    item[k] = [convert_dynamodb_json({"v": x})["v"] for x in val]
+                elif typ == "M":
+                    item[k] = convert_dynamodb_json(val)
+                elif typ == "B":
+                    item[k] = val  # base64-encoded binary
+        return json.dumps(item)
+    except Exception as e:
+        print(f"Error converting JSON: {e}")
+        return None
+
+# Register UDF
+convert_dynamodb_udf = F.udf(convert_dynamodb_json, StringType())
+
+# Convert DynamoDB JSON to standard JSON
+df_converted = df_text.withColumn(
+    "standard_json",
+    convert_dynamodb_udf(F.col("value"))
+)
+
+# Parse the standard JSON with your schema
+df_parsed = df_converted.select(
+    F.from_json(F.col("standard_json"), raw_schema).alias("data")
 ).select("data.*")
 
 # Show the DataFrame schema and data
 df_parsed.printSchema()
 df_parsed.show(truncate=False)
+
 ```
 
-### Chatgpt
+### ChatGPT
 
 ```python
 # PySpark: Read a DynamoDB "Export to S3" (DynamoDB JSON) into a DataFrame
