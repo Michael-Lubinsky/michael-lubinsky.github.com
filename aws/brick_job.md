@@ -352,8 +352,7 @@ Cons & gotchas
 Code sketch (Databricks notebook, using your provided credential handle)
 - Assumes your admin exposed AWS creds via `dbutils.credentials.getServiceCredentialsProvider("chargeminder-dynamodb-creds")`.
 - Replace `TENANT_IDS` with your partition keys or iterate all tenants you own.
-```
-
+ 
 ```python
 from pyspark.sql import functions as F
 
