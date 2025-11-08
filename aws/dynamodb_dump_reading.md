@@ -148,7 +148,7 @@ def convert_dynamodb_json(dynamodb_json_str):
 
 Main logic in following 3 lines:
 ```python 
-raw_lines = spark.read.text(ddb_export_s3_uri).select("value").rdd.map(lambda r: r[0])
+raw_lines = spark.read.text("s3a://YOUR-BUCKET/AWSDynamoDB/.../data/*.gz").select("value").rdd.map(lambda r: r[0])
 clean_json_rdd = raw_lines.map(convert_dynamodb_json).filter(lambda s: s is not None)
 df_converted = spark.read.schema(raw_schema).json(ddbjson_to_python)
 ```
