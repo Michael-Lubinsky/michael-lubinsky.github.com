@@ -18,36 +18,59 @@ aws dynamodb scan --table-name chargeminder-car-telemetry --output json \
 
 If you want to strip DynamoDB’s data-type wrappers ({"S": "value"}, {"N": "123"}), use AWS’s --projection-expression or a small Python helper (see below)
 
-### pure JSONL output
+### Pure JSONL output (no types)
 
 ```python
 import boto3, json
 from boto3.dynamodb.types import TypeDeserializer
+from decimal import Decimal
 
-dynamodb = boto3.client('dynamodb')
-table_name = 'YourTableName'
+PROFILE = "PowerUserAccess-447759255101"
+REGION = "us-east-1"
+
+session = boto3.Session(region_name=REGION, profile_name=PROFILE) if PROFILE else boto3.Session(region_name=REGION)
+dynamodb = session.client("dynamodb")
+
+table_name = 'chargeminder-car-telemetry'
 
 deserializer = TypeDeserializer()
 items = []
 last_key = None
 
+fname='export_new_'+table_name+'.jsonl'
+
+def convert_decimals(obj):
+    """Recursively convert Decimals to int or float."""
+    if isinstance(obj, list):
+        return [convert_decimals(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        # Convert to int if no fractional part, else float
+        return int(obj) if obj % 1 == 0 else float(obj)
+    else:
+        return obj
+
+last_key = None
+
 with open('export.jsonl', 'w') as f:
     while True:
+        params = {'TableName': table_name}
         if last_key:
-            response = dynamodb.scan(
-                TableName=table_name,
-                ExclusiveStartKey=last_key
-            )
-        else:
-            response = dynamodb.scan(TableName=table_name)
-        
+            params['ExclusiveStartKey'] = last_key
+
+        response = dynamodb.scan(**params)
+
         for item in response['Items']:
             python_item = {k: deserializer.deserialize(v) for k, v in item.items()}
+            python_item = convert_decimals(python_item)
             f.write(json.dumps(python_item) + '\n')
-        
+
         last_key = response.get('LastEvaluatedKey')
         if not last_key:
             break
+
+print("Export complete:",  fname)
 ```
 Add these lines at the end if you want to push it to an S3 bucket:
 ```
