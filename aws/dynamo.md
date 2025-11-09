@@ -48,7 +48,13 @@ with open('export.jsonl', 'w') as f:
         last_key = response.get('LastEvaluatedKey')
         if not last_key:
             break
-```            
+```
+Add these lines at the end if you want to push it to an S3 bucket:
+```
+import boto3
+s3 = boto3.client('s3')
+s3.upload_file('export.jsonl', 'your-s3-bucket-name', 'exports/export.jsonl')
+```
 
 ## Export table to file  in json  format (many lines for single json)
 
