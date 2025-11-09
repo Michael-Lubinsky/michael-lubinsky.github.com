@@ -10,6 +10,77 @@ They have their own read and write capacity provisioned separately from the base
 DynamoDB offers two types of capacity modes: provisioned and on-demand.  
 ```
 
+## Export table to file  in jsonl format (1 json line per record)
+```
+aws dynamodb scan --table-name chargeminder-car-telemetry --output json \
+  | jq -c '.Items[]' > export.jsonl
+```  
+
+If you want to strip DynamoDB’s data-type wrappers ({"S": "value"}, {"N": "123"}), use AWS’s --projection-expression or a small Python helper (see below)
+
+### pure JSONL output
+
+```python
+import boto3, json
+from boto3.dynamodb.types import TypeDeserializer
+
+dynamodb = boto3.client('dynamodb')
+table_name = 'YourTableName'
+
+deserializer = TypeDeserializer()
+items = []
+last_key = None
+
+with open('export.jsonl', 'w') as f:
+    while True:
+        if last_key:
+            response = dynamodb.scan(
+                TableName=table_name,
+                ExclusiveStartKey=last_key
+            )
+        else:
+            response = dynamodb.scan(TableName=table_name)
+        
+        for item in response['Items']:
+            python_item = {k: deserializer.deserialize(v) for k, v in item.items()}
+            f.write(json.dumps(python_item) + '\n')
+        
+        last_key = response.get('LastEvaluatedKey')
+        if not last_key:
+            break
+```            
+
+## Export table to file  in json  format (many lines for single json)
+
+```python
+import boto3, json
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('YourTableName')
+
+items = []
+response = table.scan()
+items.extend(response['Items'])
+
+while 'LastEvaluatedKey' in response:
+    response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+    items.extend(response['Items'])
+
+with open('export.json', 'w') as f:
+    json.dump(items, f, indent=2)
+
+# To push to S3 directly:
+#-------------------------
+ 
+import boto3, json
+
+s3 = boto3.client('s3')
+s3.put_object(
+    Bucket='your-s3-bucket',
+    Key='export.json',
+    Body=json.dumps(items)
+)
+```
 ## Global Secondary Index (GSI)
 
 <https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html>
