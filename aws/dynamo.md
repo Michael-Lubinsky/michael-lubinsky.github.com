@@ -67,6 +67,66 @@ aws dynamodb describe-table --table-name YOUR_TABLE_NAME --query 'Table.ItemCoun
 
 **Note**: This count is updated approximately every 6 hours, so it may not be real-time accurate.
 
+## Exact count
+```bash
+aws dynamodb scan \
+    --table-name <your-table-name> \
+    --select "COUNT" \
+
+
+aws dynamodb scan \
+    --table-name <your-table-name> \
+    --select "COUNT" \
+    --query "Count"
+
+```
+## Python approx and exact count
+``` python
+import boto3
+
+def get_approx_count(table_name, region="us-east-1"):
+    client = boto3.client("dynamodb", region_name=region)
+    response = client.describe_table(TableName=table_name)
+    return response["Table"]["ItemCount"]
+
+if __name__ == "__main__":
+    table = "chargeminder-car-telemetry"
+    count = get_approx_count(table)
+    print(f"Approximate item count in {table}: {count}")
+
+
+import boto3
+
+def get_exact_count(table_name, region="us-east-1"):
+    dynamodb = boto3.client("dynamodb", region_name=region)
+    total = 0
+    last_evaluated_key = None
+
+    while True:
+        if last_evaluated_key:
+            response = dynamodb.scan(
+                TableName=table_name,
+                Select="COUNT",
+                ExclusiveStartKey=last_evaluated_key
+            )
+        else:
+            response = dynamodb.scan(
+                TableName=table_name,
+                Select="COUNT"
+            )
+        total += response["Count"]
+        last_evaluated_key = response.get("LastEvaluatedKey")
+        if not last_evaluated_key:
+            break
+
+    return total
+
+if __name__ == "__main__":
+    table = "chargeminder-car-telemetry"
+    count = get_exact_count(table)
+    print(f"Exact item count in {table}: {count}")
+
+```
 ## 5. One-Liner for Key Info
 ```bash
 aws dynamodb describe-table --table-name YOUR_TABLE_NAME \
