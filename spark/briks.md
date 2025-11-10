@@ -18,6 +18,32 @@ Catalog (top-level container)
 │   └── Function (UDF)
 ```
 
+
+### Databricks CLI
+```bash
+brew tap databricks/tap
+brew install databricks
+databricks --version
+databricks --help
+cat  ~/.databricks/config
+databricks auth profiles
+databricks warehouses list
+databricks auth describe -p work
+
+# show number of record in table
+TABLE=mlubinsly_telemetry
+echo $TABLE
+
+databricks api post /api/2.0/sql/statements \
+  --json '{
+    "warehouse_id": "c39aadaef2c738fb",
+    "statement": "SELECT count(*) FROM hcai_databricks_dev.chargeminder2.mlubinsky_telemetry",
+    "wait_timeout": "30s"
+  }' -p work
+
+echo $TABLE
+```
+
 ### Delta Lake
 Delta Lake is an open-source storage layer that brings reliability, performance, and governance to data lakes. It is tightly integrated with Databricks and underpins much of its functionality.
 
