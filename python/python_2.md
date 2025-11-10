@@ -1,5 +1,6 @@
 ## Python notes continued
-
+### with
+https://habr.com/ru/articles/964502/ 
 
 ### Transpose Matrix 
 ```python
