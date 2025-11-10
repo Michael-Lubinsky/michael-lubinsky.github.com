@@ -2,6 +2,8 @@
 
 https://ru.algorithmica.org/
 
+https://habr.com/ru/articles/964104/ LeetCode
+
 #### Algebraic data types
 
 <https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
