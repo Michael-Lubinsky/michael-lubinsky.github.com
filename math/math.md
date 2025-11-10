@@ -4,6 +4,8 @@
 
 <https://www.kvant.digital/>
 
+<https://github.com/valeman/Awesome_Math_Books>
+
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
 ### Koopman Operator
