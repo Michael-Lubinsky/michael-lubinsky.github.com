@@ -34,6 +34,7 @@ databricks auth describe -p work
 TABLE=mlubinsly_telemetry
 echo $TABLE
 
+## hardcode table inside:
 databricks api post /api/2.0/sql/statements \
   --json '{
     "warehouse_id": "c39aadaef2c738fb",
@@ -42,6 +43,13 @@ databricks api post /api/2.0/sql/statements \
   }' -p work
 
 echo $TABLE
+
+
+databricks api post /api/2.0/sql/statements \
+  --json "{
+    \"warehouse_id\": \"c39aadaef2c738fb\",
+    \"statement\": \"SELECT count(*) FROM hcai_databricks_dev.chargeminder2.${TABLE}\"
+  }" -p work
 ```
 
 ### Delta Lake
