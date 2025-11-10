@@ -722,6 +722,73 @@ display(dbutils.fs.ls("s3://chargeminder-2/_checkpoints/"))
 If you want, I can give you a tiny cell that flips your job to a **new checkpoint path** automatically (e.g., `_checkpoints/fact_telemetry_reprocess_2025-11-04`) so you don’t have to delete anything.
 
 
+
+# Reprocessing Archived Files in Your Databricks Streaming Job
+
+Your code's archiving logic (`archive_processed_files()`) moves successfully processed files from the source S3 prefix (e.g., `s3://chargeminder-2/raw/dynamodb/chargeminder-mlubinsky-telemetry/`) to the archive prefix (e.g., `s3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/`) using `dbutils.fs.mv()`. This is a common pattern for data lakes to prevent re-ingestion, but it makes reprocessing intentional (e.g., for errors or schema evolution).
+
+Reprocessing is straightforward: **Manually move files back to the source path**, then **restart the stream** to let Auto Loader detect and process them again. Auto Loader's checkpointing ensures it tracks what's been ingested, but you can override with a new checkpoint or schema tweaks. Below, I'll cover scenarios (errors vs. schema changes) and step-by-step instructions.
+
+#### Key Concepts
+- **Checkpoint Safety**: Your stream uses `checkpointLocation` (e.g., `s3://chargeminder-2/_checkpoints/mlubinsky-telemetry`). It logs processed files/metadata—moving files back won't auto-reprocess unless you clear/rename the checkpoint.
+- **Schema Evolution**: Auto Loader supports adding columns (`cloudFiles.schemaEvolutionMode="addNewColumn"`) without full reprocessing.
+- **No Data Loss**: Archived files remain intact; MERGE in `upsert_batch` handles upserts idempotently (via `event_id` PK).
+
+| Scenario | Trigger | Reprocessing Impact | Best Tool |
+|----------|---------|---------------------|-----------|
+| **Job Error** (e.g., transform fail) | Partial batch fails; some files archived, others not. | Reprocess only failed files; no schema change. | S3 Console or AWS CLI. |
+| **Schema Change** (e.g., add column) | Update `raw_schema` or DDL; run stream with evolution. | Full reprocess if needed; append-only for new cols. | Databricks SQL + Auto Loader. |
+
+#### Step-by-Step: Reprocessing Archived Files
+
+##### 1. **Stop the Running Job/Stream**
+   - In Databricks UI: Go to **Workflows** → Your Job → **Runs** → Stop the active run.
+   - Or via API: `POST /api/2.0/jobs/runs/cancel` with run ID.
+   - This prevents conflicts during file moves.
+
+##### 2. **Identify Files to Reprocess**
+   - **For Errors**: Check Job logs/metrics (`METRICS_TABLE`) for batch IDs/files that failed (e.g., `status="FAILED"`, `error_message`).
+     ```sql
+     SELECT * FROM hcai_databricks_dev.chargeminder2.telemetry_metrics 
+     WHERE status = 'FAILED' ORDER BY run_timestamp DESC;
+     ```
+     - From logs, note archived file paths (e.g., via `source_file` in quarantined data).
+   - **For Schema Changes**: Query the archive for all files (or date range).
+     ```sql
+     -- List archived files (use Databricks SQL or AWS CLI)
+     LIST 's3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/';
+     ```
+   - **Tip**: If high volume, use AWS CLI: `aws s3 ls s3://chargeminder-2/archived/... --recursive | grep jsonl`.
+
+##### 3. **Move Files Back to Source Path**
+   - **Manual (Small Scale)**: Use Databricks Notebook (attach to your cluster):
+     ```python
+     # In a notebook cell
+     from delta.utils import DeltaFiles
+
+     # Example: Move specific files back
+     source_prefix = "s3://chargeminder-2/raw/dynamodb/chargeminder-mlubinsky-telemetry/"
+     archive_prefix = "s3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/"
+     
+     # List archived files (adapt for your needs)
+     archived_files = dbutils.fs.ls(archive_prefix)  # Returns list of FileInfo
+     for file_info in archived_files:
+         if file_info.name.endswith('.jsonl'):  # Filter JSONL
+             archive_path = file_info.path
+             source_path = archive_path.replace(archive_prefix, source_prefix)
+             dbutils.fs.mv(archive_path, source_path, recurse=True)
+             print(f"Moved back: {source_path}")
+     ```
+     - Run this in a one-off notebook; test with `--dryrun` if available.
+
+   - **Bulk (AWS CLI/S3 Console)**:
+     - CLI: `aws s3 mv s3://chargeminder-2/archived/.../file.jsonl s3://chargeminder-2/raw/.../file.jsonl --recursive`
+     - Console: Select files in S3 → Actions → Copy/Move.
+     - **Caution**: Add a timestamp suffix (e.g., `_reprocess_v2.jsonl`) to avoid name conflicts.
+
+
+
+
 ### ✅ Recommendation
 
 Keep both schema and checkpoint paths persistent and unique per stream:
@@ -984,3 +1051,313 @@ aws sqs receive-message --queue-url YOUR_DLQ_URL
 **Cost:** Only +$0.50/month for 1M records
 
 **Recommendation:** Use the robust version for production! 🚀
+
+
+
+
+
+
+
+
+
+ ## 4. **Handle Schema Changes (If Applicable)**
+   - **Add Columns**: Update `raw_schema` (e.g., add `StructField("new_field", StringType(), True)`) and DDL (`create_or_update_table()`).
+     - Re-run the job: Auto Loader's `"addNewColumn"` mode appends without reprocessing old data.
+   - **Breaking Changes** (e.g., type changes): 
+     - Set `cloudFiles.schemaEvolutionMode="rescue"` to quarantine bad rows.
+     - Or full reprocess: Clear checkpoint (delete contents of `checkpoint_path`) before restart—**warning: loses ingestion history**.
+   - **Test**: Run a dry-run job with `maxFilesPerTrigger=1` on a subset.
+
+## 5. **Restart the Stream and Monitor**
+   - **Restart Job**: In UI, **Run Now** or resume schedule (now "Continuously" if using notifications).
+   - **Verify Reprocessing**:
+     - Watch logs for "Processing Batch X" with your files.
+     - Query target table: `SELECT COUNT(*) FROM {FULL_TABLE} WHERE pipeline_ingest_ts > '2025-11-09';` (post-reprocess).
+     - Check metrics: New rows in `METRICS_TABLE` with updated counts.
+   - **Checkpoint Reset (If Needed)**: To force re-detection:
+     ```python
+     # In notebook: Clear checkpoint (one-time)
+     dbutils.fs.rm(CONFIG["checkpoint_path"], recurse=True)
+     ```
+     - Then restart—Auto Loader rescans from scratch.
+
+## 6. **Prevention and Best Practices**
+   - **Error Handling**: In `upsert_batch`, add try-catch around archiving—only move on full success.
+     ```python
+     # In upsert_batch, after MERGE
+     try:
+         archive_processed_files(micro_df)
+     except Exception as ae:
+         print(f"⚠️ Archiving failed: {ae} — Files remain in source for retry")
+     ```
+   - **Dry Runs**: Add a config flag (`"dry_run": True`) to skip archiving/MERGE for testing schema changes.
+   - **Versioned Archives**: Append timestamps to archive paths (e.g., `/archived/YYYY/MM/DD/`) for easier rollback.
+   - **Alternatives to Archiving**:
+     - Use Auto Loader's **file filtering** (e.g., `cloudFiles.includeExistingFiles=true` for re-runs) instead of moving.
+     - Or soft-archive: Add a `processed` tag via S3 metadata, filter in Auto Loader.
+   - **Monitoring**: Set Job alerts for failures; use Delta Lake's time travel (`AS OF TIMESTAMP`) to rollback bad inserts.
+
+This process typically takes 5-15 minutes for small batches. If reprocessing large volumes (>1TB), consider partitioning by date in your source S3 structure. Let me know your error details or schema mods for tailored tweaks!
+
+
+## Explanation of `rescuedDataColumn` Option
+
+The `.option("rescuedDataColumn", "_rescued_data")` line in your Auto Loader (`cloudFiles`) configuration tells Databricks to **automatically rescue (save) malformed or unparsable records** during ingestion, rather than failing the entire batch. Here's a breakdown:
+
+## What It Does
+- **Purpose**: When Auto Loader reads JSON files (or other formats) against your explicit `raw_schema`, some rows might not conform:
+  - Missing required fields.
+  - Type mismatches (e.g., expected `string` but got `int`).
+  - Malformed JSON (e.g., syntax errors from DynamoDB Lambda exports).
+  - Without this, the job would **fail** (throwing a schema validation error), halting processing.
+- **How It Works**:
+  - Auto Loader parses each row against `raw_schema`.
+  - If a row fails, it's **not dropped**—instead, the **raw, unparsed content** (as a JSON string) is inserted into a new column named `_rescued_data`.
+  - Valid rows proceed normally.
+  - The `_rescued_data` column is added to your DataFrame schema (nullable `string` type).
+- **Example**:
+  - Input JSON row: `{"event_id": "abc", "recorded_at": 123}` (type mismatch: `recorded_at` should be `string`).
+  - Output: Row has all normal columns as `null` (or defaults), but `_rescued_data` = `'{"event_id": "abc", "recorded_at": 123}'`.
+- **Benefits**:
+  - **Resilience**: Job continues; no full failure.
+  - **Debugging**: Query `_rescued_data` to inspect/fix issues (e.g., `df.filter(F.col("_rescued_data").isNotNull()).show()`).
+  - **Downstream Handling**: In `upsert_batch`, filter out rescued rows or route to quarantine.
+
+#### When to Use/Configure
+- **Default**: No rescued column (fails on errors).
+- **Your Code**: Naming it `"_rescued_data"` is conventional—keep it if you plan to query it.
+- **Trade-Offs**:
+  | Pro | Con |
+  |-----|-----|
+  | Prevents job crashes | Adds a column (slight schema bloat) |
+  | Easy error triage | Rescued rows may need manual cleanup |
+
+If unused, you can drop it later: `.drop("_rescued_data")`.
+
+### Explanation of `schemaEvolutionMode` Option (Missing in Snippet)
+
+The `option("schemaEvolutionMode", "rescue")` is **not present** in the code snippet you shared (it uses `"addNewColumn"` in the full code from earlier responses). This option controls how Auto Loader **adapts to schema changes** over time (e.g., new fields in DynamoDB exports). Adding it is optional but recommended for evolving data like telemetry signals.
+
+#### What It Does
+- **Purpose**: Auto Loader infers/evolves the schema at `CONFIG["schema_path"]` based on new files. Without this, it fails on mismatches. With it, it handles changes gracefully.
+- **Modes** (All are "permissive"—no failures):
+  | Mode | Description | Best For | Impact on Data |
+  |------|-------------|----------|----------------|
+  | **"addNewColumn"** (Your Current) | Adds new fields as nullable columns to the schema. Existing rows get `null` for new fields. | Non-breaking adds (e.g., new signal like "battery_temp"). | Minimal data loss; appends columns. |
+  | **"rescue"** (You Asked About) | Like "addNewColumn", but **any row with schema mismatches** (new/missing fields) is routed to `rescuedDataColumn`. Valid rows evolve the schema. | Strict validation + error isolation (e.g., old files with outdated JSON). | Mismatches become raw strings in rescued column; schema still evolves. |
+  | **"failOnNewColumn"** (Strict) | Fails if new fields appear. | Frozen schemas (rare). | Stops processing. |
+  | **"none"** (Default) | No evolution; strict match to initial schema. | Stable data only. | Fails on changes. |
+
+- **"rescue" Specifics**:
+  - Combines evolution with rescue: New columns are added, but problematic rows (e.g., missing new required field) go to `_rescued_data` as raw JSON.
+  - Example: New file has `{"event_id": "abc", "new_signal": "xyz"}`. Schema adds `new_signal`; old rows get `null`; mismatched rows (e.g., bad types) → rescued.
+  - **Why "rescue" over "addNewColumn"?** Better for auditing—isolates "dirty" rows without polluting the main table.
+
+#### Why It's Missing & How to Add It
+- **In Snippet**: Omitted for brevity; full code had `"addNewColumn"`.
+- **Recommendation**: Use `"rescue"` if you have `rescuedDataColumn` enabled (synergistic). Add it right after `.option("cloudFiles.validateOptions", "true")`:
+  ```python
+  .option("cloudFiles.schemaEvolutionMode", "rescue")  # Handles changes + rescues mismatches
+  ```
+- **Trade-Offs**:
+  | Pro | Con |
+  |-----|-----|
+  | Evolves schema dynamically | More rescued rows if data varies wildly |
+  | Integrates with rescuedDataColumn | Slight perf hit on validation |
+
+#### Quick Test
+In a notebook:
+```python
+# Simulate: Add a mismatched file, run stream, query rescued rows
+df.filter(F.col("_rescued_data").isNotNull()).count()  # Should show issues
+```
+
+
+### Does a Dedicated Databricks Cluster Need to Be Always Running for a Job Task Scheduled Every Minute?
+
+**Short Answer**: Not strictly "always," but practically **yes**—you'll want it **running and ready** at all times to avoid delays, queuing, or failures. For ultra-frequent schedules like every minute, Databricks recommends using an **All-Purpose Cluster** (often called "dedicated" in this context) with **auto-termination** enabled after idle periods. This ensures near-instant job starts without the spin-up overhead of Job Clusters.
+
+#### Why This Setup?
+- **Job Clusters** (ephemeral, on-demand): These spin up when a job starts and shut down after. Great for infrequent runs, but:
+  - **Spin-up time**: 1-5 minutes (depending on size/policies), so a 1-minute schedule would cause massive overlap/queuing—jobs wait for the cluster to provision.
+  - Not ideal for <5-10 minute intervals; Databricks docs advise against it for high-frequency workloads.
+- **All-Purpose Clusters** (persistent/shared): Always provisioned and ready. Jobs attach instantly.
+  - Enable **auto-termination** (e.g., after 10-30 minutes of idle) to shut down when not in use, restarting on the next job trigger.
+  - Best for your scenario: Low latency, but managed costs.
+
+If your job runtime is <1 minute (e.g., quick stream micro-batch), the cluster can auto-terminate between runs, but keep it in a "running" state via scheduling or manual start for reliability.
+
+#### Comparison: Job vs. All-Purpose Clusters for Frequent Scheduling
+
+| Aspect | Job Clusters | All-Purpose Clusters |
+|--------|--------------|----------------------|
+| **Startup Time** | 1-5 min (provisioning) | Instant (already running) |
+| **Suitability for 1-Min Schedules** | Poor (queuing/delays) | Excellent (with auto-terminate) |
+| **When to Use** | Infrequent/batch jobs (e.g., hourly/daily) | Frequent/interactive (e.g., streaming, every min) |
+| **Termination** | Auto after job ends | Manual or auto after idle (configurable) |
+| **Sharing** | Job-only (isolated) | Multi-user (interactive notebooks/jobs) |
+
+### Is It Costly to Have an Always-Running Databricks Cluster?
+
+**Short Answer**: It *can* be, but not excessively if optimized—expect **$50-500/month** for a small cluster running 24/7 with auto-scaling and discounts, depending on size/location. All-Purpose Clusters cost ~2x more per DBU than Job Clusters, but for every-minute jobs, the time savings outweigh this. Use commitments and idle controls to cut 30-50%.
+
+#### Cost Breakdown (2025 Pricing Estimates)
+Databricks bills via **Databricks Units (DBUs)** per hour (processing power) + underlying cloud VM costs (e.g., AWS EC2). Pricing varies by tier (Standard/Premium), cloud (AWS/Azure/GCP), and commitments. From recent data:
+
+- **DBU Rates** (Premium Tier, per DBU-hour):
+  | Workload Type | AWS | Azure | Notes |
+  |---------------|-----|-------|-------|
+  | **Job Clusters** | ~$0.15-0.30 | ~$0.30-0.40 | Lower for non-interactive; spin-up only. |
+  | **All-Purpose Clusters** | ~$0.40-0.60 | ~$0.55-0.80 | ~2x higher; charged while running. |
+
+- **Example Monthly Cost** (small cluster, e.g., 2-4 nodes, AWS Premium, no commitments):
+  | Scenario | DBU-Hour Cost | VM Cost (est.) | Total/Month (24/7) | With 30% DBCU Discount |
+  |----------|---------------|----------------|---------------------|-------------------------|
+  | **Job Cluster** (infrequent) | $0.20/DBU | $0.10-0.20/node-hr | $10-50 (on-demand only) | $7-35 |
+  | **All-Purpose** (every min, auto-terminate 10-min idle) | $0.50/DBU | $0.20-0.40/node-hr | $200-800 (if always-on) | $140-560 |
+  | **Optimized All-Purpose** (spot instances + scale-to-zero) | $0.50/DBU | $0.10-0.30/node-hr | $100-400 | $70-280 |
+
+- **Factors Driving Cost**:
+  - **Always-On Penalty**: Charged per second while active (even idle). A 4-node cluster idling 24/7 could hit $300+/month in DBUs alone.
+  - **Savings Tips** (30-50% reduction):
+    - **Databricks Commit Units (DBCUs)**: Pre-buy for 1/3-year terms; up to 37% off pay-as-you-go.
+    - **Auto-Termination**: Set to 10-15 min idle—cluster shuts down between jobs if no activity.
+    - **Auto-Scaling**: Min 1 node, max based on load; use spot/preemptible VMs for 50-90% VM savings.
+    - **Serverless SQL/Jobs**: Emerging in 2025; pay-per-query, no cluster management (~20-40% cheaper for light workloads).
+    - **Reservations**: Cloud-side (e.g., AWS Reserved Instances) for VMs.
+
+For your every-minute streaming job, an All-Purpose cluster is cost-justified if jobs are short/light. Monitor via Databricks Cost Reports or third-party tools like CloudZero. If costs spike, switch to Serverless (if available for your workload) or batch less frequently.
+
+#  Achieving Near-Real-Time Processing for  Databricks Job
+
+Yes, for **almost real-time (near-RT) processing** of DynamoDB streams (via S3 JSONL exports), introducing a second AWS Lambda function to trigger your Databricks job immediately after the first Lambda (DynamoDB stream handler) completes is a **viable but not optimal** approach.  
+It's better suited for **batch-oriented jobs**, but your code uses **streaming Auto Loader** (`spark.readStream.format("cloudFiles")`), which is already designed for incremental, low-latency ingestion. 
+The best path forward is to **enable S3 event notifications directly in Auto Loader** for true event-driven processing without extra components. 
+
+##  Why Not Always the Best: Lambda 2 + Databricks Jobs API Trigger
+This setup would work: Lambda 1 (DynamoDB → S3) completes → Triggers S3 Event Notification → Lambda 2 invokes Databricks Jobs API (`/api/2.1/jobs/run-now`) to start your job.
+
+- **How It Works**:
+  1. Configure S3 bucket for **Event Notifications** on object creation (e.g., new JSONL file).
+  2. Route to SNS/SQS → Lambda 2.
+  3. In Lambda 2 (Python): Use `requests` to POST to Databricks API with your job ID and auth token (stored in Secrets Manager).
+     ```python
+     import requests
+     import json
+
+     def lambda_handler(event, context):
+         # Extract S3 key from event
+         s3_key = event['Records'][0]['s3']['object']['key']
+         
+         # Databricks API call
+         url = "https://<your-databricks-workspace>.cloud.databricks.com/api/2.1/jobs/run-now"
+         headers = {
+             "Authorization": "Bearer <your-personal-access-token>",
+             "Content-Type": "application/json"
+         }
+         payload = {
+             "job_id": <your-databricks-job-id>,  # From your job config
+             "notebook_params": {"s3_path": f"s3://{CONFIG['s3_bucket']}/{s3_key}"}  # Pass file path dynamically
+         }
+         
+         response = requests.post(url, headers=headers, data=json.dumps(payload))
+         if response.status_code == 200:
+             print(f"Triggered Databricks job for {s3_key}")
+         else:
+             raise Exception(f"API error: {response.text}")
+     ```
+  - Latency: ~5-30 seconds end-to-end (S3 event → Lambda → API → Databricks start).
+
+- **Pros**:
+  - Simple if your job is **batch-only** (non-streaming): Triggers a full run per file.
+  - Flexible: Pass params (e.g., specific file path) to process only new data.
+  - No polling waste.
+
+- **Cons**:
+  - **Added Complexity/Cost**: Extra Lambda (cold starts add 100ms-1s latency; ~$0.20/million invocations).
+  - **Overkill for Streaming**: Your code is already set up for continuous ingestion—re-triggering the whole job per file causes overlap/restarts, wasting resources.
+  - **Spin-Up Delays**: If using Job Clusters, each trigger waits 1-5 min to provision; All-Purpose helps but still ~10-20s.
+  - **Reliability**: API rate limits (100/min), token management, error retries needed.
+
+- **When to Use**: If switching to a **batch job** (e.g., `spark.read.json(single_file)` instead of streaming), or if notifications aren't feasible.
+
+## Better Alternative: Enable S3 Event Notifications in Auto Loader (Native Near-RT)
+Your code uses **Auto Loader streaming**, which supports **file notification mode**—S3 sends events directly to Databricks (via auto-provisioned SNS/SQS). This turns your 1-minute polling into **event-driven micro-batches** (processes new files in ~10-60 seconds). No Lambda 2 needed!
+
+- **How It Works** (As of Nov 2025 Docs):
+  1. S3 bucket notifies on new object (JSONL file from Lambda 1).
+  2. Databricks auto-sets up SNS topic + SQS queue (one-time via code or UI).
+  3. Auto Loader subscribes and triggers micro-batches on events—no fixed schedule.
+  - End-to-End Latency: ~5-20 seconds (S3 event → Databricks process).
+
+- **Pros**:
+  - **True Near-RT**: Processes files as they land; scales to high volume without manual triggers.
+  - **Zero Extra Cost/Components**: Built-in; no Lambda invocations.
+  - **Fault-Tolerant**: Handles retries, schema evolution, exactly-once semantics.
+  - **Your Code is Ready**: Just flip a flag and one-time setup.
+
+- **Cons**:
+  - Requires **S3 permissions** for Databricks (IAM role with SNS/SQS access).
+  - One-time setup (~5 min); queue backlogs if cluster is down.
+  - Still needs a running cluster (but auto-terminate works).
+
+- **Implementation Steps**:
+  1. **Grant Permissions** (One-Time):
+     - In AWS IAM: Add Databricks service role to S3 bucket policy for SNS/SQS (docs: [Auto Loader File Notification Setup](https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/file-notification-mode)).
+     - Example Policy Snippet:
+       ```json
+       {
+         "Effect": "Allow",
+         "Principal": {"Service": "sqs.amazonaws.com"},
+         "Action": "sns:Publish",
+         "Resource": "arn:aws:sns:*:*:AutoLoader-*"
+       }
+       ```
+
+  2. **Update Your Code** (In `read_stream()`):
+     ```python
+     @retry(max_attempts=3, delay=10)
+     def read_stream():
+         print(f"Reading from: {SOURCE_PATH}")
+         
+         return (
+             spark.readStream
+                  .format("cloudFiles")
+                  .option("cloudFiles.format", "json")
+                  .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+                  .option("cloudFiles.useNotifications", "true")  # Enable events (key change!)
+                  .option("cloudFiles.maxFilesPerTrigger", CONFIG["max_files_per_trigger"])
+                  .option("cloudFiles.validateOptions", "true")
+                  .option("cloudFiles.schemaEvolutionMode", "addNewColumn")
+                  .option("rescuedDataColumn", "_rescued_data")
+                  .schema(raw_schema)
+                  .load(SOURCE_PATH)
+                  .withColumn("source_file", F.col("_metadata.file_path"))  # As discussed
+         )
+     ```
+     - Remove the 1-minute schedule—run the job continuously (e.g., "Continuously" in Job config).
+
+  3. **Job Config**:
+     - Use **All-Purpose Cluster** with auto-terminate (10 min idle).
+     - Schedule: "Continuously" or manual start (notifications keep it active).
+     - Monitor: Check SQS queue depth in AWS Console.
+
+- **Latency Comparison**:
+  | Approach | End-to-End Delay | Setup Effort | Extra Cost/Month |
+  |----------|------------------|--------------|------------------|
+  | **Current (Poll Every Min)** | 30s-1min | Low | Low (polling overhead) |
+  | **Lambda 2 + API Trigger** | 10-40s | Medium | $1-5 (Lambda + API calls) |
+  | **Auto Loader Notifications** | 5-20s | Low-Medium | $0 (native) |
+
+#### Cost Implications
+- **No Major Change**: Notifications don't add DBU costs—same as polling, but more efficient (processes only new files).
+- **Cluster**: Still needs to be "always ready" (All-Purpose, ~$100-300/month optimized, as before). Events keep it active minimally.
+- **Total**: For near-RT, expect +10-20% vs. batch (due to more frequent micro-batches), but far cheaper than over-provisioning.
+
+#### Recommendation
+- **Go with Auto Loader Notifications**: It's the **cleanest, most scalable** for your streaming setup—achieves near-RT without Lambda 2. Implement the code change and permissions today.
+- **Fallback**: If notifications fail (e.g., IAM issues), add Lambda 2 for API triggers—it's a quick win (~30 min setup).
+- **Test**: Start with `maxFilesPerTrigger=1` and a dev bucket; measure latency with timestamps in your data.
+
+If you hit setup snags (e.g., SNS permissions), share error logs!
+
