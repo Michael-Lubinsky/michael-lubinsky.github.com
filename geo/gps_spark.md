@@ -147,7 +147,11 @@ If you’d rather not preprocess shapefiles:
 * **Apache Sedona** has U.S. census polygon loaders and spatial join operators.
 * Commercial alternative: use APIs like Google Maps or Mapbox — but that’s *not static* and usually costly at scale.
 
----
+## H3 GEO 
+<https://h3geo.org/>
+H3 is a geospatial indexing system that partitions the world into hexagonal cells. H3 is open source under the Apache 2 license.
+
+The H3 Core Library implements the H3 grid system. It includes functions for converting from latitude and longitude coordinates to the containing H3 cell, finding the center of H3 cells, finding the boundary geometry of H3 cells, finding neighbors of H3 cells, and more.
 
 ## ⚡ Suggested Static Lookup Table Setup in Databricks
 
