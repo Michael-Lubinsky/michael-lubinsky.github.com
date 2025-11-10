@@ -2,6 +2,8 @@
 check syntax  
 python -m py_compile my_script.py
 
+https://habr.com/ru/companies/yandex_praktikum/articles/960812/
+
 ### None
 ```python
 if x is None:
