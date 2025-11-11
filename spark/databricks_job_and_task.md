@@ -27,7 +27,23 @@ S3 (event) → SNS topic → SQS queue → Databricks Auto Loader
 
 ## IAM Requirements:
 
-## 🔐 AWS IAM Permissions (Corrected)
+## GROK
+
+# 1. Give Databricks permission to create SNS/SQS for you
+aws iam create-policy --policy-name DatabricksAutoLoaderNotifications \
+  --policy-document '{
+    "Version":"2012-10-17",
+    "Statement":[
+      {"Effect":"Allow","Action":["sns:CreateTopic","sns:Subscribe"],"Resource":"*"},
+      {"Effect":"Allow","Action":["sqs:*"],"Resource":"*"}
+    ]
+  }'
+
+# Attach the policy to the role that your Databricks workspace uses for S3 access
+Databricks will now auto-provision an SNS topic + SQS queue the first time you start the stream with useNotifications=true.
+
+
+## 🔐 AWS IAM Permissions (Claude)
 
 ### IAM Policy for Databricks
 
