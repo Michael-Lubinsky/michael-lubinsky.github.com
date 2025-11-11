@@ -27,96 +27,213 @@ S3 (event) → SNS topic → SQS queue → Databricks Auto Loader
 
 ## IAM Requirements:
 
-✅ S3: GetObject, ListBucket, PutObject (for archive)
-✅ SQS: ReceiveMessage, DeleteMessage, GetQueueAttributes
-✅ S3 Event Notifications configured
-✅ SQS Queue policy allowing S3 to send messages
+## 🔐 AWS IAM Permissions (Corrected)
 
-### AWS IAM you need:
-
-1. **SNS topic policy** that allows **S3** to publish to the topic
-   (Principal = `s3.amazonaws.com`)
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "AllowS3ToPublish",
-    "Effect": "Allow",
-    "Principal": {"Service": "s3.amazonaws.com"},
-    "Action": "SNS:Publish",
-    "Resource": "arn:aws:sns:us-east-1:<ACCOUNT_ID>:AutoLoaderTopic",
-    "Condition": {
-      "ArnLike": {"aws:SourceArn": "arn:aws:s3:::chargeminder-2"}
-    }
-  }]
-}
-```
-
-2. **SQS queue policy** that allows **the SNS topic** to send messages to the queue
-   (Principal = `sns.amazonaws.com`, Action = `SQS:SendMessage`, with SourceArn = your topic)
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "AllowSnsToSend",
-    "Effect": "Allow",
-    "Principal": {"Service": "sns.amazonaws.com"},
-    "Action": "SQS:SendMessage",
-    "Resource": "arn:aws:sqs:us-east-1:<ACCOUNT_ID>:AutoLoaderQueue",
-    "Condition": {
-      "ArnEquals": {"aws:SourceArn": "arn:aws:sns:us-east-1:<ACCOUNT_ID>:AutoLoaderTopic"}
-    }
-  }]
-}
-```
-
-3. **IAM permissions for the Databricks role** (the role your job uses) so Auto Loader can poll SQS and read/write S3:
+### IAM Policy for Databricks
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
-    { "Effect": "Allow",
-      "Action": ["sqs:GetQueueUrl","sqs:GetQueueAttributes","sqs:ReceiveMessage","sqs:DeleteMessage","sqs:ChangeMessageVisibility"],
-      "Resource": "arn:aws:sqs:us-east-1:<ACCOUNT_ID>:AutoLoaderQueue"
-    },
-    { "Effect": "Allow",
-      "Action": ["s3:GetBucketLocation","s3:ListBucket"],
-      "Resource": "arn:aws:s3:::chargeminder-2"
-    },
-    { "Effect": "Allow",
-      "Action": ["s3:GetObject","s3:GetObjectVersion"],
-      "Resource": "arn:aws:s3:::chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/*"
-    },
-    { "Effect": "Allow",
-      "Action": ["s3:ListBucket","s3:GetObject","s3:PutObject"],
+    {
+      "Sid": "S3DataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
       "Resource": [
         "arn:aws:s3:::chargeminder-2",
-        "arn:aws:s3:::chargeminder-2/_checkpoints/fact_telemetry/*"
+        "arn:aws:s3:::chargeminder-2/*"
       ]
+    },
+    {
+      "Sid": "SQSAccessForAutoLoader",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ChangeMessageVisibility"
+      ],
+      "Resource": "arn:aws:sqs:*:*:databricks-auto-ingest-*"
+    },
+    {
+      "Sid": "SQSListQueues",
+      "Effect": "Allow",
+      "Action": "sqs:ListQueues",
+      "Resource": "*"
     }
   ]
 }
 ```
 
-4. **S3 bucket notification** wired to the SNS topic (in the S3 console or via IaC) for the prefixes you care about (e.g., `raw/dynamodb/chargeminder-car-telemetry/`).
+### S3 Event Notification to SQS
+
+```json
+{
+  "QueueConfigurations": [
+    {
+      "Id": "DatabricksAutoLoaderNotification",
+      "QueueArn": "arn:aws:sqs:us-east-1:ACCOUNT_ID:databricks-auto-ingest-chargeminder",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": {
+        "Key": {
+          "FilterRules": [
+            {
+              "Name": "prefix",
+              "Value": "raw/dynamodb/chargeminder-car-telemetry/"
+            },
+            {
+              "Name": "suffix",
+              "Value": ".json"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+```
+
+### SQS Queue Policy
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": "sqs:SendMessage",
+      "Resource": "arn:aws:sqs:us-east-1:ACCOUNT_ID:databricks-auto-ingest-chargeminder",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "arn:aws:s3:::chargeminder-2"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT_ID:role/databricks-instance-role"
+      },
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:ChangeMessageVisibility"
+      ],
+      "Resource": "arn:aws:sqs:us-east-1:ACCOUNT_ID:databricks-auto-ingest-chargeminder"
+    }
+  ]
+}
+```
+
+## 🎯 Two Modes of Operation
+
+### Mode 1: Continuous Streaming (Your Current Code)
+```python
+if CONFIG["trigger_mode"] == "availableNow":
+    writer = writer.trigger(availableNow=True)  # ✅ Process files then stop
+else:
+    writer = writer.trigger(processingTime=CONFIG["processing_time"])  # Continuous
+```
+
+**For File Arrival Trigger, use:**
+```python
+CONFIG = {
+    "trigger_mode": "availableNow",  # ✅ Recommended for cost efficiency
+    # When file arrives → job starts → processes all files → stops
+}
+```
+
+### Mode 2: Always-On Streaming
+```python
+CONFIG = {
+    "trigger_mode": "processingTime",
+    "processing_time": "1 minute",
+    # Cluster stays running, checks every minute
+}
+```
+
+## 📊 Comparison: Batch vs Streaming with File Arrival
+
+| Approach | Trigger | Processing | Checkpoints | Duplicates | Cost |
+|----------|---------|------------|-------------|------------|------|
+| **Batch (read + merge)** | Manual/Orchestrated | Each file separately | No | Possible | Lower if infrequent |
+| **Streaming + File Arrival** ✅ | Automatic on file | Incremental with checkpoints | Yes | Prevented | Optimal with availableNow |
+| **Continuous Streaming** | Always running | Continuous micro-batches | Yes | Prevented | Higher (always on) |
+
+## ✅ Your Code is Already Correct!
+
+The only actual modifications needed:
+
+### 1. Change One Option (Critical)
+```python
+.option("cloudFiles.useNotifications", "true")  # Changed from "false"
+```
+
+### 2. Optionally Add Queue Name (For Multiple Jobs)
+```python
+.option("cloudFiles.queueName", "databricks-auto-ingest-chargeminder")  # Optional but recommended
+```
+
+### 3. Recommended: Use availableNow Trigger
+```python
+CONFIG = {
+    "trigger_mode": "availableNow",  # Process files and stop (cost-efficient)
+    # ... rest of config unchanged
+}
+```
+
+## 🚀 Setup Steps
+
+### 1. Create SQS Queue
+```bash
+aws sqs create-queue \
+  --queue-name databricks-auto-ingest-chargeminder \
+  --attributes MessageRetentionPeriod=86400
+```
+
+### 2. Configure S3 Event Notifications
+```bash
+aws s3api put-bucket-notification-configuration \
+  --bucket chargeminder-2 \
+  --notification-configuration file://s3-notification.json
+```
+
+### 3. Update Your Code
+```python
+# In read_stream() function:
+.option("cloudFiles.useNotifications", "true")
+.option("cloudFiles.queueName", "databricks-auto-ingest-chargeminder")
+```
+
+### 4. Create Databricks Job
+- **No File Arrival Trigger needed in Databricks UI!**
+- Just create a regular scheduled job or run it manually first
+- Auto Loader will automatically poll the SQS queue
+- When files arrive → Auto Loader processes them automatically
+
+## 🎓 Key Takeaways
+
+1. ✅ **File Arrival = Streaming, not batch**
+2. ✅ **Auto Loader with useNotifications=true handles everything**
+3. ✅ **checkpointLocation is required**
+4. ✅ **schemaLocation is required**
+5. ✅ **Your original code is correct**, just change one option
+6. ✅ **availableNow trigger is recommended** for cost efficiency
 
  
-
-### What to put in Databricks
-
-For Auto Loader file-notification mode you typically set:
-
-* `cloudFiles.useNotifications = true`
-* `cloudFiles.region = "us-east-1"` (if needed)
-* Optionally `cloudFiles.queueUrl = "https://sqs.us-east-1.amazonaws.com/<ACCOUNT_ID>/AutoLoaderQueue"` (if you provisioned SQS yourself)
-
-Databricks then polls the SQS queue; as messages arrive, it reads the referenced S3 objects.
-
- 
-## Another opinoon on IAM permisiions for File arrive Trigger
+## Another opinion on IAM permisiions for File arrive Trigger
 
 
 🔐 AWS IAM Permissions Required
