@@ -1,7 +1,7 @@
 ## Databricks Job
 
 It Streamining we use readStream() and writeStream(), checkpoint required
-In File arrived we use  read() and merge(), sluster starts on demand
+ 
 
 ## Trigger Type: File Arrival
 
@@ -32,9 +32,14 @@ writer = (
                 .option("checkpointLocation", CONFIG["checkpoint_path"])
                 .foreachBatch(upsert_batch)
                 .option("mergeSchema", "true")
-                .trigger(availableNow=True)        # ### CHANGED: one-shot to fit File-Arrival job
+                .trigger(processingTime="30 seconds") # continuousl wathc  for new files
+                .trigger(availableNow=True)        #  Good for reprocessing current dta and stop File-Arrival job
         )
 ```
+
+If trigger is not speccified to writeStream default is   
+.trigger(processingTime="100ms")  
+which is 100 times per second
 
 
 ## IAM Requirements:
