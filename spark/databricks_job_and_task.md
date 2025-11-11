@@ -7,19 +7,13 @@ In File arrived we use  read() and merge(), sluster starts on demand
 
 S3 (event) → SNS topic → SQS queue → Databricks Auto Loader
 ```
-CONFIG = {
-    # ❌ REMOVE streaming-specific configs:
-    # "checkpoint_path": ...  # Not needed for batch
-    # "schema_path": ...      # Not needed for batch
-    # "trigger_mode": ...     # Not needed for batch
-    # "max_files_per_trigger": ...  # Not needed for batch
-    }
+# Change this line:
+.option("cloudFiles.useNotifications", "false")  # ❌ Current
+
+# To this:
+.option("cloudFiles.useNotifications", "true")   # ✅ For File Arrival
 ```
 
-✅ Remove readStream/writeStream → Use batch read/merge
-✅ Remove checkpoint and schema location configs
-✅ Add logic to get file paths from trigger
-✅ Change from continuous to batch processing
 
 IAM Requirements:
 
