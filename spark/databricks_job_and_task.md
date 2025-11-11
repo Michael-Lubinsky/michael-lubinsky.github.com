@@ -33,7 +33,7 @@ writer = (
                 .foreachBatch(upsert_batch)
                 .option("mergeSchema", "true")
                 .trigger(processingTime="30 seconds") # continuousl wathc  for new files
-                .trigger(availableNow=True)        #  Good for reprocessing current dta and stop File-Arrival job
+                .trigger(availableNow=True)    #  Good for reprocessing current dta and stop File-Arrival job DOES NOT WAIT FOR NEW FILES
         )
 ```
 
