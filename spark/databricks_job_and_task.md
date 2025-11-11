@@ -407,7 +407,7 @@ aws s3api put-bucket-notification-configuration \
 ###   Option B: Step 3: Create Databricks Job with File Arrival Trigger
 
 In Databricks UI:
-
+```
 1. **Create Job**
 2. **Add Task:**
    - Task name: `process_telemetry`
@@ -420,27 +420,31 @@ In Databricks UI:
    - Select **File arrival**
    - Configure:
 
-     File notification service: SQS (or SNS)
-     Queue/Topic URL: https://sqs.us-east-1.amazonaws.com/YOUR_ACCOUNT_ID/databricks-file-arrival-queue
 
+File notification service: SQS (or SNS)
+Queue/Topic URL:
+https://sqs.us-east-1.amazonaws.com/YOUR_ACCOUNT_ID/databricks-file-arrival-queue
+```
 #### Advanced Options:
-
+```
 Wait for all tasks: ✓
 Max concurrent runs: 1 (or higher for parallel processing)
 Timeout: 60 minutes
+```
 
 
-
-### Option B:  Step 4: Test the Setup
-bash# Upload a test file to S3
+###  Test the Setup - Upload a test file to S3
+ 
+```bash
 aws s3 cp test-file.json s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/
-
-# Check SQS queue for message
+```
+### Check SQS queue for message
+```
 aws sqs receive-message \
   --queue-url https://sqs.us-east-1.amazonaws.com/YOUR_ACCOUNT_ID/databricks-file-arrival-queue
-
-# Monitor Databricks job runs
-# The job should trigger automatically within a few seconds
+```
+### Monitor Databricks job runs
+  The job should trigger automatically within a few seconds
 
 
 
