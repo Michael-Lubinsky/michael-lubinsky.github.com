@@ -12,10 +12,20 @@ S3 (event) → SNS topic → SQS queue → Databricks Auto Loader
 
 # To this:
 .option("cloudFiles.useNotifications", "true")   # ✅ For File Arrival
+.option("cloudFiles.queueName", "databricks-auto-ingest-chargeminder")
 ```
 
+```
+1. Lambda writes file → s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/file.json                   ↓
+2. S3 Event Notification → SQS Queue                       ↓
+3. Databricks File Arrival Trigger monitors SQS → Detects new file                       ↓
+4. Starts your Databricks Job (streaming query)                      ↓
+5. Auto Loader reads from SQS notification → Processes new file(s)                      ↓
+6. Checkpoint tracks processed files → No duplicates                     ↓
+7. Query completes (if using availableNow) → Cluster stops
+```
 
-IAM Requirements:
+## IAM Requirements:
 
 ✅ S3: GetObject, ListBucket, PutObject (for archive)
 ✅ SQS: ReceiveMessage, DeleteMessage, GetQueueAttributes
