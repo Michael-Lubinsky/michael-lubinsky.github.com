@@ -32,7 +32,7 @@ writer = (
                 .option("checkpointLocation", CONFIG["checkpoint_path"])
                 .foreachBatch(upsert_batch)
                 .option("mergeSchema", "true")
-                .trigger(processingTime="30 seconds") # continuousl wathc  for new files
+                .trigger(processingTime="30 seconds") # continuousl watch  for new files
                 .trigger(availableNow=True)    #  Good for reprocessing current dta and stop File-Arrival job DOES NOT WAIT FOR NEW FILES
         )
 ```
@@ -42,11 +42,186 @@ If trigger is not speccified to writeStream default is
 which is 100 times per second
 
 
-## IAM Requirements:
+## How to specify S3 location for Trigger and PySpark code in single place only?
 
-## GROK
+Below is a **complete, production-ready pattern** that lets you **declare the S3 location only once** and have it flow automatically into:
 
-# 1. Give Databricks permission to create SNS/SQS for you
+1. **Databricks file-arrival trigger** (the *Job* that wakes up when a new file lands)  
+2. **Your PySpark script** (the code that actually reads the files)
+
+---
+
+## 1. Declare the location **once** – in a **Databricks Job parameter**
+
+| UI | CLI | API |
+|----|-----|-----|
+| **Jobs → Edit → Parameters** | `databricks jobs configure --job-id <id> --json '{ "parameters": { "s3_source": "s3://my-bucket/raw/telemetry" } }'` | `POST /api/2.1/jobs/update` with `settings.parameters` |
+
+> **Only one place to change** when the bucket/prefix moves.
+
+---
+
+## 2. Trigger the job **on file arrival** using **S3 Event → SNS → Databricks Job**
+
+### Step-by-step (one-time)
+
+| Step | What you do |
+|------|-------------|
+| **a.** Create an **SNS topic** (Databricks can do it for you – see below) |
+| **b.** Configure **S3 bucket** → **Event Notification** → **SNS topic** on `*.jsonl` (or `*.gz`) |
+| **c.** Give Databricks permission to **subscribe** to that topic and **run the job** |
+
+```bash
+# 1. Create SNS policy (run once)
+aws sns create-topic --name databricks-file-arrival
+
+# 2. S3 bucket event (via console or CLI)
+aws s3api put-bucket-notification-configuration \
+  --bucket my-bucket \
+  --notification-configuration '{
+    "TopicConfigurations": [{
+      "TopicArn": "arn:aws:sns:us-east-1:123456789012:databricks-file-arrival",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": { "Key": { "FilterRules": [{ "Name": "suffix", "Value": ".jsonl" }]}}
+    }]
+  }'
+```
+
+> **Databricks will auto-subscribe** the first time you run the job with `cloudFiles.useNotifications=true`.
+
+---
+
+## 3. PySpark script – **read the parameter** (no hard-coded path)
+
+```python
+# -------------------------------------------------
+#  databricks_file_arrival_job.py
+# -------------------------------------------------
+import sys
+from pyspark.sql import functions as F
+
+# ---------- 1. Get the S3 path from job parameter ----------
+# Databricks injects parameters into sys.argv when you use "Parameters" in the UI
+if len(sys.argv) < 2:
+    raise ValueError("Missing required parameter: s3_source")
+S3_SOURCE = sys.argv[1]                     # <-- ONLY ONE PLACE
+
+# Optional: fallback for local testing
+# S3_SOURCE = S3_SOURCE or "s3://my-bucket/raw/telemetry"
+
+print(f"Job started for path: {S3_SOURCE}")
+
+# ---------- 2. Auto Loader (file-notification mode) ----------
+df = (
+    spark.readStream
+        .format("cloudFiles")
+        .option("cloudFiles.format", "json")
+        .option("cloudFiles.schemaLocation", f"{S3_SOURCE}/_schema")
+        .option("cloudFiles.useNotifications", "true")   # <-- reacts to SNS
+        .option("cloudFiles.maxFilesPerTrigger", "500")
+        .option("cloudFiles.schemaEvolutionMode", "rescue")
+        .option("rescuedDataColumn", "_rescued_data")
+        .schema(raw_schema)
+        .load(S3_SOURCE)
+        .withColumn("source_file", F.col("_metadata.file_path"))
+)
+
+# ---------- 3. Rest of your pipeline (transform → MERGE) ----------
+# ... (same as before) ...
+
+# ---------- 4. Start the stream ----------
+query = (
+    df.writeStream
+      .option("checkpointLocation", f"{S3_SOURCE}/_checkpoint")
+      .trigger(processingTime="30 seconds")
+      .foreachBatch(upsert_batch)
+      .start()
+)
+
+query.awaitTermination()
+```
+
+---
+
+## 4. Databricks **Job configuration** (UI)
+
+| Field | Value |
+|-------|-------|
+| **Task type** | Python script |
+| **Python file** | `dbfs:/FileStore/jobs/databricks_file_arrival_job.py` |
+| **Parameters** | `{{s3_source}}`  *(you will fill this in the job definition)* |
+| **Cluster** | All-Purpose (auto-terminate = 10 min) |
+| **Schedule** | **None** – the job is **triggered by SNS**, not cron |
+
+### How to set the parameter in the job definition
+
+```json
+{
+  "name": "Telemetry File-Arrival Ingestion",
+  "tasks": [
+    {
+      "task_key": "ingest",
+      "python_wheel_task": { ... },
+      "spark_python_task": {
+        "python_file": "dbfs:/FileStore/jobs/databricks_file_arrival_job.py",
+        "parameters": ["s3://my-bucket/raw/telemetry"]
+      }
+    }
+  ],
+  "triggers": {
+    "file_arrival": {
+      "file_patterns": ["*.jsonl"],
+      "folder": "s3://my-bucket/raw/telemetry"
+    }
+  }
+}
+```
+
+> **Databricks 13.3+ supports native `file_arrival` trigger** – you **don’t even need SNS** if you enable it in the UI.
+
+---
+
+## 5. Alternative: **Native Databricks File-Arrival Trigger** (no AWS SNS)
+
+Databricks now offers **built-in file-arrival triggers** (DBR 13.3+):
+
+1. **Jobs → Create Job → Trigger type → File arrival**  
+2. **Folder**: `s3://my-bucket/raw/telemetry`  
+3. **File pattern**: `*.jsonl`
+
+The job **starts automatically** when a matching file appears.
+
+**Your script still reads the path from `sys.argv[1]`** – **no duplication**.
+
+---
+
+## 6. Summary – **Zero duplication**
+
+| Where the path lives | How it’s used |
+|----------------------|---------------|
+| **Job definition** (UI / JSON / CLI) | `parameters: ["s3://..."]` |
+| **Python script** | `S3_SOURCE = sys.argv[1]` |
+| **Auto Loader** | `.load(S3_SOURCE)` |
+| **Checkpoint / Schema** | derived from `S3_SOURCE` |
+
+> **Change the bucket/prefix?** → Edit **one line** in the job definition. Everything else updates automatically.
+
+---
+
+### TL;DR
+
+1. **Put the S3 path in a Databricks Job parameter** (`sys.argv[1]`).  
+2. **Use native `file_arrival` trigger** **or** **S3 → SNS → Databricks**.  
+3. **Never hard-code the path in the script** – read it from the parameter.  
+
+You now have **one source of truth** and **zero duplication**.
+
+
+
+
+## IAM Requirements: GROK
+
+### 1. Give Databricks permission to create SNS/SQS for you
 ```
 aws iam create-policy --policy-name DatabricksAutoLoaderNotifications \
   --policy-document '{
@@ -57,7 +232,7 @@ aws iam create-policy --policy-name DatabricksAutoLoaderNotifications \
     ]
   }'
 ```
-# Attach the policy to the role
+### Attach the policy to the role
 that your Databricks workspace uses for S3 access  
 Databricks will now auto-provision an SNS topic + SQS queue 
 the first time you start the stream with useNotifications=true.
