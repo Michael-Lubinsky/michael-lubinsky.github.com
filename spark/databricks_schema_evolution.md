@@ -280,6 +280,7 @@ If you prefer not to auto-restart on changes:
 - Later, manually evolve: Read the rescued column, parse it, and write with `mergeSchema=true`.
 
 ### Comparison of Reading Approaches
+
 | Approach | Pros for Evolution | Cons | When to Use |
 |----------|---------------------|------|-------------|
 | **Explicit Schema** (e.g., `spark.read.schema(mySchema).json(...)`) | Strict control, performance. | Ignores new fields (sets to NULL or drops); no auto-evolution. | Stable schemas; combine with `mergeSchema` for basic adds (but misses nested). |
