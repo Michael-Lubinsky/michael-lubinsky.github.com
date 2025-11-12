@@ -33,8 +33,7 @@ How to handle this case automatically?
 
 # ChatGPT
 
-##  Pattern to  use so your File-Arrival Spark job ingests nested JSON from S3 and **automatically 
-adds new columns** to a Unity Catalog Delta table—without manual DDL.
+##  Trigger File-Arrival Spark job ingests nested JSON from S3 and **automatically adds new columns** to a Unity Catalog Delta table—without manual DDL.
 
 
 High-level approach (Bronze → Silver, streaming):
@@ -53,7 +52,7 @@ High-level approach (Bronze → Silver, streaming):
 
 ---
 
-Option A — Append-only (new columns get added automatically)
+## Option A — Append-only (new columns get added automatically)
 
 ```python
 from pyspark.sql import functions as F
@@ -94,7 +93,7 @@ Why this works:
 
 ---
 
-Option B — Upsert (MERGE) with automatic schema evolution (e.g., SCD)
+## Option B — Upsert (MERGE) with automatic schema evolution (e.g., SCD)
 
 Use this if you dedupe, maintain keys, or do SCD logic in `foreachBatch`. The important knob is `autoMerge`.
 
@@ -123,9 +122,9 @@ def upsert_to_delta(batch_df, batch_id):
 
 With `autoMerge` on, **new columns present in `batch_df` but missing in the table are added automatically** during MERGE (including nested struct evolution). ([Microsoft Learn][2])
 
----
 
-Choosing between explicit schema vs. inference
+
+## Choosing between explicit schema vs. inference
 
 • Explicit schema + `schemaHints`: best when you know most of the structure (types stay stable), but still want evolution for surprises; Auto Loader will add new columns beyond your declared schema (or rescue them, depending on mode). This reduces type flapping. ([Databricks Documentation][4])
 
@@ -135,14 +134,14 @@ Tip: always set and keep `cloudFiles.schemaLocation` stable for the stream; it�
 
 ---
 
-Handling deeply-nested arrays/structs
+## Handling deeply-nested arrays/structs
 
 • Auto Loader + `addNewColumns` can add **nested** fields when JSON evolves (e.g., a new `signals[i].body.capacity` key appears).
 • To write those nested additions into the Delta table during append, keep `mergeSchema` on (and `autoMerge` on if you later MERGE). This combination is what enables nested evolution end-to-end. ([Stack Overflow][5])
 
----
 
-“Rescue” mode when you’re cautious
+
+### “Rescue” mode when you’re cautious
 
 If you’re not ready to add columns automatically, use:
 
@@ -190,23 +189,29 @@ That’s it—new attributes that appear in future JSON files will flow into the
 
 ### Overview of Schema Evolution in Databricks Unity Catalog Tables
 
-Databricks Unity Catalog tables are backed by Delta Lake, which natively supports schema evolution. This means you can automatically handle changes in incoming data schemas—like new attributes in deeply nested JSON files—without manual schema updates. For your Spark job triggered on file arrival in S3, the key is to use **Auto Loader** (the recommended approach for incremental file ingestion) combined with Delta Lake's schema merging capabilities. Auto Loader handles schema inference and evolution for JSON files, while Delta Lake ensures the Unity Catalog table schema adapts during writes.
+Databricks Unity Catalog tables are backed by Delta Lake, which natively supports schema evolution. 
+This means you can automatically handle changes in incoming data schemas—like new attributes in deeply nested JSON files—without manual schema updates. 
+For your Spark job triggered on file arrival in S3, the key is to use **Auto Loader** (the recommended approach for incremental file ingestion) 
+combined with Delta Lake's schema merging capabilities. Auto Loader handles schema inference and evolution for JSON files,   
+while Delta Lake ensures the Unity Catalog table schema adapts during writes.
 
 Schema evolution supports:
 - **Adding new columns**: Automatically appends new fields (including nested ones as structs) to the table schema.
 - **Limitations**: It doesn't support changing existing column types, dropping columns, or evolving arrays/maps deeply (though top-level structs work well for nested JSON). For reordering/renaming/dropping, you'd need column mapping or manual rewrites.
 
-There are two main paths for reading JSON (explicit schema vs. inference), but for automatic evolution with new attributes, **let Spark infer the schema via Auto Loader** and enable evolution modes. Using an explicit schema upfront would ignore new fields, requiring manual updates.
+There are two main paths for reading JSON (explicit schema vs. inference), but for automatic evolution with new attributes,  
+**let Spark infer the schema via Auto Loader** and enable evolution modes. Using an explicit schema upfront would ignore new fields, requiring manual updates. 
 
 ### Recommended Approach: Auto Loader with Schema Evolution
-
+```
 Auto Loader (`cloudFiles` source) is ideal for your file-arrival trigger. It:
 - Infers schemas from JSON files (sampling up to 50 GB or 1,000 files by default; configurable).
 - Evolves the schema over time by tracking versions in a `_schemas` directory at the `cloudFiles.schemaLocation`.
 - Handles deeply nested JSON by inferring structs (e.g., `{"user": {"name": "Alice", "address": {"city": "NY"}}}` becomes `user.name STRING` and `user.address STRUCT<city: STRING>`).
 
-For new attributes (e.g., a new field `extra_field` appears in a JSON file), Auto Loader detects it, updates the inferred schema, and propagates it to the Delta table.
-
+For new attributes (e.g., a new field `extra_field` appears in a JSON file),  
+ Auto Loader detects it, updates the inferred schema, and propagates it to the Delta table.
+```
 #### Key Configurations
 1. **Schema Evolution Mode in Auto Loader** (`cloudFiles.schemaEvolutionMode`):
    - **`addNewColumns`** (default when no schema provided): Automatically adds new columns to the inferred schema. When a new field is detected:
@@ -1034,4 +1039,182 @@ def smart_promotion_pipeline():
 
 **For ChargeMinder telemetry data**, I'd recommend **starting with rescue mode** in production, then switching to a hybrid approach once you understand the evolution patterns.
 
-Would you like me to help you implement the monitoring dashboard or the automatic promotion logic for your specific ChargeMinder use case?
+
+## One more opinion
+
+### Explanation of `rescuedDataColumn` Option
+
+The `.option("rescuedDataColumn", "_rescued_data")` line in your Auto Loader (`cloudFiles`) configuration tells Databricks to **automatically rescue (save) malformed or unparsable records** during ingestion, rather than failing the entire batch. Here's a breakdown:
+
+#### What It Does
+- **Purpose**: When Auto Loader reads JSON files (or other formats) against your explicit `raw_schema`, some rows might not conform:
+  - Missing required fields.
+  - Type mismatches (e.g., expected `string` but got `int`).
+  - Malformed JSON (e.g., syntax errors from DynamoDB Lambda exports).
+  - Without this, the job would **fail** (throwing a schema validation error), halting processing.
+- **How It Works**:
+  - Auto Loader parses each row against `raw_schema`.
+  - If a row fails, it's **not dropped**—instead, the **raw, unparsed content** (as a JSON string) is inserted into a new column named `_rescued_data`.
+  - Valid rows proceed normally.
+  - The `_rescued_data` column is added to your DataFrame schema (nullable `string` type).
+- **Example**:
+  - Input JSON row: `{"event_id": "abc", "recorded_at": 123}` (type mismatch: `recorded_at` should be `string`).
+  - Output: Row has all normal columns as `null` (or defaults), but `_rescued_data` = `'{"event_id": "abc", "recorded_at": 123}'`.
+- **Benefits**:
+  - **Resilience**: Job continues; no full failure.
+  - **Debugging**: Query `_rescued_data` to inspect/fix issues (e.g., `df.filter(F.col("_rescued_data").isNotNull()).show()`).
+  - **Downstream Handling**: In `upsert_batch`, filter out rescued rows or route to quarantine.
+
+#### When to Use/Configure
+- **Default**: No rescued column (fails on errors).
+- **Your Code**: Naming it `"_rescued_data"` is conventional—keep it if you plan to query it.
+- **Trade-Offs**:
+  | Pro | Con |
+  |-----|-----|
+  | Prevents job crashes | Adds a column (slight schema bloat) |
+  | Easy error triage | Rescued rows may need manual cleanup |
+
+If unused, you can drop it later: `.drop("_rescued_data")`.
+
+### Explanation of `schemaEvolutionMode` Option (Missing in Snippet)
+
+The `option("schemaEvolutionMode", "rescue")` is **not present** in the code snippet you shared (it uses `"addNewColumn"` in the full code from earlier responses). This option controls how Auto Loader **adapts to schema changes** over time (e.g., new fields in DynamoDB exports). Adding it is optional but recommended for evolving data like telemetry signals.
+
+#### What It Does
+- **Purpose**: Auto Loader infers/evolves the schema at `CONFIG["schema_path"]` based on new files. Without this, it fails on mismatches. With it, it handles changes gracefully.
+- **Modes** (All are "permissive"—no failures):
+  | Mode | Description | Best For | Impact on Data |
+  |------|-------------|----------|----------------|
+  | **"addNewColumn"** (Your Current) | Adds new fields as nullable columns to the schema. Existing rows get `null` for new fields. | Non-breaking adds (e.g., new signal like "battery_temp"). | Minimal data loss; appends columns. |
+  | **"rescue"** (You Asked About) | Like "addNewColumn", but **any row with schema mismatches** (new/missing fields) is routed to `rescuedDataColumn`. Valid rows evolve the schema. | Strict validation + error isolation (e.g., old files with outdated JSON). | Mismatches become raw strings in rescued column; schema still evolves. |
+  | **"failOnNewColumn"** (Strict) | Fails if new fields appear. | Frozen schemas (rare). | Stops processing. |
+  | **"none"** (Default) | No evolution; strict match to initial schema. | Stable data only. | Fails on changes. |
+
+- **"rescue" Specifics**:
+  - Combines evolution with rescue: New columns are added, but problematic rows (e.g., missing new required field) go to `_rescued_data` as raw JSON.
+  - Example: New file has `{"event_id": "abc", "new_signal": "xyz"}`. Schema adds `new_signal`; old rows get `null`; mismatched rows (e.g., bad types) → rescued.
+  - **Why "rescue" over "addNewColumn"?** Better for auditing—isolates "dirty" rows without polluting the main table.
+
+#### Why It's Missing & How to Add It
+- **In Snippet**: Omitted for brevity; full code had `"addNewColumn"`.
+- **Recommendation**: Use `"rescue"` if you have `rescuedDataColumn` enabled (synergistic). Add it right after `.option("cloudFiles.validateOptions", "true")`:
+  ```python
+  .option("cloudFiles.schemaEvolutionMode", "rescue")  # Handles changes + rescues mismatches
+  ```
+- **Trade-Offs**:
+  | Pro | Con |
+  |-----|-----|
+  | Evolves schema dynamically | More rescued rows if data varies wildly |
+  | Integrates with rescuedDataColumn | Slight perf hit on validation |
+
+#### Quick Test
+In a notebook:
+```python
+# Simulate: Add a mismatched file, run stream, query rescued rows
+df.filter(F.col("_rescued_data").isNotNull()).count()  # Should show issues
+```
+
+This keeps your pipeline robust for real-world DynamoDB variability. If adding it causes issues, fall back to `"addNewColumn"`. Let me know if you need the full updated `read_stream()`!
+
+
+#  Reprocessing Archived Files in Your Databricks Streaming Job
+
+Your code's archiving logic (`archive_processed_files()`) moves successfully processed files from the source S3 prefix (e.g., `s3://chargeminder-2/raw/dynamodb/chargeminder-mlubinsky-telemetry/`) to the archive prefix (e.g., `s3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/`) using `dbutils.fs.mv()`. This is a common pattern for data lakes to prevent re-ingestion, but it makes reprocessing intentional (e.g., for errors or schema evolution).
+
+Reprocessing is straightforward: **Manually move files back to the source path**, then **restart the stream** to let Auto Loader detect and process them again. Auto Loader's checkpointing ensures it tracks what's been ingested, but you can override with a new checkpoint or schema tweaks. Below, I'll cover scenarios (errors vs. schema changes) and step-by-step instructions.
+
+#### Key Concepts
+- **Checkpoint Safety**: Your stream uses `checkpointLocation` (e.g., `s3://chargeminder-2/_checkpoints/mlubinsky-telemetry`). It logs processed files/metadata—moving files back won't auto-reprocess unless you clear/rename the checkpoint.
+- **Schema Evolution**: Auto Loader supports adding columns (`cloudFiles.schemaEvolutionMode="addNewColumn"`) without full reprocessing.
+- **No Data Loss**: Archived files remain intact; MERGE in `upsert_batch` handles upserts idempotently (via `event_id` PK).
+
+| Scenario | Trigger | Reprocessing Impact | Best Tool |
+|----------|---------|---------------------|-----------|
+| **Job Error** (e.g., transform fail) | Partial batch fails; some files archived, others not. | Reprocess only failed files; no schema change. | S3 Console or AWS CLI. |
+| **Schema Change** (e.g., add column) | Update `raw_schema` or DDL; run stream with evolution. | Full reprocess if needed; append-only for new cols. | Databricks SQL + Auto Loader. |
+
+#### Step-by-Step: Reprocessing Archived Files
+
+##### 1. **Stop the Running Job/Stream**
+   - In Databricks UI: Go to **Workflows** → Your Job → **Runs** → Stop the active run.
+   - Or via API: `POST /api/2.0/jobs/runs/cancel` with run ID.
+   - This prevents conflicts during file moves.
+
+##### 2. **Identify Files to Reprocess**
+   - **For Errors**: Check Job logs/metrics (`METRICS_TABLE`) for batch IDs/files that failed (e.g., `status="FAILED"`, `error_message`).
+     ```sql
+     SELECT * FROM hcai_databricks_dev.chargeminder2.telemetry_metrics 
+     WHERE status = 'FAILED' ORDER BY run_timestamp DESC;
+     ```
+     - From logs, note archived file paths (e.g., via `source_file` in quarantined data).
+   - **For Schema Changes**: Query the archive for all files (or date range).
+     ```sql
+     -- List archived files (use Databricks SQL or AWS CLI)
+     LIST 's3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/';
+     ```
+   - **Tip**: If high volume, use AWS CLI: `aws s3 ls s3://chargeminder-2/archived/... --recursive | grep jsonl`.
+
+##### 3. **Move Files Back to Source Path**
+   - **Manual (Small Scale)**: Use Databricks Notebook (attach to your cluster):
+     ```python
+     # In a notebook cell
+     from delta.utils import DeltaFiles
+
+     # Example: Move specific files back
+     source_prefix = "s3://chargeminder-2/raw/dynamodb/chargeminder-mlubinsky-telemetry/"
+     archive_prefix = "s3://chargeminder-2/archived/dynamodb/chargeminder-michael-telemetry/"
+     
+     # List archived files (adapt for your needs)
+     archived_files = dbutils.fs.ls(archive_prefix)  # Returns list of FileInfo
+     for file_info in archived_files:
+         if file_info.name.endswith('.jsonl'):  # Filter JSONL
+             archive_path = file_info.path
+             source_path = archive_path.replace(archive_prefix, source_prefix)
+             dbutils.fs.mv(archive_path, source_path, recurse=True)
+             print(f"Moved back: {source_path}")
+     ```
+     - Run this in a one-off notebook; test with `--dryrun` if available.
+
+   - **Bulk (AWS CLI/S3 Console)**:
+     - CLI: `aws s3 mv s3://chargeminder-2/archived/.../file.jsonl s3://chargeminder-2/raw/.../file.jsonl --recursive`
+     - Console: Select files in S3 → Actions → Copy/Move.
+     - **Caution**: Add a timestamp suffix (e.g., `_reprocess_v2.jsonl`) to avoid name conflicts.
+
+##### 4. **Handle Schema Changes (If Applicable)**
+   - **Add Columns**: Update `raw_schema` (e.g., add `StructField("new_field", StringType(), True)`) and DDL (`create_or_update_table()`).
+     - Re-run the job: Auto Loader's `"addNewColumn"` mode appends without reprocessing old data.
+   - **Breaking Changes** (e.g., type changes): 
+     - Set `cloudFiles.schemaEvolutionMode="rescue"` to quarantine bad rows.
+     - Or full reprocess: Clear checkpoint (delete contents of `checkpoint_path`) before restart—**warning: loses ingestion history**.
+   - **Test**: Run a dry-run job with `maxFilesPerTrigger=1` on a subset.
+
+##### 5. **Restart the Stream and Monitor**
+   - **Restart Job**: In UI, **Run Now** or resume schedule (now "Continuously" if using notifications).
+   - **Verify Reprocessing**:
+     - Watch logs for "Processing Batch X" with your files.
+     - Query target table: `SELECT COUNT(*) FROM {FULL_TABLE} WHERE pipeline_ingest_ts > '2025-11-09';` (post-reprocess).
+     - Check metrics: New rows in `METRICS_TABLE` with updated counts.
+   - **Checkpoint Reset (If Needed)**: To force re-detection:
+     ```python
+     # In notebook: Clear checkpoint (one-time)
+     dbutils.fs.rm(CONFIG["checkpoint_path"], recurse=True)
+     ```
+     - Then restart—Auto Loader rescans from scratch.
+
+##### 6. **Prevention and Best Practices**
+   - **Error Handling**: In `upsert_batch`, add try-catch around archiving—only move on full success.
+     ```python
+     # In upsert_batch, after MERGE
+     try:
+         archive_processed_files(micro_df)
+     except Exception as ae:
+         print(f"⚠️ Archiving failed: {ae} — Files remain in source for retry")
+     ```
+   - **Dry Runs**: Add a config flag (`"dry_run": True`) to skip archiving/MERGE for testing schema changes.
+   - **Versioned Archives**: Append timestamps to archive paths (e.g., `/archived/YYYY/MM/DD/`) for easier rollback.
+   - **Alternatives to Archiving**:
+     - Use Auto Loader's **file filtering** (e.g., `cloudFiles.includeExistingFiles=true` for re-runs) instead of moving.
+     - Or soft-archive: Add a `processed` tag via S3 metadata, filter in Auto Loader.
+   - **Monitoring**: Set Job alerts for failures; use Delta Lake's time travel (`AS OF TIMESTAMP`) to rollback bad inserts.
+
+This process typically takes 5-15 minutes for small batches. If reprocessing large volumes (>1TB), consider partitioning by date in your source S3 structure. Let me know your error details or schema mods for tailored tweaks!
