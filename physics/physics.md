@@ -28,7 +28,7 @@ https://habr.com/ru/search/?target_type=posts&order=relevance&q=%5B%D0%B3%D0%B5%
 
 https://teach-in.ru/course/quantum-electrodynamics  QED
 
-
+https://habr.com/ru/articles/965372/ QM
 
 https://www.sciencejournals.ru/catalog/rubrics/
 
