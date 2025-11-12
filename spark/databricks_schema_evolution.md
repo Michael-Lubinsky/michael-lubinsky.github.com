@@ -184,3 +184,118 @@ That’s it—new attributes that appear in future JSON files will flow into the
 [4]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/options?utm_source=chatgpt.com "Auto Loader options | Databricks on AWS"
 [5]: https://stackoverflow.com/questions/66335154/spark-delta-lake-auto-schema-evolution-for-nested-columns?utm_source=chatgpt.com "Spark, delta lake auto schema evolution for nested columns"
 [6]: https://stackoverflow.com/questions/73319482/how-to-deal-with-invalid-characters-in-column-names-when-using-databricks-auto?utm_source=chatgpt.com "How to deal with invalid character(s) in column names ..."
+
+
+### Overview of Schema Evolution in Databricks Unity Catalog Tables
+
+Databricks Unity Catalog tables are backed by Delta Lake, which natively supports schema evolution. This means you can automatically handle changes in incoming data schemas—like new attributes in deeply nested JSON files—without manual schema updates. For your Spark job triggered on file arrival in S3, the key is to use **Auto Loader** (the recommended approach for incremental file ingestion) combined with Delta Lake's schema merging capabilities. Auto Loader handles schema inference and evolution for JSON files, while Delta Lake ensures the Unity Catalog table schema adapts during writes.
+
+Schema evolution supports:
+- **Adding new columns**: Automatically appends new fields (including nested ones as structs) to the table schema.
+- **Limitations**: It doesn't support changing existing column types, dropping columns, or evolving arrays/maps deeply (though top-level structs work well for nested JSON). For reordering/renaming/dropping, you'd need column mapping or manual rewrites.
+
+There are two main paths for reading JSON (explicit schema vs. inference), but for automatic evolution with new attributes, **let Spark infer the schema via Auto Loader** and enable evolution modes. Using an explicit schema upfront would ignore new fields, requiring manual updates.
+
+### Recommended Approach: Auto Loader with Schema Evolution
+
+Auto Loader (`cloudFiles` source) is ideal for your file-arrival trigger. It:
+- Infers schemas from JSON files (sampling up to 50 GB or 1,000 files by default; configurable).
+- Evolves the schema over time by tracking versions in a `_schemas` directory at the `cloudFiles.schemaLocation`.
+- Handles deeply nested JSON by inferring structs (e.g., `{"user": {"name": "Alice", "address": {"city": "NY"}}}` becomes `user.name STRING` and `user.address STRUCT<city: STRING>`).
+
+For new attributes (e.g., a new field `extra_field` appears in a JSON file), Auto Loader detects it, updates the inferred schema, and propagates it to the Delta table.
+
+#### Key Configurations
+1. **Schema Evolution Mode in Auto Loader** (`cloudFiles.schemaEvolutionMode`):
+   - **`addNewColumns`** (default when no schema provided): Automatically adds new columns to the inferred schema. When a new field is detected:
+     - The stream temporarily fails with an `UnknownFieldException`.
+     - Auto Loader updates the schema at `schemaLocation` and restarts the stream (use Lakeflow Jobs for auto-restart).
+     - New columns are appended to the end of the schema (preserves case).
+   - **`rescue`** (alternative): Doesn't evolve the schema; instead, captures new/mismatched fields in a special `_rescued_data` column (as JSON string with file path). Use this if you want to quarantine unknowns for later review, but it won't auto-add columns to the main schema.
+   - Set via `.option("cloudFiles.schemaEvolutionMode", "addNewColumns")`.
+
+2. **Delta Lake Merge on Write** (`mergeSchema` option):
+   - Enables the table to automatically incorporate the evolved schema from Auto Loader during appends.
+   - Set `.option("mergeSchema", "true")` on the write stream.
+   - For Unity Catalog tables, this works seamlessly—specify the table as `catalog.schema.table_name`.
+
+3. **Other Essentials**:
+   - **Schema Location**: Required for evolution; stores schema versions (e.g., `s3://bucket/schema-path`).
+   - **Checkpoint Location**: Tracks processed files (e.g., `s3://bucket/checkpoint-path`).
+   - **Explicit Schema Hint**: Optional for deeply nested JSON—provide hints like `.option("cloudFiles.schemaHints", "user.dob DATE")` to refine types without blocking evolution.
+   - **Global Config**: Avoid `spark.databricks.delta.schema.autoMerge.enabled` (it's for older merges); per-operation options are preferred.
+
+#### Example Spark Code for Your Job
+Assuming your job reads from `s3://bucket/input-json/` and writes to a Unity Catalog table `my_catalog.my_schema.events_table`. Use PySpark/Scala in your Databricks notebook or job.
+
+```python
+# Streaming read with Auto Loader for JSON files
+df = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")  # Handles nested JSON
+    .option("cloudFiles.schemaLocation", "s3://bucket/schema-location/")  # Stores evolved schemas
+    .option("cloudFiles.schemaEvolutionMode", "addNewColumns")  # Auto-add new columns
+    .load("s3://bucket/input-json/")  # Trigger on file arrival
+)
+
+# Write to Unity Catalog Delta table with schema merge
+query = (df.writeStream
+    .format("delta")
+    .option("mergeSchema", "true")  # Evolves table schema on write
+    .option("checkpointLocation", "s3://bucket/checkpoint-location/")
+    .outputMode("append")
+    .trigger(availableNow=True)  # Or .trigger(once=True) for batch-like
+    .toTable("my_catalog.my_schema.events_table")  # Unity Catalog table
+)
+
+query.awaitTermination()
+```
+
+- **How It Handles New Attributes Automatically**:
+  1. Initial files: Schema inferred (e.g., columns `id`, `name`, `nested.obj`).
+  2. New JSON arrives with `extra_field`: Auto Loader samples it, detects the mismatch, updates the schema at `schemaLocation` (adds `extra_field STRING` at the end), and restarts.
+  3. On write: `mergeSchema=true` appends `extra_field` to the Unity Catalog table schema. Existing rows get `NULL` in the new column.
+  4. Nested new fields (e.g., `nested.new_subfield`) are added as `nested STRUCT<new_subfield: STRING>` if the parent is a struct.
+
+- **Batch Mode Alternative** (if not streaming):
+  ```python
+  df = spark.read.format("json").load("s3://bucket/input-json/")
+  df.write \
+    .format("delta") \
+    .mode("append") \
+    .option("mergeSchema", "true") \
+    .saveAsTable("my_catalog.my_schema.events_table")
+  ```
+  This infers schema per batch but lacks Auto Loader's evolution tracking—use for one-off jobs.
+
+#### Using `rescue` Mode for Safer Handling
+If you prefer not to auto-restart on changes:
+```python
+.option("cloudFiles.schemaEvolutionMode", "rescue")
+.option("cloudFiles.rescuedDataColumn", "_extra_fields")  # Custom column for unknowns
+```
+- New fields go into `_extra_fields` as JSON (e.g., `{"extra_field": "value", "source_file": "s3://..."}`).
+- Later, manually evolve: Read the rescued column, parse it, and write with `mergeSchema=true`.
+
+### Comparison of Reading Approaches
+| Approach | Pros for Evolution | Cons | When to Use |
+|----------|---------------------|------|-------------|
+| **Explicit Schema** (e.g., `spark.read.schema(mySchema).json(...)`) | Strict control, performance. | Ignores new fields (sets to NULL or drops); no auto-evolution. | Stable schemas; combine with `mergeSchema` for basic adds (but misses nested). |
+| **Schema Inference** (default or Auto Loader) | Auto-detects/evolves nested fields. | Initial sampling overhead; temporary failures on changes. | Dynamic JSON like yours; enables full automation. |
+
+### Additional Tips for Your Setup
+- **File Arrival Trigger**: Use Databricks Workflows (Jobs) with a "File Arrival" sensor on S3 paths to trigger the notebook/cluster.
+- **Performance**: For large/deep JSON, increase sampling (`spark.databricks.cloudFiles.schemaInference.sampleSize.numBytes=100GB`).
+- **Unity Catalog Specifics**: Ensure your service principal/job has `USE CATALOG`, `USE SCHEMA`, and `CREATE/MODIFY` on the table. Evolution works identically to managed tables.
+- **MERGE Operations**: If transforming/upserting (not just append), use `MERGE WITH SCHEMA EVOLUTION` SQL:
+  ```sql
+  MERGE WITH SCHEMA EVOLUTION INTO my_catalog.my_schema.events_table AS target
+  USING source_df AS source
+  ON source.id = target.id
+  WHEN MATCHED THEN UPDATE SET *
+  WHEN NOT MATCHED THEN INSERT *;
+  ```
+  This auto-adds new columns from `source_df` (Databricks Runtime 12.2+).
+- **Testing**: Start with a small S3 path; monitor via `DESCRIBE HISTORY` or `DESCRIBE DETAIL` on the table.
+- **Edge Cases**: If new fields cause type conflicts, use `overwriteSchema=true` (replaces entire schema—use cautiously). For very deep nesting, flatten with `spark.sql.functions.explode` or UDFs before writing.
+ 
