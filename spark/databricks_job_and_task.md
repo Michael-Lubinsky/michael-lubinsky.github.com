@@ -187,7 +187,7 @@ Databricks now offers **built-in file-arrival triggers** (DBR 13.3+):
 
 1. **Jobs → Create Job → Trigger type → File arrival**  
 2. **Folder**: `s3://my-bucket/raw/telemetry`  
-3. **File pattern**: `*.jsonl`
+
 
 The job **starts automatically** when a matching file appears.
 
@@ -792,7 +792,7 @@ Databricks now offers **built-in file-arrival triggers** (DBR 13.3+):
 
 1. **Jobs → Create Job → Trigger type → File arrival**  
 2. **Folder**: `s3://my-bucket/raw/telemetry`  
-3. **File pattern**: `*.jsonl`
+ 
 
 The job **starts automatically** when a matching file appears.
 
@@ -817,6 +817,103 @@ The job **starts automatically** when a matching file appears.
 
 1. **Put the S3 path in a Databricks Job parameter** (`sys.argv[1]`).  
 2. **Use native `file_arrival` trigger** **or** **S3 → SNS → Databricks**.  
-3. **Never hard-code the path in the script** – read it from the parameter.  
+3. **Never hard-code the path in the script** – read it from the parameter. 
 
-You now have **one source of truth** and **zero duplication**.
+
+
+
+
+
+### Confirmation: No File Pattern Option in Databricks File Arrival Trigger UI
+
+Yes, your observation is correct—the Databricks web UI for **File Arrival triggers** (as of November 11, 2025) **does not provide an explicit option to assign or configure file patterns** (e.g., `*.jsonl` or `data-*.csv`). This is a known limitation based on official documentation and community reports. Below, I'll explain why, how it works, and practical workarounds to achieve file filtering.
+
+#### Why No File Pattern Option?
+- **UI Simplicity**: The File Arrival trigger is designed for **broad monitoring** of a storage location. It focuses on detecting *any* new or updated files in the specified path, without built-in filtering to keep the setup straightforward. Databricks assumes you'll handle specificity in your job logic (e.g., via Auto Loader options).
+- **Underlying Mechanism**: Triggers poll the path **every minute** (best-effort) and fire on *any* change. There's no UI field for patterns because it's not event-filtered at the trigger level—filtering happens downstream in your code.
+- **Evolution**: Introduced in February 2023 and GA in 2024, the feature emphasizes Unity Catalog integration (volumes/external locations) over granular UI controls. Community feedback (e.g., on Reddit and Databricks forums) highlights this as a gap, with users requesting pattern support.
+
+From Databricks docs:
+- **UI Steps** (no pattern mentioned):  
+  1. Go to **Jobs** → Select your job → **Add trigger**.  
+  2. Set **Trigger type** to **File arrival**.  
+  3. Enter **Storage location** (e.g., `s3://your-bucket/path/` or Unity Catalog volume/external location path).  
+  4. Optional: Set **Minimum time between triggers** (e.g., 5 minutes) to batch multiple arrivals.  
+  5. Save—no pattern field appears.
+
+No screenshots in docs show a pattern option; it's just the location field.
+
+#### Limitations
+| Aspect | Details |
+|--------|---------|
+| **Polling Frequency** | Every ~1 minute (affected by storage perf; faster with "file events" enabled on Unity Catalog external locations). |
+| **File Detection** | Triggers on *any* new/updated file in the path (no native filtering). Multiple files in one minute → single trigger. |
+| **Path Scope** | Root or subpath only; no regex/wildcards in UI. |
+| **Max Triggers** | Up to 1,000 per workspace (with file events enabled). |
+| **Cost** | Free (beyond S3 listing costs); no extra DBUs for polling. |
+
+If files arrive irregularly (e.g., Lambda dumps), it may delay ~1 minute—use **file events** (enable on external locations) for <10s latency.
+
+# Workarounds: How to Filter Files Effectively
+Since the trigger fires on *any* file, implement filtering **in your PySpark job code** (e.g., using Auto Loader options). This is the recommended pattern—no UI changes needed.
+
+ ## 1. **Filter in Auto Loader (cloudFiles Options)**
+   Use `.option("cloudFiles.includeExistingFiles", "false")` + pattern matching to ignore non-target files.
+
+   ```python
+   # In your read_stream() function
+   return (
+       spark.readStream
+           .format("cloudFiles")
+           .option("cloudFiles.format", "json")
+           .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+           .option("cloudFiles.useNotifications", "true")  # For low-latency events
+           .option("cloudFiles.maxFilesPerTrigger", "1000")
+           # ----- FILE PATTERN FILTERING -----
+           .option("cloudFiles.fileNamePattern", ".*\\.jsonl$")  # Only *.jsonl files
+           # Or more complex: .option("cloudFiles.filterFunction", "lambda path: 'telemetry' in path")
+           .option("cloudFiles.schemaEvolutionMode", "rescue")
+           .option("rescuedDataColumn", "_rescued_data")
+           .schema(raw_schema)
+           .load(SOURCE_PATH)
+           .withColumn("source_file", F.col("_metadata.file_path"))
+   )
+   ```
+
+   - **Patterns Supported**: Regex (e.g., `.*telemetry-.*\\.jsonl$`) or custom functions.
+   - **Behavior**: Auto Loader scans and filters *before* processing—ignores mismatches without triggering MERGE.
+
+## 2. **Filter in Your Batch Function (upsert_batch)**
+   If patterns vary, filter post-read:
+
+   ```python
+   # In upsert_batch(micro_df, batch_id)
+   # Filter to only process *.jsonl
+   filtered_df = micro_df.filter(F.regexp_extract(F.col("source_file"), r"([^/]+)$", 1).like("%jsonl"))
+   
+   if filtered_df.count() == 0:
+       print(f"No matching files in batch {batch_id} — skipping")
+       return
+   
+   # Then validate/dedup/MERGE on filtered_df
+   valid_df, invalid_df, _ = validate_batch(filtered_df)
+   # ... rest of MERGE
+   ```
+
+ ## 3. **Use Subpaths for "Patterns"**
+   - Structure your S3 like: `s3://bucket/raw/telemetry/jsonl/` (only JSONL here).
+   - Trigger monitors the subpath—no code changes.
+
+ ## 4. **Advanced: Custom SNS Filtering (If Using Events)**
+   - In AWS SNS: Add a **filter policy** on S3 events (e.g., `{"object.key[0]": [{"prefix": "telemetry-"}]}`).
+   - This prevents the trigger from firing on non-matches.
+
+ ## Testing & Best Practices
+1. **Test Setup**: Upload a non-matching file (e.g., `.txt`) → Trigger should fire, but your code filters it out (check logs).
+2. **Monitor**: Use Job runs/logs; query `_rescued_data` for mismatches.
+3. **Docs Links**:
+   - [File Arrival Triggers](https://docs.databricks.com/aws/en/jobs/file-arrival-triggers.html) (confirms no pattern UI).
+   - [Auto Loader Patterns](https://docs.databricks.com/en/ingestion/cloud-object-storage/auto-loader/patterns.html) (for code filtering).
+4. **Community Workaround**: Users on forums (e.g., Reddit, Databricks Community) confirm UI limitation—code-based filtering is standard.
+
+If this doesn't match your UI (e.g., preview/public vs. your workspace), share a screenshot or workspace details for troubleshooting. For now, code filtering is reliable and flexible!
