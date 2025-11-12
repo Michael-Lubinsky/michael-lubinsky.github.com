@@ -1,22 +1,20 @@
+## Schema Evolution
 
- https://docs.databricks.com/aws/en/delta/update-schema
- https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema
+ <https://docs.databricks.com/aws/en/delta/update-schema>  
+ <https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema>
 
 
-There is Databricks Spark Job task triggered on File arrival 
-which reads json files from S3.
+There is Databricks Spark Job task triggered on File arrival  which reads json files from S3.
 JSON has deeply nested attributes.
 
-The  dataframe need to be transformed into  into another dataframe  
-which will be stored in Databcks Unity Catalog Table.
+The  dataframe need to be transformed into  another dataframe  which will be stored in Databcks Unity Catalog Table.
 
-
-Please explain how to support the Databicks Unity Catalog Table schema evolution?
-If  new attribute will appear in JSON how to automatically create add new columnd in 
+How to support the Databicks Unity Catalog Table schema evolution?
+If  new attribute will appear in JSON how to automatically   add new columnd in 
 Databcks Unity Catalog table?
 
-There are 2 ways to read JSON from Spark:
-1) Using explicit schema, provided by code.
+There are 2 ways to read JSON from Spark:  
+1) Using explicit schema, provided by code.  
 2) Let Spark to infer schema
 
 I read about  Delta Lake tables using options like .option("mergeSchema", "true") for writes, MERGE WITH SCHEMA EVOLUTION syntax for merge operations 
@@ -25,10 +23,10 @@ I read about  Delta Lake tables using options like .option("mergeSchema", "true"
 I also read about 
 cloudFiles.schemaEvolutionMode: addNewColumns or rescue
 
- https://docs.databricks.com/aws/en/delta/update-schema
+ https://docs.databricks.com/aws/en/delta/update-schema  
  https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/schema
 
-let say the new json file has extra attribute which did not exits before and therefore there  is no such column in Databicks Unity Catalog Table.
+Let say the new json file has extra attribute which did not exits before and therefore there  is no such column in Databicks Unity Catalog Table.
 How to handle this case automatically?
 
 # ChatGPT
