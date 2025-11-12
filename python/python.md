@@ -4,6 +4,8 @@ python -m py_compile my_script.py
 
 https://habr.com/ru/companies/yandex_praktikum/articles/960812/
 
+https://habr.com/ru/articles/965170/ 
+
 ### None
 ```python
 if x is None:
