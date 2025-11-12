@@ -512,6 +512,526 @@ spark.conf.set("spark.databricks.delta.merge.enableSchemaEvolution", "true")
 
 **For your case with evolving JSON**, inferred schema with Auto Loader is the clear winner.
 
+
+
+# **Rescue Mode Approach: Controlled Schema Evolution**
+
+Rescue mode is the **safer, production-grade approach** where new JSON attributes are captured in a special `_rescued_data` column instead of automatically creating new columns. This gives you visibility and control before promoting fields to full schema.
+
 ---
 
-Would you like me to help you implement this for your specific ChargeMinder telemetry data pipeline, or would you like to explore the `rescue` mode approach to review new columns before they're automatically added?
+## **How Rescue Mode Works**
+
+1. **Known fields** → Regular columns
+2. **Unknown fields** → Captured as JSON in `_rescued_data` column
+3. **You review** → Decide which fields to promote
+4. **Manual promotion** → Update schema and add columns
+5. **Backfill (optional)** → Extract rescued data into new columns
+
+---
+
+## **1. Initial Setup with Rescue Mode**
+
+```python
+from pyspark.sql.functions import *
+from pyspark.sql.types import *
+
+# Schema and checkpoint locations
+schema_location = "s3://your-bucket/autoloader-schemas/telemetry_table"
+checkpoint_location = "s3://your-bucket/checkpoints/telemetry_table"
+
+# Read with Auto Loader in RESCUE mode
+raw_df = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", schema_location)
+    
+    # RESCUE MODE: Capture unknown fields
+    .option("cloudFiles.schemaEvolutionMode", "rescue")
+    .option("cloudFiles.inferColumnTypes", "true")
+    
+    # Name the rescue column (default is "_rescued_data")
+    .option("cloudFiles.rescuedDataColumn", "_rescued_data")
+    
+    # Optional: Also capture parsing errors
+    .option("columnNameOfCorruptRecord", "_corrupt_record")
+    
+    .load("s3://your-bucket/telemetry/json/")
+)
+
+# Add metadata for tracking
+transformed_df = (raw_df
+    .withColumn("ingestion_timestamp", current_timestamp())
+    .withColumn("source_file", input_file_name())
+)
+
+# Write to Unity Catalog
+query = (transformed_df.writeStream
+    .format("delta")
+    .outputMode("append")
+    .option("mergeSchema", "true")  # Allow _rescued_data column to be added
+    .option("checkpointLocation", checkpoint_location)
+    .trigger(availableNow=True)
+    .toTable("catalog.schema.telemetry_data")
+)
+
+query.awaitTermination()
+```
+
+---
+
+## **2. Monitoring & Inspecting Rescued Data**
+
+### **A. Check if There's Any Rescued Data**
+
+```python
+# Query to see if any records have rescued data
+rescued_records = spark.sql("""
+    SELECT 
+        COUNT(*) as total_records,
+        COUNT_IF(_rescued_data IS NOT NULL) as records_with_rescued_data,
+        COUNT_IF(_rescued_data IS NOT NULL) * 100.0 / COUNT(*) as rescued_percentage
+    FROM catalog.schema.telemetry_data
+    WHERE ingestion_timestamp >= current_timestamp() - INTERVAL 7 DAYS
+""")
+
+rescued_records.display()
+```
+
+### **B. Explore What Fields Are Being Rescued**
+
+```python
+# Get sample of rescued data
+rescued_samples = spark.sql("""
+    SELECT 
+        _rescued_data,
+        ingestion_timestamp,
+        source_file
+    FROM catalog.schema.telemetry_data
+    WHERE _rescued_data IS NOT NULL
+    LIMIT 100
+""")
+
+rescued_samples.display()
+
+# Parse rescued JSON to see structure
+from pyspark.sql.functions import from_json, schema_of_json
+
+# Infer schema from rescued data
+rescued_schema_sample = spark.sql("""
+    SELECT _rescued_data 
+    FROM catalog.schema.telemetry_data 
+    WHERE _rescued_data IS NOT NULL 
+    LIMIT 1
+""").collect()[0][0]
+
+print("Rescued data sample:")
+print(rescued_schema_sample)
+```
+
+### **C. Analyze Rescued Fields Systematically**
+
+```python
+# Extract all unique keys from rescued JSON
+rescued_analysis = spark.sql("""
+    SELECT 
+        explode(map_keys(from_json(_rescued_data, 'map<string,string>'))) as rescued_field,
+        COUNT(*) as occurrence_count,
+        MIN(ingestion_timestamp) as first_seen,
+        MAX(ingestion_timestamp) as last_seen
+    FROM catalog.schema.telemetry_data
+    WHERE _rescued_data IS NOT NULL
+    GROUP BY rescued_field
+    ORDER BY occurrence_count DESC
+""")
+
+rescued_analysis.display()
+```
+
+### **D. Deep Inspection of Specific Rescued Fields**
+
+```python
+# Look at specific rescued field values
+spark.sql("""
+    SELECT 
+        from_json(_rescued_data, 'map<string,string>')['battery_health_score'] as battery_health_score,
+        from_json(_rescued_data, 'map<string,string>')['charging_session_id'] as charging_session_id,
+        COUNT(*) as count
+    FROM catalog.schema.telemetry_data
+    WHERE _rescued_data IS NOT NULL
+    GROUP BY 1, 2
+    ORDER BY count DESC
+    LIMIT 20
+""").display()
+```
+
+---
+
+## **3. Promoting Rescued Fields to Full Columns**
+
+Once you've reviewed and decided which fields to promote:
+
+### **Option A: Add Schema Hints (Prospective)**
+
+Update your Auto Loader to recognize the new fields going forward:
+
+```python
+# Updated Auto Loader with schema hints for new fields
+raw_df = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", schema_location)
+    .option("cloudFiles.schemaEvolutionMode", "rescue")
+    .option("cloudFiles.inferColumnTypes", "true")
+    
+    # Add schema hints for fields you want to promote
+    .option("cloudFiles.schemaHints", 
+            """
+            battery_health_score double,
+            charging_session_id string,
+            battery.temperature_celsius double,
+            diagnostics.error_codes array<string>
+            """)
+    
+    .option("cloudFiles.rescuedDataColumn", "_rescued_data")
+    .load("s3://your-bucket/telemetry/json/")
+)
+```
+
+### **Option B: Switch to addNewColumns Mode**
+
+If you're confident about the new fields, switch evolution mode:
+
+```python
+# Change to automatic evolution
+raw_df = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", schema_location)
+    
+    # Switch from rescue to addNewColumns
+    .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+    .option("cloudFiles.inferColumnTypes", "true")
+    
+    .load("s3://your-bucket/telemetry/json/")
+)
+```
+
+**Note:** You'll need to reset the checkpoint or use a new checkpoint location when changing evolution modes.
+
+### **Option C: Manually Add Columns to Table**
+
+```sql
+-- Add specific columns you want from rescued data
+ALTER TABLE catalog.schema.telemetry_data 
+ADD COLUMNS (
+    battery_health_score DOUBLE COMMENT 'Battery health score from rescued data',
+    charging_session_id STRING COMMENT 'Charging session identifier'
+);
+```
+
+---
+
+## **4. Backfilling Rescued Data**
+
+After promoting fields, extract historical data from `_rescued_data`:
+
+```python
+# Backfill: Extract rescued data into new columns
+spark.sql("""
+    UPDATE catalog.schema.telemetry_data
+    SET 
+        battery_health_score = CAST(from_json(_rescued_data, 'map<string,string>')['battery_health_score'] AS DOUBLE),
+        charging_session_id = from_json(_rescued_data, 'map<string,string>')['charging_session_id']
+    WHERE _rescued_data IS NOT NULL
+        AND battery_health_score IS NULL  -- Only update if not already set
+""")
+
+# Verify backfill
+spark.sql("""
+    SELECT 
+        COUNT(*) as total_backfilled,
+        COUNT_IF(battery_health_score IS NOT NULL) as has_battery_health,
+        COUNT_IF(charging_session_id IS NOT NULL) as has_charging_session
+    FROM catalog.schema.telemetry_data
+    WHERE _rescued_data IS NOT NULL
+""").display()
+```
+
+---
+
+## **5. Complete Production Workflow**
+
+Here's a complete, opinionated production setup:
+
+```python
+from pyspark.sql.functions import *
+from delta.tables import *
+
+# Configuration
+CATALOG = "catalog"
+SCHEMA = "schema"
+TABLE = "telemetry_data"
+FULL_TABLE = f"{CATALOG}.{SCHEMA}.{TABLE}"
+
+schema_location = f"s3://your-bucket/autoloader-schemas/{TABLE}"
+checkpoint_location = f"s3://your-bucket/checkpoints/{TABLE}"
+
+# ===== STEP 1: Ingest with Rescue Mode =====
+def ingest_with_rescue():
+    raw_df = (spark.readStream
+        .format("cloudFiles")
+        .option("cloudFiles.format", "json")
+        .option("cloudFiles.schemaLocation", schema_location)
+        .option("cloudFiles.schemaEvolutionMode", "rescue")
+        .option("cloudFiles.inferColumnTypes", "true")
+        .option("cloudFiles.rescuedDataColumn", "_rescued_data")
+        .option("cloudFiles.maxFilesPerTrigger", 1000)
+        .load("s3://your-bucket/telemetry/json/")
+    )
+    
+    # Add metadata
+    enriched_df = (raw_df
+        .withColumn("ingestion_timestamp", current_timestamp())
+        .withColumn("source_file", input_file_name())
+        .withColumn("processing_date", current_date())
+    )
+    
+    query = (enriched_df.writeStream
+        .format("delta")
+        .outputMode("append")
+        .option("mergeSchema", "true")
+        .option("checkpointLocation", checkpoint_location)
+        .trigger(availableNow=True)
+        .toTable(FULL_TABLE)
+    )
+    
+    return query
+
+# ===== STEP 2: Monitor Rescued Data =====
+def analyze_rescued_data():
+    """Run this periodically to see what new fields are appearing"""
+    
+    analysis = spark.sql(f"""
+        WITH rescued_records AS (
+            SELECT 
+                _rescued_data,
+                ingestion_timestamp
+            FROM {FULL_TABLE}
+            WHERE _rescued_data IS NOT NULL
+                AND ingestion_timestamp >= current_timestamp() - INTERVAL 24 HOURS
+        ),
+        parsed_keys AS (
+            SELECT 
+                explode(map_keys(from_json(_rescued_data, 'map<string,string>'))) as field_name,
+                from_json(_rescued_data, 'map<string,string>')[explode(map_keys(from_json(_rescued_data, 'map<string,string>')))] as field_value,
+                ingestion_timestamp
+            FROM rescued_records
+        )
+        SELECT 
+            field_name,
+            COUNT(*) as occurrence_count,
+            COUNT(DISTINCT field_value) as unique_values,
+            MIN(field_value) as sample_value,
+            MIN(ingestion_timestamp) as first_seen,
+            MAX(ingestion_timestamp) as last_seen
+        FROM parsed_keys
+        GROUP BY field_name
+        ORDER BY occurrence_count DESC
+    """)
+    
+    return analysis
+
+# ===== STEP 3: Promote Fields =====
+def promote_rescued_fields(field_definitions):
+    """
+    Promote rescued fields to full columns
+    
+    Args:
+        field_definitions: dict like {'battery_health_score': 'DOUBLE', 'charging_session_id': 'STRING'}
+    """
+    
+    # Add columns to table
+    for field_name, field_type in field_definitions.items():
+        spark.sql(f"""
+            ALTER TABLE {FULL_TABLE}
+            ADD COLUMNS ({field_name} {field_type})
+        """)
+        print(f"✓ Added column: {field_name} ({field_type})")
+    
+    # Backfill from rescued data
+    set_clause = ", ".join([
+        f"{field} = CAST(from_json(_rescued_data, 'map<string,string>')['{field}'] AS {dtype})"
+        for field, dtype in field_definitions.items()
+    ])
+    
+    spark.sql(f"""
+        UPDATE {FULL_TABLE}
+        SET {set_clause}
+        WHERE _rescued_data IS NOT NULL
+    """)
+    print(f"✓ Backfilled {len(field_definitions)} fields from rescued data")
+
+# ===== STEP 4: Clean Up Rescued Data (Optional) =====
+def clean_rescued_data_for_promoted_fields(promoted_fields):
+    """
+    Remove promoted fields from _rescued_data column to reduce storage
+    """
+    
+    spark.sql(f"""
+        UPDATE {FULL_TABLE}
+        SET _rescued_data = CASE
+            WHEN size(map_keys(from_json(_rescued_data, 'map<string,string>'))) = {len(promoted_fields)}
+            THEN NULL  -- All fields promoted, clear rescued data
+            ELSE _rescued_data  -- Keep remaining unpromoted fields
+        END
+        WHERE _rescued_data IS NOT NULL
+    """)
+    print("✓ Cleaned up rescued data for promoted fields")
+```
+
+### **Using the Workflow:**
+
+```python
+# Day 1: Start ingestion with rescue mode
+query = ingest_with_rescue()
+query.awaitTermination()
+
+# Day 2: Check what's being rescued
+rescued_analysis = analyze_rescued_data()
+rescued_analysis.display()
+
+# Output might show:
+# field_name              | occurrence_count | unique_values | sample_value | first_seen          | last_seen
+# battery_health_score    | 15000           | 450          | "87.5"       | 2025-11-10 08:00:00 | 2025-11-11 10:00:00
+# charging_session_id     | 15000           | 8900         | "CS-2024..." | 2025-11-10 08:00:00 | 2025-11-11 10:00:00
+# experimental_metric     | 120             | 45           | "0.234"      | 2025-11-11 09:00:00 | 2025-11-11 10:00:00
+
+# Day 3: Promote fields you want to keep
+promote_rescued_fields({
+    'battery_health_score': 'DOUBLE',
+    'charging_session_id': 'STRING'
+})
+
+# Day 4: Clean up (optional)
+clean_rescued_data_for_promoted_fields(['battery_health_score', 'charging_session_id'])
+
+# Continue ingestion - new data will now populate the promoted columns
+# while "experimental_metric" stays in _rescued_data until you decide
+```
+
+---
+
+## **6. Rescue Mode vs. addNewColumns Comparison**
+
+| Aspect | Rescue Mode | addNewColumns |
+|--------|-------------|---------------|
+| **New fields** | Go to `_rescued_data` | Auto-create columns |
+| **Visibility** | ✅ Full visibility | ⚠️ Silent addition |
+| **Control** | ✅ Manual promotion | ❌ Automatic |
+| **Storage** | ⚠️ JSON overhead | ✅ Optimized columnar |
+| **Querying** | ⚠️ Requires parsing | ✅ Direct access |
+| **Testing** | ✅ Safe testing | ⚠️ Immediate impact |
+| **Backfilling** | ⚠️ Manual process | ✅ Automatic |
+| **Best for** | Production, governance | Development, flexibility |
+
+---
+
+## **7. Best Practices for Rescue Mode**
+
+### **✅ DO:**
+
+1. **Set up monitoring dashboards**
+   ```sql
+   -- Daily rescued data report
+   CREATE OR REPLACE VIEW rescued_data_summary AS
+   SELECT 
+       processing_date,
+       COUNT(*) as total_records,
+       COUNT_IF(_rescued_data IS NOT NULL) as rescued_count,
+       COUNT_IF(_rescued_data IS NOT NULL) * 100.0 / COUNT(*) as rescued_pct
+   FROM catalog.schema.telemetry_data
+   GROUP BY processing_date
+   ORDER BY processing_date DESC;
+   ```
+
+2. **Schedule regular analysis**
+   ```python
+   # Run weekly via Databricks job
+   analysis = analyze_rescued_data()
+   analysis.write.mode("overwrite").saveAsTable("catalog.schema.rescued_data_analysis")
+   ```
+
+3. **Document promotion decisions**
+   ```python
+   # Keep a log of schema changes
+   schema_changes = spark.createDataFrame([
+       ("2025-11-11", "battery_health_score", "DOUBLE", "Promoted from rescued", "user@company.com")
+   ], ["change_date", "field_name", "field_type", "reason", "changed_by"])
+   
+   schema_changes.write.mode("append").saveAsTable("catalog.schema.schema_change_log")
+   ```
+
+### **❌ DON'T:**
+
+1. Don't let rescued data accumulate indefinitely without review
+2. Don't promote fields without understanding their semantics
+3. Don't forget to backfill after promotion
+4. Don't ignore the storage cost of JSON in `_rescued_data`
+
+---
+
+## **8. Hybrid Approach: Rescue + Auto-Promotion**
+
+For the best of both worlds:
+
+```python
+# Use rescue mode initially
+# After 7 days, if field appears consistently, auto-promote
+
+def smart_promotion_pipeline():
+    # Analyze rescued data
+    analysis = spark.sql(f"""
+        SELECT 
+            field_name,
+            COUNT(*) as count,
+            MAX(ingestion_timestamp) as last_seen
+        FROM (
+            SELECT 
+                explode(map_keys(from_json(_rescued_data, 'map<string,string>'))) as field_name,
+                ingestion_timestamp
+            FROM {FULL_TABLE}
+            WHERE _rescued_data IS NOT NULL
+        )
+        GROUP BY field_name
+        HAVING COUNT(*) > 10000  -- Significant volume
+            AND MAX(ingestion_timestamp) >= current_timestamp() - INTERVAL 7 DAYS  -- Recent
+    """)
+    
+    # Auto-promote high-volume, consistent fields
+    for row in analysis.collect():
+        field_name = row['field_name']
+        print(f"Auto-promoting: {field_name}")
+        promote_rescued_fields({field_name: 'STRING'})  # Default to STRING, refine later
+```
+
+---
+
+## **Summary: When to Use Rescue Mode**
+
+**Use Rescue Mode when:**
+- ✅ Production environment with governance requirements
+- ✅ Schema changes need review/approval
+- ✅ You want to test new fields before committing
+- ✅ Multiple teams contribute data with varying quality
+- ✅ You need audit trail of schema evolution
+
+**Use addNewColumns when:**
+- ✅ Development/staging environment
+- ✅ Trusted data sources
+- ✅ Rapid iteration needed
+- ✅ Schema is expected to evolve frequently
+
+**For ChargeMinder telemetry data**, I'd recommend **starting with rescue mode** in production, then switching to a hybrid approach once you understand the evolution patterns.
+
+Would you like me to help you implement the monitoring dashboard or the automatic promotion logic for your specific ChargeMinder use case?
