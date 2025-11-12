@@ -1,6 +1,9 @@
 ## Databricks Job
 
 It Streamining we use readStream() and writeStream(), checkpoint required
+
+Explain the difference
+cloudFiles.useNotifications=true (or use cloudFiles.useManagedFileEvents=true
  
 
 ## Trigger Type: File Arrival
