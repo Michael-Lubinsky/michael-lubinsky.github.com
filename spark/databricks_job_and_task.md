@@ -1095,3 +1095,273 @@ query.awaitTermination()
   }
 }
 ```
+
+## 🔍 **cloudFiles.useNotifications: True vs False**
+
+This option controls **how Databricks Auto Loader discovers new files** in your S3 bucket.
+
+---
+
+## 📊 **Architecture Comparison**
+
+### **useNotifications = true (Event-Driven)**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. File arrives in S3                                      │
+│     s3://chargeminder-2/data/file001.json                   │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│  2. S3 sends event notification                             │
+│     S3 Event → SNS Topic → SQS Queue                        │
+│     (Auto Loader sets these up automatically)               │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│  3. Databricks polls SQS queue                              │
+│     Gets instant notification: "file001.json arrived!"      │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│  4. Databricks processes the file immediately               │
+│     Latency: Seconds                                        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Requirements:**
+- ✅ Storage Credential in Unity Catalog
+- ✅ Permissions to create SNS/SQS resources
+- ✅ S3 bucket permissions for notifications
+
+---
+
+### **useNotifications = false (Directory Listing)**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. File arrives in S3                                      │
+│     s3://chargeminder-2/data/file001.json                   │
+└─────────────────────────────────────────────────────────────┘
+                     
+                     (File just sits there, no notification)
+                     
+┌─────────────────────────────────────────────────────────────┐
+│  2. Databricks periodically lists S3 directory              │
+│     s3.listObjectsV2("s3://chargeminder-2/data/")          │
+│     Interval: Every few seconds to minutes                  │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│  3. Compares file list to previous scan                     │
+│     New file detected: "file001.json"                       │
+└────────────────────┬────────────────────────────────────────┘
+                     │
+                     ▼
+┌─────────────────────────────────────────────────────────────┐
+│  4. Databricks processes the file                           │
+│     Latency: Seconds to minutes (depends on polling)        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Requirements:**
+- ✅ Instance Profile with S3 ListBucket permission
+- ✅ No Unity Catalog Storage Credential needed
+- ✅ No SNS/SQS setup required
+
+---
+
+## ⚡ **Performance Comparison**
+
+| Metric | useNotifications = **true** | useNotifications = **false** |
+|--------|---------------------------|------------------------------|
+| **Latency** | 1-5 seconds | 10 seconds - 5 minutes |
+| **How it discovers files** | Event-driven (push) | Polling (pull) |
+| **S3 API calls** | Minimal (only reads) | Frequent LIST operations |
+| **S3 costs** | Lower | Higher (more LIST calls) |
+| **Setup complexity** | High (needs Unity Catalog) | Low (just IAM role) |
+| **Scalability** | Excellent (instant notification) | Good (but polls all paths) |
+| **Works with** | Unity Catalog required | Instance profile only |
+
+---
+
+## 💰 **Cost Implications**
+
+### **With Notifications (true):**
+```
+S3 Event Notifications: Free
+SNS: ~$0.50 per million notifications
+SQS: ~$0.40 per million requests
+S3 LIST calls: Minimal
+
+Example: 10,000 files/day
+- SNS: $0.005/day
+- SQS: $0.004/day
+- Total: ~$0.01/day
+```
+
+### **Without Notifications (false):**
+```
+S3 LIST calls: $0.005 per 1,000 requests
+
+Example: Polling every 30 seconds
+- 2,880 LIST calls/day
+- Cost: ~$0.014/day
+
+With 100 subdirectories:
+- 288,000 LIST calls/day
+- Cost: ~$1.44/day
+```
+
+**For high-volume or many directories:** Notifications are cheaper ✅
+
+---
+
+## 🎯 **When to Use Each**
+
+### **Use `useNotifications = true` when:**
+- ✅ You need **low latency** (real-time processing)
+- ✅ High file volume (thousands+ per day)
+- ✅ Many subdirectories to monitor
+- ✅ You have Unity Catalog configured
+- ✅ Cost optimization matters
+
+**Example use cases:**
+- Real-time dashboards
+- Streaming analytics
+- IoT data ingestion
+- Transaction processing
+
+---
+
+### **Use `useNotifications = false` when:**
+- ✅ You **don't have Unity Catalog** Storage Credential
+- ✅ Low to medium file volume (< 1,000/day)
+- ✅ Latency of minutes is acceptable
+- ✅ Simple setup preferred
+- ✅ Few directories to monitor
+
+**Example use cases:**
+- Daily batch jobs
+- Hourly data loads
+- Development/testing
+- Quick prototypes
+
+---
+
+## 🔧 **Code Examples**
+
+### **Example 1: High-Performance Real-Time (Notifications)**
+
+```python
+# Real-time vehicle telemetry processing
+df = (spark.readStream
+  .format("cloudFiles")
+  .option("cloudFiles.format", "json")
+  .option("cloudFiles.useNotifications", "true")  # Event-driven
+  .option("cloudFiles.region", "us-east-1")
+  .option("cloudFiles.queueUrl", "auto")  # Auto-creates SQS queue
+  .load("s3://chargeminder-2/telemetry/"))
+
+# Process and write
+(df.writeStream
+  .format("delta")
+  .option("checkpointLocation", "/checkpoints/telemetry")
+  .table("vehicle_telemetry"))
+```
+
+**Requirements:** Storage Credential must exist
+
+---
+
+### **Example 2: Simple Batch Processing (Directory Listing)**
+
+```python
+# Hourly batch processing - latency OK
+df = (spark.readStream
+  .format("cloudFiles")
+  .option("cloudFiles.format", "json")
+  .option("cloudFiles.useNotifications", "false")  # Directory listing
+  .option("cloudFiles.maxFilesPerTrigger", 1000)  # Throttle processing
+  .load("s3://chargeminder-2/telemetry/"))
+
+# Process and write
+(df.writeStream
+  .trigger(processingTime="10 minutes")  # Batch every 10 min
+  .format("delta")
+  .option("checkpointLocation", "/checkpoints/telemetry")
+  .table("vehicle_telemetry"))
+```
+
+**Requirements:** Only instance profile needed
+
+---
+
+## 🐛 **Why Your Job Failed**
+
+### **What Happened:**
+
+```python
+# Your file arrival trigger used this:
+.option("cloudFiles.useNotifications", "true")
+```
+
+**Execution flow:**
+1. ✅ File arrival trigger fires
+2. ❌ Auto Loader tries to set up SNS/SQS
+3. ❌ **Needs Storage Credential** to authenticate with AWS
+4. ❌ Storage Credential doesn't exist
+5. ❌ **Error: Unable to load AWS credentials**
+
+### **With Scheduled Trigger:**
+
+Your scheduled trigger likely either:
+- Used `useNotifications = false` (directory listing)
+- Or didn't use Auto Loader at all (regular `spark.read`)
+
+That's why it worked - it only needed the instance profile, not a Storage Credential.
+
+---
+
+## 🎯 **Your Decision Matrix**
+
+For your ChargeMinder use case:
+
+| Scenario | Recommendation |
+|----------|----------------|
+| **Need it working TODAY** | `useNotifications = false` |
+| **Processing < 1,000 files/day** | `useNotifications = false` |
+| **Can wait for admin to create Storage Credential** | `useNotifications = true` |
+| **Processing > 10,000 files/day** | `useNotifications = true` (get admin help) |
+| **Need sub-second latency** | `useNotifications = true` (get admin help) |
+| **Cost-sensitive, high volume** | `useNotifications = true` (get admin help) |
+
+---
+
+## 📝 **Summary**
+
+```
+useNotifications = true:
+✅ Fast (seconds)
+✅ Event-driven
+✅ Cost-efficient at scale
+❌ Requires Storage Credential (you don't have)
+❌ Complex setup
+
+useNotifications = false:
+✅ Simple setup
+✅ Works with instance profile only
+✅ No Unity Catalog needed
+⚠️ Slower (polling)
+⚠️ More expensive at high scale
+```
+
+---
+
+**For your immediate needs:** Use `false` to unblock yourself today, then work with your admin to set up Storage Credential for `true` later if you need better performance.
+
+Does this help clarify the difference?
