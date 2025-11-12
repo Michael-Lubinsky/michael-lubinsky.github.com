@@ -51,131 +51,8 @@ Below is a **complete, production-ready pattern** that lets you **declare the S3
 
 ---
 
-## 1. Declare the location **once** – in a **Databricks Job parameter**
 
-| UI | CLI | API |
-|----|-----|-----|
-| **Jobs → Edit → Parameters** | `databricks jobs configure --job-id <id> --json '{ "parameters": { "s3_source": "s3://my-bucket/raw/telemetry" } }'` | `POST /api/2.1/jobs/update` with `settings.parameters` |
 
-> **Only one place to change** when the bucket/prefix moves.
-
----
-
-## 2. Trigger the job **on file arrival** using **S3 Event → SNS → Databricks Job**
-
-### Step-by-step (one-time)
-
-| Step | What you do |
-|------|-------------|
-| **a.** Create an **SNS topic** (Databricks can do it for you – see below) |
-| **b.** Configure **S3 bucket** → **Event Notification** → **SNS topic** on `*.jsonl` (or `*.gz`) |
-| **c.** Give Databricks permission to **subscribe** to that topic and **run the job** |
-
-```bash
-# 1. Create SNS policy (run once)
-aws sns create-topic --name databricks-file-arrival
-
-# 2. S3 bucket event (via console or CLI)
-aws s3api put-bucket-notification-configuration \
-  --bucket my-bucket \
-  --notification-configuration '{
-    "TopicConfigurations": [{
-      "TopicArn": "arn:aws:sns:us-east-1:123456789012:databricks-file-arrival",
-      "Events": ["s3:ObjectCreated:*"],
-      "Filter": { "Key": { "FilterRules": [{ "Name": "suffix", "Value": ".jsonl" }]}}
-    }]
-  }'
-```
-
-> **Databricks will auto-subscribe** the first time you run the job with `cloudFiles.useNotifications=true`.
-
----
-
-## 3. PySpark script – **read the parameter** (no hard-coded path)
-
-```python
-# -------------------------------------------------
-#  databricks_file_arrival_job.py
-# -------------------------------------------------
-import sys
-from pyspark.sql import functions as F
-
-# ---------- 1. Get the S3 path from job parameter ----------
-# Databricks injects parameters into sys.argv when you use "Parameters" in the UI
-if len(sys.argv) < 2:
-    raise ValueError("Missing required parameter: s3_source")
-S3_SOURCE = sys.argv[1]                     # <-- ONLY ONE PLACE
-
-# Optional: fallback for local testing
-# S3_SOURCE = S3_SOURCE or "s3://my-bucket/raw/telemetry"
-
-print(f"Job started for path: {S3_SOURCE}")
-
-# ---------- 2. Auto Loader (file-notification mode) ----------
-df = (
-    spark.readStream
-        .format("cloudFiles")
-        .option("cloudFiles.format", "json")
-        .option("cloudFiles.schemaLocation", f"{S3_SOURCE}/_schema")
-        .option("cloudFiles.useNotifications", "true")   # <-- reacts to SNS
-        .option("cloudFiles.maxFilesPerTrigger", "500")
-        .option("cloudFiles.schemaEvolutionMode", "rescue")
-        .option("rescuedDataColumn", "_rescued_data")
-        .schema(raw_schema)
-        .load(S3_SOURCE)
-        .withColumn("source_file", F.col("_metadata.file_path"))
-)
-
-# ---------- 3. Rest of your pipeline (transform → MERGE) ----------
-# ... (same as before) ...
-
-# ---------- 4. Start the stream ----------
-query = (
-    df.writeStream
-      .option("checkpointLocation", f"{S3_SOURCE}/_checkpoint")
-      .trigger(processingTime="30 seconds")
-      .foreachBatch(upsert_batch)
-      .start()
-)
-
-query.awaitTermination()
-```
-
----
-
-## 4. Databricks **Job configuration** (UI)
-
-| Field | Value |
-|-------|-------|
-| **Task type** | Python script |
-| **Python file** | `dbfs:/FileStore/jobs/databricks_file_arrival_job.py` |
-| **Parameters** | `{{s3_source}}`  *(you will fill this in the job definition)* |
-| **Cluster** | All-Purpose (auto-terminate = 10 min) |
-| **Schedule** | **None** – the job is **triggered by SNS**, not cron |
-
-### How to set the parameter in the job definition
-
-```json
-{
-  "name": "Telemetry File-Arrival Ingestion",
-  "tasks": [
-    {
-      "task_key": "ingest",
-      "python_wheel_task": { ... },
-      "spark_python_task": {
-        "python_file": "dbfs:/FileStore/jobs/databricks_file_arrival_job.py",
-        "parameters": ["s3://my-bucket/raw/telemetry"]
-      }
-    }
-  ],
-  "triggers": {
-    "file_arrival": {
-      "file_patterns": ["*.jsonl"],
-      "folder": "s3://my-bucket/raw/telemetry"
-    }
-  }
-}
-```
 
 > **Databricks 13.3+ supports native `file_arrival` trigger** – you **don’t even need SNS** if you enable it in the UI.
 
@@ -642,8 +519,272 @@ aws sqs receive-message \
   The job should trigger automatically within a few seconds
 
 
-# How to avoid this duplication of S3 location ?
-## The S3 location with input files should be hardcoded in 2 places :
+
+
+
+#### Limitations
+| Aspect | Details |
+|--------|---------|
+| **Polling Frequency** | Every ~1 minute (affected by storage perf; faster with "file events" enabled on Unity Catalog external locations). |
+| **File Detection** | Triggers on *any* new/updated file in the path (no native filtering). Multiple files in one minute → single trigger. |
+| **Path Scope** | Root or subpath only; no regex/wildcards in UI. |
+| **Max Triggers** | Up to 1,000 per workspace (with file events enabled). |
+| **Cost** | Free (beyond S3 listing costs); no extra DBUs for polling. |
+
+If files arrive irregularly (e.g., Lambda dumps), it may delay ~1 minute—use **file events** (enable on external locations) for <10s latency.
+
+#  How to Filter Input Files Effectively
+Since the trigger fires on *any* file, implement filtering **in your PySpark job code** (e.g., using Auto Loader options).  
+This is the recommended pattern—no UI changes needed.
+
+ ## 1. **Filter in Auto Loader (cloudFiles Options)**
+   Use `.option("cloudFiles.includeExistingFiles", "false")` + pattern matching to ignore non-target files.
+
+   ```python
+   # In your read_stream() function
+   return (
+       spark.readStream
+           .format("cloudFiles")
+           .option("cloudFiles.format", "json")
+           .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+           .option("cloudFiles.useNotifications", "true")  # For low-latency events
+           .option("cloudFiles.maxFilesPerTrigger", "1000")
+           # ----- FILE PATTERN FILTERING -----
+           .option("cloudFiles.fileNamePattern", ".*\\.jsonl$")  # <--------    Only *.jsonl files
+           # Or more complex: .option("cloudFiles.filterFunction", "lambda path: 'telemetry' in path")
+           .option("cloudFiles.schemaEvolutionMode", "rescue")
+           .option("rescuedDataColumn", "_rescued_data")
+           .schema(raw_schema)
+           .load(SOURCE_PATH)
+           .withColumn("source_file", F.col("_metadata.file_path"))
+   )
+   ```
+
+   - **Patterns Supported**: Regex (e.g., `.*telemetry-.*\\.jsonl$`) or custom functions.
+   - **Behavior**: Auto Loader scans and filters *before* processing—ignores mismatches without triggering MERGE.
+
+## 2. **Filter in Your Batch Function (upsert_batch)**
+   If patterns vary, filter post-read:
+
+   ```python
+   # In upsert_batch(micro_df, batch_id)
+   # Filter to only process *.jsonl
+   filtered_df = micro_df.filter(F.regexp_extract(F.col("source_file"), r"([^/]+)$", 1).like("%jsonl"))
+   
+   if filtered_df.count() == 0:
+       print(f"No matching files in batch {batch_id} — skipping")
+       return
+   
+   # Then validate/dedup/MERGE on filtered_df
+   valid_df, invalid_df, _ = validate_batch(filtered_df)
+   # ... rest of MERGE
+   ```
+
+ ## 3. **Use Subpaths for "Patterns"**
+   - Structure your S3 like: `s3://bucket/raw/telemetry/jsonl/` (only JSONL here).
+   - Trigger monitors the subpath—no code changes.
+
+ ## 4. **Advanced: Custom SNS Filtering (If Using Events)**
+   - In AWS SNS: Add a **filter policy** on S3 events (e.g., `{"object.key[0]": [{"prefix": "telemetry-"}]}`).
+   - This prevents the trigger from firing on non-matches.
+
+ ## Testing & Best Practices
+1. **Test Setup**: Upload a non-matching file (e.g., `.txt`) → Trigger should fire, but your code filters it out (check logs).
+2. **Monitor**: Use Job runs/logs; query `_rescued_data` for mismatches.
+3. **Docs Links**:
+   - [File Arrival Triggers](https://docs.databricks.com/aws/en/jobs/file-arrival-triggers.html) (confirms no pattern UI).
+   - [Auto Loader Patterns](https://docs.databricks.com/en/ingestion/cloud-object-storage/auto-loader/patterns.html) (for code filtering).
+4. **Community Workaround**: Users on forums (e.g., Reddit, Databricks Community) confirm UI limitation—code-based filtering is standard.
+
+
+
+# You cannot use dbutils inside foreachBatch (or any Spark job) when running in File Arrival / Streaming mode — it is not serializable and will throw the error
+
+ You cannot use `dbutils` inside `foreachBatch` (or any Spark job) when running in **File Arrival / Streaming mode** —  
+ it is **not serializable** and will throw the exact error you saw.**  
+
+**Fix:**  
+1. **Never call `dbutils.fs.mv()` inside `upsert_batch`.**  
+2. **Use pure PySpark (`spark.sparkContext._jvm.org.apache.hadoop.fs.FileSystem`) or AWS SDK (`boto3`) to move files.**  
+3. **Or: Do the move *outside* the stream (e.g., in a separate scheduled job).**
+
+---
+
+## Why `dbutils` Fails in `foreachBatch`
+
+| Feature | `dbutils` | Spark Job (`foreachBatch`) |
+|--------|-----------|----------------------------|
+| **Serializable?** | No | **Must be** |
+| **Runs on** | Driver (Databricks-specific) | Driver **via Spark Connect** |
+| **Pickling** | Contains live JVM objects | **Cannot be pickled** |
+| **Error** | `You cannot use dbutils within a spark job or otherwise pickle it` | Exactly what you got |
+
+> `dbutils` is a **Databricks-specific utility** that wraps the notebook/driver context.  
+> Spark **cannot send it to executors** or **serialize it** for `foreachBatch`.
+
+---
+
+## Correct Way to Move Files in Streaming Job
+
+### Option 1: **Pure PySpark (Hadoop FS) – Recommended**
+
+```python
+def move_file_hadoop(src_path: str, dst_path: str, spark):
+    """Move file using Hadoop FileSystem (no dbutils)."""
+    fs = spark._jsc.hadoopConfiguration()
+    path_src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
+    path_dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
+    file_system = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
+    
+    if file_system.exists(path_src):
+        file_system.rename(path_src, path_dst)
+        print(f"Moved: {src_path} → {dst_path}")
+    else:
+        print(f"File not found: {src_path}")
+```
+
+Use it in `upsert_batch`:
+
+```python
+# Inside upsert_batch (after MERGE)
+spark = micro_df.sparkSession
+for file_path in micro_df.select("source_file").distinct().collect():
+    src = file_path["source_file"]
+    dst = src.replace("/raw/", "/archived/")
+    move_file_hadoop(src, dst, spark)
+```
+
+---
+
+### Option 2: **Use `boto3` (AWS SDK)**
+
+```python
+import boto3
+
+s3 = boto3.client('s3')
+
+def move_file_boto3(src_bucket, src_key, dst_bucket, dst_key):
+    # Copy
+    s3.copy_object(
+        Bucket=dst_bucket,
+        Key=dst_key,
+        CopySource={'Bucket': src_bucket, 'Key': src_key}
+    )
+    # Delete original
+    s3.delete_object(Bucket=src_bucket, Key=src_key)
+    print(f"Moved: s3://{src_bucket}/{src_key} → s3://{dst_bucket}/{dst_key}")
+```
+
+Call it:
+
+```python
+bucket = "chargeminder-2"
+for row in micro_df.select("source_file").distinct().collect():
+    src_key = row["source_file"].replace(f"s3://{bucket}/", "")
+    dst_key = src_key.replace("raw/", "archived/")
+    move_file_boto3(bucket, src_key, bucket, dst_key)
+```
+
+**Note:** Requires IAM role with `s3:CopyObject`, `s3:DeleteObject`.
+
+---
+
+### Option 3: **Move Files Outside the Stream (Best Practice)**
+
+Run a **separate scheduled job** (e.g., every 5 min) that:
+1. Queries the **metrics table** or **Delta `_commit` logs** to find processed files.
+2. Uses `dbutils.fs.mv()` safely (since it's not in a Spark job).
+
+```python
+# Separate job: archive_processed.py
+processed_files = spark.sql("""
+    SELECT DISTINCT source_file 
+    FROM telemetry_metrics 
+    WHERE status = 'SUCCESS' AND run_timestamp > date_sub(current_date(), 1)
+""")
+
+for row in processed_files.collect():
+    src = row.source_file
+    dst = src.replace("/raw/", "/archived/")
+    dbutils.fs.mv(src, dst)
+```
+
+**Pros:**  
+- `dbutils` is safe  
+- No serialization issues  
+- Cleaner separation
+
+---
+
+## Updated `archive_processed_files` (Safe for Streaming)
+
+```python
+def archive_processed_files(micro_df: DataFrame, spark):
+    """Move processed files using Hadoop FS (no dbutils)."""
+    bucket = CONFIG["s3_bucket"]
+    archive_prefix = CONFIG["archive_prefix"]
+
+    files = [row["source_file"] for row in micro_df.select("source_file").distinct().collect()]
+    fs = spark._jsc.hadoopConfiguration()
+    hdfs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
+
+    for src_path in files:
+        if not src_path.startswith("s3://"):
+            continue
+        src_key = src_path.replace(f"s3://{bucket}/", "")
+        dst_key = src_key.replace(CONFIG["s3_prefix"].rstrip("/"), archive_prefix.rstrip("/"))
+        dst_path = f"s3://{bucket}/{dst_key}"
+
+        src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
+        dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
+        if hdfs.exists(src):
+            hdfs.rename(src, dst)
+            print(f"Archived: {src_path} → {dst_path}")
+```
+
+Call from `upsert_batch`:
+
+```python
+archive_processed_files(micro_df, spark)
+```
+
+---
+
+## Final `upsert_batch` Snippet (No `dbutils`)
+
+```python
+def upsert_batch(micro_df: DataFrame, batch_id: int):
+    spark = micro_df.sparkSession  # Fresh session
+
+    # ... validation, MERGE ...
+
+    # Archive using Hadoop FS
+    archive_processed_files(micro_df, spark)
+```
+
+---
+
+## Summary
+
+| Method | Can use in `foreachBatch`? | Needs IAM? | Recommended? |
+|-------|----------------------------|-----------|--------------|
+| `dbutils.fs.mv()` | No | No | No |
+| Hadoop FS (`FileSystem`) | Yes | No | Yes |
+| `boto3` | Yes | Yes (`CopyObject`, `DeleteObject`) | Yes |
+| Separate job | Yes (outside stream) | Yes | Yes (cleanest) |
+
+---
+
+## Summary
+
+> **No, you cannot use `dbutils` to move files inside `foreachBatch` in File Arrival mode.**  
+> **Use Hadoop FS (`spark._jvm.org.apache.hadoop.fs.FileSystem`) or `boto3` instead.**  
+> **Or move files in a separate scheduled job using `dbutils` safely.**
+
+# How to avoid  providing  S3 input folder in 2 places: Task File Arrival trigger and Python task code
+
+
+Problem statement:  The S3 location with input files should be hardcoded in 2 places :
 
 1) Databricks task trigger on file arrival
 2) PySpark code which is invoked by this trigger
@@ -821,284 +962,130 @@ The job **starts automatically** when a matching file appears.
 
 
 
+## 1. Declare the location **once** – in a **Databricks Job parameter**
 
+| UI | CLI | API |
+|----|-----|-----|
+| **Jobs → Edit → Parameters** | `databricks jobs configure --job-id <id> --json '{ "parameters": { "s3_source": "s3://my-bucket/raw/telemetry" } }'` | `POST /api/2.1/jobs/update` with `settings.parameters` |
 
-
-### Confirmation: No File Pattern Option in Databricks File Arrival Trigger UI
-
-Yes, your observation is correct—the Databricks web UI for **File Arrival triggers** (as of November 11, 2025) **does not provide an explicit option to assign or configure file patterns** (e.g., `*.jsonl` or `data-*.csv`). This is a known limitation based on official documentation and community reports. Below, I'll explain why, how it works, and practical workarounds to achieve file filtering.
-
-#### Why No File Pattern Option?
-- **UI Simplicity**: The File Arrival trigger is designed for **broad monitoring** of a storage location. It focuses on detecting *any* new or updated files in the specified path, without built-in filtering to keep the setup straightforward. Databricks assumes you'll handle specificity in your job logic (e.g., via Auto Loader options).
-- **Underlying Mechanism**: Triggers poll the path **every minute** (best-effort) and fire on *any* change. There's no UI field for patterns because it's not event-filtered at the trigger level—filtering happens downstream in your code.
-- **Evolution**: Introduced in February 2023 and GA in 2024, the feature emphasizes Unity Catalog integration (volumes/external locations) over granular UI controls. Community feedback (e.g., on Reddit and Databricks forums) highlights this as a gap, with users requesting pattern support.
-
-From Databricks docs:
-- **UI Steps** (no pattern mentioned):  
-  1. Go to **Jobs** → Select your job → **Add trigger**.  
-  2. Set **Trigger type** to **File arrival**.  
-  3. Enter **Storage location** (e.g., `s3://your-bucket/path/` or Unity Catalog volume/external location path).  
-  4. Optional: Set **Minimum time between triggers** (e.g., 5 minutes) to batch multiple arrivals.  
-  5. Save—no pattern field appears.
-
-No screenshots in docs show a pattern option; it's just the location field.
-
-#### Limitations
-| Aspect | Details |
-|--------|---------|
-| **Polling Frequency** | Every ~1 minute (affected by storage perf; faster with "file events" enabled on Unity Catalog external locations). |
-| **File Detection** | Triggers on *any* new/updated file in the path (no native filtering). Multiple files in one minute → single trigger. |
-| **Path Scope** | Root or subpath only; no regex/wildcards in UI. |
-| **Max Triggers** | Up to 1,000 per workspace (with file events enabled). |
-| **Cost** | Free (beyond S3 listing costs); no extra DBUs for polling. |
-
-If files arrive irregularly (e.g., Lambda dumps), it may delay ~1 minute—use **file events** (enable on external locations) for <10s latency.
-
-# Workarounds: How to Filter Files Effectively
-Since the trigger fires on *any* file, implement filtering **in your PySpark job code** (e.g., using Auto Loader options). This is the recommended pattern—no UI changes needed.
-
- ## 1. **Filter in Auto Loader (cloudFiles Options)**
-   Use `.option("cloudFiles.includeExistingFiles", "false")` + pattern matching to ignore non-target files.
-
-   ```python
-   # In your read_stream() function
-   return (
-       spark.readStream
-           .format("cloudFiles")
-           .option("cloudFiles.format", "json")
-           .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
-           .option("cloudFiles.useNotifications", "true")  # For low-latency events
-           .option("cloudFiles.maxFilesPerTrigger", "1000")
-           # ----- FILE PATTERN FILTERING -----
-           .option("cloudFiles.fileNamePattern", ".*\\.jsonl$")  # Only *.jsonl files
-           # Or more complex: .option("cloudFiles.filterFunction", "lambda path: 'telemetry' in path")
-           .option("cloudFiles.schemaEvolutionMode", "rescue")
-           .option("rescuedDataColumn", "_rescued_data")
-           .schema(raw_schema)
-           .load(SOURCE_PATH)
-           .withColumn("source_file", F.col("_metadata.file_path"))
-   )
-   ```
-
-   - **Patterns Supported**: Regex (e.g., `.*telemetry-.*\\.jsonl$`) or custom functions.
-   - **Behavior**: Auto Loader scans and filters *before* processing—ignores mismatches without triggering MERGE.
-
-## 2. **Filter in Your Batch Function (upsert_batch)**
-   If patterns vary, filter post-read:
-
-   ```python
-   # In upsert_batch(micro_df, batch_id)
-   # Filter to only process *.jsonl
-   filtered_df = micro_df.filter(F.regexp_extract(F.col("source_file"), r"([^/]+)$", 1).like("%jsonl"))
-   
-   if filtered_df.count() == 0:
-       print(f"No matching files in batch {batch_id} — skipping")
-       return
-   
-   # Then validate/dedup/MERGE on filtered_df
-   valid_df, invalid_df, _ = validate_batch(filtered_df)
-   # ... rest of MERGE
-   ```
-
- ## 3. **Use Subpaths for "Patterns"**
-   - Structure your S3 like: `s3://bucket/raw/telemetry/jsonl/` (only JSONL here).
-   - Trigger monitors the subpath—no code changes.
-
- ## 4. **Advanced: Custom SNS Filtering (If Using Events)**
-   - In AWS SNS: Add a **filter policy** on S3 events (e.g., `{"object.key[0]": [{"prefix": "telemetry-"}]}`).
-   - This prevents the trigger from firing on non-matches.
-
- ## Testing & Best Practices
-1. **Test Setup**: Upload a non-matching file (e.g., `.txt`) → Trigger should fire, but your code filters it out (check logs).
-2. **Monitor**: Use Job runs/logs; query `_rescued_data` for mismatches.
-3. **Docs Links**:
-   - [File Arrival Triggers](https://docs.databricks.com/aws/en/jobs/file-arrival-triggers.html) (confirms no pattern UI).
-   - [Auto Loader Patterns](https://docs.databricks.com/en/ingestion/cloud-object-storage/auto-loader/patterns.html) (for code filtering).
-4. **Community Workaround**: Users on forums (e.g., Reddit, Databricks Community) confirm UI limitation—code-based filtering is standard.
-
-
-
-# you cannot use dbutils inside foreachBatch (or any Spark job) when running in File Arrival / Streaming mode — it is not serializable and will throw the error
-
-## TL;DR  
-**No, you cannot use `dbutils` inside `foreachBatch` (or any Spark job) when running in **File Arrival / Streaming mode** — it is **not serializable** and will throw the exact error you saw.**  
-
-**Fix:**  
-1. **Never call `dbutils.fs.mv()` inside `upsert_batch`.**  
-2. **Use pure PySpark (`spark.sparkContext._jvm.org.apache.hadoop.fs.FileSystem`) or AWS SDK (`boto3`) to move files.**  
-3. **Or: Do the move *outside* the stream (e.g., in a separate scheduled job).**
+> **Only one place to change** when the bucket/prefix moves.
 
 ---
 
-## Why `dbutils` Fails in `foreachBatch`
+## 2. Trigger the job **on file arrival** using **S3 Event → SNS → Databricks Job**
 
-| Feature | `dbutils` | Spark Job (`foreachBatch`) |
-|--------|-----------|----------------------------|
-| **Serializable?** | No | **Must be** |
-| **Runs on** | Driver (Databricks-specific) | Driver **via Spark Connect** |
-| **Pickling** | Contains live JVM objects | **Cannot be pickled** |
-| **Error** | `You cannot use dbutils within a spark job or otherwise pickle it` | Exactly what you got |
+### Step-by-step (one-time)
 
-> `dbutils` is a **Databricks-specific utility** that wraps the notebook/driver context.  
-> Spark **cannot send it to executors** or **serialize it** for `foreachBatch`.
+| Step | What you do |
+|------|-------------|
+| **a.** Create an **SNS topic** (Databricks can do it for you – see below) |
+| **b.** Configure **S3 bucket** → **Event Notification** → **SNS topic** on `*.jsonl` (or `*.gz`) |
+| **c.** Give Databricks permission to **subscribe** to that topic and **run the job** |
 
----
+```bash
+# 1. Create SNS policy (run once)
+aws sns create-topic --name databricks-file-arrival
 
-## Correct Way to Move Files in Streaming Job
-
-### Option 1: **Pure PySpark (Hadoop FS) – Recommended**
-
-```python
-def move_file_hadoop(src_path: str, dst_path: str, spark):
-    """Move file using Hadoop FileSystem (no dbutils)."""
-    fs = spark._jsc.hadoopConfiguration()
-    path_src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
-    path_dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
-    file_system = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
-    
-    if file_system.exists(path_src):
-        file_system.rename(path_src, path_dst)
-        print(f"Moved: {src_path} → {dst_path}")
-    else:
-        print(f"File not found: {src_path}")
+# 2. S3 bucket event (via console or CLI)
+aws s3api put-bucket-notification-configuration \
+  --bucket my-bucket \
+  --notification-configuration '{
+    "TopicConfigurations": [{
+      "TopicArn": "arn:aws:sns:us-east-1:123456789012:databricks-file-arrival",
+      "Events": ["s3:ObjectCreated:*"],
+      "Filter": { "Key": { "FilterRules": [{ "Name": "suffix", "Value": ".jsonl" }]}}
+    }]
+  }'
 ```
 
-Use it in `upsert_batch`:
+> **Databricks will auto-subscribe** the first time you run the job with `cloudFiles.useNotifications=true`.
+
+---
+
+
+
+## 3. PySpark script – **read the parameter** (no hard-coded path)
 
 ```python
-# Inside upsert_batch (after MERGE)
-spark = micro_df.sparkSession
-for file_path in micro_df.select("source_file").distinct().collect():
-    src = file_path["source_file"]
-    dst = src.replace("/raw/", "/archived/")
-    move_file_hadoop(src, dst, spark)
+# -------------------------------------------------
+#  databricks_file_arrival_job.py
+# -------------------------------------------------
+import sys
+from pyspark.sql import functions as F
+
+# ---------- 1. Get the S3 path from job parameter ----------
+# Databricks injects parameters into sys.argv when you use "Parameters" in the UI
+if len(sys.argv) < 2:
+    raise ValueError("Missing required parameter: s3_source")
+S3_SOURCE = sys.argv[1]                     # <-- ONLY ONE PLACE
+
+# Optional: fallback for local testing
+# S3_SOURCE = S3_SOURCE or "s3://my-bucket/raw/telemetry"
+
+print(f"Job started for path: {S3_SOURCE}")
+
+# ---------- 2. Auto Loader (file-notification mode) ----------
+df = (
+    spark.readStream
+        .format("cloudFiles")
+        .option("cloudFiles.format", "json")
+        .option("cloudFiles.schemaLocation", f"{S3_SOURCE}/_schema")
+        .option("cloudFiles.useNotifications", "true")   # <-- reacts to SNS
+        .option("cloudFiles.maxFilesPerTrigger", "500")
+        .option("cloudFiles.schemaEvolutionMode", "rescue")
+        .option("rescuedDataColumn", "_rescued_data")
+        .schema(raw_schema)
+        .load(S3_SOURCE)
+        .withColumn("source_file", F.col("_metadata.file_path"))
+)
+
+# ---------- 3. Rest of your pipeline (transform → MERGE) ----------
+# ... (same as before) ...
+
+# ---------- 4. Start the stream ----------
+query = (
+    df.writeStream
+      .option("checkpointLocation", f"{S3_SOURCE}/_checkpoint")
+      .trigger(processingTime="30 seconds")
+      .foreachBatch(upsert_batch)
+      .start()
+)
+
+query.awaitTermination()
 ```
 
 ---
 
-### Option 2: **Use `boto3` (AWS SDK)**
+## 4. Databricks **Job configuration** (UI)
 
-```python
-import boto3
+| Field | Value |
+|-------|-------|
+| **Task type** | Python script |
+| **Python file** | `dbfs:/FileStore/jobs/databricks_file_arrival_job.py` |
+| **Parameters** | `{{s3_source}}`  *(you will fill this in the job definition)* |
+| **Cluster** | All-Purpose (auto-terminate = 10 min) |
+| **Schedule** | **None** – the job is **triggered by SNS**, not cron |
 
-s3 = boto3.client('s3')
+### How to set the parameter in the job definition
 
-def move_file_boto3(src_bucket, src_key, dst_bucket, dst_key):
-    # Copy
-    s3.copy_object(
-        Bucket=dst_bucket,
-        Key=dst_key,
-        CopySource={'Bucket': src_bucket, 'Key': src_key}
-    )
-    # Delete original
-    s3.delete_object(Bucket=src_bucket, Key=src_key)
-    print(f"Moved: s3://{src_bucket}/{src_key} → s3://{dst_bucket}/{dst_key}")
+```json
+{
+  "name": "Telemetry File-Arrival Ingestion",
+  "tasks": [
+    {
+      "task_key": "ingest",
+      "python_wheel_task": { ... },
+      "spark_python_task": {
+        "python_file": "dbfs:/FileStore/jobs/databricks_file_arrival_job.py",
+        "parameters": ["s3://my-bucket/raw/telemetry"]
+      }
+    }
+  ],
+  "triggers": {
+    "file_arrival": {
+      "file_patterns": ["*.jsonl"],
+      "folder": "s3://my-bucket/raw/telemetry"
+    }
+  }
+}
 ```
-
-Call it:
-
-```python
-bucket = "chargeminder-2"
-for row in micro_df.select("source_file").distinct().collect():
-    src_key = row["source_file"].replace(f"s3://{bucket}/", "")
-    dst_key = src_key.replace("raw/", "archived/")
-    move_file_boto3(bucket, src_key, bucket, dst_key)
-```
-
-**Note:** Requires IAM role with `s3:CopyObject`, `s3:DeleteObject`.
-
----
-
-### Option 3: **Move Files Outside the Stream (Best Practice)**
-
-Run a **separate scheduled job** (e.g., every 5 min) that:
-1. Queries the **metrics table** or **Delta `_commit` logs** to find processed files.
-2. Uses `dbutils.fs.mv()` safely (since it's not in a Spark job).
-
-```python
-# Separate job: archive_processed.py
-processed_files = spark.sql("""
-    SELECT DISTINCT source_file 
-    FROM telemetry_metrics 
-    WHERE status = 'SUCCESS' AND run_timestamp > date_sub(current_date(), 1)
-""")
-
-for row in processed_files.collect():
-    src = row.source_file
-    dst = src.replace("/raw/", "/archived/")
-    dbutils.fs.mv(src, dst)
-```
-
-**Pros:**  
-- `dbutils` is safe  
-- No serialization issues  
-- Cleaner separation
-
----
-
-## Updated `archive_processed_files` (Safe for Streaming)
-
-```python
-def archive_processed_files(micro_df: DataFrame, spark):
-    """Move processed files using Hadoop FS (no dbutils)."""
-    bucket = CONFIG["s3_bucket"]
-    archive_prefix = CONFIG["archive_prefix"]
-
-    files = [row["source_file"] for row in micro_df.select("source_file").distinct().collect()]
-    fs = spark._jsc.hadoopConfiguration()
-    hdfs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
-
-    for src_path in files:
-        if not src_path.startswith("s3://"):
-            continue
-        src_key = src_path.replace(f"s3://{bucket}/", "")
-        dst_key = src_key.replace(CONFIG["s3_prefix"].rstrip("/"), archive_prefix.rstrip("/"))
-        dst_path = f"s3://{bucket}/{dst_key}"
-
-        src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
-        dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
-        if hdfs.exists(src):
-            hdfs.rename(src, dst)
-            print(f"Archived: {src_path} → {dst_path}")
-```
-
-Call from `upsert_batch`:
-
-```python
-archive_processed_files(micro_df, spark)
-```
-
----
-
-## Final `upsert_batch` Snippet (No `dbutils`)
-
-```python
-def upsert_batch(micro_df: DataFrame, batch_id: int):
-    spark = micro_df.sparkSession  # Fresh session
-
-    # ... validation, MERGE ...
-
-    # Archive using Hadoop FS
-    archive_processed_files(micro_df, spark)
-```
-
----
-
-## Summary
-
-| Method | Can use in `foreachBatch`? | Needs IAM? | Recommended? |
-|-------|----------------------------|-----------|--------------|
-| `dbutils.fs.mv()` | No | No | No |
-| Hadoop FS (`FileSystem`) | Yes | No | Yes |
-| `boto3` | Yes | Yes (`CopyObject`, `DeleteObject`) | Yes |
-| Separate job | Yes (outside stream) | Yes | Yes (cleanest) |
-
----
-
-## Final Answer
-
-> **No, you cannot use `dbutils` to move files inside `foreachBatch` in File Arrival mode.**  
-> **Use Hadoop FS (`spark._jvm.org.apache.hadoop.fs.FileSystem`) or `boto3` instead.**  
-> **Or move files in a separate scheduled job using `dbutils` safely.**
-
-Let me know if you want the **full corrected script** with Hadoop FS archiving!
