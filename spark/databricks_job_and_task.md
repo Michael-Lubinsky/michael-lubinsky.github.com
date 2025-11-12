@@ -42,56 +42,6 @@ If trigger is not speccified to writeStream default is
 which is 100 times per second
 
 
-## How to specify S3 location for Trigger and PySpark code in single place only?
-
-Below is a **complete, production-ready pattern** that lets you **declare the S3 location only once** and have it flow automatically into:
-
-1. **Databricks file-arrival trigger** (the *Job* that wakes up when a new file lands)  
-2. **Your PySpark script** (the code that actually reads the files)
-
----
-
-
-
-
-> **Databricks 13.3+ supports native `file_arrival` trigger** – you **don’t even need SNS** if you enable it in the UI.
-
----
-
-## 5. Alternative: **Native Databricks File-Arrival Trigger** (no AWS SNS)
-
-Databricks now offers **built-in file-arrival triggers** (DBR 13.3+):
-
-1. **Jobs → Create Job → Trigger type → File arrival**  
-2. **Folder**: `s3://my-bucket/raw/telemetry`  
-
-
-The job **starts automatically** when a matching file appears.
-
-**Your script still reads the path from `sys.argv[1]`** – **no duplication**.
-
----
-
-## 6. Summary – **Zero duplication**
-
-| Where the path lives | How it’s used |
-|----------------------|---------------|
-| **Job definition** (UI / JSON / CLI) | `parameters: ["s3://..."]` |
-| **Python script** | `S3_SOURCE = sys.argv[1]` |
-| **Auto Loader** | `.load(S3_SOURCE)` |
-| **Checkpoint / Schema** | derived from `S3_SOURCE` |
-
-> **Change the bucket/prefix?** → Edit **one line** in the job definition. Everything else updates automatically.
-
----
-
-### TL;DR
-
-1. **Put the S3 path in a Databricks Job parameter** (`sys.argv[1]`).  
-2. **Use native `file_arrival` trigger** **or** **S3 → SNS → Databricks**.  
-3. **Never hard-code the path in the script** – read it from the parameter.  
-
-You now have **one source of truth** and **zero duplication**.
 
 
 
@@ -959,6 +909,59 @@ The job **starts automatically** when a matching file appears.
 1. **Put the S3 path in a Databricks Job parameter** (`sys.argv[1]`).  
 2. **Use native `file_arrival` trigger** **or** **S3 → SNS → Databricks**.  
 3. **Never hard-code the path in the script** – read it from the parameter. 
+
+
+
+## How to specify S3 location for Trigger and PySpark code in single place only?
+
+Below is a **complete, production-ready pattern** that lets you **declare the S3 location only once** and have it flow automatically into:
+
+1. **Databricks file-arrival trigger** (the *Job* that wakes up when a new file lands)  
+2. **Your PySpark script** (the code that actually reads the files)
+
+---
+
+
+
+
+> **Databricks 13.3+ supports native `file_arrival` trigger** – you **don’t even need SNS** if you enable it in the UI.
+
+---
+
+## 5. Alternative: **Native Databricks File-Arrival Trigger** (no AWS SNS)
+
+Databricks now offers **built-in file-arrival triggers** (DBR 13.3+):
+
+1. **Jobs → Create Job → Trigger type → File arrival**  
+2. **Folder**: `s3://my-bucket/raw/telemetry`  
+
+
+The job **starts automatically** when a matching file appears.
+
+**Your script still reads the path from `sys.argv[1]`** – **no duplication**.
+
+---
+
+## 6. Summary – **Zero duplication**
+
+| Where the path lives | How it’s used |
+|----------------------|---------------|
+| **Job definition** (UI / JSON / CLI) | `parameters: ["s3://..."]` |
+| **Python script** | `S3_SOURCE = sys.argv[1]` |
+| **Auto Loader** | `.load(S3_SOURCE)` |
+| **Checkpoint / Schema** | derived from `S3_SOURCE` |
+
+> **Change the bucket/prefix?** → Edit **one line** in the job definition. Everything else updates automatically.
+
+---
+
+### TL;DR
+
+1. **Put the S3 path in a Databricks Job parameter** (`sys.argv[1]`).  
+2. **Use native `file_arrival` trigger** **or** **S3 → SNS → Databricks**.  
+3. **Never hard-code the path in the script** – read it from the parameter.  
+
+You now have **one source of truth** and **zero duplication**.
 
 
 
