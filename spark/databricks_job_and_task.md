@@ -91,7 +91,6 @@ stream = (spark.readStream
 
 ---
 
-If you like, I can check your **specific Databricks runtime version** and **external location setup** and tell you **which mode is supported in your environment** (and highlight exactly which options to remove/keep).
 
 [1]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/file-notification-mode?utm_source=chatgpt.com "Configure Auto Loader streams in file notification mode"
 [2]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/options?utm_source=chatgpt.com "Auto Loader options | Databricks on AWS"
@@ -316,7 +315,7 @@ If you have existing code with `useNotifications`:
 df = (spark.readStream
   .format("cloudFiles")
   .option("cloudFiles.format", "json")
-  .option("cloudFiles.useNotifications", "true")
+  .option("cloudFiles.useNotifications", "true")  #  OLD way
   .option("cloudFiles.queueUrl", "auto")
   .load("s3://chargeminder-2/data/"))
 ```
@@ -417,10 +416,430 @@ cloudFiles.useNotifications = false:
 
 **Bottom line:** Once your admin creates the Storage Credential, use **`useManagedFileEvents = true`** - it's the modern, recommended approach that Databricks prefers!
 
-Does this clarify the difference?
+
+
+Yes – that policy is *exactly* why you’re getting the `SNS:CreateTopic` error.
+
+The key mismatch is here 👇
+
+Your **policy** allows `sns:CreateTopic` only on:
+
+```json
+"Resource": [
+  "arn:aws:sns:*:*:databricks-auto-ingest-*",
+  "arn:aws:sqs:*:*:databricks-auto-ingest-*"
+]
+```
+
+But the **actual topic** Databricks is trying to create (from the error) is:
+
+```text
+arn:aws:sns:us-east-1:447759255101:csms-topic-by-path-d3822b22...
+```
+
+The name starts with `csms-topic-by-path-…`, **not** `databricks-auto-ingest-…`, so your `sns:CreateTopic` permission does **not** apply → 403 on `SNS:CreateTopic`.
+
+That “databricks-auto-ingest-*” pattern is from **older / different Auto Loader examples**. Managed file events use the `csms-*` naming convention.
+
+---
+
+### What to change
+
+You can fix it by changing the **Resource** on the SNS/SQS statement to include `csms-*` instead of (or in addition to) `databricks-auto-ingest-*`.
+
+For example, replace this block:
+
+```json
+{
+  "Action": [
+    "sns:CreateTopic",
+    "sns:TagResource",
+    "sns:Publish",
+    "sns:Subscribe",
+    "sns:ListSubscriptionsByTopic",
+    "sns:GetTopicAttributes",
+    "sns:SetTopicAttributes",
+    "sqs:CreateQueue",
+    "sqs:TagQueue",
+    "sqs:GetQueueUrl",
+    "sqs:GetQueueAttributes",
+    "sqs:SetQueueAttributes",
+    "sqs:ReceiveMessage",
+    "sqs:SendMessage",
+    "sqs:DeleteMessage",
+    "sqs:ChangeMessageVisibility"
+  ],
+  "Effect": "Allow",
+  "Resource": [
+    "arn:aws:sns:*:*:databricks-auto-ingest-*",
+    "arn:aws:sqs:*:*:databricks-auto-ingest-*"
+  ],
+  "Sid": "ManagedFileEventsSetupStatement"
+}
+```
+
+with something like:
+
+```json
+{
+  "Sid": "ManagedFileEventsSetupStatement",
+  "Effect": "Allow",
+  "Action": [
+    "sns:CreateTopic",
+    "sns:TagResource",
+    "sns:Publish",
+    "sns:Subscribe",
+    "sns:ListSubscriptionsByTopic",
+    "sns:GetTopicAttributes",
+    "sns:SetTopicAttributes",
+    "sqs:CreateQueue",
+    "sqs:TagQueue",
+    "sqs:GetQueueUrl",
+    "sqs:GetQueueAttributes",
+    "sqs:SetQueueAttributes",
+    "sqs:ReceiveMessage",
+    "sqs:DeleteMessage",
+    "sqs:ChangeMessageVisibility"
+  ],
+  "Resource": [
+    "arn:aws:sns:us-east-1:447759255101:csms-*",
+    "arn:aws:sqs:us-east-1:447759255101:csms-*"
+  ]
+}
+```
+
+If your security team wants to be *extra* strict, they can narrow the SNS ARN to just:
+
+```json
+"arn:aws:sns:us-east-1:447759255101:csms-topic-by-path-*"
+```
+
+but `csms-*` is usually fine.
+
+The rest of your policy looks OK for managed file events:
+
+* `S3DataAccess` → bucket + object read/write ✅
+* `S3NotificationSetup` → `GetBucketNotification` / `PutBucketNotification` ✅
+* `ManagedFileEventsListStatement` / `TeardownStatement` → listing topics/queues and delete/unsubscribe ✅
+
+Right now, the **only** thing blocking managed file events is that `CreateTopic` Resource pattern doesn’t match the actual `csms-topic-by-path-*` name.
+
+---
+
+### After updating
+
+Once that policy is updated on the role used by your Databricks **storage credential**:
+
+1. Make sure the external location for `s3://chargeminder-2/raw/dynamodb/chargeminder-mlubinsky-telemetry` still has **File events enabled (Automatic)**.
+2. Re-run your job with:
+
+   ```python
+   .option("cloudFiles.useManagedFileEvents", "true")
+   .trigger(availableNow=True)
+   ```
+
+The `SNS:CreateTopic` error should disappear.
+
+If you’d like, I can rewrite the *entire* final policy JSON (S3 + SNS + SQS) in one clean block with your bucket/account baked in so you can just paste it into IAM.
+
+
+## 🎯 **Found It! IAM Policy Mismatch**
+
+The error is clear - Databricks is trying to create an SNS topic but your IAM policy is **too restrictive**.
+
+### **The Problem:**
+
+**What Databricks is trying to create:**
+```
+arn:aws:sns:us-east-1:447759255101:csms-topic-by-path-d3822b227e3d150b5235f321e95e8bd9203a300dca7cf806457fdeb2c168606a
+```
+Topic prefix: `csms-topic-by-path-*`
+
+**What your IAM policy allows:**
+```json
+"Resource": [
+  "arn:aws:sns:*:*:databricks-auto-ingest-*",  // ❌ Wrong prefix!
+  "arn:aws:sqs:*:*:databricks-auto-ingest-*"
+]
+```
+Only allows: `databricks-auto-ingest-*`
+
+---
+
+## ✅ **Solution: Update IAM Policy**
+
+Unity Catalog's `useManagedFileEvents` uses **different naming conventions** than the legacy Auto Loader.
+
+### **Update File: `policies/chargeminder-databricks-s3-file-events-access.json`**
+
+**Change from:**
+```json
+{
+  "Action": [
+    "sns:CreateTopic",
+    "sns:TagResource",
+    "sns:Publish",
+    "sns:Subscribe",
+    "sns:ListSubscriptionsByTopic",
+    "sns:GetTopicAttributes",
+    "sns:SetTopicAttributes",
+    "sqs:CreateQueue",
+    "sqs:TagQueue",
+    "sqs:GetQueueUrl",
+    "sqs:GetQueueAttributes",
+    "sqs:SetQueueAttributes",
+    "sqs:ReceiveMessage",
+    "sqs:SendMessage",
+    "sqs:DeleteMessage",
+    "sqs:ChangeMessageVisibility"
+  ],
+  "Effect": "Allow",
+  "Resource": [
+    "arn:aws:sns:*:*:databricks-auto-ingest-*",
+    "arn:aws:sqs:*:*:databricks-auto-ingest-*"
+  ],
+  "Sid": "ManagedFileEventsSetupStatement"
+}
+```
+
+**To:**
+```json
+{
+  "Action": [
+    "sns:CreateTopic",
+    "sns:TagResource",
+    "sns:Publish",
+    "sns:Subscribe",
+    "sns:ListSubscriptionsByTopic",
+    "sns:GetTopicAttributes",
+    "sns:SetTopicAttributes",
+    "sqs:CreateQueue",
+    "sqs:TagQueue",
+    "sqs:GetQueueUrl",
+    "sqs:GetQueueAttributes",
+    "sqs:SetQueueAttributes",
+    "sqs:ReceiveMessage",
+    "sqs:SendMessage",
+    "sqs:DeleteMessage",
+    "sqs:ChangeMessageVisibility"
+  ],
+  "Effect": "Allow",
+  "Resource": [
+    "arn:aws:sns:*:447759255101:databricks-auto-ingest-*",
+    "arn:aws:sqs:*:447759255101:databricks-auto-ingest-*",
+    "arn:aws:sns:*:447759255101:csms-topic-by-path-*",
+    "arn:aws:sqs:*:447759255101:csms-queue-by-path-*"
+  ],
+  "Sid": "ManagedFileEventsSetupStatement"
+}
+```
+
+---
+
+## 🔧 **Complete Updated Policy**
+
+Here's the full updated `chargeminder-databricks-s3-file-events-access.json`:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3DataAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::chargeminder-2",
+        "arn:aws:s3:::chargeminder-2/*"
+      ]
+    },
+    {
+      "Sid": "S3NotificationSetup",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketNotification",
+        "s3:PutBucketNotification"
+      ],
+      "Resource": "arn:aws:s3:::chargeminder-2"
+    },
+    {
+      "Sid": "ManagedFileEventsSetupStatement",
+      "Effect": "Allow",
+      "Action": [
+        "sns:CreateTopic",
+        "sns:TagResource",
+        "sns:Publish",
+        "sns:Subscribe",
+        "sns:ListSubscriptionsByTopic",
+        "sns:GetTopicAttributes",
+        "sns:SetTopicAttributes",
+        "sqs:CreateQueue",
+        "sqs:TagQueue",
+        "sqs:GetQueueUrl",
+        "sqs:GetQueueAttributes",
+        "sqs:SetQueueAttributes",
+        "sqs:ReceiveMessage",
+        "sqs:SendMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility"
+      ],
+      "Resource": [
+        "arn:aws:sns:*:447759255101:databricks-auto-ingest-*",
+        "arn:aws:sqs:*:447759255101:databricks-auto-ingest-*",
+        "arn:aws:sns:*:447759255101:csms-topic-by-path-*",
+        "arn:aws:sqs:*:447759255101:csms-queue-by-path-*"
+      ]
+    },
+    {
+      "Sid": "ManagedFileEventsListStatement",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ListQueues",
+        "sqs:ListQueueTags",
+        "sns:ListTopics"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ManagedFileEventsTeardownStatement",
+      "Effect": "Allow",
+      "Action": [
+        "sns:Unsubscribe",
+        "sns:DeleteTopic",
+        "sqs:DeleteQueue"
+      ],
+      "Resource": [
+        "arn:aws:sqs:*:447759255101:databricks-auto-ingest-*",
+        "arn:aws:sns:*:447759255101:databricks-auto-ingest-*",
+        "arn:aws:sqs:*:447759255101:csms-queue-by-path-*",
+        "arn:aws:sns:*:447759255101:csms-topic-by-path-*"
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 📝 **What Changed**
+
+### **Added Resources for Unity Catalog Managed File Events:**
+
+```json
+"arn:aws:sns:*:447759255101:csms-topic-by-path-*",   // ✅ NEW
+"arn:aws:sqs:*:447759255101:csms-queue-by-path-*"    // ✅ NEW
+```
+
+**CSMS** = Cloud Storage Metadata Service (Unity Catalog's file event service)
+
+---
+
+## 🚀 **Deployment Steps**
+
+### **Step 1: Update the Policy File**
+Edit `policies/chargeminder-databricks-s3-file-events-access.json` with the updated content above.
+
+### **Step 2: Deploy the IAM Changes**
+```bash
+# Apply your IAM changes (using your deployment tool)
+terraform apply
+# or
+cdktf deploy
+# or whatever tool you use
+```
+
+### **Step 3: Verify Policy Update**
+```bash
+# Check that the policy is updated
+aws iam get-role-policy \
+  --role-name chargeminder-databricks-s3-access-prod \
+  --policy-name chargeminder-databricks-s3-file-events-access
+
+# Or if it's an attached policy:
+aws iam get-policy-version \
+  --policy-arn <policy-arn> \
+  --version-id <version-id>
+```
+
+### **Step 4: Re-run Your Databricks Job**
+The SNS:CreateTopic error should be resolved! ✅
+
+---
+
+## 🔍 **Why This Happened**
+
+**Legacy Auto Loader** naming:
+```
+databricks-auto-ingest-*
+```
+
+**Unity Catalog Managed File Events** naming:
+```
+csms-topic-by-path-*
+csms-queue-by-path-*
+```
+
+Your policy was written for the legacy naming convention, but Unity Catalog uses the new CSMS naming.
+
+---
+
+## 📊 **Resource Naming Patterns**
+
+| Feature | SNS Topic Pattern | SQS Queue Pattern |
+|---------|------------------|-------------------|
+| **Legacy Auto Loader** | `databricks-auto-ingest-*` | `databricks-auto-ingest-*` |
+| **Unity Catalog (CSMS)** | `csms-topic-by-path-*` | `csms-queue-by-path-*` |
+
+Your policy now supports **both** for maximum compatibility.
+
+---
+
+## ⚠️ **Important Note on Account ID**
+
+I changed the wildcard `*:*:` to your specific account ID `*:447759255101:` for better security:
+
+```json
+// Before (too permissive):
+"arn:aws:sns:*:*:databricks-auto-ingest-*"
+
+// After (scoped to your account):
+"arn:aws:sns:*:447759255101:databricks-auto-ingest-*"
+```
+
+This ensures the policy only works in your AWS account.
+
+---
+
+## 🧪 **Testing After Deployment**
+
+Once deployed, your Databricks job should:
+1. ✅ Create SNS topic: `csms-topic-by-path-...`
+2. ✅ Create SQS queue: `csms-queue-by-path-...`
+3. ✅ Set up S3 event notifications
+4. ✅ Start processing files with file arrival trigger
+
+---
+
+## 📋 **Checklist**
+
+- [ ] Update `chargeminder-databricks-s3-file-events-access.json` with new resource patterns
+- [ ] Deploy IAM policy changes
+- [ ] Wait 1-2 minutes for IAM propagation
+- [ ] Re-run Databricks job
+- [ ] Verify SNS/SQS resources created in AWS Console
+- [ ] Confirm file arrival trigger works
+
+---
+
+**Update that policy file and deploy it - your file arrival trigger should work after that!** Let me know if you hit any other errors.
  
 
-## Trigger Type: File Arrival
+#  Trigger Type: File Arrival
 
 S3 (event) → SNS topic → SQS queue → Databricks Auto Loader
 ```
