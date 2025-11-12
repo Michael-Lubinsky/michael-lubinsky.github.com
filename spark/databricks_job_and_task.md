@@ -6,9 +6,98 @@ It Streamining we use readStream() and writeStream(), checkpoint required
 
 ## 🔍 **cloudFiles.useNotifications vs cloudFiles.useManagedFileEvents**
 
-Great question! These are **two different approaches** to file event notifications in Databricks Auto Loader. Let me break down the key differences:
+  These are **two different approaches** to file event notifications in Databricks Auto Loader. Let me break down the key differences:
+
+ Here’s a clear breakdown of the difference between the two options in Databricks Auto Loader: `cloudFiles.useNotifications` vs `cloudFiles.useManagedFileEvents` — when to use each, what they require, and how they behave.
 
 ---
+
+| Option                                       | Description                                                                                                                                                                                                                                                                     | When to use                                                                                                                                  | Key requirements & caveats                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`cloudFiles.useNotifications = true`**     | Legacy file-notification mode: Auto Loader uses cloud storage events (e.g., S3 → SNS → SQS) or you supply your own queue, to detect new files rather than scanning the entire directory. ([Databricks Documentation][1])                                                        | Useful when you want more real-time detection than listing, but haven’t adopted the newer “file events” service yet.                         | • You must supply or allow creation of SNS + SQS (or provider equivalent) for your cloud storage. ([Databricks Documentation][1]) <br>• You must ensure your IAM role can create or subscribe to those resources.<br>• Some settings (e.g., backfill interval, incremental listing) still apply.<br>• You must **not** set `useManagedFileEvents = true` at the same time. ([Databricks Documentation][2])                                                                                                                                                           |
+| **`cloudFiles.useManagedFileEvents = true`** | Modern (“file events”) mode: If your load path is defined as a UC external location with file-events enabled, Auto Loader uses a managed notifications service and internal queue/cache rather than requiring you to manage SNS/SQS per stream. ([Databricks Documentation][3]) | The preferred long-term mode if you’re using Unity Catalog and external locations, want simpler setup, fewer queues, and better scalability. | • Requires your workspace to support external locations + file-events (often UC enabled). ([Databricks Documentation][1]) <br>• Only available in newer runtimes (e.g., 14.3 LTS+) on AWS. ([Databricks Documentation][3]) <br>• Certain options are **not supported** when using it (e.g., `cloudFiles.useNotifications`, `cloudFiles.backfillInterval`, some path-rewrites). ([Databricks Documentation][4]) <br>• On first run it still does a full listing to establish the cache, then subsequent runs use event notifications. ([Databricks Documentation][3]) |
+
+---
+
+### 🔍 Key behavioral differences
+
+* **Discovery mechanism**
+
+  * `useNotifications = true`: Auto Loader listens to or polls a queue you manage (or created) for file‐created events, so new files show up faster.
+  * `useManagedFileEvents = true`: Auto Loader uses a **managed event service** (Databricks sets up the underlying infrastructure) that watches the external location; it then uses an internal “cache” of file arrival events — directory listing is minimized. ([Databricks Documentation][3])
+
+* **Setup & maintenance**
+
+  * Legacy (`useNotifications`): You (or your cloud team) must configure SNS/SQS, subscriptions, IAM permissions, etc. Limits exist (e.g., number of queues per bucket). ([Databricks Documentation][1])
+  * Managed (`useManagedFileEvents`): Much simpler to maintain; less cloud-resource overhead, fewer queues. Databricks handles many parts of the plumbing. ([Databricks Documentation][1])
+
+* **Supported options**
+
+  * If using `useManagedFileEvents`, some legacy options are disabled: e.g., `cloudFiles.useNotifications` cannot be set at the same time. ([Databricks Documentation][2])
+  * If using `useNotifications`, you still may need to consider `cloudFiles.backfillInterval`, queueUrl options, etc.
+
+* **Fallback behavior**
+
+  * With managed file-events, even though event notifications are used, Auto Loader may fallback to directory listing in certain cases (e.g., initial run, path changed, no run in 7+ days) to ensure completeness. ([Databricks Documentation][3])
+  * With legacy notifications, you still might need to schedule periodic directory listing/backfill if events are delayed or missed.
+
+---
+
+### 🎯 Which one should **you** pick?
+
+Given your environment:
+
+* You are using UC or want to move towards it — then `useManagedFileEvents=true` is **ideal**.
+* If you have an external location set up with file events enabled (via storage credential + external location) and newer runtime (14.3+), pick `useManagedFileEvents`.
+* If you don’t yet have the external location/file-events infra, and you already built SNS/SQS or want quicker short-term setup, `useNotifications=true` is okay — but you should plan to migrate to managed mode.
+
+---
+
+### 🧾 Example usage snippets
+
+**Legacy notifications mode:**
+
+```python
+stream = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+    .option("cloudFiles.useNotifications", "true")
+    .option("cloudFiles.queueUrl", "https://sqs.us-east-1.amazonaws.com/123456789012/yourQueue")  # if you self-manage
+    .schema(raw_schema)
+    .load(SOURCE_PATH)
+)
+```
+
+**Managed file events mode:**
+
+```python
+stream = (spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+    .option("cloudFiles.useManagedFileEvents", "true")
+    .schema(raw_schema)
+    .load(SOURCE_PATH)
+)
+```
+
+---
+
+### ✅ Summary
+
+* `cloudFiles.useNotifications`: legacy queue-based file event detection; you manage or configure SNS/SQS.
+* `cloudFiles.useManagedFileEvents`: newer, preferred mode if using UC + external locations; less manual infra, better scalability.
+
+---
+
+If you like, I can check your **specific Databricks runtime version** and **external location setup** and tell you **which mode is supported in your environment** (and highlight exactly which options to remove/keep).
+
+[1]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/file-notification-mode?utm_source=chatgpt.com "Configure Auto Loader streams in file notification mode"
+[2]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/options?utm_source=chatgpt.com "Auto Loader options | Databricks on AWS"
+[3]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/file-events-explained?utm_source=chatgpt.com "Auto Loader with file events overview | Databricks on AWS"
+[4]: https://docs.databricks.com/aws/en/ingestion/cloud-object-storage/auto-loader/migrating-to-file-events?utm_source=chatgpt.com "Migrate to Auto Loader with file events | Databricks on AWS"
+
 
 ## 📊 **Quick Comparison**
 
