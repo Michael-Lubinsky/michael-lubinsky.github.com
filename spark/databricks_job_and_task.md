@@ -916,4 +916,189 @@ Since the trigger fires on *any* file, implement filtering **in your PySpark job
    - [Auto Loader Patterns](https://docs.databricks.com/en/ingestion/cloud-object-storage/auto-loader/patterns.html) (for code filtering).
 4. **Community Workaround**: Users on forums (e.g., Reddit, Databricks Community) confirm UI limitation—code-based filtering is standard.
 
-If this doesn't match your UI (e.g., preview/public vs. your workspace), share a screenshot or workspace details for troubleshooting. For now, code filtering is reliable and flexible!
+
+
+# you cannot use dbutils inside foreachBatch (or any Spark job) when running in File Arrival / Streaming mode — it is not serializable and will throw the error
+
+## TL;DR  
+**No, you cannot use `dbutils` inside `foreachBatch` (or any Spark job) when running in **File Arrival / Streaming mode** — it is **not serializable** and will throw the exact error you saw.**  
+
+**Fix:**  
+1. **Never call `dbutils.fs.mv()` inside `upsert_batch`.**  
+2. **Use pure PySpark (`spark.sparkContext._jvm.org.apache.hadoop.fs.FileSystem`) or AWS SDK (`boto3`) to move files.**  
+3. **Or: Do the move *outside* the stream (e.g., in a separate scheduled job).**
+
+---
+
+## Why `dbutils` Fails in `foreachBatch`
+
+| Feature | `dbutils` | Spark Job (`foreachBatch`) |
+|--------|-----------|----------------------------|
+| **Serializable?** | No | **Must be** |
+| **Runs on** | Driver (Databricks-specific) | Driver **via Spark Connect** |
+| **Pickling** | Contains live JVM objects | **Cannot be pickled** |
+| **Error** | `You cannot use dbutils within a spark job or otherwise pickle it` | Exactly what you got |
+
+> `dbutils` is a **Databricks-specific utility** that wraps the notebook/driver context.  
+> Spark **cannot send it to executors** or **serialize it** for `foreachBatch`.
+
+---
+
+## Correct Way to Move Files in Streaming Job
+
+### Option 1: **Pure PySpark (Hadoop FS) – Recommended**
+
+```python
+def move_file_hadoop(src_path: str, dst_path: str, spark):
+    """Move file using Hadoop FileSystem (no dbutils)."""
+    fs = spark._jsc.hadoopConfiguration()
+    path_src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
+    path_dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
+    file_system = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
+    
+    if file_system.exists(path_src):
+        file_system.rename(path_src, path_dst)
+        print(f"Moved: {src_path} → {dst_path}")
+    else:
+        print(f"File not found: {src_path}")
+```
+
+Use it in `upsert_batch`:
+
+```python
+# Inside upsert_batch (after MERGE)
+spark = micro_df.sparkSession
+for file_path in micro_df.select("source_file").distinct().collect():
+    src = file_path["source_file"]
+    dst = src.replace("/raw/", "/archived/")
+    move_file_hadoop(src, dst, spark)
+```
+
+---
+
+### Option 2: **Use `boto3` (AWS SDK)**
+
+```python
+import boto3
+
+s3 = boto3.client('s3')
+
+def move_file_boto3(src_bucket, src_key, dst_bucket, dst_key):
+    # Copy
+    s3.copy_object(
+        Bucket=dst_bucket,
+        Key=dst_key,
+        CopySource={'Bucket': src_bucket, 'Key': src_key}
+    )
+    # Delete original
+    s3.delete_object(Bucket=src_bucket, Key=src_key)
+    print(f"Moved: s3://{src_bucket}/{src_key} → s3://{dst_bucket}/{dst_key}")
+```
+
+Call it:
+
+```python
+bucket = "chargeminder-2"
+for row in micro_df.select("source_file").distinct().collect():
+    src_key = row["source_file"].replace(f"s3://{bucket}/", "")
+    dst_key = src_key.replace("raw/", "archived/")
+    move_file_boto3(bucket, src_key, bucket, dst_key)
+```
+
+**Note:** Requires IAM role with `s3:CopyObject`, `s3:DeleteObject`.
+
+---
+
+### Option 3: **Move Files Outside the Stream (Best Practice)**
+
+Run a **separate scheduled job** (e.g., every 5 min) that:
+1. Queries the **metrics table** or **Delta `_commit` logs** to find processed files.
+2. Uses `dbutils.fs.mv()` safely (since it's not in a Spark job).
+
+```python
+# Separate job: archive_processed.py
+processed_files = spark.sql("""
+    SELECT DISTINCT source_file 
+    FROM telemetry_metrics 
+    WHERE status = 'SUCCESS' AND run_timestamp > date_sub(current_date(), 1)
+""")
+
+for row in processed_files.collect():
+    src = row.source_file
+    dst = src.replace("/raw/", "/archived/")
+    dbutils.fs.mv(src, dst)
+```
+
+**Pros:**  
+- `dbutils` is safe  
+- No serialization issues  
+- Cleaner separation
+
+---
+
+## Updated `archive_processed_files` (Safe for Streaming)
+
+```python
+def archive_processed_files(micro_df: DataFrame, spark):
+    """Move processed files using Hadoop FS (no dbutils)."""
+    bucket = CONFIG["s3_bucket"]
+    archive_prefix = CONFIG["archive_prefix"]
+
+    files = [row["source_file"] for row in micro_df.select("source_file").distinct().collect()]
+    fs = spark._jsc.hadoopConfiguration()
+    hdfs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(fs)
+
+    for src_path in files:
+        if not src_path.startswith("s3://"):
+            continue
+        src_key = src_path.replace(f"s3://{bucket}/", "")
+        dst_key = src_key.replace(CONFIG["s3_prefix"].rstrip("/"), archive_prefix.rstrip("/"))
+        dst_path = f"s3://{bucket}/{dst_key}"
+
+        src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
+        dst = spark._jvm.org.apache.hadoop.fs.Path(dst_path)
+        if hdfs.exists(src):
+            hdfs.rename(src, dst)
+            print(f"Archived: {src_path} → {dst_path}")
+```
+
+Call from `upsert_batch`:
+
+```python
+archive_processed_files(micro_df, spark)
+```
+
+---
+
+## Final `upsert_batch` Snippet (No `dbutils`)
+
+```python
+def upsert_batch(micro_df: DataFrame, batch_id: int):
+    spark = micro_df.sparkSession  # Fresh session
+
+    # ... validation, MERGE ...
+
+    # Archive using Hadoop FS
+    archive_processed_files(micro_df, spark)
+```
+
+---
+
+## Summary
+
+| Method | Can use in `foreachBatch`? | Needs IAM? | Recommended? |
+|-------|----------------------------|-----------|--------------|
+| `dbutils.fs.mv()` | No | No | No |
+| Hadoop FS (`FileSystem`) | Yes | No | Yes |
+| `boto3` | Yes | Yes (`CopyObject`, `DeleteObject`) | Yes |
+| Separate job | Yes (outside stream) | Yes | Yes (cleanest) |
+
+---
+
+## Final Answer
+
+> **No, you cannot use `dbutils` to move files inside `foreachBatch` in File Arrival mode.**  
+> **Use Hadoop FS (`spark._jvm.org.apache.hadoop.fs.FileSystem`) or `boto3` instead.**  
+> **Or move files in a separate scheduled job using `dbutils` safely.**
+
+Let me know if you want the **full corrected script** with Hadoop FS archiving!
