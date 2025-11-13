@@ -1,6 +1,6 @@
 ## Claude **Backfilling Historical DynamoDB Data**
 
-https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/0089444a861c931fefbbe287a67065465274ebd5/aws/dynamodb_dump_reading.md
+<https://michael-lubinsky.github.io/aws/dynamodb_dump_reading.html>
 
 ## **Option 1: DynamoDB Export to S3 (Recommended)**
 
