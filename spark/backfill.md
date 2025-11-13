@@ -1,10 +1,6 @@
-## Claude
+## Claude **Backfilling Historical DynamoDB Data**
 
-# **Backfilling Historical DynamoDB Data**
 
-Great question! DynamoDB Streams only capture changes from when streaming is enabled (and only keep 24 hours of data), so you need a separate approach for historical records. Here are your options:
-
----
 
 ## **Option 1: DynamoDB Export to S3 (Recommended)**
 
