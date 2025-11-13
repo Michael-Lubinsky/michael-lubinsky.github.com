@@ -1,3 +1,98 @@
+Short answer: use a one-time **full export from DynamoDB to S3** for the historical backfill, run a **Databricks backfill job** over that export using the *same* transform you already use for streaming, then let your existing **Streams → Lambda → S3 → Databricks** pipeline keep you current.
+
+Why: DynamoDB Streams only contain **future modifications** (and for ~24h), so old rows won’t ever appear on the stream. ([AWS Documentation][1])
+
+# Recommended plan
+
+1. **Do a full export of the table to S3 (once).**
+   Use DynamoDB “Export to S3”. It’s async, has **no impact on table RCUs**, and writes either **DynamoDB JSON** or **Amazon Ion** into S3 with a manifest. Pick a distinct prefix, e.g. `s3://bucket/dynamodb-export/2025-11-12/`. ([AWS Documentation][2])
+
+2. **Run a Databricks backfill job** over that export prefix.
+   Reuse your existing transformation function (the logic that maps the nested item into your target schema). Write the output into the same Unity Catalog Delta table, using **idempotent** semantics (e.g., `MERGE` on your business key with `updated_at` tie-breakers). Enable schema evolution:
+
+   * `spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")`
+   * `mergeSchema=true` if you’re appending.
+     This ensures any new attributes present in export also materialize as new columns. ([Amazon Web Services, Inc.][3])
+
+3. **Keep your live pipeline running** for new changes.
+   The stream (Lambda → S3 → Databricks) continues to deliver fresh updates while the backfill loads historical data. If overlap is possible, let the **MERGE** resolve duplicates by key + last-write-wins. ([AWS Static][4])
+
+# Databricks backfill: practical starter
+
+**Reading the DynamoDB export** (DynamoDB JSON) into Spark:
+
+```python
+EXPORT_PREFIX = "s3://your-bucket/dynamodb-export/2025-11-12/"
+CHECKPOINT    = "s3://your-bucket/_checkpoints/ddb_backfill"
+TARGET_TABLE  = "hcai_databricks_dev.chargeminder2.events"
+
+# If your export is a one-time batch, use read (not readStream).
+raw = (spark.read
+       .format("json")
+       .load(EXPORT_PREFIX))
+
+# raw rows are in DynamoDB JSON ("S","N","M","L" wrappers).
+# Write or import a small UDF to unwrap these to native types,
+# OR pre-convert with AWS Glue (DDB JSON -> Parquet).
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StringType
+
+# Example placeholder: you’d replace with a robust unwrap for S/N/M/L/BOOL/NULL
+@udf("string")
+def unwrap_example(d): 
+    # d looks like {"S":"abc"} or {"N":"123"} etc.
+    # ... implement full unwrap here ...
+    return d.get("S") if isinstance(d, dict) and "S" in d else None
+
+# Apply your existing transformation function to produce df_out
+# df_out must match your Delta target schema (or superset, with autoMerge)
+df_out = (raw
+          # .withColumn("id", unwrap_example(raw["yourKey"]))
+          # ... your existing mapping logic here ...
+          )
+
+spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
+
+# Prefer MERGE for idempotency (dedupe by key/updated_at)
+from delta.tables import DeltaTable
+tgt = DeltaTable.forName(spark, TARGET_TABLE)
+(tgt.alias("t")
+   .merge(df_out.alias("s"), "t.id = s.id")
+   .whenMatchedUpdateAll()
+   .whenNotMatchedInsertAll()
+   .execute())
+```
+
+Notes:
+
+* If you’d rather avoid writing an “unwrap DDB JSON” UDF, an **AWS Glue job** can convert the export to **Parquet** first; then your Databricks backfill reads cleanly typed Parquet. (This is a common path and easy to automate.) ([AWS Documentation][5])
+* For massive tables, run the backfill in parallel (partition on the export folder structure) and **checkpoint** only your Databricks job state (the export itself is immutable).
+
+# Alternative (not recommended unless you must)
+
+* **“Self-replay” the table via writes**: do a full Scan and issue a no-op `UpdateItem` per row to force a stream record so your existing Lambda sees “historical” rows. This **consumes RCUs/WCUs**, is slow/pricey, and risks side effects (TTL, triggers). Prefer Export→S3 backfill. (Streams emit only on modifications; they won’t produce events for existing items.) ([AWS Documentation][1])
+
+# Format & governance tips
+
+* DynamoDB Export creates **manifests + gzipped object shards**; point Databricks at the prefix; don’t forget to recurse folders. ([AWS Documentation][6])
+* Keep a **max `source_updated_at`** watermark in your Delta table so the backfill MERGE can skip newer rows if needed (or let last-write-wins).
+* If your streaming Lambda writes in a different JSON shape than the export, keep two reader paths but a **single transform()** that normalizes to a common intermediate schema before writing.
+* For ongoing sync use cases, AWS now documents **full export + incremental exports** patterns that complement streams. ([Amazon Web Services, Inc.][3])
+
+# TL;DR
+
+1. One-time **Export to S3** → Databricks **backfill job** (MERGE, auto-evolve schema).
+2. Keep **Streams→Lambda→S3→Databricks** for new changes.
+   This cleanly covers “historical + real-time” with minimal risk and strong performance. ([AWS Documentation][2])
+
+[1]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html?utm_source=chatgpt.com "Change data capture for DynamoDB Streams"
+[2]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/S3DataExport.HowItWorks.html?utm_source=chatgpt.com "DynamoDB data export to Amazon S3: how it works"
+[3]: https://aws.amazon.com/solutions/guidance/incremental-data-exports-from-amazon-dynamodb-to-amazon-s3/?utm_source=chatgpt.com "Guidance for Incremental Data Exports from Amazon ..."
+[4]: https://d1.awsstatic.com/solutions/guidance/architecture-diagrams/incremental-data-exports-on-aws.pdf?utm_source=chatgpt.com "Guidance for Incremental Data Exports on AWS - awsstatic.com"
+[5]: https://docs.aws.amazon.com/prescriptive-guidance/latest/dynamodb-full-table-copy-options/amazon-s3.html?utm_source=chatgpt.com "Using DynamoDB with Amazon S3 to export and import ..."
+[6]: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/S3DataExport.Output.html?utm_source=chatgpt.com "DynamoDB table export output format"
+
+
 ### Backfilling Historical DynamoDB Data into Your Streaming Pipeline
 
 Your existing pipeline (DynamoDB Streams → Lambda → S3 → Databricks Job) is designed for **incremental** processing of new/modified records via streams, which capture only changes made *after* the stream is enabled (with a 24-hour retention limit). Historical records (pre-pipeline data) won't trigger the stream automatically, so you need a **one-time backfill** process to export them to the same S3 location in a compatible format. This ensures the Databricks job can process them seamlessly, populating your Unity Catalog table with full historical data before ongoing streams take over.
