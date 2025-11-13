@@ -14,6 +14,8 @@ https://habr.com/ru/companies/sberbank/articles/954636/
 
 https://habr.com/ru/companies/otus/articles/894754/  TSFresh
 
+https://github.com/MatthewK84/Time-Series-Textbooks
+
 Monte Carlo
 https://medium.com/dataman-in-ai/monte-carlo-simulation-for-time-series-probabilistic-forecasts-e04a7d29c9b3
 
