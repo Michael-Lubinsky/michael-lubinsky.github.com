@@ -57,9 +57,97 @@ If it were `KEYS_ONLY`, you’d get:
 * For **event-detection only** (e.g., “something changed” alerts), `KEYS_ONLY` is sufficient and cheapest.
 * Remember: each image type affects both the **size of stream records** (and hence cost) and the **information** available to your consumer.
 
+ 
+  **You can’t modify the stream view type of an existing DynamoDB stream directly.**
+
+DynamoDB treats each stream configuration (its ARN and view type) as **immutable** once created.
+
+ 
+
+### ⚙️ To change the Stream View Type
+
+You must **disable** the current stream, and then **re-enable** it with the desired view type.
+
+Here’s exactly how:
+
 ---
 
-If you tell me what your Lambda does (e.g., “write changed records to S3”), I can recommend the exact view type you should enable.
+### ✅ **AWS Console**
+
+1. Go to **DynamoDB → Tables → Your Table → Exports and streams** tab.
+2. Under **DynamoDB stream details**, click **“Disable”**.
+3. After the stream is disabled (takes a few seconds), click **“Enable”** again.
+4. When prompted for **View type**, select one of:
+
+   * `KEYS_ONLY`
+   * `NEW_IMAGE`
+   * `OLD_IMAGE`
+   * `NEW_AND_OLD_IMAGES`
+5. Save changes — DynamoDB will create a **new stream ARN**.
+
+> ⚠️ The stream ARN changes because this is technically a *new stream*.
+> You’ll need to **re-attach your Lambda trigger** to the new stream ARN.
+
+---
+
+### ✅ **AWS CLI**
+
+Disable the current stream:
+
+```bash
+aws dynamodb update-table \
+  --table-name MyTable \
+  --stream-specification StreamEnabled=false
+```
+
+Then re-enable it with a new view type (example: NEW_AND_OLD_IMAGES):
+
+```bash
+aws dynamodb update-table \
+  --table-name MyTable \
+  --stream-specification StreamEnabled=true,StreamViewType=NEW_AND_OLD_IMAGES
+```
+
+You can verify:
+
+```bash
+aws dynamodb describe-table --table-name MyTable \
+  --query "Table.LatestStreamArn"
+```
+
+That ARN will now be different from before.
+
+---
+
+### ✅ **After enabling**
+
+* Update any **Lambda triggers** or **Kinesis stream consumers** to point to the **new stream ARN**.
+* Your **old stream** will remain available for up to 24 hours (its retention window), but will stop receiving new updates.
+
+---
+
+### ⚠️ Important notes
+
+| Behavior               | Description                                             |
+| ---------------------- | ------------------------------------------------------- |
+| Stream ARN changes     | Yes — always after re-enabling                          |
+| Existing consumers     | Must be reattached manually                             |
+| Table data             | Unaffected — only the stream config changes             |
+| Historical stream data | Old stream remains readable for up to 24h, then expires |
+
+---
+
+### ✅ Summary
+
+| Step | Action                                  |
+| ---- | --------------------------------------- |
+| 1    | Disable stream                          |
+| 2    | Re-enable stream with desired view type |
+| 3    | Update Lambda trigger to new stream ARN |
+
+---
+
+If you’d like, I can give you a one-line AWS CLI command that **automatically fetches the current ARN**, disables the stream, re-enables it with your desired type, and re-attaches your Lambda trigger — would you like that?
 
 
 
