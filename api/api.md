@@ -29,5 +29,6 @@ https://habr.com/ru/companies/psb/articles/949246/
 <https://medium.com/@CodeWithHannan/python-for-data-apis-building-robust-backends-with-fastapi-ecfe096663c4>  
 <https://fastlaunchapi.dev/blog/how-fastapi-works/>  
 <https://fastlaunchapi.dev/blog/how-to-structure-fastapi/> 
+<https://realpython.com/fastapi-python-web-apis/>  
 
 <https://fastlaunchapi.dev/blog/async-secure-scalable-fastapi>
