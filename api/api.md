@@ -26,7 +26,7 @@ https://habr.com/ru/companies/psb/articles/949246/
 
 ### FastAPI
 
-<https://github.com/offerrall/FuncToWeb> 
+<https://github.com/offerrall/FuncToWeb>   
 <https://realpython.com/get-started-with-fastapi/>  
 <https://medium.com/@CodeWithHannan/python-for-data-apis-building-robust-backends-with-fastapi-ecfe096663c4>  
 <https://fastlaunchapi.dev/blog/how-fastapi-works/>  
