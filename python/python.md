@@ -157,7 +157,6 @@ sorted_by_value_desc = dict(sorted(data.items(), key=lambda item: item[1], rever
 print(sorted_by_value_desc)  # {'b': 3, 'c': 2, 'a': 1}
 ```
 
----
 
 ### ✅ Sort by **key**
 
@@ -182,8 +181,27 @@ print(sorted_by_key_desc)  # {'c': 2, 'b': 3, 'a': 1}
   sorted_values = sorted(data.values())
   ```
 
+## Use bisect for sorted list operations
+ 
+When working with sorted lists, using linear search or manual insertion logic can be inefficient – especially as the list grows. Python’s bisect module provides fast, efficient tools for maintaining sorted order using binary search.
 
+With functions like bisect_left(), bisect_right(), and insort(), you can perform insertions and searches in O(log n) time, as opposed to the O(n) complexity of a simple scan. This is particularly useful in scenarios like maintaining leaderboards, event timelines, or implementing efficient range queries.
 
+By using bisect, you avoid re-sorting after every change and gain a significant performance boost when working with dynamic, sorted data. It’s a lightweight and powerful tool that brings algorithmic efficiency to common list operations.
+
+```python
+import bisect
+numbers = sorted(list(range(0, 1000000, 2)))
+start = time.time()
+bisect.insort(numbers, 75432)
+print(f"Bisect: {time.time() - start:.4f}s")
+start = time.time()
+for i, num in enumerate(numbers):
+    if num > 75432:
+        numbers.insert(i, 75432)
+        break
+print(f"Loop: {time.time() - start:.4f}s")
+```
 ### Context manager
 
 ```python
