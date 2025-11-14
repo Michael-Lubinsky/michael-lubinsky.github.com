@@ -966,6 +966,7 @@ df_postgres = spark.read.format("jdbc") \
 
 ### Databricks Links
 
+<https://www.youtube.com/playlist?list=PL2IsFZBGM_IGiAvVZWAEKX8gg1ItnxEEb>  
 <https://blog.devgenius.io/databricks-platform-basics-de00317bbf2c>
 
 <https://medium.com/dev-genius/databricks-platform-advanced-18c2dcfe31a5>
