@@ -2,6 +2,12 @@ https://github.com/Saivineeth147/awesome-llm-resources
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
 
+https://github.com/harvard-edge/cs249r_book
+
+https://www.mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
+
+https://www.mlsysbook.ai/
+
 https://www.lotas.ai/erdos  IDE for ML
 
 https://habr.com/ru/articles/964438/ Linear regression and ML
