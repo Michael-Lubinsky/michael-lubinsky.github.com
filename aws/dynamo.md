@@ -1,3 +1,68 @@
+### Streaming
+
+Those three **DynamoDB Stream view types** control *what data images* get written into the stream whenever an item changes.
+Each stream record represents one modification (INSERT, MODIFY, or REMOVE) in your table — but you choose **what parts of the item** get captured.
+
+Here’s the breakdown:
+
+| Stream view type         | What’s included in the stream record                | Typical use                                                                                                                    |
+| ------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **`NEW_IMAGE`**          | The *entire item after* the change.                 | When your downstream process (like a Lambda) only needs the new state — e.g., update an index or cache with the latest values. |
+| **`OLD_IMAGE`**          | The *entire item before* the change.                | When you only care about what existed previously — e.g., auditing deletions or detecting what was overwritten.                 |
+| **`NEW_AND_OLD_IMAGES`** | Both the *before* and *after* versions of the item. | When you need to compare old vs new (e.g., for change diffs, audit logs, or reconciliation logic).                             |
+| **`KEYS_ONLY`**          | Only the primary key attributes.                    | Lightweight mode used when you only need to detect *which item* changed (not the values).                                      |
+
+### Example: Stream record contents
+
+If you choose **`NEW_AND_OLD_IMAGES`**, your Lambda event looks like:
+
+```json
+{
+  "Records": [
+    {
+      "eventName": "MODIFY",
+      "dynamodb": {
+        "Keys": { "id": { "S": "123" } },
+        "OldImage": { "id": {"S": "123"}, "status": {"S": "inactive"} },
+        "NewImage": { "id": {"S": "123"}, "status": {"S": "active"} }
+      }
+    }
+  ]
+}
+```
+
+If the stream were `NEW_IMAGE`, you’d only get:
+
+```json
+"dynamodb": {
+  "Keys": { "id": {"S": "123"} },
+  "NewImage": { "id": {"S": "123"}, "status": {"S": "active"} }
+}
+```
+
+If it were `KEYS_ONLY`, you’d get:
+
+```json
+"dynamodb": {
+  "Keys": { "id": {"S": "123"} }
+}
+```
+
+---
+
+### ✅ Best practices
+
+* For most **Lambda triggers that transform or archive data**, use **`NEW_IMAGE`** — simplest and smallest payloads.
+* For **audit or change-tracking pipelines**, use **`NEW_AND_OLD_IMAGES`**.
+* For **event-detection only** (e.g., “something changed” alerts), `KEYS_ONLY` is sufficient and cheapest.
+* Remember: each image type affects both the **size of stream records** (and hence cost) and the **information** available to your consumer.
+
+---
+
+If you tell me what your Lambda does (e.g., “write changed records to S3”), I can recommend the exact view type you should enable.
+
+
+
 ### Throttling
 <https://vladholubiev.com/articles/five-ways-to-deal-with-aws-dynamodb-gsi-throttling>
 ```
