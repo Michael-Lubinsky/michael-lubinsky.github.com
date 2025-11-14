@@ -21,6 +21,14 @@ Catalog (top-level container)
 
 ### Databricks CLI
 ```bash
+
+pip install "databricks-sdk[sql]" databricks-cli
+databricks configure --token
+databricks sql warehouses list
+databricks sql query run \
+  --warehouse-id <your-warehouse-id> \
+  --statement "SELECT * FROM catalog.schema.table LIMIT 10"
+
 brew tap databricks/tap
 brew install databricks
 databricks --version
