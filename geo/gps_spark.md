@@ -30,7 +30,10 @@ Longitude: anywhere from -180 to +180
 It lies in the Gulf of Guinea, off the coast of West Africa, where the Equator meets the Prime Meridian.  
 There’s no actual island — it’s an imaginary point in the Atlantic Ocean.  
 
-### GeoPy , Folium
+### GeoPy , Folium, etc
+
+<https://blog.devgenius.io/geospatial-file-formats-899fe6eeb9e3>
+
 ```python
 import folium
 from geopy.geocoders import Nominatim
