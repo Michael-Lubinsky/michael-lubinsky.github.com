@@ -8,6 +8,8 @@ https://www.mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
 
 https://www.mlsysbook.ai/
 
+https://www.sergeynikolenko.ru/courses
+
 https://www.lotas.ai/erdos  IDE for ML
 
 https://habr.com/ru/articles/964438/ Linear regression and ML
