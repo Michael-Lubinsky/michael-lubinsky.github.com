@@ -1,5 +1,35 @@
 ## max_by
 
+The Query
+Find the top (ranked 1) in each category based on certain condition.
+
+The solution was implemented with a window function to handle duplicate records (some pseudo SQL):
+```sql
+WITH ranked AS (
+  SELECT 
+    ...
+    ROW_NUMBER() OVER (
+      PARTITION BY col1, col2, col3, col4
+      ORDER BY 
+        col5 DESC, 
+        col6 DESC, 
+        col7 DESC
+    ) AS rank
+  FROM table1 t1
+  JOIN table2 t2 ON (...)
+)
+SELECT * EXCEPT (rank)
+FROM ranked 
+WHERE rank = 1
+```
+This is a simple query. The goal of the above query is to find the top record for each combination of col1, col2, col3, col4. In Spark terms it will do
+
+Split the into partitions based on partition keys
+Sort each partition by the ORDER BY clause
+Assign row numbers to every single row
+Filter out everything except rank = 1
+
+
 https://blog.devgenius.io/improving-spark-jobs-runtime-b128f0c29d44
 
 How max_by Works Under the Hood  
