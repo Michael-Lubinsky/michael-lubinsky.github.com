@@ -177,7 +177,7 @@ The H3 Core Library implements the H3 grid system. It includes functions for con
 * Store them as static Parquet/Delta tables in Databricks and join via **Mosaic** or **Sedona**.
 
 ---
-```python?code_reference&code_event_index=2
+```python 
 # Define the conversion factors in miles
 miles_per_lat_degree = 69 # Constant value
 miles_per_lon_degree_usa = 54.4 # Approximate value for mid-latitudes of the USA (around 38 degrees N)
@@ -203,7 +203,7 @@ for i in range(len(precisions)):
 print(results)
 ```
 
-```text?code_stdout&code_event_index=2
+```text 
 [{'Decimal Places': 1, 'Latitude (miles)': 6.9, 'Longitude (miles)': 5.44}, {'Decimal Places': 2, 'Latitude (miles)': 0.6900000000000001, 'Longitude (miles)': 0.544}, {'Decimal Places': 3, 'Latitude (miles)': 0.069, 'Longitude (miles)': 0.0544}]
 
 ```
@@ -800,7 +800,7 @@ This dramatically improves performance for large datasets.
 | Complex spatial joins | Optimized with spatial partitioning         | Efficient but slower on large data    |
 | Ad hoc queries        | ❌ Higher latency (Spark startup)            | ✅ Very fast for small/medium datasets |
 
-
+<https://www.youtube.com/watch?v=i80_1IzTy_w>  
 <https://www.manning.com/books/postgis-in-action-third-edition>  PostGIS book  
 <https://freegisdata.rtwilson.com/> freely available geographic datasets  
 <https://motherduck.com/blog/geospatial-for-beginner-duckdb-spatial-motherduck/> GIS with DuckDB  
