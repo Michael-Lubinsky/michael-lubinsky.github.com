@@ -8,6 +8,12 @@
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
+###  Lebegue integration
+
+https://www.youtube.com/watch?v=y7rTbl__fp0
+
+https://www.youtube.com/watch?v=Fb2ei6lD-d8&t=381s
+
 ### Koopman Operator
 <https://www.youtube.com/watch?v=bPvLRppwB9o>
 <https://fluids.ac.uk/files/meetings/KoopmanNotes.1575558616.pdf>  
