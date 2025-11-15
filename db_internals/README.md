@@ -1,5 +1,7 @@
 ## DB Internals
 
+<https://blog.dataengineerthings.org/postgresql-wal-internals-for-data-engineers-ef6229584a99>
+
 <https://github.com/avalokkumar/database-deep-dive>
 
 <https://www.nan.fyi/database> Build Your Own Database
