@@ -24,6 +24,8 @@ https://habr.com/ru/articles/927862/
 
 ## Flink
 
+https://python.plainenglish.io/apache-flink-for-python-developers-a-practical-introduction-to-stream-processing-4875af30f27e
+
 https://habr.com/ru/articles/914836/
 
 https://www.unskewdata.com/blog/stream-flink-4
