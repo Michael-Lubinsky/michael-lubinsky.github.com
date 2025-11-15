@@ -3,6 +3,9 @@
 https://arxiv.org/abs/1602.04182 Feynman Diagrams  
 http://cleonis.nl/
 
+Density matrix in QM
+https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d
+
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/
