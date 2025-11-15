@@ -364,6 +364,7 @@ ORDER BY  extname;
 
 <https://www.postgresql.org/docs/current/contrib.html>  
 <https://www.tigerdata.com/blog/top-8-postgresql-extensions>  
+<https://medium.com/@Nexumo_/7-postgres-extension-combos-that-feel-like-superpowers-6d753ee56965>
 <https://habr.com/ru/companies/selectel/articles/936362/>  
 <https://pgxn.org/>  
 
