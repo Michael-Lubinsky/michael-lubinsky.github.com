@@ -815,6 +815,8 @@ MongoDB for GIS
 <https://www.mongodb.com/docs/manual/geospatial-queries/#:~:text=MongoDB%20supports%20query%20operations%20on%20geospatial%20data.>
 
 <https://www.matecdev.com/posts/geospatial-python-tutorial.html>
+SpatioTemporal Asset Catalog - STAC
+<https://blog.devgenius.io/spatiotemporal-asset-catalog-16c4db873958>
 
 	SedonaDB: A new geospatial DataFrame library written in Rust 
 <https://news.ycombinator.com/item?id=45362206>
