@@ -1,4 +1,7 @@
 ## Python notes continued
+
+https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
+
 ### with
 https://habr.com/ru/articles/964502/ 
 
