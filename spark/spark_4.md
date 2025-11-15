@@ -2,12 +2,16 @@
 
 https://blog.devgenius.io/improving-spark-jobs-runtime-b128f0c29d44
 
-How max_by Works Under the Hood
-max_by(col, ord) — Returns the value from the col parameter that is associated with the maximum value from the ord parameter. The first parameter is the column name that needs to be displayed as output, and the second parameter is the column on which we check the max condition.
+How max_by Works Under the Hood  
+
+max_by(col, ord) — Returns the value from the col parameter that is associated with the maximum value from the ord parameter.  
+
+The first parameter is the column name that needs to be displayed as output, and the second parameter is the column on which we check the max condition.
 ```
 df.groupby("course").agg(max_by("year", "earnings")).show()
 # SELECT max_by(x, y) FROM VALUES ('a', 10), ('b', 50), ('c', 20) AS tab(x, y);
 ```
+
 Instead of collecting and sorting all rows in each partition, max_by uses an incremental aggregation approach:
 
 For each partition, maintain only two values:
