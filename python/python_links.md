@@ -1,5 +1,8 @@
 <https://habr.com/ru/articles/949314/>
 
+
+https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02
+
 <https://pydevtools.com/handbook/>
 
 https://www.cosmicpython.com/book/preface.html  Book
