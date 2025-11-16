@@ -32,6 +32,10 @@ https://miller.readthedocs.io/  CSV, JSON processing
 https://superintendent.app/  
 https://www.tadviewer.com/
 
+
+### Parquet 
+<https://medium.com/@2nick2patel2/parquet-is-the-new-csv-for-python-0c0630afb57c>
+
 ### DB Modelling Tools ERD
 <https://medium.com/@kanishks772/from-code-to-diagram-in-seconds-the-lazy-developers-guide-b48987837bd3>  
 <https://datasherpa.blog/>  
