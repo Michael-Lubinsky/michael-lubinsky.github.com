@@ -6,6 +6,8 @@
 
 <https://theperfparlor.com/2025/09/10/boost-postgresql-performance-with-effective-indexing/>
 
+<https://medium.com/@vishwajitpatil1224/3-postgresql-indexing-secrets-that-even-senior-devs-get-wrong-a4cd797c370e>
+
 <https://www.architecture-weekly.com/p/postgresql-partitioning-logical-replication>
 
 <https://habr.com/ru/articles/931410/>
