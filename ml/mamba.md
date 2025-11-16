@@ -127,7 +127,12 @@ https://habr.com/ru/articles/917664/ основополагающих стате
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
+## PyTorch
+https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html 
+
 https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
+
+
 
 ### Transformers
 
