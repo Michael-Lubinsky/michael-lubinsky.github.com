@@ -1115,3 +1115,6 @@ def backup_table_safe(conn, table, backup_date, partition_column):
 This eliminates disk I/O completely and should be 2-5x faster for typical backup sizes.
 
 <https://medium.com/@bhagyarana80/8-python-postgres-features-youre-missing-152f595ef5e4>
+
+
+<https://medium.com/@bhagyarana80/7-psycopg3-features-that-make-postgres-fly-ef7f231babb9>
