@@ -9,6 +9,7 @@ https://connect.posit.cloud/
 
 https://www.youtube.com/watch?v=F-9KWQByeU0  Setting up a production ready VPS (Virtual Private Server)
 
+https://python.plainenglish.io/i-built-everything-in-streamlit-until-it-broke-me-d0f54fa43d62
 
 ### Taipy
 <https://python.plainenglish.io/taipy-vs-the-rest-why-your-dashboard-journey-should-end-here-2adc59833278> Taipy
