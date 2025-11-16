@@ -1,6 +1,7 @@
 https://habr.com/ru/articles/960970/  gradient decent
 
 ## Auto-differentiation
+<https://www.youtube.com/watch?v=rjPO-k-WaDI>
 
 Auto-differentiation is neither symbolic differentiation nor numerical approximations using finite difference methods.   
 What auto-differentiation provides is code augmentation where code is provided for derivatives of your functions free of charge.
