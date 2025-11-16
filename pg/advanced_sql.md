@@ -91,7 +91,9 @@ WHERE rnk = 1;
 
 ###  "gaps and islands" problem.
 
-https://blog.jooq.org/how-to-find-the-longest-consecutive-series-of-events-in-sql/
+<https://medium.com/@mlasala1964/islands-and-gaps-with-recursive-cte-32fa8c0388b1>
+
+<https://blog.jooq.org/how-to-find-the-longest-consecutive-series-of-events-in-sql/>
 
 ```
 There is Postgres table named 'accounts' with 2 columns: id and mac.
