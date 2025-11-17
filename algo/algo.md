@@ -2,6 +2,9 @@
 
 https://ru.algorithmica.org/
 
+## Constrain programming 
+https://cpmpy.readthedocs.io/en/latest/
+
 https://ericpony.github.io/z3py-tutorial/guide-examples.htm  Z3 theorem proover
 
 https://habr.com/ru/articles/964104/ LeetCode
