@@ -76,6 +76,9 @@ GROUP BY col1, col2, col3, col
 
 
 ### Spark 4.0
+
+https://medium.com/@cralle/what-developers-need-to-know-about-apache-spark-4-0-508d0e4a5370
+
 https://habr.com/ru/companies/korus_consulting/articles/920766/
 
 https://sabarevictor.medium.com/stop-learning-pandas-the-spark-4-0-features-nobodys-telling-you-about-8651b0206ee5
