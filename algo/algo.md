@@ -7,6 +7,8 @@ https://cpmpy.readthedocs.io/en/latest/
 
 https://ericpony.github.io/z3py-tutorial/guide-examples.htm  Z3 theorem proover
 
+https://news.ycombinator.com/item?id=40867746
+
 https://developers.google.com/optimization/cp
 
 https://habr.com/ru/articles/964104/ LeetCode
