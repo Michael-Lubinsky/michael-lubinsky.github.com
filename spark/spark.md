@@ -7,7 +7,14 @@
 
 ![](Spark_plan_building_steps.png)
 
-Spark connect: <https://habr.com/ru/companies/arenadata/articles/921246/>
+## Spark connect 
+Traditionally, the Spark driver process must perform a significant amount of work, ranging from running the client application to scheduling the actual data processing. In client mode, users must maintain the full Spark dependencies and ensure they are compatible with those running on the submit destination.
+
+Spark Connect offers a decoupled client-server architecture for Spark by separating the driver process from the client and making the client thinner. There will be a dedicated server that hosts a long-running Spark application (Spark cluster) and exposes a gRPC endpoint to accept client requests. The ultimate goal is to make the client far thinner compared to the traditional approach.
+<https://habr.com/ru/companies/arenadata/articles/921246/>
+
+<https://blog.dataengineerthings.org/is-this-feature-a-revolution-in-spark-29636b690ea7>
+
 ### Reading files
 ```
 spark.conf.set("spark.sql.files.maxPartitionBytes", "256000000")  # 256 mb  
