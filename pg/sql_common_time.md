@@ -240,5 +240,20 @@ FROM all_times
 GROUP BY common_time
 ORDER BY common_time;
 
+```
 
+
+
+### Convert Milliseconds to Timestamp
+```sql
+SELECT 
+  common_time,
+  TIMESTAMP_MILLIS(common_time) as common_timestamp,
+  device1_value,
+  device2_value,
+  device3_value
+FROM (
+  -- Use any of the above queries here
+)
+ORDER BY common_time
 ```
