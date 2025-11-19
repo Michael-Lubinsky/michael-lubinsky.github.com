@@ -1,5 +1,142 @@
 # Claude Databricks daily job to populate  rollup table:
 
+
+Here's a clean solution that handles both interactive testing and job modes:
+
+## Notebook Cell Setup
+
+```python
+# Cell 1: Parameter setup
+from datetime import datetime, timedelta
+
+# Create widget for job parameter (will be populated by job scheduler)
+dbutils.widgets.text("process_date", "")
+
+# Get the parameter value
+process_date_param = dbutils.widgets.get("process_date")
+
+# Determine mode and set process_date
+if process_date_param:
+    # JOB MODE: Use the parameter passed by the job
+    process_date = process_date_param
+    print(f"Job mode: Processing date {process_date}")
+else:
+    # INTERACTIVE MODE: Use a specific date for testing
+    process_date = "2025-10-01"  # Change this for different test dates
+    print(f"Interactive mode: Processing date {process_date}")
+
+print(f"Final process_date: {process_date}")
+```
+
+## Your SQL Query Cell
+
+```sql
+-- Cell 2: Main query
+INSERT INTO car_daily_summary
+SELECT 
+    '${process_date}'::DATE as process_date,
+    car_id,
+    SUM(distance) as total_distance,
+    -- ... other aggregations
+FROM car_telemetry
+WHERE date_trunc('day', timestamp) = '${process_date}'::DATE
+GROUP BY car_id;
+```
+
+## For Interactive Testing of Multiple Dates
+
+```python
+# Cell 1 Alternative: Loop through dates for bulk testing
+from datetime import datetime, timedelta
+
+dbutils.widgets.text("process_date", "")
+process_date_param = dbutils.widgets.get("process_date")
+
+if process_date_param:
+    # JOB MODE
+    dates_to_process = [process_date_param]
+    print(f"Job mode: Processing {process_date_param}")
+else:
+    # INTERACTIVE MODE: Process multiple dates
+    start_date = datetime(2025, 10, 1)
+    end_date = datetime(2025, 10, 17)
+    
+    dates_to_process = []
+    current = start_date
+    while current <= end_date:
+        dates_to_process.append(current.strftime('%Y-%m-%d'))
+        current += timedelta(days=1)
+    
+    print(f"Interactive mode: Processing {len(dates_to_process)} dates")
+
+# Process each date
+for process_date in dates_to_process:
+    print(f"Processing: {process_date}")
+    
+    spark.sql(f"""
+        INSERT INTO car_daily_summary
+        SELECT 
+            '{process_date}'::DATE as process_date,
+            car_id,
+            SUM(distance) as total_distance,
+            -- ... other aggregations
+        FROM car_telemetry
+        WHERE date_trunc('day', timestamp) = '{process_date}'::DATE
+        GROUP BY car_id
+    """)
+    
+    print(f"✓ Completed: {process_date}")
+```
+
+## Setting Up the Databricks Job
+
+When you create the job, set the parameter:
+
+**Option 1: Use yesterday's date (your preference)**
+```json
+{
+  "process_date": "{{date_add(from_utc_timestamp(current_timestamp(), 'America/Los_Angeles'), -1)}}"
+}
+```
+
+**Option 2: Simpler - use Databricks' built-in variable**
+```json
+{
+  "process_date": "{{start_date}}"
+}
+```
+Then set the job schedule to run daily.
+
+**Option 3: Calculate in the notebook itself**
+```python
+dbutils.widgets.text("process_date", "")
+process_date_param = dbutils.widgets.get("process_date")
+
+if process_date_param:
+    process_date = process_date_param
+else:
+    # Calculate yesterday in LA timezone
+    from pyspark.sql.functions import date_sub, from_utc_timestamp, current_timestamp
+    
+    process_date = spark.sql("""
+        SELECT date_sub(
+            date(from_utc_timestamp(current_timestamp(), 'America/Los_Angeles')),
+            1
+        ) as yesterday
+    """).collect()[0]['yesterday'].strftime('%Y-%m-%d')
+    
+    print(f"Interactive mode: Using calculated yesterday = {process_date}")
+```
+
+This approach gives you:
+- ✅ Clean testing: Just change one date in Cell 1
+- ✅ Bulk testing: Loop through date range
+- ✅ Job-ready: Widget automatically picks up job parameter
+- ✅ No code changes needed between modes
+
+Which approach works best for your workflow?
+
+
 ## 1. Create Target Rollup Table
 
 ```sql
