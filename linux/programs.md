@@ -38,6 +38,8 @@ https://www.tadviewer.com/
 
 <https://github.com/raulcd/datanomy>
 
+brew install kaushiksrini/parqeye/parqeye
+
 <https://github.com/kaushiksrini/parqeye>
 
 <https://news.ycombinator.com/item?id=45959780>
