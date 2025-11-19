@@ -36,6 +36,8 @@ https://www.tadviewer.com/
 ### Parquet 
 <https://medium.com/@2nick2patel2/parquet-is-the-new-csv-for-python-0c0630afb57c>
 
+<https://github.com/raulcd/datanomy>
+
 <https://github.com/kaushiksrini/parqeye>
 
 <https://news.ycombinator.com/item?id=45959780>
