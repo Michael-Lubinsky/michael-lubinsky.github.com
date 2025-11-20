@@ -9,6 +9,103 @@ https://subhamkharwal.medium.com/pyspark-spark-streaming-error-and-exception-han
 https://www.youtube.com/playlist?list=PL2IsFZBGM_IEtp2fF5xxZCS9CYBSHV2WW
 
 
+
+
+## 
+
+`df.isEmpty()` (or `df.head(1)`, `df.count()`, etc.) only works on **batch DataFrames**.
+
+`df_raw` is a **streaming DataFrame** (because of `readStream` / Auto Loader), and *any* action on it must go through `writeStream.start()` — that’s exactly what the error is telling you.
+
+> `Queries with streaming sources must be executed with writeStream.start()`
+
+So:
+
+* ✅ `df.isEmpty()` → OK for **batch** df
+* ❌ `df_raw.isEmpty()` → NOT allowed for **streaming** df
+
+---
+
+## What to do instead
+
+If your goal is “skip processing when this micro-batch is empty”, you do that **inside `foreachBatch`** (or inside the sink logic), not on the streaming DataFrame itself.
+
+### Pattern with `foreachBatch`
+
+```python
+from pyspark.sql import functions as F
+
+def read_stream():   
+    return (
+        spark.readStream
+             .format("cloudFiles")
+             .option("cloudFiles.format", "json")
+             .option("cloudFiles.schemaLocation", CONFIG["schema_path"])
+             .option("cloudFiles.useManagedFileEvents", "true")
+             .option("cloudFiles.maxFilesPerTrigger", CONFIG["max_files_per_trigger"])
+             .option("cloudFiles.validateOptions", "true")
+             .option("rescuedDataColumn", "_rescued_data")
+             .load(SOURCE_PATH)
+             .withColumn("source_file", F.col("_metadata.file_path"))
+    )
+
+df_raw = read_stream()
+
+def process_batch(batch_df, batch_id):
+    print(f"=== Batch {batch_id} ===")
+    
+    # Best way to check empty for a *batch* DataFrame
+    if not batch_df.head(1):
+        print("Batch is empty – nothing to do")
+        return
+    
+    print("Batch has data – process it here")
+    # your transformations & writes here
+    # e.g. batch_df.write.format("delta").mode("append").saveAsTable(...)
+
+query = (
+    df_raw.writeStream
+          .option("checkpointLocation", CONFIG["checkpoint_path"])
+          .foreachBatch(process_batch)
+          .start()
+)
+```
+
+Key points:
+
+* `df_raw` is **never** used with `.isEmpty()` or `.count()` etc.
+* Each micro-batch is a normal **batch DataFrame** (`batch_df`), and there you *can* safely do `batch_df.head(1)` / `batch_df.isEmpty()`.
+
+---
+
+## If you only want a one-off batch from Auto Loader
+
+If your intent was more like: “just read today’s new files once and then stop”, you can combine Auto Loader + **trigger once**:
+
+```python
+query = (
+    df_raw.writeStream
+          .format("delta")
+          .option("checkpointLocation", CONFIG["checkpoint_path"])
+          .option("path", CONFIG["target_path"])
+          .trigger(once=True)
+          .start()
+)
+
+query.awaitTermination()
+```
+
+Here you don't check emptiness; you just let Auto Loader make a micro-batch *if anything is there*.
+
+---
+
+### TL;DR
+
+* Streaming DataFrame (`readStream`) → **no** `.isEmpty()` / `.count()` / `.collect()` directly.
+* Use `foreachBatch` and check emptiness **inside** the per-batch function.
+* For batch DataFrames only, `if not df.head(1):` is the good pattern.
+
+
 # How **Auto Loader**, **read()**, and **readStream()** relate in Databricks.
 
 
