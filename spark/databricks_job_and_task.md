@@ -1,3 +1,30 @@
+## Error
+```
+Pipeline failed: [STREAMING_CONNECT_SERIALIZATION_ERROR] Cannot serialize the function `foreachBatch`.
+If you accessed the Spark session, or a DataFrame defined outside of the function, or any object that contains a Spark session,
+please be aware that they are not allowed in Spark Connect.
+For `foreachBatch`, please access the Spark session using `df.sparkSession`, where `df` is the first parameter in your `foreachBatch` function.
+
+For `StreamingQueryListener`,
+please access the Spark session using `self.spark`.
+For details please check out the PySpark doc for `foreachBatch` and `StreamingQueryListener`.
+
+INFO:__main__:
+Spark session stopped
+ You cannot use dbutils within a spark job or otherwise pickle it.
+            If you need to use getArguments within a spark job, you have to get the argument before
+            using it in the job. For example, if you have the following code:
+
+              myRdd.map(lambda i: dbutils.args.getArgument("X") + str(i))
+
+            Then you should use it this way:
+
+              argX = dbutils.args.getArgument("X")
+              myRdd.map(lambda i: argX + str(i))
+
+```            
+
+
 ## Databricks Job
 
 It Streamining we use readStream() and writeStream(), checkpoint required
