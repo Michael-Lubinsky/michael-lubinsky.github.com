@@ -872,7 +872,125 @@ assert filter_by_price_threshold(df, 10).count() == 1
 assert filter_by_price_threshold(df, 8).count() == 2
 ```
 
-<!--
+ ## try
+
+* DataFrame expressions run **on the Spark cluster**, not in the Python driver
+* Python exceptions do not propagate into the distributed execution engine
+
+Instead, PySpark provides **SQL-style try/catch equivalents inside expressions**, such as:
+
+* `try_cast()`
+* `element_at()` default behavior
+* `F.when(...).otherwise(...)`
+* `F.coalesce()`
+* `F.try_add()`, `F.try_divide()`, `F.try_multiply()`, etc. (Spark 3.4+)
+* `F.expr("try(...)")` for SQL `try(...)` blocks
+
+Below are real examples you can use.
+
+---
+
+## ✔ 1. Using `try_cast()` (recommended)
+
+```python
+from pyspark.sql import functions as F
+
+df = df.withColumn(
+    "value_int",
+    F.try_cast(F.col("value"), "int")
+)
+```
+
+**If cast fails**, result becomes **NULL** instead of throwing an error.
+This is the closest to a “try/catch” in PySpark expressions.
+
+---
+
+## ✔ 2. Using `when / otherwise` (safe fallback)
+
+```python
+from pyspark.sql import functions as F
+
+df = df.withColumn(
+    "safe_int",
+    F.when(F.col("value").rlike("^[0-9]+$"), F.col("value").cast("int"))
+     .otherwise(F.lit(None))
+)
+```
+
+Equivalent to:
+
+```
+try:
+   int(value)
+except:
+   None
+```
+
+---
+
+## ✔ 3. Using SQL `try(...)` expression via F.expr()
+
+Spark SQL has a `try()` function that catches runtime errors.
+
+```python
+df = df.withColumn(
+    "safe_divide",
+    F.expr("try( 100 / value )")
+)
+```
+
+If `value = 0` → result = NULL instead of exception.
+
+---
+
+## ✔ 4. Using PySpark *try_* functions (Spark 3.4+)
+
+```python
+df = df.withColumn(
+    "safe_divide",
+    F.try_divide(F.lit(100), F.col("value"))
+)
+```
+
+This is exactly like:
+
+```
+try:
+    result = 100 / value
+except:
+    result = null
+```
+
+Available functions include:
+
+* `try_add`
+* `try_subtract`
+* `try_multiply`
+* `try_divide`
+* `try_sum`
+* `try_avg`
+* `try_cast`
+
+---
+
+## ✔ 5. Example of full safe parsing expression
+
+```python
+from pyspark.sql import functions as F
+
+df = df.withColumn(
+    "parsed_date",
+    F.to_date(
+        F.expr("try(to_timestamp(raw_date, 'yyyy-MM-dd'))")
+    )
+)
+```
+
+If parsing fails → `parsed_date = NULL`.
+
+ 
+
 
 https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8
 
@@ -901,4 +1019,4 @@ https://medium.com/@rames1000/pyspark-transformation-solutions-part-1-7a879d5dce
 https://medium.com/@rames1000/pyspark-transformation-solutions-part-2-200d2bf82398
 
 https://codecut.ai/pyspark-sql-enhancing-reusability-with-parameterized-queries/
- -->
+ 
