@@ -1,3 +1,141 @@
+Good start! Here's my review with several issues and suggestions:
+
+## Issues Found
+
+### 1. **Column Name Mismatch in ORDER BY** ❌
+```sql
+ORDER BY car_id, date  -- Should be date_pst
+```
+
+**Fix:**
+```sql
+ORDER BY car_id, date_pst
+```
+
+### 2. **Missing Refueling Detection** ⚠️
+
+Your current logic:
+- Start of day: 5 gallons
+- **Refuel at noon**: 15 gallons  
+- End of day: 12 gallons
+- **Calculated consumption**: 5 - 12 = -7 → `GREATEST` makes it **0 gallons** ❌
+
+**Reality**: Car consumed ~3 gallons before refuel + ~3 gallons after = **6 gallons total**
+
+### 3. **Single Reading Per Day** ⚠️
+
+If only one telemetry reading exists for a day:
+- `MIN_BY` and `MAX_BY` return the **same value**
+- Consumption = 0 (even if car actually drove)
+
+### 4. **Column Name Inconsistency**
+
+You're filtering by `fuel_remaining_gallons_updated_at_ms` but also referencing `fuel_remaining_gallons_retrieved_at_ms` in your full code. Make sure you're using the correct column.
+
+## Improved Version - Handles Refueling
+
+```sql
+WITH fuel_readings AS (
+  SELECT
+    car_id,
+    date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles')) AS date_pst,
+    fuel_remaining_gallons,
+    fuel_remaining_gallons_updated_at_ms,
+    -- Track if fuel increased (refueling event)
+    LAG(fuel_remaining_gallons) OVER (
+      PARTITION BY car_id, date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles'))
+      ORDER BY fuel_remaining_gallons_updated_at_ms
+    ) AS prev_fuel
+  FROM hcai_databricks_dev.chargeminder2.telemetry
+  WHERE fuel_remaining_gallons IS NOT NULL
+    AND fuel_remaining_gallons_updated_at_ms IS NOT NULL
+    AND date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles'))
+        = '{process_date}'::DATE
+),
+fuel_consumed_calc AS (
+  SELECT
+    car_id,
+    date_pst,
+    -- Sum only decreases in fuel (consumption), ignore increases (refueling)
+    SUM(
+      CASE 
+        WHEN prev_fuel IS NOT NULL AND prev_fuel > fuel_remaining_gallons
+        THEN prev_fuel - fuel_remaining_gallons
+        ELSE 0
+      END
+    ) AS fuel_consumed_gallons
+  FROM fuel_readings
+  GROUP BY car_id, date_pst
+)
+SELECT 
+  car_id,
+  date_pst,
+  ROUND(COALESCE(fuel_consumed_gallons, 0.0), 2) AS fuel_consumed_gallons
+FROM fuel_consumed_calc
+ORDER BY car_id, date_pst
+```
+
+## Alternative - Your Original Logic (Fixed)
+
+If refueling is rare and you want to keep it simple:
+
+```sql
+WITH fuel AS (
+  SELECT
+    car_id,
+    date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles')) AS date_pst,
+    MIN_BY(fuel_remaining_gallons, fuel_remaining_gallons_updated_at_ms) AS fuel_start,
+    MAX_BY(fuel_remaining_gallons, fuel_remaining_gallons_updated_at_ms) AS fuel_end,
+    COUNT(*) AS reading_count  -- Track number of readings
+  FROM hcai_databricks_dev.chargeminder2.telemetry
+  WHERE fuel_remaining_gallons IS NOT NULL
+    AND fuel_remaining_gallons_updated_at_ms IS NOT NULL
+    AND date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles'))
+        = '{process_date}'::DATE
+  GROUP BY car_id, date_pst
+),
+daily AS (
+  SELECT 
+    car_id, 
+    date_pst,
+    fuel_start,
+    fuel_end,
+    reading_count,
+    ROUND(
+      CASE
+        WHEN reading_count >= 2 THEN GREATEST(fuel_start - fuel_end, 0.0)
+        ELSE 0.0  -- Don't calculate if only 1 reading
+      END,
+      2
+    ) AS fuel_consumed_gallons
+  FROM fuel
+)
+SELECT 
+  car_id,
+  date_pst,
+  fuel_consumed_gallons,
+  reading_count  -- Include for debugging
+FROM daily
+ORDER BY car_id, date_pst
+```
+
+## Recommendation
+
+**For production**: Use the **refueling-aware version** (first improved version) because:
+- ✅ Handles refueling correctly
+- ✅ Sums actual consumption throughout the day
+- ✅ More accurate for real-world scenarios
+
+**For testing**: Your simpler version is fine if:
+- Cars rarely refuel
+- You just need rough estimates
+- You fix the `ORDER BY date` → `date_pst` bug
+
+Which approach fits your use case better?
+
+
+
+
 # Claude Databricks daily job to populate  rollup table:
 
 
