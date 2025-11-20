@@ -1,3 +1,110 @@
+Given:
+
+* Files are **small**
+* They arrive only **a few times per day**
+* You’re already using a **Databricks Job with File Arrival trigger**
+
+👉 I would **recommend batch DataFrames**, not a long-running streaming query.
+
+---
+
+## Why batch is a better fit here
+
+1. **File Arrival trigger is already your “streaming” layer**
+
+   * The Job run is started *only when a new file arrives*.
+   * Each run can just do a **one-shot batch** read of the new files, transform, and write output.
+   * No need to manage streaming checkpoints, query lifecycle, etc.
+
+2. **Cluster lifecycle is simpler**
+
+   * Job starts → reads the new file(s) → writes to target table → stops.
+   * With streaming you’d typically want a long-running cluster, or at least `trigger(once/availableNow)` and `awaitTermination()`. That’s extra plumbing for no real gain at your volume.
+
+3. **Cost and complexity**
+
+   * For “few files/day”, streaming ≈ overkill.
+   * Batch is easier to reason about, debug, and re-run for a given file/date.
+
+---
+
+## How it usually looks with batch + file arrival
+
+File Arrival trigger can pass the new paths into your job (e.g. via widget or param). Then in the notebook:
+
+```python
+from pyspark.sql import functions as F
+
+# Example: widget populated by file arrival trigger with comma-separated paths
+dbutils.widgets.text("input_file_paths", "")
+raw_paths = dbutils.widgets.get("input_file_paths")
+
+if not raw_paths:
+    print("No input_file_paths provided, nothing to process.")
+else:
+    paths = [p.strip() for p in raw_paths.split(",") if p.strip()]
+    print(f"Processing {len(paths)} new files:")
+    for p in paths:
+        print("  ", p)
+
+    df_raw = (
+        spark.read
+             .format("json")
+             .load(paths)
+             .withColumn("source_file", F.input_file_name())
+    )
+
+    # your transformations here…
+    df_transformed = ...  # build car_daily_summary cols etc.
+
+    (
+        df_transformed
+        .write
+        .format("delta")
+        .mode("append")
+        .saveAsTable("hcai_databricks_dev.chargeminder2.car_daily_summary")
+    )
+```
+
+This plays perfectly with “small, infrequent files”.
+
+---
+
+## When I *would* recommend streaming / Auto Loader
+
+Use `readStream().format("cloudFiles")` (Auto Loader) if:
+
+* You have **lots of files** arriving frequently, or
+* Need **schema evolution**, `_rescued_data`, and file-discovery optimizations, or
+* Want a **continuous** pipeline independent of Jobs.
+
+Even then, for job-style runs you’d typically do:
+
+```python
+df = spark.readStream.format("cloudFiles")...
+query = (
+    df.writeStream
+      .format("delta")
+      .option("checkpointLocation", CHECKPOINT_PATH)
+      .trigger(availableNow=True)  # or once=True
+      .start(TARGET_PATH)
+)
+query.awaitTermination()
+```
+
+That’s still more machinery than you need for “few files/day”.
+
+---
+
+### Bottom line
+
+For your scenario (small, few-per-day, job on File Arrival):
+
+➡️ **Batch DataFrames (`spark.read`) inside the job task are the right tool.**
+Streaming/Auto Loader is great, but it shines when the *file arrival itself* is large/continuous, not when you’re already using File Arrival as the trigger.
+
+
+
 ## forEachBatch Error
 ```
 Pipeline failed: [STREAMING_CONNECT_SERIALIZATION_ERROR] Cannot serialize the function `foreachBatch`.
