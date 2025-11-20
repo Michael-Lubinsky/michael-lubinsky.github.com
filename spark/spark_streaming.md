@@ -242,3 +242,85 @@ This pattern is very popular in Databricks Jobs — the job starts, processes wh
 Use `spark.readStream.format("cloudFiles")` whenever you want Auto Loader behavior.   
 Use `spark.read()` only as a helper to inspect or infer schemas when needed.   
 This combination gives you the most robust, performant, and low-maintenance file ingestion pipeline in Databricks.
+
+
+### Understanding Backfill in Databricks Auto Loader
+
+**Backfill** in Auto Loader refers to the process of discovering and ingesting **historical/existing files** (files that were already present in the input directory before the stream started or files that might have been missed during normal incremental processing).
+
+By default, when you start a new Auto Loader stream:
+- It performs an **initial directory listing** to discover **all existing files** in the input path.
+- Those files are added to the processing queue (backlog) and ingested incrementally in streaming batches.
+- This initial load acts as an automatic one-time backfill of everything that exists at stream startup.
+- After that, the stream switches to incremental mode: only **new files arriving after startup** are processed (via directory listing or file notifications).
+
+This makes Auto Loader perfect for migrations or initial loads of massive historical datasets (billions of files) without writing custom backfill logic.
+
+#### Built-in Options and Mechanisms for Controlling Backfill
+
+| Scenario | Option / Mechanism | Description | Example Usage & Notes |
+|----------|---------------------|-------------|-----------------------|
+| **Initial backfill of all existing files when starting a brand-new stream** | No special option needed (default behavior) | On first startup, Auto Loader automatically lists the directory and queues **all** discovered files for processing. | Just start the stream — it will backfill everything once, then go incremental forever after. No duplicates thanks to checkpointing. |
+| **Periodic/reconciliation backfill to catch missed files** | `cloudFiles.backfillInterval` | Triggers an **asynchronous directory listing** every N time period to find any files that were missed (e.g., due to rare notification losses in file-notification mode or race conditions). <br><br>Recommended for production when you need strict data-completeness SLAs. <br><br>Values like `"1 day"`, `"1 week"` are common. The backfill runs in the background and does **not** block normal processing. | ```python
+| **Default automatic reconciliation in directory-listing mode** | Built-in (no option) | In pure directory-listing mode (or "auto" incremental listing), Auto Loader automatically triggers a full directory list after every **7 consecutive incremental lists** to guarantee eventual completeness. | You can override/replace this default with `cloudFiles.backfillInterval`. |
+| **Limit backfill to files modified after a certain timestamp** (e.g., partial historical load) | `modifiedAfter` (or `cloudFiles.modifiedAfter`) | Ignores files older than the given timestamp during discovery. Useful if you only want to backfill recent history and skip very old data. | ```python<br>.option("modifiedAfter", "2024-01-01T00:00:00Z")<br>``` |
+| **Limit backfill to files modified before a certain timestamp** | `modifiedBefore` (or `cloudFiles.modifiedBefore`) | Ignores files newer than the timestamp. Often combined with `modifiedAfter` for a time window backfill. | ```python<br>.option("modifiedBefore", "2025-01-01T00:00:00Z")<br>``` |
+| **One-time full backfill without leaving a continuous stream running** | Use `.trigger(availableNow=True)` | Processes **all** currently existing (and any arriving during the run) files exactly once, then the query stops. Perfect for scheduled jobs that backfill historical data incrementally over time. | See example below. |
+
+#### PySpark Examples
+
+1. **Full initial backfill + continuous incremental ingestion** (most common production pattern)
+
+```python
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .option("cloudFiles.backfillInterval", "1 day")   # Optional: daily reconciliation
+    .load(input_path)
+    .writeStream
+    .format("delta")
+    .option("checkpointLocation", checkpoint_path)
+    .table("bronze_table")
+)
+```
+
+→ First run = backfills everything. Subsequent runs = only new files + daily reconciliation.
+
+2. **One-time backfill of all historical data** (run as a Databricks Job with `availableNow`)
+
+```python
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "parquet")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .load(input_path)
+    .writeStream
+    .format("delta")
+    .trigger(availableNow=True)          # Process everything once, then stop
+    .option("checkpointLocation", checkpoint_path)
+    .table("bronze_historical")
+)
+```
+
+3. **Partial backfill – only files from the last 6 months**
+
+```python
+from datetime import datetime, timedelta
+
+six_months_ago = (datetime.now() - timedelta(days=180)).isoformat() + "Z"
+
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "csv")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .option("modifiedAfter", six_months_ago)   # Only backfill recent files
+    .load(input_path)
+    .writeStream
+    .trigger(availableNow=True)
+    .option("checkpointLocation", checkpoint_path)
+    .table("bronze_partial_backfill")
+)
+```
+
+In summary, Auto Loader’s backfill capabilities are **built-in and automatic** for the initial load**, with `cloudFiles.backfillInterval` providing the main knob for ongoing reconciliation in production. This combination gives you both easy historical migration and strong guarantees that no file is permanently missed — all without manual scripting or duplicate risk.
