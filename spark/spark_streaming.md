@@ -323,4 +323,98 @@ six_months_ago = (datetime.now() - timedelta(days=180)).isoformat() + "Z"
 )
 ```
 
-In summary, Auto Loader’s backfill capabilities are **built-in and automatic** for the initial load**, with `cloudFiles.backfillInterval` providing the main knob for ongoing reconciliation in production. This combination gives you both easy historical migration and strong guarantees that no file is permanently missed — all without manual scripting or duplicate risk.
+In summary, Auto Loader’s backfill capabilities are **built-in and automatic** for the initial load**,  
+with `cloudFiles.backfillInterval` providing the main knob for ongoing reconciliation in production. 
+This combination gives you both easy historical migration and strong guarantees that no file is permanently missed — all without manual scripting or duplicate risk. 
+
+
+Yes — your setup is very common in production, and here are the exact answers to your two questions. 
+
+### 1. Will the task process **only new files** when the job is triggered on file arrival?
+
+**YES, **100% only new files** (files that arrived since the last successful run), **provided you use the same checkpoint location every time**.
+
+How it works in your exact scenario:
+
+| Run # | What happens when the job starts | Which files get processed |
+|-------|----------------------------------|---------------------------|
+| Run 1 (first ever) | Auto Loader sees no checkpoint → does initial backfill of **all** files that exist at that moment | All files in the folder |
+| Run 2, 3, … (triggered by new file arrival) | Auto Loader reads the checkpoint (stored in your `checkpointLocation`) and knows exactly which files were already successfully processed in previous runs | **Only files that arrived after the last successful run** (i.e. truly incremental) |
+
+So as long as:
+- You use `.option("checkpointLocation", "/same/path/every/time")` (or the same one in the job settings),
+- The checkpoint is **not deleted** between runs,
+- You use `.trigger(availableNow=True)` or no trigger at all (default for jobs with file-arrival trigger is availableNow),
+
+→ every new job run will process **only the new files** and finish quickly.  
+No reprocessing of old files ever happens.
+
+### 2. Is it recommended to archive (move) processed files out of the arrival folder?
+
+**YES — strongly recommended in almost all production scenarios.**
+
+Reasons why you should archive/move processed files:
+
+| Reason | Without archiving | With archiving (move/delete) |
+|--------|-------------------|------------------------------|
+| Cost & performance | Every job run does a directory listing of ALL files (even if only 1 is new). With millions of files this listing becomes slow and expensive. | Directory listing stays tiny and fast forever. |
+| Risk of accidental reprocessing | If you ever delete or corrupt the checkpoint, the next run would reprocesses EVERYTHING (data duplication, wrong aggregates, etc.). | Even if checkpoint is lost, only the files still in the folder would be reprocessed — but the folder only has very recent files → damage is minimal. |
+| SLA / latency | Large backlog = slower trigger response when a new file arrives. | New files wait longer in the queue. | New files are processed almost immediately. |
+| Cloud storage best practices | Landing zone should be transient. Raw data should be immutable in an archive zone. | Clean separation: raw/landing → processed/archive. |
+| Debugging & reprocessing | Hard to delete/reprocess one bad file without touching everything. | Just drop the bad files back into landing or a new folder and re-run. |
+
+### Recommended patterns for archiving
+
+Most production teams use one of these two patterns:
+
+#### Pattern A – Auto Loader + “processed” subfolder (most popular)
+
+```python
+from pyspark.sql.functions import input_file_name
+
+raw_path       = "abfss://landing@sa.dfs.core.windows.net/incoming/"
+processed_path = "abfss://landing@sa.dfs.core.windows.net/processed/"
+
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .load(raw_path)
+    .writeStream
+    .format("delta")
+    .foreachBatch(lambda df, batchId: 
+        df.write.mode("append").format("delta").saveAsTable("bronze_table")
+        # Move files to processed folder
+        spark.sql(f"""
+            COPY INTO delta.`{processed_path}`
+            FROM '{raw_path}'
+            FILEFORMAT = JSON
+            PATTERN = '*.json'
+            COPY_OPTIONS ('mergeSchema' = 'true')
+        """)   # or use dbutils.fs.mv in a loop
+    )
+    .option("checkpointLocation", checkpoint_path)
+    .trigger(availableNow=True)
+    .start()
+)
+```
+
+#### Pattern B – External orchestration (Databricks Workflows or ADF/Event Grid + Function)
+
+1. File arrives → triggers job (you already have this).
+2. Job runs Auto Loader on the landing folder (processes only new files).
+3. At the end of the task (or in a separate task), run:
+   ```python
+   dbutils.fs.mv("abfss://landing@sa/incoming/2025/11/", "abfss://archive@sa/raw/2025/11/", recurse=True)
+   # or dbutils.fs.rm(..., recurse=True) if you don’t need to keep raw files
+   ```
+
+This pattern is the cleanest and most widely adopted.
+
+### Summary – Best Practice Recommendation
+
+- Yes → Your job already processes only new files (thanks to checkpointing).
+- Yes → **Always archive or delete** successfully processed files from the landing folder in production.
+  Most teams move them to `/processed/` or `/archive/` using either `foreachBatch` + `COPY INTO` or a separate task with `dbutils.fs.mv`.
+
+This gives you speed, cost savings, safety against checkpoint loss, and clean governance.
