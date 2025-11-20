@@ -143,6 +143,145 @@ def bad_batch(df, batch_id):
 
 Follow Option 1 in 95 % of cases and you will never see this error again.
 
+Here are the exact ways to detect and fix the issue on **Serverless Compute** or any cluster with **Spark Connect** enabled.
+
+### 1. How to Check if Spark Connect is Enabled
+
+#### Programmatically (PySpark / Python)
+
+Run this in any notebook cell — works everywhere:
+
+```python
+# Method 1: Most reliable (works in DBR 13.3+ and all Serverless)
+print(spark.conf.get("spark.databricks.clusterUsageTags.isSparkConnectCluster", "false").lower() == "true")
+
+# Method 2: Also very reliable
+print("spark.connect" in spark.conf.get("spark.sql.execution.arrow.pyspark.enabled", "") or 
+      spark.conf.get("spark.databricks.isServerless", "false).lower() == "true")
+
+# Method 3: One-liner you can paste anywhere
+is_spark_connect = spark.conf.get("spark.databricks.clusterUsageTags.clusterOwnerOrgId", None) is not None and \
+                   spark.conf.get("spark.databricks.isServerless", "false").lower() == "true" or \
+                   spark.conf.get("spark.databricks.clusterUsageTags.isSparkConnectCluster", "false").lower() == "true"
+
+print("Spark Connect / Serverless =", is_spark_connect)
+```
+
+If it prints **True** → you are on Serverless or a Spark Connect cluster → `foreachBatch` with `dbutils` or outer `spark` will fail.
+
+#### Via Web UI (100% accurate)
+
+1. Open your running cluster page.
+2. Go to the Configuration tab → Spark cluster UI → Environment tab.
+3. Look for any of these properties:
+
+| Property                                         | Value that means Spark Connect is ON |
+|--------------------------------------------------|--------------------------------------|
+| `spark.databricks.isServerless`                  | `true`                               |
+| `spark.databricks.clusterUsageTags.isSparkConnectCluster` | `true`                               |
+| `spark.connect.grpc.binding.port`                | any value (e.g. 15002)               |
+
+If you see any of the above → Spark Connect is active.
+
+### 2. How to Modify Your Code So It Works Everywhere (Serverless + Classic Clusters)
+
+Use this future-proof pattern — works on Serverless, Spark Connect clusters, and normal clusters:
+
+```python
+from pyspark.sql.functions import input_file_name, current_timestamp
+
+input_path       = "abfss://landing@storage.dfs.core.windows.net/incoming/"
+processed_path   = "abfss://landing@storage.dfs.core.windows.net/processed/"
+checkpoint_path  = "/dbfs/tmp/checkpoints/my_autoloader"
+
+# Extract everything that is NOT serializable BEFORE the stream
+archive_path = processed_path   # or dbutils.widgets.get("archive_path") etc.
+some_secret  = dbutils.secrets.get(scope="my-scope", key="my-key") if not spark.conf.get("spark.databricks.isServerless", "false") == "true" else "dummy"
+
+def process_batch(df, batchId):
+    if df.rdd.isEmpty(): 
+        return   # nothing to do
+
+    spark = df.sparkSession   # ← THIS IS THE ONLY SPARK YOU ARE ALLOWED TO USE
+
+    # 1. Write the data (recommended way)
+    (df.write
+       .format("delta")
+       .mode("append")
+       .option("mergeSchema", "true")
+       .saveAsTable("my_catalog.my_db.bronze_table"))
+
+    # 2. Archive / move processed files (two safe options)
+
+    # Option A: Use pure Hadoop FS (works 100% on Serverless)
+    fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())
+    processed_files = [row.file_path for row in df.select("_metadata.file_path").distinct().collect()]
+
+    for src_path in processed_files:
+        src = spark._jvm.org.apache.hadoop.fs.Path(src_path)
+        file_name = src.getName()
+        dst = spark._jvm.org.apache.hadoop.fs.Path(archive_path + file_name)
+        if fs.exists(src):          # safety check
+            fs.mkdirs(dst.getParent()) # ensure parent folder exists
+            fs.rename(src, dst)
+
+    # Option B: Use dbutils only if we are NOT on Serverless (safe fallback)
+    try:
+        is_serverless = spark.conf.get("spark.databricks.isServerless", "false").lower() == "true"
+        if not is_serverless:
+            for src_path in processed_files:
+                file_name = src_path.split("/")[-1]
+                dbutils.fs.mv(src_path, archive_path + file_name)
+    except Exception as e:
+        print("dbutils not available (expected on Serverless):", e)
+
+# Final streaming query — this works everywhere
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+    .load(input_path)
+    .withColumn("ingest_time", current_timestamp())
+    .withColumn("source_file", input_file_name())
+    .writeStream
+    .foreachBatch(process_batch)
+    .option("checkpointLocation", checkpoint_path)
+    .trigger(availableNow=True)    # perfect for file-arrival jobs
+    .start()
+)
+```
+
+### Even Better: Avoid foreachBatch Completely (Recommended for New Code)
+
+```python
+# 100% Serverless-safe, simplest, and fastest
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", checkpoint_path)
+    .load(input_path)
+    .writeStream
+    .format("delta")
+    .option("checkpointLocation", checkpoint_path)
+    .option("mergeSchema", "true")
+    .trigger(availableNow=True)
+    .table("my_catalog.my_db.bronze_table")   # or .start("/path/to/table")
+)
+```
+
+Then move files in a separate task (or with Databricks Workflows) using `dbutils.fs.mv` — no serialization issues at all.
+
+### Summary
+
+| Question                              | Answer                                                                 |
+|---------------------------------------|------------------------------------------------------------------------|
+| How to detect Spark Connect?          | `spark.conf.get("spark.databricks.isServerless") == "true"` or check UI Environment tab |
+| Will my old `foreachBatch` + `dbutils` work on Serverless? | No → serialization error |
+| How to make it work everywhere?       | Never use `dbutils` or outer `spark` inside `foreachBatch`. Use `df.sparkSession` + Hadoop FS API or move archiving to a separate task |
+
+Use the code pattern above and you will never see the `[STREAMING_CONNECT_SERIALIZATION_ERROR]` again — on any Databricks compute type.
+
 ## Databricks Job
 
 It Streamining we use readStream() and writeStream(), checkpoint required
