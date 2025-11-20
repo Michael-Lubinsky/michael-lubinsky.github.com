@@ -1,3 +1,5 @@
+High-Dimensional Probability. Roman Vershinin 
+<https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
 ## How to test whether two variables have a monotonic relationship 
 meaning they tend to increase or decrease together, 
