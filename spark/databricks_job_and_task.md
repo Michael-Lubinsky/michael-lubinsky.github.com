@@ -103,6 +103,163 @@ For your scenario (small, few-per-day, job on File Arrival):
 ➡️ **Batch DataFrames (`spark.read`) inside the job task are the right tool.**
 Streaming/Auto Loader is great, but it shines when the *file arrival itself* is large/continuous, not when you’re already using File Arrival as the trigger.
 
+Great question — **Databricks File Arrival triggers do *not* magically populate a widget for you**.
+They provide file arrival info through a **special field in the Job run context**, which *you* must read inside your job code.
+
+Let me explain exactly how this works.
+
+---
+
+# ✅ **How File Arrival Trigger passes file information**
+
+When a Databricks Job task is triggered by a **File Arrival event**, Databricks injects a special JSON payload into the job run context.
+
+You access it through:
+
+```python
+dbutils.jobs.taskContext().get()
+```
+
+Inside that JSON, you will find:
+
+```
+taskConfig
+ └── file_arrival
+        ├── files
+        │     ├── path
+        │     ├── event_time
+        │     ├── size
+        │     └── ...
+        └── directory
+```
+
+---
+
+# 📌 **Example: Read file-arrival info in PySpark**
+
+Here’s the correct way to extract the list of files:
+
+```python
+from pyspark.sql import functions as F
+import json
+
+ctx = dbutils.jobs.taskContext().get()
+
+# This field is only present when job is triggered by File Arrival
+file_arrival_info = ctx.get("file_arrival", None)
+
+if file_arrival_info is None:
+    print("⚠️ Not triggered by file arrival event. Nothing to process.")
+else:
+    files = file_arrival_info.get("files", [])
+    paths = [f["path"] for f in files]
+
+    print(f"🔔 Files that triggered this job ({len(paths)}):")
+    for p in paths:
+        print(" -", p)
+
+    # Read new files (batch mode)
+    df_raw = (
+        spark.read
+             .format("json")
+             .load(paths)
+             .withColumn("source_file", F.input_file_name())
+    )
+
+    print(f"Read {df_raw.count()} records.")
+```
+
+---
+
+# 🔍 **Output looks like:**
+
+```text
+file_arrival: {
+  "files": [
+      {
+         "path": "s3://mybucket/path/file1.json",
+         "size": 1024,
+         "event_time": "2025-01-10T03:22:41Z"
+      },
+      {
+         "path": "s3://mybucket/path/file2.json",
+         "size": 981,
+         "event_time": "2025-01-10T03:22:41Z"
+      }
+  ],
+  "directory": "s3://mybucket/path/"
+}
+```
+
+---
+
+# 🚀 **Full recommended job pattern (Batch mode + File Arrival)**
+
+```python
+import json
+from pyspark.sql import functions as F
+
+ctx = dbutils.jobs.taskContext().get()
+
+file_arrival_info = ctx.get("file_arrival", None)
+
+if not file_arrival_info:
+    print("No new files – job was not triggered by File Arrival.")
+    dbutils.notebook.exit("NO FILES")
+
+files = file_arrival_info["files"]
+paths = [x["path"] for x in files]
+
+print(f"Processing {len(paths)} new files")
+
+# Batch read (recommended)
+df_raw = (
+    spark.read
+         .format("json")
+         .load(paths)
+         .withColumn("source_file", F.input_file_name())
+)
+
+# Skip empty file
+if not df_raw.head(1):
+    print("Empty batch. Skipping.")
+    dbutils.notebook.exit("EMPTY")
+
+# Process further...
+```
+
+---
+
+# ❗ **Important clarification**
+
+### You do **NOT** use widgets for File Arrival trigger.
+
+Widgets are for user-driven parameters only.
+
+File Arrival → **Databricks automatically injects metadata into task context**.
+
+---
+
+# ✔ Summary
+
+| What you want      | How it works                                                    |
+| ------------------ | --------------------------------------------------------------- |
+| Get file paths     | Use `dbutils.jobs.taskContext().get()["file_arrival"]["files"]` |
+| Do batch ingestion | Use `spark.read` (recommended for few small files/day)          |
+| Avoid streaming    | Yes — streaming not needed in your use case                     |
+| Widgets?           | ❌ Not used for file arrival info                                |
+
+---
+
+If you want, I can generate:
+
+* A **complete production-ready Databricks job notebook**
+* Auto-create rollup logic
+* Logging
+* Error handling + retries
+* MERGE to target table
+
+Just say the word!
 
 
 ## forEachBatch Error
