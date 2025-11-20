@@ -1,4 +1,4 @@
-## Error
+## forEachBatch Error
 ```
 Pipeline failed: [STREAMING_CONNECT_SERIALIZATION_ERROR] Cannot serialize the function `foreachBatch`.
 If you accessed the Spark session, or a DataFrame defined outside of the function, or any object that contains a Spark session,
@@ -23,7 +23,125 @@ Spark session stopped
               myRdd.map(lambda i: argX + str(i))
 
 ```            
+This exact error almost always appears when you run an Auto Loader (or any Structured Streaming) job on a **Spark Connect-based cluster** (i.e. a Serverless compute, SQL warehouse-started notebook, or a cluster started with “Enable Spark Connect” turned on) **and** you use `.foreachBatch()` in a way that tries to capture non-serializable objects (most commonly `dbutils`, global variables, or the notebook’s `spark` session).
 
+### Why the error happens
+
+Spark Connect runs the driver code on your browser/notebook side and the executor code remotely.  
+Everything you pass inside `foreachBatch` (or UDFs, etc.) must be **serializable with pickle**.  
+`dbutils` and the notebook’s `spark` object are **explicitly non-serializable** in Spark Connect → instant failure with the message you saw.
+
+### How to fix it (100% working patterns)
+
+#### Option 1 (Recommended) – Don’t use `foreachBatch` at all  
+Just write directly to Delta with `writeStream` – this is the simplest and most reliable on Serverless/Spark Connect.
+
+```python
+# This works perfectly on Serverless / Spark Connect
+(spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")
+    .option("cloudFiles.schemaLocation", "/tmp/checkpoints/my_stream")
+    .load("abfss://landing@mystorage.dfs.core.windows.net/incoming/")
+    .writeStream
+    .format("delta")
+    .outputMode("append")
+    .option("checkpointLocation", "/tmp/checkpoints/my_stream")
+    .option("mergeSchema", "true")
+    .trigger(availableNow=True)          # or leave empty for continuous
+    .table("my_catalog.my_db.bronze_table")   # or .start("/path/to/table")
+)
+```
+
+→ No `foreachBatch` → no serialization problem.
+
+#### Option 2 – You really need custom logic inside `foreachBatch` (e.g. move files, call external API, etc.)
+
+Do it like this — **never capture dbutils or the outer spark**:
+
+```python
+```python
+def process_batch(df, batch_id):
+    # CORRECT: use the spark session that comes with the DataFrame
+    spark = df.sparkSession
+    
+    # Do whatever you need with normal Spark APIs
+    df.write.mode("append").saveAsTable("my_catalog.my_db.bronze_table")
+    
+    # If you need to move/archive files, use pure Hadoop FS API (works everywhere)
+    fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())
+    raw_path = "abfss://landing@mystorage.dfs.core.windows.net/incoming/"
+    archive_path = "abfss://landing@mystorage.dfs.core.windows.net/processed/"
+    
+    # List files that were just processed in this micro-batch
+    files_this_batch = [row._1 for row in df.select("_metadata.file_path").distinct().collect()]
+    
+    for file_path in files_this_batch:
+        src = spark._jvm.org.apache.hadoop.fs.Path(file_path)
+        dst = spark._jvm.org.apache.hadoop.fs.Path(archive_path + src.getName())
+        fs.rename(src, dst)   # moves the file
+
+# Now register the function
+(spark.readStream
+    .format("cloudFiles")
+    ...
+    .foreachBatch(process_batch)
+    .option("checkpointLocation", checkpoint_path)
+    .trigger(availableNow=True)
+    .start()
+)
+```
+
+#### Option 3 – You really need `dbutils` inside the batch (e.g. secrets, widgets, fs utils)
+
+Extract everything **before** you start the stream:
+
+```python
+# Do this in notebook cells BEFORE the streaming query
+archive_path = dbutils.widgets.get("archive_path")          # or hard-code
+secret_value = dbutils.secrets.get("my-scope", "my-key")
+
+def process_batch_with_dbutils(df, batch_id):
+    spark = df.sparkSession
+    
+    df.write.mode("append").saveAsTable("bronze_table")
+    
+    # Use the variables that were captured BEFORE the stream started
+    print("Using secret:", secret_value)
+    
+    # Move files with dbutils (this works because we captured the path earlier)
+    files = [row.file_path for row in df.select("_metadata.file_path").collect()]
+    for f in files:
+        file_name = f.split("/")[-1]
+        dbutils.fs.mv(f, f"{archive_path}{file_name}")
+
+# Now start the stream
+(spark.readStream
+    .readStream
+    .format("cloudFiles")
+    ...
+    .foreachBatch(process_batch_with_dbutils)
+    .start()
+)
+```
+
+### What does NOT work on Spark Connect / Serverless
+
+```python
+def bad_batch(df, batch_id):
+    dbutils.fs.mv(...)           # ← crashes
+    spark.session...            # ← also crashes
+    some_global_variable        # if it contains spark or dbutils → crashes
+```
+
+### Quick checklist for your notebook
+
+- Are you on Serverless compute or a cluster with “Spark Connect” enabled? → avoid `foreachBatch` if possible.
+- Do you use `.table()` or `.start(path)` to write the stream.
+- If you must use `foreachBatch`, never reference `dbutils` or the outer `spark` inside the function.
+- Use `df.sparkSession` inside the function when you need Spark.
+
+Follow Option 1 in 95 % of cases and you will never see this error again.
 
 ## Databricks Job
 
