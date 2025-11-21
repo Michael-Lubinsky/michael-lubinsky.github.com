@@ -6,11 +6,11 @@ This is one of the key differences between:
 • Job clusters  (auto-start + auto-shutdown)
 • All-purpose clusters (stay alive until idle timeout)
 • Streaming jobs (keep running)
-```
+ 
 
 Let’s go deeper so there is no ambiguity.
 
-==================================================
+===================================
 Behavior of Databricks Job Clusters
 ===================================
 
@@ -88,7 +88,7 @@ Yes, this is exactly what job clusters were designed for.
 
 Ideal flow:
 
-```
+ 
 New file arrives
    ↓
 Databricks triggers job run
@@ -109,7 +109,7 @@ You only pay:
 
 This is the most cost-efficient setup for event-driven ingestion.
 
- 
+ ```
 
 
 
