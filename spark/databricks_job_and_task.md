@@ -1,3 +1,197 @@
+Gotcha — so right now you have:
+
+* Job trigger: **File arrival**
+* Code: **Auto Loader** with `readStream()` + `writeStream()`
+
+That combination has some non-obvious behavior.
+
+---
+
+## 1. What actually happens with your current setup
+
+Because you use `readStream()` + `writeStream()`, your notebook is a **streaming job**:
+
+```python
+df = (spark.readStream
+         .format("cloudFiles")
+         .option("cloudFiles.format", "json")
+         .load("..."))
+
+query = (df.writeStream
+           .format("delta")
+           .option("checkpointLocation", "...")
+           .table("..."))
+
+query.awaitTermination()   # explicit or implicit
+```
+
+For streaming:
+
+* The **job run does not complete** on its own.
+* The **job cluster does not shut down** until:
+
+  * the stream is stopped/cancelled, or
+  * an error kills the stream, or
+  * you manually cancel the run.
+
+So in your case:
+
+* The **File Arrival trigger only matters for the very first start**.
+* After that, the run stays in `RUNNING` state indefinitely.
+* New file arrivals do **not** start new runs while the stream is still running.
+* The dedicated job cluster will **keep running (and billing)** the whole time.
+
+So the behavior is:
+
+* File arrival → starts run once
+* Streaming query → keeps run alive forever
+* Cluster → stays up as long as that run is alive
+
+Which is very different from a batch job (where the run completes and the cluster auto-terminates).
+
+---
+
+## 2. Is this pattern recommended?
+
+Pretty much **no**:
+
+* File arrival is meant for **short batch jobs** (spark.read, not streaming).
+* Auto Loader streaming is meant for **continuous ingestion**, usually started by:
+
+  * manual “Run now” once, or
+  * a job configured to “run until stopped”, or
+  * a simple schedule if using trigger-once.
+
+Mixing them makes things confusing:
+
+* You think: “file arrival will start/stop/scale my work”.
+* Reality: file arrival only starts the first run; after that, your streaming job is what’s in control.
+
+---
+
+## 3. What you probably want instead
+
+Depending on your goal, here are the clean patterns.
+
+### Pattern A: True streaming / continuous ingestion
+
+If you want a long-running Auto Loader pipeline:
+
+* **Do NOT** use File Arrival trigger.
+* Configure the job to run manually (or as “continuous” in Jobs UI).
+* Let Auto Loader watch for new files itself.
+
+You only need to start it once; it keeps ingesting:
+
+```python
+df = (spark.readStream
+         .format("cloudFiles")
+         .option("cloudFiles.format", "json")
+         .load("s3://bucket/folderA"))
+
+query = (df.writeStream
+           .format("delta")
+           .option("checkpointLocation", "s3://bucket/checkpoints/folderA")
+           .table("bronze.folderA"))
+
+query.awaitTermination()
+```
+
+Cluster behavior:
+
+* Job run stays running.
+* Cluster stays up as long as the stream runs.
+* When you stop the job/run, the job cluster terminates.
+
+Here Auto Loader is your “file arrival detector”, not the job trigger.
+
+---
+
+### Pattern B: Batch-style runs with Auto Loader (trigger once)
+
+If you want:
+
+* Job to wake up,
+* Process **all new files** since last run,
+* Then **shut down cluster** and finish,
+
+use **Auto Loader with `trigger.once`** and a **schedule**, not file-arrival.
+
+Job trigger: e.g. schedule every 5 minutes
+
+Code:
+
+```python
+df = (spark.readStream
+         .format("cloudFiles")
+         .option("cloudFiles.format", "json")
+         .option("cloudFiles.trigger.once", "true")
+         .load("s3://bucket/folderA"))
+
+query = (df.writeStream
+           .format("delta")
+           .option("checkpointLocation", "s3://bucket/checkpoints/folderA")
+           .trigger(once=True)
+           .table("bronze.folderA"))
+
+query.awaitTermination()  # job finishes after processing all available files
+```
+
+Behavior:
+
+* Each run:
+
+  * Starts, ingests all currently-unprocessed files, then finishes.
+* Job cluster:
+
+  * Starts when run starts,
+  * Terminates when run finishes.
+* You get incremental ingestion with Auto Loader **and** finite runs.
+
+Here again, **File Arrival is unnecessary** – the schedule drives runs; Auto Loader finds the new files.
+
+---
+
+### Pattern C: Simple file-arrival + non-streaming code
+
+If you *really* want to keep File Arrival:
+
+* Drop streaming.
+* Use simple batch code inside the job task:
+
+```python
+df = spark.read.format("json").load("s3://bucket/folderA")
+# transform...
+df.write.format("delta").mode("append").saveAsTable("bronze.folderA")
+```
+
+Then:
+
+* Each file arrival → one run.
+* Each run finishes.
+* Cluster auto-terminates after the run.
+* Simple and predictable; good for low volume.
+
+---
+
+## 4. Concrete answer to your situation
+
+For **your current job**:
+
+* Because it uses **Auto Loader + readStream/writeStream**, your run is a **streaming run**.
+* With a streaming run:
+
+  * The **job run will not complete by itself** (unless an error/stop).
+  * The **dedicated job cluster will NOT shut down automatically** in the “short batch job” sense.
+  * File arrival only affected the moment the first run started; after that it’s basically irrelevant.
+
+If you tell me which of these is your actual target:
+
+1. “I want an always-on pipeline that ingests files as soon as they arrive”
+2. “I want the cluster to start, process new files, and stop; and I don’t care if it’s every 5 min”
+
+…I can rewrite your job pattern (and give you exact code + job settings) to match it cleanly and safely.
+
 ```text
 when a job is triggered by File Arrival and the job finishes,
 the dedicated job cluster WILL automatically shut down.
