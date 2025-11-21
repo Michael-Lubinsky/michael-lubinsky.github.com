@@ -88,7 +88,123 @@ Here’s exactly how:
 > ⚠️ The stream ARN changes because this is technically a *new stream*.
 > You’ll need to **re-attach your Lambda trigger** to the new stream ARN.
 
+
+
+In DynamoDB Streams the “options” you see (New images, New and old images, etc.) are really about **what data is included for each change**, not *which* changes (INSERT/MODIFY/REMOVE) you get.
+
+You **always** get all change types; you then **filter in your Lambda**.
+
 ---
+
+## 1. Stream view types (what you pick in the console)
+
+`StreamViewType` can be:
+
+* `KEYS_ONLY`
+
+  * Only partition/sort keys.
+* `NEW_IMAGE`
+
+  * Full item **after** the change (for INSERT + MODIFY).
+* `OLD_IMAGE`
+
+  * Full item **before** the change (for MODIFY + REMOVE).
+* `NEW_AND_OLD_IMAGES`
+
+  * Both before and after versions.
+
+In the console these are often labelled roughly like:
+
+* *Keys only*
+* *New images*
+* *Old images*
+* *New and old images*
+
+You said:
+
+> I need to capture the new records and updated records.
+
+For that you want:
+
+* **At least**: `NEW_IMAGE`
+
+  * You’ll get the full item *after* an INSERT or MODIFY.
+* Or, if you also want the **previous version** on updates: `NEW_AND_OLD_IMAGES`.
+
+You do *not* need `OLD_IMAGE` alone, and `KEYS_ONLY` is too little for your use-case.
+
+---
+
+## 2. How to “capture new and updated records”
+
+Once the stream is enabled with `NEW_IMAGE` or `NEW_AND_OLD_IMAGES`, your Lambda gets events like:
+
+```json
+{
+  "Records": [
+    {
+      "eventName": "INSERT" | "MODIFY" | "REMOVE",
+      "dynamodb": {
+        "Keys": { ... },
+        "NewImage": { ... },   // if NEW_IMAGE / NEW_AND_OLD_IMAGES
+        "OldImage": { ... }    // if OLD_IMAGE / NEW_AND_OLD_IMAGES
+      }
+    },
+    ...
+  ]
+}
+```
+
+In your Lambda you just **filter by `eventName`**:
+
+```python
+def lambda_handler(event, context):
+    for record in event["Records"]:
+        event_name = record["eventName"]  # "INSERT", "MODIFY", "REMOVE"
+
+        if event_name in ("INSERT", "MODIFY"):
+            # This is a "new" or "updated" record
+            new_image = record["dynamodb"].get("NewImage", {})
+            # serialize new_image → JSONL line, write to S3, etc.
+        else:
+            # event_name == "REMOVE"
+            # Either ignore deletes, or handle them separately
+            pass
+```
+
+So:
+
+* **New items** → `eventName == "INSERT"` with `NewImage`
+* **Updated items** → `eventName == "MODIFY"` with `NewImage` (and optional `OldImage` if you chose `NEW_AND_OLD_IMAGES`)
+
+Deletes still come through as `REMOVE`, but you can ignore them.
+
+---
+
+## 3. What I’d recommend for your pipeline
+
+Since you’re sending **jsonl snapshots to S3** and then letting Databricks read them:
+
+* Choose **`NEW_IMAGE`** if you only need the **final state** after each change (simpler, less data).
+* Choose **`NEW_AND_OLD_IMAGES`** if you might later want:
+
+  * before/after comparisons,
+  * to compute deltas,
+  * or to handle some advanced reconciliation logic.
+
+In either case, in Lambda:
+
+* process only `eventName in ("INSERT", "MODIFY")`
+* ignore `REMOVE` unless you also want to track deletions.
+
+If you’d like, I can sketch the exact Lambda code that:
+
+* takes `NewImage`,
+* converts it to normal JSON (no DynamoDB types),
+* writes **one JSON per line** to S3 in a partitioned folder layout that’s easy for Databricks.
+
+
+
 
 ### ✅ **AWS CLI**
 
