@@ -11,7 +11,8 @@
 <https://habr.com/ru/companies/otus/articles/930372/>  
 <https://habr.com/ru/articles/957824/>   
 <https://habr.com/ru/articles/961048/>  
-<https://habr.com/ru/companies/T1Holding/articles/968394/>
+<https://habr.com/ru/companies/T1Holding/articles/968394/>  
+<https://habr.com/ru/articles/968844/>
 
 ### Python client for Kafka
 
