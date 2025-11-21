@@ -1,6 +1,7 @@
 ```text
-Short answer:
-YES — when a job is triggered by File Arrival and the job finishes, the dedicated job cluster WILL automatically shut down. You do NOT need to stop it manually.
+when a job is triggered by File Arrival and the job finishes,
+the dedicated job cluster WILL automatically shut down.
+You do NOT need to stop it manually.
 
 This is one of the key differences between:
 • Job clusters  (auto-start + auto-shutdown)
