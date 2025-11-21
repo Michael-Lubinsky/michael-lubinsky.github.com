@@ -872,6 +872,197 @@ assert filter_by_price_threshold(df, 10).count() == 1
 assert filter_by_price_threshold(df, 8).count() == 2
 ```
 
+
+`element_at()` is a **built-in PySpark SQL function** used to safely access elements inside:
+
+* **Maps** (`MapType`)
+* **Arrays** (`ArrayType`)
+
+It pairs extremely well with SQL **`try(...)`** because together they allow **safe lookups** without throwing runtime errors.
+
+Below is the full explanation with examples.
+
+---
+
+# ✅ 1. What `element_at()` does
+
+## **For MAPS**
+
+Extracts the value for a given key:
+
+```python
+from pyspark.sql import functions as F
+
+df.withColumn("v", F.element_at(F.col("my_map"), F.lit("key1")))
+```
+
+Equivalent to:
+
+```
+my_map["key1"]
+```
+
+If the key does *not* exist:
+
+* Spark **returns NULL**
+* No exception is thrown
+
+---
+
+## **For ARRAYS**
+
+Extracts an element by **1-based index**:
+
+```python
+F.element_at(F.col("arr"), 1)  # arr[0]
+F.element_at(F.col("arr"), 2)  # arr[1]
+```
+
+If index is out of range:
+
+* Spark returns **NULL**
+* No exception (unlike Python `IndexError`)
+
+---
+
+# 🔥 2. How `element_at()` works together with `try(...)`
+
+`try()` is a Spark SQL expression that **catches errors** and returns NULL instead of failing the query.
+
+So combining them:
+
+```python
+F.expr("try(element_at(my_map, 'missing_key'))")
+```
+
+This gives you three levels of safety:
+
+* No exception if the **map key doesn't exist**
+* No exception if **my_map is NULL**
+* No exception if **my_map is not even a map** (e.g. malformed data)
+
+---
+
+# 🟢 3. Practical examples
+
+## ✅ **3.1 Safe lookup inside map column**
+
+```python
+df = df.withColumn(
+    "location",
+    F.expr("try(element_at(signals_map, 'location'))")
+)
+```
+
+If:
+
+* `signals_map` is NULL → result NULL
+* Key `"location"` doesn’t exist → result NULL
+* The column isn't even a map → NULL instead of error
+* JSON corrupted → NULL instead of job failure
+
+---
+
+## ✅ **3.2 Safe extraction from deeply nested JSON**
+
+Consider JSON:
+
+```json
+{
+  "signals": [
+    {"code": "internalcombustionengine-amountremaining", "body": {"value": 49.41}}
+  ]
+}
+```
+
+You want `"body.value"` only when `code` matches.
+
+Common pattern:
+
+```python
+df = df.withColumn(
+    "fuel_value",
+    F.expr("""
+      try(
+          element_at(
+              filter(signals, x -> x.code = 'internalcombustionengine-amountremaining'),
+              1
+          ).body.value
+      )
+    """)
+)
+```
+
+Without `try(...)`, this can throw errors if:
+
+* `signals` is NULL
+* Filter result is empty
+* `body` is missing
+* Fields are malformed
+
+With `try`, errors turn into **NULL**, pipeline continues.
+
+---
+
+## ✅ **3.3 Safe array element lookup**
+
+```python
+df = df.withColumn(
+    "first_value",
+    F.expr("try(element_at(values_array, 1))")
+)
+```
+
+Indexes outside range → NULL.
+Array is NULL → NULL.
+Array is wrong type → NULL.
+
+---
+
+# 🎯 Why use `element_at()` instead of direct dot-access?
+
+Compare these:
+
+### ❌ dot-access (unsafe)
+
+```python
+df["signals"][0]["body"]["value"]
+```
+
+This will break if:
+
+* array empty
+* `body` missing
+* type mismatch
+* wrong index
+
+### ✔ With element_at and try
+
+```python
+F.expr("try(element_at(signals, 1).body.value)")
+```
+
+This **never throws**, always returns NULL on failure.
+
+---
+
+# ⭐ Summary
+
+| Function       | Purpose                     | Behavior on missing key/value |
+| -------------- | --------------------------- | ----------------------------- |
+| `element_at()` | Safe lookup in MAP or ARRAY | Returns **NULL**, no error    |
+| `try(...)`     | Exception guard             | Converts errors → **NULL**    |
+
+Together they give you **robust, production-grade JSON and nested-structure handling**, especially critical when ingesting messy IoT/telemetry data.
+
+---
+
+If you want, I can give you:
+
+* The best **pattern** to safely extract `signals.body.value`
+* A reusable function to parse ANY nested JSON safely
+* A complete set of examples for arrays/maps and try() combos
+
  ## try
 
 * DataFrame expressions run **on the Spark cluster**, not in the Python driver
