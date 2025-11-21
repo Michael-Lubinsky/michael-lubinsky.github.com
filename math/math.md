@@ -1,5 +1,6 @@
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
+https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/ Hilbert Space
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
 
 <https://www.kvant.digital/>
