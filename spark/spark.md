@@ -513,6 +513,9 @@ spark.driver.extraJavaOptions: Allows you to set JVM options for the driver.
 Tuning Strategy: Monitor GC activity in the Spark UI. If you see long GC pauses, experiment with different GC algorithms (like G1 GC) and adjust JVM heap sizes.
 
 ## 7. Adaptive Query Execution (AQE)
+
+<https://habr.com/ru/companies/gnivc/articles/967656/>
+
 - spark.sql.adaptive.enabled: Enables Adaptive Query Execution, which allows Spark to re-optimize query plans during runtime based on statistics.
 - spark.sql.adaptive.coalescePartitions.enabled: Enables coalescing of shuffle output partitions to reduce the number of downstream tasks.
 - spark.sql.adaptive.skewJoin.enabled: Enables handling of skew joins by splitting larger partitions into smaller ones.
