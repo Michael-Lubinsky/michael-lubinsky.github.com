@@ -1,15 +1,165 @@
-Good start! Here's my review with several issues and suggestions:
+```python
+from datetime import datetime, timedelta
+from pyspark.sql import functions as F
 
-## Issues Found
+dbutils.widgets.text("process_date", "")
+dbutils.widgets.text("mode", "")
 
-### 1. **Column Name Mismatch in ORDER BY** ❌
-```sql
-ORDER BY car_id, date  -- Should be date_pst
-```
+process_date_param = dbutils.widgets.get("process_date")
+mode = dbutils.widgets.get("mode")
 
-**Fix:**
-```sql
-ORDER BY car_id, date_pst
+if mode == "job":
+    # JOB MODE: Calculate yesterday in PST
+    yesterday = spark.sql("""
+        SELECT date_sub(
+            to_date(from_utc_timestamp(current_timestamp(), 'America/Los_Angeles')),
+            1
+        ) as yesterday
+    """).collect()[0]['yesterday']
+    
+    dates_to_process = [yesterday.strftime('%Y-%m-%d')]
+    print(f"✓ Job mode: Processing yesterday = {dates_to_process[0]}")
+elif process_date_param:
+     # JOB MODE: Process single date
+    dates_to_process = [process_date_param]
+    print(f"Job mode: Processing {process_date_param}")
+else:
+    # INTERACTIVE MODE: Process date range
+    start_date = datetime(2025, 10, 1)
+    end_date = datetime(2025, 11, 18)
+    
+    dates_to_process = []
+    current = start_date
+    while current <= end_date:
+        dates_to_process.append(current.strftime('%Y-%m-%d'))
+        current += timedelta(days=1)
+    
+    print(f"Interactive mode: Processing {len(dates_to_process)} dates from {dates_to_process[0]} to {dates_to_process[-1]}")
+
+
+# Process each date
+for process_date in dates_to_process:
+    print(f"\n{'='*60}")
+    print(f"Processing: {process_date}")
+    print(f"{'='*60}")
+
+
+    df = spark.sql(f"""
+    -- 1) Miles driven from odometer
+WITH odo AS (
+  SELECT
+    car_id,
+    date(
+      from_utc_timestamp(
+        timestamp_millis(odometer_miles_updated_at_ms),
+        'America/Los_Angeles'
+      )
+    ) AS date_pst,
+    MIN(odometer_miles) AS odo_min,
+    MAX(odometer_miles) AS odo_max
+  FROM hcai_databricks_dev.chargeminder2.telemetry
+  WHERE odometer_miles IS NOT NULL
+    AND odometer_miles_updated_at_ms IS NOT NULL
+
+    AND date(from_utc_timestamp(timestamp_millis(odometer_miles_updated_at_ms), 'America/Los_Angeles'))
+    = '{process_date}'::DATE
+  GROUP BY car_id, date_pst
+),
+
+-- 2) Fuel consumption from fuel_remaining
+fuel AS (
+  SELECT
+    car_id,
+    date(
+      from_utc_timestamp(
+        timestamp_millis(fuel_remaining_gallons_updated_at_ms),
+        'America/Los_Angeles'
+      )
+    ) AS date_pst,
+    MIN_BY(
+      fuel_remaining_gallons,
+      fuel_remaining_gallons_updated_at_ms
+    ) AS fuel_start,
+    MAX_BY(
+      fuel_remaining_gallons,
+      fuel_remaining_gallons_updated_at_ms
+    ) AS fuel_end
+  FROM hcai_databricks_dev.chargeminder2.telemetry
+  WHERE fuel_remaining_gallons IS NOT NULL
+    AND fuel_remaining_gallons_updated_at_ms IS NOT NULL
+
+        AND date(from_utc_timestamp(timestamp_millis(fuel_remaining_gallons_updated_at_ms), 'America/Los_Angeles'))
+    = '{process_date}'::DATE
+
+  GROUP BY car_id, date_pst
+),
+
+-- 3) Charging flag
+charge AS (
+  SELECT
+    car_id,
+    date(
+      from_utc_timestamp(
+        timestamp_millis(is_charging_updated_at_ms),
+        'America/Los_Angeles'
+      )
+    ) AS date_pst,
+    MAX(CASE WHEN is_charging THEN 1 ELSE 0 END) AS has_charge_int
+  FROM hcai_databricks_dev.chargeminder2.telemetry
+  WHERE is_charging_updated_at_ms IS NOT NULL
+
+  AND date(from_utc_timestamp(timestamp_millis(is_charging_updated_at_ms), 'America/Los_Angeles'))
+    = '{process_date}'::DATE
+  GROUP BY car_id, date_pst
+),
+
+-- 4) Combine daily metrics
+daily AS (
+  SELECT
+    COALESCE(o.car_id, f.car_id, c.car_id) AS car_id,
+    COALESCE(o.date_pst, f.date_pst, c.date_pst) AS date,
+    -- miles driven
+     
+    ROUND(COALESCE(
+      GREATEST(o.odo_max - o.odo_min, 0.0),
+      0.0
+    ),2) AS miles_driven,
+
+    -- fuel consumed
+    ROUND(COALESCE(
+      GREATEST(f.fuel_start - f.fuel_end, 0.0),
+      0.0
+    ),2) AS fuel_consumed_gallons,
+    -- has_charge
+    (COALESCE(c.has_charge_int, 0) = 1) AS has_charge
+  FROM odo o
+  FULL OUTER JOIN fuel f
+    ON o.car_id = f.car_id
+   AND o.date_pst = f.date_pst
+  FULL OUTER JOIN charge c
+    ON COALESCE(o.car_id, f.car_id) = c.car_id
+   AND COALESCE(o.date_pst, f.date_pst) = c.date_pst
+)
+-- Final SELECT to return results
+SELECT * FROM daily
+ORDER BY car_id, date
+ """ )
+
+    df_to_write = (
+      df.withColumn("updated_at",F.from_utc_timestamp(F.current_timestamp(), "America/Los_Angeles"))
+    )
+ 
+    spark.sql(f"""
+      DELETE FROM hcai_databricks_dev.chargeminder2.car_daily_summary WHERE date = '{process_date}'::DATE
+    """)
+    
+    (
+     df_to_write
+      .write
+      .format("delta")
+      .mode("append")
+      .saveAsTable("hcai_databricks_dev.chargeminder2.car_daily_summary")
+    )
 ```
 
 ### 2. **Missing Refueling Detection** ⚠️
