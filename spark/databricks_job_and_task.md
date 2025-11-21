@@ -1,6 +1,120 @@
 ```text
 Short answer:
-Usually NO — combining File Arrival *and* Auto Loader in the same flow is almost always redundant and can even be harmful. In almost all real setups you should choose ONE of them as the “new file detector”:
+YES — when a job is triggered by File Arrival and the job finishes, the dedicated job cluster WILL automatically shut down. You do NOT need to stop it manually.
+
+This is one of the key differences between:
+• Job clusters  (auto-start + auto-shutdown)
+• All-purpose clusters (stay alive until idle timeout)
+• Streaming jobs (keep running)
+```
+
+Let’s go deeper so there is no ambiguity.
+
+==================================================
+Behavior of Databricks Job Clusters
+===================================
+
+When you configure a Job with:
+
+* Trigger = File Arrival
+* Cluster = “Job cluster” (NOT an all-purpose cluster)
+
+Then the lifecycle is:
+
+1. File arrival detected → Job starts
+2. Databricks automatically creates a brand-new **job cluster**
+3. It runs the notebook/script
+4. When the notebook completes successfully:
+   → **Cluster shuts down automatically**
+5. If another file arrives later:
+   → Databricks schedules a new run
+   → A brand-new job cluster is created again
+
+**Each run uses a fresh cluster.
+No cluster stays alive beyond task execution.**
+
+==================================================
+Contrast with other cluster types
+=================================
+
+### 1) **Job cluster** (what you use)
+
+✔️ Starts automatically for each job run
+✔️ Stops automatically at the end
+✔️ No cost while idle
+✔️ Best choice for File Arrival trigger
+❌ Cannot remain running between runs
+
+---
+
+### 2) **All-purpose (interactive) cluster**
+
+❌ Job will NOT stop the cluster automatically
+✔️ The cluster will remain alive based on Idle Timeout
+✔️ Good for notebooks
+❌ Not ideal for file-arrival jobs
+✔️ Expensive if you forget to shut it down
+
+---
+
+### 3) **Streaming (Auto Loader) job**
+
+If your job contains `writeStream` (structured streaming):
+
+* The job cluster **does NOT stop** automatically
+* It keeps running indefinitely
+  (unless you explicitly stop the job run)
+
+Streaming jobs behave like servers: always on.
+
+That’s why a file-arrival job must NOT contain structured streaming,
+unless you understand it will never stop.
+
+==================================================
+Edge Case:
+"What if task errors?"
+======================
+
+✔️ On failure:
+Cluster still terminates after the run stops.
+
+Databricks guarantees job clusters do not remain alive after job termination — success or failure.
+
+==================================================
+Your use case: File arrival → run notebook once → shutdown?
+===========================================================
+
+Yes, this is exactly what job clusters were designed for.
+
+Ideal flow:
+
+```
+New file arrives
+   ↓
+Databricks triggers job run
+   ↓
+Job cluster starts
+   ↓
+Notebook runs batch logic (spark.read)
+   ↓
+Task completes
+   ↓
+Cluster TERMINATES automatically
+```
+
+You only pay:
+
+* For the time cluster was starting,
+* For the time notebook ran.
+
+This is the most cost-efficient setup for event-driven ingestion.
+
+ 
+
+
+
+```text
+ combining File Arrival *and* Auto Loader in the same flow is almost always redundant and can even be harmful. In almost all real setups you should choose ONE of them as the “new file detector”:
 
 - Either: File Arrival trigger + *batch* / non-streaming code
 - Or: Auto Loader (streaming or trigger-once) + schedule/manual job
