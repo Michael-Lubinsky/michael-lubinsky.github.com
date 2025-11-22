@@ -10,6 +10,8 @@ https://www.mlsysbook.ai/
 
 https://www.youtube.com/watch?v=681kv_x12u0
 
+https://www.youtube.com/@vladimirnechaev4332
+
 https://www.sergeynikolenko.ru/courses
 
 https://www.lotas.ai/erdos  IDE for ML
