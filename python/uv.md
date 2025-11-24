@@ -2,6 +2,8 @@ pip install uv
 
 <https://mathspp.com/blog/uv-cheatsheet>
 
+<https://habr.com/ru/articles/969296/>
+
 ### uv init
 This comand creates 4 files:
 - .python-version: Specifies the Python version for the project.
