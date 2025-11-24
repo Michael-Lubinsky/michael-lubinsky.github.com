@@ -3,6 +3,7 @@
 https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/ Hilbert Space
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML
 
+<https://toomanydigits.online/index.html> Вычислительная математика
 <https://www.kvant.digital/>
 
 <https://github.com/valeman/Awesome_Math_Books>
