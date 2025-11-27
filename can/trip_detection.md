@@ -1,3 +1,44 @@
+Good questions. Based on the documentation for Smartcar, here is how “time interval between data points” works — and what is (and isn’t) configurable.
+
+## ✅ What Smartcar says about data-update frequency
+
+* The main “Vehicles API” is *not* designed for continuous polling or real-time monitoring. By default, vehicle data is only updated about once every **24 hours** — unless the car is actively “subscribed to a webhook.” ([Smartcar][1])
+* If you use webhooks, then the frequency of updates depends heavily on the vehicle’s manufacturer (OEM), how often the vehicle state changes, and what signals you’ve subscribed to. According to Smartcar’s “Data Freshness Frequencies” page, update intervals (when available) can range from **every few minutes to once every few hours**, depending on vehicle make, data type, and usage. ([Smartcar][2])
+* For example, for some makes/vehicles the “typical” refresh intervals stated are in a table ranging from as fast as **1 second to 5 minutes** (for some vehicle makes) — but that does not guarantee continuous updates. ([Smartcar][2])
+
+## ⚠️ What “minimal time interval between consecutive data points” means — and the limitations
+
+* There is *no universal minimal interval* that Smartcar guarantees across all vehicles. Because data freshness depends on the OEM, vehicle status (sleep vs awake), and which data signal is requested, different vehicles will produce data at different rates.
+* Even if you request data via the Vehicles API repeatedly, the returned value might not change — because underlying data might not have been updated by the vehicle/OEM. Smartcar explicitly warns that the Vehicles API is “not designed for continuous polling or real-time monitoring.” ([Smartcar][1])
+* The “per-vehicle rate limit” is enforced by Smartcar (and sometimes by the OEM) to prevent “excessive vehicle requests.” If you hit that limit, you’ll receive a `VEHICLE`-rate-limit error and must wait for the duration specified in the response header before retrying. ([Smartcar][3])
+
+## 🔧 What is configurable (and what is not)
+
+* What you **can** control: you can choose to rely on webhooks rather than frequent polling. That’s the recommended mode for getting timely data updates. ([Smartcar][4])
+* You cannot reliably force a fixed “every-X-seconds” interval for all vehicles. The actual update cadence depends on vehicle make/model, OEM behavior, and whether the vehicle is active or sleeping.
+* You also cannot bypass per-vehicle rate limits — those are enforced by Smartcar/OEM to protect vehicle hardware and network resources. ([Smartcar][3])
+
+## 🎯 What this means in practice for a consumer of Smartcar telemetry
+
+* If you want near real-time or frequent telemetry (location, battery state, odometer, etc.), you should use webhooks and only rely on the update cadence supported by the specific vehicle — which might be minutes, but might also be hours depending on the vehicle’s “sleep” / awake status.
+* Polling the Vehicles API in a tight loop — hoping to get “fresh” data every few seconds or minutes — is ineffective and discouraged. You may end up hitting rate limits or simply receiving stale data.
+* For fleet / telemetry applications: evaluate which vehicles you support, check their OEM-specific data-freshness behavior via Smartcar’s “Data Freshness Frequencies,” and design your polling / webhook logic accordingly.
+
+---
+
+## ✅ Bottom line — to your questions directly
+
+* There is **no single “minimal time interval”** enforced globally for data points via Smartcar.
+* The interval **depends on the vehicle’s OEM, model, and state**, and may vary from **a few minutes up to hours** — or longer if the vehicle is asleep.
+* It is **not fully configurable** in a way that forces high-frequency updates; you either rely on Smartcar’s natural update cadence (via webhooks) or poll via Vehicles API (not recommended for real-time).
+
+If you like — I can check for the **latest** Smartcar documentation (as of 2025) to see if they recently introduced a configurable “minimum polling interval” for some car makes.
+Do you want me to fetch that for you now?
+
+[1]: https://smartcar.com/docs/api-reference/vehicles-api-intro?utm_source=chatgpt.com "Vehicles API Overview"
+[2]: https://smartcar.com/docs/help/frequencies?utm_source=chatgpt.com "Data Freshness Frequencies"
+[3]: https://smartcar.com/docs/help/api-limits?utm_source=chatgpt.com "Smartcar Usage Limits"
+[4]: https://smartcar.com/docs/getting-started/integration-overview?utm_source=chatgpt.com "Integrate with Smartcar To Receive Vehicle Data"
  
 ### Rule 1: Odometer Not Changing → Not Moving
 **Pros:**
