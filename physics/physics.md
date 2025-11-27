@@ -1,6 +1,9 @@
 ### Physics
 
+https://arxiv.org/abs/1508.06951 Math for QM
+
 https://arxiv.org/abs/1602.04182 Feynman Diagrams  
+
 http://cleonis.nl/
 
 Density matrix in QM
