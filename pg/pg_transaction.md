@@ -1,5 +1,7 @@
 https://habr.com/ru/articles/961134/
 
+https://habr.com/ru/companies/otus/articles/968212/
+
 ```sql
 CREATE OR REPLACE PROCEDURE gold.backfill_all()
 LANGUAGE plpgsql
