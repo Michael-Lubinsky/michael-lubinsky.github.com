@@ -8,6 +8,7 @@
 
 <https://habr.com/ru/articles/918520/> Kafka / NATS   
 <https://habr.com/ru/articles/923046/>  Kafka / NATS / RabbitMQ
+<https://habr.com/ru/companies/otus/articles/969914/> Kafka vs RabbitMQ
 <https://habr.com/ru/companies/otus/articles/930372/>  
 <https://habr.com/ru/articles/957824/>   
 <https://habr.com/ru/articles/961048/>  
