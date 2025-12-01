@@ -2,6 +2,8 @@
 
 https://ru.algorithmica.org/
 
+https://algorithmsbook.com/optimization/files/optimization.pdf
+
 ## Constrain programming 
 https://cpmpy.readthedocs.io/en/latest/
 
