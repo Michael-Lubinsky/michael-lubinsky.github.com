@@ -100,7 +100,19 @@ https://panel.holoviz.org/reference/panes/ECharts.html
 
 https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html 
 
+## JS libs
+
+https://vega.github.io/vega-lite/
+
 https://airbnb.io/visx/ VisX
+
+https://charts.carbondesignsystem.com/combo
+
+https://unovis.dev/
+
+https://apexcharts.com/
+
+https://lightningchart.com/
 
 ### Apps
 
