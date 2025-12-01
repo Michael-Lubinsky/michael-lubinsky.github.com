@@ -42,6 +42,7 @@ https://habr.com/ru/articles/957848/ Monads
 ### Books
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
+“Information Theory” by Yury Polyanskiy and Yihong Wu.
 https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf
 
 https://www.youtube.com/watch?v=qO-HpEgmd6U
