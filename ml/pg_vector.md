@@ -4,6 +4,9 @@
 
 Let use it for finding customers with similar patterns.
 
+
+<https://www.clarvo.ai/blog/optimizing-filtered-vector-queries-from-tens-of-seconds-to-single-digit-milliseconds-in-postgresql>
+
 ###   Step 1: Install `pgvector` extension
 
 ```sql
