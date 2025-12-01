@@ -2,7 +2,17 @@
 
 https://ru.algorithmica.org/
 
+https://cleveralgorithms.com/
+
+https://cs.gmu.edu/~sean/book/metaheuristics/
+
 https://algorithmsbook.com/optimization/files/optimization.pdf
+
+https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncertainty
+
+https://mykel.kochenderfer.com/textbooks/
+
+https://lpviz.net/
 
 ## Constrain programming 
 https://cpmpy.readthedocs.io/en/latest/
