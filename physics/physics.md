@@ -4,6 +4,8 @@ https://interactivetextbooks.tudelft.nl/mqp/ Math for QM
 
 https://arxiv.org/abs/1508.06951 Math for QM
 
+https://faculty.washington.edu/seattle/physics441/441index.html
+
 https://arxiv.org/abs/1602.04182 Feynman Diagrams  
 
 http://cleonis.nl/
