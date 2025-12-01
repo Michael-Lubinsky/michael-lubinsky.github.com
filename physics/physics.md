@@ -6,6 +6,10 @@ https://arxiv.org/abs/1508.06951 Math for QM
 
 https://faculty.washington.edu/seattle/physics441/441index.html
 
+https://www.youtube.com/watch?v=CByk-raQ3Lg  Problem Solving in QM - Part I 
+
+https://www.youtube.com/watch?v=3WvrO1kb_zM  Problem Solving in QM - Part II 
+
 https://arxiv.org/abs/1602.04182 Feynman Diagrams  
 
 http://cleonis.nl/
