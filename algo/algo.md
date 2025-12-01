@@ -12,6 +12,8 @@ https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncerta
 
 https://mykel.kochenderfer.com/textbooks/
 
+https://github.com/TimefoldAI/timefold-quickstarts
+
 https://lpviz.net/
 
 ## Constrain programming 
