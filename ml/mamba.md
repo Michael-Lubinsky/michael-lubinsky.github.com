@@ -6,6 +6,8 @@ https://github.com/harvard-edge/cs249r_book
 
 https://www.mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
 
+https://github.com/chiphuyen/aie-book
+
 https://www.mlsysbook.ai/
 
 https://www.youtube.com/watch?v=681kv_x12u0
