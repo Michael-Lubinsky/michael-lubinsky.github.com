@@ -21,6 +21,7 @@ https://habr.com/ru/articles/930094/
 
 https://adamgrant.micro.blog/2025/07/24/123050.html
 
+https://catt.rs/en/stable/
 
 https://news.ycombinator.com/item?id=44675119
 
