@@ -10,6 +10,8 @@ https://github.com/chiphuyen/aie-book
 
 https://www.mlsysbook.ai/
 
+   https://huggingface.co/learn/llm-course/chapter1
+
 https://www.youtube.com/watch?v=681kv_x12u0
 
 https://www.youtube.com/@vladimirnechaev4332
