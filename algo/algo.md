@@ -12,6 +12,8 @@ https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncerta
 
 https://mykel.kochenderfer.com/textbooks/
 
+https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289
+
 https://github.com/TimefoldAI/timefold-quickstarts
 
 https://lpviz.net/
