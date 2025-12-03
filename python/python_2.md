@@ -2,6 +2,9 @@
 
 https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
+### regex
+https://habr.com/ru/articles/972746/
+
 ### with
 https://habr.com/ru/articles/964502/ 
 
