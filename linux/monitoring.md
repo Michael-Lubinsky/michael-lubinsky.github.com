@@ -3,15 +3,17 @@
 
 <https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
-<https://habr.com/ru/articles/928948/> 
+<https://habr.com/ru/articles/928948/>  Разработка высоконагруженных API
 
-<https://habr.com/ru/companies/otus/articles/971082/> Observability Tools
 
-<https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
 
 <https://theremoteengineer.substack.com/p/availability-in-system-design>
 
 ## Monitoring
+
+<https://habr.com/ru/companies/otus/articles/971082/> Observability Tools
+
+<https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
