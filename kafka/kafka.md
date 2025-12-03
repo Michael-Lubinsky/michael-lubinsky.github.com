@@ -4,6 +4,8 @@
 
 <https://newsletter.systemdesign.one/p/how-kafka-works>
 
+<https://habr.com/ru/articles/972788/>
+
 <https://habr.com/ru/companies/ydb/articles/972180/>
 
 <https://github.com/twmb/franz-go?tab=readme-ov-file> Go library for interacting with Kafka: Producing, consuming, transacting, administrating, etc.
