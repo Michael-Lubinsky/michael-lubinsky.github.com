@@ -35,8 +35,12 @@ enable you to build web UIs in Python without touching JavaScript.
 
 ## ✅ 1. NiceGUI
 <https://nicegui.io/documentation> 
+
 <https://python.plainenglish.io/nicegui-how-to-create-stunning-web-interfaces-in-python-with-minimal-code-7d33fdac998e>
 
+<https://www.pythonguis.com/tutorials/getting-started-nicegui/>
+
+<https://github.com/jaehyeon-kim/nicegui-fastapi-template>
 
 - **Backend**: FastAPI  
 - **Frontend**: Vue.js (via WebSocket)  
