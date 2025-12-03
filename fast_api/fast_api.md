@@ -7,3 +7,5 @@ https://levelup.gitconnected.com/7-fastapi-extensions-so-powerful-i-stopped-usin
 https://github.com/jaehyeon-kim/nicegui-fastapi-template
 
 https://habr.com/ru/articles/970798/
+
+https://habr.com/ru/articles/972642/
