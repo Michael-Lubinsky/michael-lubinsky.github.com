@@ -1,5 +1,7 @@
 https://www.dailydoseofds.com/
 
+https://blog.dailydoseofds.com/p/7-categorical-data-encoding-techniques-cd2
+
 https://github.com/Saivineeth147/awesome-llm-resources
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
