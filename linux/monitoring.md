@@ -1,8 +1,11 @@
 ### High Load Systems
 
+
 <https://habr.com/ru/articles/922310/> DevOps в локальных облаках: как строить высоконагруженные системы с CI/CD, Kubernetes и Grafana
 
 <https://habr.com/ru/articles/928948/> 
+
+<https://habr.com/ru/companies/otus/articles/971082/> Observability Tools
 
 <https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
 
