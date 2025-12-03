@@ -58,6 +58,10 @@ https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse
 ## Casual Inference
 
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
+
+https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
+
+
 ### Book
 https://www.manning.com/books/deep-learning-with-python-third-edition 
 
