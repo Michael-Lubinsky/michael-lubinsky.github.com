@@ -40,7 +40,8 @@ https://huggingface.co/learn
 
 https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
 
-### Reinforcement learning: 
+### Reinforcement learning
+
 https://www.understandingai.org/p/reinforcement-learning-explained
 
 https://habr.com/ru/articles/956890/
@@ -107,6 +108,8 @@ https://habr.com/ru/companies/netologyru/articles/926776/
 
 Антон Бойцев
 https://www.youtube.com/@%D0%90%D0%BD%D1%82%D0%BE%D0%BD%D0%91%D0%BE%D0%B9%D1%86%D0%B5%D0%B2-%D1%8C9%D0%BE/videos
+
+https://pypi.org/project/category-encoders
 
 https://github.com/Dyakonov/DL
 
