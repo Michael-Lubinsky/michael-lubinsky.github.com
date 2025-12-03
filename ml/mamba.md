@@ -1,3 +1,5 @@
+https://www.dailydoseofds.com/
+
 https://github.com/Saivineeth147/awesome-llm-resources
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
