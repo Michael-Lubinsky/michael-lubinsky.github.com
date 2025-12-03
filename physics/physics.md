@@ -1,5 +1,7 @@
 ### Physics
 
+https://www.youtube.com/watch?v=qJZ1Ez28C-A
+
 https://interactivetextbooks.tudelft.nl/mqp/ Math for QM
 
 https://arxiv.org/abs/1508.06951 Math for QM
