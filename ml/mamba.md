@@ -24,6 +24,8 @@ https://www.sergeynikolenko.ru/courses
 
 https://www.lotas.ai/erdos  IDE for ML
 
+https://www.reddit.com/r/MachineLearning/comments/1p4qdf3/d_what_are_the_best_machine_learning_phd_thesis/
+
 https://habr.com/ru/articles/964438/ Linear regression and ML
 
 https://www.skills.google/paths/183  Free cource from Google
