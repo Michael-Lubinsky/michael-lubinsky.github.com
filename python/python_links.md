@@ -1,5 +1,7 @@
 <https://habr.com/ru/articles/949314/>
 
+EuroPython 2025
+<https://www.youtube.com/watch?v=4gotVjbeluY&list=PL8uoeex94UhFQY9cYBQOVkj9fSHMHf5x9>
 
 https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02
 
