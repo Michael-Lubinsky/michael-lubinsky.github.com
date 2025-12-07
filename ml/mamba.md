@@ -258,6 +258,8 @@ https://github.com/alteryx/featuretools Feature Engineering
 
 ### Comp vision
 
+https://pbr-book.org/4ed/contents
+
 https://habr.com/ru/articles/908168/
 
 ### Mamba
