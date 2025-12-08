@@ -298,8 +298,8 @@ URL: https://leetcode.com/problems/delete-node-in-a-linked-list/
   #       def __init__(self, x):
   #            self.val = x
   #            self.next = None
-
-
+```
+```python
   class Solution(object):
        def deleteNode(self, node):
             """
@@ -314,7 +314,7 @@ URL: https://leetcode.com/problems/delete-node-in-a-linked-list/
                   node.val = next_node.val
                   node.next = next_node.next
 
-
+```
 
 
                                                                                       10
@@ -336,7 +336,7 @@ URL: https://leetcode.com/problems/merge-two-sorted-lists/
 Merge Two Sorted Lists
 
 
-
+```python
   # Definition for singly-linked list.
   # class ListNode(object):
   #     def __init__(self, x):
@@ -381,7 +381,7 @@ URL: https://leetcode.com/problems/merge-two-sorted-lists/
 
 
                  return dummy.next
-
+```
 
 
 
@@ -415,7 +415,7 @@ in O(n) time and use only O(1) memory.
 
 URL: https://leetcode.com/problems/intersection-of-two-linked-lists/
 
-
+```python
   # Definition for singly-linked list.
   # class ListNode(object):
   #       def __init__(self, x):
@@ -483,7 +483,7 @@ URL: https://leetcode.com/problems/intersection-of-two-linked-lists/
                           currentA = currentA.next
                           currentB = currentB.next
 
-
+```
 
 
                                                                15
@@ -508,7 +508,7 @@ URL: https://leetcode.com/problems/linked-list-cycle-ii/
                                                                                      16
 Linked List Cycle II
 
-
+```python
 
   # Definition for singly-linked list.
   # class ListNode(object):
@@ -551,7 +551,7 @@ URL: https://leetcode.com/problems/linked-list-cycle-ii/
 
                   return slow
 
-
+```
 
 
                                                               17
@@ -574,7 +574,7 @@ URL: https://leetcode.com/problems/palindrome-linked-list/
 Palindrome Linked List
 
 
-
+```python
   # Definition for singly-linked list.
   # class ListNode(object):
   #      def __init__(self, x):
@@ -616,7 +616,7 @@ URL: https://leetcode.com/problems/palindrome-linked-list/
 
                  return True
 
-
+```
 
 
                                                              19
@@ -645,7 +645,7 @@ URL: https://leetcode.com/problems/remove-linked-list-elements/
                                                                                     21
 Remove Linked List Elements
 
-
+```python
 
   # Definition for singly-linked list.
   # class ListNode(object):
@@ -684,7 +684,7 @@ URL: https://leetcode.com/problems/remove-linked-list-elements/
 
                 return dummy.next
 
-
+```
 
 
                                                      22
@@ -708,7 +708,7 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list/
                                                                                  23
 Remove Duplicates from Sorted Linked List
 
-
+```python
 
   # Definition for singly-linked list.
   # class ListNode(object):
@@ -743,7 +743,7 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list/
                  return head
 
 
-
+```
 
                                                       24
 Remove Duplicates from Sorted Linked List II
@@ -761,7 +761,7 @@ return 2->3.
 
 URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
 
-
+```python
   # Definition for singly-linked list
   # class ListNode(object):
   #       def __init__(self, x):
@@ -814,7 +814,7 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
 
 
                     return head
-
+```
 
 
 
@@ -853,7 +853,7 @@ URL: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
                                                                                      28
 Remove Nth node from End of List
 
-
+```python
 
   # Definition for singly-linked list.
   # class ListNode(object):
@@ -891,7 +891,7 @@ URL: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
                 return dummy.next
 
 
-
+```
 
                                              29
 Trees
@@ -934,7 +934,7 @@ serialize and deserialize algorithms should be stateless.
 
 URL: https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #           def __init__(self, x):
@@ -993,7 +993,7 @@ URL: https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
            root.left = self.deserialize(data)
            root.right = self.deserialize(data)
            return root
-
+```
 
 
 
@@ -1023,7 +1023,7 @@ Note: Recursive solution is trivial, could you do it iteratively?
 
 URL: https://leetcode.com/problems/binary-tree-preorder-traversal/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #       def __init__(self, x):
@@ -1051,7 +1051,7 @@ URL: https://leetcode.com/problems/binary-tree-preorder-traversal/
                             stack.append(node.left)
                   return preorderList
 
-
+```
 
 
                                                                            33
