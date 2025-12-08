@@ -292,7 +292,7 @@ value 3, the linked list should become 1 -> 2 -> 4 after calling your function.
 
 URL: https://leetcode.com/problems/delete-node-in-a-linked-list/
 
-
+```
   # Definition for singly-linked list.
   # class ListNode(object):
   #       def __init__(self, x):
