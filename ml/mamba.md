@@ -161,6 +161,8 @@ https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffus
 
 ### Transformers
 
+https://habr.com/ru/companies/wunderfund/articles/974300/
+
 https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
 https://news.ycombinator.com/item?id=45116957
 
