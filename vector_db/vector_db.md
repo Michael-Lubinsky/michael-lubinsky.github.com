@@ -1,5 +1,7 @@
 https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
 
+https://habr.com/ru/companies/tensor/articles/970480/ Векторный поиск: как выбрать систему и не пожалеть
+
 https://habr.com/ru/articles/961088/ 
 
 https://habr.com/ru/articles/947216/
