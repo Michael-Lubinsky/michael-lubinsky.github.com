@@ -1,5 +1,7 @@
 <https://habr.com/ru/companies/ru_mts/articles/947710/>
 
+https://habr.com/ru/articles/974598/ recsys and search books
+
 <https://habr.com/ru/companies/otus/articles/950650/>
 
 <https://habr.com/ru/articles/951694/>
