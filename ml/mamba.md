@@ -6,6 +6,8 @@ https://github.com/Saivineeth147/awesome-llm-resources
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
 
+https://arxiv.org/abs/2511.18538
+
 https://github.com/harvard-edge/cs249r_book
 
 https://www.mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
