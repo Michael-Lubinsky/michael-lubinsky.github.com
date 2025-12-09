@@ -29,11 +29,9 @@ https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/mai
 
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
-https://github.com/TimefoldAI/timefold-quickstarts
 
-https://lpviz.net/
 
-## Constrain programming  MiniZinc, etc
+## Constraint programming  MiniZinc, etc
 https://cpmpy.readthedocs.io/en/latest/
 
 https://ericpony.github.io/z3py-tutorial/guide-examples.htm  Z3 theorem proover
@@ -43,6 +41,10 @@ https://realpython.com/podcasts/rpp/213/
 https://news.ycombinator.com/item?id=40867746
 
 https://developers.google.com/optimization/cp
+
+https://github.com/TimefoldAI/timefold-quickstarts
+
+https://lpviz.net/
 
 ## LeetCode
 https://algodrill.io/
