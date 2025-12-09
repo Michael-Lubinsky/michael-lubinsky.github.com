@@ -49,6 +49,8 @@ https://lpviz.net/
 ## LeetCode
 https://algodrill.io/
 
+https://algo.monster/landing
+
 https://habr.com/ru/articles/964104/ LeetCode
 
 
