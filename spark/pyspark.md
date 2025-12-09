@@ -39,6 +39,144 @@ or
 df_result = df_grouped.filter(df_grouped["cnt"] > avg_val)
 ```
 
+
+##  Avoid duplicates during insert
+
+### Implementation 1: DELETE Existing Records Before INSERT
+
+This approach first deletes any rows in the destination table that have matching `event_id` values from the staging DataFrame, then inserts the new rows. This ensures no duplicates by replacing any conflicting rows. Note that this requires the destination table to support ACID operations (e.g., a Delta Lake table).
+
+```python
+df.createOrReplaceTempView("staging")
+
+# Delete existing records with matching event_ids
+spark.sql(f"""
+    DELETE FROM {FULL_TABLE}
+    WHERE event_id IN (SELECT event_id FROM staging)
+""")
+
+# Insert the new records
+spark.sql(f"""
+    INSERT INTO {FULL_TABLE}
+    SELECT * FROM staging
+""")
+```
+
+### Implementation 2: Use SQL MERGE Command
+
+This approach uses the `MERGE` statement to perform an upsert: if a row with the same `event_id` exists, it updates (replaces) it with the new values; otherwise, it inserts the new row. This is more efficient than delete-then-insert for large datasets and also requires the destination table to support ACID operations (e.g., Delta Lake).
+
+```python
+df.createOrReplaceTempView("staging")
+
+spark.sql(f"""
+    MERGE INTO {FULL_TABLE} dest
+    USING staging src
+    ON dest.event_id = src.event_id
+    WHEN MATCHED THEN UPDATE SET *
+    WHEN NOT MATCHED THEN INSERT *
+""")
+```
+ 
+If the incoming `df` (staging DataFrame) itself contains **duplicate `event_id` values**, both previous approaches can cause issues:
+
+- **Problem**  
+- **DELETE + INSERT**: Deletes the row once, but inserts multiple duplicates → you end up with duplicates.  
+- **MERGE**: Behavior is undefined or throws an error in Delta Lake if multiple source rows match the same target row (unless you use the newer `WHEN MATCHED ... THEN UPDATE` with `MERGE` enhancements in Delta 2.0+).
+
+### Recommended robust solution (works in all cases)
+
+```python
+from pyspark.sql import functions as F
+
+# 1. Remove duplicates in staging: keep the latest record per event_id
+#    (adjust logic if you have a timestamp or ingestion order)
+deduped_df = (
+    df
+    .withColumn("row_num", F.row_number().over(
+        Window.partitionBy("event_id").orderBy(
+            F.desc("_ingestion_timestamp")  # use your actual event timestamp or metadata column
+            # Alternatives if no timestamp:
+            # F.desc("_metadata.file_modification_time")  # for file-based sources
+            # or just F.monotonically_increasing_id() as last resort
+        )
+    ))
+    .filter("row_num = 1")
+    .drop("row_num")
+)
+
+# Register clean staging view
+deduped_df.createOrReplaceTempView("staging_clean")
+
+# 2. Now safely use the most efficient and correct MERGE
+spark.sql(f"""
+    MERGE INTO {FULL_TABLE} AS target
+    USING staging_clean AS source
+    ON target.event_id = source.event_id
+    WHEN MATCHED THEN 
+        UPDATE SET *
+    WHEN NOT MATCHED THEN 
+        INSERT *
+""")
+```
+
+### Alternative versions depending on your needs
+
+#### A. If you don’t have any timestamp but want deterministic choice (e.g., keep first seen)
+```python
+deduped_df = df.dropDuplicates(["event_id"])
+```
+
+#### B. If you are on Delta Lake ≥ 2.0 and want MERGE to handle source duplicates automatically (new feature!)
+```python
+# No deduplication needed in PySpark
+df.createOrReplaceTempView("staging")
+
+spark.sql(f"""
+    MERGE INTO {FULL_TABLE} target
+    USING staging source
+    ON target.event_id = source.event_id
+    WHEN MATCHED THEN UPDATE SET *
+    WHEN NOT MATCHED THEN INSERT *
+""")
+
+# Enable the session config to make MERGE tolerant to source duplicates
+spark.conf.set("spark.databricks.delta.merge.repartitionBeforeWrite.enabled", "true")
+# This makes Delta pick one source row arbitrarily when multiple match
+```
+
+#### C. Most bullet-proof version (delete + insert) – still works even on Hive tables
+```python
+deduped_df = df.dropDuplicates(["event_id"])
+deduped_df.createOrReplaceTempView("staging_clean")
+
+spark.sql(f"""
+    DELETE FROM {FULL_TABLE}
+    WHERE event_id IN (SELECT event_id FROM staging_clean)
+""")
+
+spark.sql(f"""
+    INSERT INTO {FULL_TABLE}
+    SELECT * FROM staging_clean
+""")
+```
+
+### Summary – Recommended choice in 2025
+
+| Scenario                              | Best approach                                      |
+|---------------------------------------|-----------------------------------------------------|
+| You are on **Delta Lake** (recommended) | Deduplicate staging + MERGE (cleanest & fastest) |
+| You have a reliable event timestamp   | Use `row_number()` over `event_id` + timestamp     |
+| No timestamp, just want one row       | `dropDuplicates(["event_id"])` + MERGE             |
+| Still on Hive / non-ACID tables       | Deduplicate + DELETE + INSERT                      |
+
+Use the first full example with `row_number()` if you have any timestamp column — it’s the safest and most commonly needed pattern in production.
+
+
+
+
+
+
 ### read json
 ```python
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
