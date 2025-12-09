@@ -20,6 +20,10 @@ https://habr.com/ru/companies/bhv_publishing/articles/961570/
 
 https://habr.com/ru/companies/psb/articles/949246/
 
+### GraphQL
+
+https://habr.com/ru/articles/973654/
+
 ### Litestar
 
 <https://www.b-list.org/weblog/2025/aug/06/litestar/>
