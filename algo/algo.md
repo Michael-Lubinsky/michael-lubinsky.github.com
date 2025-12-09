@@ -14,35 +14,6 @@ https://mykel.kochenderfer.com/textbooks/
 
 https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289
 
-https://github.com/TimefoldAI/timefold-quickstarts
-
-https://lpviz.net/
-
-## Constrain programming 
-https://cpmpy.readthedocs.io/en/latest/
-
-https://ericpony.github.io/z3py-tutorial/guide-examples.htm  Z3 theorem proover
-
-https://realpython.com/podcasts/rpp/213/
-
-https://news.ycombinator.com/item?id=40867746
-
-https://developers.google.com/optimization/cp
-
-https://habr.com/ru/articles/964104/ LeetCode
-
-#### Algebraic data types
-
-<https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
-
-https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
-
-https://news.ycombinator.com/item?id=45248043
-
-<https://iacgm.com/articles/adts/>
-
-https://habr.com/ru/articles/957848/ Monads
-
 ### Books
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
@@ -58,9 +29,26 @@ https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/mai
 
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
-https://cartesian.app/
+https://github.com/TimefoldAI/timefold-quickstarts
 
-https://github.com/tayllan/awesome-algorithms
+https://lpviz.net/
+
+## Constrain programming  MiniZinc, etc
+https://cpmpy.readthedocs.io/en/latest/
+
+https://ericpony.github.io/z3py-tutorial/guide-examples.htm  Z3 theorem proover
+
+https://realpython.com/podcasts/rpp/213/
+
+https://news.ycombinator.com/item?id=40867746
+
+https://developers.google.com/optimization/cp
+
+## LeetCode
+https://algodrill.io/
+
+https://habr.com/ru/articles/964104/ LeetCode
+
 
 https://habr.com/ru/articles/879914/ interview
 
@@ -69,6 +57,25 @@ https://habr.com/ru/articles/962688/  Algo
 https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 
 <https://neetcode.io/roadmap>
+
+
+#### Algebraic data types
+
+<https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
+
+https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
+
+https://news.ycombinator.com/item?id=45248043
+
+<https://iacgm.com/articles/adts/>
+
+https://habr.com/ru/articles/957848/ Monads
+
+
+
+https://cartesian.app/
+
+https://github.com/tayllan/awesome-algorithms
 
 <https://habr.com/ru/articles/924828/>
 
@@ -112,6 +119,8 @@ https://habr.com/ru/articles/849894/ Поиск соседей в двумерн
 
 ### Hashing
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
+
+https://www.corsix.org/content/my-favourite-small-hash-table
 
 https://javarevisited.substack.com/p/consistent-hashing-why-your-distributed
 
