@@ -750,6 +750,8 @@ Which PostgreSQL HA Solution Fits Your Needs: Pgpool or Patroni?
 <https://habr.com/ru/articles/942788/>  Patroni web UI
 
 ### Features
+
+Queue in Postgres https://habr.com/ru/companies/yandex/articles/972164/
 ```
 ✅ Caching: Use UNLOGGED tables and TEXT as a JSON data type in Postgres instead of Redis.
 ✅ Message Queue: Replace Kafka with Postgres using SKIP LOCKED for simple message queue needs.
