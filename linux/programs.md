@@ -19,8 +19,8 @@ For example:
 
     $ curl -s 'https://ip-ranges.amazonaws.com/ip-ranges.json' | jq -r '[path(..)|map(if type=="number" then "[]" else tostring end)|join(".")|split(".[]")|join("[]")]|unique|map("."+.)|.[]'
 ```
-https://news.ycombinator.com/item?id=44637716  jq
-https://github.com/noperator/jqfmt
+https://news.ycombinator.com/item?id=44637716  jq  
+https://github.com/noperator/jqfmt  
 
 ### CSV toolkits
 https://github.com/medialab/xan   XAN is a command line tool to process CSV files  
