@@ -6,6 +6,8 @@
 <https://toomanydigits.online/index.html> Вычислительная математика  
 <https://www.kvant.digital/> Kvant
 
+https://www.ega-math.narod.ru/
+
 <https://github.com/valeman/Awesome_Math_Books>
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
