@@ -2,6 +2,8 @@
 
 https://habr.com/ru/articles/974598/ recsys and search books
 
+https://www.vorillaz.com/netflix-but-better
+
 <https://habr.com/ru/companies/otus/articles/950650/>
 
 <https://habr.com/ru/articles/951694/>
