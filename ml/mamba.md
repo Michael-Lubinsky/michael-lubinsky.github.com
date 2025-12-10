@@ -1,5 +1,7 @@
 https://arpitbhayani.me/blogs/qkv-matrices
 
+https://habr.com/ru/articles/975468/ Model Quantization
+
 https://www.dailydoseofds.com/
 
 https://blog.dailydoseofds.com/p/7-categorical-data-encoding-techniques-cd2
