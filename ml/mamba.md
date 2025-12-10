@@ -78,7 +78,7 @@ https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
 ### Book
 https://www.manning.com/books/deep-learning-with-python-third-edition 
 
-https://www.manning.com/books/deep-learning-with-python-third-edition 
+ 
 
 ### Book with code: Understanding Deep Learning 
 https://udlbook.github.io/udlbook/
@@ -157,6 +157,8 @@ https://habr.com/ru/articles/917664/ основополагающих стате
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
 ## PyTorch
+
+https://habr.com/ru/companies/otus/articles/975328/
 
 https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision
 
