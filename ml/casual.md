@@ -6,4 +6,8 @@ https://scott.am/
 
 https://www.linkedin.com/in/scottamueller/
 
+https://matheusfacure.github.io/python-causality-handbook/landing-page.html
+
+https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
+
 https://www.youtube.com/watch?v=eyuGTZu6bQk
