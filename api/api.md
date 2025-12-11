@@ -1,5 +1,7 @@
 https://aep.dev/
 
+https://habr.com/ru/articles/968114/ FluentAPI
+
 ### Rest API
 
 <https://habr.com/ru/articles/955574/>
