@@ -46,6 +46,11 @@ https://github.com/TimefoldAI/timefold-quickstarts
 
 https://lpviz.net/
 
+
+## Idioms
+https://programming-idioms.org/all-idioms
+
+
 ## LeetCode
 https://algodrill.io/
 
