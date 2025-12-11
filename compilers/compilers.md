@@ -1,5 +1,7 @@
 ### Compilers
 
+https://eli.thegreenplace.net/2025/revisiting-lets-build-a-compiler/
+
 https://habr.com/ru/companies/postgrespro/articles/922260/
 
 https://github.com/IUCompilerCourse/Essentials-of-Compilation
