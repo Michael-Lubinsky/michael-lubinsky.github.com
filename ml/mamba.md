@@ -328,3 +328,32 @@ The BIC score is intended to balance the fit of the model to the data with the c
 So, when choosing between models, you can use either AIC or BIC to help you find the best one.
 ```
 MLFlow https://habr.com/ru/companies/pgk/articles/904078/
+
+
+Here are 11 channels worth your time:
+🔸 Andrej Karpathy: from fundamentals to deep dives
+https://lnkd.in/gcyMKQJB
+🔸 AI Coffee Break with Letitia: bite-sized ML concepts for your coffee breaks
+https://lnkd.in/gE73wXbE
+🔸 Umar Jamil: builds ML + LLM techniques from scratch
+https://lnkd.in/gmbrMj7D
+🔸 Simon Oz: low-level ML, excellent for fundamentals
+https://lnkd.in/gNDkAm7M
+🔸 Art of Saience: break into the AI field without the hype
+https://lnkd.in/gF3ypnTP
+🔸 3blue1brown: the OG of visual explanations
+https://lnkd.in/gByiG2By
+🔸 GPU Mode: deep dives into GPU architecture + ML workloads
+https://lnkd.in/gR_tJ-f9
+🔸 AI Jason: beautifully explained AI experiments + design
+https://lnkd.in/gCkyPvUw
+🔸 Yannic Kilcher: research papers explained without losing depth
+https://lnkd.in/gACCpvhS
+🔸 Artem Kirsanov: neuroscience + ML with stunning visuals
+https://lnkd.in/gUF-_J83
+🔸 Aleksa Gordić: practical AI code walkthroughs
+https://lnkd.in/gf_TAZkK
+
+
+🔸 Bonus: 
+Master the basics here: https://lnkd.in/gTQyc_fi
