@@ -6,6 +6,8 @@ https://www.youtube.com/watch?v=C2tL1A3B3cY
 
 https://www.youtube.com/watch?v=qJZ1Ez28C-A
 
+https://saykind.github.io/teaching/
+
 https://interactivetextbooks.tudelft.nl/mqp/ Math for QM
 
 https://arxiv.org/abs/1508.06951 Math for QM
