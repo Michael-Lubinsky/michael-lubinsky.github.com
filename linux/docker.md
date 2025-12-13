@@ -61,5 +61,7 @@ docker pull grafana/grafana
 
 <https://habr.com/ru/articles/917226/>
 
+<https://habr.com/ru/companies/ruvds/articles/975114/>
+
 <https://martynassubonis.substack.com/p/optimizing-docker-images-for-python>
 
