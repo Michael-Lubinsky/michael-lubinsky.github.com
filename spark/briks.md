@@ -20,6 +20,8 @@ Catalog (top-level container)
 
 <https://blog.dataengineerthings.org/>
 
+<https://www.uber.com/blog/from-batch-to-streaming-accelerating-data-freshness-in-ubers-data-lake/>
+
 ### Databricks CLI
 ```bash
 
