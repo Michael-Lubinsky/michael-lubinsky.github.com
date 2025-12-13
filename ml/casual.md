@@ -2,6 +2,8 @@ https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness
 
 https://en.wikipedia.org/wiki/Causality
 
+https://arxiv.org/abs/1809.09337
+
 https://yanirseroussi.com/2016/02/14/why-you-should-stop-worrying-about-deep-learning-and-deepen-your-understanding-of-causality-instead/
 
 https://medium.com/@akelleh/a-technical-primer-on-causality-181db2575e41#.e0g0dq5zj
