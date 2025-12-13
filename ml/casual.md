@@ -4,6 +4,8 @@ https://gwern.net/everything
 
 Judea Pearl   “The Book of Why” 
 
+https://news.ycombinator.com/item?id=26670312
+
 <https://miguelhernan.org/whatifbook>
 
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
