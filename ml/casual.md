@@ -1,5 +1,7 @@
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
 
+Judea Pearl   “The Book of Why” 
+
 <https://miguelhernan.org/whatifbook>
 
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
