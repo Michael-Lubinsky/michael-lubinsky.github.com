@@ -1,5 +1,7 @@
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
 
+<https://miguelhernan.org/whatifbook>
+
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
 
 <https://paperswithcode.com/paper/causalml-python-package-for-causal-machine> 
