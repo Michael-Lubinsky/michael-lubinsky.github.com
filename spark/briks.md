@@ -18,6 +18,7 @@ Catalog (top-level container)
 │   └── Function (UDF)
 ```
 
+<https://blog.dataengineerthings.org/>
 
 ### Databricks CLI
 ```bash
