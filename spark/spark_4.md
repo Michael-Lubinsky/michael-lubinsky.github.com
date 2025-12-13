@@ -1,3 +1,5 @@
+https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets
+
 ## DataSource API
 
 https://github.com/allisonwang-db/awesome-python-datasources
