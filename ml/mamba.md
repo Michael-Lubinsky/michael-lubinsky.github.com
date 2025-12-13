@@ -68,6 +68,9 @@ https://habr.com/ru/companies/otus/articles/951412/ Q-learning
 
 https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse Data
 
+Free book:
+https://www.manning.com/books/grokking-ai-algorithms-second-edition
+
 ## Casual Inference
 
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
