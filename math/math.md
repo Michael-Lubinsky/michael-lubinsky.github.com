@@ -78,3 +78,7 @@ https://medium.com/puzzle-sphere/egg-dropping-interview-recursive-coding-optimiz
 <https://cain.math.gatech.edu/textbooks/onlinebooks.html>
 
 <https://no-idle.github.io/conspecta/>
+
+Complex Analysis and physical applications: 
+https://www.youtube.com/watch?v=0Won5Vs_65E
+
