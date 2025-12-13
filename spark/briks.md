@@ -20,6 +20,8 @@ Catalog (top-level container)
 
 <https://blog.dataengineerthings.org/>
 
+<https://sympathetic.ink/2025/12/11/Column-Storage-for-the-AI-era.html>
+
 <https://www.uber.com/blog/from-batch-to-streaming-accelerating-data-freshness-in-ubers-data-lake/>
 
 ### Databricks CLI
