@@ -322,3 +322,11 @@ A full list of output modes can be seen like this:
 <https://github.com/tursodatabase/libsql>
 
 <https://habr.com/ru/companies/ruvds/articles/924338/>
+
+
+### JSON
+
+https://www.dbpro.app/blog/sqlite-json-virtual-columns-indexing
+
+https://news.ycombinator.com/item?id=46243904
+
