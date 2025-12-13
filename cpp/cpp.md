@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/bercut/articles/970442/
+
 https://en.wikipedia.org/wiki/Region-based_memory_management
 
 https://habr.com/ru/articles/920790/  Supervisor on C++
