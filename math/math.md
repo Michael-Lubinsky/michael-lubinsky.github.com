@@ -4,9 +4,9 @@
 
 https://www.axler.net/DwD.pdf Linear Algebra without determinants
 
-https://link.springer.com/book/10.1007/978-981-99-2951-1
+https://link.springer.com/book/10.1007/978-981-99-2951-1 Linear Algebra with Python
 
-https://link.springer.com/book/10.1007/978-3-031-46270-2
+https://link.springer.com/book/10.1007/978-3-031-46270-2 Exploring University Mathematics with Python
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
 <https://news.ycombinator.com/item?id=46138632> Lie Groups  
