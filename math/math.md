@@ -1,3 +1,5 @@
+https://gpai.app/solver
+
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
 <https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
