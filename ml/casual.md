@@ -1,3 +1,5 @@
+https://en.wikipedia.org/wiki/Causal_model
+
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
 
 https://static1.squarespace.com/static/675db8b0dd37046447128f5f/t/691fb7706ce66332f0b44467/1763686256720/hernanrobins_WhatIf_21nov25.pdf
