@@ -1,6 +1,10 @@
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
 
+https://static1.squarespace.com/static/675db8b0dd37046447128f5f/t/691fb7706ce66332f0b44467/1763686256720/hernanrobins_WhatIf_21nov25.pdf
+
 https://en.wikipedia.org/wiki/Causality
+
+https://dl.acm.org/doi/fullHtml/10.1145/3397269
 
 https://arxiv.org/abs/1809.09337
 
@@ -63,6 +67,8 @@ https://news.ycombinator.com/item?id=24931923
 https://news.ycombinator.com/item?id=25471098
 
 <https://miguelhernan.org/whatifbook>
+
+
 
 https://matheusfacure.github.io/python-causality-handbook/landing-page.html
 
