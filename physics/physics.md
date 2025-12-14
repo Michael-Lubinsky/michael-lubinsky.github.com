@@ -45,6 +45,9 @@ https://habr.com/ru/articles/966744/
 
 https://habr.com/ru/articles/945102/
 
+Ахмедов Э.Т. - Элементы КТП для математиков - 1.
+https://www.youtube.com/watch?v=MqhnyTEaNZ8
+
 ### Geometric Algebra
 https://habr.com/ru/articles/958088/ 
 
