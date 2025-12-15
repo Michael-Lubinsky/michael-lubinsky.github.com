@@ -150,6 +150,9 @@ If you’d rather not preprocess shapefiles:
 * **Apache Sedona** has U.S. census polygon loaders and spatial join operators.
 * Commercial alternative: use APIs like Google Maps or Mapbox — but that’s *not static* and usually costly at scale.
 
+гео-пространственный Lakehouse с помощью открытого ПО и Databricks:
+https://habr.com/ru/companies/otus/articles/976752/
+
 ## H3 GEO 
 <https://h3geo.org/>
 H3 is a geospatial indexing system that partitions the world into hexagonal cells. H3 is open source under the Apache 2 license.
