@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=B8J4uefCQMc The Master Algorithm | Pedro Domingos | Talks at Google
+
 Rain leads to mud, not vice versa:
 ```  
   p(mud | rain) = 1.0
