@@ -8,29 +8,15 @@ This variable Z is a causal explanation of their dependence.
 
 What the principle is saying (intuitively)
 
-If you see a correlation between two variables, it should not be taken as fundamental. There must be a causal reason for it. That reason can be:
+If you see a correlation between two variables,
+it should not be taken as fundamental.
+There must be a causal reason for it. That reason can be:
 
-A common cause
+1. A common cause Z, such 
+Z→X and Z→Y
 
-𝑍
-→
-𝑋
-Z→X and 
-𝑍
-→
-𝑌
-Z→Y
-
-A direct causal link
-
-𝑋
-→
-𝑌
-X→Y or 
-𝑌
-→
-𝑋
-Y→X
+2. A direct causal link
+X→Y or Y→X
 
 The principle asserts that mere correlation without causal explanation is incomplete.
 
@@ -40,97 +26,38 @@ The three canonical causal explanations
      / \
     X   Y
 
-
-𝑍
 Z influences both 
-𝑋
-X and 
-𝑌
-Y
+X and Y
 
-Conditioning on 
-𝑍
-Z removes the correlation:
+Conditioning on Z removes the correlation:
 
-𝑋
-⊥
- ⁣
- ⁣
- ⁣
-⊥
-𝑌
-∣
-𝑍
 X⊥⊥Y∣Z
 
 Example:
 
-𝑍
 Z: degree of urbanization
-
-𝑋
 X: stork population
-
-𝑌
 Y: human birth rate
 
 Urbanization reduces both storks and births → correlation explained.
 
-2. Direct causation: 
-𝑋
-→
-𝑌
-X→Y
-X → Y
+2. Direct causation: X → Y
 
-
-𝑋
 X itself is the explanatory variable
-
-Conditioning on 
-𝑋
-X trivially removes dependence
-
+Conditioning on X trivially removes dependence
 Interpretation:
-
 Storks bring babies
-
 Changes in stork population directly affect birth rate
+Here, Z=X is the special case mentioned in the principle.
 
-Here, 
-𝑍
-=
-𝑋
-Z=X is the special case mentioned in the principle.
-
-3. Reverse causation: 
-𝑌
-→
-𝑋
-Y→X
-Y → X
-
-
+3. Reverse causation: Y → X
 Babies attract storks
 
-Conditioning on 
-𝑌
-Y explains the dependence
+Conditioning on Y explains the dependence
 
-Here, 
-𝑍
-=
-𝑌
-Z=Y is the explanatory variable
+Here, Z=Y is the explanatory variable
 
-Note: In your text, the sentence
-“If babies attract storks, it is X.”
-should read:
-“If babies attract storks, it is 
-𝑌
-→
-𝑋
-Y→X.”
+“If babies attract storks, it is Y→X.”
 
 Why conditioning matters
 
@@ -138,50 +65,10 @@ The key idea is conditional independence:
 
 Before conditioning:
 
-𝑃
-(
-𝑋
-,
-𝑌
-)
-≠
-𝑃
-(
-𝑋
-)
-𝑃
-(
-𝑌
-)
-P(X,Y)
-
-=P(X)P(Y)
+P(X,Y) != P(X)P(Y)
 
-After conditioning on the correct 
-𝑍
-Z:
+After conditioning on the correct Z
 
-𝑃
-(
-𝑋
-,
-𝑌
-∣
-𝑍
-)
-=
-𝑃
-(
-𝑋
-∣
-𝑍
-)
-𝑃
-(
-𝑌
-∣
-𝑍
-)
 P(X,Y∣Z)=P(X∣Z)P(Y∣Z)
 
 If no such Z exists, your causal model is incomplete.
@@ -190,52 +77,20 @@ Why this principle is foundational
 1. Separates correlation from causation
 
 Correlation alone does not tell you:
-
 which variable causes which
-
 or whether both are effects of something else
-
 The Common Cause Principle gives the search space for causal explanations.
 
 2. Basis of causal graphs (DAGs)
 
 Modern causal inference (Pearl, Rubin) relies on this idea:
-
 dependencies must be explainable by causal structure
-
 unexplained dependencies signal missing variables
 
 3. Explains Simpson’s paradox
 
 Aggregated data may show correlation:
-
-𝑋
-̸
- ⁣
-⊥
- ⁣
- ⁣
- ⁣
-⊥
-𝑌
-X
-
-⊥⊥Y
-
-But once you condition on 
-𝑍
-Z:
-
-𝑋
-⊥
- ⁣
- ⁣
- ⁣
-⊥
-𝑌
-∣
-𝑍
-X⊥⊥Y∣Z
+But once you condition on 𝑍
 
 This is exactly the Common Cause Principle in action.
 
