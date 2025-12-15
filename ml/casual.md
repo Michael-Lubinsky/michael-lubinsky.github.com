@@ -1,5 +1,7 @@
 https://en.wikipedia.org/wiki/Causal_model
 
+https://plato.stanford.edu/entries/causal-models/
+
 https://www.reddit.com/r/CausalInference/comments/1nk5mnc/asking_for_resources/
 
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
