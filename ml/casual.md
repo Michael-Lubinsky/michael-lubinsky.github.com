@@ -1,3 +1,6 @@
+Rook Cause Analysis Template
+https://www.smartsheet.com/free-root-cause-analysis-templates-complete-collection?amp
+
 ### Common Cause Principle (Reichenbach’s Principle)
 
 ```
