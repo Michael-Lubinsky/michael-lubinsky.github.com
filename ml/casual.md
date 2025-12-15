@@ -1,3 +1,271 @@
+### Common Cause Principle (Reichenbach’s Principle)
+
+```
+If two observables X and Y are statistically dependent, then there exists a variable 
+Z such that conditioning on 
+Z makes X and Y independent.
+This variable Z is a causal explanation of their dependence.
+
+What the principle is saying (intuitively)
+
+If you see a correlation between two variables, it should not be taken as fundamental. There must be a causal reason for it. That reason can be:
+
+A common cause
+
+𝑍
+→
+𝑋
+Z→X and 
+𝑍
+→
+𝑌
+Z→Y
+
+A direct causal link
+
+𝑋
+→
+𝑌
+X→Y or 
+𝑌
+→
+𝑋
+Y→X
+
+The principle asserts that mere correlation without causal explanation is incomplete.
+
+The three canonical causal explanations
+1. Common cause
+      Z
+     / \
+    X   Y
+
+
+𝑍
+Z influences both 
+𝑋
+X and 
+𝑌
+Y
+
+Conditioning on 
+𝑍
+Z removes the correlation:
+
+𝑋
+⊥
+ ⁣
+ ⁣
+ ⁣
+⊥
+𝑌
+∣
+𝑍
+X⊥⊥Y∣Z
+
+Example:
+
+𝑍
+Z: degree of urbanization
+
+𝑋
+X: stork population
+
+𝑌
+Y: human birth rate
+
+Urbanization reduces both storks and births → correlation explained.
+
+2. Direct causation: 
+𝑋
+→
+𝑌
+X→Y
+X → Y
+
+
+𝑋
+X itself is the explanatory variable
+
+Conditioning on 
+𝑋
+X trivially removes dependence
+
+Interpretation:
+
+Storks bring babies
+
+Changes in stork population directly affect birth rate
+
+Here, 
+𝑍
+=
+𝑋
+Z=X is the special case mentioned in the principle.
+
+3. Reverse causation: 
+𝑌
+→
+𝑋
+Y→X
+Y → X
+
+
+Babies attract storks
+
+Conditioning on 
+𝑌
+Y explains the dependence
+
+Here, 
+𝑍
+=
+𝑌
+Z=Y is the explanatory variable
+
+Note: In your text, the sentence
+“If babies attract storks, it is X.”
+should read:
+“If babies attract storks, it is 
+𝑌
+→
+𝑋
+Y→X.”
+
+Why conditioning matters
+
+The key idea is conditional independence:
+
+Before conditioning:
+
+𝑃
+(
+𝑋
+,
+𝑌
+)
+≠
+𝑃
+(
+𝑋
+)
+𝑃
+(
+𝑌
+)
+P(X,Y)
+
+=P(X)P(Y)
+
+After conditioning on the correct 
+𝑍
+Z:
+
+𝑃
+(
+𝑋
+,
+𝑌
+∣
+𝑍
+)
+=
+𝑃
+(
+𝑋
+∣
+𝑍
+)
+𝑃
+(
+𝑌
+∣
+𝑍
+)
+P(X,Y∣Z)=P(X∣Z)P(Y∣Z)
+
+If no such Z exists, your causal model is incomplete.
+
+Why this principle is foundational
+1. Separates correlation from causation
+
+Correlation alone does not tell you:
+
+which variable causes which
+
+or whether both are effects of something else
+
+The Common Cause Principle gives the search space for causal explanations.
+
+2. Basis of causal graphs (DAGs)
+
+Modern causal inference (Pearl, Rubin) relies on this idea:
+
+dependencies must be explainable by causal structure
+
+unexplained dependencies signal missing variables
+
+3. Explains Simpson’s paradox
+
+Aggregated data may show correlation:
+
+𝑋
+̸
+ ⁣
+⊥
+ ⁣
+ ⁣
+ ⁣
+⊥
+𝑌
+X
+
+⊥⊥Y
+
+But once you condition on 
+𝑍
+Z:
+
+𝑋
+⊥
+ ⁣
+ ⁣
+ ⁣
+⊥
+𝑌
+∣
+𝑍
+X⊥⊥Y∣Z
+
+This is exactly the Common Cause Principle in action.
+
+Important limitations
+
+The principle assumes causal sufficiency
+(that all relevant common causes can, in principle, be represented)
+
+In quantum mechanics, violations occur (Bell correlations)
+
+In practice, the true Z may be unobserved or unmeasurable
+
+Practical takeaway
+
+When you observe a dependency:Do not stop at correlation
+
+Ask:
+
+Is there a common cause?
+Is there direct causation?
+Is the causation reversed?
+
+Test whether conditioning on plausible Z removes the dependence
+
+In data engineering / telemetry terms:
+
+Correlated signals often share hidden operational causes
+
+Conditioning on time, device, user, or environment frequently breaks “mysterious” correlations
+```
 https://en.wikipedia.org/wiki/Causal_model
 
 https://plato.stanford.edu/entries/causal-models/
