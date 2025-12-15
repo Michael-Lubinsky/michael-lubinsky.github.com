@@ -30,6 +30,7 @@ https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/mai
 https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
 
 
+https://tproger.ru/problems
 
 ## Constraint programming  MiniZinc, etc
 https://cpmpy.readthedocs.io/en/latest/
