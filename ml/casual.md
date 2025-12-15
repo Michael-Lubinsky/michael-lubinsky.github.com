@@ -1,8 +1,14 @@
 https://en.wikipedia.org/wiki/Causal_model
 
+https://www.reddit.com/r/CausalInference/comments/1nk5mnc/asking_for_resources/
+
 https://www.amazon.com/dp/1633439917  Causal AI by Robert Osazuwa Ness  
 
+https://www.reddit.com/r/CausalInference/comments/1o7gqlu/timeseries_causal_modeling/
+
 https://static1.squarespace.com/static/675db8b0dd37046447128f5f/t/691fb7706ce66332f0b44467/1763686256720/hernanrobins_WhatIf_21nov25.pdf
+
+https://www.reddit.com/r/CausalInference/
 
 https://en.wikipedia.org/wiki/Causality
 
@@ -96,3 +102,36 @@ https://www.linkedin.com/in/scottamueller/
 https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
 
 https://www.youtube.com/watch?v=eyuGTZu6bQk
+
+---
+
+https://habr.com/ru/companies/megafon/articles/657747/
+
+https://habr.com/ru/companies/ru_mts/articles/485980/ uplift
+
+https://habr.com/ru/companies/vk/articles/518100/
+
+https://habr.com/ru/companies/uzum/articles/817473/
+
+https://www.youtube.com/watch?v=KeO2E3UIIwE&list=PLXBwTSS5__Kn9VmkyyhzLicuS3F34M-BG& 
+
+https://habr.com/ru/companies/ods/articles/667730/
+
+https://habr.com/ru/companies/X5Tech/articles/768008/
+
+https://habr.com/ru/articles/693532/
+
+https://habr.com/ru/companies/sberbank/articles/847382/
+
+https://habr.com/ru/companies/sberbank/articles/847406/
+
+https://habr.com/ru/articles/832466/
+
+https://habr.com/ru/companies/piter/articles/852440/
+
+https://habr.com/ru/articles/705694/
+
+https://habr.com/ru/companies/ods/articles/544208/
+
+https://habr.com/ru/articles/870874/ Causal Inference методы на практике
+
