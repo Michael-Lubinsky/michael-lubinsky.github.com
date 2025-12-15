@@ -1,3 +1,5 @@
+https://david-salazar.github.io/posts/causality/2020-08-10-causality-counterfactuals-clash-of-worlds.html
+
 https://www.youtube.com/watch?v=B8J4uefCQMc The Master Algorithm | Pedro Domingos | Talks at Google
 
 Rain leads to mud, not vice versa:
