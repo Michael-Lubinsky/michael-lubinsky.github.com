@@ -1,3 +1,8 @@
+Rain leads to mud, not vice versa:
+```  
+  p(mud | rain) = 1.0
+  p(rain | mud) = p(rain) 
+```
 Rook Cause Analysis Template
 https://www.smartsheet.com/free-root-cause-analysis-templates-complete-collection?amp
 
