@@ -6,6 +6,8 @@ https://habr.com/ru/articles/968114/ FluentAPI
 
 <https://habr.com/ru/articles/955574/>
 
+https://habr.com/ru/companies/psb/articles/976722/
+
 <https://lukasniessen.medium.com/simple-checklist-what-are-rest-apis-755b7565aa8e>
 
 <https://habr.com/ru/companies/sberbank/articles/937218/>
