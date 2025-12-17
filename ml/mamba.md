@@ -2,6 +2,10 @@ https://arpitbhayani.me/blogs/qkv-matrices
 
 https://habr.com/ru/articles/975468/ Model Quantization
 
+https://habr.com/ru/articles/976576/
+
+https://habr.com/ru/articles/972178/ Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
+
 https://www.dailydoseofds.com/
 
 https://blog.dailydoseofds.com/p/7-categorical-data-encoding-techniques-cd2
