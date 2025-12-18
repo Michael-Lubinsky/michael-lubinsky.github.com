@@ -340,27 +340,68 @@ MLFlow https://habr.com/ru/companies/pgk/articles/904078/
 Here are 11 channels worth your time:
 🔸 Andrej Karpathy: from fundamentals to deep dives
 https://lnkd.in/gcyMKQJB
+
 🔸 AI Coffee Break with Letitia: bite-sized ML concepts for your coffee breaks
 https://lnkd.in/gE73wXbE
+
 🔸 Umar Jamil: builds ML + LLM techniques from scratch
 https://lnkd.in/gmbrMj7D
+
 🔸 Simon Oz: low-level ML, excellent for fundamentals
 https://lnkd.in/gNDkAm7M
+
 🔸 Art of Saience: break into the AI field without the hype
 https://lnkd.in/gF3ypnTP
+
 🔸 3blue1brown: the OG of visual explanations
 https://lnkd.in/gByiG2By
+
 🔸 GPU Mode: deep dives into GPU architecture + ML workloads
 https://lnkd.in/gR_tJ-f9
+
 🔸 AI Jason: beautifully explained AI experiments + design
 https://lnkd.in/gCkyPvUw
+
 🔸 Yannic Kilcher: research papers explained without losing depth
 https://lnkd.in/gACCpvhS
+
 🔸 Artem Kirsanov: neuroscience + ML with stunning visuals
 https://lnkd.in/gUF-_J83
+
 🔸 Aleksa Gordić: practical AI code walkthroughs
 https://lnkd.in/gf_TAZkK
 
 
 🔸 Bonus: 
 Master the basics here: https://lnkd.in/gTQyc_fi
+
+
+s? ✅ • The new MCP standard? ✅
+
+➡️ LLM Course
+🔗https://lnkd.in/gZuAHUSj
+
+➡️ MCP Course
+🔗https://lnkd.in/gxpFMHyZ
+
+➡️ AI Agents Course
+🔗https://lnkd.in/gHVhfa_c
+
+➡️ Deep RL Course
+🔗https://lnkd.in/gsrxQHH3
+
+➡️ Robotics Course
+🔗https://lnkd.in/g6fW7t4i
+
+➡️ smol Course
+🔗https://lnkd.in/gh6EyCAW
+
+➡️ Computer Vision Course
+🔗https://lnkd.in/gBwa8X9h
+
+➡️ Audio Course
+🔗https://lnkd.in/gWy5uiwr
+
+➡️ Open-source AI Cookbook
+🔗https://lnkd.in/ghT8c_cD
+
