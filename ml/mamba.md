@@ -1,3 +1,5 @@
+https://www.coursera.org/learn/deep-learning-reinforcement-learning
+
 https://arpitbhayani.me/blogs/qkv-matrices
 
 https://habr.com/ru/articles/975468/ Model Quantization
