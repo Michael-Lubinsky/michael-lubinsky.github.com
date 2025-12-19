@@ -1,3 +1,27 @@
+для каждого клиента нужно определить дату последней транзакции и сумму трёх последних транзакций.
+
+Решение чаще всего строят через ранжирование записей и накопление значений окна:
+```sql
+WITH ranked AS (
+  SELECT
+    t.client_id,
+    t.trx_date,
+    t.amount,
+    ROW_NUMBER() OVER (PARTITION BY t.client_id ORDER BY t.trx_date DESC) AS rn,
+    SUM(t.amount) OVER (
+      PARTITION BY t.client_id
+      ORDER BY t.trx_date DESC
+      ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+    ) AS sum_last3
+  FROM transactions t
+)
+SELECT client_id,
+       MAX(CASE WHEN rn = 1 THEN trx_date END)   AS last_trx_date,
+       MAX(CASE WHEN rn = 1 THEN sum_last3 END)  AS sum_last3_trx
+FROM ranked
+GROUP BY client_id;
+```
+
 https://theanalystsedge.medium.com/10-practical-sql-interview-questions-i-failed-to-answer-during-an-interview-46878603a759
 
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
