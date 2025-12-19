@@ -6930,7 +6930,7 @@ Solution2:
 Subsets
 
 
-
+```python
  class Solution(object):
       def subsets(self, nums):
           """
@@ -6960,7 +6960,7 @@ Solution2:
                 index += 1
           return res
 
-
+```
 
 
                                                  202
@@ -6988,7 +6988,7 @@ URL: https://leetcode.com/problems/subsets-ii/
 Subsets II
 
 
-
+```python
   class Solution(object):
        def subsetsWithDup(self, nums):
              """
@@ -7018,7 +7018,7 @@ URL: https://leetcode.com/problems/subsets-ii/
                    k >>= 1
                    index += 1
              return res
-
+```
 
 
 
@@ -7067,7 +7067,7 @@ URL: https://leetcode.com/problems/self-crossing/
 Self Crossing
 
 
-
+```python
   class Solution(object):
       def isSelfCrossing(self, x):
            """
@@ -7080,17 +7080,19 @@ URL: https://leetcode.com/problems/self-crossing/
                  for i in range(3, len(x)):
                     if (x[i-3] >= x[i-1]) and (x[i-2] <= x[i]):
                         return True
-                    if (i >= 4) and (x[i-4] + x[i] >= x[i-2]) and (x
-  [i-3] == x[i-1]):
+                    if (i >= 4) and (x[i-4] + x[i] >= x[i-2]) and (x[i-3] == x[i-1]):
                         return True
-                    if (i>=5) and (x[i-5] <= x[i-3]) and (x[i-4] <=
-  x[i-2]) and (x[i-1] <= x[i-3]) and (x[i-1] >= x[i-3] - x[i-5]) a
-  nd (x[i] >= x[i-2] - x[i-4]) and (x[i] <= x[i-2]):
+                    if (i>=5) and (x[i-5] <= x[i-3])
+                              and (x[i-4] <=x[i-2])
+                              and (x[i-1] <= x[i-3])
+                              and (x[i-1] >= x[i-3] - x[i-5])
+                              and (x[i] >= x[i-2] - x[i-4])
+                              and (x[i] <= x[i-2]):
                         return True
 
 
                  return False
-
+```
 
 
 
@@ -7112,7 +7114,7 @@ Note: n and k are non-negative integers.
 
 URL: https://leetcode.com/problems/paint-fence/
 
-
+```python
   class Solution(object):
        def numWays(self, n, k):
             """
@@ -7130,7 +7132,7 @@ URL: https://leetcode.com/problems/paint-fence/
 
 
             return dp[3]
-
+```python
 
 
 
@@ -7158,7 +7160,7 @@ So you should return 1, because there is only one bulb is on.
 
 URL: https://leetcode.com/problems/bulb-switcher/
 
-
+```python
   import math
   class Solution(object):
         def bulbSwitch(self, n):
@@ -7167,7 +7169,7 @@ URL: https://leetcode.com/problems/bulb-switcher/
              :rtype: int
              """
              return int(math.sqrt(n))
-
+```
 
 
 
@@ -7225,13 +7227,12 @@ Follow up: Could you do this in-place?
 
 URL: https://leetcode.com/problems/rotate-image/
 
-
+```python
   class Solution(object):
         def rotate(self, matrix):
            """
            :type matrix: List[List[int]]
-           :rtype: void Do not return anything, modify matrix in-pl
-  ace instead.
+           :rtype: void Do not return anything, modify matrix in-place instead.
            """
            if matrix == None or matrix == []:
                  pass
@@ -7243,15 +7244,12 @@ URL: https://leetcode.com/problems/rotate-image/
                      for i in range(first, last):
                           offset = i - first
                           top = matrix[first][i]
-                          matrix[first][i] = matrix[last - offset][fir
-  st]
-                          matrix[last - offset][first] = matrix[last][
-  last - offset]
-                          matrix[last][last - offset] = matrix[i][last
-  ]
+                          matrix[first][i] = matrix[last - offset][first]
+                          matrix[last - offset][first] = matrix[last][last - offset]
+                          matrix[last][last - offset] = matrix[i][last]
                           matrix[i][last] = top
 
-
+```
 
 
                                                                      211
@@ -7272,7 +7270,7 @@ not the best solution. Could you devise a constant space solution?
 
 URL: https://leetcode.com/problems/set-matrix-zeroes/
 
-
+```python
   class Solution(object):
          def setZeroes(self, matrix):
             """
@@ -7299,7 +7297,7 @@ URL: https://leetcode.com/problems/set-matrix-zeroes/
                            if rows_with_0[i] or cols_with_0[j]:
                                 matrix[i][j] = 0
 
-
+```
 
 
                                                                                   212
@@ -7308,7 +7306,7 @@ URL: https://leetcode.com/problems/set-matrix-zeroes/
 
 Constant Space Solution:
 
-
+```python
   class Solution(object):
       def setZeroes(self, matrix):
            """
@@ -7352,7 +7350,7 @@ Constant Space Solution:
            if first_row:
                  for i in range(len(matrix[0])):
                     matrix[0][i] = 0
-
+```
 
 
 
@@ -7365,10 +7363,6 @@ Constant Space Solution:
                     214
 Search a 2D Matrix
 
-
-
-
-Search a 2D Matrix
 Write an efficient algorithm that searches for a value in an m x n matrix. This
 matrix has the following properties:
 
@@ -7385,7 +7379,7 @@ Consider the following matrix:
                                                                                       215
 Search a 2D Matrix
 
-
+```python
 
   class Solution(object):
       def searchMatrix(self, matrix, target):
@@ -7404,8 +7398,7 @@ Consider the following matrix:
                  #get the first element and the last element of the m
   atrix
                  #compare it with the target
-                 if target < matrix[0][0] or target > matrix[no_rows-
-  1][no_cols-1]:
+                 if target < matrix[0][0] or target > matrix[no_rows - 1][no_cols-1]:
                      return False
 
 
@@ -7421,7 +7414,7 @@ Consider the following matrix:
                  return False
 
 
-
+```
 
                                                                     216
 Search a 2D Matrix II
@@ -7452,7 +7445,7 @@ URL: https://leetcode.com/problems/search-a-2d-matrix-ii/
 Search a 2D Matrix II
 
 
-
+```python
   class Solution(object):
        def searchMatrix(self, matrix, target):
            """
@@ -7467,8 +7460,7 @@ URL: https://leetcode.com/problems/search-a-2d-matrix-ii/
                  no_cols = len(matrix[0])
 
 
-                 if target < matrix[0][0] or target > matrix[no_rows-
-  1][no_cols-1]:
+                 if target < matrix[0][0] or target > matrix[no_rows - 1][no_cols-1]:
                         return False
                  else:
                         r = 0
@@ -7486,7 +7478,7 @@ URL: https://leetcode.com/problems/search-a-2d-matrix-ii/
 
 
 
-
+```
                                                                     218
 Spiral Matrix
 
@@ -7503,7 +7495,7 @@ For example, Given the following matrix:
 
 URL: https://leetcode.com/problems/spiral-matrix/
 
-
+```python
   class Solution(object):
         def spiralOrder(self, matrix):
              """
@@ -7556,8 +7548,7 @@ URL: https://leetcode.com/problems/spiral-matrix/
                        m -= 1
 
 
-                   #print the first column from the remaining colum
-  ns
+                   #print the first column from the remaining columns
                    if l < n:
                        for i in range(m-1, k-1, -1):
                            spiral.append(matrix[i][l])
@@ -7567,7 +7558,7 @@ URL: https://leetcode.com/problems/spiral-matrix/
 
 
                 return spiral
-
+```
 
 
 
@@ -7587,7 +7578,7 @@ You should return the following matrix: [ [ 1, 2, 3 ], [ 8, 9, 4 ], [ 7, 6, 5 ] 
 
 URL: https://leetcode.com/problems/spiral-matrix-ii/
 
-
+```python
   class Solution(object):
         def generateMatrix(self, n):
                 """
@@ -7657,7 +7648,7 @@ URL: https://leetcode.com/problems/spiral-matrix-ii/
 
 
                    return matrix
-
+```
 
 
 
@@ -7678,7 +7669,9 @@ should support the following operations: get and set .
 
  get(key) - Get the value (will always be positive) of the key if the key exists in
 the cache, otherwise return -1.
+
  set(key, value) - Set or insert the value if the key is not already present.
+ 
 When the cache reached its capacity, it should invalidate the least recently used
 item before inserting a new item.
 
@@ -7689,7 +7682,7 @@ item before inserting a new item.
 LRU Cache
 
 
-
+```python
  class LRUCache(object):
 
 
@@ -7733,13 +7726,6 @@ item before inserting a new item.
                      self.cache[key] = value
 
 
-
+```
 
                                                                    225
-LRU Cache
-
-
-
-
-            226
-```
