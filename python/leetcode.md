@@ -988,11 +988,9 @@ URL: https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
 Trees
 
 
- # Your Codec object will be instantiated and called as such:
- # codec = Codec()
- # codec.deserialize(codec.serialize(root))
-
-
+  Your Codec object will be instantiated and called as such:  
+   codec = Codec()  
+  codec.deserialize(codec.serialize(root))
 
 
                                                                 32
@@ -1384,7 +1382,7 @@ URL: https://leetcode.com/problems/binary-tree-postorder-traversal/
 Postorder Traversal
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -1419,7 +1417,7 @@ URL: https://leetcode.com/problems/binary-tree-postorder-traversal/
                  return out_stack[::-1]
 
 
-
+```
 
                                                        47
 Maximum Depth of Binary Tree
@@ -1435,7 +1433,7 @@ node down to the farthest leaf node.
 
 URL: https://leetcode.com/problems/maximum-depth-of-binary-tree/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -1453,10 +1451,9 @@ URL: https://leetcode.com/problems/maximum-depth-of-binary-tree/
            if root == None:
                  return 0
            else:
-                 return max(self.maxDepth(root.left), self.maxDepth(r
-  oot.right)) + 1
+                 return max(self.maxDepth(root.left), self.maxDepth(root.right)) + 1
 
-
+```
 
 
                                                                             48
@@ -1473,9 +1470,12 @@ Invert a binary tree.
 
 
 
-/ \ 2 7 / \ / \ 1 3 6 9 to 4 / \ 7 2 / \ / \ 9 6 3 1 Trivia: This problem was inspired by this
-original tweet by Max Howell: Google: 90% of our engineers use the software you
-wrote (Homebrew), but you can’t invert a binary tree on a whiteboard so fuck off.
+/ \ 2 7 / \ / \ 1 3 6 9 to 4 / \ 7 2 / \ / \ 9 6 3 1 Trivia: 
+
+This problem was inspired by this
+original tweet by Max Howell:  
+Google: 90% of our engineers use the software youwrote (Homebrew),  
+but you can’t invert a binary tree on a whiteboard so fuck off.  
 URL: https://leetcode.com/problems/invert-binary-tree/
 
 
@@ -1484,7 +1484,7 @@ URL: https://leetcode.com/problems/invert-binary-tree/
                                                                                            49
 Invert Binary Tree
 
-
+```python
 
   # Definition for a binary tree node.
   # class TreeNode(object):
@@ -1507,8 +1507,7 @@ URL: https://leetcode.com/problems/invert-binary-tree/
                  stack.append(root)
                  while stack != []:
                      curr_node = stack.pop()
-                     if curr_node.left != None or curr_node.right !=
-  None:
+                     if curr_node.left != None or curr_node.right != None:
                         temp = curr_node.left
                         curr_node.left = curr_node.right
                         curr_node.right = temp
@@ -1518,7 +1517,7 @@ URL: https://leetcode.com/problems/invert-binary-tree/
                         stack.append(curr_node.left)
                  return root
 
-
+```
 
 
                                                                        50
@@ -1535,7 +1534,7 @@ nodes have the same value.
 
 URL: https://leetcode.com/problems/same-tree/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #      def __init__(self, x):
@@ -1563,7 +1562,7 @@ URL: https://leetcode.com/problems/same-tree/
                            return False
 
 
-
+```
 
                                                                                    51
 Lowest Common Ancestor of a Binary Search Tree
@@ -1588,13 +1587,15 @@ as descendants (where we allow a node to be a descendant of itself).”
 
 
 / \ / \ 0 _4 7 9 / \ 3 5 For example, the lowest common ancestor (LCA) of nodes 2
-and 8 is 6. Another example is LCA of nodes 2 and 4 is 2, since a node can be a
+and 8 is 6. 
+
+Another example is LCA of nodes 2 and 4 is 2, since a node can be a
 descendant of itself according to the LCA definition.
 
 URL: https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-
 tree/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #         def __init__(self, x):
@@ -1630,20 +1631,15 @@ tree/
           else:
                 self.inorder_traversal(root)
                 self.postorder_traversal(root)
-                #get the positions of node1 and node2 in the inorder
-   traversal of the tree
+                #get the positions of node1 and node2 in the inorder traversal of the tree
                 index_node1 = self.inorder_list.index(p.val)
                 index_node2 = self.inorder_list.index(q.val)
 
 
                 if index_node1 < index_node2:
-                   between_elems = self.inorder_list[index_node1 :
-  index_node2 + 1]
+                   between_elems = self.inorder_list[index_node1 : index_node2 + 1]
                 else:
-                   between_elems = self.inorder_list[index_node2 :
-  index_node1 + 1]
-
-
+                   between_elems = self.inorder_list[index_node2 : index_node1 + 1]
 
                 lca_elem = self.find_elem_max_index(between_elems)
 
@@ -1682,7 +1678,7 @@ tree/
                self.postorder_traversal(node.right)
                self.postorder_list.append(node.val)
 
-
+```
 
 
                                                       54
@@ -1707,7 +1703,8 @@ as descendants (where we allow a node to be a descendant of itself).”
 
 
 / \ / \ 6 _2 0 8 / \ 7 4 For example, the lowest common ancestor (LCA) of nodes 5
-and 1 is 3. Another example is LCA of nodes 5 and 4 is 5, since a node can be a
+and 1 is 3.   
+Another example is LCA of nodes 5 and 4 is 5, since a node can be a
 descendant of itself according to the LCA definition.
 
 URL: https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
@@ -1719,7 +1716,7 @@ URL: https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
 Lowest Common Ancestor in a Binary Tree
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #     def __init__(self, x):
@@ -1749,17 +1746,14 @@ URL: https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/
           left = self.lowestCommonAncestor(root.left, p, q)
           right = self.lowestCommonAncestor(root.right, p, q)
 
-
           if left != None and right != None:
                 return root
-
 
           if left == None:
                 return right
           else:
                 return left
-
-
+```
 
 
                                                                 56
@@ -1785,7 +1779,7 @@ URL: https://leetcode.com/problems/unique-binary-search-trees/
 Unique Binary Search Trees
 
 
-
+```python
     class Solution(object):
 
 
@@ -1801,27 +1795,22 @@ URL: https://leetcode.com/problems/unique-binary-search-trees/
 
       def numUniqueBST(self, n, solutions):
 
-
            if n < 0:
                  return 0
-
 
            if n == 0 or n == 1:
                  return 1
 
-
            possibilities = 0
-
 
            for i in range(0, n):
                  if solutions[i] == -1:
                     solutions[i] = self.numUniqueBST(i, solutions)
                  if solutions[n-1-i] == -1:
-                    solutions[n-1-i] = self.numUniqueBST(n-1-i, solu
-  tions)
+                    solutions[n-1-i] = self.numUniqueBST(n-1-i, solutions)
                  possibilities += solutions[i]*solutions[n-1-i]
            return possibilities
-
+```
 
 
 
@@ -1849,7 +1838,7 @@ URL: https://leetcode.com/problems/unique-binary-search-trees-ii/
 Unique Binary Search Trees II
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -1890,7 +1879,7 @@ URL: https://leetcode.com/problems/unique-binary-search-trees-ii/
 
 
            return results
-
+```
 
 
 
@@ -1915,7 +1904,7 @@ For example: Given the below binary tree and sum = 22, 5 / \ 4 8 / / \ 11 13 4 /
 
 URL: https://leetcode.com/problems/path-sum/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -1972,7 +1961,7 @@ URL: https://leetcode.com/problems/path-sum/
 
 
            return False
-
+```
 
 
 
