@@ -237,7 +237,11 @@ https://scott.am/
 https://www.linkedin.com/in/scottamueller/
 
 
+ https://benjaminmanning.io/files/rs.pdf
 
+https://arxiv.org/abs/2405.13100
+https://github.com/kairong-han/causal_agent
+https://openreview.net/pdf?id=pAoqRlTBtY
 
 
 https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
@@ -276,6 +280,12 @@ https://habr.com/ru/companies/ods/articles/544208/
 
 https://habr.com/ru/articles/870874/ Causal Inference методы на практике
 
+
+https://arxiv.org/abs/2405.13100 
+https://github.com/kairong-han/causal_agent  
+https://openreview.net/pdf?id=pAoqRlTBtY  
+https://dl.acm.org/doi/fullHtml/10.1145/3397269  
+https://imai.fas.harvard.edu/talk/files/AAAI19.pdf  
 
 ## AI Agents
 
