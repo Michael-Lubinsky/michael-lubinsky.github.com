@@ -21,6 +21,9 @@ https://www.ega-math.narod.ru/
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
+Matrix
+https://habr.com/ru/articles/949084/
+
 ###  Lebegue integration
 
 https://www.youtube.com/watch?v=y7rTbl__fp0
