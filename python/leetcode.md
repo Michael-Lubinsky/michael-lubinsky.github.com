@@ -791,17 +791,11 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
                      list_values = []
                      current = head
                      while current != None:
-
-
-                                                                                    25
-Remove Duplicates from Sorted Linked List II
-
-
-                    if dup_dict[current.val] > 1:
+                      if dup_dict[current.val] > 1:
                          pass
-                    else:
+                      else:
                          list_values.append(current.val)
-                    current = current.next
+                      current = current.next
                 if list_values == []:
                     return None
                 else:
@@ -822,9 +816,6 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/
 Swap Nodes in Pairs
 
 
-
-
-Swap Nodes in Pairs
 
 
 
@@ -918,15 +909,11 @@ For example, you may serialize the following tree
 
 
 
-as
+as "[1,2,3,null,null,4,5]"
 
- "[1,2,3,null,null,4,5]"
+ just the same as how LeetCode OJ serializes a binary tree.
 
-, just the same as
-
-how LeetCode OJ serializes a binary tree
-
-. You do not necessarily need to follow this format, so please be creative and
+You do not necessarily need to follow this format, so please be creative and
 come up with different approaches yourself.
 
 Note:Do not use class member/global/static variables to store states. Your
@@ -1084,7 +1071,7 @@ URL: https://leetcode.com/problems/binary-search-tree-iterator/
 BST Iterator
 
 
-
+```python
   # Definition for a     binary tree node
   # class TreeNode:
   #      def __init__(self, x):
@@ -1124,7 +1111,7 @@ URL: https://leetcode.com/problems/binary-search-tree-iterator/
   # Your BSTIterator will be called like this:
   # i, v = BSTIterator(root), []
   # while i.hasNext(): v.append(i.next())
-
+```
 
 
 
@@ -1143,7 +1130,7 @@ Note: Recursive solution is trivial, could you do it iteratively?
 
 URL: https://leetcode.com/problems/binary-tree-inorder-traversal/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #       def __init__(self, x):
@@ -1172,7 +1159,7 @@ URL: https://leetcode.com/problems/binary-tree-inorder-traversal/
                             node = node.right
                   return result
 
-
+```
 
 
                                                                           37
@@ -1195,7 +1182,7 @@ Note: Bonus points if you could solve it both recursively and iteratively.
 
 URL: https://leetcode.com/problems/symmetric-tree/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #        def __init__(self, x):
@@ -1227,7 +1214,7 @@ URL: https://leetcode.com/problems/symmetric-tree/
   d self.isMirror(root1.right, root2.left)
                   else:
                       return False
-
+```
 
 
                                                                                     39
@@ -1257,7 +1244,7 @@ URL: https://leetcode.com/problems/balanced-binary-tree/
 Balanced Binary Tree
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #     def __init__(self, x):
@@ -1301,7 +1288,7 @@ URL: https://leetcode.com/problems/balanced-binary-tree/
                return True
 
 
-
+```
 
                                                         42
 Closest BST Value
@@ -1324,7 +1311,7 @@ URL: https://leetcode.com/problems/closest-binary-search-tree-value/
                                                                                  43
 Closest BST Value
 
-
+```python
 
   # Definition for a binary tree node.
   # class TreeNode(object):
@@ -1366,7 +1353,7 @@ URL: https://leetcode.com/problems/closest-binary-search-tree-value/
                               root = None
           return closestVal
 
-
+```
 
 
                                                        44
