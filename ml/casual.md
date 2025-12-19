@@ -276,3 +276,31 @@ https://habr.com/ru/companies/ods/articles/544208/
 
 https://habr.com/ru/articles/870874/ Causal Inference методы на практике
 
+
+## AI Agents
+
+https://www.reddit.com/r/AI_Agents/comments/1il8b1i/my_guide_on_what_tools_to_use_to_build_ai_agents/
+
+https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf
+
+n8n
+
+https://medium.com/@neriasebastien/learning-how-to-build-ai-agents-7349f3821c3d
+
+
+https://learn.microsoft.com/en-us/shows/ai-agents-for-beginners/
+
+
+Simulating Human Behavior with AI Agents
+
+https://hai.stanford.edu/policy/simulating-human-behavior-with-ai-agents
+
+OASIS: Open Agent Social Interaction Simulations with One Million Agents.
+
+https://github.com/camel-ai/oasis
+
+AI Agents as Humans // Social experiments simulations
+
+https://evoailabs.medium.com/ai-agents-as-humans-social-experiments-simulations-5140553533cd
+
+ 
