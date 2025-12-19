@@ -1,5 +1,8 @@
 # Postgres performance
 https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l&t=3723s indexes ru
+
+https://habr.com/ru/companies/ppr/articles/978100/
+
 <https://pg-hint-plan.readthedocs.io/en/latest/>
 
 <https://byteofdev.com/posts/tuning-postgres-intro/>
