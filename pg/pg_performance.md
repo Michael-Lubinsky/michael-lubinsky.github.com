@@ -1,4 +1,7 @@
-# Postgres performance
+## Self hosting Postgres
+https://news.ycombinator.com/item?id=46336947
+
+## Postgres performance
 https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l&t=3723s indexes ru
 
 https://habr.com/ru/companies/ppr/articles/978100/
