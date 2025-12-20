@@ -20,6 +20,10 @@ Catalog (top-level container)
 
 <https://blog.dataengineerthings.org/>
 
+https://www.waitingforcode.com/  Bartosz Konieczny
+
+https://buf.build/resources/data-engineering-design-patterns
+
 <https://sympathetic.ink/2025/12/11/Column-Storage-for-the-AI-era.html>
 
 <https://www.uber.com/blog/from-batch-to-streaming-accelerating-data-freshness-in-ubers-data-lake/>
