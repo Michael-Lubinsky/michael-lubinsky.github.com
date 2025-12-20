@@ -1,3 +1,6 @@
+https://machinelearningmastery.com/top-5-vector-databases-for-high-performance-llm-applications/
+
+
 https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
 
 https://habr.com/ru/companies/tensor/articles/970480/ Векторный поиск: как выбрать систему и не пожалеть
