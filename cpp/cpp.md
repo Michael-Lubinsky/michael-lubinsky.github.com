@@ -29,7 +29,10 @@ https://www.reddit.com/r/cpp/comments/1ijwb7d/reignite_my_love_for_c/
 https://www.reddit.com/r/cpp/comments/1idj7q5/what_will_be_some_really_good_and_impressive_c/
 https://www.reddit.com/r/cpp/comments/1iddk3v/c_watch_me_build_this_videos/
 https://www.reddit.com/r/cpp/comments/1ibxuyn/how_do_you_decide_when_to_use_smart_pointers_vs/
-https://github.com/hosseinmoein/DataFrame
+## Dataframe library
+https://github.com/hosseinmoein/DataFrame  
+https://hosseinmoein.github.io/DataFrame/docs/HTML/DataFrame.html#1
+
 https://www.reddit.com/r/cpp/comments/1i8a5lm/mustknow_librariesframeworkstechnologies_for_c/
 https://www.reddit.com/r/cpp/comments/1i73ky9/whats_your_favorite_feature_introduced_in_c20_or/
 https://www.reddit.com/r/cpp/comments/1hwr6bo/learning_c_efficiently_in_2025/
