@@ -1,3 +1,5 @@
+https://abseil.io/fast/hints.html
+
 https://github.com/dendibakh/perf-book
 
 https://www.youtube.com/watch?v=-HNpim5x-IE How CPU works
