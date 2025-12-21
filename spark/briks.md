@@ -1002,6 +1002,10 @@ df_postgres = spark.read.format("jdbc") \
 
 <https://medium.com/towards-data-engineering/real-world-retail-data-pipeline-using-databricks-declarative-pipelines-8b80ea7bc34c>
 
+
+Databricks X PySpark INTERVIEW QUESTIONS (2026 Guide) | PySpark Real-Time Scenarios
+https://www.youtube.com/watch?v=__9tqYjEJhE
+
 ### Apache Iceberg
 
 <https://www.youtube.com/watch?v=XluBSLT60h8&list=PLGVZCDnMOq0qi19dNwAO6KxWmMqXppGpz&index=47&pp=iAQB>
