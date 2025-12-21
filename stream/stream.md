@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=__9tqYjEJhE
+
 https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4
 
 https://medium.com/@gilles.philippart/build-a-streaming-data-lakehouse-with-apache-flink-kafka-iceberg-and-polaris-473c47e04525
