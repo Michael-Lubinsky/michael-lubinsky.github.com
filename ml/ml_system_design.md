@@ -4,6 +4,8 @@ https://metaflow.org/
 
 https://mlip-cmu.github.io/book/
 
+https://github.com/EthicalML/awesome-production-machine-learning/
+
 https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md   
 
 https://habr.com/ru/articles/920030/
