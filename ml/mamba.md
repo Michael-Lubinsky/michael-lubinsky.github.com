@@ -197,6 +197,9 @@ https://jalammar.github.io/illustrated-transformer/
 https://habr.com/ru/companies/wunderfund/articles/974300/
 
 https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
+
+https://news.ycombinator.com/item?id=35990118
+
 https://news.ycombinator.com/item?id=45116957
 
 https://nlp.seas.harvard.edu/annotated-transformer/
