@@ -719,7 +719,9 @@ CREATE TABLE products (
 
 <https://pgtune.leopard.in.ua/>
 
-###  UUID7 as primary key
+### UUID4 or UUID7 as primary key
+
+https://habr.com/ru/companies/otus/articles/979212/
 
 <https://medium.com/@jamauriceholt.com/your-database-is-slow-because-youre-using-uuids-and-how-i-made-it-500x-faster-e57270d9b294>
 
