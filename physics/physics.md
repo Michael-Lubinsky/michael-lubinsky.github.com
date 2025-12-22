@@ -2,9 +2,15 @@
 
 http://lightcone.ru/
 
+Принцип наименьшего действия [Veritasium]:
 https://www.youtube.com/watch?v=C2tL1A3B3cY
 
+
+Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 https://www.youtube.com/watch?v=qJZ1Ez28C-A
+
+100 лет (и задач по) квантовой механике:
+https://www.youtube.com/playlist?list=PLTLLDTOgMz4WzAHQM7iDzWuae-Y2qpWZi
 
 https://saykind.github.io/teaching/
 
