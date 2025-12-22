@@ -188,6 +188,12 @@ https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffus
 
 ### Transformers
 
+https://poloclub.github.io/transformer-explainer/
+
+https://www.youtube.com/watch?v=S27pHKBEp30
+
+https://jalammar.github.io/illustrated-transformer/
+
 https://habr.com/ru/companies/wunderfund/articles/974300/
 
 https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
