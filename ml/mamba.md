@@ -2,6 +2,8 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
+https://mlsysbook.ai/tinytorch/intro.html
+
 https://arpitbhayani.me/blogs/qkv-matrices
 
 https://habr.com/ru/articles/975468/ Model Quantization
