@@ -6,6 +6,9 @@ https://gpai.app/solver
 
 https://www.axler.net/DwD.pdf Linear Algebra without determinants
 
+Суть линейной алгебры:
+https://www.youtube.com/playlist?list=PL8YZyma552VfeWdaBSz5zj195mPwaDnnk
+
 https://link.springer.com/book/10.1007/978-981-99-2951-1 Linear Algebra with Python
 
 https://link.springer.com/book/10.1007/978-3-031-46270-2 Exploring University Mathematics with Python
