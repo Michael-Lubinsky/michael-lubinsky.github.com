@@ -2,6 +2,9 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
+ применение теории информации в машинном обучении
+https://habr.com/ru/companies/wunderfund/articles/978786/
+
 https://mlsysbook.ai/tinytorch/intro.html
 
 https://arpitbhayani.me/blogs/qkv-matrices
