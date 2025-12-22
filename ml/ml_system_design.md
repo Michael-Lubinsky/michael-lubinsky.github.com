@@ -1,5 +1,7 @@
 ## ML System Design
 
+https://habr.com/ru/companies/tochka/articles/976892/
+
 https://metaflow.org/
 
 https://mlip-cmu.github.io/book/
