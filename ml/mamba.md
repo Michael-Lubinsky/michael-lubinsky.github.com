@@ -71,6 +71,8 @@ https://ma-lab-berkeley.github.io/deep-representation-learning-book/
 
 https://www.understandingai.org/p/reinforcement-learning-explained
 
+https://habr.com/ru/articles/979394/
+
 https://habr.com/ru/articles/956890/
 
 https://www.youtube.com/watch?v=q9972BRoXzQ
