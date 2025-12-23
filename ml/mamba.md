@@ -192,6 +192,8 @@ https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffus
 
 https://poloclub.github.io/transformer-explainer/
 
+https://pub.towardsai.net/the-transformer-architecture-a1caa330ddc6
+
 https://www.youtube.com/watch?v=S27pHKBEp30
 
 https://jalammar.github.io/illustrated-transformer/
