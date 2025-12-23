@@ -6,7 +6,46 @@ https://habr.com/ru/companies/yandex_praktikum/articles/960812/
 
 https://habr.com/ru/articles/965170/ 
 
-### None
+### Sorting dictionary
+Given: python dictionary d where key is the word, and value is tuple(frequency, language)
+
+Sort by language (ascending) and frequency (descending)
+```python
+sorted_items = sorted(
+    d.items(),
+    key=lambda item: (item[1][1], -item[1][0])
+)
+```
+Explanation:
+
+Using reverse=True reverses both fields.
+```
+item[1][1] → language (ascending)
+
+-item[1][0] → frequency (descending)
+
+sorted() returns list()
+```
+To convert it to dict:
+sorted_dict = dict(sorted_items)
+
+To get language ↓ and frequency ↑, invert only the language:
+```python
+sorted_items = sorted(
+    d.items(),
+    key=lambda item: (-ord(item[1][1][0]), item[1][0])
+)
+# But that only works for single-character language codes and is not general.
+ 
+# Use two-pass stable sorting (recommended):
+# 1) frequency ascending
+tmp = sorted(d.items(), key=lambda item: item[1][0])
+
+# 2) language descending
+sorted_items = sorted(tmp, key=lambda item: item[1][1], reverse=True)
+```
+
+### None vs False
 ```python
 if x is None:
 ```
