@@ -4,6 +4,8 @@
 
 <https://blog.stackademic.com/the-real-difference-between-git-fetch-git-pull-and-git-pull-rebase-991514cb5bd6>
 
+<https://habr.com/ru/companies/ruvds/articles/978320/>
+
 <https://dangitgit.com/>
 
 ```git
