@@ -3,6 +3,7 @@ https://python.plainenglish.io/8-python-visualization-tricks-that-make-data-pop-
 
 https://altair-viz.github.io/index.html
 
+https://vizro.readthedocs.io/en/stable/
 
 ### detroit is a Python implementation of d3js.
 https://detroit.readthedocs.io/en/latest/
