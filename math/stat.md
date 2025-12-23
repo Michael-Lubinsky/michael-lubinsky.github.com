@@ -4,6 +4,8 @@ High-Dimensional Probability. Roman Vershinin
 Statistical process control in python  
 <https://timothyfraser.com/sigma/statistical-process-control-in-python.html>
 
+https://blog.keithmcnulty.org/
+
 ## How to test whether two variables have a monotonic relationship 
 meaning they tend to increase or decrease together, 
 without necessarily being linearly related — 
