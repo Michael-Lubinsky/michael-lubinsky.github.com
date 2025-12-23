@@ -1,6 +1,6 @@
 для каждого клиента нужно определить дату последней транзакции и сумму трёх последних транзакций.
 
-Решение чаще всего строят через ранжирование записей и накопление значений окна:
+Решение через ранжирование записей и накопление значений окна:
 ```sql
 WITH ranked AS (
   SELECT
@@ -23,6 +23,8 @@ GROUP BY client_id;
 ```
 
 https://theanalystsedge.medium.com/10-practical-sql-interview-questions-i-failed-to-answer-during-an-interview-46878603a759
+
+https://medium.com/@Rohan_Dutt/10-hard-time-series-problems-you-can-surprisingly-solve-in-sql-6707911f48af
 
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
 https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17  
