@@ -7,7 +7,7 @@ https://habr.com/ru/articles/967152/
 ### regex
 https://habr.com/ru/articles/972746/
 
-### with
+### with (__enter__ __exit__)
 https://habr.com/ru/articles/964502/ 
 
 ### Transpose Matrix 
@@ -479,3 +479,4 @@ while True:
         print(f"New files: {new_files}")
     prev_files = current_files
 ```
+<https://github.com/peterlamar/python-cp-cheatsheet>
