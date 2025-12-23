@@ -26,6 +26,10 @@ https://theanalystsedge.medium.com/10-practical-sql-interview-questions-i-failed
 
 https://medium.com/@Rohan_Dutt/10-hard-time-series-problems-you-can-surprisingly-solve-in-sql-6707911f48af
 
+
+https://medium.com/@Rohan_Dutt/10-advanced-time-series-transformations-in-sql-youve-probably-never-used-33c1322756d5
+
+
 https://medium.com/towards-data-engineering/are-you-a-sql-expert-try-solving-these-problems-48c1c809f1b9  
 https://towardsaws.com/amazon-sql-hard-level-question-solution-in-detail-e9f3a7d1bd17  
 https://medium.com/@bigtechinterviews/5-real-amazon-sql-questions-answers-d1733a2a2c4c  
