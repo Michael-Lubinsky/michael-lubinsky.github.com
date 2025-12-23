@@ -2,6 +2,8 @@
 
 <https://jvns.ca/blog/2024/02/01/dealing-with-diverged-git-branches/>
 
+<https://blog.stackademic.com/the-real-difference-between-git-fetch-git-pull-and-git-pull-rebase-991514cb5bd6>
+
 <https://dangitgit.com/>
 
 ```git
