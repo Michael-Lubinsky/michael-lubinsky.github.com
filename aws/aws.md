@@ -474,6 +474,7 @@ based on core features, performance, pricing, and use cases:
 
 ### AWS Links
 
+https://blog.dataengineerthings.org/building-an-end-to-end-data-pipeline-on-aws-with-lambda-s3-glue-redshift-and-step-functions-7dec6d794c0a
 
 <https://github.com/lusingander/stu> S3 explorer
 
