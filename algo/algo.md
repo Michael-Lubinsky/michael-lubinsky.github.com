@@ -14,6 +14,8 @@ https://mykel.kochenderfer.com/textbooks/
 
 https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289
 
+https://codepointer.substack.com/p/docling-leetcode-in-production-union 
+
 ### Books
 https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
 
