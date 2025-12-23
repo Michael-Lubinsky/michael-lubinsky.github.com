@@ -2,6 +2,8 @@
 https://406.ch/writing/my-favorite-django-packages/  
 https://pybit.es/articles/django-plugin-recommendations-by-antonio-mele-top-10-picks-for-web-development/
 
+https://vizro.readthedocs.io/en/stable/
+
 ### Where to host python WebApp
 https://www.reddit.com/r/Python/comments/1llwhzr/where_are_people_hosting_their_python_web_apps/
 
