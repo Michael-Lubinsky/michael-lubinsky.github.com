@@ -410,6 +410,8 @@ WHERE t2.id IS NULL;
 ```
 ## Window functions
 
+https://medium.com/@Rohan_Dutt/10-hard-window-join-problems-in-sql-and-how-to-solve-them-f94d1f27b573
+
 ### Running total and avg
 
 
