@@ -6,6 +6,10 @@ https://en.wikipedia.org/wiki/Anatol_Rapoport
 
 https://en.wikipedia.org/wiki/Tit_for_tat
 
+## What makes you senior?
+
+https://news.ycombinator.com/item?id=46327692
+
 <https://idiallo.com/blog/how-to-lead-in-a-room-full-of-experts>
 
 <https://news.ycombinator.com/item?id=45359604>
