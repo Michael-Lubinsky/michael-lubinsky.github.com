@@ -6,6 +6,22 @@ https://plato.stanford.edu/entries/causal-models/
 
 https://david-salazar.github.io/posts/causality/2020-08-10-causality-counterfactuals-clash-of-worlds.html
 
+
+```
+The Rubin Causal Model (RCM) and Judea Pearl's Structural Causal Models (SCMs) are two major frameworks for causal inference, differing mainly in emphasis:
+
+RCM (Potential Outcomes) focuses on what would happen (counterfactuals) to individuals under different treatments
+ (e.g., the same person getting drug A vs. drug B),
+ideal for experiments and defining causal effects via interventions (like do(X=x)),
+
+whereas SCMs (Graphs/DAGs) use directed acyclic graphs to model relationships between variables, visualizing assumptions and allowing for complex causal structures,
+ better at identifying causes for non-manipulable variables and handling collider bias.
+While mathematically linked and sometimes equivalent for specific problems, RCM is data-centric (experiments),
+and SCMs are model-centric (graphs/mechanisms), leading to different recommendations (e.g., what to control for). 
+```
+
+
+
 https://opensource.salesforce.com/causalai/latest/index.html
 
 https://www.youtube.com/watch?v=B8J4uefCQMc The Master Algorithm | Pedro Domingos | Talks at Google
