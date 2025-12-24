@@ -1,3 +1,12 @@
+## Reverse geo-coding
+
+It converts latitude–longitude coordinates into the correct administrative region (country, state, district) without using external APIs:  
+https://github.com/SOORAJTS2001/gazetteer    
+
+https://gazetteer.readthedocs.io/en/stable  
+ 
+https://www.reddit.com/r/Python/comments/1pr3bih/the_offline_geocoder_we_all_wanted/
+
 # Here's how to implement ZIP code detection in Databricks using static data files:
 
 <https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html>
