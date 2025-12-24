@@ -1,3 +1,5 @@
+https://codecut.ai/pyspark-4-0-whats-new/
+
 https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets
 
 ## DataSource API
