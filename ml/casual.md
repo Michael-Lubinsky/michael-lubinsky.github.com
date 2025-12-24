@@ -4,6 +4,8 @@ https://www.youtube.com/watch?v=LrmrH26EhSo
 
 https://plato.stanford.edu/entries/causal-models/
 
+https://www.coursera.org/learn/crash-course-in-causality
+
 https://david-salazar.github.io/posts/causality/2020-08-10-causality-counterfactuals-clash-of-worlds.html
 
 https://philsci-archive.pitt.edu/19773/1/Markus_Commentary_Revisions_Unblinded.pdf
