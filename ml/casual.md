@@ -1,3 +1,9 @@
+https://en.wikipedia.org/wiki/Rubin_causal_model
+
+https://www.youtube.com/watch?v=LrmrH26EhSo
+
+https://plato.stanford.edu/entries/causal-models/
+
 https://david-salazar.github.io/posts/causality/2020-08-10-causality-counterfactuals-clash-of-worlds.html
 
 https://opensource.salesforce.com/causalai/latest/index.html
