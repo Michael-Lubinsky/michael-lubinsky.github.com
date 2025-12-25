@@ -1,3 +1,5 @@
+https://causalml-book.org/
+
 https://en.wikipedia.org/wiki/Rubin_causal_model
 
 https://www.youtube.com/watch?v=LrmrH26EhSo
