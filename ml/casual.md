@@ -1,3 +1,9 @@
+Casual dependency between x and y:
+if we change x then y is changing.
+if we change y they x is not changing
+
+https://www.inference.vc/untitled/
+
 https://www.reddit.com/r/CausalInference/comments/1nk5mnc/asking_for_resources/
 
 https://www.reddit.com/r/CausalInference/
