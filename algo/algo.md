@@ -4,6 +4,8 @@ https://ru.algorithmica.org/
 
 https://cleveralgorithms.com/
 
+https://arxiv.org/pdf/2301.00754 Algos for Massive Data
+
 https://cs.gmu.edu/~sean/book/metaheuristics/
 
 https://algorithmsbook.com/optimization/files/optimization.pdf
