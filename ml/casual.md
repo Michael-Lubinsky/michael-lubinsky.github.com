@@ -1,6 +1,9 @@
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
+Intervention: What if I do X?  
+Counterfactuals: What if I had acted differently?  
+
 https://changliu00.github.io/static/causality-basics.pdf
 
 https://towardsdatascience.com/causality-an-introduction-f8a3f6ac4c4a/
