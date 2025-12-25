@@ -1,5 +1,7 @@
 https://causalml-book.org/
 
+https://mitpress.mit.edu/9780262037310/elements-of-causal-inference/
+
 https://en.wikipedia.org/wiki/Rubin_causal_model
 
 https://www.youtube.com/watch?v=LrmrH26EhSo
