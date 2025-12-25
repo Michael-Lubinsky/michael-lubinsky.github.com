@@ -1,5 +1,7 @@
 <https://habr.com/ru/companies/ru_mts/articles/947710/>
 
+<https://habr.com/ru/companies/odnoklassniki/articles/532388/>
+
 https://habr.com/ru/articles/974598/ recsys and search books
 
 https://www.vorillaz.com/netflix-but-better
