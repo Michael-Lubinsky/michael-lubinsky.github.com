@@ -1,3 +1,5 @@
+https://probml.github.io/pml-book/book2.html
+
 https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
