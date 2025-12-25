@@ -4,6 +4,8 @@ https://www.reddit.com/r/CausalInference/
 
 https://www.pywhy.org/
 
+https://www.youtube.com/watch?v=DZbLQ-WLrD0 Causal Inference on Time Series Data with the Tigramite Package
+
 https://causalml-book.org/
 
 https://mitpress.mit.edu/9780262037310/elements-of-causal-inference/
