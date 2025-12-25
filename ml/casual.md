@@ -1,6 +1,7 @@
-Casual dependency between x and y:
-if we change x then y is changing.
-if we change y they x is not changing
+Casual dependency between X and Y:  
+if we change X then Y is changing, but if we change Y then X is not changing
+
+https://changliu00.github.io/static/causality-basics.pdf
 
 https://towardsdatascience.com/causality-an-introduction-f8a3f6ac4c4a/
 
