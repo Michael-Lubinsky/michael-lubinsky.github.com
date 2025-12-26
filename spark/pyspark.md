@@ -38,8 +38,19 @@ or
 
 df_result = df_grouped.filter(df_grouped["cnt"] > avg_val)
 ```
-
-
+### Crosstab
+```
+In PySpark, you can create a cross-tabulation (contingency table) using the crosstab method, which is available directly on a DataFrame or via df.stat. 
+Usage
+The crosstab method takes two column names as arguments: 
+col1: The name of the column for the rows of the resulting table.
+col2: The name of the column for the columns of the resulting table. 
+The method then computes the frequency of each pair of distinct values from these two columns. The result is a new DataFrame. 
+ 
+Both of the following syntaxes are aliases and produce the same result: 
+df.crosstab(col1, col2)
+df.stat.crosstab(col1, col2) 
+```
 ##  Avoid duplicates during insert
 
 ### Implementation 1: DELETE Existing Records Before INSERT
