@@ -2,6 +2,8 @@ https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-wor
 
 https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
 
+https://github.com/business-science/pytimetk
+
 https://habr.com/ru/articles/953154/
 
 https://habr.com/ru/articles/949062/ Chronos и AutoGluon-TimeSeries — мощный инструмент прогнозирования временных рядов
