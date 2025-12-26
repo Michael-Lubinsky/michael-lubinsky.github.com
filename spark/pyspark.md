@@ -47,9 +47,41 @@ col1: The name of the column for the rows of the resulting table.
 col2: The name of the column for the columns of the resulting table. 
 The method then computes the frequency of each pair of distinct values from these two columns. The result is a new DataFrame. 
  
-Both of the following syntaxes are aliases and produce the same result: 
+Both of the following syntaxes are aliases and produce the same result:
 df.crosstab(col1, col2)
-df.stat.crosstab(col1, col2) 
+df.stat.crosstab(col1, col2)
+```
+
+```python
+
+
+data = [
+    ("A", "X"),
+    ("A", "Y"),
+    ("A", "X"),
+    ("B", "X"),
+    ("B", "Z"),
+    ("C", "Y")
+]
+
+df = spark.createDataFrame(data, ["col1", "col2"])
+ct = df.crosstab("col1", "col2")
+ct.show()
++---------+---+---+---+
+|col1_col2| X | Y | Z |
++---------+---+---+---+
+|   A     | 2 | 1 | 0 |
+|   B     | 1 | 0 | 1 |
+|   C     | 0 | 1 | 0 |
++---------+---+---+---+
+
+ct.printSchema()
+root
+ |-- col1_col2: string
+ |-- X: long
+ |-- Y: long
+ |-- Z: long
+
 ```
 ##  Avoid duplicates during insert
 
