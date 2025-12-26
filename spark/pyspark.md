@@ -50,6 +50,11 @@ The method then computes the frequency of each pair of distinct values from thes
 Both of the following syntaxes are aliases and produce the same result:
 df.crosstab(col1, col2)
 df.stat.crosstab(col1, col2)
+
+Important characteristics & limitations:
+ Only counts (no aggregations)
+crosstab always counts rows.
+You cannot compute sums, averages, etc.
 ```
 
 ```python
@@ -82,6 +87,23 @@ root
  |-- Y: long
  |-- Z: long
 
+Alternative: groupBy + pivot (more flexible)
+
+If you need:
+Custom aggregations
+Controlled pivot values
+Better column naming
+
+Use:
+
+df.groupBy("col1").pivot("col2").count()
+
+
+Or with explicit values (recommended for large data):
+
+df.groupBy("col1") \
+  .pivot("col2", ["X", "Y", "Z"]) \
+  .count()
 ```
 ##  Avoid duplicates during insert
 
