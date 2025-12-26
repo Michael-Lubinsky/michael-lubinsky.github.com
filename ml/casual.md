@@ -43,6 +43,8 @@ https://david-salazar.github.io/posts/causality/2020-08-10-causality-counterfact
 https://philsci-archive.pitt.edu/19773/1/Markus_Commentary_Revisions_Unblinded.pdf
 
 https://statmodeling.stat.columbia.edu/2009/07/05/disputes_about/
+
+https://kauzly.io/docs/
 ```
 The Rubin Causal Model (RCM) and Judea Pearl's Structural Causal Models (SCMs) are two major frameworks for causal inference, differing mainly in emphasis:
 
