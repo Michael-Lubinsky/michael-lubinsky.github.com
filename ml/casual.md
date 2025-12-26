@@ -1,6 +1,8 @@
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
+https://www.youtube.com/watch?v=XBJI-pQKDDY
+
 Intervention: What if I do X?   p(y | do(x),z)
 Counterfactuals: What if I had acted differently?  
 
