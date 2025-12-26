@@ -1,6 +1,8 @@
 High-Dimensional Probability. Roman Vershinin 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
+https://stat.cmu.edu/~cshalizi/ADAfaEPoV/ADAfaEPoV.pdf Advanced Data Analysis Book
+
 Statistical process control in python  
 <https://timothyfraser.com/sigma/statistical-process-control-in-python.html>
 
