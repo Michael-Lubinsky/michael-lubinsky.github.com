@@ -1383,7 +1383,186 @@ df = df.withColumn(
 
 If parsing fails → `parsed_date = NULL`.
 
+ In PySpark, `df.stat` is a **statistics helper namespace** that provides a small set of **column-level statistical functions**, mainly for **EDA, feature analysis, and ML preprocessing**.
+
+You access them as:
+
+```python
+df.stat.<function>(...)
+```
+
+Below is the **complete and commonly supported set**.
+
+---
+
+## Functions available in `df.stat`
+
+### 1. `approxQuantile()`
+
+Computes **approximate quantiles** for one or more numeric columns.
+
+```python
+df.stat.approxQuantile(
+    col="value",
+    probabilities=[0.25, 0.5, 0.75],
+    relativeError=0.01
+)
+```
+
+**Returns**
+
+```python
+[Q1, median, Q3]
+```
+
+**Notes**
+
+* Very fast and scalable
+* Uses Greenwald–Khanna algorithm
+* Common replacement for exact percentiles
+
+---
+
+### 2. `corr()`
+
+Computes the **correlation** between two columns.
+
+```python
+df.stat.corr("col1", "col2")
+```
+
+**Methods**
+
+* Default: Pearson
+
+**Returns**
+
+```python
+float
+```
+
+---
+
+### 3. `cov()`
+
+Computes the **covariance** between two columns.
+
+```python
+df.stat.cov("col1", "col2")
+```
+
+---
+
+### 4. `crosstab()`
+
+Creates a **cross-tabulation (contingency table)** of two columns.
+
+```python
+df.stat.crosstab("col1", "col2")
+```
+
+**Equivalent**
+
+```python
+df.crosstab("col1", "col2")
+```
+
+---
+
+### 5. `freqItems()`
+
+Finds **frequent items** in one or more columns using an approximate algorithm.
+
+```python
+df.stat.freqItems(["col1", "col2"], support=0.01)
+```
+
+**Returns**
+
+* One row
+* Each column contains an array of frequent values
+
+```text
++------------------+
+| col1_freqItems  |
++------------------+
+| [A, B, C]       |
++------------------+
+```
+
+**Notes**
+
+* Uses Misra–Gries algorithm
+* Approximate, not exact
+* Good for skew detection
+
+---
+
+### 6. `sampleBy()`
+
+Performs **stratified sampling**.
+
+```python
+df.stat.sampleBy(
+    col="category",
+    fractions={"A": 0.1, "B": 0.2},
+    seed=42
+)
+```
+
+**Use cases**
+
+* Balanced sampling
+* Training ML models
+* Rare class preservation
+
+---
+
+## Summary table
+
+| Function         | Purpose                 | Output      |
+| ---------------- | ----------------------- | ----------- |
+| `approxQuantile` | Percentiles / quantiles | Python list |
+| `corr`           | Correlation             | float       |
+| `cov`            | Covariance              | float       |
+| `crosstab`       | Contingency table       | DataFrame   |
+| `freqItems`      | Frequent values         | DataFrame   |
+| `sampleBy`       | Stratified sampling     | DataFrame   |
+
+---
+
+## What is **NOT** in `df.stat`
+
+These are **not** part of `df.stat` (common confusion):
+
+❌ `mean`, `sum`, `stddev` → use `df.agg()`
+❌ `describe()` → top-level `df.describe()`
+❌ `percentile_approx()` → SQL / `pyspark.sql.functions`
+❌ Hypothesis tests (t-test, chi-square) → MLlib (`pyspark.ml.stat`)
+
+---
+
+## Relationship to MLlib statistics
+
+If you need **advanced statistics**, look at:
+
+```python
+from pyspark.ml.stat import Correlation, ChiSquareTest
+```
+
+These operate on **Vector columns**, not raw columns.
+
+---
+
+## Practical guidance (Databricks / large data)
+
+* Use `approxQuantile()` instead of exact percentiles
+* Avoid `crosstab()` on high-cardinality columns
+* Prefer `sampleBy()` over random sampling for skewed data
+* Use `freqItems()` to detect data quality issues
+
  
+
 
 
 https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8
