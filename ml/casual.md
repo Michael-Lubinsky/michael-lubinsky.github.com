@@ -20,6 +20,11 @@ https://www.pywhy.org/
 
 https://www.youtube.com/watch?v=DZbLQ-WLrD0 Causal Inference on Time Series Data with the Tigramite Package
 
+
+Inferring causation from time series: state-of-the-art, challenges, and application cases
+https://www.youtube.com/watch?v=ZjC8iDUST0E
+
+
 https://causalml-book.org/
 
 https://mitpress.mit.edu/9780262037310/elements-of-causal-inference/
