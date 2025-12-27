@@ -1998,7 +1998,7 @@ URL: https://leetcode.com/problems/binary-tree-maximum-path-sum/
 Binary Tree Maximum Path Sum
 
 
-
+```python
  # Definition for a binary tree node.
  # class TreeNode(object):
  #      def __init__(self, x):
@@ -2030,7 +2030,7 @@ URL: https://leetcode.com/problems/binary-tree-maximum-path-sum/
               return 0
           else:
               return ret
-
+```
 
 
 
@@ -2056,7 +2056,7 @@ URL: https://leetcode.com/problems/binary-tree-level-order-traversal/
 Binary Tree Level Order Traversal
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #      def __init__(self, x):
@@ -2094,7 +2094,7 @@ URL: https://leetcode.com/problems/binary-tree-level-order-traversal/
 
 
                 return levelOrderTraversal
-
+```
 
 
 
@@ -2124,7 +2124,7 @@ URL: https://leetcode.com/problems/validate-binary-search-tree/
 Validate Binary Search Tree
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #      def __init__(self, x):
@@ -2159,7 +2159,7 @@ URL: https://leetcode.com/problems/validate-binary-search-tree/
 
 
            return True
-
+```
 
 
 
@@ -2184,7 +2184,7 @@ URL: https://leetcode.com/problems/minimum-depth-of-binary-tree/
 Minimum Depth of Binary Tree
 
 
-
+```python
   import sys
   # Definition for a binary tree node.
   # class TreeNode(object):
@@ -2221,7 +2221,7 @@ URL: https://leetcode.com/problems/minimum-depth-of-binary-tree/
 
 
           return 1 + min(left, right)
-
+```
 
 
 
@@ -2245,7 +2245,7 @@ URL: https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
 Convert Sorted Array to Binary Search Tree
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -2280,7 +2280,7 @@ URL: https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/
                  node.left = self.to_bst(arr, start, mid - 1)
                  node.right = self.to_bst(arr, mid + 1, end)
                    return node`
-
+```
 
 
 
@@ -2315,7 +2315,7 @@ URL: https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
 Flatten Binary Tree to Linked List
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -2356,7 +2356,7 @@ URL: https://leetcode.com/problems/flatten-binary-tree-to-linked-list/
 
 
                   current = current.right
-
+```
 
 
 
@@ -2375,7 +2375,7 @@ Note: You may assume that duplicates do not exist in the tree.
 URL: https://leetcode.com/problems/construct-binary-tree-from-preorder-and-
 inorder-traversal/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #       def __init__(self, x):
@@ -2440,7 +2440,7 @@ inorder-traversal/
 
 
            return root
-
+```
 
 
 
@@ -2461,7 +2461,7 @@ For example, given the following binary tree:
 
 URL: https://leetcode.com/problems/binary-tree-paths/
 
-
+```python
   # class TreeNode:
   #       def __init__(self, x):
   #             self.val = x
@@ -2512,7 +2512,7 @@ URL: https://leetcode.com/problems/binary-tree-paths/
                        s.append(current.left)
                        s.append(leftstr)
                return paths
-
+```
 
 
 
@@ -2539,7 +2539,7 @@ URL: https://leetcode.com/problems/recover-binary-search-tree/
 Recover Binary Search Tree
 
 
-
+```python
   # class TreeNode(object):
   #     def __init__(self, x):
   #          self.val = x
@@ -2579,7 +2579,7 @@ URL: https://leetcode.com/problems/recover-binary-search-tree/
                    self.__node2 = root
           self.__prev = root
           self.recoverTreeHelp(root.right)
-
+```
 
 
 
@@ -2598,7 +2598,7 @@ For example: Given the below binary tree and sum = 22, 5 / \ 4 8 / / \ 11 13 4 /
 
 URL: https://leetcode.com/problems/path-sum-ii/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #       def __init__(self, x):
@@ -2652,7 +2652,7 @@ URL: https://leetcode.com/problems/path-sum-ii/
                      stack.append(leftstr)
                      stack.append(leftsum)
               return paths
-
+```
 
 
 
@@ -2671,7 +2671,7 @@ bottom-up level order traversal as: [ [15,7], [9,20], [3] ]
 
 URL: https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #       def __init__(self, x):
@@ -2723,7 +2723,7 @@ URL: https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
 
 
                 return levelOrderTraversal
-
+```
 
 
 
@@ -2757,7 +2757,7 @@ URL: https://leetcode.com/problems/kth-smallest-element-in-a-bst/
 Kth Smallest Element in a BST
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #     def __init__(self, x):
@@ -2820,7 +2820,7 @@ URL: https://leetcode.com/problems/kth-smallest-element-in-a-bst/
                     k -= 1
                     root = root.right
 
-
+```
 
 
                                          88
@@ -2835,7 +2835,7 @@ Given inorder and postorder traversal of a tree, construct the binary tree.
 
 Note: You may assume that duplicates do not exist in the tree.
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #      def __init__(self, x):
@@ -2904,7 +2904,7 @@ Note: You may assume that duplicates do not exist in the tree.
 
 
            return root
-
+```
 
 
 
@@ -2930,7 +2930,7 @@ URL: https://leetcode.com/problems/binary-tree-right-side-view/
 Binary Tree Right Side View
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #      def __init__(self, x):
@@ -2966,7 +2966,7 @@ URL: https://leetcode.com/problems/binary-tree-right-side-view/
                          if node.right != None:
                               q.put(node.right)
                 return rightSideView
-
+```
 
 
 
@@ -3003,7 +3003,7 @@ Return the sum = 12 + 13 = 25.
 Sum Root to Leaf Numbers
 
 
-
+```python
  # Definition for a binary tree node.
  # class TreeNode(object):
  #      def __init__(self, x):
@@ -3040,7 +3040,7 @@ Return the sum = 12 + 13 = 25.
                         stack.append(current.left)
                         stack.append(leftstr)
                 return sum(paths)
-
+```
 
 
 
@@ -3057,7 +3057,7 @@ from left to right, then right to left for the next level and alternate between)
 For example: Given binary tree [3,9,20,null,null,15,7], 3 / \ 9 20 / \ 15 7 return its
 zigzag level order traversal as: [ [3], [20,9], [15,7] ]
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode:
   #       def __init__(self, x):
@@ -3110,7 +3110,7 @@ zigzag level order traversal as: [ [3], [20,9], [15,7] ]
 
 
                 return levelOrderTraversal
-
+```
 
 
 
@@ -3143,7 +3143,7 @@ URL: https://leetcode.com/problems/house-robber-iii/
 House Robber III
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #     def __init__(self, x):
@@ -3177,7 +3177,7 @@ URL: https://leetcode.com/problems/house-robber-iii/
   t_res[0], right_res[1])
                  return result
 
-
+```
 
 
                                                                         98
@@ -3201,7 +3201,7 @@ URL: https://leetcode.com/problems/inorder-successor-in-bst/
 Inorder Successor in BST
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #     def __init__(self, x):
@@ -3241,7 +3241,7 @@ URL: https://leetcode.com/problems/inorder-successor-in-bst/
            while root.left != None:
                  root = root.left
            return root
-
+```
 
 
 
@@ -3263,7 +3263,7 @@ For example, 1 \ 3 / \ 2 4 \ 5 Longest consecutive sequence path is 3-4-5, so
 return 3. 2 \ 3 / 2
 / 1 Longest consecutive sequence path is 2-3,not3-2-1, so return 2.
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #       def __init__(self, x):
@@ -3289,7 +3289,7 @@ return 3. 2 \ 3 / 2
                       size_q = Queue()
                       node_q = Queue()
                       node_q.put(root)
-
+```
 
 
                                                                                  101
