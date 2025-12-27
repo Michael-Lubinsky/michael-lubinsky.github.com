@@ -3289,7 +3289,7 @@ return 3. 2 \ 3 / 2
                       size_q = Queue()
                       node_q = Queue()
                       node_q.put(root)
-```
+ 
 
 
                                                                                  101
@@ -3329,7 +3329,7 @@ return 3. 2 \ 3 / 2
 
 
                return max_size
-
+```
 
 
 
@@ -3351,7 +3351,7 @@ Follow up: Could you do it using only constant space complexity?
 URL: https://leetcode.com/problems/verify-preorder-sequence-in-binary-search-
 tree/
 
-
+```python
   import sys
   class Solution(object):
         def verifyPreorder(self, preorder):
@@ -3378,7 +3378,7 @@ tree/
 
 
             return True
-
+```
 
 
 
@@ -3403,7 +3403,7 @@ new root.
 For example: Given a binary tree {1,2,3,4,5}, 1 / \ 2 3 / \ 4 5 return the root of the
 binary tree [4,5,2,#,#,3,1]. 4 / \ 5 2 / \ 3 1
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #         def __init__(self, x):
@@ -3433,7 +3433,7 @@ binary tree [4,5,2,#,#,3,1]. 4 / \ 5 2 / \ 3 1
 
 
              return parent
-
+```
 
 
 
@@ -3465,7 +3465,7 @@ URL: https://leetcode.com/problems/count-univalue-subtrees/
 Count Univalue Subtrees
 
 
-
+```python
   # Definition for a binary tree node.
   # class TreeNode(object):
   #     def __init__(self, x):
@@ -3505,7 +3505,7 @@ URL: https://leetcode.com/problems/count-univalue-subtrees/
                 return True
           else:
                 return False
-
+```
 
 
 
@@ -3524,7 +3524,7 @@ an undirected graph.
 URL : https://leetcode.com/problems/number-of-connected-components-in-an-
 undirected-graph/
 
-
+```python
   import sys
   from queue import Queue
 
@@ -3705,7 +3705,7 @@ undirected-graph/
       soln = Solution()
       print(soln.countComponents(n, edges1))
       print(soln.countComponents(n, edges2))
-
+```
 
 
 
@@ -3738,7 +3738,7 @@ adjacency matrices. Read more about how a graph is represented.
 
 URL: https://leetcode.com/problems/course-schedule/
 
-
+```python
   class Vertex:
 
 
@@ -3972,7 +3972,7 @@ URL: https://leetcode.com/problems/course-schedule/
 
       soln2 = Solution()
       print(soln2.canFinish(2, [[1,0],[0,1]]))
-
+```
 
 
 
@@ -4002,7 +4002,7 @@ other words, any connected graph without simple cycles is a tree.”
 
 URL: https://leetcode.com/problems/graph-valid-tree/
 
-
+```python
   import sys
   class Vertex:
         def __init__(self, node):
@@ -4199,7 +4199,7 @@ URL: https://leetcode.com/problems/graph-valid-tree/
                          stack.append(nbr)
                curr_node.setColor("black")
            return True
-
+```
 
 
 
@@ -4233,7 +4233,7 @@ correct ordering is [0,2,1,3].
 
 URL: https://leetcode.com/problems/course-schedule-ii/
 
-
+```python
   from queue import Queue
   import sys
 
@@ -4444,7 +4444,7 @@ URL: https://leetcode.com/problems/course-schedule-ii/
       print(soln.findOrder(4, [[1,0],[2,0],[3,1],[3,2]]))
       print(soln.findOrder(2, [[1,0]]))
       print(soln.findOrder(3, [[1,0]]))
-
+```
 
 
 
@@ -4477,7 +4477,7 @@ URL: https://leetcode.com/problems/number-of-islands/
 Number of Islands
 
 
-
+```python
   class Solution:
        # @param {boolean[][]} grid a boolean 2D matrix
        # @return {int} an integer
@@ -4515,7 +4515,7 @@ URL: https://leetcode.com/problems/number-of-islands/
                self.dfs(grid, used, row, col, x, y - 1)
            if y != col - 1:
                self.dfs(grid, used, row, col, x, y + 1)
-
+```
 
 
 
@@ -4538,7 +4538,7 @@ URL: https://leetcode.com/problems/merge-k-sorted-lists/
 Merge K Sorted Linked Lists
 
 
-
+```python
   import heapq
   # Definition for singly-linked list.
   class ListNode(object):
@@ -4578,7 +4578,7 @@ URL: https://leetcode.com/problems/merge-k-sorted-lists/
 
 
                  return dummy.next
-
+```
 
 
 
@@ -4598,7 +4598,7 @@ Note: You may assume k is always valid, 1 ≤ k ≤ array's length
 
 URL: https://leetcode.com/problems/kth-largest-element-in-an-array/
 
-
+```python
   class Solution(object):
        def findKthLargest(self, nums, k):
             """
@@ -4624,7 +4624,7 @@ URL: https://leetcode.com/problems/kth-largest-element-in-an-array/
 
 
                   return heapq.heappop(heap)[0]
-
+```
 
 
 
@@ -4648,7 +4648,7 @@ Input: numbers={2, 7, 11, 15}, target=9 Output: index1=1, index2=2
 
 URL: https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
 
-
+```python
   class Solution(object):
        def twoSum(self, numbers, target):
             """
@@ -4670,7 +4670,7 @@ URL: https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/
                       elif curr_sum > target:
                            end -= 1
                   return [-1]
-
+```
 
 
 
@@ -4697,7 +4697,7 @@ For example, add(1); add(3); add(5); find(4) -> true find(7) -> false
 
 URL: https://leetcode.com/problems/two-sum-iii-data-structure-design/
 
-
+```python
   import collections
 
 
@@ -4753,7 +4753,7 @@ URL: https://leetcode.com/problems/two-sum-iii-data-structure-design/
        twoSum.add(0)
        twoSum.add(0)
        print(twoSum.find(0))
-
+```
 
 
 
@@ -4770,7 +4770,7 @@ return false if every element is distinct.
 
 URL: https://leetcode.com/problems/contains-duplicate/
 
-
+```python
   class Solution(object):
        def containsDuplicate(self, nums):
              """
@@ -4791,7 +4791,7 @@ URL: https://leetcode.com/problems/contains-duplicate/
                        else:
                             dup_dict[entries] = 1
                    return False
-
+```
 
 
 
