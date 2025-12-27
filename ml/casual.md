@@ -1,3 +1,6 @@
+https://www.bradyneal.com/causal-inference-course
+
+
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
@@ -11,18 +14,30 @@ Counterfactuals: What if I had acted differently?
 ### Confounder
 https://en.wikipedia.org/wiki/Confounding
 ```
-In causal inference, a confounder (or confounding variable) is a third variable that influences both the exposure (cause) and the outcome (effect), creating a false or distorted association between them, making it seem like the cause directly affects the effect when it's actually the confounder pulling the strings. Confounders are a major problem in observational studies, as they make it hard to isolate the true causal effect, leading to overestimated, underestimated, or even reversed conclusions about relationships, like believing ice cream sales cause shark attacks because both rise with summer heat (the confounder). 
+In causal inference, a confounder (or confounding variable) is a third variable
+that influences both the exposure (cause) and the outcome (effect),
+creating a false or distorted association between them,
+ making it seem like the cause directly affects the effect when it's actually the confounder pulling the strings.
+Confounders are a major problem in observational studies,
+as they make it hard to isolate the true causal effect,
+ leading to overestimated, underestimated, or even reversed conclusions about relationships,
+like believing ice cream sales cause shark attacks because both rise with summer heat (the confounder). 
 Key Characteristics
 Common Cause: It's a variable that causes both the treatment/exposure (X) and the outcome (Y).
-Not on Causal Pathway: It's not an intermediate step between the cause and effect; it's external to that direct link.
+Not on Causal Pathway: It's not an intermediate step between the cause and effect;
+it's external to that direct link.
 Causes Bias: Ignoring it creates "confounding bias," distorting the observed relationship. 
 Example
 Study: Investigating if coffee (exposure) causes heart disease (outcome).
-Confounder: Smoking (confounder). Smokers are more likely to drink coffee and smoking directly causes heart disease.
-Problem: The observed link between coffee and heart disease might actually be due to smoking, not the coffee itself, if smoking isn't accounted for. 
+Confounder: Smoking (confounder).
+ Smokers are more likely to drink coffee and smoking directly causes heart disease.
+
+Problem: The observed link between coffee and heart disease might actually be due to smoking,
+not the coffee itself, if smoking isn't accounted for. 
 How to Address Confounding
 Randomization: Randomly assigning treatments (like in RCTs) distributes confounders evenly, eliminating their effect.
-Matching/Restriction: Ensuring groups are similar on potential confounders (e.g., matching smokers with non-smokers).
+Matching/Restriction: Ensuring groups are similar on potential confounders
+(e.g., matching smokers with non-smokers).
 Statistical Adjustment: Using methods like regression to statistically control for known confounders in observational data. 
 ```
 https://changliu00.github.io/static/causality-basics.pdf
