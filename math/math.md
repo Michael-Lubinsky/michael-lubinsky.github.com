@@ -1,4 +1,4 @@
-https://gpai.app/solver
+ https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27 
 
 
 https://www.cis.upenn.edu/~jean/math-deep.pdf
