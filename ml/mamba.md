@@ -38,6 +38,8 @@ https://github.com/chiphuyen/aie-book
 
 https://www.mlsysbook.ai/
 
+https://github.com/rasbt/LLMs-from-scratch  Sebastian Rashka. Build LLM From Scratch
+
 https://github.com/EthicalML/awesome-production-machine-learning/
 
    https://huggingface.co/learn/llm-course/chapter1
