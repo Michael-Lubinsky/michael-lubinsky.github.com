@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/tensor/articles/970480/
+
 https://machinelearningmastery.com/top-5-vector-databases-for-high-performance-llm-applications/
 
 
