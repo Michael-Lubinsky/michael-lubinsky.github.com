@@ -1,5 +1,9 @@
 <https://habr.com/ru/articles/949314/>
 
+https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
+
+https://www.amazon.com/Clean-Architecture-Python-maintainable-architectural/dp/183664289X Implementing the Clean Architecture (Book)
+
 EuroPython 2025
 <https://www.youtube.com/watch?v=4gotVjbeluY&list=PL8uoeex94UhFQY9cYBQOVkj9fSHMHf5x9>
 
