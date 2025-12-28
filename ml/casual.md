@@ -1,5 +1,7 @@
 https://www.bradyneal.com/causal-inference-course
 
+https://bit.ly/m/alex-bio
+
 https://dl.acm.org/doi/fullHtml/10.1145/3397269
 
 https://github.com/py-why/dowhy
