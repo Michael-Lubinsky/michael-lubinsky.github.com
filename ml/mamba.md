@@ -5,7 +5,7 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
 
-https://pixelbank.dev/
+https://pixelbank.dev/ Leetcode for ML
 
  применение теории информации в машинном обучении
 https://habr.com/ru/companies/wunderfund/articles/978786/
