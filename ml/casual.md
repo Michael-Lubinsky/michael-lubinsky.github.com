@@ -2,6 +2,8 @@ https://www.bradyneal.com/causal-inference-course
 
 https://dl.acm.org/doi/fullHtml/10.1145/3397269
 
+https://github.com/py-why/dowhy
+
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
