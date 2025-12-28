@@ -12,6 +12,9 @@ Counterfactuals: What if I had acted differently?
 
 
 ### Confounder
+
+Confounder	(confounding variable)	a variable causally influences both treatment and outcome
+
 https://en.wikipedia.org/wiki/Confounding
 ```
 In causal inference, a confounder (or confounding variable) is a third variable
