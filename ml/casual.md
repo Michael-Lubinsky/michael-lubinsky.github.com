@@ -4,6 +4,14 @@ https://bit.ly/m/alex-bio
 
 https://dl.acm.org/doi/fullHtml/10.1145/3397269
 
+Causal Inference and Discovery in Python: Unlock the secrets of modern causal machine learning with DoWhy, EconML, PyTorch and more
+by Aleksander Molak 
+https://www.amazon.com/dp/1804612987
+
+Causal Inference in Python: Applying Causal Inference in the Tech Industry 
+by Matheus Facure 
+https://www.amazon.com/dp/1098140257/
+
 https://github.com/py-why/dowhy
 
 https://www.reddit.com/r/AskStatistics/comments/wm4uyg/rubin_causal_model_vs_pearl_causal_model/ 
