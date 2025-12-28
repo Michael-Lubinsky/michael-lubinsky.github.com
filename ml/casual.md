@@ -4,6 +4,8 @@ https://dl.acm.org/doi/fullHtml/10.1145/3397269
 
 https://github.com/py-why/dowhy
 
+https://www.reddit.com/r/AskStatistics/comments/wm4uyg/rubin_causal_model_vs_pearl_causal_model/ 
+
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
