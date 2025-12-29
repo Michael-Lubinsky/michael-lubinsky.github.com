@@ -1,3 +1,5 @@
+https://habr.com/ru/articles/981624/  How to use ChatGPT effectively 
+
 https://habr.com/ru/companies/otus/articles/978426/
 
 https://habr.com/ru/articles/981650/
