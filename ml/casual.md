@@ -1,5 +1,8 @@
 https://www.bradyneal.com/causal-inference-course
 
+The Granger causality test is a statistical hypothesis test for determining whether one time series is useful in forecasting another,
+https://en.wikipedia.org/wiki/Granger_causality
+
 https://bit.ly/m/alex-bio
 
 https://dl.acm.org/doi/fullHtml/10.1145/3397269
