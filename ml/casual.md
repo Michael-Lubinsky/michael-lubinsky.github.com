@@ -73,6 +73,9 @@ https://www.reddit.com/r/CausalInference/
 
 https://www.pywhy.org/
 
+## Causality in time series
+https://www.youtube.com/watch?v=QVQoV22pPak
+
 https://www.youtube.com/watch?v=DZbLQ-WLrD0 Causal Inference on Time Series Data with the Tigramite Package
 
 
