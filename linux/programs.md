@@ -76,6 +76,8 @@ https://github.com/Canop/broot
 
 https://github.com/juftin/browsr
 
+https://github.com/houqp/kiorg
+
 ### Others
 <https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
 
