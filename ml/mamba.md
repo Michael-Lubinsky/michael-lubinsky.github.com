@@ -1,5 +1,7 @@
 https://probml.github.io/pml-book/book2.html
 
+https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
+
 https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
