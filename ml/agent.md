@@ -1,5 +1,7 @@
 https://habr.com/ru/companies/otus/articles/978426/
 
+https://habr.com/ru/articles/981650/
+
 https://habr.com/ru/articles/981100/
 
 https://pub.towardsai.net/building-production-grade-ai-agents-in-2025-the-complete-technical-guide-9f02eff84ea2
