@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/companies/odnoklassniki/articles/532388/>
 
+https://pll.harvard.edu/course/data-science-building-machine-learning-models
+
 https://habr.com/ru/articles/974598/ recsys and search books
 
 https://www.vorillaz.com/netflix-but-better
