@@ -89,6 +89,8 @@ https://mitpress.mit.edu/9780262037310/elements-of-causal-inference/
 
 https://www.youtube.com/watch?v=gRkUhg9Wb-I  Causal Inference, Part 1. MIT OpenCourseWare
 
+https://www.youtube.com/watch?v=g5v-NvNoJQQ Causal Inference, Part 2. MIT OpenCourseWare
+
 What is causal inference
 https://www.youtube.com/watch?v=dFp2Ou52-po 
 
