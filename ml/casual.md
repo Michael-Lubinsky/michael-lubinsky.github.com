@@ -438,10 +438,15 @@ https://www.linkedin.com/in/scottamueller/
 
  https://benjaminmanning.io/files/rs.pdf
 
-https://arxiv.org/abs/2405.13100
-https://github.com/kairong-han/causal_agent
-https://openreview.net/pdf?id=pAoqRlTBtY
+https://arxiv.org/abs/2405.13100  
+https://github.com/kairong-han/causal_agent  
+https://openreview.net/pdf?id=pAoqRlTBtY  
 
+
+Kevin Klein - Causal Inference Libraries: What They Do, What I'd Like Them To Do 
+https://www.youtube.com/watch?v=cRS4yZt6OU4&t=781s&pp=0gcJCU0KAYcqIYzv
+
+https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
 
 https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
 
