@@ -40,6 +40,8 @@ https://www.tadviewer.com/
 
 <https://github.com/raulcd/datanomy>
 
+https://github.com/datasetq/datasetq
+
 brew install kaushiksrini/parqeye/parqeye
 
 <https://github.com/kaushiksrini/parqeye>
