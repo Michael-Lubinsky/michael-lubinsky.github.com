@@ -3,6 +3,8 @@ Chao Ma: Towards Causal Foundation Model: on Duality between Causal Inference an
 
 https://www.bradyneal.com/causal-inference-course
 
+https://www.youtube.com/watch?v=66LBrNG2un0 PyWhy EconoML
+
 https://www.youtube.com/@BradyNealCausalInference
 
 The Granger causality test is a statistical hypothesis test for determining whether one time series is useful in forecasting another,
