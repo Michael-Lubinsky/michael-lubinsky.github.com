@@ -1,3 +1,10 @@
+Stream processing with Apache Spark Structured Streaming, Apache Kafka, and Apache Flink:
+https://www.youtube.com/playlist?list=PLI1kSUAlZf2U71IAu_wxBJB9a2jsbz6Xe
+
+https://github.com/bartosz25/master-stream-processing  
+https://github.com/bartosz25/master-stream-processing-homework
+
+Databricks X PySpark INTERVIEW QUESTIONS (2026 Guide) | PySpark Real-Time Scenarios
 https://www.youtube.com/watch?v=__9tqYjEJhE
 
 https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4
