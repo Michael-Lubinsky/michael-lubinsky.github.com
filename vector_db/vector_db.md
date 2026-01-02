@@ -1,5 +1,7 @@
 https://vickiboykis.com/what_are_embeddings/
 
+https://habr.com/ru/articles/947216/
+
 https://habr.com/ru/companies/tensor/articles/970480/
 
 https://machinelearningmastery.com/top-5-vector-databases-for-high-performance-llm-applications/
