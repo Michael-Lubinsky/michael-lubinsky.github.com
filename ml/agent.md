@@ -1,5 +1,7 @@
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively 
 
+https://habr.com/ru/articles/951428/
+
 https://github.com/Mathews-Tom/Agentic-Design-Patterns
 
 https://learn.microsoft.com/en-us/shows/ai-agents-for-beginners/
