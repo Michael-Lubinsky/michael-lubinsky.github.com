@@ -3,6 +3,8 @@
 https://www.youtube.com/watch?v=1vPqIweQh_U 
 LLM, трансформеры, внимательно разбираем внутренности
 
+https://www.youtube.com/watch?v=iOrNbK2T92M
+
 https://habr.com/ru/companies/wunderfund/articles/974300/
 
 https://arpitbhayani.me/blogs/qkv-matrices
