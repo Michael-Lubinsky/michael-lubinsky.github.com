@@ -1,6 +1,8 @@
 https://www.youtube.com/watch?v=cnz17Q6g6Lw  
 Chao Ma: Towards Causal Foundation Model: on Duality between Causal Inference and  Attention
 
+https://www.youtube.com/watch?v=27ptGVVQflc
+
 https://habr.com/ru/companies/avito/articles/981614/
 
 https://www.bradyneal.com/causal-inference-course
