@@ -1,5 +1,7 @@
 https://github.com/rasbt/LLMs-from-scratch Sebastian Rashka. Build LLM From Scratch
 
+https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
+
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
 
 https://zekcrates.quarto.pub/deep-learning-library/
