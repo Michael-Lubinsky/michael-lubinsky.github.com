@@ -1,3 +1,5 @@
+https://simonwillison.net/2025/Dec/31/the-year-in-llms/
+
 https://probml.github.io/pml-book/book2.html
 
 https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
