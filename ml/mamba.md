@@ -197,33 +197,7 @@ https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html
 
 https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
 
-
-
-### Transformers
-
-https://poloclub.github.io/transformer-explainer/
-
-https://pub.towardsai.net/the-transformer-architecture-a1caa330ddc6
-
-https://www.youtube.com/watch?v=S27pHKBEp30
-
-https://jalammar.github.io/illustrated-transformer/
-
-https://habr.com/ru/companies/wunderfund/articles/974300/
-
-https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
-
-https://news.ycombinator.com/item?id=35990118
-
-https://news.ycombinator.com/item?id=45116957
-
-https://nlp.seas.harvard.edu/annotated-transformer/
-
-https://habr.com/ru/articles/925404/ Text-to-LoRA: мгновенная адаптация трансформеров
-
-https://vectorfold.studio/blog/transformers
-
-https://www.stephendiehl.com/posts/post_transformers/  Attention ?
+ 
 
 https://github.com/ageron/handson-ml3
 
