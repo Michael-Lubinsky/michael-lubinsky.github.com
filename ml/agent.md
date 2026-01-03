@@ -1,4 +1,8 @@
+### Agents
+
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively 
+
+https://github.com/nicolasahar/morphic-programming
 
 https://habr.com/ru/articles/951428/
 
