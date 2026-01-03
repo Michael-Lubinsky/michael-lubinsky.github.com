@@ -9,3 +9,7 @@ https://github.com/Niki110607/CNN-from-scratch-numpy-
 https://github.com/mohamedrxo/simplegrad
 
 https://www.tensortonic.com/
+
+
+coding a machine learning library in c from scratch
+https://www.youtube.com/watch?v=hL_n_GljC0I 
