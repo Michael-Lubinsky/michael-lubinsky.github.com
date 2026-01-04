@@ -2,6 +2,9 @@
 
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively 
 
+Microsoft AI Agents for beginners (lessons 1-10)
+https://www.youtube.com/watch?v=OhI005_aJkA&list=PLlrxD0HtieHgKcRjd5-8DT9TbwdlDO-OC
+
 https://github.com/nicolasahar/morphic-programming
 
 https://habr.com/ru/articles/951428/
