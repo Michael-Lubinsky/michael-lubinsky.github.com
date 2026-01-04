@@ -7,7 +7,7 @@ https://bbycroft.net/llm
 
 https://www.youtube.com/watch?v=iOrNbK2T92M
 
-https://habr.com/ru/companies/wunderfund/articles/974300/
+https://habr.com/ru/companies/wunderfund/articles/974300/ Transformer, explained in detail | Igor Kotenkov | NLP Lecture (in Russian)
 
 https://habr.com/ru/articles/982820/
 
