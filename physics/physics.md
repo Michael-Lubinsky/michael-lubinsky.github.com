@@ -18,6 +18,8 @@ https://interactivetextbooks.tudelft.nl/mqp/ Math for QM
 
 https://arxiv.org/abs/1508.06951 Math for QM
 
+https://commons.library.stonybrook.edu/egp/
+
 https://faculty.washington.edu/seattle/physics441/441index.html
 
 https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf
