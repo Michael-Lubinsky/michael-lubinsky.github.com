@@ -2,6 +2,9 @@
 
 https://www.youtube.com/watch?v=yqKJ9pUQ6Q8
 
+https://www.youtube.com/watch?v=mujOFx5oZUQ  
+Introduction to Causal Graphical Models: Graphs, d-separation, do-calculus
+
 https://www.youtube.com/watch?v=cnz17Q6g6Lw  
 Chao Ma: Towards Causal Foundation Model: on Duality between Causal Inference and  Attention
 
