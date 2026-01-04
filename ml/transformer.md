@@ -7,6 +7,8 @@ https://www.youtube.com/watch?v=iOrNbK2T92M
 
 https://habr.com/ru/companies/wunderfund/articles/974300/
 
+https://habr.com/ru/articles/982820/
+
 https://arpitbhayani.me/blogs/qkv-matrices
 
 https://habr.com/ru/articles/975468/ Model Quantization
