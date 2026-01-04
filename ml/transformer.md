@@ -43,3 +43,23 @@ https://habr.com/ru/articles/925404/ Text-to-LoRA: мгновенная адап
 https://vectorfold.studio/blog/transformers
 
 https://www.stephendiehl.com/posts/post_transformers/  Attention ?
+
+Stanford put their LLM course online.:
+• Lecture 1 - Transformer
+https://www.youtube.com/watch?v=Ub3GoFaUcds
+• Lecture 2 - Transformer-Based Models & Tricks
+https://www.youtube.com/watch?v=yT84Y5zCnaA
+• Lecture 3 - Transformers & Large Language Models
+https://www.youtube.com/watch?v=Q5baLehv5So
+• Lecture 4 - LLM Training
+https://www.youtube.com/watch?v=VlA_jt_3Qc4
+• Lecture 5 - LLM tuning
+https://www.youtube.com/watch?v=PmW_TMQ3l0I
+• Lecture 6 - LLM Reasoning
+https://www.youtube.com/watch?v=k5Fh-UgTuCo
+• Lecture 7 - Agentic LLMs
+https://www.youtube.com/watch?v=h-7S6HNq0Vg
+• Lecture 8 - LLM Evaluation
+https://www.youtube.com/watch?v=8fNP4N46RRo
+• Lecture 9 - Recap & Current Trends
+https://www.youtube.com/watch?v=Q86qzJ1K1Ss
