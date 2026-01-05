@@ -1,5 +1,7 @@
 ### Causality
 
+https://www.causalmlbook.com/
+
 https://www.youtube.com/watch?v=yqKJ9pUQ6Q8
 
 https://www.youtube.com/watch?v=mujOFx5oZUQ  
