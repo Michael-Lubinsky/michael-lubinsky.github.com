@@ -4,6 +4,8 @@ High-Dimensional Probability. Roman Vershinin
 
 <https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
 
+<https://www.tensortonic.com/ml-math/statistics/hypothesis-testing>
+
 РУКОВОДСТВО К РЕШЕНИЮ ЗАДАЧ ПО ТЕОРИИ ВЕРОЯТНОСТЕЙ И МАТЕМАТИЧЕСКОЙ СТАТИСТИКЕ
 https://elenagavrile.narod.ru/ms/gmurman.pdf
 
