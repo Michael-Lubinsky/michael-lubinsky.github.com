@@ -1,3 +1,5 @@
+«Если вы не ошибаетесь трижды в день, вы не учитесь»
+
 https://simonwillison.net/2025/Dec/31/the-year-in-llms/
 
 https://www.youtube.com/playlist?list=PL0beoaW5rFR9oQg96Wu0NVsUZZpFbTzK9
