@@ -14,7 +14,11 @@ Chao Ma: Towards Causal Foundation Model: on Duality between Causal Inference an
 
 https://www.youtube.com/watch?v=27ptGVVQflc
 
-https://habr.com/ru/companies/avito/articles/981614/
+Anton Lebedevich: Causal Inference Intro
+https://www.youtube.com/watch?v=V4ONp9PZrvk
+
+
+ nies/avito/articles/981614/
 
 https://www.bradyneal.com/causal-inference-course
 
