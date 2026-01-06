@@ -10,6 +10,9 @@ https://habr.com/ru/articles/970798/
 
 https://habr.com/ru/articles/972642/
 
+
+<https://habr.com/ru/articles/983254/>
+
 <https://github.com/offerrall/FuncToWeb>   
 <https://realpython.com/get-started-with-fastapi/>  
 <https://medium.com/@CodeWithHannan/python-for-data-apis-building-robust-backends-with-fastapi-ecfe096663c4>  
