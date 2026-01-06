@@ -19,8 +19,7 @@ https://www.youtube.com/watch?v=27ptGVVQflc
 Anton Lebedevich: Causal Inference Intro
 https://www.youtube.com/watch?v=V4ONp9PZrvk
 
-
- nies/avito/articles/981614/
+https://habr.com/ru/companies/avito/articles/981614/
 
 https://www.bradyneal.com/causal-inference-course
 
