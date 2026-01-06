@@ -64,6 +64,11 @@ Confounder	(confounding variable)	a variable causally influences both treatment 
 
 https://en.wikipedia.org/wiki/Confounding
 ```
+        Confounder
+          |      |
+          V      V
+   Treatment  > Outcome
+
 In causal inference, a confounder (or confounding variable) is a third variable
 that influences both the exposure (cause) and the outcome (effect),
 creating a false or distorted association between them,
