@@ -52,6 +52,13 @@ https://www.reddit.com/r/AskStatistics/comments/wm4uyg/rubin_causal_model_vs_pea
 Casual dependency between X and Y:  
 if we change X then Y is changing, but if we change Y then X is not changing
 
+
+### Inference methods
+ - stratification
+ - propensity scores
+ - outcome regression
+   
+
 https://www.youtube.com/watch?v=XBJI-pQKDDY
 ```
 Intervention: What if I do X?   p(y | do(x),z)
