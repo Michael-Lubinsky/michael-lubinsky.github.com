@@ -1,6 +1,9 @@
+## Fourier Transform
 
+The Unreasonable Effectiveness of the Fourier Transform
 https://joshuawise.com/resources/ofdm/
 
+<https://news.ycombinator.com/item?id=45132810>  Fourier Transform 
 
 ### DFT
 Дискретное преобразование Фурье 
@@ -11,4 +14,4 @@ https://joshuawise.com/resources/ofdm/
 
 <https://connorboyle.io/2025/09/11/fft-cooley-tukey.html>
 
-<https://news.ycombinator.com/item?id=45132810>  Fourier Transform 
+
