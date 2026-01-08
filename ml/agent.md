@@ -1,7 +1,9 @@
 ### Agents
 
-https://habr.com/ru/articles/981624/  How to use ChatGPT effectively 
+https://habr.com/ru/articles/981624/  How to use ChatGPT effectively   
 https://habr.com/ru/articles/983214/  Claude Code 
+
+https://www.mihaileric.com/The-Emperor-Has-No-Clothes/
 
 Microsoft AI Agents for beginners (lessons 1-10)
 https://www.youtube.com/watch?v=OhI005_aJkA&list=PLlrxD0HtieHgKcRjd5-8DT9TbwdlDO-OC
