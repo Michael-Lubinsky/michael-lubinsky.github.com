@@ -12,6 +12,15 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
+https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
+
+https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
+
+
+https://arpitbhayani.me/blogs/qkv-matrices/
+
+https://news.ycombinator.com/item?id=46523887
+
 
 https://pixelbank.dev/ Leetcode for ML
 
