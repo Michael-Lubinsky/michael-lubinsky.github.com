@@ -1,4 +1,4 @@
-### Transformers
+## Transformers
 
 https://www.youtube.com/watch?v=1vPqIweQh_U 
 LLM, трансформеры, внимательно разбираем внутренности
@@ -12,6 +12,8 @@ https://habr.com/ru/companies/wunderfund/articles/974300/ Transformer, explained
 https://habr.com/ru/articles/982820/
 
 https://arpitbhayani.me/blogs/qkv-matrices
+
+https://news.ycombinator.com/item?id=46523887
 
 https://habr.com/ru/articles/975468/ Model Quantization
 
