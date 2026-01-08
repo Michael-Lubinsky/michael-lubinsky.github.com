@@ -1,3 +1,5 @@
+## Time Series
+
 https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/ 
 
 https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
