@@ -1,3 +1,80 @@
+## Lambda Example
+
+```python
+import json
+import boto3
+import os
+import time
+from datetime import datetime, timezone
+from decimal import Decimal
+from boto3.dynamodb.types import TypeDeserializer
+import uuid
+
+s3_client = boto3.client('s3')
+deser = TypeDeserializer()
+
+print("Starting Lambda function!")
+S3_BUCKET = "chargeminder-2"
+S3_PREFIX = "raw/dynamodb/chargeminder-user-badges-status"
+
+def _key(n):
+    """Build S3 object key."""
+    now = time.gmtime()
+    ts = time.strftime("%Y-%m-%d-%H-%M-%S", now)
+    unique_id = str(uuid.uuid4())[:8]
+    return f"{S3_PREFIX}/dt={time.strftime('%Y-%m-%d', now)}/HH={time.strftime('%H', now)}/badges_{ts}_{unique_id}_{n}.jsonl"
+
+class DecimalEncoder(json.JSONEncoder):
+    """Proper handling of Decimal types"""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj) if obj % 1 else int(obj)
+        return super().default(obj)
+
+
+def lambda_handler(event, context):
+    """
+     Read DynamoDB stream, write to S3
+    """
+    
+    # Extract all items from stream
+    lines = []
+
+    for r in event.get("Records", []):
+        if r.get("eventSource") != "aws:dynamodb":
+            continue
+        if r.get("eventName") in ("INSERT", "MODIFY") and "NewImage" in r["dynamodb"]:
+            obj = {k: deser.deserialize(v) for k, v in r["dynamodb"]["NewImage"].items()}
+            lines.append(json.dumps(obj, separators=(",", ":"), cls=DecimalEncoder))
+
+    
+    if not lines:
+        return {'statusCode': 200, 'body': 'No items to process'}
+    
+
+    
+    # Combine all records into NDJSON text
+    ndjson_content = "\n".join(lines) + "\n"
+
+    # Write to S3 (proper decimal handling)
+  
+    key = _key(len(lines))
+    print('key=', key)
+    s3_client.put_object(
+        Bucket=S3_BUCKET,
+        Key=key,
+        Body=ndjson_content.encode("utf-8"),
+        ContentType="application/x-ndjson"
+    )
+    
+    print(f"Written {len(lines)} items to s3://{S3_BUCKET}/{key}")
+    
+    return {
+        'statusCode': 200,
+        'body': f'Processed {len(lines)} records',
+        'file': f's3://{S3_BUCKET}/{key}'
+    }
+```
 
 ## DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
 
