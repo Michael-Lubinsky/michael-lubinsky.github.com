@@ -1,3 +1,7 @@
+
+https://joshuawise.com/resources/ofdm/
+
+
 ### DFT
 Дискретное преобразование Фурье 
 
