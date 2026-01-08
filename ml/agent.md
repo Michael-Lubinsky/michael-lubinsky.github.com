@@ -3,6 +3,8 @@
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively   
 https://habr.com/ru/articles/983214/  Claude Code 
 
+https://ampcode.com/how-to-build-an-agent
+
 https://www.mihaileric.com/The-Emperor-Has-No-Clothes/
 
 Microsoft AI Agents for beginners (lessons 1-10)
