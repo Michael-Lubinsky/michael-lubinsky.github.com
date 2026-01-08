@@ -1,4 +1,46 @@
 ## Python notes continued
+```
+SET
+* ﻿﻿add()
+* ﻿﻿clear)
+* ﻿﻿pop()
+* ﻿﻿union()
+* ﻿﻿issuperset()
+* ﻿﻿issubset()
+* ﻿﻿intersection()
+* ﻿﻿diffrence()
+* ﻿﻿isdiscard()
+* ﻿﻿setdiscard()
+* ﻿﻿copy()
+LIST
+* ﻿﻿append()
+* ﻿﻿copy()
+* ﻿﻿count()
+* ﻿﻿insert()
+* ﻿﻿reverse(
+* ﻿﻿remove()
+* ﻿﻿sort()
+* ﻿﻿pop()
+* ﻿﻿extend()
+* ﻿﻿index()
+* ﻿﻿clear()
+DICTIONARIES
+* ﻿﻿copy()
+* ﻿﻿clear()
+* ﻿﻿fromkeys()
+* ﻿﻿items)
+* ﻿﻿get()
+* ﻿﻿keys()
+* ﻿﻿pop()
+* ﻿﻿values()
+* ﻿﻿update()
+* ﻿﻿setdefault()
+* ﻿﻿popitem()
+TUPLES
+* ﻿﻿count()
+* ﻿﻿index)
+Since tuples are immutable, these are the only specific methods available directly to them
+```
 
 https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
