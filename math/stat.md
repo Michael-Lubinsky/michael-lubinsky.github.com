@@ -4,6 +4,8 @@ High-Dimensional Probability. Roman Vershinin
 
 <https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
 
+https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
+
 <https://www.youtube.com/watch?v=ztbYkBPDOgU>
 
 <https://www.tensortonic.com/ml-math/statistics/hypothesis-testing>
