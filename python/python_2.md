@@ -1,6 +1,7 @@
 ## Python notes continued
 ```
 SET
+
 * ﻿﻿add()
 * ﻿﻿clear)
 * ﻿﻿pop()
@@ -8,11 +9,13 @@ SET
 * ﻿﻿issuperset()
 * ﻿﻿issubset()
 * ﻿﻿intersection()
-* ﻿﻿diffrence()
+* ﻿﻿difference()
 * ﻿﻿isdiscard()
 * ﻿﻿setdiscard()
 * ﻿﻿copy()
+
 LIST
+
 * ﻿﻿append()
 * ﻿﻿copy()
 * ﻿﻿count()
@@ -24,6 +27,7 @@ LIST
 * ﻿﻿extend()
 * ﻿﻿index()
 * ﻿﻿clear()
+
 DICTIONARIES
 * ﻿﻿copy()
 * ﻿﻿clear()
@@ -36,6 +40,7 @@ DICTIONARIES
 * ﻿﻿update()
 * ﻿﻿setdefault()
 * ﻿﻿popitem()
+
 TUPLES
 * ﻿﻿count()
 * ﻿﻿index)
