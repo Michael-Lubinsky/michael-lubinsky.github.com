@@ -9,6 +9,8 @@ https://www.mihaileric.com/The-Emperor-Has-No-Clothes/
 
 https://github.com/SWE-agent/mini-swe-agent
 
+https://github.com/rcarmo/python-steward
+
 Microsoft AI Agents for beginners (lessons 1-10)
 https://www.youtube.com/watch?v=OhI005_aJkA&list=PLlrxD0HtieHgKcRjd5-8DT9TbwdlDO-OC
 
