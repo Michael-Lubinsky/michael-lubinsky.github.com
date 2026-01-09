@@ -1,7 +1,8 @@
  https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27 
 
 
-https://www.cis.upenn.edu/~jean/math-deep.pdf
+https://www.cis.upenn.edu/~jean/math-deep.pdf  Algebra, Topology, Differential Calculus, and
+Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 
 https://courses.csail.mit.edu/6.042/spring18/mcs.pdf  Math for CS
 
