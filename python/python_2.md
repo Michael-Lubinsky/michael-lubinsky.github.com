@@ -31,14 +31,14 @@ LIST
 DICTIONARIES
 * ﻿﻿copy()
 * ﻿﻿clear()
-* ﻿﻿fromkeys()
+* ﻿﻿fromkeys()  -- ?
 * ﻿﻿items)
 * ﻿﻿get()
 * ﻿﻿keys()
 * ﻿﻿pop()
 * ﻿﻿values()
 * ﻿﻿update()
-* ﻿﻿setdefault()
+* ﻿﻿setdefault()  --?
 * ﻿﻿popitem()
 
 TUPLES
@@ -49,7 +49,9 @@ Since tuples are immutable, these are the only specific methods available direct
 
 https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
-https://habr.com/ru/articles/967152/
+https://habr.com/ru/articles/967152/  9 самых частых задач на Python live-coding
+
+https://habr.com/ru/articles/982768/ Python Collections
 
 ### regex
 https://habr.com/ru/articles/972746/
