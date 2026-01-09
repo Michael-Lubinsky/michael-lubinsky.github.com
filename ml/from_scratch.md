@@ -2,6 +2,8 @@ https://github.com/rasbt/LLMs-from-scratch Sebastian Rashka. Build LLM From Scra
 
 https://karpathy.ai/zero-to-hero.html
 
+https://www.amazon.com/Hands-Deep-Learning-Building-Scratch-ebook/dp/B0GDMNQSMZ 
+
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
