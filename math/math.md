@@ -3,6 +3,8 @@
 
 https://www.cis.upenn.edu/~jean/math-deep.pdf
 
+https://courses.csail.mit.edu/6.042/spring18/mcs.pdf  Math for CS
+
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
 <https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
