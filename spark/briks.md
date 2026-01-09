@@ -24,6 +24,8 @@ https://www.waitingforcode.com/  Bartosz Konieczny
 
 https://buf.build/resources/data-engineering-design-patterns
 
+https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf
+
 <https://sympathetic.ink/2025/12/11/Column-Storage-for-the-AI-era.html>
 
 <https://www.uber.com/blog/from-batch-to-streaming-accelerating-data-freshness-in-ubers-data-lake/>
