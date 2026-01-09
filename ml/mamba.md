@@ -8,9 +8,11 @@ https://www.youtube.com/playlist?list=PL0beoaW5rFR9oQg96Wu0NVsUZZpFbTzK9
 
 https://probml.github.io/pml-book/book2.html
 
-https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
+https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/ BOOK!
 
 https://www.coursera.org/learn/deep-learning-reinforcement-learning
+
+https://habr.com/ru/articles/983768/ Self-supervising learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
