@@ -1,6 +1,7 @@
 High-Dimensional Probability. Roman Vershinin 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
+https://www.youtube.com/watch?v=nKmYjFoiuYM
 
 <https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
 
