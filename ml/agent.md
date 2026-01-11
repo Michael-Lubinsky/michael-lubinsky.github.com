@@ -32,6 +32,12 @@ https://habr.com/ru/articles/981100/
 
 https://pub.towardsai.net/building-production-grade-ai-agents-in-2025-the-complete-technical-guide-9f02eff84ea2
 
+1. Google's Agent Whitepaper: http://lnkd.in/gFvCfbSN
+2. Google's Agent Companion: http://lnkd.in/gfmCrgAH
+3. Building Effective Agents by Anthropic: http://lnkd.in/gRWKANS4.
+4. Claude Code Best Agentic Coding practices: http://lnkd.in/gs99zyCf
+5. OpenAI's Practical Guide to Building Agents: http://lnkd.in/guRfXsFK
+   
 Agent Skills:
 <https://skillsmp.com/>
 
