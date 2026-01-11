@@ -15,6 +15,8 @@ https://www.cosmicpython.com/book/preface.html  Book
 
 <https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
 
+https://tryolabs.com/blog/top-python-libraries-2025
+
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
 https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8
