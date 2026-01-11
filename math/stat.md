@@ -11,6 +11,8 @@ https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
 
 <https://www.tensortonic.com/ml-math/statistics/hypothesis-testing>
 
+https://eyal-kazin.medium.com/
+
 РУКОВОДСТВО К РЕШЕНИЮ ЗАДАЧ ПО ТЕОРИИ ВЕРОЯТНОСТЕЙ И МАТЕМАТИЧЕСКОЙ СТАТИСТИКЕ
 https://elenagavrile.narod.ru/ms/gmurman.pdf
 
