@@ -11,6 +11,9 @@ Introduction to Causal Graphical Models: Graphs, d-separation, do-calculus
 
 https://simons.berkeley.edu/sites/default/files/docs/18989/cau22-bcspencergordon.pdf
 
+
+eyal-kazin.medium.com/causality-mental-hygiene-for-data-science-b7efc302eb72
+
 https://www.youtube.com/watch?v=cnz17Q6g6Lw  
 Chao Ma: Towards Causal Foundation Model: on Duality between Causal Inference and  Attention
 
