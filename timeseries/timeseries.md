@@ -80,3 +80,6 @@ https://medium.com/data-science-collective/enhancing-time-series-forecasting-wit
 https://github.com/salesforce/Merlion#comparison-with-related-libraries
 
 https://habr.com/ru/companies/sportmaster_lab/articles/792318/
+
+
+https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU
