@@ -13,6 +13,8 @@ https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
 
 https://eyal-kazin.medium.com/
 
+https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU
+
 РУКОВОДСТВО К РЕШЕНИЮ ЗАДАЧ ПО ТЕОРИИ ВЕРОЯТНОСТЕЙ И МАТЕМАТИЧЕСКОЙ СТАТИСТИКЕ
 https://elenagavrile.narod.ru/ms/gmurman.pdf
 
