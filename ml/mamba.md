@@ -79,6 +79,16 @@ https://habr.com/ru/articles/964438/ Linear regression and ML
 
 https://www.skills.google/paths/183  Free cource from Google
 
+
+1. LLM Introduction: http://lnkd.in/dMqbaZdK
+2. LLMs from Scratch: http://lnkd.in/dYYwEhYy
+3. Agentic AI Overview (Stanford): http://lnkd.in/dArmMt2i
+4. Building and Evaluating Agents: http://lnkd.in/dBWd2W8u
+5. Building Effective Agents: http://lnkd.in/dHfdebqw
+6. Building Agents with MCP: http://lnkd.in/dXuNHrRJ
+7. Building an Agent from Scratch: http://lnkd.in/da3ANw3w
+8. Philo Agents: http://lnkd.in/dq-BfZE5
+9. 
 https://github.com/mohamedrxo/simplegrad
 
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
