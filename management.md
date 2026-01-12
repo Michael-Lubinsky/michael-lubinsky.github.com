@@ -1,10 +1,9 @@
-<https://vknight.org/2025/10/21/rrr.html> Axelrod tournament
+### Management
+Lessons from 14 years at Google 
+ 
+https://news.ycombinator.com/item?id=46488819
 
-https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation
 
-https://en.wikipedia.org/wiki/Anatol_Rapoport
-
-https://en.wikipedia.org/wiki/Tit_for_tat
 
 ## What makes you senior?
 
