@@ -2,6 +2,8 @@
 
 https://www.youtube.com/watch?v=IBJUt9JPKHk
 
+https://github.com/stas00/
+
 https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
