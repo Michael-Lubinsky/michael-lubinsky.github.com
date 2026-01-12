@@ -1,5 +1,8 @@
 «Если вы не ошибаетесь трижды в день, вы не учитесь»
 
+
+https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
+
 https://habr.com/ru/articles/804605/ ML algos
 
 https://habr.com/ru/articles/984248/ гайд по экосистеме языковых моделей
