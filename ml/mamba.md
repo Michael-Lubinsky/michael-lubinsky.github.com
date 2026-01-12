@@ -1,5 +1,6 @@
 «Если вы не ошибаетесь трижды в день, вы не учитесь»
 
+https://www.youtube.com/watch?v=IBJUt9JPKHk
 
 https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
