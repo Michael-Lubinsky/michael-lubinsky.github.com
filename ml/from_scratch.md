@@ -1,5 +1,7 @@
 https://github.com/rasbt/LLMs-from-scratch Sebastian Rashka. Build LLM From Scratch
 
+https://www.freecodecamp.org/news/code-an-llm-from-scratch-theory-to-rlhf
+
 https://karpathy.ai/zero-to-hero.html
 
 https://www.amazon.com/Hands-Deep-Learning-Building-Scratch-ebook/dp/B0GDMNQSMZ 
