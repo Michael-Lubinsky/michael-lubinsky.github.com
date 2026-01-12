@@ -2,6 +2,7 @@
 
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively   
 https://habr.com/ru/articles/983214/  Claude Code 
+https://habr.com/ru/articles/984160/ Claude Code  agent
 
 https://ampcode.com/how-to-build-an-agent
 
