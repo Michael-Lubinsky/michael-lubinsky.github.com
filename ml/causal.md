@@ -534,6 +534,34 @@ https://openreview.net/pdf?id=pAoqRlTBtY
 https://dl.acm.org/doi/fullHtml/10.1145/3397269  
 https://imai.fas.harvard.edu/talk/files/AAAI19.pdf  
 
+```
+Day 12 of coding diff-diff, the best library for Difference-in-Differences, using Claude Code.
+
+Today we're launching v2, which is up to 2,000x faster than R. That's not a typo. We optimized the core computations and added an optional Rust backend to significantly improve performance.
+
+DiD is the workhorse of causal inference. Policy evaluation, economics research, and testing at scale.
+
+But if you wanted to do serious DiD work, you needed R. The Python ecosystem was fragmented, missing modern methods, and slow.
+
+ What's inside:
+ → Callaway-Sant'Anna (2021) for staggered adoption
+ → Sun-Abraham interaction-weighted estimator
+ → Synthetic DiD
+ → Triple Difference (DDD)
+ → Honest DiD sensitivity analysis
+ → Wild bootstrap for few clusters
+ → Event study plots
+ → And more...
+
+ The best part? It's validated against R packages (did, synthdid, fixest). Point estimates match to 10+ decimal places. And did I mention it's fast?
+
+ sklearn-like API. Statsmodels-style output. No R dependency.
+
+ Get started in 30 seconds:
+ pip install diff-diff
+```
+
+
 ## AI Agents
 
 https://www.reddit.com/r/AI_Agents/comments/1il8b1i/my_guide_on_what_tools_to_use_to_build_ai_agents/
