@@ -1,3 +1,5 @@
+https://habr.com/ru/companies/ruvds/articles/983958/  Embedding
+
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
 Writing an LLM from scratch:
