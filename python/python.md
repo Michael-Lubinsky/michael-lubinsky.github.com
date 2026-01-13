@@ -274,6 +274,9 @@ print(nums[::-1])
 print(list(reversed(nums))) 
 ```
 ### Stack, queue and  deque
+
+https://realpython.com/python-deque/
+
 In Python, there is no built-in stack type. 
 Instead, we can simply use a list to represent a stack efficiently: 
 ```
