@@ -1,3 +1,5 @@
+https://habr.com/ru/articles/979024/
+
 ### Dataclass 
 
 In a Python @dataclass, the order=True option means the class will automatically get comparison methods:
