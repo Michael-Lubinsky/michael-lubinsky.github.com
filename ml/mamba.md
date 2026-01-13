@@ -8,6 +8,8 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+https://habr.com/ru/companies/bothub/articles/984648/ Loss functions
+
 https://habr.com/ru/articles/984248/ гайд по экосистеме языковых моделей
 
 https://simonwillison.net/2025/Dec/31/the-year-in-llms/
