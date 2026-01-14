@@ -3,6 +3,9 @@ High-Dimensional Probability. Roman Vershinin
 
 https://www.youtube.com/watch?v=nKmYjFoiuYM
 
+Statistical Modeling: The Two Cultures. Leo Breiman
+https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726
+
 <https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
 
 https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
