@@ -8,6 +8,10 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+Chris Bishop (all 3 books)
+
+
+
 https://habr.com/ru/companies/bothub/articles/984648/ Loss functions
 
 https://habr.com/ru/articles/984248/ гайд по экосистеме языковых моделей
