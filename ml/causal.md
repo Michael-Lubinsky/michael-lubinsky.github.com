@@ -4,6 +4,9 @@ https://www.causalmlbook.com/
 
 https://ods.ai/tracks/causal-inference-in-ml-df2020
 
+https://blog.neoforgelabs.tech/part-1-why-causality-matters-for-ai
+
+
 https://www.youtube.com/watch?v=yqKJ9pUQ6Q8
 
 https://www.youtube.com/watch?v=mujOFx5oZUQ  
