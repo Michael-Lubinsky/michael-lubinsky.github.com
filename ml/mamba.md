@@ -1,6 +1,6 @@
-«Если вы не ошибаетесь трижды в день, вы не учитесь»
+ https://github.com/roboticcam/machine-learning-notes?tab=readme-ov-file)   ML Learning Notes
 
-https://www.youtube.com/watch?v=IBJUt9JPKHk
+https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
 
 https://github.com/stas00/
 
