@@ -2,6 +2,8 @@
 
 https://www.youtube.com/watch?v=PS9adB2ErkY
 
+https://www.youtube.com/watch?v=WtNpneVKNoY
+
 https://www.causalmlbook.com/
 
 https://ods.ai/tracks/causal-inference-in-ml-df2020
