@@ -10,7 +10,10 @@ https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F100921372
 
 https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
 
-<https://www.youtube.com/watch?v=ztbYkBPDOgU>
+<https://www.youtube.com/watch?v=ztbYkBPDOgU> 
+Statistical Rethinking 2026 - Lecture A01 by Richard McElreath
+
+https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 
 <https://www.tensortonic.com/ml-math/statistics/hypothesis-testing>
 
@@ -28,7 +31,7 @@ Statistical process control in python
 
 https://blog.keithmcnulty.org/
 
-https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
+
 
 ## How to test whether two variables have a monotonic relationship 
 meaning they tend to increase or decrease together, 
