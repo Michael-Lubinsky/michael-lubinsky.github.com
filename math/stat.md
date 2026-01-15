@@ -28,6 +28,8 @@ Statistical process control in python
 
 https://blog.keithmcnulty.org/
 
+https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
+
 ## How to test whether two variables have a monotonic relationship 
 meaning they tend to increase or decrease together, 
 without necessarily being linearly related — 
