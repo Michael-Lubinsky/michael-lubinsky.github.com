@@ -1,5 +1,7 @@
 ### Causality
 
+https://www.youtube.com/watch?v=PS9adB2ErkY
+
 https://www.causalmlbook.com/
 
 https://ods.ai/tracks/causal-inference-in-ml-df2020
