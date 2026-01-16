@@ -1,4 +1,6 @@
 ## Time Series
+Book: https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-ebook/dp/B0G3VGKWHJ 
+
 
 https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/ 
 
