@@ -251,7 +251,8 @@ https://machine-learning-with-python.readthedocs.io/
 
 https://lux-api.readthedocs.io/en/latest/index.html
 
-
+Feature selection
+https://ikromshi.com/2025/12/30/feature-selection-primer.html
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
