@@ -1,4 +1,7 @@
 ### DuckDB
+
+https://news.ycombinator.com/item?id=46645176
+
 ```python
 # No need to load CSV file explicitely!
 max_q2 = duckdb.execute(
