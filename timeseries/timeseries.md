@@ -14,6 +14,8 @@ https://habr.com/ru/articles/953154/
 
 https://habr.com/ru/articles/949062/ Chronos и AutoGluon-TimeSeries — мощный инструмент прогнозирования временных рядов
 
+diff-in-diff
+
 https://autognosi.medium.com/advanced-techniques-and-practical-aspects-in-anomaly-detection-for-time-series-f9b30e4e8760
 
 https://habr.com/ru/companies/otus/articles/919156/
