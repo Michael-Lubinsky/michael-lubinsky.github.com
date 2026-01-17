@@ -545,9 +545,11 @@ https://openreview.net/pdf?id=pAoqRlTBtY
 https://dl.acm.org/doi/fullHtml/10.1145/3397269  
 https://imai.fas.harvard.edu/talk/files/AAAI19.pdf  
 
-```
-Day 12 of coding diff-diff, the best library for Difference-in-Differences, using Claude Code.
+ 
+### diff-diff, the best library for Difference-in-Differences 
 
+https://habr.com/ru/articles/986182/
+```
 Today we're launching v2, which is up to 2,000x faster than R. That's not a typo. We optimized the core computations and added an optional Rust backend to significantly improve performance.
 
 DiD is the workhorse of causal inference. Policy evaluation, economics research, and testing at scale.
@@ -567,10 +569,9 @@ But if you wanted to do serious DiD work, you needed R. The Python ecosystem was
  The best part? It's validated against R packages (did, synthdid, fixest). Point estimates match to 10+ decimal places. And did I mention it's fast?
 
  sklearn-like API. Statsmodels-style output. No R dependency.
-
- Get started in 30 seconds:
- pip install diff-diff
 ```
+ pip install diff-diff
+ 
 
 
 ## AI Agents
