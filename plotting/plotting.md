@@ -1,6 +1,9 @@
 
 https://python.plainenglish.io/8-python-visualization-tricks-that-make-data-pop-5585ea5f84d7
 
+
+https://lets-plot.org/
+
 https://altair-viz.github.io/index.html
 
 https://vizro.readthedocs.io/en/stable/
