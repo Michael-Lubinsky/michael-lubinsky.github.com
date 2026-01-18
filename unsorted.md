@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=CzI2CKrnZsw> БИБЛИЯ. Ветхий Завет. Синодальный перевод. Часть 1.
 
+https://dokumen.pub/
+
 ## Unsorted
 
 <https://openai.com/index/introducing-codex/>
