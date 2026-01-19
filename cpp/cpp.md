@@ -1,3 +1,7 @@
+https://github.com/federico-busato/Modern-CPP-Programming
+
+https://techfortalk.co.uk/2026/01/18/c17-efficiently-returning-stdvector-from-functions/
+
 https://habr.com/ru/companies/bercut/articles/970442/
 
 https://habr.com/ru/companies/piter/articles/977658/
