@@ -10,7 +10,9 @@ https://github.com/rjsabouhi/signal-scope
 
 https://github.com/business-science/pytimetk
 
-https://habr.com/ru/articles/953154/
+https://habr.com/ru/articles/953154/  Как ИИ-агенты учатся работать с временными рядами
+
+https://habr.com/ru/companies/magnit/articles/985864/  делаем прогноз для 200+ рядов с библиотекой Etna
 
 https://habr.com/ru/articles/949062/ Chronos и AutoGluon-TimeSeries — мощный инструмент прогнозирования временных рядов
 
