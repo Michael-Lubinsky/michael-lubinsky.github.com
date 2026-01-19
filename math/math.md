@@ -12,6 +12,9 @@ https://courses.csail.mit.edu/6.042/spring18/mcs.pdf  Math for CS
 
 https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work 
 
+
+https://www.youtube.com/watch?v=yVji26jB2h4 Lie Theory
+
 https://www.axler.net/DwD.pdf Linear Algebra without determinants
 
 Суть линейной алгебры:
