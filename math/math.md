@@ -10,6 +10,8 @@ https://courses.csail.mit.edu/6.042/spring18/mcs.pdf  Math for CS
 
 <https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
 
+https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work 
+
 https://www.axler.net/DwD.pdf Linear Algebra without determinants
 
 Суть линейной алгебры:
