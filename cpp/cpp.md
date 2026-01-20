@@ -8,7 +8,7 @@ https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference
 
 https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловушки C++: типичные ошибки, их последствия и защита
 
-https://habr.com/ru/companies/piter/articles/977658/
+https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
 
 https://en.wikipedia.org/wiki/Region-based_memory_management
 
