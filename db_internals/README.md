@@ -2,6 +2,8 @@
 
 <https://blog.dataengineerthings.org/postgresql-wal-internals-for-data-engineers-ef6229584a99>
 
+https://www.interdb.jp/pg/pgsql03/05/index.html
+
 <https://github.com/avalokkumar/database-deep-dive>
 
 <https://www.nan.fyi/database> Build Your Own Database
