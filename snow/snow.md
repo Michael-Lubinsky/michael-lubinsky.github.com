@@ -1270,6 +1270,10 @@ JSON query helpers
 
 ```
 
+### Semantic Views
+
+https://docs.snowflake.com/en/user-guide/views-semantic/overview
+
 ### Pivot SQL
 - You must specify the values in the IN (...) clause (no dynamic pivoting).
 - Aggregation function (e.g. SUM, AVG) is required.
