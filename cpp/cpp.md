@@ -6,6 +6,9 @@ https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-effici
 
 https://techfortalk.co.uk/2026/01/18/c17-efficiently-returning-stdvector-from-functions/
 
+
+https://accu.org/journals/overload/33/190/filipek/ 15 Different Ways to Filter Containers
+
 https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference
 
 https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловушки C++: типичные ошибки, их последствия и защита
