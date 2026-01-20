@@ -6,7 +6,7 @@ https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-wor
 
 https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
 
-https://github.com/rjsabouhi/signal-scope
+https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet
 
 https://github.com/business-science/pytimetk
 
