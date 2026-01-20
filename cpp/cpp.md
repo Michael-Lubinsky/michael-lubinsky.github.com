@@ -6,7 +6,7 @@ https://techfortalk.co.uk/2026/01/18/c17-efficiently-returning-stdvector-from-fu
 
 https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference
 
-https://habr.com/ru/companies/bercut/articles/970442/
+https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловушки C++: типичные ошибки, их последствия и защита
 
 https://habr.com/ru/companies/piter/articles/977658/
 
