@@ -12,6 +12,8 @@ https://www.youtube.com/watch?v=g8vyOeLaGh0
 
 https://www.causalmlbook.com/
 
+https://www.amazon.com/Causal-Inference-Press-Essential-Knowledge/dp/0262545195  
+
 https://ods.ai/tracks/causal-inference-in-ml-df2020
 
 https://blog.neoforgelabs.tech/part-1-why-causality-matters-for-ai
