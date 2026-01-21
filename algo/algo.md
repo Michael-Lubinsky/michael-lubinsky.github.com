@@ -445,3 +445,22 @@ return canoes
 #### list comprehension to generate a list of odd numbers
  
 odd_numbers = [x for x in range(101) if x % 2 != 0]
+
+
+###  Stack
+
+```python
+class Stack:
+  def __init__(self):
+     self.items = []
+  def isEmpty(self):
+     return self.items == []
+  def push(self, item):
+     self.items.append(item)
+  def pop(self):
+     return self.items.pop()
+ def peek(self):
+     return self.items[len(self.items)-1]
+ def size(self):
+   return len(self.items)
+```
