@@ -1,4 +1,7 @@
 ### Management
+
+https://habr.com/ru/articles/987238/  Performance review
+
 Lessons from 14 years at Google 
  
 https://news.ycombinator.com/item?id=46488819
