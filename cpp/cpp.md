@@ -1,3 +1,4 @@
+## C /C++
 https://github.com/federico-busato/Modern-CPP-Programming
 
 https://leanpub.com/cppinterview
@@ -70,11 +71,11 @@ https://github.com/taskflow/taskflow
 
 https://github.com/fffaraz/awesome-cpp
 
-
+https://grishavanika.github.io/cpp_tips_tricks_quirks.html
 
 https://habr.com/ru/articles/935590/  C++ string library
 
-Flame Graph
+### Flame Graph
 https://github.com/ibogosavljevic/fiya
 https://johnnysswlab.com/fiya-flamegraphs-in-your-app
 
