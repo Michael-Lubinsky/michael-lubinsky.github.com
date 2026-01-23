@@ -47,7 +47,10 @@ https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-effici
 
 https://habr.com/ru/articles/912926/  Performance Traps
 
-https://habr.com/ru/companies/pvs-studio/articles/708138/  
+## Very useful links
+https://habr.com/ru/companies/pvs-studio/articles/708138/
+https://github.com/JoshuaJakowlew/cppfaq
+
 https://accu.org/    
 https://www.learncpp.com/  
 https://roadmap2.me/PA74IVSGMe C++ exersices
