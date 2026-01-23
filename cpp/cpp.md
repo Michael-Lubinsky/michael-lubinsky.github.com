@@ -13,13 +13,24 @@ https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference
 
 https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловушки C++: типичные ошибки, их последствия и защита
 
+https://habr.com/ru/articles/920790/  Supervisor on C++
+
+### Memory management
+
 https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
+
+https://habr.com/ru/companies/otus/articles/914262/ Ссылки и указатели в C++
 
 https://en.wikipedia.org/wiki/Region-based_memory_management
 
-https://habr.com/ru/articles/920790/  Supervisor on C++
+https://habr.com/ru/articles/896958/  Memory management
+
+https://habr.com/ru/companies/otus/articles/988086/ Custom allocators
+
 
 https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри  
+
+
 https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C  
 https://github.com/codr7/hacktical-c  
 
@@ -35,9 +46,9 @@ https://habr.com/ru/articles/912926/
 https://habr.com/ru/companies/pvs-studio/articles/708138/  
 https://accu.org/    
 https://www.learncpp.com/  
-https://roadmap2.me/PA74IVSGMe C++ exercises
+https://roadmap2.me/PA74IVSGMe C++ exersices
 https://www.reddit.com/r/cpp/comments/1isd58i/selfdescribing_compact_binary_serialization_format/ 
-https://habr.com/ru/articles/896958/  Memory management
+
 https://www.reddit.com/r/cpp/comments/1j1cysb/the_cherno_tutorial_still_good/
 https://www.reddit.com/r/cpp/comments/1ir2x5y/your_favorite_cppcon_talks/
 https://www.reddit.com/r/cpp/comments/1ijwb7d/reignite_my_love_for_c/
@@ -56,7 +67,7 @@ https://github.com/taskflow/taskflow
 
 https://github.com/fffaraz/awesome-cpp
 
-https://habr.com/ru/companies/otus/articles/914262/ Ссылки и указатели в C++
+
 
 https://habr.com/ru/articles/935590/  C++ string library
 
