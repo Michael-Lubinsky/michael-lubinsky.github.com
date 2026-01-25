@@ -5,6 +5,8 @@ https://habr.com/ru/articles/983214/  Claude Code
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 https://habr.com/ru/articles/984656/  Cursor Agent
 
+https://habr.com/ru/articles/987528/
+
 https://www.freecodecamp.org/news/how-to-build-advanced-ai-agents/ 
 https://ampcode.com/how-to-build-an-agent
 
