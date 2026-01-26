@@ -4,7 +4,7 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/
 
-https://habr.com/ru/companies/otus/articles/975328/
+https://habr.com/ru/companies/otus/articles/975328/ модель множественной регрессии с нуля
 
 https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision
 
