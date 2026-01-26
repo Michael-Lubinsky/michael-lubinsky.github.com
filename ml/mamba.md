@@ -12,7 +12,7 @@ https://habr.com/ru/articles/804605/ ML algos
 
 Chris Bishop (all 3 books)
 
-
+https://www.youtube.com/c/joshstarmer
 
 https://habr.com/ru/companies/bothub/articles/984648/ Loss functions
 
