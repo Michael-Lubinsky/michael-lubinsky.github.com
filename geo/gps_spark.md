@@ -32,6 +32,8 @@ There’s no actual island — it’s an imaginary point in the Atlantic Ocean.
 
 ### GeoPy , Folium, etc
 
+<https://realpython.com/geopandas/>
+
 <https://blog.devgenius.io/geospatial-file-formats-899fe6eeb9e3>
 
 ```python
