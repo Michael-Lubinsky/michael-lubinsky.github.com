@@ -20,7 +20,9 @@ Catalog (top-level container)
 
 <https://blog.dataengineerthings.org/>
 
-https://www.waitingforcode.com/  Bartosz Konieczny
+<https://smartdataconf.ru/schedule/topics/#topic-2>
+
+<https://www.waitingforcode.com/>  Bartosz Konieczny
 
 https://buf.build/resources/data-engineering-design-patterns
 
