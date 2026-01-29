@@ -22,6 +22,8 @@ https://udlbook.github.io/udlbook/
 3. Introduction to Machine Learning Systems
 http://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
 
+https://t.co/U61m5EUgiT
+
 4. Algorithms for ML
 https://algorithmsbook.com
 
