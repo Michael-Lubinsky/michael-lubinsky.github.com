@@ -20,9 +20,9 @@ https://cs.nyu.edu/~mohri/mlbook/
 https://udlbook.github.io/udlbook/
 
 3. Introduction to Machine Learning Systems
-http://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
-
-https://t.co/U61m5EUgiT
+http://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf -- wrong?
+https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf
+ 
 
 4. Algorithms for ML
 https://algorithmsbook.com
