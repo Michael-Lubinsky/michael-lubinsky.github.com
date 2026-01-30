@@ -16,6 +16,8 @@ https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловуш�
 
 https://habr.com/ru/articles/920790/  Supervisor on C++
 
+https://www.cppnext.com/
+
 ### Memory management
 
 https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
