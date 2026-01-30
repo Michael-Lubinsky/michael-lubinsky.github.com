@@ -2,6 +2,8 @@
 
 https://causalpython.io/
 
+https://www.udemy.com/course/causal-ai-in-a-nutshell/learn/lecture/47006907#overview
+
 https://www.youtube.com/watch?v=tvyuJZHJZvA
 
 https://www.youtube.com/watch?v=PS9adB2ErkY
