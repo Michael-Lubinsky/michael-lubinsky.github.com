@@ -1,6 +1,6 @@
 ## Lambda
 
-Yes — **absolutely right** 👍
+
 An **AWS Lambda function can be associated with (triggered by) many different event sources at the same time**.
 
 In the **AWS Console (Web UI)**, this is done via **Triggers** on the Lambda.
