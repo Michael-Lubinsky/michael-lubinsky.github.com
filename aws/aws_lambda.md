@@ -1,3 +1,153 @@
+## Lambda
+
+Yes — **absolutely right** 👍
+An **AWS Lambda function can be associated with (triggered by) many different event sources at the same time**.
+
+In the **AWS Console (Web UI)**, this is done via **Triggers** on the Lambda.
+
+---
+
+## Common Lambda trigger types (one Lambda, many triggers)
+
+A single Lambda can be invoked by **any combination** of these:
+
+### 🔔 Event-based / async
+
+* **Amazon S3** – object created / deleted
+* **Amazon EventBridge (CloudWatch Events)** – schedules (cron), SaaS events, custom events
+* **SNS** – topic publish
+* **CloudWatch Logs** – log subscription filters
+* **IoT Core**
+* **CodeCommit / CodePipeline**
+
+### ⚡ Stream-based
+
+* **DynamoDB Streams**
+* **Kinesis Data Streams**
+* **Amazon MSK (Kafka)**
+
+### 🌐 Request/response
+
+* **API Gateway (REST / HTTP)**
+* **Application Load Balancer (ALB)**
+* **Lambda Function URL**
+
+### 🧩 Other AWS services
+
+* **Step Functions**
+* **SQS**
+* **Cognito**
+* **Lex**
+* **Alexa**
+* **Bedrock (newer use cases)**
+
+---
+
+## What this looks like in the AWS Web UI
+
+1. Open **Lambda**
+2. Select your function
+3. Go to **Configuration → Triggers**
+4. Click **Add trigger**
+5. Choose another service
+
+You’ll see **multiple triggers listed**, all pointing to the same Lambda.
+
+Example:
+
+```
+Triggers:
+✔ S3 (bucket uploads)
+✔ EventBridge (every 5 minutes)
+✔ API Gateway (REST endpoint)
+✔ SQS (queue messages)
+```
+
+All of these can invoke the *same* function.
+
+---
+
+## Important design details (this matters)
+
+### 1️⃣ Your code must distinguish the event source
+
+Since the same Lambda handles multiple triggers, your handler usually checks the event shape:
+
+```python
+def handler(event, context):
+    if "Records" in event and event["Records"][0]["eventSource"] == "aws:s3":
+        handle_s3(event)
+    elif "httpMethod" in event:
+        handle_api(event)
+    elif "source" in event and event["source"] == "aws.events":
+        handle_eventbridge(event)
+```
+
+This is very common in production Lambdas.
+
+---
+
+### 2️⃣ Permissions are added automatically
+
+When you add a trigger in the console:
+
+* AWS automatically updates the **resource-based policy**
+* Example:
+
+  ```
+  s3.amazonaws.com
+  events.amazonaws.com
+  apigateway.amazonaws.com
+  ```
+
+Each trigger gets permission to invoke the Lambda.
+
+---
+
+### 3️⃣ Triggers are independent
+
+* One trigger failing does **not** affect others
+* You can disable or delete one trigger without touching the rest
+* You can add concurrency limits per function (shared across triggers)
+
+---
+
+### 4️⃣ Same Lambda ≠ same behavior
+
+Often used patterns:
+
+* **Fan-in**: many event sources → one Lambda
+* **Routing Lambda**: one entry point, logic dispatch inside
+* **Cost optimization**: reuse deployment package and infra
+
+But for complex systems, **multiple Lambdas** is often cleaner.
+
+---
+
+## When *not* to do this
+
+Avoid many triggers on one Lambda if:
+
+* Event payloads are very different and logic becomes messy
+* Different triggers need very different IAM roles
+* You want independent scaling limits or deploy cycles
+
+In those cases → split Lambdas.
+
+---
+
+
+
+✔ Yes, **one AWS Lambda can be triggered by many different event sources**
+✔ This is fully supported in the **AWS Web UI**
+✔ Your handler must detect the event type
+✔ AWS manages permissions automatically
+
+
+
+
+
+
 ## Lambda Example
 
 ```python
