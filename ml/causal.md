@@ -4,6 +4,8 @@ https://causalpython.io/
 
 https://www.udemy.com/course/causal-ai-in-a-nutshell/learn/lecture/47006907#overview
 
+https://habr.com/ru/companies/kuper/articles/990726/
+
 https://www.youtube.com/watch?v=tvyuJZHJZvA
 
 https://www.youtube.com/watch?v=PS9adB2ErkY
