@@ -144,6 +144,7 @@ In those cases → split Lambdas.
 ✔ AWS manages permissions automatically
 
 
+<img width="539" height="1235" alt="image" src="https://github.com/user-attachments/assets/54d35ba7-d523-4fe8-9fd3-4d67168d3be6" />
 
 
 
