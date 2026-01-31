@@ -1,6 +1,8 @@
 ## Time Series
 Book: https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-ebook/dp/B0G3VGKWHJ 
 
+https://leanpub.com/mastering_modern_time_series_forecasting
+
 https://machinelearningmastery.com/the-2026-time-series-toolkit-5-foundation-models-for-autonomous-forecasting/
 
 https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/ 
