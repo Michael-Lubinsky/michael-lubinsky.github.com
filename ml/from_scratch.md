@@ -1,5 +1,8 @@
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
+https://www.youtube.com/watch?v=qx7hirqgfuU 
+Why Deep Learning Works Unreasonably Well [How Models Learn Part 3]
+
 https://github.com/rasbt/LLMs-from-scratch Sebastian Rashka. Build LLM From Scratch
 
 https://www.freecodecamp.org/news/code-an-llm-from-scratch-theory-to-rlhf
