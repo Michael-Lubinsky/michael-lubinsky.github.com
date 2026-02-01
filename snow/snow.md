@@ -21,6 +21,15 @@ SNOWFLAKE (Snowflake-managed data, like replication status)
 | `SNOWFLAKE.READER_ACCOUNT_USAGE` | Reader accounts       | Usage billing from shared accounts |
 
 
+### 4 Snowflake functions 
+
+1️⃣MIN_BY Returns the value of one column for the row containing the minimum value of another column. 
+
+2️⃣ MAX_BY Same as above but for maximum value. 
+
+3️⃣COUNT_IF Counts the number of rows that meet a specified condition (simplified CASE WHEN). 
+
+4️⃣LISTAGG Aggregates the values from multiple rows into a single concatenated string, separated by a specified delimiter. 
 
 ### INFORMATION_SCHEMA
 
