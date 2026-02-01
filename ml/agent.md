@@ -7,6 +7,8 @@ https://habr.com/ru/articles/984656/  Cursor Agent
 
 https://habr.com/ru/articles/987528/
 
+https://news.ycombinator.com/item?id=46844822
+
 https://www.freecodecamp.org/news/how-to-build-advanced-ai-agents/ 
 https://ampcode.com/how-to-build-an-agent
 
