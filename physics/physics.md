@@ -5,6 +5,7 @@ http://lightcone.ru/
 Принцип наименьшего действия [Veritasium]:
 https://www.youtube.com/watch?v=C2tL1A3B3cY
 
+https://www.amazon.com/Introduction-Modern-Physics-Theoretical-Foundations/dp/9812812253
 
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 https://www.youtube.com/watch?v=qJZ1Ez28C-A
