@@ -238,7 +238,52 @@ https://www.youtube.com/watch?v=JZGacZrf-6M Top Leetcode Algo
 <https://neetcode.io/roadmap>
 
 
-#### Algebraic data types
+### Algebraic data types: Union types, sum types and product types
+
+```
+struct P {
+    year: u16,
+    number: u32
+}
+```
+struct P is simply the Cartesian product of the two types,
+That's why structs are called product types
+
+#### union type   
+is not composed of one field AND another, but instead one field OR another.
+
+#### sum type 
+Suppose you want to make a union type that contains either the year of the Gregorian calendar (stored in a u16), or the year according to the Hijri calendar (also stored in a u16). You can't express this as a union type 
+``` 
+T=u16∪u16=u16, because in your case, these two u16 are different things, that just happen to have the same representation, but shouldn't be conflated.
+
+The solution is pretty straightforward: You create two new types that wrap the u16s, and serve as a "type tag" so the program knows how to interpret the data. Something like:
+
+struct Year_Gregorian {
+    val: u16
+}
+
+struct Year_Hijri {
+    val: u16
+}
+
+union type Year {
+    Year_Gregorian,
+    Year_Hijri
+}
+This kind of type - a union type with each member tagged - is called a tagged union. It's also called a sum type. By now you can guess why it's called a sum type: The number of values of type Year is exactly the sum of its members: 
+
+∣Year∣=∣Year 
+Gregorian
+​
+ ∣+∣Year 
+Hijri
+​
+ ∣.
+
+Sum types are really useful when you want to be 100% sure you can distinguish all members of your union.
+```
+<https://viralinstruction.com/posts/uniontypes/>
 
 <https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
 
