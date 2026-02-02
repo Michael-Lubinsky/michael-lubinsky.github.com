@@ -1,7 +1,13 @@
-## Python notes continued
-```
-SET
 
+## Python notes continued
+
+Разбор threading vs multiprocessing vs asyncio в Python
+https://habr.com/ru/articles/991478/
+
+
+
+#### SET
+```
 * ﻿﻿add()
 * ﻿﻿clear)
 * ﻿﻿pop()
@@ -13,9 +19,9 @@ SET
 * ﻿﻿isdiscard()
 * ﻿﻿setdiscard()
 * ﻿﻿copy()
-
-LIST
-
+```
+#### LIST
+```
 * ﻿﻿append()
 * ﻿﻿copy()
 * ﻿﻿count()
@@ -27,8 +33,9 @@ LIST
 * ﻿﻿extend()
 * ﻿﻿index()
 * ﻿﻿clear()
-
-DICTIONARIES
+```
+#### DICTIONARIES
+```
 * ﻿﻿copy()
 * ﻿﻿clear()
 * ﻿﻿fromkeys()  -- ?
@@ -40,10 +47,12 @@ DICTIONARIES
 * ﻿﻿update()
 * ﻿﻿setdefault()  --?
 * ﻿﻿popitem()
-
-TUPLES
+```
+#### TUPLES
+```
 * ﻿﻿count()
-* ﻿﻿index)
+* ﻿﻿index
+```
 Since tuples are immutable, these are the only specific methods available directly to them
 ```
 
