@@ -57,7 +57,7 @@ FROM (
 GROUP BY customer_id, grp;
 ```
 
-### all cities with more customers than the average number of customers per city
+### All cities with more customers than the average number of customers per city
 ```sql
 Copy code
 SELECT city, COUNT(*) AS customer_count
@@ -1019,6 +1019,42 @@ Here are **two clean, standard solutions**. Both assume:
 ## Problem:
 There is database table T. which contains emp_id and login_date columns.  
 Write SQL to find employees who logged in for 3 consecutive days.
+```sql
+WITH consecutive_logins AS (
+    SELECT 
+        emp_id,
+        login_date,
+        DATE_SUB(login_date, INTERVAL ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY login_date) DAY) AS grp
+    FROM (
+        SELECT DISTINCT emp_id, login_date
+        FROM T
+    ) distinct_logins
+)
+SELECT DISTINCT emp_id
+FROM consecutive_logins
+GROUP BY emp_id, grp
+HAVING COUNT(*) >= 3;
+```
+
+**How it works:**
+
+1. **Remove duplicates**: First, get distinct emp_id and login_date combinations (in case an employee logged in multiple times on the same day)
+
+2. **Calculate grouping key**: For each employee, assign row numbers to ordered login dates, then subtract that row number from the date. Consecutive dates will produce the same group value.
+
+3. **Count consecutive days**: Group by employee and the grouping key, count how many consecutive days exist
+
+4. **Filter**: Keep only employees with 3+ consecutive login days
+
+**Example:**
+```
+emp_id | login_date  | row_num | grp (date - row_num)
+-------|-------------|---------|-------------------
+1      | 2024-01-01  | 1       | 2023-12-31
+1      | 2024-01-02  | 2       | 2023-12-31  ← same group
+1      | 2024-01-03  | 3       | 2023-12-31  ← same group (3 consecutive!)
+1      | 2024-01-05  | 4       | 2024-01-01  ← different group (gap)
+```
 
 ## Solution 1 — Using `ROW_NUMBER()` (most common & elegant)
 
