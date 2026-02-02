@@ -4,6 +4,8 @@ https://causalpython.io/
 
 https://www.udemy.com/course/causal-ai-in-a-nutshell/learn/lecture/47006907#overview
 
+https://www.youtube.com/watch?v=DrbqwNhHK9Y NeurIPS 2025 in San Diego. Causal Representations from Observational Data
+
 https://habr.com/ru/companies/kuper/articles/990726/
 
 https://www.youtube.com/watch?v=tvyuJZHJZvA
