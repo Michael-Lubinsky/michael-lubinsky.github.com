@@ -1,4 +1,4 @@
-
+## Kafka
 
 <https://github.com/quixio/quix-streams>  Python Streaming DataFrames for Kafka
 
@@ -7,6 +7,8 @@
 <https://habr.com/ru/articles/972788/>
 
 <https://habr.com/ru/companies/ydb/articles/972180/>
+
+<https://habr.com/ru/companies/usetech/articles/991698/>
 
 <https://github.com/twmb/franz-go?tab=readme-ov-file> Go library for interacting with Kafka: Producing, consuming, transacting, administrating, etc.
 
