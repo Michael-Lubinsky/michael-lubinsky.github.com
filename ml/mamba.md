@@ -53,6 +53,8 @@ https://fairmlbook.org
 
 Chris Bishop (all 3 books)
 
+https://habr.com/ru/companies/yandex_praktikum/articles/986742/ Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов
+
 https://www.youtube.com/c/joshstarmer
 
 https://habr.com/ru/companies/bothub/articles/984648/ Loss functions
