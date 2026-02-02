@@ -3,6 +3,8 @@
 https://www.youtube.com/watch?v=1vPqIweQh_U 
 LLM, трансформеры, внимательно разбираем внутренности
 
+Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов: https://habr.com/ru/companies/yandex_praktikum/articles/986742/
+
 https://bbycroft.net/llm
 
 https://www.youtube.com/watch?v=iOrNbK2T92M
