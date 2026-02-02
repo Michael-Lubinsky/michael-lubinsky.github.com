@@ -1009,6 +1009,91 @@ GROUP BY CURR_DATE, COHORT
 ORDER BY CURR_DATE, COHORT;
 ```
 
+Classic interview / real-world SQL problem 🙂
+Here are **two clean, standard solutions**. Both assume:
+
+* Table: `T(emp_id, login_date)`
+* `login_date` is a **DATE** (not timestamp)
+* If an employee logs in multiple times in a day, we count it **once per day**
+
+## Problem:
+There is database table T. which contains emp_id and login_date columns.  
+Write SQL to find employees who logged in for 3 consecutive days.
+
+## Solution 1 — Using `ROW_NUMBER()` (most common & elegant)
+
+**Idea:**
+For each employee, order their login dates.
+If dates are consecutive, the expression
+
+```
+login_date - row_number
+```
+
+is constant.
+
+### SQL
+
+```sql
+WITH distinct_logins AS (
+    SELECT DISTINCT emp_id, login_date
+    FROM T
+),
+seq AS (
+    SELECT
+        emp_id,
+        login_date,
+        ROW_NUMBER() OVER (PARTITION BY emp_id ORDER BY login_date) AS rn
+    FROM distinct_logins
+)
+SELECT emp_id
+FROM seq
+GROUP BY emp_id, login_date - rn
+HAVING COUNT(*) >= 3;
+```
+
+### Why this works
+
+For consecutive dates:
+
+| login_date | rn | login_date − rn |
+| ---------- | -- | --------------- |
+| Jan 1      | 1  | Dec 31          |
+| Jan 2      | 2  | Dec 31          |
+| Jan 3      | 3  | Dec 31          |
+
+Same value ⇒ consecutive streak.
+
+---
+
+## Solution 2 — Self-join on next days (simple & readable)
+
+**Idea:**
+Find a day `D` such that the employee also logged in on `D+1` and `D+2`.
+
+### SQL
+
+```sql
+SELECT DISTINCT t1.emp_id
+FROM T t1
+JOIN T t2
+  ON t1.emp_id = t2.emp_id
+ AND t2.login_date = t1.login_date + INTERVAL '1 day'
+JOIN T t3
+  ON t1.emp_id = t3.emp_id
+ AND t3.login_date = t1.login_date + INTERVAL '2 day';
+```
+ 
+
+If `login_date` is a **timestamp**, wrap it:
+
+```sql
+DATE(login_ts)
+```
+
+before applying logic, otherwise consecutive days won’t match.
+
+ 
 
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
