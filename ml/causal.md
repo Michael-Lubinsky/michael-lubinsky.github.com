@@ -2,6 +2,9 @@
 
 https://causalpython.io/
 
+Causal Discovery Algorithms 
+https://arxiv.org/pdf/2502.17030
+
 https://www.udemy.com/course/causal-ai-in-a-nutshell/learn/lecture/47006907#overview
 
 https://www.youtube.com/watch?v=DrbqwNhHK9Y NeurIPS 2025 in San Diego. Causal Representations from Observational Data
