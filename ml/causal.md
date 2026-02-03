@@ -168,6 +168,8 @@ What is causal inference
 https://www.youtube.com/watch?v=dFp2Ou52-po 
 
 
+https://causal-learn.readthedocs.io/en/latest/
+
 https://en.wikipedia.org/wiki/Rubin_causal_model
 
 https://www.youtube.com/watch?v=LrmrH26EhSo
