@@ -3,6 +3,8 @@
 
 ![](Spark_architecture.png)
 
+<https://medium.com/@reliabledataengineering/the-best-github-repos-for-data-engineers-in-2025-b2f02d7c1833>
+
 ### Query plan  builder
 
 ![](Spark_plan_building_steps.png)
