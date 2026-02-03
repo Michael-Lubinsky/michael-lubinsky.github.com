@@ -9,6 +9,9 @@
 SQL for time series:
 <https://medium.com/@Rohan_Dutt/10-time-series-feature-engineering-tricks-you-can-do-directly-in-sql-39acc18fab52>
 
+count(distinct) over window function
+<https://medium.com/snowflake/snowflake-rolling-window-distinct-count-how-to-make-this-happen-b9ba35cc105a>
+
 ### Find maximum interval of consecutive dates (no gaps)
 ```sql
 WITH date_sequence AS (
