@@ -2,6 +2,8 @@
 
 https://habr.com/ru/companies/tochka/articles/976892/
 
+https://habr.com/ru/companies/ruvds/articles/990814/
+
 https://metaflow.org/
 
 https://mlip-cmu.github.io/book/
