@@ -6,6 +6,8 @@ https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering
 https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
 https://stasosphere.com/machine-learning/  
 
+https://deeplearningwithpython.io/chapters/
+
 https://github.com/Dyakonov/MLDM_BOOK   ML book
 
 https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
