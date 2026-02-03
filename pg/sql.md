@@ -6,6 +6,9 @@
 
 <https://dbfiddle.uk/>   <https://sqlfiddle.com/>     <https://rextester.com/>   <https://schemaspy.org/>
 
+SQL for time series:
+<https://medium.com/@Rohan_Dutt/10-time-series-feature-engineering-tricks-you-can-do-directly-in-sql-39acc18fab52>
+
 ### Find maximum interval of consecutive dates (no gaps)
 ```sql
 WITH date_sequence AS (
