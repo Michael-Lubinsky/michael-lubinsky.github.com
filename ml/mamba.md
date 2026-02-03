@@ -12,6 +12,8 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+## ONNX book
+https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/ref=tmm_pap_swatch_0?_encoding=UTF8&dib_tag=se& 
 
 1. Foundations of Machine Learning
 https://cs.nyu.edu/~mohri/mlbook/
@@ -50,8 +52,9 @@ https://fairmlbook.org
   Part 1 : https://probml.github.io/pml-book/book1.html
   Part 2 : https://probml.github.io/pml-book/book2.html
 
-
+ 
 Chris Bishop (all 3 books)
+https://www.bishopbook.com
 
 https://habr.com/ru/companies/yandex_praktikum/articles/986742/ Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов
 
@@ -65,7 +68,6 @@ https://simonwillison.net/2025/Dec/31/the-year-in-llms/
 
 https://www.youtube.com/playlist?list=PL0beoaW5rFR9oQg96Wu0NVsUZZpFbTzK9
 
-https://probml.github.io/pml-book/book2.html
 
 https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/ BOOK!
 
