@@ -1,3 +1,5 @@
+## PySpark
+
 ```python
 df.printSchema()
 df.columns
@@ -276,7 +278,7 @@ df.show(5)
 ### Splat * operator
 In PySpark, the * symbol (called the "splat" operator) is Python syntax used to unpack a list (or tuple)
 into individual arguments.  
-It's not specific to PySpark—it's pure Python—but is commonly seen in PySpark code when you're passing multiple columns dynamically.
+It's not specific to PySpark — it's pure Python — but is commonly seen in PySpark code when you're passing multiple columns dynamically.
 
  Example: select(*cols)
 ```python
@@ -1564,16 +1566,17 @@ These operate on **Vector columns**, not raw columns.
  
 
 
+<https://medium.com/@udayjagga/top-10-production-grade-reusable-pyspark-scripts-for-data-engineers-aaa088d424ab>
 
-https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8
+<https://mayursurani.medium.com/comprehensive-guide-to-building-an-enterprise-etl-pipeline-with-pyspark-and-airflow-e9286bb609a8>
 
-  https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448 
+<https://mayursurani.medium.com/production-grade-pyspark-scripts-for-aws-data-engineering-bb824399c448> 
 
-https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6
+<https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6>
 
 <https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
 
-https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6  
+<https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6>  
 https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
 https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
 
