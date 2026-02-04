@@ -1,14 +1,7 @@
 ## ONNX
 
-Book
-https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207 
-
-
-# **Alternatives to ONNX Format**
-
-Great question! There are several alternatives, each with different trade-offs. Let me break them down by category:
-
----
+ 
+## **Alternatives to ONNX Format**
 
 ## **1. Framework-Native Formats**
 
