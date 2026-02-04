@@ -7,6 +7,8 @@ https://www.youtube.com/watch?v=C2tL1A3B3cY
 
 https://www.amazon.com/Introduction-Modern-Physics-Theoretical-Foundations/dp/9812812253
 
+https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb
+
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 https://www.youtube.com/watch?v=qJZ1Ez28C-A
 
