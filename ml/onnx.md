@@ -1,10 +1,7 @@
 ## ONNX
 
-# **ONNX File Format Deep Dive**
-
-ONNX uses **Protocol Buffers (protobuf)** for serialization - a binary format developed by Google for efficient data serialization.
-
----
+ONNX uses **Protocol Buffers (protobuf)** for serialization -  
+a binary format developed by Google for efficient data serialization.
 
 ## **High-Level Structure**
 
