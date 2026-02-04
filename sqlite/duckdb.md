@@ -1,6 +1,8 @@
 ### DuckDB
 
-https://news.ycombinator.com/item?id=46645176
+<https://medium.com/@sparknp1/10-duckdb-in-browser-demos-that-wow-stakeholders-7f1faa62304e>
+
+<https://news.ycombinator.com/item?id=46645176>
 
 ```python
 # No need to load CSV file explicitely!
