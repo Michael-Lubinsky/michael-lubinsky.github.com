@@ -442,7 +442,134 @@ def validate_graph(graph):
         available.update(node.output)
 ```
 
-## **Alternatives to ONNX Format**
+## The list of existing ONNX tools:
+
+## **Core ONNX Tools (Official)**
+
+**1. ONNX (Main Project)**
+- **URL**: https://onnx.ai/
+- **GitHub**: https://github.com/onnx/onnx
+- Core ONNX format specification and Python API
+
+**2. ONNX Runtime** ⭐
+- **URL**: https://onnxruntime.ai/
+- **GitHub**: https://github.com/microsoft/onnxruntime
+- High-performance inference engine for executing ONNX models
+
+**3. ONNX Optimizer**
+- **GitHub**: https://github.com/onnx/optimizer
+- Graph optimization library with prepackaged optimization passes
+
+**4. ONNX Version Converter**
+- **Docs**: https://onnx.ai/onnx/repo-docs/VersionConverter.html
+- Converts models between different ONNX opset versions
+
+---
+
+## **Visualization Tools**
+
+**5. Netron** ⭐
+- **GitHub**: https://github.com/lutzroeder/netron
+- Most popular ONNX model visualizer (web-based and desktop)
+
+**6. onnx-modifier**
+- **GitHub**: https://github.com/ZhangGe6/onnx-modifier
+- Interactive visual editor for ONNX graphs (built on Netron + Flask)
+
+---
+
+## **Model Conversion Tools**
+
+**7. PyTorch ONNX Export** (Built-in)
+- **Docs**: https://pytorch.org/docs/stable/onnx.html
+- **Tutorial**: https://pytorch.org/tutorials/beginner/onnx/intro_onnx.html
+
+**8. tf2onnx** (TensorFlow → ONNX)
+- **GitHub**: https://github.com/onnx/tensorflow-onnx
+- **Docs**: https://onnxruntime.ai/docs/tutorials/tf-get-started.html
+
+**9. sklearn-onnx** (scikit-learn → ONNX)
+- **GitHub**: https://github.com/onnx/sklearn-onnx
+- **Docs**: https://onnx.ai/sklearn-onnx/
+
+**10. onnxmltools** (LightGBM, XGBoost, etc. → ONNX)
+- **GitHub**: https://github.com/onnx/onnxmltools
+- **PyPI**: https://pypi.org/project/onnxmltools/
+
+**11. Hugging Face Optimum** ⭐
+- **GitHub (Main)**: https://github.com/huggingface/optimum
+- **GitHub (ONNX)**: https://github.com/huggingface/optimum-onnx
+- **Docs**: https://huggingface.co/docs/optimum-onnx/
+- Transformers → ONNX with quantization
+
+---
+
+## **Graph Manipulation Tools**
+
+**12. ONNX GraphSurgeon** (NVIDIA)
+- **GitHub**: https://github.com/NVIDIA/TensorRT/tree/master/tools/onnx-graphsurgeon
+- **PyPI**: https://pypi.org/project/onnx-graphsurgeon/
+- Programmatic graph surgery
+
+**13. onnx-simplifier** ⭐
+- **GitHub**: https://github.com/daquexian/onnx-simplifier
+- Automatic model simplification and optimization
+
+**14. simple-onnx-processing-tools**
+- **PyPI**: https://pypi.org/project/simple-onnx-processing-tools/
+- Collection of ONNX processing utilities
+
+---
+
+## **Hardware-Specific Optimization**
+
+**15. Intel OpenVINO**
+- **GitHub**: https://github.com/openvinotoolkit/openvino
+- **Docs**: https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html
+- Optimization for Intel hardware (CPU, GPU, NPU)
+
+**16. NVIDIA TensorRT**
+- **Docs**: https://docs.nvidia.com/deeplearning/tensorrt/
+- **ONNX Guide**: https://docs.nvidia.com/deeplearning/tensorrt/developer-guide/index.html#import_onnx
+- Optimization for NVIDIA GPUs
+
+---
+
+## **Additional Converters**
+
+**17. onnx-tensorflow** (ONNX → TensorFlow)
+- **GitHub**: https://github.com/onnx/onnx-tensorflow
+
+**18. onnx2tf** (ONNX → TensorFlow/TFLite)
+- **GitHub**: https://github.com/PINTO0309/onnx2tf
+- Improved ONNX to TensorFlow converter
+
+**19. keras-onnx** (Keras → ONNX) [Deprecated]
+- **GitHub**: https://github.com/onnx/keras-onnx
+- Note: Frozen, use tf2onnx instead
+
+---
+
+## **Notable Gaps (Opportunities)**
+
+Based on this ecosystem analysis, here are the **underserved areas**:
+
+1. **Performance profiling & bottleneck analysis** - No comprehensive tool
+2. **Automated test generation** - No systematic testing frameworks
+3. **Security scanning** - Virtually nonexistent
+4. **Semantic diff/version comparison** - No good tools
+5. **Auto-documentation generation** - Models lack integration docs
+6. **CI/CD integration tools** - Limited pipeline automation
+7. **Model governance & compliance** - Minimal tooling
+8. **Operator coverage analysis** - Hard to predict hardware compatibility
+
+The most promising project ideas :
+- **Profiler/Bottleneck Analyzer** (fills gap #1)
+- **Test Data Generator** (fills gap #2)  
+- **Model Diff Tool** (fills gap #4)
+
+
+# **Alternatives to ONNX Format**
 
 ## **1. Framework-Native Formats**
 
