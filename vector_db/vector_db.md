@@ -1,3 +1,11 @@
+## Embedding and vector databases
+cosine similarity: 
+```
+similarity = (a*b) / (|a| * |b|)
+
+similarity = 0 if perpendicular 
+
+```
 https://vickiboykis.com/what_are_embeddings/
 
 https://habr.com/ru/companies/ruvds/articles/983958/ Embedding
