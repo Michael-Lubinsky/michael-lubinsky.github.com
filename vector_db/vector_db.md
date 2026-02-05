@@ -3,8 +3,10 @@ cosine similarity:
 ```
 similarity = (a*b) / (|a| * |b|)
 
-similarity = 0 if perpendicular 
-
+similarity =
+        0 if vectors are perpendicular 
+        1 if vectors are aligned
+        -1 if vectors are in opposite direction
 ```
 https://vickiboykis.com/what_are_embeddings/
 
