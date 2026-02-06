@@ -27,6 +27,8 @@ https://faculty.washington.edu/seattle/physics441/441index.html
 
 https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf
 
+https://arxiv.org/pdf/2602.04484  Fermi statistics origin
+
 https://www.youtube.com/watch?v=CByk-raQ3Lg  Problem Solving in QM - Part I 
 
 https://www.youtube.com/watch?v=3WvrO1kb_zM  Problem Solving in QM - Part II 
