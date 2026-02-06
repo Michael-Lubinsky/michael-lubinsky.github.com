@@ -1,5 +1,7 @@
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
+https://www.youtube.com/watch?v=ChfEO8l-fas   Visualization of ML
+
 https://www.youtube.com/watch?v=qx7hirqgfuU 
 Why Deep Learning Works Unreasonably Well [How Models Learn Part 3]
 
