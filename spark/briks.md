@@ -985,6 +985,173 @@ df_postgres = spark.read.format("jdbc") \
 
 <https://github.com/oiivantsov/transport-streaming-lakehouse>
 
+
+
+## Histogram Visualization in Databricks
+
+Here are several ways to create a histogram with 10 buckets based on column distance in table:
+
+## Method 1: SQL with WIDTH_BUCKET (Easiest)
+
+```sql
+SELECT 
+  WIDTH_BUCKET(distance, 
+    (SELECT MIN(distance) FROM your_table), 
+    (SELECT MAX(distance) FROM your_table), 
+    10
+  ) AS distance_bucket,
+  COUNT(*) AS trip_count
+FROM your_table
+GROUP BY distance_bucket
+ORDER BY distance_bucket
+```
+
+Then click the **Bar Chart** icon and configure:
+- **X axis**: `distance_bucket`
+- **Y axis**: `trip_count` (Sum)
+
+---
+
+## Method 2: SQL with Named Buckets (More Readable)
+
+First, find your min/max distance to determine bucket ranges:
+
+```sql
+SELECT MIN(distance) AS min_dist, MAX(distance) AS max_dist
+FROM your_table
+```
+
+Then create buckets (assuming distance ranges from 0 to 100):
+
+```sql
+SELECT 
+  CASE 
+    WHEN distance >= 0 AND distance < 10 THEN '0-10'
+    WHEN distance >= 10 AND distance < 20 THEN '10-20'
+    WHEN distance >= 20 AND distance < 30 THEN '20-30'
+    WHEN distance >= 30 AND distance < 40 THEN '30-40'
+    WHEN distance >= 40 AND distance < 50 THEN '40-50'
+    WHEN distance >= 50 AND distance < 60 THEN '50-60'
+    WHEN distance >= 60 AND distance < 70 THEN '60-70'
+    WHEN distance >= 70 AND distance < 80 THEN '70-80'
+    WHEN distance >= 80 AND distance < 90 THEN '80-90'
+    WHEN distance >= 90 THEN '90+'
+  END AS distance_range,
+  COUNT(*) AS trip_count
+FROM your_table
+GROUP BY distance_range
+ORDER BY distance_range
+```
+
+---
+
+## Method 3: SQL with Dynamic Buckets
+
+Calculate bucket width automatically:
+
+```sql
+WITH stats AS (
+  SELECT 
+    MIN(distance) AS min_dist,
+    MAX(distance) AS max_dist,
+    (MAX(distance) - MIN(distance)) / 10.0 AS bucket_width
+  FROM your_table
+)
+SELECT 
+  FLOOR((distance - stats.min_dist) / stats.bucket_width) AS bucket_number,
+  CONCAT(
+    CAST(ROUND(stats.min_dist + FLOOR((distance - stats.min_dist) / stats.bucket_width) * stats.bucket_width, 1) AS STRING),
+    ' - ',
+    CAST(ROUND(stats.min_dist + (FLOOR((distance - stats.min_dist) / stats.bucket_width) + 1) * stats.bucket_width, 1) AS STRING)
+  ) AS distance_range,
+  COUNT(*) AS trip_count
+FROM your_table
+CROSS JOIN stats
+GROUP BY bucket_number, distance_range, stats.min_dist, stats.max_dist, stats.bucket_width
+ORDER BY bucket_number
+```
+
+---
+
+## Method 4: Python with Matplotlib (Most Control)
+
+```python
+import matplotlib.pyplot as plt
+
+# Get data
+df = spark.sql("""
+  SELECT distance 
+  FROM your_table
+  WHERE distance IS NOT NULL
+""").toPandas()
+
+# Create histogram
+plt.figure(figsize=(10, 6))
+plt.hist(df['distance'], bins=10, color='steelblue', edgecolor='black')
+plt.xlabel('Distance')
+plt.ylabel('Number of Trips')
+plt.title('Trip Distribution by Distance')
+plt.grid(axis='y', alpha=0.3)
+
+# Display
+display(plt.gcf())
+```
+
+---
+
+## Method 5: Python with Databricks display()
+
+```python
+# Calculate buckets in SQL
+buckets_df = spark.sql("""
+  SELECT 
+    WIDTH_BUCKET(distance, 
+      (SELECT MIN(distance) FROM your_table), 
+      (SELECT MAX(distance) FROM your_table), 
+      10
+    ) AS bucket,
+    COUNT(*) AS count
+  FROM your_table
+  GROUP BY bucket
+  ORDER BY bucket
+""")
+
+# Display with built-in visualization
+display(buckets_df)
+```
+
+Then use the bar chart visualization.
+
+---
+
+## Recommended Approach
+
+**Start with Method 1 (WIDTH_BUCKET)** - it's the simplest and automatically handles the bucket ranges for you. Here's the complete workflow:
+
+```sql
+-- Step 1: Create the histogram data
+CREATE OR REPLACE TEMP VIEW distance_histogram AS
+SELECT 
+  WIDTH_BUCKET(distance, 
+    (SELECT MIN(distance) FROM your_table), 
+    (SELECT MAX(distance) FROM your_table), 
+    10
+  ) AS bucket,
+  COUNT(*) AS trip_count,
+  ROUND(MIN(distance), 1) AS bucket_min,
+  ROUND(MAX(distance), 1) AS bucket_max
+FROM your_table
+GROUP BY bucket
+ORDER BY bucket;
+
+-- Step 2: View results
+SELECT * FROM distance_histogram;
+```
+
+Then click the **Bar Chart** icon below the results!
+
+Which method would you prefer?
+
 ### Databricks Links
 
 <https://www.youtube.com/@easewithdata/playlists>
