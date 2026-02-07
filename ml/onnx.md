@@ -958,3 +958,98 @@ Despite alternatives, ONNX has unique advantages:
 - Mobile-first (TFLite/CoreML are more optimized)
 - Research iteration (native formats are simpler)
 
+## **Best Sources for ONNX Test Files**
+
+### **1. ONNX Model Zoo (Official Repository)** ⭐ Recommended
+**URL**: https://github.com/onnx/models
+
+The official ONNX model collection with pre-trained models across multiple domains.
+
+**Popular models to download**:
+- **Vision**: ResNet50, MobileNetV2, EfficientNet, YOLOv4
+- **NLP**: BERT, GPT-2, RoBERTa
+- **Small models for quick testing**: MNIST, SqueezeNet (~5MB)
+
+**Download example**:
+```bash
+# Clone the repo
+git clone https://github.com/onnx/models.git
+
+# Or download specific model directly
+wget https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v1-7.onnx
+```
+
+---
+
+### **2. ONNX Runtime Model Zoo**
+**URL**: https://github.com/microsoft/onnxruntime/tree/main/onnxruntime/test/testdata
+
+Microsoft's test models - great for edge cases and various operator types.
+
+---
+
+### **3. Hugging Face Hub**
+**URL**: https://huggingface.co/models?library=onnx
+
+Many models with ONNX variants. Search with filter `library:onnx`
+
+**Example models**:
+- `optimum/bert-base-uncased` (NLP)
+- `onnx-community/resnet-18` (Vision)
+
+**Download via CLI**:
+```bash
+pip install huggingface-hub
+huggingface-cli download optimum/bert-base-uncased --include "*.onnx"
+```
+
+---
+
+### **4. Generate Your Own (Great for Testing)**
+
+I can help you create simple ONNX files from PyTorch/TensorFlow:
+
+```python
+# Simple PyTorch -> ONNX
+import torch
+import torch.nn as nn
+
+class SimpleNet(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc1 = nn.Linear(10, 20)
+        self.fc2 = nn.Linear(20, 5)
+    
+    def forward(self, x):
+        x = torch.relu(self.fc1(x))
+        return self.fc2(x)
+
+model = SimpleNet()
+dummy_input = torch.randn(1, 10)
+torch.onnx.export(model, dummy_input, "simple_model.onnx")
+```
+
+---
+
+## **Quick Start Test Set Recommendation**
+
+For your `onnx_files/` folder, I suggest downloading these 3-4 models for variety:
+
+1. **SqueezeNet** (~5MB - small, fast to test)
+   ```bash
+   wget https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.1-7.onnx -O onnx_files/squeezenet.onnx
+   ```
+
+2. **ResNet50** (~100MB - medium complexity)
+   ```bash
+   wget https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v1-7.onnx -O onnx_files/resnet50.onnx
+   ```
+
+3. **MNIST** (~26KB - tiny, good for edge cases)
+   ```bash
+   wget https://github.com/onnx/models/raw/main/vision/classification/mnist/model/mnist-8.onnx -O onnx_files/mnist.onnx
+   ```
+
+4. **Generate a simple custom one** (for testing basic features)
+
+
