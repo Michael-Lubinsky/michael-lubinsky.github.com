@@ -48,6 +48,311 @@ https://pub.towardsai.net/building-production-grade-ai-agents-in-2025-the-comple
 3. Building Effective Agents by Anthropic: http://lnkd.in/gRWKANS4.
 4. Claude Code Best Agentic Coding practices: http://lnkd.in/gs99zyCf
 5. OpenAI's Practical Guide to Building Agents: http://lnkd.in/guRfXsFK
+
+
+
+Great question — this gets to the **architecture difference between “model CLIs” and “agent coding shells.”**
+
+Short answer:
+
+> You use **Aider** when you want a repo-editing coding agent.
+> You use **Claude CLI** when you want a direct LLM interface (chat + commands).
+
+They overlap, but they’re not the same tool category.
+
+---
+
+##  Mental model first
+
+| Tool       | Role                  |
+| ---------- | --------------------- |
+| Claude CLI | AI brain terminal     |
+| Aider      | AI coding agent shell |
+
+Analogy:
+
+* Claude CLI = talking to an engineer
+* Aider = project manager + Git editor + engineer
+
+---
+
+## 🔍 Core architectural difference
+
+## Claude CLI
+
+Provides:
+
+* Chat
+* File reading/writing (if enabled)
+* Command execution (Computer Use)
+* General reasoning
+
+But repo workflows are ad-hoc.
+
+You must say things like:
+
+> “Edit src/foo.py and add X.”
+
+It doesn’t inherently manage diffs, Git commits, or patch safety.
+
+---
+
+## Aider
+
+Built specifically for coding repos.
+
+Provides:
+
+* Automatic file tracking
+* Patch diffs
+* Git commits
+* Multi-file edits
+* Test-driven loops
+* Conflict handling
+
+So it wraps the model with coding workflows.
+
+---
+
+### 📊 Feature comparison
+
+| Capability           | Claude CLI  | Aider     |
+| -------------------- | ----------- | --------- |
+| Chat with LLM        | ✅           | ✅         |
+| Edit files           | ✅           | ✅         |
+| Repo awareness       | Medium      | High      |
+| Git integration      | ❌           | ✅         |
+| Patch diffs          | ❌           | ✅         |
+| Auto commits         | ❌           | ✅         |
+| Multi-file refactors | Manual      | Native    |
+| Test loops           | Manual      | Supported |
+| Model choice         | Claude only | Any       |
+
+---
+
+### 🧪 Example — your ONNX CLI project
+
+## Using Claude CLI directly
+
+You’d do:
+
+```
+Write summarize.py to parse ONNX graph.
+```
+
+Then:
+
+* Copy/paste code
+* Save file
+* Run tests
+* Ask for fixes
+* Apply patches manually
+
+Workflow = conversational.
+
+---
+
+## Using Aider
+
+You’d run:
+
+```bash
+aider src tests
+```
+
+Prompt:
+
+```
+Build CLI tool to summarize ONNX models.
+```
+
+Aider will:
+
+1. Create files
+2. Apply diffs
+3. Commit changes
+4. Track modified files
+5. Iterate via tests
+
+Workflow = agentic.
+
+---
+
+### 🧩 Where Aider adds value
+
+## 1) Git-native editing
+
+Aider shows diffs like:
+
+```diff
++ def summarize_model(path):
++     model = onnx.load(path)
+```
+
+You approve or reject.
+
+Claude CLI → no built-in diff workflow.
+
+---
+
+### 2) Multi-file refactors
+
+Example:
+
+> “Rename summarize() to summarize_model() everywhere.”
+
+Aider updates:
+
+* CLI
+* Imports
+* Tests
+
+Claude CLI → you must orchestrate.
+
+---
+
+### 3) Test-driven development loops
+
+You can do:
+
+```
+Fix failing pytest tests.
+```
+
+Aider:
+
+* Reads failures
+* Edits code
+* Re-runs loop (conceptually)
+
+Claude CLI → manual copy/paste cycle.
+
+---
+
+### 4) Model portability
+
+Aider can switch brains:
+
+* Claude today
+* DeepSeek tomorrow
+* Local model offline
+
+Claude CLI → locked to Claude.
+
+---
+
+### 🧭 When Claude CLI alone is enough
+
+Use Claude CLI if you want:
+
+* One-off scripts
+* Concept design
+* Debug help
+* Architecture brainstorming
+* Terminal automation
+
+Example:
+
+> “Explain ONNX graph structure.”
+
+No repo edits needed.
+
+---
+
+### 🧭 When Aider is better
+
+Use Aider if you want:
+
+* Persistent coding agent
+* Git-managed changes
+* Multi-file edits
+* Automated refactors
+* Test iteration
+
+Your ONNX CLI project fits here.
+
+---
+
+### ⚖️ Cost & infra angle
+
+| Factor              | Claude CLI    | Aider       |
+| ------------------- | ------------- | ----------- |
+| Model cost          | Claude tokens | Same tokens |
+| Tool cost           | Paid          | Free OSS    |
+| Local model support | ❌             | ✅           |
+| Offline coding      | ❌             | ✅           |
+
+So Aider can reduce costs if you use local models.
+
+---
+
+### 🧩 Real-world stack patterns
+
+Common setups:
+
+### Claude-only
+
+```
+Claude CLI → code → manual edits
+```
+
+### Aider + Claude
+
+```
+Aider shell → Claude brain → Git patches
+```
+
+### Aider + DeepSeek (free)
+
+```
+Aider shell → Local model → Git patches
+```
+
+---
+
+###  Why both exist
+
+Because they solve different layers:
+
+| Layer           | Tool       |
+| --------------- | ---------- |
+| LLM reasoning   | Claude CLI |
+| Coding workflow | Aider      |
+
+Codex.app bundles both into one product.
+
+Open-source world splits them.
+
+---
+
+# ✅ Bottom line
+
+Use Claude CLI if:
+
+* You want direct AI interaction
+* Repo edits are light/manual
+
+Use Aider if:
+
+* You want an autonomous coding agent
+* You want Git-native edits
+* You want multi-file refactors
+* You want model flexibility
+
+For your ONNX summarizer project:
+
+> Claude CLI = helpful
+> Aider = more productive
+
+---
+
+If you want, I can:
+
+* Show side-by-side workflow (Claude CLI vs Aider) building your ONNX CLI
+* Recommend cheapest model stack
+* Provide a ready-to-run Mac setup script (brew + pip + ollama + aider)
+
+
    
 ### Agent Skills:
 <https://skillsmp.com/>
