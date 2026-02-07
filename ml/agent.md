@@ -1,8 +1,9 @@
 ## Agents
 
 ### Claude 
-https://code.claude.com/docs 
-https://habr.com/ru/articles/983214/  Claude Code   
+https://code.claude.com/docs  
+https://code.claude.com/docs/en/cli-reference  
+https://habr.com/ru/articles/983214/   
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
 ## ChatGPT
@@ -56,10 +57,7 @@ https://pub.towardsai.net/building-production-grade-ai-agents-in-2025-the-comple
 5. OpenAI's Practical Guide to Building Agents: http://lnkd.in/guRfXsFK
 
 
-
-Great question — this gets to the **architecture difference between “model CLIs” and “agent coding shells.”**
-
-Short answer:
+## Aider vs Claude CLU - Architecture difference between “model CLIs” and “agent coding shells"
 
 > You use **Aider** when you want a repo-editing coding agent.
 > You use **Claude CLI** when you want a direct LLM interface (chat + commands).
@@ -118,7 +116,6 @@ Provides:
 
 So it wraps the model with coding workflows.
 
----
 
 ### 📊 Feature comparison
 
