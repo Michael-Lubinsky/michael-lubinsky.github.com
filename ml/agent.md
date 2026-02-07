@@ -1,8 +1,14 @@
-### Agents
+## Agents
 
-https://habr.com/ru/articles/981624/  How to use ChatGPT effectively   
+### Claude 
+https://code.claude.com/docs 
 https://habr.com/ru/articles/983214/  Claude Code   
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
+
+## ChatGPT
+https://habr.com/ru/articles/981624/  How to use ChatGPT effectively  
+
+### Cursor
 https://habr.com/ru/articles/984656/  Cursor Agent
 
 https://habr.com/ru/articles/987528/
