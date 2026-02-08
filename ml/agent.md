@@ -7,6 +7,8 @@ https://code.claude.com/docs/en/cli-reference
 https://habr.com/ru/articles/983214/   
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
+https://psantanna.com/claude-code-my-workflow/workflow-guide.html
+
 ## ChatGPT
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively  
 
