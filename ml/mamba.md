@@ -16,6 +16,9 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+## Reinforcement learning 
+https://habr.com/ru/articles/991622/
+
 https://rlhfbook.com/  Reinforcement learning human feedback
 
 ## ONNX book
