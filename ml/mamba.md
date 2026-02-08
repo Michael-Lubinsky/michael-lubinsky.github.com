@@ -16,6 +16,8 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+https://rlhfbook.com/  Reinforcement learning human feedback
+
 ## ONNX book
 https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/ref=tmm_pap_swatch_0?_encoding=UTF8&dib_tag=se& 
 
