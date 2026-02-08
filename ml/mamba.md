@@ -1,5 +1,7 @@
  https://github.com/roboticcam/machine-learning-notes?tab=readme-ov-file)   ML Learning Notes
 
+ https://www.youtube.com/playlist?list=PLgPbN3w-ia_PeT1_c5jiLW3RJdR7853b9
+
 https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/   
 https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
 
