@@ -1,3 +1,4 @@
+### 
 https://habr.com/ru/companies/ruvds/articles/983958/  Embedding
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
@@ -383,4 +384,723 @@ Use three learnable weight matrices <math xmlns="http://www.w3.org/1998/Math/Mat
 
 Compute all Q, K, V vectors efficiently via matrix multiplications: <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>Q</mi></msup></mrow><annotation encoding="application/x-tex"> Q = X W^Q </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>K</mi></msup></mrow><annotation encoding="application/x-tex"> K = X W^K </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> V = X W^V </annotation></semantics></math>.
 
-These Q, K, V vectors are then used in the self-attention mechanism to compute attention scores and produce context-aware representations. If you’d like a deeper dive into the attention computation (e.g., scaled dot-product attention) or code examples (e.g., in Python/PyTorch), let me know!
+These Q, K, V vectors are then used in the self-attention mechanism to compute attention scores and produce context-aware representations.  
+
+
+
+# Deep Dive: How LLM Training Works
+
+## **1. Foundation: The Transformer Architecture**
+
+### **Core Components**
+
+LLMs are built on the **Transformer architecture** (Vaswani et al., 2017). The key insight is the **self-attention mechanism** that allows the model to weigh the importance of different tokens when processing each token.
+
+**Basic Transformer Block:**
+```
+Input Tokens → Embedding → Position Encoding → 
+[
+  Multi-Head Self-Attention → 
+  Add & Normalize → 
+  Feed-Forward Network → 
+  Add & Normalize
+] × N layers → 
+Output Logits
+```
+
+### **Self-Attention Mechanism (The Heart of LLMs)**
+
+For each token, self-attention computes how much to "attend to" every other token in the sequence.
+
+**Mathematical Formulation:**
+
+Given input embeddings **X** ∈ ℝ^(n×d), we compute:
+
+```
+Q = XW_Q  (Query)
+K = XW_K  (Key)
+V = XW_V  (Value)
+
+Attention(Q, K, V) = softmax(QK^T / √d_k)V
+```
+
+**Intuition:**
+- **Query**: "What am I looking for?"
+- **Key**: "What do I contain?"
+- **Value**: "What information should I pass forward?"
+- **QK^T**: Dot product measures similarity between queries and keys
+- **Softmax**: Converts scores to probability distribution
+- **√d_k scaling**: Prevents extremely large values that would make softmax too peaked
+
+**Multi-Head Attention:**
+Instead of one attention mechanism, use **h** parallel heads:
+
+```
+MultiHead(Q, K, V) = Concat(head_1, ..., head_h)W_O
+
+where head_i = Attention(QW_Q^i, KW_K^i, VW_V^i)
+```
+
+This allows the model to attend to different aspects simultaneously (e.g., one head might focus on syntax, another on semantics).
+
+### **Causal Masking (for Autoregressive LLMs)**
+
+For language modeling, we use **causal masking** to ensure the model can only attend to previous tokens:
+
+```
+Mask = [
+  [0,  -∞, -∞, -∞],
+  [0,   0, -∞, -∞],
+  [0,   0,  0, -∞],
+  [0,   0,  0,  0]
+]
+```
+
+This prevents "cheating" by looking at future tokens during training.
+
+### **Position Encodings**
+
+Since attention has no inherent notion of position, we add positional information:
+
+**Absolute Positional Encoding (Original Transformer):**
+```
+PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
+PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+```
+
+**Modern Approaches:**
+- **RoPE (Rotary Position Embedding)** - Used in LLaMA, rotates query/key vectors
+- **ALiBi (Attention with Linear Biases)** - Adds linear bias to attention scores
+- **Learned Positional Embeddings** - Trainable position vectors
+
+### **Feed-Forward Networks**
+
+After attention, each position passes through an identical FFN:
+
+```
+FFN(x) = max(0, xW_1 + b_1)W_2 + b_2
+```
+
+Or with other activations (GeLU, SwiGLU):
+```
+FFN(x) = GeLU(xW_1 + b_1)W_2 + b_2
+```
+
+Modern LLMs often use **SwiGLU** (Swish-Gated Linear Unit):
+```
+FFN(x) = (Swish(xW_1) ⊙ xW_2)W_3
+```
+
+### **Layer Normalization**
+
+Applied before (Pre-LN) or after (Post-LN) each sub-layer:
+
+```
+LayerNorm(x) = γ ⊙ (x - μ) / √(σ² + ε) + β
+
+where μ = mean(x), σ² = variance(x)
+```
+
+Modern LLMs typically use **Pre-LN** for training stability.
+
+---
+
+## **2. Pre-Training: Learning Language Understanding**
+
+### **Objective: Next Token Prediction**
+
+The fundamental task is **causal language modeling**: predict the next token given all previous tokens.
+
+**Training Objective:**
+```
+L = -∑_{i=1}^{N} log P(x_i | x_1, ..., x_{i-1})
+```
+
+For a sequence [x₁, x₂, ..., x_n], the model learns:
+- Given [x₁], predict x₂
+- Given [x₁, x₂], predict x₃
+- Given [x₁, x₂, x₃], predict x₄
+- ...and so on
+
+### **Tokenization**
+
+Before training, text is converted to tokens using **subword tokenization**:
+
+**Common Algorithms:**
+- **Byte-Pair Encoding (BPE)** - GPT series
+- **WordPiece** - BERT
+- **SentencePiece** - LLaMA, T5
+- **Unigram** - Alternative approach
+
+**Example:**
+```
+Text: "unhappiness"
+BPE tokens: ["un", "happiness"] or ["un", "hap", "piness"]
+```
+
+**Why Subwords?**
+- Handles rare words and misspellings
+- Reduces vocabulary size (typically 32k-100k tokens)
+- Balances granularity with efficiency
+
+### **Forward Pass During Training**
+
+**Step-by-step for a single sequence:**
+
+1. **Tokenization**: Text → Token IDs
+   ```
+   "The cat sat" → [1, 234, 5678]
+   ```
+
+2. **Embedding Lookup**: Token IDs → Dense vectors
+   ```
+   [1, 234, 5678] → [[e₁], [e₂], [e₃]]  each ∈ ℝ^d_model
+   ```
+
+3. **Add Position Encodings**:
+   ```
+   x = [e₁ + PE(0), e₂ + PE(1), e₃ + PE(2)]
+   ```
+
+4. **Through N Transformer Layers**:
+   Each layer applies:
+   - Multi-head self-attention
+   - Layer norm + residual connection
+   - Feed-forward network
+   - Layer norm + residual connection
+
+5. **Output Head**: Project to vocabulary size
+   ```
+   logits = h_final W_out  ∈ ℝ^(n × vocab_size)
+   ```
+
+6. **Compute Loss**:
+   ```
+   For each position i:
+     target = next_token_id[i]
+     loss_i = CrossEntropy(logits[i], target)
+   
+   Total loss = mean(all loss_i values)
+   ```
+
+### **Training Data**
+
+**Pre-training Datasets (Examples):**
+- **Common Crawl** - Web scrapes (~400TB+ raw)
+- **Books** (Books3, BookCorpus)
+- **Wikipedia**
+- **GitHub** (for code)
+- **Academic papers** (arXiv, PubMed)
+- **News** articles
+- **Reddit**, **StackExchange**
+
+**Data Processing Pipeline:**
+1. **Deduplication** - Remove exact and near-duplicates
+2. **Quality filtering** - Remove low-quality content
+3. **Language filtering** - Keep desired languages
+4. **PII removal** - Strip personal information
+5. **Toxicity filtering** - Remove harmful content
+6. **Formatting** - Clean HTML, normalize text
+7. **Shuffling** - Randomize at document/sentence level
+
+**Scale**: Modern LLMs train on **trillions of tokens** (1-15+ trillion).
+
+### **Optimization**
+
+**Adam Optimizer** (or variants like AdamW):
+```
+m_t = β₁ m_{t-1} + (1 - β₁) g_t        (momentum)
+v_t = β₂ v_{t-1} + (1 - β₂) g_t²       (adaptive learning rate)
+
+m̂_t = m_t / (1 - β₁^t)                 (bias correction)
+v̂_t = v_t / (1 - β₂^t)
+
+θ_{t+1} = θ_t - α m̂_t / (√v̂_t + ε)
+```
+
+**Typical Hyperparameters:**
+- Learning rate: 1e-4 to 6e-4, with **cosine decay** or **linear warmup + decay**
+- β₁ = 0.9, β₂ = 0.95 or 0.999
+- Weight decay: 0.1 (for AdamW)
+- Gradient clipping: norm ≤ 1.0
+
+**Learning Rate Schedule:**
+```
+Warmup (linear increase):
+  lr = lr_max × (step / warmup_steps)
+
+Cosine Decay:
+  lr = lr_min + 0.5 × (lr_max - lr_min) × (1 + cos(π × progress))
+```
+
+### **Batch Construction**
+
+**Packing**: Concatenate multiple documents to fully utilize context length
+```
+[Doc1][EOS][Doc2][EOS][Doc3]... until max_length
+```
+
+**Effective Batch Size**: Often measured in **tokens**
+- Typical: 2M - 4M tokens per batch
+- Achieved through gradient accumulation across multiple GPU steps
+
+---
+
+## **3. Distributed Training at Scale**
+
+### **Parallelism Strategies**
+
+Modern LLMs are too large to fit on a single GPU, requiring distributed training:
+
+#### **Data Parallelism (DP)**
+- Each GPU has a full model copy
+- Different batches processed on each GPU
+- Gradients averaged across GPUs
+
+**Limitations**: Model must fit in single GPU memory
+
+#### **Tensor Parallelism (TP)**
+- Split individual **layers** across GPUs
+- Each GPU computes part of matrix multiplications
+- Used in Megatron-LM
+
+**Example (Linear layer):**
+```
+Y = XW  where W ∈ ℝ^(d×h)
+
+Split W column-wise across 4 GPUs:
+Y = [XW₁ | XW₂ | XW₃ | XW₄]
+```
+
+#### **Pipeline Parallelism (PP)**
+- Split model **layers** across GPUs
+- GPU 1: Layers 1-8
+- GPU 2: Layers 9-16
+- GPU 3: Layers 17-24
+- etc.
+
+Uses **micro-batching** to keep GPUs busy:
+```
+Time →
+GPU1: [F1][F2][F3][F4]      [B1][B2][B3][B4]
+GPU2:     [F1][F2][F3][F4][B1][B2][B3][B4]
+GPU3:         [F1][F2][F3][F4][B1][B2][B3]
+```
+(F=Forward, B=Backward)
+
+#### **Sequence Parallelism**
+- Split the **sequence dimension** across GPUs
+- Useful for very long contexts
+
+#### **Fully Sharded Data Parallelism (FSDP)**
+- Shard model **parameters, gradients, and optimizer states**
+- Each GPU only stores 1/N of everything
+- Communication happens when needed
+
+**FSDP Workflow:**
+```
+1. All-gather parameters for current layer
+2. Compute forward/backward
+3. Reduce-scatter gradients
+4. Each GPU updates its shard
+```
+
+**Example Setup (GPT-3 175B scale):**
+- 3D parallelism: DP × TP × PP
+- Tensor parallel: 8 (within node)
+- Pipeline parallel: 16 (across nodes)
+- Data parallel: 32
+- Total: 4,096 GPUs
+
+### **Mixed Precision Training**
+
+**FP16/BF16 Training:**
+- Store weights in FP32 (master weights)
+- Compute in FP16/BF16 (faster, less memory)
+- Accumulate gradients in FP32 (numerical stability)
+
+**BF16 (Brain Float 16)** advantages:
+- Same exponent range as FP32 (8 bits)
+- Better for large models than FP16
+- No loss scaling needed
+
+**Flash Attention:**
+- Optimized attention implementation
+- Reduces memory from O(n²) to O(n)
+- 2-4x speedup for long sequences
+
+---
+
+## **4. Fine-Tuning: Adapting to Specific Tasks**
+
+After pre-training, models are adapted for specific use cases.
+
+### **Supervised Fine-Tuning (SFT)**
+
+Train on **high-quality instruction-response pairs**:
+
+```
+Input: "What is the capital of France?"
+Target: "The capital of France is Paris."
+```
+
+**Dataset Examples:**
+- **FLAN** - Mixture of tasks with instructions
+- **Dolly** - Open instruction dataset
+- **ShareGPT** - Conversations
+- **Custom datasets** for specific domains
+
+**Training:**
+- Same next-token prediction objective
+- Much smaller dataset (10k-1M examples)
+- Lower learning rate (1e-5 to 5e-5)
+- Few epochs (1-3)
+
+### **Reinforcement Learning from Human Feedback (RLHF)**
+
+**Three-stage process:**
+
+#### **Stage 1: Supervised Fine-Tuning** (as above)
+
+#### **Stage 2: Reward Model Training**
+
+Train a **reward model** to predict human preferences:
+
+**Dataset**: Pairs of responses with human rankings
+```
+Prompt: "Explain quantum computing"
+Response A: [detailed, accurate]
+Response B: [brief, less helpful]
+Label: A > B
+```
+
+**Training:**
+- Take SFT model, remove output head
+- Add scalar output for "reward score"
+- Optimize: P(response_A > response_B) using sigmoid
+
+**Loss Function:**
+```
+L = -log(σ(r_A - r_B))  when A > B
+where σ is sigmoid, r is reward score
+```
+
+#### **Stage 3: Reinforcement Learning with PPO**
+
+Use **Proximal Policy Optimization (PPO)** to maximize reward:
+
+**Setup:**
+- **Policy (π)**: The LLM being trained
+- **Reward function (R)**: Reward model from stage 2
+- **Reference policy (π_ref)**: Frozen copy of SFT model
+
+**Objective:**
+```
+maximize: E[R(prompt, response)] - β × KL(π || π_ref)
+```
+
+The KL divergence term prevents the policy from deviating too far from the reference model (prevents "reward hacking").
+
+**PPO Algorithm:**
+```
+For each prompt:
+  1. Generate response from current policy π
+  2. Get reward from reward model
+  3. Compute advantage (how much better than expected)
+  4. Update policy with clipped objective:
+  
+  L = min(
+    r_t(θ) × A_t,
+    clip(r_t(θ), 1-ε, 1+ε) × A_t
+  )
+  
+  where r_t(θ) = π_θ(a|s) / π_old(a|s)
+```
+
+**Why PPO?**
+- Prevents large policy updates (stability)
+- Balances exploration vs exploitation
+- Proven effective in LLM alignment
+
+### **Direct Preference Optimization (DPO)**
+
+**Alternative to RLHF** - simpler, no RL needed:
+
+**Key Insight**: Directly optimize policy to prefer better responses
+
+**Loss Function:**
+```
+L = -log σ(β log(π(y_w|x)/π_ref(y_w|x)) - β log(π(y_l|x)/π_ref(y_l|x)))
+
+where:
+  y_w = preferred (winning) response
+  y_l = less preferred (losing) response
+  β = temperature parameter
+```
+
+**Advantages:**
+- No reward model needed
+- No RL training instability
+- Often simpler and faster than RLHF
+
+---
+
+## **5. Advanced Training Techniques**
+
+### **Curriculum Learning**
+
+Train on progressively harder examples:
+- Start with shorter sequences
+- Gradually increase to max context length
+- Can improve sample efficiency
+
+### **Mixture of Experts (MoE)**
+
+**Architecture:**
+- Replace some FFN layers with multiple "expert" networks
+- Router decides which experts to use for each token
+- Only activates top-k experts per token
+
+**Example (Switch Transformer, GPT-4 rumored):**
+```
+For each token:
+  scores = Router(token_embedding)
+  top_k_experts = topk(scores, k=2)
+  output = Σ weight_i × Expert_i(token)
+```
+
+**Benefits:**
+- Massively increase parameters with moderate compute increase
+- Different experts specialize in different patterns
+
+### **Flash Attention & Memory Optimization**
+
+**Problem**: Standard attention is O(n²) in memory
+
+**Solution**: Tiling and recomputation
+```
+Instead of storing full attention matrix:
+1. Divide Q, K, V into blocks
+2. Compute attention block by block
+3. Recompute in backward pass (rather than store)
+```
+
+**Impact**: Can train with 4-8x longer sequences
+
+### **Gradient Checkpointing**
+
+Trade computation for memory:
+- Don't store all intermediate activations
+- Recompute them during backward pass
+- Typically increases training time by 20-30%
+- Reduces memory by ~50%
+
+---
+
+## **6. Practical Training Details**
+
+### **Hyperparameter Decisions**
+
+**Model Architecture:**
+- **d_model**: 4096-12288 (embedding dimension)
+- **n_layers**: 32-96+ layers
+- **n_heads**: 32-96 heads
+- **d_ff**: 4 × d_model (FFN dimension)
+- **vocab_size**: 32k-100k tokens
+- **context_length**: 2k-128k+ tokens
+
+**Training:**
+- **Batch size**: 2M-4M tokens
+- **Learning rate**: 1e-4 to 6e-4
+- **Warmup**: 1000-2000 steps
+- **Total steps**: 100k-1M+
+- **Gradient clipping**: 1.0
+
+### **Scaling Laws**
+
+**Chinchilla Scaling** (Hoffmann et al., 2022):
+
+For optimal performance with compute budget C:
+```
+N (parameters) ∝ C^0.5
+D (data tokens) ∝ C^0.5
+```
+
+**Key Finding**: Most models were **under-trained**
+- GPT-3 (175B): trained on 300B tokens (under-trained)
+- Optimal would be ~70B params on ~1.4T tokens
+
+**Implication**: Modern LLMs (LLaMA 2, GPT-4) train longer on more data
+
+### **Emergence and Scale**
+
+Certain capabilities **emerge** at scale:
+- **Arithmetic**: Appears around 10B+ parameters
+- **Multi-step reasoning**: 60B+
+- **Theory of mind**: 100B+
+
+**Loss vs Scale**:
+```
+L(N) ≈ (N_c / N)^α
+
+where:
+  L = loss
+  N = number of parameters
+  N_c, α = empirical constants
+```
+
+Power law suggests smooth improvement with scale.
+
+---
+
+## **7. Evaluation & Iteration**
+
+### **During Training**
+
+**Metrics Tracked:**
+- **Loss**: Primary metric (should decrease)
+- **Perplexity**: exp(loss), easier to interpret
+- **Learning rate**: Current LR value
+- **Gradient norm**: Monitor for explosions
+- **Throughput**: Tokens/second, MFU (model FLOPs utilization)
+
+**Checkpoint Strategy:**
+- Save every N steps (e.g., 1000)
+- Keep last K checkpoints
+- Save "milestone" checkpoints (10%, 25%, 50%, etc.)
+
+### **Evaluation Benchmarks**
+
+**General Language Understanding:**
+- **MMLU** (Massive Multitask Language Understanding)
+- **HellaSwag** (Commonsense reasoning)
+- **TruthfulQA** (Truthfulness)
+- **GSM8K** (Grade school math)
+
+**Coding:**
+- **HumanEval** (Python function completion)
+- **MBPP** (Mostly Basic Python Problems)
+
+**Reasoning:**
+- **Big-Bench** (Diverse reasoning tasks)
+- **ARC** (AI2 Reasoning Challenge)
+
+### **Post-Training Evaluation**
+
+After fine-tuning, evaluate on:
+- **Helpfulness** - Does it answer questions well?
+- **Harmlessness** - Does it avoid harmful outputs?
+- **Honesty** - Does it acknowledge uncertainty?
+
+Often requires **human evaluation** or **LLM-as-judge**
+
+---
+
+## **8. Inference: Using the Trained Model**
+
+### **Generation Process**
+
+**Autoregressive Sampling:**
+```python
+def generate(prompt, max_tokens):
+    tokens = tokenize(prompt)
+    for i in range(max_tokens):
+        logits = model(tokens)  # Forward pass
+        next_token = sample(logits[-1])  # Sample from distribution
+        tokens.append(next_token)
+        if next_token == EOS:
+            break
+    return detokenize(tokens)
+```
+
+### **Sampling Strategies**
+
+**Greedy Decoding**: Always pick highest probability
+```
+next_token = argmax(logits)
+```
+
+**Temperature Sampling**: Control randomness
+```
+probs = softmax(logits / temperature)
+next_token = sample(probs)
+
+temperature > 1 → more random
+temperature < 1 → more focused
+temperature → 0 → greedy
+```
+
+**Top-k Sampling**: Sample from top k tokens
+```
+top_k_logits, top_k_indices = topk(logits, k)
+probs = softmax(top_k_logits)
+next_token = top_k_indices[sample(probs)]
+```
+
+**Top-p (Nucleus) Sampling**: Sample from smallest set with cumulative prob ≥ p
+```
+sorted_probs, sorted_indices = sort(softmax(logits))
+cumsum = cumulative_sum(sorted_probs)
+nucleus = sorted_probs[cumsum <= p]
+next_token = sample(nucleus)
+```
+
+**Best Practice**: Top-p = 0.9-0.95 with temperature = 0.7-0.8
+
+### **Optimization Techniques**
+
+**KV Cache**: Cache key/value tensors for already-generated tokens
+- Avoids recomputing attention for past tokens
+- Trades memory for speed
+
+**Batching**: Process multiple requests together
+- Share computation where possible
+- Increases throughput
+
+**Quantization**: Reduce precision
+- INT8 or INT4 weights
+- 2-4x speedup, minimal quality loss for inference
+
+**Speculative Decoding**: Use small model to propose tokens, large model to verify
+- Can achieve 2-3x speedup
+
+---
+
+## **Summary: The Complete Training Pipeline**
+
+```
+1. DATA COLLECTION
+   ├─ Crawl web, books, code, etc.
+   ├─ Deduplicate and filter
+   └─ Tokenize (100B-15T+ tokens)
+
+2. PRE-TRAINING
+   ├─ Initialize transformer (random weights)
+   ├─ Next-token prediction on massive corpus
+   ├─ Distributed training (weeks to months)
+   │  ├─ 3D parallelism (DP × TP × PP)
+   │  ├─ Mixed precision (BF16)
+   │  └─ Optimization (AdamW + cosine LR)
+   └─ Checkpoint: Base model
+
+3. SUPERVISED FINE-TUNING
+   ├─ Instruction-response pairs
+   ├─ Few epochs, low LR
+   └─ Checkpoint: Instruction-following model
+
+4. ALIGNMENT (RLHF or DPO)
+   ├─ Collect preference data
+   ├─ Train reward model
+   ├─ PPO or DPO training
+   └─ Checkpoint: Aligned model
+
+5. DEPLOYMENT
+   ├─ Optimize for inference (quantization, KV cache)
+   ├─ Deploy on serving infrastructure (vLLM, etc.)
+   └─ Monitor and iterate
+```
+
+This is a complex, multi-stage process requiring enormous computational resources (millions of GPU hours), sophisticated engineering, and careful tuning. Modern frontier models (GPT-4, Claude 3, Gemini) represent the culmination of all these techniques applied at unprecedented scale.
+
+
+
