@@ -7,6 +7,8 @@ https://code.claude.com/docs/en/cli-reference
 https://habr.com/ru/articles/983214/   
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
+https://www.dev-log.me/pr_review_navigator_for_claude/  Skill for code review
+
 https://psantanna.com/claude-code-my-workflow/workflow-guide.html
 
 ## ChatGPT
