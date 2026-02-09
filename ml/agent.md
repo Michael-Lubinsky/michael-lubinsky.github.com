@@ -11,6 +11,10 @@ https://www.dev-log.me/pr_review_navigator_for_claude/  Skill for code review
 
 https://psantanna.com/claude-code-my-workflow/workflow-guide.html
 
+https://www.aitmpl.com/skills 
+
+https://www.youtube.com/watch?v=dTp3gbpT5G8
+
 ## ChatGPT
 https://habr.com/ru/articles/981624/  How to use ChatGPT effectively  
 
