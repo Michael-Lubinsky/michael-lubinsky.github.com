@@ -61,6 +61,11 @@ https://habr.com/ru/articles/945102/
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
 https://www.youtube.com/watch?v=MqhnyTEaNZ8
 
+Why sky is blue?
+https://explainers.blog/posts/why-is-the-sky-blue/
+
+https://news.ycombinator.com/item?id=46946401
+
 ### Geometric Algebra
 https://habr.com/ru/articles/958088/ 
 
