@@ -1,5 +1,7 @@
 ## ONNX
 
+<https://habr.com/ru/companies/otus/articles/991542/>
+
 ONNX uses **Protocol Buffers (protobuf)** for serialization -  
 a binary format developed by Google for efficient data serialization.
 
