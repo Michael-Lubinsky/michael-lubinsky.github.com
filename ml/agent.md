@@ -1,5 +1,7 @@
 ## Agents
 
+https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-suites
+
 ### Claude 
 https://anthropic.skilljar.com/claude-code-in-action
 https://code.claude.com/docs  
