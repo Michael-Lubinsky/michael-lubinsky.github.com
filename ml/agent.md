@@ -376,6 +376,8 @@ If you want, I can:
 <https://skillsmp.com/>
 
 <https://habr.com/ru/articles/987552/>
+
+<https://habr.com/ru/articles/987552/>
 ```
 Agent Skills (навыки агентов) - это новый архитектурный паттерн для LLM-агентов,
 позволяющий имитировать наличие у модели набора узкоспециализированных компетенций.
