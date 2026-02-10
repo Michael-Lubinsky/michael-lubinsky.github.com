@@ -4,6 +4,8 @@ https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-
 
 https://habr.com/ru/articles/993824/
 
+https://habr.com/ru/articles/994376/
+
 https://www.youtube.com/watch?v=ChfEO8l-fas   Visualization of ML
 
 https://visualrambling.space/neural-network/  Visualization of ML
