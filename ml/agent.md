@@ -4,6 +4,8 @@ https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-
 
 https://crawshaw.io/blog/eight-more-months-of-agents
 
+https://github.com/Tiendil/donna
+
 ### Claude 
 https://anthropic.skilljar.com/claude-code-in-action
 https://code.claude.com/docs  
