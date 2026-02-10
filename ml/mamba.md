@@ -379,6 +379,55 @@ https://num.pyro.ai/en/stable/
 https://github.com/pyro-ppl/numpyro    
 
 
+1 → Understanding Machine Learning
+Theory meets algorithms.
+Foundations explained clearly.
+https://lnkd.in/dBME-P8q
+
+2 → Mathematics for ML
+Linear algebra to calculus.
+Build mathematical intuition.
+https://lnkd.in/diK8E9N4
+
+3 → Mathematical Analysis
+ML algorithms dissected.
+Theory behind the code.
+https://lnkd.in/dUBcRTUT
+
+4 → Deep Learning Principles
+Neural networks demystified.
+Physics meets AI.
+https://lnkd.in/dkrCCqBM
+
+5 → ML with Networks
+Neurons to backpropagation.
+Practical neural network guide.
+https://lnkd.in/dxujdJTM
+
+6 → Deep Learning Graphs
+Graph neural networks explained.
+Modern architectures covered.
+https://lnkd.in/d3-_cZVy
+
+7 → Algorithmic ML Aspects
+Complexity and optimization.
+Advanced algorithm theory.
+https://lnkd.in/drs_5znT
+
+8 → Probability Theory
+Statistical foundations covered.
+Examples and applications.
+https://lnkd.in/dbDN7kyi
+
+9 → Elementary Probability
+Beginner friendly approach.
+Real world applications.
+https://lnkd.in/dTMg54Ez
+
+10 → Advanced Data Analysis
+Statistical learning methods.
+Production level insights.
+https://lnkd.in/dvSmYrtc
 
 
 ### Feature store
