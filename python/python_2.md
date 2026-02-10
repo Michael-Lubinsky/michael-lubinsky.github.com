@@ -1,7 +1,10 @@
 
 ## Python notes continued
 
-Разбор threading vs multiprocessing vs asyncio в Python
+## asyncio
+https://habr.com/ru/articles/995032/
+
+threading vs multiprocessing vs asyncio в Python
 https://habr.com/ru/articles/991478/
 
 
