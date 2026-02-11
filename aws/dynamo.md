@@ -1,5 +1,7 @@
 ## DynamoDB
 
+<https://death.andgravity.com/dynamodb>
+
 <https://death.andgravity.com/dynamodb-model>
 
 ### Streaming
