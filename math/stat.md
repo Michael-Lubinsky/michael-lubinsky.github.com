@@ -17,6 +17,9 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 
 <https://www.tensortonic.com/ml-math/statistics/hypothesis-testing>
 
+
+<https://www.youtube.com/watch?v=XCEpIBqKogo> Bayesian Inference: Overview Steve Brunton
+
 https://eyal-kazin.medium.com/
 
 https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU
