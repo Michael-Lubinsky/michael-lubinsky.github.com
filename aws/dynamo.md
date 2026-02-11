@@ -1,3 +1,7 @@
+## DynamoDB
+
+<https://death.andgravity.com/dynamodb-model>
+
 ### Streaming
 
 Those three **DynamoDB Stream view types** control *what data images* get written into the stream whenever an item changes.
