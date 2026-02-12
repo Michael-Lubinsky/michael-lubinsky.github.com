@@ -1,3 +1,5 @@
+https://maxhalford.github.io/blog/online-active-learning-river-databutton/  Online Active Learning
+ 
  https://github.com/roboticcam/machine-learning-notes?tab=readme-ov-file)   ML Learning Notes
 
  https://www.youtube.com/playlist?list=PLgPbN3w-ia_PeT1_c5jiLW3RJdR7853b9
