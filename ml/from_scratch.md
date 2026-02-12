@@ -2,6 +2,10 @@
 
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
+https://github.com/karpathy/minGPT
+
+https://habr.com/ru/articles/995838/
+
 https://www.mlacademy.ai/ml-system-design-sign-up-external Free course
 
 https://habr.com/ru/articles/993824/
