@@ -1,6 +1,10 @@
 ### SQLite
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>
 <https://visualdb.com/sqlite/>  
+
+### REST API for SQLite 
+<https://github.com/b4fun/sqlite-rest>
+
 <https://docs.python.org/3/library/sqlite3.html>
 
 #### Reading records by the column name (Python)
