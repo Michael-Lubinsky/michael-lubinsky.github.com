@@ -4,6 +4,8 @@ https://ru.algorithmica.org/
 
 https://cleveralgorithms.com/
 
+https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html
+
 https://arxiv.org/pdf/2301.00754 Algos for Massive Data
 
 https://cs.gmu.edu/~sean/book/metaheuristics/
