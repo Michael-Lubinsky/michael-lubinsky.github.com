@@ -7,6 +7,8 @@ https://www.byhand.ai/p/transformer-six-levels-of-understanding
 http://karpathy.github.io/2026/02/12/microgpt/  
 https://github.com/karpathy/minGPT  
 
+https://www.linkedin.com/in/reznikovivan/
+
 https://habr.com/ru/articles/995838/
 
 https://www.mlacademy.ai/ml-system-design-sign-up-external Free course
