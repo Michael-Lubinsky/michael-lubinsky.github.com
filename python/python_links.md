@@ -19,6 +19,8 @@ https://www.cosmicpython.com/book/preface.html  Book
 
 https://tryolabs.com/blog/top-python-libraries-2025
 
+https://github.com/ritwiktiwari/awesome-python-rs Rust Libraries
+
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
 https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8
