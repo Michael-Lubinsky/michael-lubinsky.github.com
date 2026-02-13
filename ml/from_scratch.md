@@ -2,7 +2,8 @@
 
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
-https://github.com/karpathy/minGPT
+http://karpathy.github.io/2026/02/12/microgpt/  
+https://github.com/karpathy/minGPT  
 
 https://habr.com/ru/articles/995838/
 
