@@ -2,7 +2,7 @@
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
-<https://www.manning.com/books/just-use-postgres?utm_source=social_media&utm_medium=nom_influencer&utm_campaign=book_magda&utm_content=vlad_mihalcea&utm_campaign=14012720-book_magda&utm_source=blog_post> Book Just Use Postgres
+<https://www.manning.com/books/just-use-postgres> Book Just Use Postgres
 <https://habr.com/ru/companies/otus/articles/941456/>  
 <https://habr.com/ru/companies/ppr/articles/947852/> Dynamic SQL  
 <https://learn.microsoft.com/en-us/azure/postgresql/extensions/how-to-allow-extensions>  Postgres on Azure Extensions  
@@ -11,7 +11,7 @@
 <https://boringsql.com/posts/postgresql-predefined-roles/>
 <https://habr.com/ru/companies/beget/articles/920772/>
 
-
+<https://habr.com/ru/articles/996560/> 25 rules for postgres design
 ### 
 
 ```sql
