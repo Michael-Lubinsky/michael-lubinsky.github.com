@@ -1,5 +1,7 @@
 ## ML System Design
 
+https://datascale-ai.github.io/data_engineering_book/  for LLMs
+
 https://habr.com/ru/companies/tochka/articles/976892/
 
 https://habr.com/ru/companies/ruvds/articles/990814/
