@@ -1,5 +1,6 @@
 <https://habr.com/ru/articles/949314/>
 
+https://habr.com/ru/articles/989942/ Python list internals
 https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
 
 https://www.amazon.com/Clean-Architecture-Python-maintainable-architectural/dp/183664289X Implementing the Clean Architecture (Book)
