@@ -20,6 +20,8 @@ Catalog (top-level container)
 
 <https://blog.dataengineerthings.org/>
 
+<https://books.japila.pl/>
+
 <https://smartdataconf.ru/schedule/topics/#topic-2>
 
 <https://www.waitingforcode.com/>  Bartosz Konieczny
