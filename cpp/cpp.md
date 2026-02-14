@@ -20,6 +20,8 @@ https://www.cppnext.com/
 
 ### Memory management
 
+https://habr.com/ru/articles/996452/ new , new[]. delete and delete[]
+
 https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
 
 https://www.reddit.com/r/cpp/comments/1ibxuyn/how_do_you_decide_when_to_use_smart_pointers_vs/
