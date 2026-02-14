@@ -3,6 +3,7 @@
 
 ![](Spark_architecture.png)
 
+<https://books.japila.pl/>  
 <https://medium.com/@reliabledataengineering/the-best-github-repos-for-data-engineers-in-2025-b2f02d7c1833>
 
 ### Query plan  builder
