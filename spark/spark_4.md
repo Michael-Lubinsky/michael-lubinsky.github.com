@@ -1,6 +1,8 @@
-https://codecut.ai/pyspark-4-0-whats-new/
+SPARK 4
 
-https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets
+<https://codecut.ai/pyspark-4-0-whats-new/>
+
+<https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
 
 ## DataSource API
 
@@ -38,7 +40,7 @@ Assign row numbers to every single row
 Filter out everything except rank = 1
 
 
-https://blog.devgenius.io/improving-spark-jobs-runtime-b128f0c29d44
+<https://blog.devgenius.io/improving-spark-jobs-runtime-b128f0c29d44>
 
 How max_by Works Under the Hood  
 
@@ -83,16 +85,60 @@ GROUP BY col1, col2, col3, col
  
 
 
-### Spark 4.0
+### Spark 4.0 links
 
-https://medium.com/@cralle/what-developers-need-to-know-about-apache-spark-4-0-508d0e4a5370
+<https://medium.com/@cralle/what-developers-need-to-know-about-apache-spark-4-0-508d0e4a5370>
 
-https://habr.com/ru/companies/korus_consulting/articles/920766/
+<https://habr.com/ru/companies/korus_consulting/articles/920766/>
 
-https://sabarevictor.medium.com/stop-learning-pandas-the-spark-4-0-features-nobodys-telling-you-about-8651b0206ee5
+<https://sabarevictor.medium.com/stop-learning-pandas-the-spark-4-0-features-nobodys-telling-you-about-8651b0206ee5>
 
-https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12
+<https://medium.com/@goyalarchana17/whats-next-for-apache-spark-4-0-a-comprehensive-overview-with-comparisons-to-spark-3-x-c2c1ba78aa5b?sk=81039bff1aadd3a8e65507a43f21ec12>
 
-https://medium.com/towards-data-engineering/how-to-migrate-to-apache-spark-4-0-in-10-steps-a-complete-guide-b25aff9454a7 
+<https://medium.com/towards-data-engineering/how-to-migrate-to-apache-spark-4-0-in-10-steps-a-complete-guide-b25aff9454a7>
 
-https://medium.com/towards-data-engineering/meet-variant-apache-spark-4-0s-secret-weapon-for-semi-structured-data-c087e164c241 
+<https://medium.com/towards-data-engineering/meet-variant-apache-spark-4-0s-secret-weapon-for-semi-structured-data-c087e164c241>
+
+
+
+
+
+◉ Apache Spark all fundamentals in one long article
+
+<https://lnkd.in/g8bzn5Fk>
+
+◉ Apache Spark overview: Architecture, Job, Stage, Task, RDD, the journey of the Spark application
+
+<https://lnkd.in/gxrkaAk3>
+
+◉ Spark resource allocation: Static vs dynamic allocation, FIFO vs Fair schedule mode
+
+<https://lnkd.in/ga-wX-j6>
+
+◉ Spark scheduling process: from your code to physical execution on executors
+
+https://lnkd.in/g7VrtHv3
+
+◉ Spark planning process: Catalyst, logical vs physical planning, Adaptive Query Execution in Spark 3
+
+https://lnkd.in/gcCUpKev
+
+◉ Spark's memory management: On-heap and Off-heap memory
+
+https://lnkd.in/gPpyFK7j
+
+◉ Databricks's Spark vs Open-sourced Spark: Spark + Photon engine to boost the query performance
+
+https://lnkd.in/gSN7Vk33
+
+◉ PySpark: Spark was written in Scala, so how could we use Python with it?
+
+https://lnkd.in/gwA-BWdp
+
+◉ Spark Structured Streaming: the micro-batch processing engine
+
+https://lnkd.in/gQMywJsz
+
+◉ Spark Connect: process data in Spark by making an API request instead of submitting an application
+
+https://lnkd.in/gfXsbQ35
