@@ -1,3 +1,4 @@
+<https://awstip.com/>
 
 ## What is a difference between Amazon SQS queue and Kafka?
 
