@@ -12,6 +12,13 @@
 <https://habr.com/ru/companies/beget/articles/920772/>
 
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
+
+<https://hatchet.run/blog/postgres-events-table> without needing specialized time-series databases.
+
+<https://hatchet.run/blog/multi-tenant-queues>
+
+<https://hatchet.run/blog/task-queue-modern-python>
+
 ### 
 
 ```sql
