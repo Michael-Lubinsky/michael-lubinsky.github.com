@@ -1,5 +1,6 @@
 
 ## Python notes continued
+<https://habr.com/ru/articles/1000378/>
 
 ## asyncio
 https://habr.com/ru/articles/995032/
