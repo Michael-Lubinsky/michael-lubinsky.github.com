@@ -1,5 +1,15 @@
 ### PyTorch
 
+<https://0byte.io/articles/pytorch_introduction.html>
+
+https://www.youtube.com/watch?v=dES5Cen0q-Y (part 2 https://www.youtube.com/watch?v=-HhE-8JChHA) is the video to accompany https://0byte.io/articles/helloml.html
+
+https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/
+
+Free book: https://zekcrates.quarto.pub/deep-learning-library/
+
+Ml by hand : https://github.com/workofart/ml-by-hand
+
 https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/
