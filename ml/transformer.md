@@ -1,5 +1,7 @@
 ## Transformers
 
+<https://habr.com/ru/articles/982268/>
+
 https://www.youtube.com/watch?v=1vPqIweQh_U 
 LLM, трансформеры, внимательно разбираем внутренности
 
