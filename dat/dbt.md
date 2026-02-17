@@ -1,4 +1,5 @@
 ### DBT
+<img width="550" height="404" alt="image" src="https://github.com/user-attachments/assets/bab6d06e-35bc-402f-9c4a-d5f635964cf5" />
 
 <https://docs.getdbt.com/docs/introduction>
 
