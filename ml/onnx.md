@@ -4,6 +4,12 @@
 
 <https://habr.com/ru/companies/otus/articles/991542/>
 
+pip install onnx
+
+  wget https://github.com/onnx/models/raw/main/vision/classification/resnet/model/resnet50-v1-7.onnx
+   wget https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.1-7.onnx
+  
+
 ONNX uses **Protocol Buffers (protobuf)** for serialization -  
 a binary format developed by Google for efficient data serialization.
 
