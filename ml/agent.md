@@ -83,8 +83,8 @@ Commands:
   setup-token                                       Set up a long-lived authentication token (requires Claude subscription)
   update|upgrade                                    Check for updates and install if available
 ```
-
-https://anthropic.skilljar.com/claude-code-in-action
+https://habr.com/ru/companies/alfa/articles/1000342/  
+https://anthropic.skilljar.com/claude-code-in-action  
 https://code.claude.com/docs  
 https://code.claude.com/docs/en/cli-reference  
 https://habr.com/ru/articles/983214/   
