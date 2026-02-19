@@ -374,7 +374,8 @@ ORDER BY  extname;
 <https://www.tigerdata.com/blog/top-8-postgresql-extensions>  
 <https://medium.com/@Nexumo_/7-postgres-extension-combos-that-feel-like-superpowers-6d753ee56965>
 <https://habr.com/ru/companies/selectel/articles/936362/>  
-<https://pgxn.org/>  
+<https://pgxn.org/>
+<https://habr.com/ru/companies/magnus-tech/articles/990146/> arrays
 
 ### csv import  
 <https://github.com/PostgREST/pg_csv>
