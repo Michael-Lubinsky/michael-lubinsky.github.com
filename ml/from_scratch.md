@@ -6,6 +6,9 @@ https://www.byhand.ai/p/transformer-six-levels-of-understanding
 
 https://github.com/mlabonne/llm-course
 
+## LLM interview quetions
+https://vanitaai.com/category/large-language-models/
+
 ## MicroGPT
 https://habr.com/ru/articles/996404/
 http://karpathy.github.io/2026/02/12/microgpt/  
