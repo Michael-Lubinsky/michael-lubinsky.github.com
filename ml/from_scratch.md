@@ -4,6 +4,8 @@ https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-
 
 https://www.byhand.ai/p/transformer-six-levels-of-understanding
 
+https://github.com/mlabonne/llm-course
+
 ## MicroGPT
 https://habr.com/ru/articles/996404/
 http://karpathy.github.io/2026/02/12/microgpt/  
