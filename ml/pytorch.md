@@ -2,6 +2,8 @@
 
 <https://0byte.io/articles/pytorch_introduction.html>
 
+<https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
+
 https://www.youtube.com/watch?v=dES5Cen0q-Y (part 2 https://www.youtube.com/watch?v=-HhE-8JChHA) is the video to accompany https://0byte.io/articles/helloml.html
 
 https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/
