@@ -5,14 +5,43 @@
 
 <https://habr.com/ru/companies/otus/articles/942044/> PIVOT/UNPIVOT, CROSS APPLY/LATERAL , partial indexes
 
-GROUPING_SETS  
+### COUNT_IF
+
+**Supports `COUNT_IF`:**
+- Databricks SQL / Spark SQL
+- Snowflake
+- DuckDB
+- Trino / Presto
+
+**Does NOT support `COUNT_IF`:**
+- PostgreSQL
+- MySQL
+- SQL Server
+- Oracle
+- SQLite
+- BigQuery (has `COUNTIF` without underscore though)
+
+Note that BigQuery's `COUNTIF(condition)` is slightly different syntax (no underscore).
+
+So `COUNT_IF` is common in modern cloud/analytical engines but absent from traditional RDBMS.   
+For maximum portability, the 
+
+`SUM(CASE WHEN ... THEN 1 ELSE 0 END)` 
+
+pattern works virtually everywhere, as does 
+
+`COUNT(CASE WHEN ... THEN 1 END)` 
+
+(which relies on COUNT skipping NULLs).
+
+### GROUPING_SETS  
  the GROUPING SET operator simply performs and collates many GROUP BY in one fell swoop.
 <https://maxhalford.github.io/blog/grouping-sets/>
 
-Online SQL
+### Online SQL
 <https://dbfiddle.uk/>   <https://sqlfiddle.com/>     <https://rextester.com/>   <https://schemaspy.org/>
 
-SQL for time series:
+### SQL for time series:
 <https://medium.com/@Rohan_Dutt/10-time-series-feature-engineering-tricks-you-can-do-directly-in-sql-39acc18fab52>
 
 count(distinct) over window function
