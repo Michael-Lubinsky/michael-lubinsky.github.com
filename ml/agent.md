@@ -102,17 +102,23 @@ https://www.aitmpl.com/skills
 https://www.youtube.com/watch?v=dTp3gbpT5G8
 
 ## ChatGPT
-https://habr.com/ru/articles/981624/  How to use ChatGPT effectively  
+<https://habr.com/ru/articles/981624/> How to use ChatGPT effectively  
+
+## Codex from OpenAI
+<https://habr.com/ru/companies/ods/articles/1001012/>
+Claude Code написан на TypeScript.  
+Codex CLI написан на Rust. 
 
 ### Cursor
-https://habr.com/ru/articles/984656/  Cursor Agent
+<https://habr.com/ru/articles/984656/>  Cursor Agent
 
-https://habr.com/ru/articles/987528/
-https://mariozechner.at/posts/2025-11-30-pi-coding-agent/  
-https://news.ycombinator.com/item?id=46844822
+<https://habr.com/ru/articles/987528/>
 
-https://www.freecodecamp.org/news/how-to-build-advanced-ai-agents/ 
-https://ampcode.com/how-to-build-an-agent
+<https://mariozechner.at/posts/2025-11-30-pi-coding-agent/>    
+<https://news.ycombinator.com/item?id=46844822>
+
+<https://www.freecodecamp.org/news/how-to-build-advanced-ai-agents/>
+<https://ampcode.com/how-to-build-an-agent>
 
 https://www.mihaileric.com/The-Emperor-Has-No-Clothes/
 
