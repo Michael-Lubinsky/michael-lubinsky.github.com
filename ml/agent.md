@@ -99,7 +99,7 @@ https://www.dev-log.me/pr_review_navigator_for_claude/  Skill for code review
 https://psantanna.com/claude-code-my-workflow/workflow-guide.html
 
 ## Skills
-
+https://habr.com/ru/articles/1001830/  
 https://agentskills.io/
 https://www.aitmpl.com/skills 
 
