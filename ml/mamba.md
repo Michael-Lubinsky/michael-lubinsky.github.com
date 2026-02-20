@@ -1,5 +1,7 @@
 https://habr.com/ru/companies/piter/articles/1001790/ Как в Netflix масштабируют постобучение LLM
 
+https://www.amazon.com/dp/1836200072 LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
+
 https://maxhalford.github.io/blog/online-active-learning-river-databutton/  Online Active Learning
  
  https://github.com/roboticcam/machine-learning-notes?tab=readme-ov-file)   ML Learning Notes
