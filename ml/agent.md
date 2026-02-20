@@ -6,6 +6,10 @@ https://crawshaw.io/blog/eight-more-months-of-agents
 
 https://github.com/Tiendil/donna
 
+https://github.com/gsd-build/get-shit-done  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
+
+
+
 ### Claude 
 
 which claude
