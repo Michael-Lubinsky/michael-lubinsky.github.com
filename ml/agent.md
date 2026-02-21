@@ -86,6 +86,20 @@ Commands:
   plugin                                            Manage Claude Code plugins
   setup-token                                       Set up a long-lived authentication token (requires Claude subscription)
   update|upgrade                                    Check for updates and install if available
+
+
+Example:
+
+  claude -p "<prompt>" \
+    --append-system-prompt "<identity + memory instructions>" \
+    --tools "Bash,Read,Write,Edit" \
+    --allowedTools "Bash,Read,Write,Edit" \
+    --add-dir ~/.epiphyte/memory \
+    --model opus \
+    --output-format stream-json \
+    --resume <session-id> 
+
+
 ```
 https://habr.com/ru/companies/alfa/articles/1000342/  
 https://anthropic.skilljar.com/claude-code-in-action  
