@@ -1,5 +1,6 @@
 https://habr.com/ru/companies/piter/articles/1001790/ Как в Netflix масштабируют постобучение LLM
 
+
 https://www.amazon.com/dp/1778042724/ The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
 https://www.amazon.com/dp/1836200072 LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
@@ -24,8 +25,12 @@ https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
 https://habr.com/ru/articles/804605/ ML algos
 
+https://habr.com/ru/articles/1002298/
+
 ## Reinforcement learning 
 https://habr.com/ru/articles/991622/
+
+https://habr.com/ru/articles/1002298/
 
 https://rlhfbook.com/  Reinforcement learning human feedback
 
