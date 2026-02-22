@@ -8,6 +8,10 @@ and cross-platform desktop applications written in Typescript.
 Under the hood it uses bun to execute the main process and to bundle webview typescript, 
 and has native bindings written in zig.
 
+### DataStar
+https://talkpython.fm/episodes/show/537/datastar-modern-web-dev-simplified
+
+
 ## Web tools
 
 https://viteplus.dev/
