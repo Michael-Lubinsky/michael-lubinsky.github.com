@@ -4,6 +4,8 @@ https://habr.com/ru/articles/968114/ FluentAPI
 
 ### Rest API
 
+<https://habr.com/ru/articles/946276/>
+
 <https://habr.com/ru/articles/955574/>
 
 https://habr.com/ru/companies/psb/articles/976722/
