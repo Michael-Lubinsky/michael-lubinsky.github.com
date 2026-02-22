@@ -1,6 +1,9 @@
 https://aep.dev/
 
+## Server Side Event vs Client Side rendering ... etc 
 https://habr.com/ru/articles/918200/
+
+https://habr.com/ru/articles/1000986/
 
 https://habr.com/ru/articles/968114/ FluentAPI
 
