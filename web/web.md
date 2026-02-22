@@ -11,6 +11,9 @@ and has native bindings written in zig.
 ### DataStar
 https://talkpython.fm/episodes/show/537/datastar-modern-web-dev-simplified
 
+## WEb Sockets
+
+https://habr.com/ru/articles/979614/
 
 ## Web tools
 
