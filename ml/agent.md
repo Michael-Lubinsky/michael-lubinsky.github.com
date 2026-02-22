@@ -11,6 +11,7 @@ https://github.com/gsd-build/get-shit-done  Behind the scenes: context engineeri
 
 
 ### Claude 
+<https://boristane.com/blog/how-i-use-claude-code/>
 
 which claude
 /opt/homebrew/bin/claude
