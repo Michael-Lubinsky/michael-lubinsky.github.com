@@ -2,6 +2,8 @@
 
 https://www.youtube.com/watch?v=08mmKNLQVHU
 
+https://www.youtube.com/playlist?list=PLB24BC7956EE040CD
+
 The Unreasonable Effectiveness of the Fourier Transform
 https://joshuawise.com/resources/ofdm/
 
