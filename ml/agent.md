@@ -128,12 +128,17 @@ node -v # Должно вывести "v22.22.0".
 
 # Проверяем версию npm:
 npm -v # Должно вывести "10.9.4".
+```
 
-
+### Setup OpenClaw
+<https://habr.com/ru/articles/992720/>
+```
 curl -fsSL https://openclaw.ai/install.sh | bash
 
 or 
 npm install -g clawdbot
+```
+
 ```
 После установки (к примеру через npm install -g clawdbot) приложение настраивается мастером:
 он создаёт рабочую директорию (~/clawd/ по умолчанию), 
