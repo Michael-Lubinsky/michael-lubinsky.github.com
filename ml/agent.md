@@ -107,6 +107,7 @@ https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agen
 ## OpenClaw
 <http://docs.openclaw.ai/>  
 <https://clawdhub.com/>  
+<https://habr.com/ru/articles/991264/>  
 <https://habr.com/ru/articles/990786/>
 
 ```js
