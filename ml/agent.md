@@ -105,6 +105,9 @@ Example:
 https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440
 
 ## OpenClaw
+<http://docs.openclaw.ai/>  
+<https://clawdhub.com/>  
+<https://habr.com/ru/articles/990786/>
 
 ```js
 # Скачиваем и устанавливаем nvm:
@@ -121,8 +124,23 @@ node -v # Должно вывести "v22.22.0".
 
 # Проверяем версию npm:
 npm -v # Должно вывести "10.9.4".
+
+
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+or 
 npm install -g clawdbot
 ```
+После установки (к примеру через npm install -g clawdbot) приложение настраивается мастером:
+он создаёт рабочую директорию (~/clawd/ по умолчанию), 
+генерирует конфиг ~/.clawdbot/clawdbot.json и собирает скелет ассистента из файлов Markdown. 
+Там же лежит то, что в обычных продуктах спрятано глубоко в базе данных: 
+память, 
+инструкции, 
+список инструментов, 
+описания навыков (скилов). 
+
+Всё это — просто текстовые файлы, которые можно открыть, почитать, отредактировать и закоммитить обратно, если очень захотелось.
 
 4 ключевых компонента:
 Gateway — фоновый демон, который держит подключения к мессенджерам (Telegram, WhatsApp, что угодно из 50+
