@@ -105,8 +105,16 @@ Example:
 https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440
 
 ## OpenClaw
+npm install -g clawdbot
+```
+Где бы ни запускался Gateway, паттерн работы одинаков: это локальный агент и внешний канал связи. Агент хранит память и инструкции, обращается к БЯМ для своей работы,
+ а Gateway держит коннекторы к чатам и веб-порт, по умолчанию на 127.0.0.1:18789.
 
+(По умолчанию внешних соединений не будет, поэтому для доступа с другого устройства нужно поменять пара
+метр gateway.bind на 0.0.0.0).
+Также на этом порту в браузере открывается простенький Control UI, написанный на Vite и Lit.
 
+```
 
 https://habr.com/ru/companies/alfa/articles/1000342/  
 https://anthropic.skilljar.com/claude-code-in-action  
