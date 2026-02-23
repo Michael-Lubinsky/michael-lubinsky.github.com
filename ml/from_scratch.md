@@ -18,7 +18,8 @@ https://vanitaai.com/category/large-language-models/
 https://www.youtube.com/watch?v=7xTGNNLPyMI 
 
 https://habr.com/ru/articles/996404/
-http://karpathy.github.io/2026/02/12/microgpt/  
+http://karpathy.github.io/2026/02/12/microgpt/    
+https://microgpt.boratto.ca/  
 https://github.com/karpathy/minGPT  
 
 ### Reznikov Ivan
