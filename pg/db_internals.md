@@ -1,6 +1,7 @@
 
 https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b
 
+https://planetscale.com/blog/btrees-and-database-indexes B-trees
 
 https://materialize.com/blog/how-filter-pushdown-works/
 
