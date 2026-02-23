@@ -11,11 +11,15 @@ https://www.youtube.com/watch?v=3_e0HVV3nMM
 ## LLM interview quetions
 https://vanitaai.com/category/large-language-models/
 
-## MicroGPT
+## MicroGPT Karpathy
+
+https://www.youtube.com/watch?v=7xTGNNLPyMI 
+
 https://habr.com/ru/articles/996404/
 http://karpathy.github.io/2026/02/12/microgpt/  
 https://github.com/karpathy/minGPT  
 
+### Reznikov Ib=van
 https://www.linkedin.com/in/reznikovivan/
 
 https://habr.com/ru/articles/995838/
