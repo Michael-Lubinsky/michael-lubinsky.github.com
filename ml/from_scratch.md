@@ -6,6 +6,8 @@ https://www.byhand.ai/p/transformer-six-levels-of-understanding
 
 https://github.com/mlabonne/llm-course
 
+https://github.com/springer-llms-deep-dive
+
 https://www.youtube.com/watch?v=3_e0HVV3nMM 
 
 ## LLM interview quetions
