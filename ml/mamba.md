@@ -581,3 +581,125 @@ s? ✅ • The new MCP standard? ✅
 ➡️ Open-source AI Cookbook
 🔗https://lnkd.in/ghT8c_cD
 
+
+Books and Papers
+Current
+
+* Large Language Models: A Deep Dive: Bridging Theory and Practice
+    * Uday Kamath, Kevin Keenan, Garrett Somers, and Sarah Sorenson
+    * August 20, 2024
+    * https://link.springer.com/book/10.1007/978-3-031-65647-7
+
+Future
+
+* Books
+    * How Large Language Models Work
+        * Edward Raff, Drew Farris, and Stella Biderman for Booz Allen Hamilton
+        * June 2025
+        * https://www.manning.com/books/how-large-language-models-work
+    * Large Vision-Language Models: Pre-training, Prompting, and Applications
+        * Kaiyang Zhou, Ziwei Liu, and Peng Gao
+        * August 31, 2025
+        * https://link.springer.com/book/10.1007/978-3-031-94969-2 
+    * Domain-Specific Small Language Models
+        * Guglielmo Iozzia
+        * December, 2025
+        * https://www.manning.com/books/domain-specific-small-language-models
+    * Build a Text-to-Image Generator (from Scratch)
+        * Mark Liu
+        * Early 2026
+        * https://www.manning.com/books/build-a-text-to-image-generator-from-scratch
+    * Image Generation Models: GANs, diffusion models, and transformers
+        * Vladimir Bok
+        * Early 2026
+        * https://www.manning.com/books/image-generation-models
+    * Foundations of Large Language Models
+        * Tong Xiao and Jingbo Zhu
+        * June 15, 2025
+        * https://arxiv.org/abs/2501.09223
+    * Deep Learning with Python, Third Edition
+        * François Chollet and Matthew Watson
+        * September 2025
+        * https://www.manning.com/books/deep-learning-with-python-third-edition 
+    * Agentic Design Patterns: A Hands-On Guide to Building Intelligent Systems
+        * Antonio Gullí
+        * November 2025
+        * https://link.springer.com/book/9783032014016 
+    * Build a Reasoning Model (From Scratch)
+        * Sebastian Raschka
+        * Summer 2026
+        * https://www.manning.com/books/build-a-reasoning-model-from-scratch
+    * The Hundred-Page Language Models Book: hands-on with PyTorch
+        * Andriy Burkov
+        * January 15, 2025
+        * https://thelmbook.com/
+    * Mastering Transformers: The Journey from BERT to Large Language Models and Stable Diffusion , Second Edition
+        * Savaş Yıldırım and Meysam Asgari-Chenaghlu
+        * June 2024
+        * https://www.packtpub.com/en-us/product/mastering-transformers-9781837631506?srsltid=AfmBOorRfZJyejDNVM1gcrnKWjsD9HdcetmT_mbFmtffQinMIpHd5sml
+    * AI Engineering: Building Applications with Foundation Models
+        * Chip Huyen
+        * December 2024
+        * https://www.oreilly.com/library/view/ai-engineering/9781098166298/
+    * Programming Generative AI: Large Multimodal Models with PyTorch and Hugging Face
+        * Jonathan Dinu
+        * July 27, 2026
+        * https://a.co/d/1ihSKhg
+    * Vector Databases
+        * Nitin Borwankar
+        * March 2026
+        * https://www.oreilly.com/library/view/vector-databases/9781098177584/
+    * AI Systems Performance Engineering
+        * Chris Fregly
+        * November 2025
+        * https://www.oreilly.com/library/view/ai-systems-performance/9798341627772/
+* Papers
+    * Attention Is All You Need
+        * Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
+        * August 2, 2023
+        * https://arxiv.org/abs/1706.03762
+    * Learning without training: The implicit dynamics of in-context learning
+        * Benoit Dherin, Michael Munn, Hanna Mazzawi, Michael Wunder, Javier Gonzalvo
+        * July 21, 2025
+        * https://arxiv.org/abs/2507.16003
+    * RLAD: Training LLMs to Discover Abstractions for Solving Reasoning Problems
+        * Yuxiao Qu, Anikait Singh, Yoonho Lee, Amrith Setlur, Ruslan Salakhutdinov, Chelsea Finn, Aviral Kumar
+        * October 2, 2025
+        * https://arxiv.org/abs/2510.02263
+    * Less is More: Recursive Reasoning with Tiny Networks
+        * Alexia Jolicoeur-Martineau
+        * October 6, 2025
+        * https://arxiv.org/abs/2510.04871v1
+    * Readability ≠ Learnability: Rethinking the Role of Simplicity in Training Small Language Models
+        * Ivan Lee, Taylor Berg-Kirkpatrick
+        * August 25, 2025
+        * https://openreview.net/forum?id=AFMGbq39bQ#discussion
+    * Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models
+        * Qizheng Zhang, Changran Hu, Shubhangi Upasani, Boyuan Ma, Fenglu Hong, Vamsidhar Kamanuru, Jay Rainton, Chen Wu, Mengmeng Ji, Hanchen Li, Urmish Thakker, James Zou, Kunle Olukotun
+        * October 6, 2025
+        * https://arxiv.org/abs/2510.04618
+
+Completed
+
+* 
+
+Strategy
+
+* Publishers
+    * Springer 
+        * https://link.springer.com/search?query=&content-type=Book&date=custom&dateFrom=2025&dateTo=2026&language=En&taxonomy=%22Artificial+Intelligence%22&facet-discipline=%22Computer+Science%22&sortBy=newestFirst
+    * O'Reilly 
+        * https://www.oreilly.com/search/skills/generative-ai/?type=book&rows=100&publication_date=early-release&language=en
+    * Manning 
+        * https://www.manning.com/catalog/data-science/machine-learning/large-language-models 
+        * https://www.manning.com/catalog/data-science/deep-learning/generative-ai
+    * MIT Press 
+        * https://mitpress.mit.edu/textbooks/computer-science/
+    * Cambridge University Press 
+        * https://www.cambridge.org/us/universitypress/subjects/computer-science?options%5B%5D=New+and+forthcoming
+    * Elsevier 
+        * https://shop.elsevier.com/search?query=ai&type=Book&sortBy=pubDateDesc&subjectArea=physical-sciences-and-engineering/computer-science/artificial-intelligence/artificial-intelligence-general
+* BookAuthority 
+    * https://bookauthority.org/books/new-generative-models-books
+
+
