@@ -1,3 +1,6 @@
+## Transactions
+https://planetscale.com/blog/database-transactions
+
 https://habr.com/ru/articles/961134/
 
 https://habr.com/ru/companies/otus/articles/968212/
