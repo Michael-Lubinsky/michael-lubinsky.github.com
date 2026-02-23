@@ -2,6 +2,8 @@
 
 <img width="1008" height="1056" alt="image" src="https://github.com/user-attachments/assets/8f5bdbee-dfae-4095-8317-0cf71493eacb" />
 
+<https://www.byhand.ai/p/transformer-six-levels-of-understanding>
+
 <https://habr.com/ru/articles/982268/>
 
 https://www.youtube.com/watch?v=1vPqIweQh_U 
@@ -9,7 +11,7 @@ LLM, трансформеры, внимательно разбираем вну�
 
 Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов: https://habr.com/ru/companies/yandex_praktikum/articles/986742/
 
-https://bbycroft.net/llm
+<https://bbycroft.net/llm>
 
 https://www.youtube.com/watch?v=iOrNbK2T92M
 
