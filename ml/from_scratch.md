@@ -19,7 +19,7 @@ https://habr.com/ru/articles/996404/
 http://karpathy.github.io/2026/02/12/microgpt/  
 https://github.com/karpathy/minGPT  
 
-### Reznikov Ib=van
+### Reznikov Ivan
 https://www.linkedin.com/in/reznikovivan/
 
 https://habr.com/ru/articles/995838/
