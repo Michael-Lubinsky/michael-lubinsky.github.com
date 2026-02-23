@@ -1,3 +1,5 @@
+Chris Fregly “AI Systems Performance Engineering” book 
+
 https://habr.com/ru/companies/piter/articles/1001790/ Как в Netflix масштабируют постобучение LLM
 
 https://philipkiely.com/  Inference Engineering book  
