@@ -58,7 +58,7 @@ https://habr.com/ru/articles/991478/
 * ﻿﻿index
 ```
 Since tuples are immutable, these are the only specific methods available directly to them
-```
+ 
 
 https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
