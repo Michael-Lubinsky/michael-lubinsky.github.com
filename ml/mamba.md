@@ -681,7 +681,7 @@ Future
         * October 6, 2025
         * https://arxiv.org/abs/2510.04618
 
-Completed
+ 
 
 * 
 
