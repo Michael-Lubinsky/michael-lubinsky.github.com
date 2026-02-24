@@ -5,6 +5,8 @@ https://www.youtube.com/watch?v=PB-1_JTHyEU
  https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf Linear Algebra for Computer Vision,
 Robotics, and Machine Learning
 
+https://markelic.de/
+
 https://www.cis.upenn.edu/~jean/math-deep.pdf  Algebra, Topology, Differential Calculus, and
 Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 
