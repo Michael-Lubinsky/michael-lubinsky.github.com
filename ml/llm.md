@@ -1,9 +1,18 @@
 
 ### LLM 
 
-https://huggingface.co/learn/llm-course/chapter1
+<https://huggingface.co/learn/llm-course/chapter1>
 
-https://arxiv.org/pdf/2501.09223  Foundation of LLMs
+<https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss>
+
+<https://github.com/mlabonne/llm-course>
+
+<https://github.com/springer-llms-deep-dive>
+
+<https://arxiv.org/pdf/2501.09223>  Foundation of LLMs
+
+
+https://vanitaai.com/category/large-language-models/ LLM interview quetions
 
 https://github.com/Saivineeth147/awesome-llm-resources
 
