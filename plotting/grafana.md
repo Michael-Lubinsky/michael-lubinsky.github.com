@@ -121,7 +121,8 @@ More: https://grafana.com/blog/2025/05/29/whats-new-in-grafana-metrics-drilldown
 Docs:
 - Getting Started: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/metrics/get-started/
 
-https://blog.oliviaappleton.com/posts/0007-lessons-in-grafana-02
+<https://blog.oliviaappleton.com/posts/0006-lessons-in-grafana-01>  
+<https://blog.oliviaappleton.com/posts/0007-lessons-in-grafana-02>
 
 ### Snowflake
 
