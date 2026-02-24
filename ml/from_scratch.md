@@ -2,7 +2,11 @@
 
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
+https://zekcrates.quarto.pub/deep-learning-library/
+
 https://www.byhand.ai/p/transformer-six-levels-of-understanding
+
+
 
 https://github.com/mlabonne/llm-course
 
