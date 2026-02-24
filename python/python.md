@@ -1021,8 +1021,12 @@ with open('test.txt', "r+b") as f:
         snippet = mm[0:10]
         print(snippet.decode('utf-8'))
 ```
+
+
+### Reading big files
+  https://habr.com/ru/articles/1002874/
   
-<!--
+ 
 ### Decorators and other code snippets
 
 https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-snippets-for-2024-85f5b9359103
@@ -1070,4 +1074,4 @@ https://habr.com/ru/articles/562380/ Statistics
 <https://simulation.teachem.digital/free-simulation-in-python-with-simpy-guide>
 <https://github.com/salabim/salabim>
 
--->
+ 
