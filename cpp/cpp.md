@@ -12,8 +12,13 @@ https://accu.org/journals/overload/33/190/filipek/ 15 Different Ways to Filter C
 
 https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference
 
-https://habr.com/ru/articles/1003004/  static_cast<>()   dynamic_cast<>() reinterpret_cast
-
+https://habr.com/ru/articles/1003004/  Type casting
+```
+static_cast<T>(x)
+dynamic_cast<T>(x)
+const_cast<T>(x)
+reinterpret_cast<T>(x)
+```
 https://habr.com/ru/companies/bercut/articles/970442/ Опасные ловушки C++: типичные ошибки, их последствия и защита
 
 https://habr.com/ru/articles/920790/  Supervisor on C++
