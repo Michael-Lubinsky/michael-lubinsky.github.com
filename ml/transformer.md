@@ -60,10 +60,9 @@ https://vectorfold.studio/blog/transformers
 
 https://www.stephendiehl.com/posts/post_transformers/  Attention ?
 
-Stanford put their LLM course online.:
+Stanford put their LLM course online.:  
 • Lecture 1 - Transformer
 https://www.youtube.com/watch?v=Ub3GoFaUcds  
-
 • Lecture 2 - Transformer-Based Models & Tricks
 https://www.youtube.com/watch?v=yT84Y5zCnaA  
 • Lecture 3 - Transformers & Large Language Models
