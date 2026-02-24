@@ -13,11 +13,9 @@ https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-
 
 https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 
-🔸 Umar Jamil: builds ML + LLM techniques from scratch
-https://lnkd.in/gmbrMj7D
-
-LLM Course
-🔗https://lnkd.in/gZuAHUSj
+ Umar Jamil: builds ML + LLM techniques from scratch
+[https://lnkd.in/gmbrMj7D](https://www.youtube.com/@umarjamilai)
+ 
 
 ### RAG
 
