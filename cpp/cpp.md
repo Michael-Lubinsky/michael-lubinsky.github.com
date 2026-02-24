@@ -80,6 +80,8 @@ https://github.com/fffaraz/awesome-cpp
 
 https://grishavanika.github.io/cpp_tips_tricks_quirks.html
 
+https://habr.com/ru/companies/timeweb/articles/990110/  C tricks
+
 https://habr.com/ru/articles/935590/  C++ string library
 
 ### Flame Graph
