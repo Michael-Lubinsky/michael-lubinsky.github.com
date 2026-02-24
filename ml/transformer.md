@@ -4,6 +4,8 @@
 
 <https://www.byhand.ai/p/transformer-six-levels-of-understanding>
 
+<https://www.youtube.com/watch?v=ISNdQcPhsts>   Coding a Transformer from scratch on PyTorch, with full explanation, training and inference. 
+
 <https://habr.com/ru/articles/982268/>
 
 https://www.youtube.com/watch?v=1vPqIweQh_U 
