@@ -1009,6 +1009,8 @@ print(me_with_slots.__dict__)
  <https://medium.com/techtofreedom/string-interning-in-python-a-hidden-gem-that-makes-your-code-faster-9be71c7a5f3e>
  
 ### mmap
+
+https://habr.com/ru/articles/1001546/
 ```python
 import mmap
 
