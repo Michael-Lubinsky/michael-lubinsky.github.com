@@ -8,14 +8,9 @@ https://www.byhand.ai/p/transformer-six-levels-of-understanding
 
 
 
-https://github.com/mlabonne/llm-course
-
-https://github.com/springer-llms-deep-dive
 
 https://www.youtube.com/watch?v=3_e0HVV3nMM 
 
-## LLM interview quetions
-https://vanitaai.com/category/large-language-models/
 
 ## MicroGPT Karpathy
 
@@ -54,7 +49,7 @@ https://www.amazon.com/Hands-Deep-Learning-Building-Scratch-ebook/dp/B0GDMNQSMZ
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
-https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
+
 
 https://zekcrates.quarto.pub/deep-learning-library/
 
