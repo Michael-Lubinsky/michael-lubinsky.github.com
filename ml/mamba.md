@@ -47,6 +47,9 @@ https://rlhfbook.com/  Reinforcement learning human feedback
 ## ONNX book
 https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/ 
 
+https://mml-book.github.io/book/mml-book.pdf  Math for ML book
+ 
+
 1. Foundations of Machine Learning
 https://cs.nyu.edu/~mohri/mlbook/
 
