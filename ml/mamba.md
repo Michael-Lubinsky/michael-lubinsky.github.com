@@ -1,4 +1,25 @@
+## ML Engineering
+
 Chris Fregly “AI Systems Performance Engineering” book 
+
+
+<https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
+Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
+
+
+<https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
+
+
+https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
+
+https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
+https://stasosphere.com/machine-learning/ 
+
+
+## ML Books
+
+https://github.com/AniruddhaChattopadhyay/Books
+
 
 <https://artint.info/3e/html/ArtInt3e.html>
 
@@ -7,12 +28,10 @@ Chris Fregly “AI Systems Performance Engineering” book
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
-<https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
-Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
-<https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
+
 
 <https://maxhalford.github.io/blog/online-active-learning-river-databutton/>  Online Active Learning
  
@@ -22,7 +41,6 @@ Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and Fas
 
 <https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/>  
 
-https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
 
 https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
 https://stasosphere.com/machine-learning/  
