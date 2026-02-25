@@ -105,7 +105,14 @@ Example:
 
 ```
 ## Pi
-https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440
+
+<https://pi.dev/>
+
+<https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
+
+<https://github.com/can1357/oh-my-pi>
+
+<https://news.ycombinator.com/item?id=47143754>
 
 ## OpenClaw
 <http://docs.openclaw.ai/>  
