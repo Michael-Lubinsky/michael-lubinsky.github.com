@@ -4,6 +4,8 @@ https://ru.algorithmica.org/
 
 https://github.com/keon/algorithms
 
+https://github.com/TheAlgorithms/Python
+
 https://cleveralgorithms.com/
 
 https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html
