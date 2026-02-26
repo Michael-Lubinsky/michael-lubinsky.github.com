@@ -1,6 +1,10 @@
-https://habr.com/ru/articles/960970/  gradient decent
-
 ## Auto-differentiation
+
+<https://habr.com/ru/articles/960970/>  gradient decent
+
+<https://habr.com/ru/companies/yadro/articles/1002784/> in C++
+
+
 <https://www.youtube.com/watch?v=rjPO-k-WaDI>
 
 Auto-differentiation is neither symbolic differentiation nor numerical approximations using finite difference methods.   
