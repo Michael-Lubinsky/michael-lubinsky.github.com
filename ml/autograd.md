@@ -2,6 +2,9 @@
 
 <https://habr.com/ru/articles/960970/>  gradient decent
 
+chain rule
+<https://pytorch.org/blog/overview-of-pytorch-autograd-engine/>
+
 <https://habr.com/ru/companies/yadro/articles/1002784/> in C++
 
 
