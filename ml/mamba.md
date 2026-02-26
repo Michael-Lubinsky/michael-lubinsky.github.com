@@ -35,7 +35,7 @@ https://github.com/AniruddhaChattopadhyay/Books
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
-
+<https://habr.com/ru/companies/yandex_praktikum/articles/1001402/>  Linear Models
 
 <https://maxhalford.github.io/blog/online-active-learning-river-databutton/>  Online Active Learning
  
