@@ -3,7 +3,8 @@
 Chris Fregly “AI Systems Performance Engineering” book 
 
 <https://github.com/EthicalML/awesome-production-machine-learning/>
- 
+
+<https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf>
 
 <https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
 Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
@@ -76,7 +77,7 @@ https://cs.nyu.edu/~mohri/mlbook/
 https://udlbook.github.io/udlbook/
 
 3. Introduction to Machine Learning Systems
-http://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf -- wrong?
+
 https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf
  
 
