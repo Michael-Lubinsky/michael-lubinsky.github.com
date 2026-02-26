@@ -12,6 +12,14 @@
 <https://arxiv.org/pdf/2501.09223>  Foundation of LLMs
 
 
+<https://habr.com/ru/articles/984248/> гайд по экосистеме языковых моделей
+
+<https://simonwillison.net/2025/Dec/31/the-year-in-llms/>
+
+
+<https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/> BOOK!
+
+
 https://vanitaai.com/category/large-language-models/ LLM interview quetions
 
 https://github.com/Saivineeth147/awesome-llm-resources
