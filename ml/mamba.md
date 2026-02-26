@@ -2,6 +2,8 @@
 
 Chris Fregly “AI Systems Performance Engineering” book 
 
+<https://github.com/EthicalML/awesome-production-machine-learning/>
+ 
 
 <https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
 Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
@@ -16,18 +18,19 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 https://stasosphere.com/machine-learning/ 
 
 
+<https://habr.com/ru/companies/piter/articles/1001790/> Как в Netflix масштабируют постобучение LLM
+
+<https://philipkiely.com/>  Inference Engineering book  
+<https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
+
+
+
 ## ML Books
 
 https://github.com/AniruddhaChattopadhyay/Books
 
 
 <https://artint.info/3e/html/ArtInt3e.html>
-
-<https://habr.com/ru/companies/piter/articles/1001790/> Как в Netflix масштабируют постобучение LLM
-
-<https://philipkiely.com/>  Inference Engineering book  
-<https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
-
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
@@ -114,15 +117,9 @@ https://habr.com/ru/companies/yandex_praktikum/articles/986742/ Машинное
 https://www.youtube.com/c/joshstarmer
 
 https://habr.com/ru/companies/bothub/articles/984648/ Loss functions
-
-https://habr.com/ru/articles/984248/ гайд по экосистеме языковых моделей
-
-https://simonwillison.net/2025/Dec/31/the-year-in-llms/
-
+ 
 https://www.youtube.com/playlist?list=PL0beoaW5rFR9oQg96Wu0NVsUZZpFbTzK9
 
-
-https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/ BOOK!
 
 https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
@@ -131,9 +128,7 @@ https://habr.com/ru/articles/983768/ Self-supervising learning
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
 https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
-
-https://mltechniques.com/product/ebook-state-of-the-art-in-genai-llms-creative-projects-with-solutions/
-
+ 
 
 https://arpitbhayani.me/blogs/qkv-matrices/
 
@@ -158,8 +153,7 @@ https://habr.com/ru/articles/972178/ Топ вопросов с NLP собесе
 https://www.dailydoseofds.com/
 
 https://blog.dailydoseofds.com/p/7-categorical-data-encoding-techniques-cd2
-
-https://github.com/Saivineeth147/awesome-llm-resources
+ 
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
 
@@ -175,9 +169,6 @@ https://www.mlsysbook.ai/
 
 https://github.com/rasbt/LLMs-from-scratch  Sebastian Rashka. Build LLM From Scratch
 
-https://github.com/EthicalML/awesome-production-machine-learning/
-
-   https://huggingface.co/learn/llm-course/chapter1
 
 https://www.youtube.com/watch?v=681kv_x12u0
 
