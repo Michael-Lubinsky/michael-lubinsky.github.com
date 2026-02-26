@@ -4,11 +4,13 @@
 
 <https://www.byhand.ai/p/transformer-six-levels-of-understanding>
 
+<https://www.youtube.com/watch?v=wjZofJX0v4M&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&index=7>   3Blue1Brown
+
 <https://www.youtube.com/watch?v=ISNdQcPhsts>   Coding a Transformer from scratch on PyTorch, with full explanation, training and inference. 
 
 <https://habr.com/ru/articles/982268/>
 
-https://www.youtube.com/watch?v=1vPqIweQh_U 
+<https://www.youtube.com/watch?v=1vPqIweQh_U>
 LLM, трансформеры, внимательно разбираем внутренности
 
 Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов: https://habr.com/ru/companies/yandex_praktikum/articles/986742/
