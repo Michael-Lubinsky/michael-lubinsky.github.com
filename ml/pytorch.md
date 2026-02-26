@@ -1,5 +1,9 @@
 ### PyTorch
 
+<https://blog.ezyang.com/2019/05/pytorch-internals/>
+
+<https://pytorch.org/blog/computational-graphs-constructed-in-pytorch/>
+
 <https://0byte.io/articles/pytorch_introduction.html>
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
