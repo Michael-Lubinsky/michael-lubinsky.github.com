@@ -43,3 +43,6 @@ https://habr.com/ru/articles/1002298/
 https://habr.com/ru/articles/1002152/
 
 https://habr.com/ru/articles/1002138/
+
+RAG vs Fine Tuning
+https://habr.com/ru/articles/1003212/
