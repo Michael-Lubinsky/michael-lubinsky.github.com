@@ -11,6 +11,7 @@
 
 <https://arxiv.org/pdf/2501.09223>  Foundation of LLMs
 
+<https://habr.com/ru/articles/984248/>
 
 <https://habr.com/ru/articles/984248/> гайд по экосистеме языковых моделей
 
