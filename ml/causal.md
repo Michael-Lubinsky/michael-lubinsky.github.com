@@ -1,5 +1,7 @@
 ### Causality
 
+https://causalai-book.net/
+
 https://causalpython.io/
 
 Causal Discovery Algorithms 
