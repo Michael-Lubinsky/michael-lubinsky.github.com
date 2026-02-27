@@ -1,8 +1,11 @@
 <https://cpu.land/> how computer works
 
-<https://apps.apple.com/us/app/windows-app/id1295203466?mt=12> Remoye Desktop from Mac To Windows
-
 <https://blog.codingconfessions.com/p/what-makes-system-calls-expensive>
+
+## Tools and Programs
+<https://apps.apple.com/us/app/windows-app/id1295203466?mt=12> Remote Desktop from Mac To Windows
+
+
 
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
 
