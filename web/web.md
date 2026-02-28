@@ -88,6 +88,8 @@ https://talkpython.fm/episodes/show/537/datastar-modern-web-dev-simplified
 
 https://habr.com/ru/articles/979614/
 
+https://habr.com/ru/articles/1004772/
+
 ## Web tools
 
 https://viteplus.dev/
