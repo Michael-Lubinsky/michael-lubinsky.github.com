@@ -3,6 +3,8 @@
 
 <https://huggingface.co/learn/llm-course/chapter1>
 
+ <https://machinelearningmastery.com/kv-caching-in-llms-a-guide-for-developers/>
+
 <https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss>
 
 <https://github.com/mlabonne/llm-course>
