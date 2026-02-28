@@ -10,7 +10,9 @@ https://github.com/Tiendil/donna
 
 https://github.com/gsd-build/get-shit-done  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
 
+### MCP
 
+https://habr.com/ru/articles/1005028/
 
 ### Claude 
 <https://boristane.com/blog/how-i-use-claude-code/>
