@@ -1,3 +1,7 @@
+## Recommendation systems
+
+<https://testmysearch.com/my-books.html>
+
 <https://habr.com/ru/companies/ru_mts/articles/947710/>
 
 <https://habr.com/ru/companies/odnoklassniki/articles/532388/>
