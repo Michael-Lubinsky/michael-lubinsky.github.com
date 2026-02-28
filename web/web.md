@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1002550/>
 
+<https://habr.com/ru/companies/otus/articles/994238/>
+
 ### ASGI WSGI Python 
 
 https://habr.com/ru/articles/1003282/
