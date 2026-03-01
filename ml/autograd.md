@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/960970/>  gradient decent
 
+https://www.youtube.com/watch?v=EWxa8VHi2iA  Nikolenko. Stochastic Gradient
+
 chain rule
 <https://pytorch.org/blog/overview-of-pytorch-autograd-engine/>
 
