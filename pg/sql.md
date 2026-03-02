@@ -1171,7 +1171,7 @@ DATE(login_ts)
 before applying logic, otherwise consecutive days won’t match.
 
  
-
+<https://habr.com/ru/articles/1005262/> SQL examples
 <!--
 <https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/blob/main/pg/Window_Functions_Cheat_Sheet_Letter.pdf>  
 
