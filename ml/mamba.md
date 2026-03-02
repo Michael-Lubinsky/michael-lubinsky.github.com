@@ -37,13 +37,18 @@ https://github.com/AniruddhaChattopadhyay/Books
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/>  Linear Models
 
+https://news.ycombinator.com/item?id=47204964
+
 <https://maxhalford.github.io/blog/online-active-learning-river-databutton/>  Online Active Learning
  
  <https://github.com/roboticcam/machine-learning-notes> ML Learning Notes
 
- https://www.youtube.com/playlist?list=PLgPbN3w-ia_PeT1_c5jiLW3RJdR7853b9
+### Decision Trees
+<https://mlu-explain.github.io/decision-tree/>
 
-<https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/>  
+<https://www.youtube.com/playlist?list=PLgPbN3w-ia_PeT1_c5jiLW3RJdR7853b9>
+
+
 
 
 https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
