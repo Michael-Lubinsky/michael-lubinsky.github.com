@@ -13,6 +13,11 @@ https://github.com/FareedKhan-dev/all-agentic-architectures
 Создание умных AI-агентов: полный курс по LangGraph от А до Я. Часть 2. Диалоговые агенты: память, сообщения и контекст 
 <https://habr.com/ru/companies/amvera/articles/948000/>
 
+<https://github.com/Mathews-Tom/Agentic-Design-Patterns>
+
+
+<https://habr.com/ru/articles/951428/> Что такое AI-агент и из каких основных частей он состоит
+
 ### Tool calling  (sometimes referred to as function calling) 
 
 Tool calling refers to the ability of artificial intelligence (AI) models to interact with external tools, application programming interfaces (APIs) or systems to enhance their functions.
