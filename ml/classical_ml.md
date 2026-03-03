@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/804605/>
 
+<https://leanpub.com/TOBoML2>
+
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/> Linear Models
 
 <https://news.ycombinator.com/item?id=47204964>
