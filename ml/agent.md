@@ -18,7 +18,7 @@ Tool calling refers to the ability of artificial intelligence (AI) models to int
 Instead of relying solely on pretrained knowledge, an AI system with tool-calling capabilities can query databases, fetch real-time information, execute functions or perform complex operations beyond its native capabilities.
 
 
- #### grep-ast - can be used asTool calling
+ #### grep-ast - can be used as tool calling
  умеет находить в коде структурные сущности - классы, методы, точки входа, значит это не просто CLI-утилита для разработчика. Это готовая операция навигации по коду, которую можно дать агенту как инструмент.
 
  https://habr.com/ru/companies/ecom_tech/articles/1005610/
