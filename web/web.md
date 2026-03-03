@@ -1,5 +1,7 @@
 ### Web Server
 
+<https://habr.com/ru/articles/1005972/> HTTP protocol
+
 <https://habr.com/ru/articles/1002550/>
 
 <https://habr.com/ru/companies/otus/articles/994238/>
