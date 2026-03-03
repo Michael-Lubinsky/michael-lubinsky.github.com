@@ -2,6 +2,7 @@
 Летняя школа "Современная математика" имени Виталия Арнольда, г. Дубна   2023 г. 
  <https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27>
 
+The Single Most Undervalued Fact of Linear Algebra
 <https://www.youtube.com/watch?v=PB-1_JTHyEU>
 
  <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for Computer Vision,
