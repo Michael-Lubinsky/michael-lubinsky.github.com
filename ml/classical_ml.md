@@ -2,7 +2,7 @@
 
 <https://habr.com/ru/articles/804605/>
 
-<https://leanpub.com/TOBoML2>
+<https://leanpub.com/TOBoML2>  The Orange Book of Machine Learning - Green edition  $15
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/> Linear Models
 
