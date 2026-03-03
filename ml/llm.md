@@ -27,7 +27,9 @@ https://vanitaai.com/category/large-language-models/ LLM interview quetions
 
 <https://github.com/Saivineeth147/awesome-llm-resources>
 
-https://github.com/rasbt/LLMs-from-scratch  Sebastian Rashka. Build LLM From Scratch
+<https://growingswe.com/blog/microgpt>
+
+<https://github.com/rasbt/LLMs-from-scratch>  Sebastian Rashka. Build LLM From Scratch
 
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
 
@@ -38,13 +40,13 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
  
 
 От RLHF к DPO и дальше: как мы разучились бояться и полюбили выравнивание LLM
-https://habr.com/ru/articles/1002298/
+<https://habr.com/ru/articles/1002298/>
 
 ### RAG
 
-https://habr.com/ru/articles/1002152/
+<https://habr.com/ru/articles/1002152/>
 
-https://habr.com/ru/articles/1002138/
+<https://habr.com/ru/articles/1002138/>
 
 RAG vs Fine Tuning
-https://habr.com/ru/articles/1003212/
+<https://habr.com/ru/articles/1003212/>
