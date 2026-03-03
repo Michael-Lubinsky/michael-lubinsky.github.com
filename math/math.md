@@ -1,49 +1,51 @@
- https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27 
+## Math
 
-https://www.youtube.com/watch?v=PB-1_JTHyEU
+ <https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27>
 
- https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf Linear Algebra for Computer Vision,
+<https://www.youtube.com/watch?v=PB-1_JTHyEU>
+
+ <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for Computer Vision,
 Robotics, and Machine Learning
 
-https://markelic.de/
+<https://markelic.de/>
 
-https://www.cis.upenn.edu/~jean/math-deep.pdf  Algebra, Topology, Differential Calculus, and
+<https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
 Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 
-https://courses.csail.mit.edu/6.042/spring18/mcs.pdf  Math for CS
+<https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
 <https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
 
-https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work 
+<https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work>
 
-https://www.youtube.com/watch?v=YYfrAk0KZGg Advanced Mathematical Courses in Virtual Setup
+<https://www.youtube.com/watch?v=YYfrAk0KZGg> Advanced Mathematical Courses in Virtual Setup
 
-https://www.youtube.com/watch?v=yVji26jB2h4 Lie Theory
+<https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory
 
-https://www.axler.net/DwD.pdf Linear Algebra without determinants
+<https://www.axler.net/DwD.pdf> Linear Algebra without determinants
 
 Суть линейной алгебры:
-https://www.youtube.com/playlist?list=PL8YZyma552VfeWdaBSz5zj195mPwaDnnk
+<https://www.youtube.com/playlist?list=PL8YZyma552VfeWdaBSz5zj195mPwaDnnk>
 
-https://link.springer.com/book/10.1007/978-981-99-2951-1 Linear Algebra with Python
+<https://link.springer.com/book/10.1007/978-981-99-2951-1> Linear Algebra with Python
 
-https://link.springer.com/book/10.1007/978-3-031-46270-2 Exploring University Mathematics with Python
+<https://link.springer.com/book/10.1007/978-3-031-46270-2> Exploring University Mathematics with Python
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
 <https://news.ycombinator.com/item?id=46138632> Lie Groups  
 <https://toomanydigits.online/index.html> Вычислительная математика  
 <https://www.kvant.digital/> Kvant
 
-https://www.ega-math.narod.ru/
+<https://www.ega-math.narod.ru/>
 
 <https://github.com/valeman/Awesome_Math_Books>
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
 Matrix
-https://habr.com/ru/articles/949084/
+<https://habr.com/ru/articles/949084/>
 
 ###  Lebegue integration
 
@@ -85,6 +87,10 @@ https://www.youtube.com/watch?v=Fb2ei6lD-d8&t=381s
 
 ## Puzzles
 <https://habr.com/ru/articles/954802/>
+
+<https://growingswe.com/blog/points-on-ring>
+Drop 4 points randomly on a circle. What are the chances they all land in the same half?
+
 ### Question 
 There are 3 ants at 3 corners of a triangle, they randomly start moving towards another corner.  
 What is the probability that they don't collide>
