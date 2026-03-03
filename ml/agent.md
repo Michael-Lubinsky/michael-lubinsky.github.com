@@ -11,11 +11,13 @@ https://github.com/Tiendil/donna
 https://github.com/gsd-build/get-shit-done  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
 
 
-### Tool calling ,  sometimes referred to as function calling, 
+### Tool calling  (sometimes referred to as function calling) 
 
 Tool calling refers to the ability of artificial intelligence (AI) models to interact with external tools, application programming interfaces (APIs) or systems to enhance their functions.
 
 Instead of relying solely on pretrained knowledge, an AI system with tool-calling capabilities can query databases, fetch real-time information, execute functions or perform complex operations beyond its native capabilities.
+
+<https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>
 
 
  #### grep-ast - can be used as tool calling
