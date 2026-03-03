@@ -6,6 +6,9 @@
 
 <https://leanpub.com/TOBoML2>  The Orange Book of Machine Learning - Green edition  $15
 
+<https://machine-learning-with-python.readthedocs.io>
+
+
 Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
 
 <https://www.inference.org.uk/itprnn/book.pdf>
