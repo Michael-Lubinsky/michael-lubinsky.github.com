@@ -1,15 +1,17 @@
 ## Agents
 
-https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-suites
+<https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-suites>
 
-https://crawshaw.io/blog/eight-more-months-of-agents
+<https://crawshaw.io/blog/eight-more-months-of-agents>
 
 https://github.com/FareedKhan-dev/all-agentic-architectures
 
-https://github.com/Tiendil/donna
+<https://github.com/Tiendil/donna>
 
-https://github.com/gsd-build/get-shit-done  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
+<https://github.com/gsd-build/get-shit-done>  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
 
+Создание умных AI-агентов: полный курс по LangGraph от А до Я. Часть 2. Диалоговые агенты: память, сообщения и контекст 
+<https://habr.com/ru/companies/amvera/articles/948000/>
 
 ### Tool calling  (sometimes referred to as function calling) 
 
@@ -23,11 +25,11 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
  #### grep-ast - can be used as tool calling
  умеет находить в коде структурные сущности - классы, методы, точки входа, значит это не просто CLI-утилита для разработчика. Это готовая операция навигации по коду, которую можно дать агенту как инструмент.
 
- https://habr.com/ru/companies/ecom_tech/articles/1005610/
+ <https://habr.com/ru/companies/ecom_tech/articles/1005610/>
  
 ### MCP
 
-https://habr.com/ru/articles/1005028/
+<https://habr.com/ru/articles/1005028/>
 
 ### Claude 
 <https://boristane.com/blog/how-i-use-claude-code/>
