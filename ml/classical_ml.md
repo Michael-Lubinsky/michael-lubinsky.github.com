@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/804605/>
 
+<https://habr.com/ru/articles/926398/>
+
 <https://leanpub.com/TOBoML2>  The Orange Book of Machine Learning - Green edition  $15
 
 Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
