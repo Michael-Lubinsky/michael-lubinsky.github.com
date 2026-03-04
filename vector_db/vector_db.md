@@ -103,7 +103,10 @@ https://ig.ft.com/generative-ai/
 https://www.facebook.com/groups/197964893963666/permalink/1793728821053924/?mibextid=uJjRxr
 
 ### PG_vector
-https://habr.com/ru/companies/selectel/articles/920824/
+
+<https://habr.com/ru/articles/1006364/>
+
+<https://habr.com/ru/companies/selectel/articles/920824/>
 
 https://tembo.io/blog/pgvector-and-embedding-solutions-with-postgres
 
