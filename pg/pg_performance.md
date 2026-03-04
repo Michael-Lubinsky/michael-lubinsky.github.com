@@ -63,7 +63,9 @@ https://hakibenita.com/postgresql-unused-index-size#clearing-bloat-in-tables
 ### Partition Pruning
 SET enable_partition_pruning = on; 
 
-#### Explain analyze
+### Explain analyze
+
+<https://habr.com/ru/companies/first/articles/1006278/>
 
 <https://medium.com/@Nexumo_/8-postgres-query-plan-reading-skills-for-senior-engineers-bc22cf76dd73>
 ```sql
