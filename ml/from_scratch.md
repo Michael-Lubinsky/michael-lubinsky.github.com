@@ -22,6 +22,11 @@ https://www.youtube.com/watch?v=3_e0HVV3nMM
 
 ## MicroGPT Karpathy
 
+https://www.reddit.com/user/rsrini7/comments/1r3q5u2/andrej_karpathys_microgpt_architecture_stepbystep/
+
+<img width="1080" height="589" alt="image" src="https://github.com/user-attachments/assets/bc19e841-ba69-4650-a8ec-5e7756efd54d" />
+
+
 https://www.youtube.com/watch?v=7xTGNNLPyMI 
 
 https://habr.com/ru/articles/996404/
