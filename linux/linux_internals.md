@@ -11,3 +11,5 @@
 <https://habr.com/ru/companies/wunderfund/articles/964696/> О правильной и аккуратной остановке потоков в Linux
 
 <https://habr.com/ru/articles/943128/> Высокопроизводительный асинхронный ввод/вывод в Linux: от epoll до io_uring
+
+<https://habr.com/ru/articles/1006576/>  Threads & Fibers
