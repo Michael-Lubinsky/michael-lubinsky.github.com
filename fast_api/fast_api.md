@@ -6,11 +6,13 @@
 
 <https://levelup.gitconnected.com/7-fastapi-extensions-so-powerful-i-stopped-using-flask-forever-9c6e9a4fbb5a>
 
-https://github.com/jaehyeon-kim/nicegui-fastapi-template
+<https://github.com/jaehyeon-kim/nicegui-fastapi-template>
 
-https://habr.com/ru/articles/970798/
+<https://www.honeybadger.io/blog/fastapi-error-handling/>
 
-https://habr.com/ru/articles/972642/
+<https://habr.com/ru/articles/970798/>
+
+<https://habr.com/ru/articles/972642/>
 
 
 <https://habr.com/ru/articles/983254/>
