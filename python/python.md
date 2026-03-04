@@ -44,7 +44,19 @@ tmp = sorted(d.items(), key=lambda item: item[1][0])
 # 2) language descending
 sorted_items = sorted(tmp, key=lambda item: item[1][1], reverse=True)
 ```
+Sort people by age:
+```python
+people = [
+    {'name': 'Alice', 'age': 30},
+    {'name': 'Bob', 'age': 25},
+    {'name': 'Charlie', 'age': 35}
+]
+sorted_people = sorted(people, key=lambda person: person['age'])
 
+oldest = max(people, key=lambda p: p['age'])
+print(oldest)  # {'name': 'Charlie', 'age': 35}
+
+```
 ### None vs False
 ```python
 if x is None:
