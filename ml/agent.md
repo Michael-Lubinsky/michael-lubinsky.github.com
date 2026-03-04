@@ -4,9 +4,11 @@
 
 <https://crawshaw.io/blog/eight-more-months-of-agents>
 
-https://github.com/FareedKhan-dev/all-agentic-architectures
+<https://github.com/FareedKhan-dev/all-agentic-architectures>
 
 <https://github.com/Tiendil/donna>
+
+<https://blog.tedivm.com/guides/2026/03/beyond-the-vibes-coding-assistants-and-agents/>
 
 <https://github.com/gsd-build/get-shit-done>  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
 
