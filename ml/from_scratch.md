@@ -12,9 +12,9 @@ https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-
 
 https://zekcrates.quarto.pub/deep-learning-library/
 
-https://www.byhand.ai/p/transformer-six-levels-of-understanding
+ 
 
-
+<https://github.com/Mathews-Tom/no-magic>
 
 
 https://www.youtube.com/watch?v=3_e0HVV3nMM 
