@@ -4,9 +4,9 @@ https://www.iclimbtrees.com/courses
 
 ### Loss Function in DL
 
-https://www.datacamp.com/tutorial/loss-function-in-machine-learning
+<https://www.datacamp.com/tutorial/loss-function-in-machine-learning>
 
-https://arxiv.org/pdf/2504.04242v1
+<https://arxiv.org/pdf/2504.04242v1>
 
 https://miriamposner.com/blog/introducing-beginners-to-the-mechanics-of-machine-learning/ 
 
