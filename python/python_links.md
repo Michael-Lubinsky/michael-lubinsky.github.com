@@ -1,5 +1,7 @@
 <https://habr.com/ru/articles/949314/>
 
+<https://github.com/tedivm/robs_awesome_python_template>
+
 https://habr.com/ru/articles/989942/ Python list internals
 https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
 
