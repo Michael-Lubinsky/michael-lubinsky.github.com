@@ -1,12 +1,14 @@
 ## CAN (Controller Area Network) Bus protocol
 
-https://en.wikipedia.org/wiki/CAN_bus
+<https://en.wikipedia.org/wiki/CAN_bus>
 
-https://github.com/ajouatom/canbus-tools
+<https://cardog.app/blog/autonomous-driving-stack-technical-guide>
 
-https://github.com/iDoka/awesome-canbus
+<https://github.com/ajouatom/canbus-tools>
 
-https://youtu.be/v_y65h68z3U  Learn How The CAN Bus Works
+<https://github.com/iDoka/awesome-canbus>
+
+<https://youtu.be/v_y65h68z3U>  Learn How The CAN Bus Works
 
 https://emqx.medium.com/can-bus-how-it-works-pros-and-cons-and-fast-local-processing-tutorial-a6543a8ef713
 
