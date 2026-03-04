@@ -8,11 +8,16 @@
 
 <https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/>
 
+<https://www.reddit.com/r/MachineLearning/comments/1repn7v/d_ml_engineers_how_did_you_actually_learn_pytorch/>
+
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
-<https://www.youtube.com/watch?v=dES5Cen0q-Y> (part 2 <https://www.youtube.com/watch?v=-HhE-8JChHA> is the video to accompany https://0byte.io/articles/helloml.html
+<https://www.youtube.com/watch?v=dES5Cen0q-Y> (part 2)  
+<https://www.youtube.com/watch?v=-HhE-8JChHA> is the video to accompany 
 
-https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/
+<https://0byte.io/articles/helloml.html>
+
+<https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/
 
 Free book: <https://zekcrates.quarto.pub/deep-learning-library/>
 
