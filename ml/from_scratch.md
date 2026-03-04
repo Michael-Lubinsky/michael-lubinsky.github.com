@@ -24,6 +24,12 @@ https://www.youtube.com/watch?v=3_e0HVV3nMM
 
 https://www.reddit.com/user/rsrini7/comments/1r3q5u2/andrej_karpathys_microgpt_architecture_stepbystep/
 
+
+ Demo : https://ko-microgpt.vercel.app/
+
+Source : https://github.com/woduq1414/ko-microgpt 
+
+
 <img width="1080" height="589" alt="image" src="https://github.com/user-attachments/assets/bc19e841-ba69-4650-a8ec-5e7756efd54d" />
 
 ```
