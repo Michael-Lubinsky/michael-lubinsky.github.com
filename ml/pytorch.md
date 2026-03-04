@@ -8,6 +8,8 @@
 
 <https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/>
 
+<https://github.com/srush/Tensor-Puzzles>
+
 <https://www.reddit.com/r/MachineLearning/comments/1repn7v/d_ml_engineers_how_did_you_actually_learn_pytorch/>
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
