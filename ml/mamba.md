@@ -4,6 +4,8 @@ Chris Fregly “AI Systems Performance Engineering” book
 
 <https://github.com/EthicalML/awesome-production-machine-learning/>
 
+<https://mlcontests.com/state-of-machine-learning-competitions-2025/?ref=mlcr25>
+
 <https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf>
 
 <https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
