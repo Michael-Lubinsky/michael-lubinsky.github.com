@@ -35,6 +35,10 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
  умеет находить в коде структурные сущности - классы, методы, точки входа, значит это не просто CLI-утилита для разработчика. Это готовая операция навигации по коду, которую можно дать агенту как инструмент.
 
  <https://habr.com/ru/companies/ecom_tech/articles/1005610/>
+
+### Sub-agents
+
+<https://habr.com/ru/articles/1006602/>
  
 ### MCP
 
