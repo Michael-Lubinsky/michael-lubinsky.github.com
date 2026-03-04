@@ -1,6 +1,6 @@
 ### DuckDB
 
-pip install duckdb-cli 
+pip install duckdb-cli   
 <https://medium.com/@sparknp1/10-duckdb-in-browser-demos-that-wow-stakeholders-7f1faa62304e>
 
 <https://news.ycombinator.com/item?id=46645176>
