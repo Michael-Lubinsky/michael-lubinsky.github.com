@@ -1,5 +1,7 @@
 ## Java
 
+<https://habr.com/ru/companies/otus/articles/994152/> Collections 
+
 <https://habr.com/ru/articles/1004906/>  Performance
 
 https://www.youtube.com/watch?v=XpunFFS-n8I  How Netflix uses Java 2025
