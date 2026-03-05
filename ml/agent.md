@@ -51,6 +51,8 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 
 <https://habr.com/ru/articles/1006756/>
 
+<https://habr.com/ru/articles/1006756/>
+
 ### Claude 
 <https://boristane.com/blog/how-i-use-claude-code/>
 
