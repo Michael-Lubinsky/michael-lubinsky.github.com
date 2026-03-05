@@ -3,6 +3,7 @@
 <https://planet.postgresql.org/>  
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
 <https://youjustneedpostgres.com/>
+<https://www.tigerdata.com/blog/its-2026-just-use-postgres>
 <https://www.manning.com/books/just-use-postgres> Book Just Use Postgres
 <https://habr.com/ru/companies/otus/articles/941456/>  
 <https://habr.com/ru/companies/ppr/articles/947852/> Dynamic SQL  
@@ -846,7 +847,7 @@ CALL public.process_date_range('2025-08-01', '2025-08-03', 'public.process_singl
 
 <https://www.pgedge.com/blog/postgres-18-skip-scan-breaking-free-from-the-left-most-index-limitation>
 
-<https://medium.com/@ThreadSafeDiaries/postgresql-18-just-rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
+<https://medium.com/@ThreadSafeDiaries/postgresql-18--rewrote-the-rulebook-groundbreaking-features-you-cant-ignore-85eb81477890>
 
 <https://medium.com/@dev_tips/scaling-broke-my-stack-but-postgresql-18-showed-me-how-to-fix-it-c91cb02f4f6f>
 
