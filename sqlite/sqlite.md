@@ -1,6 +1,25 @@
 ### SQLite
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>
 <https://visualdb.com/sqlite/>  
+```
+            "PRAGMA foreign_keys=ON;"
+            "PRAGMA journal_mode = WAL;"
+            "PRAGMA synchronous = NORMAL;"
+            "PRAGMA busy_timeout = 5000;"
+            "PRAGMA temp_store = MEMORY;"
+            "PRAGMA mmap_size = 134217728;"
+            "PRAGMA journal_size_limit = 67108864;"
+            "PRAGMA cache_size = 2000;"
+also turn on immediate mode so the busy_timeout works.
+```
+Sources:
+
+<https://fractaledmind.github.io/2024/04/15/sqlite-on-rails-the-how-and-why-of-optimal-performance/>
+<https://kerkour.com/sqlite-for-servers>
+
+
+
+
 
 ### REST API for SQLite 
 <https://github.com/b4fun/sqlite-rest>
