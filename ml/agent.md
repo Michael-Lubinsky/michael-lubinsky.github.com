@@ -22,6 +22,11 @@
 
 <https://habr.com/ru/articles/951428/> Что такое AI-агент и из каких основных частей он состоит
 
+### Spec Driven Development, OpenSpec
+
+https://habr.com/ru/articles/1007048/
+
+
 ### Tool calling  (sometimes referred to as function calling) 
 
 Tool calling refers to the ability of artificial intelligence (AI) models to interact with external tools, application programming interfaces (APIs) or systems to enhance their functions.
@@ -43,6 +48,8 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 ### MCP
 
 <https://habr.com/ru/articles/1005028/>
+
+<https://habr.com/ru/articles/1006756/>
 
 ### Claude 
 <https://boristane.com/blog/how-i-use-claude-code/>
