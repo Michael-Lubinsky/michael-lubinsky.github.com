@@ -98,6 +98,9 @@ https://johnnysswlab.com/fiya-flamegraphs-in-your-app
 
 
 ### C
-https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM How I program C  
+
+<https://habr.com/ru/articles/1000968/> stack, heap
+
+<https://www.youtube.com/watch?app=desktop&v=443UNeGrFoM> How I program C  
 https://github.com/codr7/hacktical-c  
 https://www.youtube.com/@olgapavlova/videos
