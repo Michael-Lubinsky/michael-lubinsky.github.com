@@ -52,3 +52,6 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 
 RAG vs Fine Tuning
 <https://habr.com/ru/articles/1003212/>
+
+The High-Throughput and Memory-Efficient inference and serving engine for LLMs
+<https://vllm.ai/>
