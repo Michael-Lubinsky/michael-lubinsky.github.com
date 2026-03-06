@@ -3,7 +3,7 @@
 Chris Fregly “AI Systems Performance Engineering” book 
 
 
-NVIDI-Certified Associate AI Infrastructure and Operations (NCA AIIO) Free Study Course
+NVIDIA-Certified Associate AI Infrastructure and Operations (NCA AIIO) Free Study Course
 <https://www.youtube.com/watch?v=0WjfKQdfeMU>
 
 <https://github.com/EthicalML/awesome-production-machine-learning/>
