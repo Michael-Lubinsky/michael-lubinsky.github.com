@@ -4,6 +4,10 @@
 
 <https://habr.com/ru/companies/otus/articles/994152/> Collections 
 
+<https://javaevolved.github.io/>
+
+<https://openjdk.org/projects/amber/design-notes/beyond-records>
+
 <https://habr.com/ru/articles/1004906/>  Performance
 
 https://www.youtube.com/watch?v=XpunFFS-n8I  How Netflix uses Java 2025
