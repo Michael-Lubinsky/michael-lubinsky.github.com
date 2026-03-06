@@ -1,5 +1,8 @@
 ## ML System Design
 
+Learn MLOps with MLflow and Databricks – Full Course for Machine Learning Engineers
+<https://www.youtube.com/watch?v=tVskbekONlw>
+
 https://datascale-ai.github.io/data_engineering_book/  for LLMs
 
 https://habr.com/ru/companies/tochka/articles/976892/
