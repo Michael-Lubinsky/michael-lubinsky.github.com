@@ -13,6 +13,8 @@ https://machinelearningmastery.com/time-series-forecasting-methods-in-python-che
 
 https://github.com/business-science/pytimetk
 
+<https://habr.com/ru/companies/otus/articles/1003098/>  Darts
+
 https://habr.com/ru/articles/953154/  Как ИИ-агенты учатся работать с временными рядами
 
 https://habr.com/ru/companies/magnit/articles/985864/  делаем прогноз для 200+ рядов с библиотекой Etna
