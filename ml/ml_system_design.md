@@ -35,6 +35,40 @@ https://habr.com/ru/companies/domclick/articles/917608/ ML Deployment
 
 https://habr.com/ru/companies/domclick/articles/902926/ Feature store
 
+
+## ML Engineering
+
+Chris Fregly “AI Systems Performance Engineering” book 
+
+
+NVIDIA-Certified Associate AI Infrastructure and Operations (NCA AIIO) Free Study Course
+<https://www.youtube.com/watch?v=0WjfKQdfeMU>
+
+<https://github.com/EthicalML/awesome-production-machine-learning/>
+
+<https://mlcontests.com/state-of-machine-learning-competitions-2025/?ref=mlcr25>
+
+<https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf>
+
+<https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
+Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
+
+
+<https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
+
+
+https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
+
+https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
+https://stasosphere.com/machine-learning/ 
+
+
+<https://habr.com/ru/companies/piter/articles/1001790/> Как в Netflix масштабируют постобучение LLM
+
+<https://philipkiely.com/>  Inference Engineering book  
+<https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
+
+
 ## RAG
 
 https://habr.com/ru/articles/1002138/
