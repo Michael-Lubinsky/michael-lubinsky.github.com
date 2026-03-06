@@ -39,7 +39,7 @@ https://habr.com/ru/companies/domclick/articles/902926/ Feature store
 ## ML Engineering
 
 Chris Fregly “AI Systems Performance Engineering” book 
-
+<https://github.com/cfregly/ai-performance-engineering>
 
 NVIDIA-Certified Associate AI Infrastructure and Operations (NCA AIIO) Free Study Course
 <https://www.youtube.com/watch?v=0WjfKQdfeMU>
