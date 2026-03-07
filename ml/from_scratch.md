@@ -1,4 +1,10 @@
 ## Build From Scratch
+```
+Neural networks separate layers by breaking linearity with an activation
+function. Activation functions are non-linear to prevent composable matmul
+from collapsing layers, and are differentiable or mostly-differentiable to
+support back propagation.
+```
 
 https://www.iclimbtrees.com/courses
 
