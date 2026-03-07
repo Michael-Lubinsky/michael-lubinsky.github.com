@@ -1,4 +1,9 @@
 ## Agents
+<https://openrouter.ai/>
+
+<https://github.com/BerriAI/litellm>
+
+<https://github.com/SWE-agent/mini-swe-agent/>
 
 <https://simonwillison.net/guides/agentic-engineering-patterns/>
 
