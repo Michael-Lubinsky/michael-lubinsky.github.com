@@ -1,4 +1,6 @@
 ## Build From Scratch
+<img width="472" height="51" alt="image" src="https://github.com/user-attachments/assets/0ee72af4-ba9a-407c-8554-774d4a061b1c" />
+
 ```
 Neural networks separate layers by breaking linearity with an activation
 function. Activation functions are non-linear to prevent composable matmul
