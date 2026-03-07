@@ -1,6 +1,12 @@
-
 ### LLM 
-
+```
+Modern LLMs are decoder-only, while encoder-only models are somewhat
+rare today, with old-school text embedding models from the BERT family
+as a prominent example.
+Many models in other modalities use an encoder-decoder architecture.
+Whisper, a popular open model for audio transcription, uses an encoder
+to process audio input and a decoder to generate text tokens.
+```
 <https://huggingface.co/learn/llm-course/chapter1>
 
  <https://machinelearningmastery.com/kv-caching-in-llms-a-guide-for-developers/>
