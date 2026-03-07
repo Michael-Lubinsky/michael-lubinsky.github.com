@@ -13,6 +13,8 @@
 
 <https://arxiv.org/pdf/2501.09223>  Foundation of LLMs
 
+<https://github.com/HandsOnLLM/Hands-On-Large-Language-Models> 
+
 <https://habr.com/ru/articles/984248/>
 
 <https://habr.com/ru/articles/984248/> гайд по экосистеме языковых моделей
