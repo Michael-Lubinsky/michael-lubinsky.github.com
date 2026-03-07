@@ -52,6 +52,8 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 
 <https://habr.com/ru/articles/1006662/>
 
+<https://habr.com/ru/articles/1005776/>
+
 RAG vs Fine Tuning
 <https://habr.com/ru/articles/1003212/>
 
