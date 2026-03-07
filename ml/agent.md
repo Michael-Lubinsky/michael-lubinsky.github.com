@@ -24,7 +24,9 @@
 
 ### Spec Driven Development, OpenSpec
 
-https://habr.com/ru/articles/1007048/
+<https://openspec.dev/>
+
+<https://habr.com/ru/articles/1007048/>
 
 
 ### Tool calling  (sometimes referred to as function calling) 
