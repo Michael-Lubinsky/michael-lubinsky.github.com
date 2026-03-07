@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/996600/> Почему системные вызовы обходятся дорого: углубляемся в дебри Linux
 
+<img width="596" height="309" alt="image" src="https://github.com/user-attachments/assets/68a34d1a-93d9-4490-8926-12b7737f2352" />
+
 <https://habr.com/ru/companies/wunderfund/articles/964696/> О правильной и аккуратной остановке потоков в Linux
 
 <https://habr.com/ru/articles/943128/> Высокопроизводительный асинхронный ввод/вывод в Linux: от epoll до io_uring
