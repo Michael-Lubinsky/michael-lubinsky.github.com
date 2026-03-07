@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/989590/>
 
+<https://habr.com/ru/articles/992422/>
+
 <https://github.com/quixio/quix-streams>  Python Streaming DataFrames for Kafka
 
 <https://newsletter.systemdesign.one/p/how-kafka-works>
