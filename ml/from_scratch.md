@@ -4,7 +4,8 @@
 
 **FlashAttention** 
 ```
-is a fast and memory-efficient algorithm for computing the **attention operation** used in Transformer models (like GPT, BERT, etc.).
+is a fast and memory-efficient algorithm for computing the **attention operation**
+used in Transformer models (like GPT, BERT, etc.).
 It was introduced in 2022 to dramatically speed up training and inference of large language models.
 ```
 
