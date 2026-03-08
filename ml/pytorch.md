@@ -2,6 +2,25 @@
 
 <img width="374" height="268" alt="image" src="https://github.com/user-attachments/assets/7ec8e369-c70e-41e1-9ddd-6f7328e0942f" />
 
+```python
+class NeuralNetwork(nn.Module):          # define model class
+    def __init__(self):
+        super().__init__()               # initialize nn.Module
+        self.flatten = nn.Flatten()      # [B,1,28,28] -> [B,784]
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28*28, 512),       # [B,784] -> [B,512]
+            nn.ReLU(),                   # [B,512] -> [B,512]
+            nn.Linear(512, 512),         # [B,512] -> [B,512]
+            nn.ReLU(),                   # [B,512] -> [B,512]
+            nn.Linear(512, 10),          # [B,512] -> [B,10]
+        )
+
+    def forward(self, x):                # x: [B,1,28,28]
+        x = self.flatten(x)              # x: [B,784]
+        logits = self.linear_relu_stack(x) # logits: [B,10]
+        return logits    # return [B,10]  
+```
+
 This code defines a very simple **feed-forward neural network** in PyTorch for something like **MNIST digit classification**.
 
 ## The code structure
@@ -27,9 +46,6 @@ def __init__(self):
 * `__init__` runs when the model object is created.
 * `super().__init__()` initializes the parent `nn.Module` class.
 * This is required so PyTorch can track layers and parameters.
-
-
-super().__init__()
 
 Initializes the parent class nn.Module.
 allows PyTorch to track parameters
@@ -64,8 +80,6 @@ because:
 ```
 
 So each image is turned into a single vector of 784 numbers.
-
----
 
 ## 3. Stack of linear + ReLU layers
 
@@ -149,8 +163,6 @@ nn.ReLU()
 ```
 
 Again adds nonlinearity.
-
----
 
 ### Output layer
 
