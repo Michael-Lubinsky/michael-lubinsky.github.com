@@ -1,11 +1,12 @@
 ## Build From Scratch
 <img width="472" height="51" alt="image" src="https://github.com/user-attachments/assets/0ee72af4-ba9a-407c-8554-774d4a061b1c" />
-**FlashAttention** is a fast and memory-efficient algorithm for computing the **attention operation** used in Transformer models (like GPT, BERT, etc.).
+**FlashAttention** 
+```
+is a fast and memory-efficient algorithm for computing the **attention operation** used in Transformer models (like GPT, BERT, etc.).
 It was introduced in 2022 to dramatically speed up training and inference of large language models.
+```
 
----
-
-# 1. Reminder: What Attention Does
+### 1. Reminder: What Attention Does
 
 In a Transformer, attention computes:
 
@@ -19,7 +20,7 @@ where:
 * **K** = keys
 * **V** = values
 * (QK^T) produces a matrix of size **N × N** (sequence length squared)
-
+```
 Problem:
 
 If sequence length is **N**, attention requires:
@@ -28,7 +29,7 @@ If sequence length is **N**, attention requires:
 * **O(N²) compute**
 
 For long sequences this becomes extremely expensive.
-
+```
 Example:
 
 | Tokens | Attention matrix size |
@@ -39,9 +40,8 @@ Example:
 
 This is why long-context LLMs are difficult.
 
----
 
-# 2. What FlashAttention Changes
+### 2. What FlashAttention Changes
 
 FlashAttention does **not change the math** of attention.
 
@@ -73,7 +73,7 @@ The full attention matrix is **never stored in memory**.
 
 ---
 
-# 3. Why It Is Faster
+### 3. Why It Is Faster
 
 GPU architecture:
 
@@ -95,8 +95,6 @@ Result:
 
 * **2–4× faster**
 * **10–20× lower memory usage**
-
----
 
 # 4. Simplified Algorithm Idea
 
@@ -120,7 +118,7 @@ A special **online softmax algorithm** ensures numerical stability while streami
 
 ---
 
-# 5. Why It Matters for LLMs
+### 5. Why It Matters for LLMs
 
 FlashAttention enables:
 
@@ -142,9 +140,8 @@ Libraries implementing it:
 * **xFormers**
 * **Triton kernels**
 
----
 
-# 6. Evolution
+### 6. Evolution
 
 Versions:
 
@@ -154,13 +151,13 @@ Versions:
 | FlashAttention-2      | faster parallelization    |
 | FlashAttention-3      | optimized for Hopper GPUs |
 
-# 7. Important Insight
+### 7. Important Insight
 
 FlashAttention is an example of **algorithm + hardware co-design**.
 
 It does **exactly the same attention mathematically**, but reorganizes computation to match GPU memory hierarchy.
 
-✅ **One-sentence summary**
+✅ **Summary**
 
 FlashAttention is a GPU-optimized algorithm that computes Transformer attention **without materializing the huge attention matrix**, making LLM training and inference dramatically faster and more memory-efficient.
  
