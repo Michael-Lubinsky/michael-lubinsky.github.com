@@ -1,6 +1,169 @@
 ## Build From Scratch
 <img width="472" height="51" alt="image" src="https://github.com/user-attachments/assets/0ee72af4-ba9a-407c-8554-774d4a061b1c" />
+**FlashAttention** is a fast and memory-efficient algorithm for computing the **attention operation** used in Transformer models (like GPT, BERT, etc.).
+It was introduced in 2022 to dramatically speed up training and inference of large language models.
 
+---
+
+# 1. Reminder: What Attention Does
+
+In a Transformer, attention computes:
+
+[
+Attention(Q,K,V) = softmax\left(\frac{QK^T}{\sqrt{d}}\right)V
+]
+
+where:
+
+* **Q** = queries
+* **K** = keys
+* **V** = values
+* (QK^T) produces a matrix of size **N × N** (sequence length squared)
+
+Problem:
+
+If sequence length is **N**, attention requires:
+
+* **O(N²) memory**
+* **O(N²) compute**
+
+For long sequences this becomes extremely expensive.
+
+Example:
+
+| Tokens | Attention matrix size |
+| ------ | --------------------- |
+| 1k     | 1M entries            |
+| 10k    | 100M entries          |
+| 100k   | 10B entries           |
+
+This is why long-context LLMs are difficult.
+
+---
+
+# 2. What FlashAttention Changes
+
+FlashAttention does **not change the math** of attention.
+
+It changes **how the computation is executed on GPU**.
+
+Key idea:
+
+> Compute attention in **small blocks that stay inside GPU SRAM** instead of writing large intermediate matrices to slow GPU memory (HBM).
+
+Standard attention:
+
+```
+Compute QK^T  → store large matrix in GPU memory
+Softmax
+Multiply by V
+```
+
+FlashAttention:
+
+```
+Load small block of Q,K,V
+Compute partial attention
+Apply streaming softmax
+Accumulate result
+Move to next block
+```
+
+The full attention matrix is **never stored in memory**.
+
+---
+
+# 3. Why It Is Faster
+
+GPU architecture:
+
+| Memory               | Speed   |
+| -------------------- | ------- |
+| Registers            | fastest |
+| SRAM / shared memory | fast    |
+| HBM (GPU DRAM)       | slow    |
+
+Standard attention constantly writes/reads the **N×N matrix from HBM**.
+
+FlashAttention:
+
+* keeps blocks in **SRAM**
+* avoids writing large intermediate matrices
+* reduces memory traffic dramatically
+
+Result:
+
+* **2–4× faster**
+* **10–20× lower memory usage**
+
+---
+
+# 4. Simplified Algorithm Idea
+
+Instead of computing
+
+```
+softmax(QK^T)V
+```
+
+FlashAttention processes rows in blocks:
+
+```
+for block_i in Q:
+    for block_j in K,V:
+        compute Q_i * K_j^T
+        update running softmax
+        accumulate V contribution
+```
+
+A special **online softmax algorithm** ensures numerical stability while streaming.
+
+---
+
+# 5. Why It Matters for LLMs
+
+FlashAttention enables:
+
+* longer context windows
+* larger batch sizes
+* faster training
+
+Used by many modern models:
+
+* GPT-4 style architectures
+* LLaMA
+* Mistral
+* Claude
+* Falcon
+
+Libraries implementing it:
+
+* **PyTorch 2.x**
+* **xFormers**
+* **Triton kernels**
+
+---
+
+# 6. Evolution
+
+Versions:
+
+| Version               | Improvement               |
+| --------------------- | ------------------------- |
+| FlashAttention (2022) | basic IO-aware attention  |
+| FlashAttention-2      | faster parallelization    |
+| FlashAttention-3      | optimized for Hopper GPUs |
+
+# 7. Important Insight
+
+FlashAttention is an example of **algorithm + hardware co-design**.
+
+It does **exactly the same attention mathematically**, but reorganizes computation to match GPU memory hierarchy.
+
+✅ **One-sentence summary**
+
+FlashAttention is a GPU-optimized algorithm that computes Transformer attention **without materializing the huge attention matrix**, making LLM training and inference dramatically faster and more memory-efficient.
+ 
 ```
 Neural networks separate layers by breaking linearity with an activation
 function. Activation functions are non-linear to prevent composable matmul
