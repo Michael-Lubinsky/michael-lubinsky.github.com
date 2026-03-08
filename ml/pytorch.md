@@ -34,8 +34,6 @@ This creates a custom neural network class.
 * `nn.Module` is the base class for all PyTorch models.
 * By inheriting from it, your class becomes a PyTorch model.
 
----
-
 ## 1. Constructor: `__init__`
 
 ```python
@@ -241,8 +239,6 @@ Predicted class is typically:
 logits.argmax(dim=1)
 ```
 
----
-
 ## Input and output shapes
 
 If input batch shape is:
@@ -279,8 +275,6 @@ then:
 
 So for each of the 64 images, model outputs 10 class scores.
 
----
-
 ## What kind of network is this?
 
 This is a:
@@ -312,7 +306,6 @@ For example:
 * 32×32 image → use `nn.Linear(32*32, ...)`
 * RGB 32×32 image → flattened size is `3*32*32 = 3072`
 
----
 
 ## Summary of the architecture
 
@@ -339,7 +332,6 @@ The model:
 4. outputs 10 scores
 5. the highest score is the predicted class
 
----
 
 ## Small note
 
@@ -357,10 +349,7 @@ where `loss_fn` is often:
 nn.CrossEntropyLoss()
 ```
 
-Important note
-
-logits are raw scores, not probabilities.
-
+Important note: logits are raw scores, not probabilities.  
 If you use:
 
 ```nn.CrossEntropyLoss()```
@@ -378,7 +367,386 @@ Because the image is flattened immediately, the model does **not** explicitly un
 
 A CNN usually performs better on images for this reason.
 
+## 1. What “batch size” means
+
+**Batch size** is the number of training examples processed **together in one forward/backward pass** of the neural network.
+
+Instead of sending **one image at a time**, we send a **group (batch)** of images.
+
+Example:
+
+```
+batch size = 64
+```
+
+means the model processes **64 images simultaneously**.
+
 ---
+
+## 2. Why batches are used
+
+Processing data one-by-one would be very inefficient.
+
+Example:
+
+Training set:
+
+```
+60,000 images
+```
+
+If batch size = 1:
+
+```
+60,000 forward passes
+60,000 backward passes
+```
+
+If batch size = 100:
+
+```
+600 forward passes
+600 backward passes
+```
+
+Much faster.
+
+Also:
+
+* GPUs are optimized for matrix operations on large tensors
+* batching uses hardware efficiently
+
+---
+
+## 3. Shape of tensors with batch size
+
+In PyTorch, the **first dimension of most tensors is the batch dimension**.
+
+Example input tensor:
+
+```
+x.shape = [batch_size, channels, height, width]
+```
+
+For MNIST:
+
+```
+[batch_size, 1, 28, 28]
+```
+
+Example with batch size 64:
+
+```
+x.shape = [64, 1, 28, 28]
+```
+
+Meaning:
+
+```
+64 images
+1 channel
+28×28 pixels
+```
+
+---
+
+## 4. How batch flows through your network
+
+Your network:
+
+```
+Flatten
+Linear(784 → 512)
+ReLU
+Linear(512 → 512)
+ReLU
+Linear(512 → 10)
+```
+
+Now suppose:
+
+```
+batch_size = 64
+```
+
+### Input
+
+```
+x = [64, 1, 28, 28]
+```
+
+64 images.
+
+---
+
+### After flatten
+
+```
+[64, 784]
+```
+
+Each image becomes a vector of 784 pixels.
+
+---
+
+### After first linear layer
+
+```
+[64, 512]
+```
+
+Each image now represented by 512 features.
+
+---
+
+### After second linear
+
+```
+[64, 512]
+```
+
+Still 64 samples.
+
+---
+
+### Final output
+
+```
+[64, 10]
+```
+
+For each of the 64 images we have 10 scores.
+
+Example:
+
+```
+[
+ [2.1, -0.4, 5.6, ...],   # image 1
+ [0.2,  3.1, 1.7, ...],   # image 2
+ ...
+]
+```
+
+---
+
+## 5. Why batching works mathematically
+
+Instead of computing
+
+```
+y = Wx + b
+```
+
+for **one vector**, the model computes it for **many vectors simultaneously** using matrix multiplication.
+
+Example:
+
+```
+input X = [64, 784]
+weight W = [512, 784]
+```
+
+The GPU performs:
+
+```
+Y = X · Wᵀ
+```
+
+Result:
+
+```
+Y = [64, 512]
+```
+
+So 64 samples are processed in **one matrix multiplication**.
+
+This is extremely efficient.
+
+---
+
+## 6. How training uses batches
+
+During training:
+
+```
+dataset → split into batches → train batch by batch
+```
+
+Example:
+
+```
+dataset size = 60,000
+batch size = 100
+```
+
+Then:
+
+```
+60,000 / 100 = 600 batches
+```
+
+Each pass through the entire dataset is called an **epoch**.
+
+Example:
+
+```
+for epoch in range(10):
+    for batch in dataloader:
+        forward pass
+        compute loss
+        backward pass
+        update weights
+```
+
+---
+
+## 7. Example with DataLoader
+
+Typical PyTorch code:
+
+```python
+train_loader = DataLoader(dataset, batch_size=64, shuffle=True)
+```
+
+Then:
+
+```python
+for images, labels in train_loader:
+```
+
+Shapes:
+
+```
+images = [64, 1, 28, 28]
+labels = [64]
+```
+
+---
+
+## 8. Effect of batch size on training
+
+### Small batch
+
+Example:
+
+```
+batch_size = 8
+```
+
+Pros:
+
+* lower memory usage
+* sometimes better generalization
+
+Cons:
+
+* slower training
+* noisy gradients
+
+---
+
+### Large batch
+
+Example:
+
+```
+batch_size = 512
+```
+
+Pros:
+
+* faster GPU utilization
+* smoother gradients
+
+Cons:
+
+* requires more memory
+* may generalize worse
+
+---
+
+## 9. Typical batch sizes
+
+Common values:
+
+```
+32
+64
+128
+256
+```
+
+Large LLM training:
+
+```
+thousands or millions of tokens per batch
+```
+
+---
+
+## 10. Batch vs single inference
+
+During inference you may use:
+
+```
+batch_size = 1
+```
+
+Example:
+
+```
+[1, 1, 28, 28]
+```
+
+But for faster processing you might send multiple inputs:
+
+```
+[32, 1, 28, 28]
+```
+
+---
+
+## 11. Visual intuition
+
+Think of batch as **a stack of images**:
+
+```
+Batch = 4
+
+Image 1
+Image 2
+Image 3
+Image 4
+```
+
+Tensor representation:
+
+```
+[4, 1, 28, 28]
+```
+
+The network processes all four **simultaneously**.
+
+---
+
+## 12. Summary
+
+Batch size = **number of samples processed together**
+
+Example with your model:
+
+```
+input                [64, 1, 28, 28]
+flatten              [64, 784]
+linear               [64, 512]
+relu                 [64, 512]
+linear               [64, 512]
+relu                 [64, 512]
+linear               [64, 10]
+```
+
+Each row corresponds to **one training example**.
+
 
 
 <https://blog.ezyang.com/2019/05/pytorch-internals/>
