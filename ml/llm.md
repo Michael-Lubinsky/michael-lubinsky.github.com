@@ -1,4 +1,31 @@
 ### LLM 
+
+
+1️⃣ 𝗜𝗻𝘁𝗿𝗼 𝘁𝗼 𝗟𝗟𝗠𝘀 - Karpathy
+→ Best 1-hour overview of LLMs that exists.
+→ youtu.be/zjkBMFhNj_g
+
+2️⃣ 𝗟𝗟𝗠 𝗙𝘂𝗻𝗱𝗮𝗺𝗲𝗻𝘁𝗮𝗹𝘀 - Stanford CS25
+→ Academic rigor. Transformers, attention, emergent behavior.
+→ youtu.be/9vM4p9NN0Ts
+
+𝗕𝘂𝗶𝗹𝗱 𝗙𝗿𝗼𝗺 𝗦𝗰𝗿𝗮𝘁𝗰𝗵
+3️⃣ 𝗡𝗲𝘂𝗿𝗮𝗹 𝗡𝗲𝘁𝘄𝗼𝗿𝗸𝘀: 𝗭𝗲𝗿𝗼 𝘁𝗼 𝗛𝗲𝗿𝗼 - Karpathy
+→ Build a language model from scratch in code.
+→ https://lnkd.in/dDjFcVjV
+
+4️⃣ 𝗕𝘂𝗶𝗹𝗱 𝗚𝗣𝗧-𝟮 - Karpathy
+→ Not a tutorial. An engineering masterclass.
+→ youtu.be/l8pRSuU81PU
+
+𝗗𝗲𝗲𝗽 𝗗𝗶𝘃𝗲𝘀
+5️⃣ 𝗗𝗲𝗲𝗽 𝗗𝗶𝘃𝗲 𝗶𝗻𝘁𝗼 𝗟𝗟𝗠𝘀 - Karpathy
+→ What actually happens under the hood at inference.
+→ youtu.be/7xTGNNLPyMI
+
+6️⃣ 𝗛𝗼𝘄 𝘁𝗼 𝗨𝘀𝗲 𝗟𝗟𝗠𝘀 - Karpathy
+→ Bridges theory and real-world application.
+→ youtu.be/EWvNQjAaOHw
 ```
 Modern LLMs are decoder-only, while encoder-only models are somewhat
 rare today, with old-school text embedding models from the BERT family
