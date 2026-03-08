@@ -357,7 +357,15 @@ where `loss_fn` is often:
 nn.CrossEntropyLoss()
 ```
 
----
+Important note
+
+logits are raw scores, not probabilities.
+
+If you use:
+
+```nn.CrossEntropyLoss()```
+
+you should pass logits directly, because that loss function internally applies the needed softmax logic.
 
 ## One important caveat
 
