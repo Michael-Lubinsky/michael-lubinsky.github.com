@@ -2,6 +2,11 @@
 
 <img width="1008" height="1056" alt="image" src="https://github.com/user-attachments/assets/8f5bdbee-dfae-4095-8317-0cf71493eacb" />
 
+
+<https://www.youtube.com/watch?v=iOrNbK2T92M>
+
+<https://www.youtube.com/watch?v=TBEwpgyoo20>
+
 <https://www.byhand.ai/p/transformer-six-levels-of-understanding>
 
 <https://www.youtube.com/watch?v=wjZofJX0v4M&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&index=7>   3Blue1Brown
