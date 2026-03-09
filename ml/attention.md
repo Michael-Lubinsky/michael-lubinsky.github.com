@@ -1,17 +1,19 @@
 ##  Attention, Embedding
-https://habr.com/ru/companies/ruvds/articles/983958/  Embedding
+<https://habr.com/ru/companies/ruvds/articles/983958/>  Embedding
 
-https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
+<https://medium.com/data-science/attn-illustrated-attention-5ec4ad276ee3>
+
+<https://eli.thegreenplace.net/2025/notes-on-implementing-attention/>
 
 Writing an LLM from scratch:
-https://www.gilesthomas.com/python
+<https://www.gilesthomas.com/python>
 
-https://medium.com/@royrimo2006/understanding-and-implementing-transformers-from-scratch-3da5ddc0cdd6
+<https://medium.com/@royrimo2006/understanding-and-implementing-transformers-from-scratch-3da5ddc0cdd6>
 
-https://nlp.seas.harvard.edu/annotated-transformer/  
+<https://nlp.seas.harvard.edu/annotated-transformer/>  
 https://news.ycombinator.com/item?id=45002896
 
-https://habr.com/ru/companies/bothub/articles/922938/
+<https://habr.com/ru/companies/bothub/articles/922938/>
 
 ### Input Representation: Word Embeddings
 
