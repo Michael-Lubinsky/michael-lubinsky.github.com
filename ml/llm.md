@@ -1,5 +1,7 @@
 ### LLM 
 
+
+LLAMA   < https://www.youtube.com/watch?v=kt9M82teAUs> LLAMA, 100500 вариантов её файнтюнинга
 Ollama
 <https://www.youtube.com/watch?v=P9qWek5LDUw>
 
