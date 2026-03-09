@@ -1,5 +1,8 @@
 ### LLM 
 
+Ollama
+<https://www.youtube.com/watch?v=P9qWek5LDUw>
+
 There are three competitive inference engines on the market: 
 - vLLM
 - SGLang
