@@ -797,6 +797,8 @@ https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html
 
 https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
 
+<https://www.youtube.com/watch?v=r1bquDz5GGA>
+
 ### torchvista
 
 An interactive tool to visualize the forward pass of a PyTorch model directly in the notebook
