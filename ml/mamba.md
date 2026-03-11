@@ -30,6 +30,9 @@ https://stasosphere.com/machine-learning/
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
+## Activation Functions GLU, SwiGLU, ReLU, softmax
+
+https://www.byhand.ai/p/swiglu-the-activation-function-behind?
 
 
 ## ML Books
