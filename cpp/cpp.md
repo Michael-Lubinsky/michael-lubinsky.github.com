@@ -24,6 +24,9 @@ reinterpret_cast<T>(x)
 
 <https://habr.com/ru/articles/920790/>  Supervisor on C++
 
+
+<https://habr.com/ru/articles/1005564/>
+
 <https://www.cppnext.com/>
 
 ### Memory management
