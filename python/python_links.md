@@ -1,8 +1,18 @@
+## Python links
+
+<https://realpython.com/ydata-profiling-eda/>
+
+<https://dev.to/siddharth_pogul_1ba2cbfe0/building-rapidlog-why-i-made-a-3x-faster-python-logger-4cde>
 <https://habr.com/ru/articles/949314/>
+
+## Python template
+<https://github.com/mameli/python_template>
 
 <https://github.com/tedivm/robs_awesome_python_template>
 
-https://habr.com/ru/articles/989942/ Python list internals
+<https://habr.com/ru/articles/989942/> Python list internals
+
+
 https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
 
 https://www.amazon.com/Clean-Architecture-Python-maintainable-architectural/dp/183664289X Implementing the Clean Architecture (Book)
