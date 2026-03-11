@@ -37,7 +37,10 @@ https://www.byhand.ai/p/swiglu-the-activation-function-behind?
 
 ## ML Books
 
-https://github.com/AniruddhaChattopadhyay/Books
+
+<https://mlbook.dataschool.io/>
+
+<https://github.com/AniruddhaChattopadhyay/Books>
 
 
 <https://artint.info/3e/html/ArtInt3e.html>
