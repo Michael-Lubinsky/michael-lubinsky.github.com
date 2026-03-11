@@ -10,6 +10,8 @@ Robotics, and Machine Learning
 
 <https://markelic.de/>
 
+<https://www.cs.mcgill.ca/~akroit/math/>
+
 <https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
 Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 
