@@ -10,9 +10,9 @@
 
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
-https://arxiv.org/pdf/2301.00754 Algos for Massive Data
+<https://arxiv.org/pdf/2301.00754> Algos for Massive Data
 
-https://cs.gmu.edu/~sean/book/metaheuristics/
+<https://cs.gmu.edu/~sean/book/metaheuristics/>
 
 https://algorithmsbook.com/optimization/files/optimization.pdf
 
@@ -25,10 +25,13 @@ https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/100912328
 https://codepointer.substack.com/p/docling-leetcode-in-production-union 
 
 ### Books
-https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf
+
+<https://www.cambridge.org/core/books/pearls-of-algorithm-engineering/95061352D7263CCCBD4F243018236EB2>
+
+<https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf>
 
 “Information Theory” by Yury Polyanskiy and Yihong Wu.
-https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf
+<https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf>
 
 https://www.youtube.com/watch?v=qO-HpEgmd6U
 
