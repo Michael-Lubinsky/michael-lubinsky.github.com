@@ -1,5 +1,7 @@
 ## Classical ML ( no deep learning)
 
+<https://mlbook.dataschool.io/>
+
 <https://habr.com/ru/articles/804605/>
 
 <https://habr.com/ru/articles/926398/>
