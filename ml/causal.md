@@ -5,7 +5,9 @@ https://causalai-book.net/
 https://causalpython.io/
 
 Causal Discovery Algorithms 
-https://arxiv.org/pdf/2502.17030
+<https://arxiv.org/pdf/2502.17030>
+
+<https://arxiv.org/pdf/2305.10032>
 
 ### The Fast Casual Inference (FCI) algorithm
 ```
