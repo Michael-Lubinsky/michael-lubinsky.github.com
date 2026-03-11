@@ -1,14 +1,14 @@
 ### Algorithms
 
-https://ru.algorithmica.org/
+<https://ru.algorithmica.org/>
 
-https://github.com/keon/algorithms
+<https://github.com/keon/algorithms>
 
-https://github.com/TheAlgorithms/Python
+<https://github.com/TheAlgorithms/Python>
 
-https://cleveralgorithms.com/
+<https://cleveralgorithms.com/>
 
-https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html
+<https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
 https://arxiv.org/pdf/2301.00754 Algos for Massive Data
 
@@ -18,7 +18,7 @@ https://algorithmsbook.com/optimization/files/optimization.pdf
 
 https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncertainty
 
-https://mykel.kochenderfer.com/textbooks/
+<https://mykel.kochenderfer.com/textbooks/>
 
 https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289
 
@@ -41,6 +41,8 @@ https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp
 
 
 https://tproger.ru/problems
+
+<https://www.shadecoder.com/blogs/12-coding-patterns-for-technical-interviews-with-examples-code>
 
 ## Constraint programming PiCat, MiniZinc, etc
 https://cpmpy.readthedocs.io/en/latest/
