@@ -1,4 +1,8 @@
 ## Embedding and vector databases
+
+<https://huggingface.co/spaces/hesamation/primer-llm-embedding>
+
+
 cosine similarity: 
 ```
 similarity = (a*b) / (|a| * |b|)
