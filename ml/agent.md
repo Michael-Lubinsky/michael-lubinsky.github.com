@@ -10,6 +10,8 @@ Structured outputs
 The 100 line AI agent that solves GitHub issues or helps you in your command line.
 <https://github.com/SWE-agent/mini-swe-agent/>
 
+<https://github.com/jbonatakis/blackbird>
+
 <https://simonwillison.net/guides/agentic-engineering-patterns/>
 
 <https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-suites>
