@@ -15,6 +15,8 @@
 
 <https://habr.com/ru/articles/982268/>
 
+<https://habr.com/ru/articles/1008948/> from MNIST to transformer
+
 <https://www.youtube.com/watch?v=1vPqIweQh_U>
 LLM, трансформеры, внимательно разбираем внутренности
 
