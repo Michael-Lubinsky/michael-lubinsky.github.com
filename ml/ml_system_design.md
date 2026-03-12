@@ -3,6 +3,11 @@
 Learn MLOps with MLflow and Databricks – Full Course for Machine Learning Engineers
 <https://www.youtube.com/watch?v=tVskbekONlw>
 
+I own this Manning book: Machine Learning Platform Engineering. 
+Build an internal developer platform for ML and AI systems.  
+Benjamin Tan, Wei Hao, Shanoop Padmanabhan , Varun Mallya
+
+
 https://datascale-ai.github.io/data_engineering_book/  for LLMs
 
 https://habr.com/ru/companies/tochka/articles/976892/
