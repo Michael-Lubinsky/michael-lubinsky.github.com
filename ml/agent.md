@@ -1,4 +1,8 @@
 ## Agents
+
+Structured outputs
+<https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
+
 <https://openrouter.ai/>
 
 <https://github.com/BerriAI/litellm>
