@@ -3,6 +3,9 @@
 Structured outputs
 <https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
 
+Free book online
+<https://www.manning.com/books/build-a-multi-agent-system-from-scratch>
+
 <https://openrouter.ai/>
 
 <https://github.com/BerriAI/litellm>
