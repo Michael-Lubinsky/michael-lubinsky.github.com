@@ -7,6 +7,9 @@ Structured outputs
 
 <https://github.com/BerriAI/litellm>
 
+## Agents orcestrations via md files
+<https://habr.com/ru/articles/1009534/>
+
 The 100 line AI agent that solves GitHub issues or helps you in your command line.
 <https://github.com/SWE-agent/mini-swe-agent/>
 
