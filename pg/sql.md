@@ -44,8 +44,8 @@ pattern works virtually everywhere, as does
 ### SQL for time series:
 <https://medium.com/@Rohan_Dutt/10-time-series-feature-engineering-tricks-you-can-do-directly-in-sql-39acc18fab52>
 
-count(distinct) over window function
-<https://medium.com/snowflake/snowflake-rolling-window-distinct-count-how-to-make-this-happen-b9ba35cc105a>
+count(distinct) over  function
+<https://medium.com/snowflake/snowflake-rolling--distinct-count-how-to-make-this-happen-b9ba35cc105a>
 
 ### Find maximum interval of consecutive dates (no gaps)
 ```sql
@@ -451,7 +451,8 @@ WHERE t2.id IS NULL;
 ```
 ## Window functions
 
-https://medium.com/@Rohan_Dutt/10-hard-window-join-problems-in-sql-and-how-to-solve-them-f94d1f27b573
+<https://habr.com/ru/articles/1009552/>
+<https://medium.com/@Rohan_Dutt/10-hard-window-join-problems-in-sql-and-how-to-solve-them-f94d1f27b573>
 
 ### Running total and avg
 
