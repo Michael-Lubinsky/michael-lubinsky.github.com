@@ -1,5 +1,7 @@
 ## ML System Design
 
+<https://jax-ml.github.io/scaling-book/>
+
 Learn MLOps with MLflow and Databricks – Full Course for Machine Learning Engineers
 <https://www.youtube.com/watch?v=tVskbekONlw>
 
