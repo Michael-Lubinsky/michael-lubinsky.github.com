@@ -73,6 +73,8 @@ https://stasosphere.com/machine-learning/
 ## Inference
 https://news.ycombinator.com/item?id=47355410  
 
+https://habr.com/ru/articles/1008206/
+
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
