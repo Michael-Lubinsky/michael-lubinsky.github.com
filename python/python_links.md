@@ -10,8 +10,10 @@
 
 <https://github.com/tedivm/robs_awesome_python_template>
 
+## List and dict internals
 <https://habr.com/ru/articles/989942/> Python list internals
 
+<https://vitez.me/how-python-dictionaries-work>
 
 https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
 
