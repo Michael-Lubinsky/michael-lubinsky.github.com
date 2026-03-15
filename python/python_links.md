@@ -5,12 +5,18 @@
 <https://dev.to/siddharth_pogul_1ba2cbfe0/building-rapidlog-why-i-made-a-3x-faster-python-logger-4cde>
 <https://habr.com/ru/articles/949314/>
 
-## Python template
+## Python program template
 <https://github.com/mameli/python_template>
 
 <https://github.com/tedivm/robs_awesome_python_template>
 
 <https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8>
+
+## Python internals
+
+<https://habr.com/ru/companies/vk/articles/454324/>
+
+<https://habr.com/ru/articles/501920/>
 
 ## List and dict internals
 <https://habr.com/ru/articles/989942/> Python list internals
