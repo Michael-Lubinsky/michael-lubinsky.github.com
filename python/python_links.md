@@ -21,9 +21,11 @@
 ## List and dict internals
 <https://habr.com/ru/articles/989942/> Python list internals
 
-<https://vitez.me/how-python-dictionaries-work>
+<https://vitez.me/how-python-dictionaries-work> dict internals
 
-<https://cemrehancavdar.com/2026/03/10/optimization-ladder/> 
+<https://habr.com/ru/articles/432996/> dict internals
+
+<https://cemrehancavdar.com/2026/03/10/optimization-ladder/> Python internals
 
 <https://habr.com/ru/articles/1010390/> Python internals
 
