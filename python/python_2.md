@@ -3,7 +3,10 @@
 <https://habr.com/ru/articles/1000378/>
 
 ## asyncio
-https://habr.com/ru/articles/995032/
+
+<https://habr.com/ru/articles/995032/>
+
+<https://github.com/anordin95/a-conceptual-overview-of-asyncio/blob/main/readme.md>
 
 threading vs multiprocessing vs asyncio в Python
 https://habr.com/ru/articles/991478/
