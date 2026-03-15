@@ -2,6 +2,9 @@
 
 <https://habr.com/ru/articles/1005972/> HTTP protocol
 
+<https://habr.com/ru/articles/1010240/>  HTTP protocol
+
+
 <https://habr.com/ru/articles/1002550/> Web Server
 
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
