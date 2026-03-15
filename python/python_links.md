@@ -19,6 +19,8 @@
 
 <https://cemrehancavdar.com/2026/03/10/optimization-ladder/> 
 
+<https://habr.com/ru/articles/1010390/> Python internals
+
 ## Clean architecture
 
 <https://leanpub.com/implementing-the-clean-architecture> Implementing the Clean Architecture (Book)
