@@ -1,14 +1,16 @@
 ## MCP
 
-https://modelcontextprotocol.io/
+<https://modelcontextprotocol.io/>
 
-https://realpython.com/python-mcp/
+<https://realpython.com/python-mcp/>
 
-https://github.com/punkpeye/awesome-mcp-clients
+<https://chrlschn.dev/blog/2026/03/mcp-is-dead-long-live-mcp/>
+
+<https://github.com/punkpeye/awesome-mcp-clients>
 
 https://mcp.so/
 
-https://habr.com/ru/articles/890740/
+<https://habr.com/ru/articles/890740/>
 
 https://habr.com/ru/articles/862312/
 
