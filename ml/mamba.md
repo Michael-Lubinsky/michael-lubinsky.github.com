@@ -35,6 +35,8 @@ https://stasosphere.com/machine-learning/
 https://www.byhand.ai/p/swiglu-the-activation-function-behind?
 
 
+<https://newsletter.systemdesign.one/p/what-is-reinforcement-learning>
+
 ## ML Books
 
 
