@@ -4,6 +4,8 @@
 
 <https://realpython.com/python-mcp/>
 
+<https://news.ycombinator.com/item?id=47380270>
+
 <https://chrlschn.dev/blog/2026/03/mcp-is-dead-long-live-mcp/>
 
 <https://github.com/punkpeye/awesome-mcp-clients>
