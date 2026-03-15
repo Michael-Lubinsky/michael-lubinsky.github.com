@@ -2,6 +2,8 @@
 
 <https://superset.apache.org/>
 
+<https://habr.com/ru/articles/1010132/>
+
 <https://habr.com/ru/articles/932938/>
 
 <https://habr.com/ru/articles/939876/>
