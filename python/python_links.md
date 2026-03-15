@@ -10,25 +10,32 @@
 
 <https://github.com/tedivm/robs_awesome_python_template>
 
+<https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8>
+
 ## List and dict internals
 <https://habr.com/ru/articles/989942/> Python list internals
 
 <https://vitez.me/how-python-dictionaries-work>
 
-https://leanpub.com/implementing-the-clean-architecture Implementing the Clean Architecture (Book)
+<https://cemrehancavdar.com/2026/03/10/optimization-ladder/> 
 
-https://www.amazon.com/Clean-Architecture-Python-maintainable-architectural/dp/183664289X Implementing the Clean Architecture (Book)
+## Clean architecture
+
+<https://leanpub.com/implementing-the-clean-architecture> Implementing the Clean Architecture (Book)
+
+<https://www.amazon.com/Clean-Architecture-Python-maintainable-architectural/dp/183664289X> Implementing the Clean Architecture (Book)
+
+<https://www.cosmicpython.com/book/preface.html>  Book
+
+<https://pydevtools.com/handbook/>
 
 https://pypi.org/project/json-stream/
 
 EuroPython 2025
 <https://www.youtube.com/watch?v=4gotVjbeluY&list=PL8uoeex94UhFQY9cYBQOVkj9fSHMHf5x9>
 
-https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02
+<https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02>
 
-<https://pydevtools.com/handbook/>
-
-https://www.cosmicpython.com/book/preface.html  Book
 
 <https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
 
@@ -38,7 +45,7 @@ https://github.com/ritwiktiwari/awesome-python-rs Rust Libraries
 
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
-https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8
+
 
 https://habr.com/ru/companies/raiffeisenbank/articles/885792/ архитектурный подход к Python приложениям
 
