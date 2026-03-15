@@ -2,7 +2,9 @@
 check syntax  
 python -m py_compile my_script.py
 
-https://habr.com/ru/companies/yandex_praktikum/articles/960812/
+<https://habr.com/ru/companies/yandex_praktikum/articles/960812/>
+
+<https://habr.com/ru/articles/1010290/>
 
 https://habr.com/ru/articles/965170/ 
 
@@ -285,9 +287,9 @@ nums = [1, 2, 3]
 print(nums[::-1])
 print(list(reversed(nums))) 
 ```
-### Stack, queue and  deque
+### Stack, queue and  
 
-https://realpython.com/python-deque/
+<https://realpython.com/python-deque/>
 
 In Python, there is no built-in stack type. 
 Instead, we can simply use a list to represent a stack efficiently: 
