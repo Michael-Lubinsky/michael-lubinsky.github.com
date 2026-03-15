@@ -1,5 +1,7 @@
 ## Agents
 
+<https://habr.com/ru/articles/1010430/>
+
 Structured outputs
 <https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
 
