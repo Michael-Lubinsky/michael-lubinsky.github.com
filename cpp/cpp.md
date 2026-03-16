@@ -6,6 +6,8 @@
 
 <https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/>
 
+<https://habr.com/ru/companies/vk/articles/660265/> STL implementation
+
 <https://techfortalk.co.uk/2026/01/18/c17-efficiently-returning-stdvector-from-functions/>
 
 
