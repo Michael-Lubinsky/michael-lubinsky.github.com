@@ -35,6 +35,8 @@ reinterpret_cast<T>(x)
 
 <https://geocar.sdf1.org/alloc.html>
 
+https://www.gingerbill.org/series/memory-allocation-strategies/
+
 https://habr.com/ru/articles/996452/ new , new[]. delete and delete[]
 
 https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
