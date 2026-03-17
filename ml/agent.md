@@ -4,6 +4,8 @@
 
  <https://habr.com/ru/articles/1010236/>
 
+ <https://github.com/obra/superpowers>
+
 Structured outputs
 <https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
 
