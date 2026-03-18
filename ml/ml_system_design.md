@@ -77,6 +77,8 @@ https://news.ycombinator.com/item?id=47355410
 
 https://habr.com/ru/articles/1008206/
 
+<https://habr.com/ru/companies/bothub/articles/1011608/>
+
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
