@@ -1,3 +1,5 @@
+<https://medium.com/advanced-deep-learning>
+
 ## ML Engineering
 
 Chris Fregly “AI Systems Performance Engineering” book 
