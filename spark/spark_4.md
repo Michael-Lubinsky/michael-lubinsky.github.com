@@ -1,9 +1,10 @@
-SPARK 4
+## SPARK 4
 
 <https://codecut.ai/pyspark-4-0-whats-new/>
 
 <https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
-
+## Declarative Pipeline
+<https://www.waitingforcode.com/apache-spark-structured-streaming/spark-declarative-pipelines-101/read>
 ## DataSource API
 
 https://github.com/allisonwang-db/awesome-python-datasources
