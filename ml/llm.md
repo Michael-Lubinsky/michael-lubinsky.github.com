@@ -2,7 +2,9 @@
 
 <https://sebastianraschka.com/llm-architecture-gallery/>
 
-LLAMA   < https://www.youtube.com/watch?v=kt9M82teAUs> LLAMA, 100500 вариантов её файнтюнинга
+<https://www.kdnuggets.com/10-python-libraries-every-llm-engineer-should-know>
+
+LLAMA   <https://www.youtube.com/watch?v=kt9M82teAUs> LLAMA, 100500 вариантов её файнтюнинга
 Ollama
 <https://www.youtube.com/watch?v=P9qWek5LDUw>
 
