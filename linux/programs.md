@@ -47,6 +47,8 @@ brew install kaushiksrini/parqeye/parqeye
 
 ### DB Modelling Tools ERD
 
+<https://github.com/ManyakRus/image_database>
+
 <https://habr.com/ru/articles/1011576/> 
 
 <https://medium.com/@kanishks772/from-code-to-diagram-in-seconds-the-lazy-developers-guide-b48987837bd3>  
