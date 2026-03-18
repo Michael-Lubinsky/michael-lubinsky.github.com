@@ -1,6 +1,7 @@
 ### LLM 
 
 <https://sebastianraschka.com/llm-architecture-gallery/>
+<https://habr.com/ru/articles/1011784/>  LLM arch gallery
 
 <https://www.kdnuggets.com/10-python-libraries-every-llm-engineer-should-know>
 
