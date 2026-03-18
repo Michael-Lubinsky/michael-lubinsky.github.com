@@ -1,13 +1,15 @@
 ## Time Series
-Book: https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-ebook/dp/B0G3VGKWHJ 
+Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-ebook/dp/B0G3VGKWHJ> 
 
-https://leanpub.com/mastering_modern_time_series_forecasting
+<https://leanpub.com/mastering_modern_time_series_forecasting>
 
-https://machinelearningmastery.com/the-2026-time-series-toolkit-5-foundation-models-for-autonomous-forecasting/
+<https://machinelearningmastery.com/the-2026-time-series-toolkit-5-foundation-models-for-autonomous-forecasting/>
 
-https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/ 
+<https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/>
 
-https://habr.com/ru/companies/garage8/articles/920226/ Anomaly detection, Z-score with SQL
+<https://github.com/predict-idlab/plotly-resampler>
+
+<https://habr.com/ru/companies/garage8/articles/920226/> Anomaly detection, Z-score with SQL
 
 https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet
 
@@ -15,9 +17,9 @@ https://github.com/business-science/pytimetk
 
 <https://habr.com/ru/companies/otus/articles/1003098/>  Darts
 
-https://habr.com/ru/articles/953154/  Как ИИ-агенты учатся работать с временными рядами
+<https://habr.com/ru/articles/953154/>  Как ИИ-агенты учатся работать с временными рядами
 
-https://habr.com/ru/companies/magnit/articles/985864/  делаем прогноз для 200+ рядов с библиотекой Etna
+<https://habr.com/ru/companies/magnit/articles/985864/>  делаем прогноз для 200+ рядов с библиотекой Etna
 
 https://habr.com/ru/articles/949062/ Chronos и AutoGluon-TimeSeries — мощный инструмент прогнозирования временных рядов
 
