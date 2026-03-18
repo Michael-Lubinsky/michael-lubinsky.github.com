@@ -4,6 +4,8 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+<https://www.reddit.com/r/Python/comments/1rrz3kx/what_hidden_gem_python_modules_do_you_use_and_why/>
+
 <https://dev.to/siddharth_pogul_1ba2cbfe0/building-rapidlog-why-i-made-a-3x-faster-python-logger-4cde>
 <https://habr.com/ru/articles/949314/>
 
