@@ -4,10 +4,39 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+## Useful libs
+
 <https://pypi.org/project/duckdb-cli/> 
 <https://www.reddit.com/r/Python/comments/1rrz3kx/what_hidden_gem_python_modules_do_you_use_and_why/>
 
+
+https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
+
+https://www.reddit.com/r/Python/comments/1l43i8z/what_are_your_favorite_modern_libraries_or/
+
+
+<https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
+
+https://tryolabs.com/blog/top-python-libraries-2025
+
+https://github.com/ritwiktiwari/awesome-python-rs Rust Libraries
+
+
+https://www.reddit.com/r/Python/comments/1n1hkls/i_bundled_my_common_python_utilities_into_a/
+
+https://github.com/EntilZha/PyFunctional
+
+https://github.com/mahmoud/boltons  Boltons useful lib
+
+https://github.com/jlevy/strif  string, file, and object utilities
+
+https://github.com/Erotemic/ubelt  Ubelt
+
+https://realpython.com/python-loguru/  Loguru , also look into structlog
+
+
 <https://dev.to/siddharth_pogul_1ba2cbfe0/building-rapidlog-why-i-made-a-3x-faster-python-logger-4cde>
+
 <https://habr.com/ru/articles/949314/>
 
 ## Python program template
@@ -52,12 +81,6 @@ EuroPython 2025
 <https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02>
 
 
-<https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
-
-https://tryolabs.com/blog/top-python-libraries-2025
-
-https://github.com/ritwiktiwari/awesome-python-rs Rust Libraries
-
 https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
 
 
@@ -75,16 +98,11 @@ https://catt.rs/en/stable/
 https://news.ycombinator.com/item?id=44675119
 
 
-https://www.reddit.com/r/Python/comments/1n1hkls/i_bundled_my_common_python_utilities_into_a/
-
 https://github.com/dbrattli/Expression  Functional Prog Library
 
 ### Working with large files: 
 https://blog.devgenius.io/10-ways-to-work-with-large-files-in-python-effortlessly-handle-gigabytes-of-data-aeef19bc0429
-
-### asyncio
-https://github.com/anordin95/a-conceptual-overview-of-asyncio/blob/main/readme.md
-
+ 
 https://afabundle.pro/product/competitive-programming-in-python/ Competitive Programming Book
 
 https://habr.com/ru/companies/dockhost/articles/891544/
@@ -103,20 +121,6 @@ https://pyrefly.org/
 https://marketplace.visualstudio.com/items?itemName=astral-sh.ty   ty Visual Studio Code extension
 
 https://yasirbhutta.github.io/python/docs/oop-inheritance/practice-and-progress/find-fix-mistakes-oop-inheritance.html 
-
-https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
-
-https://www.reddit.com/r/Python/comments/1l43i8z/what_are_your_favorite_modern_libraries_or/
-
-https://github.com/EntilZha/PyFunctional
-
-https://github.com/mahmoud/boltons  Boltons useful lib
-
-https://github.com/jlevy/strif  string, file, and object utilities
-
-https://github.com/Erotemic/ubelt  Ubelt
-
-https://realpython.com/python-loguru/  Loguru , also look into structlog
 
 https://github.com/surister/queryzen SQL over HTTP
 
