@@ -249,7 +249,7 @@ Makes operators first-class functions, so you can pass them as arguments to high
 Improves readability, especially in functional programming.
 
 Provides efficient versions of itemgetter, attrgetter, and methodcaller for dynamic access.
-```
+```python
 import operator
 
 print(operator.add(2, 3))     # 2 + 3 → 5
