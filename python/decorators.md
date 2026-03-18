@@ -60,7 +60,7 @@ so that subsequent calls to the function with the same arguments will not be exe
 It is especially helpful for functions that are computationally expensive or that are called frequently with the same arguments.
 
 Example:
-```
+```python
 import time
 
 def fibonacci(n):
@@ -151,7 +151,7 @@ with timer("Data Processing"):
 ```
 
 Class-based context manager
-```
+```python
 class Timer:
     def __init__(self, label='Block'):
         self.label = label
@@ -341,7 +341,7 @@ def main():
 ```
 
 ### one more logging decorator
-```
+```python
 import logging
 import functools
 
@@ -393,16 +393,15 @@ def fibonacci(n):
     return fibonacci(n-1) + fibonacci(n-2)
 ```
 
-<!--
+<https://habr.com/ru/articles/910424/>
+
+<https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8>
+
 <https://www.kdnuggets.com/custom-python-decorator-patterns-worth-copy-pasting-forever>
-
-https://habr.com/ru/articles/910424/
-
-https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 <https://towardsdatascience.com/python-decorators-for-data-science-6913f717669a>
 
 <https://jacobpadilla.com/articles/Functools-Deep-Dive>
  
--->
+ 
 
