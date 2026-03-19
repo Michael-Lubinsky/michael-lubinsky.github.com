@@ -1409,5 +1409,8 @@ Snowflake is not optimized for:
 <https://habr.com/ru/companies/otus/articles/843522/>
 
 
+## Semantic view
+
+<img width="743" height="289" alt="image" src="https://github.com/user-attachments/assets/8261f0c5-4521-4b64-8a8e-34b0201ada25" />
 
 
