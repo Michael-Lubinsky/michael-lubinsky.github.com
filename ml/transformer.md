@@ -4,6 +4,7 @@
 
 <https://poloclub.github.io/transformer-explainer/>
 
+<https://www.vizuaranewsletter.com/p/the-transformers>   
 <https://youtu.be/wjZofJX0v4M?si=gT8Zlz1IY14KV_ju>
 
  
