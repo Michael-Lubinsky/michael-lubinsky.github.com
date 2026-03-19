@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/companies/ruvds/articles/978320/>
 
+<https://habr.com/ru/companies/amvera/articles/1010466/> reset revert restore
+
 <https://dangitgit.com/>
 
 ```git
