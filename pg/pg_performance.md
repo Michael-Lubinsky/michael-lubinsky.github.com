@@ -3,9 +3,11 @@ https://news.ycombinator.com/item?id=46336947
 
 ## Postgres performance
 
+
+<https://habr.com/ru/companies/otus/articles/1012266/> Vaccum, reindex
 https://news.ycombinator.com/item?id=46692116
 
-https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l&t=3723s indexes ru
+<https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l> indexes ru
 
 https://habr.com/ru/companies/ppr/articles/978100/
 
@@ -79,7 +81,7 @@ ORDER BY t1.fivethous;
 ### extension: pg_repack 
 pg_repack  is a PostgreSQL extension which lets you remove bloat from tables and indexes, 
 and optionally restore the physical order of clustered indexes.  
-Unlike CLUSTER and VACUUM FULL it works online, without holding an exclusive lock on the processed tables during processing.  
+Unlike CLUSTER and  FULL it works online, without holding an exclusive lock on the processed tables during processing.  
 pg_repack is efficient to boot, with performance comparable to using CLUSTER directly. 
 <https://github.com/reorg/pg_repack>
 
@@ -144,9 +146,9 @@ WHERE
         'parallel_setup_cost',
         'parallel_tuple_cost',
 
-        -- Autovacuum
-        'autovacuum_vacuum_cost_limit',
-        'autovacuum_vacuum_threshold',
+        -- Auto
+        'auto__cost_limit',
+        'auto_vacuum_threshold',
         'autovacuum_vacuum_scale_factor',
         'autovacuum_naptime',
         'autovacuum_max_workers',
