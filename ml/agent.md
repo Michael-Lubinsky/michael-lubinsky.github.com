@@ -1,5 +1,7 @@
 ## Agents
 
+<https://www.youtube.com/watch?v=ESBMgZHzfG0> AI Periodic table
+
 <https://habr.com/ru/articles/1010430/>
 
  <https://habr.com/ru/articles/1010236/>
