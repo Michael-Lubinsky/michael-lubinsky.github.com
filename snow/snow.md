@@ -1413,6 +1413,8 @@ Snowflake is not optimized for:
 
 ## Semantic view
 
+<https://docs.snowflake.com/en/user-guide/views-semantic/overview>
+
 <https://docs.snowflake.com/en/user-guide/views-semantic/sql#joining-logical-tables-that-contain-ranges-of-values>
 
 <img width="743" height="289" alt="image" src="https://github.com/user-attachments/assets/8261f0c5-4521-4b64-8a8e-34b0201ada25" />
