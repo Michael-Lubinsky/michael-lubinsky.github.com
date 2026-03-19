@@ -1,3 +1,7 @@
+## SQL and Python
+<https://realpython.com/python-sql-libraries/>
+
+### Postgres and Python
 Here are advanced best practices for using `psycopg2`:
 
 Here are comprehensive examples of `psycopg2.extras` module usage:
