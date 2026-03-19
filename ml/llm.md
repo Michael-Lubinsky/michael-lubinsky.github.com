@@ -6,27 +6,27 @@
 NVIDIA GenAI & LLMs: Learn and Pass NCA-GENL Certification
 <https://www.udemy.com/course/nvidia-nca-genl/>
 
+<https://media.licdn.com/dms/document/media/v2/D561FAQFHrt2lGAhBZw/feedshare-document-sanitized-pdf/B56Zzf9WfcIYBE-/0/1773283929644?e=1773928800&v=beta&t=HJOfVk9ItfIMBCiWOe-lhu8jt64RPtZm-3HlVdesdPk>
+
 <https://www.kdnuggets.com/10-python-libraries-every-llm-engineer-should-know>
 
 LLAMA   <https://www.youtube.com/watch?v=kt9M82teAUs> LLAMA, 100500 вариантов её файнтюнинга
 Ollama
 <https://www.youtube.com/watch?v=P9qWek5LDUw>
 
-There are three competitive inference engines on the market: 
+There are following competitive inference engines on the market: 
 - vLLM
 - SGLang
 - TensorRT-LLM
-
-Triton Inference Server. Часть 1. Знакомство
-- https://www.youtube.com/watch?v=wo1QS0e3uog
+- Triton Inference Server <https://www.youtube.com/watch?v=wo1QS0e3uog>
 
 1️⃣ 𝗜𝗻𝘁𝗿𝗼 𝘁𝗼 𝗟𝗟𝗠𝘀 - Karpathy
 → Best 1-hour overview of LLMs that exists.
-→ youtu.be/zjkBMFhNj_g
+→ <youtu.be/zjkBMFhNj_g>
 
 2️⃣ 𝗟𝗟𝗠 𝗙𝘂𝗻𝗱𝗮𝗺𝗲𝗻𝘁𝗮𝗹𝘀 - Stanford CS25
 → Academic rigor. Transformers, attention, emergent behavior.
-→ youtu.be/9vM4p9NN0Ts
+→ <youtu.be/9vM4p9NN0Ts>
 
 𝗕𝘂𝗶𝗹𝗱 𝗙𝗿𝗼𝗺 𝗦𝗰𝗿𝗮𝘁𝗰𝗵
 3️⃣ 𝗡𝗲𝘂𝗿𝗮𝗹 𝗡𝗲𝘁𝘄𝗼𝗿𝗸𝘀: 𝗭𝗲𝗿𝗼 𝘁𝗼 𝗛𝗲𝗿𝗼 - Karpathy
