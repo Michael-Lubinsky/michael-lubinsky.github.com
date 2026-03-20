@@ -1,3 +1,4 @@
+<https://arxiv.org/pdf/2403.04807> Math of NN
 
 <https://mlbenchmarks.org/>
 
