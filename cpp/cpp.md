@@ -22,6 +22,8 @@ dynamic_cast<T>(x)
 const_cast<T>(x)
 reinterpret_cast<T>(x)
 ```
+<https://habr.com/ru/articles/1002404/> Implement hash table from scrach
+
 <https://habr.com/ru/companies/bercut/articles/970442/> Опасные ловушки C++: типичные ошибки, их последствия и защита
 
 <https://habr.com/ru/articles/920790/>  Supervisor on C++
