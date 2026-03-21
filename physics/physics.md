@@ -2,6 +2,8 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<https://www.youtube.com/@AbideByReason>
+
 http://lightcone.ru/
 
 Принцип наименьшего действия [Veritasium]:
