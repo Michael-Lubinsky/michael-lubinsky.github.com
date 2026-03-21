@@ -4,12 +4,14 @@ https://news.ycombinator.com/item?id=46336947
 ## Postgres performance
 
 
-<https://habr.com/ru/companies/otus/articles/1012266/> Vaccum, reindex
-https://news.ycombinator.com/item?id=46692116
+<https://habr.com/ru/companies/otus/articles/1012266/> Vaccum, reindex  
+<https://news.ycombinator.com/item?id=46692116>
+
+<https://habr.com/ru/articles/1012922/>
 
 <https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l> indexes ru
 
-https://habr.com/ru/companies/ppr/articles/978100/
+<https://habr.com/ru/companies/ppr/articles/978100/>
 
 <https://pg-hint-plan.readthedocs.io/en/latest/>
 
