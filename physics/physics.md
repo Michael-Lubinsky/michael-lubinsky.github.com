@@ -4,6 +4,8 @@
 
 <https://www.youtube.com/@AbideByReason>
 
+<https://www.youtube.com/watch?v=xEyQwSV3swQ>
+
 http://lightcone.ru/
 
 Принцип наименьшего действия [Veritasium]:
