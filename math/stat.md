@@ -5,13 +5,25 @@ High-Dimensional Probability. Roman Vershinin
 
 https://www.youtube.com/watch?v=nKmYjFoiuYM
 
-Statistical Modeling: The Two Cultures. Leo Breiman
-https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726
+<https://leanpub.com/TOBoML2> The Orange Book of Machine Learning - Green edition
 
+<https://stat.cmu.edu/~cshalizi/ADAfaEPoV/ADAfaEPoV.pdf> Advanced Data Analysis Book
+
+Statistical Modeling: The Two Cultures. Leo Breiman
+<https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726>
+
+
+## Bayes
+
+<https://nchagnet.pages.dev/blog/bayesian-statistics-for-confused-data-scientists/>  
+<https://habr.com/ru/articles/895332/> Bayes
 <https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
 
-https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
+<https://www.youtube.com/watch?v=XCEpIBqKogo> Bayesian Inference: Overview Steve Brunton
 
+<https://entropicthoughts.com/bayes-rule-odds-form>
+
+## Statistical Rethinking 2026
 <https://www.youtube.com/watch?v=ztbYkBPDOgU> 
 Statistical Rethinking 2026 - Lecture A01 by Richard McElreath
 
@@ -22,9 +34,7 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
-<https://www.youtube.com/watch?v=XCEpIBqKogo> Bayesian Inference: Overview Steve Brunton
 
-<https://entropicthoughts.com/bayes-rule-odds-form>
 
 https://eyal-kazin.medium.com/
 
@@ -33,7 +43,7 @@ https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHP
 РУКОВОДСТВО К РЕШЕНИЮ ЗАДАЧ ПО ТЕОРИИ ВЕРОЯТНОСТЕЙ И МАТЕМАТИЧЕСКОЙ СТАТИСТИКЕ
 https://elenagavrile.narod.ru/ms/gmurman.pdf
 
-https://stat.cmu.edu/~cshalizi/ADAfaEPoV/ADAfaEPoV.pdf Advanced Data Analysis Book
+
 
 Statistical process control in python  
 <https://timothyfraser.com/sigma/statistical-process-control-in-python.html>
