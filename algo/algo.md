@@ -48,6 +48,8 @@ Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
 
 <https://www.amazon.com/Coding-Interview-Patterns-Nail-Your/dp/1736049135>
 
+<https://github.com/ByteByteGoHq/coding-interview-patterns/tree/main/python3>
+
 <https://tproger.ru/problems>
 
 <https://www.shadecoder.com/blogs/12-coding-patterns-for-technical-interviews-with-examples-code>
