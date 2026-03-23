@@ -8,6 +8,8 @@
 
 <https://cleveralgorithms.com/>
 
+<https://www.amazon.com/Coding-Interview-Patterns-Nail-Your/dp/1736049135>
+
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
 <https://arxiv.org/pdf/2301.00754> Algos for Massive Data
