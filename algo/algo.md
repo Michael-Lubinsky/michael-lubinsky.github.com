@@ -2,13 +2,11 @@
 
 <https://ru.algorithmica.org/>
 
-<https://github.com/keon/algorithms>
 
-<https://github.com/TheAlgorithms/Python>
 
 <https://cleveralgorithms.com/>
 
-<https://www.amazon.com/Coding-Interview-Patterns-Nail-Your/dp/1736049135>
+
 
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
@@ -22,9 +20,19 @@ https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncerta
 
 <https://mykel.kochenderfer.com/textbooks/>
 
-https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289
+<https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289>
 
-https://codepointer.substack.com/p/docling-leetcode-in-production-union 
+## Interview
+
+<https://github.com/LordMoMA/leetcode/tree/main/python>
+
+<https://github.com/keon/algorithms>
+
+<https://github.com/TheAlgorithms/Python>
+
+<https://codepointer.substack.com/p/docling-leetcode-in-production-union>
+
+<https://www.amazon.com/Coding-Interview-Patterns-Nail-Your/dp/1736049135>
 
 ### Books
 
