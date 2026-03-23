@@ -2,11 +2,7 @@
 
 <https://ru.algorithmica.org/>
 
-
-
 <https://cleveralgorithms.com/>
-
-
 
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
@@ -14,13 +10,31 @@
 
 <https://cs.gmu.edu/~sean/book/metaheuristics/>
 
-https://algorithmsbook.com/optimization/files/optimization.pdf
+<https://algorithmsbook.com/optimization/files/optimization.pdf>
 
-https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncertainty
+<https://web.stanford.edu/group/sisl/public/dmu.pdf> Decision Making Under Uncertainty
 
 <https://mykel.kochenderfer.com/textbooks/>
 
 <https://www.amazon.com/Pearls-Algorithm-Engineering-Paolo-Ferragina/dp/1009123289>
+
+
+<https://www.cambridge.org/core/books/pearls-of-algorithm-engineering/95061352D7263CCCBD4F243018236EB2>
+
+<https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf>
+
+Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
+<https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf>
+
+<https://www.youtube.com/watch?v=qO-HpEgmd6U>
+
+<https://videolectures.net/authors/david_mackay>
+
+<https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/main>
+
+<https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932>
+
+
 
 ## Interview
 
@@ -34,28 +48,11 @@ https://web.stanford.edu/group/sisl/public/dmu.pdf Decision Making Under Uncerta
 
 <https://www.amazon.com/Coding-Interview-Patterns-Nail-Your/dp/1736049135>
 
-### Books
-
-<https://www.cambridge.org/core/books/pearls-of-algorithm-engineering/95061352D7263CCCBD4F243018236EB2>
-
-<https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf>
-
-“Information Theory” by Yury Polyanskiy and Yihong Wu.
-<https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf>
-
-https://www.youtube.com/watch?v=qO-HpEgmd6U
-
-
-https://videolectures.net/authors/david_mackay
-
-https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/main
-
-https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932
-
-
-https://tproger.ru/problems
+<https://tproger.ru/problems>
 
 <https://www.shadecoder.com/blogs/12-coding-patterns-for-technical-interviews-with-examples-code>
+
+
 
 ## Constraint programming PiCat, MiniZinc, etc
 https://cpmpy.readthedocs.io/en/latest/
