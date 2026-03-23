@@ -13,3 +13,21 @@ brew install kaushiksrini/parqeye/parqeye
 <https://github.com/kaushiksrini/parqeye>
 
 <https://news.ycombinator.com/item?id=45959780>
+
+#### Upload parquet file to SQLite
+
+```python
+import pandas as pd 
+import sqlite3
+
+parquet_path = 'my-data.parquet'
+db_conn = sqlite3.connect(database='/tmp/my.db')
+
+df_parquet = pd.read_parquet(parquet_path)
+table_name = 'my_data_table'
+num_rows_inserted = df_parquet.to_sql(table_name, db_conn, if_exists="replace", index=False)
+
+query = f"SELECT * from {table_name}"
+cursor = db_conn.execute(query)
+db_conn.close()
+```
