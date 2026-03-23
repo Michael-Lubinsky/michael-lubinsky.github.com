@@ -94,6 +94,8 @@ that even if you don't explicitly activate a virtual environment
  you can still use the environment by referencing its Python executable directly.
 ```
 ### How Virtual Environments Work
+
+<https://habr.com/ru/articles/1013512/>
 ```
 When you create a virtual environment in Python (using python -m venv venv or similar tools like virtualenv), a directory is created with:
 
