@@ -118,6 +118,8 @@ https://tech.marksblogg.com/python-data-visualisation-echarts-graphs-plots.html
 
 ## JS libs
 
+<https://habr.com/ru/companies/yandex/articles/1013626/>  gravity‑ui/charts
+
 https://vega.github.io/vega-lite/
 
 https://airbnb.io/visx/ VisX
