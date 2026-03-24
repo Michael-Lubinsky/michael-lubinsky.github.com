@@ -1,6 +1,8 @@
 ## Claude
 
-<https://cc.storyfox.cz/>
+<https://cc.storyfox.cz/> CLI commands
+
+<https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
  
 <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
 
