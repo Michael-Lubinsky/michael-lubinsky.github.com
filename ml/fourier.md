@@ -18,4 +18,6 @@ https://joshuawise.com/resources/ofdm/
 
 <https://connorboyle.io/2025/09/11/fft-cooley-tukey.html>
 
+<https://www.byhand.ai/p/28-discrete-fourier-transform>
+
 
