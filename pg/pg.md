@@ -13,6 +13,8 @@
 <https://boringsql.com/posts/postgresql-predefined-roles/>
 <https://habr.com/ru/companies/beget/articles/920772/>
 
+<https://habr.com/ru/companies/postgrespro/articles/1012716/> Apache AGE ( A Graph Extension)
+
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
 
 <https://habr.com/ru/companies/postgrespro/articles/1001194/>
