@@ -18,14 +18,14 @@ Postgres internals  <https://www.interdb.jp/pg/index.html>
 
 ### Locking
 
-https://habr.com/ru/articles/940066/ SELECT FOR UPDATE
+<https://habr.com/ru/articles/940066/> SELECT FOR UPDATE
 
-https://memoizethebackend.substack.com/p/optimistic-or-pessimistic-understanding
+<https://memoizethebackend.substack.com/p/optimistic-or-pessimistic-understanding>
 
 ### Storage
 https://www.youtube.com/watch?v=i-FFVM4cIXQ База по Базам Данных - Storage (Индексы, Paging, LSM, B+-Tree, R-Tree) | Влад Тен 
 
-https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk?ref=dailydev
+<https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk>
 
 ### Replication
 https://levelup.gitconnected.com/10-essential-database-replication-techniques-every-software-developer-should-know-b51b4478646e 
@@ -36,22 +36,25 @@ https://habr.com/ru/companies/magnit/articles/938164/ CDC без боли: ка�
 
 ### Change Data Capture
 
-https://www.change-data-capture.com/
+<https://www.change-data-capture.com/>
 
 https://www.paradedb.com/blog/etl_vs_logical_replication
 
 ### Query optimization
 
-https://habr.com/ru/companies/ydb/articles/901816/
+<https://habr.com/ru/companies/ydb/articles/901816/>
 
 https://web.stanford.edu/class/cs345d-01/rl/chaudhuri98.pdf
 
 https://www.microsoft.com/en-us/research/publication/extensible-query-optimizers-in-practice/
 
-https://build-your-own.org/blog/20251015_db_in_3000/
+<https://build-your-own.org/blog/20251015_db_in_3000/>
 
 
-https://habr.com/ru/companies/tantor/articles/929980/
+<https://habr.com/ru/companies/tantor/articles/929980/>
+
+### Graph Databases
+https://gdb-engines.com/
 
 ## StarRocks
 
