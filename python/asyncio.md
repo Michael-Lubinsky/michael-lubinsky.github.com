@@ -8,4 +8,6 @@
 Threading vs Multiprocessing vs asyncio
 <https://habr.com/ru/articles/991478/>
 
+<https://habr.com/ru/articles/1013930/>
+
 <https://trio.readthedocs.io/en/stable/>
