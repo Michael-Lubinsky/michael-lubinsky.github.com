@@ -1,6 +1,17 @@
 ## Claude
+ 
+<https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
 
+<https://habr.com/ru/companies/alfa/articles/1000342/>  
+https://anthropic.skilljar.com/claude-code-in-action  
+https://code.claude.com/docs  
+https://code.claude.com/docs/en/cli-reference  
+https://habr.com/ru/articles/983214/   
+https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
+https://www.dev-log.me/pr_review_navigator_for_claude/  Skill for code review
+
+https://psantanna.com/claude-code-my-workflow/workflow-guide.html
 <https://habr.com/ru/articles/1012412/>
 
 <https://boristane.com/blog/how-i-use-claude-code/>
