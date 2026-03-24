@@ -2,7 +2,7 @@
  
 <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
 
-<https://habr.com/ru/companies/alfa/articles/1000342/>  
+
 https://anthropic.skilljar.com/claude-code-in-action  
 https://code.claude.com/docs  
 https://code.claude.com/docs/en/cli-reference  
