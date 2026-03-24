@@ -22,8 +22,7 @@
 
  <https://github.com/obra/superpowers>
 
-Structured outputs
-<https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
+ <https://habr.com/ru/companies/alfa/articles/1000342/>  
 
 Free book online
 <https://www.manning.com/books/build-a-multi-agent-system-from-scratch>
@@ -32,7 +31,7 @@ Free book online
 
 <https://github.com/BerriAI/litellm>
 
-## Agents orcestrations via md files
+## Agents orchestration via md files
 <https://habr.com/ru/articles/1009534/>
 
 The 100 line AI agent that solves GitHub issues or helps you in your command line.
