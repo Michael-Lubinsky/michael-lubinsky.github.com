@@ -8,6 +8,8 @@
 
 <https://github.com/datasetq/datasetq>
 
+<https://www.dremio.com/blog/exploring-the-evolving-file-format-landscape-in-ai-era-parquet-lance-nimble-and-vortex-and-what-it-means-for-apache-iceberg/>
+
 brew install kaushiksrini/parqeye/parqeye
 
 <https://github.com/kaushiksrini/parqeye>
