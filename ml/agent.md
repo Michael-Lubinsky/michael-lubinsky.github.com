@@ -2,6 +2,10 @@
 
 <https://www.youtube.com/watch?v=ESBMgZHzfG0> AI Periodic table
 
+<https://ecc.tools/>
+
+<https://github.com/gepa-ai/gepa>
+
 <https://medium.com/@durgaktkm/building-agentic-ai-applications-in-2026-872aefe192f6>
 
 <https://habr.com/ru/articles/1013330/>
