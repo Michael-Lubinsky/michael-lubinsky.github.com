@@ -3,6 +3,7 @@ https://news.ycombinator.com/item?id=46336947
 
 ## Postgres performance
 
+<https://habr.com/ru/companies/otus/articles/1008372/> indexes
 
 <https://habr.com/ru/companies/otus/articles/1012266/> Vaccum, reindex  
 <https://news.ycombinator.com/item?id=46692116>
