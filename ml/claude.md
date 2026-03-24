@@ -1,0 +1,113 @@
+## Claude
+
+
+<https://habr.com/ru/articles/1012412/>
+
+<https://boristane.com/blog/how-i-use-claude-code/>
+
+which claude  
+/opt/homebrew/bin/claude
+```
+claude --help
+Usage: claude [options] [command] [prompt]
+
+Claude Code - starts an interactive session by default, use -p/--print for non-interactive output
+
+Arguments:
+  prompt                                            Your prompt
+
+Options:
+  --add-dir <directories...>                        Additional directories to allow tool access to
+  --agent <agent>                                   Agent for the current session. Overrides the 'agent' setting.
+  --agents <json>                                   JSON object defining custom agents (e.g. '{"reviewer": {"description": "Reviews code", "prompt": "You are a code
+                                                    reviewer"}}')
+  --allow-dangerously-skip-permissions              Enable bypassing all permission checks as an option, without it being enabled by default. Recommended only for
+                                                    sandboxes with no internet access.
+  --allowedTools, --allowed-tools <tools...>        Comma or space-separated list of tool names to allow (e.g. "Bash(git:*) Edit")
+  --append-system-prompt <prompt>                   Append a system prompt to the default system prompt
+  --betas <betas...>                                Beta headers to include in API requests (API key users only)
+  --chrome                                          Enable Claude in Chrome integration
+  -c, --continue                                    Continue the most recent conversation in the current directory
+  --dangerously-skip-permissions                    Bypass all permission checks. Recommended only for sandboxes with no internet access.
+  -d, --debug [filter]                              Enable debug mode with optional category filtering (e.g., "api,hooks" or "!1p,!file")
+  --debug-file <path>                               Write debug logs to a specific file path (implicitly enables debug mode)
+  --disable-slash-commands                          Disable all skills
+  --disallowedTools, --disallowed-tools <tools...>  Comma or space-separated list of tool names to deny (e.g. "Bash(git:*) Edit")
+  --fallback-model <model>                          Enable automatic fallback to specified model when default model is overloaded (only works with --print)
+  --file <specs...>                                 File resources to download at startup. Format: file_id:relative_path (e.g., --file file_abc:doc.txt
+                                                    file_def:img.png)
+  --fork-session                                    When resuming, create a new session ID instead of reusing the original (use with --resume or --continue)
+  --from-pr [value]                                 Resume a session linked to a PR by PR number/URL, or open interactive picker with optional search term
+  -h, --help                                        Display help for command
+  --ide                                             Automatically connect to IDE on startup if exactly one valid IDE is available
+  --include-partial-messages                        Include partial message chunks as they arrive (only works with --print and --output-format=stream-json)
+  --input-format <format>                           Input format (only works with --print): "text" (default), or "stream-json" (realtime streaming input) (choices:
+                                                    "text", "stream-json")
+  --json-schema <schema>                            JSON Schema for structured output validation. Example:
+                                                    {"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}
+  --max-budget-usd <amount>                         Maximum dollar amount to spend on API calls (only works with --print)
+  --mcp-config <configs...>                         Load MCP servers from JSON files or strings (space-separated)
+  --mcp-debug                                       [DEPRECATED. Use --debug instead] Enable MCP debug mode (shows MCP server errors)
+  --model <model>                                   Model for the current session. Provide an alias for the latest model (e.g. 'sonnet' or 'opus') or a model's full
+                                                    name (e.g. 'claude-sonnet-4-5-20250929').
+  --no-chrome                                       Disable Claude in Chrome integration
+  --no-session-persistence                          Disable session persistence - sessions will not be saved to disk and cannot be resumed (only works with --print)
+  --output-format <format>                          Output format (only works with --print): "text" (default), "json" (single result), or "stream-json" (realtime
+                                                    streaming) (choices: "text", "json", "stream-json")
+  --permission-mode <mode>                          Permission mode to use for the session (choices: "acceptEdits", "bypassPermissions", "default", "delegate",
+                                                    "dontAsk", "plan")
+  --plugin-dir <paths...>                           Load plugins from directories for this session only (repeatable)
+  -p, --print                                       Print response and exit (useful for pipes). Note: The workspace trust dialog is skipped when Claude is run with
+                                                    the -p mode. Only use this flag in directories you trust.
+  --replay-user-messages                            Re-emit user messages from stdin back on stdout for acknowledgment (only works with --input-format=stream-json
+                                                    and --output-format=stream-json)
+  -r, --resume [value]                              Resume a conversation by session ID, or open interactive picker with optional search term
+  --session-id <uuid>                               Use a specific session ID for the conversation (must be a valid UUID)
+  --setting-sources <sources>                       Comma-separated list of setting sources to load (user, project, local).
+  --settings <file-or-json>                         Path to a settings JSON file or a JSON string to load additional settings from
+  --strict-mcp-config                               Only use MCP servers from --mcp-config, ignoring all other MCP configurations
+  --system-prompt <prompt>                          System prompt to use for the session
+  --tools <tools...>                                Specify the list of available tools from the built-in set. Use "" to disable all tools, "default" to use all
+                                                    tools, or specify tool names (e.g. "Bash,Edit,Read").
+  --verbose                                         Override verbose mode setting from config
+  -v, --version                                     Output the version number
+
+Commands:
+  doctor                                            Check the health of your Claude Code auto-updater
+  install [options] [target]                        Install Claude Code native build. Use [target] to specify version (stable, latest, or specific version)
+  mcp                                               Configure and manage MCP servers
+  plugin                                            Manage Claude Code plugins
+  setup-token                                       Set up a long-lived authentication token (requires Claude subscription)
+  update|upgrade                                    Check for updates and install if available
+
+
+Example:
+
+  claude -p "<prompt>" \
+    --append-system-prompt "<identity + memory instructions>" \
+    --tools "Bash,Read,Write,Edit" \
+    --allowedTools "Bash,Read,Write,Edit" \
+    --add-dir ~/.epiphyte/memory \
+    --model opus \
+    --output-format stream-json \
+    --resume <session-id> 
+
+
+```
+<https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
+
+Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-outputs>
+
+<https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>
+
+<https://github.com/affaan-m/everything-claude-code>
+
+![Claude Code WorkFlow Cheatsheet](https://github.com/user-attachments/assets/c86f34e8-31d1-467e-b3f7-5f9c832e1429)
+
+<img width="1228" height="1536" alt="image" src="https://github.com/user-attachments/assets/4ab21e44-594b-4c9f-b13b-5dcbe8da4f6a" />
+
+![desilula for butting state Code](https://github.com/user-attachments/assets/f48fe08f-3464-48c2-881b-3ec864587c67)
+
+<img width="1166" height="1176" alt="image" src="https://github.com/user-attachments/assets/33ca876d-8246-4a60-8efb-2691b12d0184" />
+
+<img width="483" height="428" alt="image" src="https://github.com/user-attachments/assets/66c1407f-b0e6-4ef6-a4cd-7173bdd0ae6e" />
