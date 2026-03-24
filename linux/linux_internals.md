@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
+<https://dzen.ru/a/aYzCnsI1iDpbtiPj>
+
 <https://blog.codingconfessions.com/p/what-makes-system-calls-expensive> 
 
 <https://habr.com/ru/articles/996600/> Почему системные вызовы обходятся дорого: углубляемся в дебри Linux
