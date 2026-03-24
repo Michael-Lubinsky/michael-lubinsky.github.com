@@ -1,5 +1,7 @@
 ## Claude
 
+<https://habr.com/ru/articles/1014278/> 
+
 <https://cc.storyfox.cz/> CLI commands
 
 <https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
