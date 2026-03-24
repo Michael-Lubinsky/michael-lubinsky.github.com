@@ -3,6 +3,8 @@
 
 <https://github.com/affaan-m/everything-claude-code>
 
+![Claude Code WorkFlow Cheatsheet](https://github.com/user-attachments/assets/c86f34e8-31d1-467e-b3f7-5f9c832e1429)
+
 <img width="1228" height="1536" alt="image" src="https://github.com/user-attachments/assets/4ab21e44-594b-4c9f-b13b-5dcbe8da4f6a" />
 
 ![desilula for butting state Code](https://github.com/user-attachments/assets/f48fe08f-3464-48c2-881b-3ec864587c67)
