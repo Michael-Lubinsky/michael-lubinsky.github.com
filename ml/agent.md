@@ -67,6 +67,8 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 <https://habr.com/ru/articles/1007048/>
 
+<https://habr.com/ru/articles/985990/>
+
 
 ### Tool calling  (sometimes referred to as function calling) 
 
