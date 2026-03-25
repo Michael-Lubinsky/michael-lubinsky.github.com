@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/companies/ods/articles/544208/>
 
+<https://habr.com/ru/companies/ods/articles/667730/>
+
 Causal Discovery Algorithms: FCI and others
 Fast Causal Inference (FCI)  
 <https://www.shadecoder.com/topics/fci-algorithm-a-comprehensive-guide-for-2025>
