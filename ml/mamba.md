@@ -8,6 +8,10 @@
 
 <https://habr.com/ru/articles/1012998/>
 
+
+Quantization
+<https://ngrok.com/blog/quantization>
+
 ## ML Engineering
 
 Chris Fregly “AI Systems Performance Engineering” book 
