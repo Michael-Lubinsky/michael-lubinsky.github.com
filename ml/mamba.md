@@ -1,5 +1,7 @@
 <https://arxiv.org/pdf/2403.04807> Math of NN
 
+<https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
+
 <https://mlbenchmarks.org/>
 
 <https://medium.com/advanced-deep-learning>
@@ -91,10 +93,12 @@ https://habr.com/ru/articles/1002298/
 
 https://rlhfbook.com/  Reinforcement learning human feedback
 
+<https://physo.readthedocs.io/en/latest/> -SO’s symbolic regression module uses deep reinforcement learning to infer analytical physical laws that fit data points, searching in the space of functional forms.
+
 ## ONNX book
 https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/ 
 
-https://mml-book.github.io/book/mml-book.pdf  Math for ML book
+
  
 
 1. Foundations of Machine Learning
