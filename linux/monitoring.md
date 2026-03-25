@@ -6,10 +6,11 @@
 <https://habr.com/ru/articles/928948/>  Разработка высоконагруженных API
 
 
-
 <https://theremoteengineer.substack.com/p/availability-in-system-design>
 
 ## Monitoring
+
+<https://habr.com/ru/companies/otus/articles/1013812/> strace
 
 https://habr.com/ru/articles/1005210/ Victoria metrics, etc
 
