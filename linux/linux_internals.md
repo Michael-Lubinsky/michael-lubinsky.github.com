@@ -4,7 +4,9 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
-<https://dzen.ru/a/aYzCnsI1iDpbtiPj>
+<https://dzen.ru/a/aYzCnsI1iDpbtiPj> memory types
+
+<https://malkovsky.github.io/personal-site/ru/blog/posts/2026-03-16_hpc_starting_guide/>
 
 <https://blog.codingconfessions.com/p/what-makes-system-calls-expensive> 
 
