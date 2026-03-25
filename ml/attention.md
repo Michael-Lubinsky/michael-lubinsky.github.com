@@ -1,7 +1,17 @@
-##  Attention, Embedding
+##  Embedding
+Before you can project anything, each word in your input string needs to be represented numerically. This is usually done using word embeddings.
+
+What are Word Embeddings? They are dense vector representations of words where words with similar meanings have similar vector representations.   
+Popular pre-trained word embeddings include Word2Vec, GloVe, and FastText.   
+More advanced methods like BERT, GPT, and others use contextual embeddings, where the embedding for a word changes based on its surrounding words in a sentence.
+
+<https://vickiboykis.com/what_are_embeddings/>
+
 <https://habr.com/ru/companies/ruvds/articles/983958/>  Embedding
 
 <https://medium.com/data-science/attn-illustrated-attention-5ec4ad276ee3>
+
+##  Attention 
 
 <https://eli.thegreenplace.net/2025/notes-on-implementing-attention/>
 
@@ -15,13 +25,7 @@ https://news.ycombinator.com/item?id=45002896
 
 <https://habr.com/ru/companies/bothub/articles/922938/>
 
-### Input Representation: Word Embeddings
-
-Before you can project anything, each word in your input string needs to be represented numerically. This is usually done using word embeddings.
-
-What are Word Embeddings? They are dense vector representations of words where words with similar meanings have similar vector representations.   
-Popular pre-trained word embeddings include Word2Vec, GloVe, and FastText.   
-More advanced methods like BERT, GPT, and others use contextual embeddings, where the embedding for a word changes based on its surrounding words in a sentence.
+ 
 
 
  **2\. Learnable Linear Transformations (Weight Matrices)**
