@@ -34,6 +34,8 @@ https://static.googleusercontent.com/media/research.google.com/en//archive/mapre
 
 <https://www.uber.com/blog/from-batch-to-streaming-accelerating-data-freshness-in-ubers-data-lake/>
 
+<https://habr.com/ru/companies/otus/articles/1013890/> reading CSV
+
 ### Databricks CLI
 ```bash
 
