@@ -8,10 +8,11 @@
  
 <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
 
+<https://www.youtube.com/watch?v=dn3CuC-2NiI>
 
-https://anthropic.skilljar.com/claude-code-in-action  
-https://code.claude.com/docs  
-https://code.claude.com/docs/en/cli-reference  
+<https://anthropic.skilljar.com/claude-code-in-action>  
+<https://code.claude.com/docs>  
+<https://code.claude.com/docs/en/cli-reference> 
 https://habr.com/ru/articles/983214/   
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
