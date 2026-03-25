@@ -27,6 +27,18 @@ git commit --amend
 Если изменения уже добавлены в staging area, и вы хотите проверить, что именно попадёт в следующий коммит, используем команду:
 
 git diff --staged
+
+создать ветку:
+
+git branch имя_ветки
+
+ переключитесь на неё:
+
+git switch имя_ветки
+
+Создание ветки и переключение можно сделать одной командой:
+
+git switch -c имя_ветки
   
 <https://medium.com/the-pythonworld/20-advanced-git-command-line-tricks-every-developer-should-know-03543884d3be>
 
