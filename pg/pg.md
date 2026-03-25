@@ -17,7 +17,15 @@
 
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
 
+<https://habr.com/ru/articles/1011996/>
+
 <https://habr.com/ru/companies/postgrespro/articles/1001194/>
+
+что отличает PostgreSQL от многих других СУБД: всего три уровня изоляции:
+
+    - Read Uncommitted / Read Committed — для PostgreSQL это одно и то же. Грязного чтения нет в принципе.
+    - Repeatable Read
+    - Serializable
 
 ## Time Series
 <https://www.snowflake.com/en/engineering-blog/postgres-time-series-iceberg/>
