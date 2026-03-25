@@ -2,6 +2,8 @@
 
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
+<https://awesomecpp.com/>
+
 <https://leanpub.com/cppinterview>
 
 <https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/>
