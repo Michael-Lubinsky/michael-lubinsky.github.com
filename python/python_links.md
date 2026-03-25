@@ -4,6 +4,8 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+<https://github.com/jawah/niquests> fork of request for HTTP
+
 ## Useful libs
 
 <https://pypi.org/project/duckdb-cli/> 
