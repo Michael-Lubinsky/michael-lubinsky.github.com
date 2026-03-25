@@ -1,8 +1,10 @@
 ### Causality
 
-https://causalai-book.net/
+<https://causalai-book.net/>
 
-https://causalpython.io/
+<https://causalpython.io/>
+
+<https://habr.com/ru/companies/ods/articles/544208/>
 
 Causal Discovery Algorithms: FCI and others
 Fast Causal Inference (FCI)  
@@ -11,6 +13,18 @@ Fast Causal Inference (FCI)
 <https://arxiv.org/pdf/2502.17030>
 
 <https://arxiv.org/pdf/2305.10032>
+
+### Collider
+
+<https://habr.com/ru/articles/1014586/>
+
+
+Коллайдер переменная, являющаяся следствием других переменных -То есть та, в которой два и более причинных пути сходятся.  
+Зачастую коллайдерами становятся разного рода результаты: последствия действий, выводы, искомые значения.
+
+Формально: если есть A и B, то коллайдер это такая переменная C, которая зависит и от A и от B
+
+A ⇨ C ⇦ B
 
 ### The Fast Casual Inference (FCI) algorithm
 ```
