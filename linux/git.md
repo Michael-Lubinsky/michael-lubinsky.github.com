@@ -23,6 +23,10 @@ git commit --amend
 ```
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>  
+
+Если изменения уже добавлены в staging area, и вы хотите проверить, что именно попадёт в следующий коммит, используем команду:
+
+git diff --staged
   
 <https://medium.com/the-pythonworld/20-advanced-git-command-line-tricks-every-developer-should-know-03543884d3be>
 
