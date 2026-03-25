@@ -24,6 +24,8 @@ git commit --amend
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/812139/>  
 
+<https://habr.com/ru/companies/netologyru/articles/1012264/>
+
 Если изменения уже добавлены в staging area, и вы хотите проверить, что именно попадёт в следующий коммит, используем команду:
 
 git diff --staged
