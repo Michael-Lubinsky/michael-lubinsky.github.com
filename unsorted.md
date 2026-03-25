@@ -4,6 +4,47 @@
 
 https://dokumen.pub/
 
+
+1️⃣ Netflix
+ ⤷ Pipelines serving 300M+ users. Their engineering blog is absolutely elite.
+🔗 https://lnkd.in/gugp2d2X
+
+2️⃣ Uber
+ ⤷ Real-time data at massive scale. Deep dives into their data platform are insane.
+🔗 https://lnkd.in/gns5z_Ft
+
+3️⃣ Databricks
+ ⤷ The company literally behind Apache Spark. Their blog = free education.
+🔗 https://lnkd.in/g4kVpT6E
+
+4️⃣ Airbnb
+ ⤷ From search to pricing to trust. Every post is a masterclass in data engineering.
+🔗 https://lnkd.in/gVfdPgnN
+
+5️⃣ Amazon AWS Blog
+ ⤷ The most comprehensive cloud data resources on the internet. Period.
+🔗 https://lnkd.in/gDFQmY3E
+
+6️⃣ Microsoft Data Architecture Blogs
+ ⤷ Enterprise-grade thinking. If you work at scale, this is a must-read.
+🔗 https://lnkd.in/gbBWURNT
+
+7️⃣ Microsoft Fabric Blog
+ ⤷ The future of unified data platforms. Stay ahead by reading this religiously.
+🔗 https://lnkd.in/g5bUkDur
+
+8️⃣ Oracle
+ ⤷ Quietly putting out some of the best database and data engineering content out there.
+🔗 https://lnkd.in/gMKVhDNy
+
+9️⃣ Meta
+ ⤷ They process more data than almost anyone on the planet. Their blog proves it.
+🔗 https://lnkd.in/g2Di4MJU
+
+🔟 Onehouse
+ ⤷ Open source lakehouse leaders. Underrated gem in the data engineering space.
+🔗 https://lnkd.in/gCJGgPwd
+
 ## Unsorted
 
 <https://openai.com/index/introducing-codex/>
