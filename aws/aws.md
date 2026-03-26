@@ -1,5 +1,8 @@
 ### AWS
 
+Athena, Glue, S3
+<https://www.linkedin.com/posts/mentorsachin_interview-guides-on-athena-glue-and-s3-activity-7442872996987326464-2mgi>
+
 
 <https://awstip.com/>
 <https://www.exampro.co/>
