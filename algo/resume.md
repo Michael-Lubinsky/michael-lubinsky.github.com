@@ -2,6 +2,8 @@
 
 <https://www.linkedin.com/posts/bigdatabysumit_resume-guidance-activity-7442899187035217920-TWtj>
 
+<https://www.linkedin.com/posts/nimra-khan-fe-dev_atsresume-resumeinvent-atscv-activity-7442597715143868416-SqWQ>
+
 Correct this one thing related to your Resume and get lots of interview calls.
 
 ATS plays a really important role here.
@@ -51,7 +53,50 @@ There are 2 essentials (primary hygiene) & 5 actions to be performed.
  - Include Communication skills (Addressed, Arranged, Awarded etc.)
 
 
+This resume has a high ATS score of 97.
 
+𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝 this from here 👇
+🔗 https://lnkd.in/du75H_gD
+
+I used this for many USA client's resumes and achieved 98% interview results.
+
+———
+Here is a tool i used to create a professional high scored ATS resume in less than 90 seconds.
+ 🔗 https://lnkd.in/dZTcw2_y
+———
+
+Read this quick guide to craft an ATS-friendly resume that stands out!
+
+✔Tips for Writing an ATS-Friendly Resume:
+
+𝐔𝐬𝐞 𝐒𝐭𝐚𝐧𝐝𝐚𝐫𝐝 𝐇𝐞𝐚𝐝𝐢𝐧𝐠𝐬:
+Stick to common headings like "Work Experience," "Education," and "Skills."
+
+𝐊𝐞𝐞𝐩 𝐅𝐨𝐫𝐦𝐚𝐭𝐭𝐢𝐧𝐠 𝐒𝐢𝐦𝐩𝐥𝐞:
+Avoid complex layouts, tables, and graphics that might confuse ATS.
+🔗 https://lnkd.in/d3jk7yd8
+
+𝐈𝐧𝐜𝐨𝐫𝐩𝐨𝐫𝐚𝐭𝐞 𝐊𝐞𝐲𝐰𝐨𝐫𝐝𝐬:
+Use job-specific keywords from the job description to ensure your resume matches the job requirements.
+🔗 https://lnkd.in/dZTcw2_y
+
+𝐔𝐬𝐞 𝐚 𝐏𝐫𝐨𝐟𝐞𝐬𝐬𝐢𝐨𝐧𝐚𝐥 𝐅𝐨𝐧𝐭:
+Stick to fonts like Arial, Times New Roman, or Calibri to ensure readability.
+
+𝐓𝐚𝐢𝐥𝐨𝐫 𝐄𝐚𝐜𝐡 𝐑𝐞𝐬𝐮𝐦𝐞:
+Customize your resume for each job application to match the specific job requirements.
+🔗 https://lnkd.in/dZTcw2_y
+
+Your next move isn’t just a resume.
+It’s your comeback strategy. Let’s make it count.
+
+------
+𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝 𝐓𝐞𝐦𝐩𝐥𝐚𝐭𝐞 𝐰𝐢𝐭𝐡 𝐩𝐡𝐨𝐭𝐨:
+🔗 https://lnkd.in/daHMuFmF
+
+𝐑𝐞𝐯𝐢𝐞𝐰 other 1 & 2 Column Templates:
+🔗 https://lnkd.in/dmaGUq2z
+-------
 
 ### remote job websites
 
