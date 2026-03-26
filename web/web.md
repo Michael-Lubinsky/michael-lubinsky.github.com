@@ -12,6 +12,17 @@
 
 <https://habr.com/ru/articles/1015134/> Web JS API
 
+### lynx
+
+Web search — call lynx from Python using subprocess
+```python
+result = subprocess.run([
+    "lynx", "-dump", "-number_links",
+    "-display_charset=utf-8",
+    f"-useragent={user_agent}",
+    f"https://html.duckduckgo.com/html/?q={encoded_query}"
+], capture_output=True, text=True, timeout=15)
+```
 ### ASGI WSGI Python 
 
 https://habr.com/ru/articles/1003282/
