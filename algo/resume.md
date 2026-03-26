@@ -1,3 +1,58 @@
+## ATS
+
+<https://www.linkedin.com/posts/bigdatabysumit_resume-guidance-activity-7442899187035217920-TWtj>
+
+Correct this one thing related to your Resume and get lots of interview calls.
+
+ATS plays a really important role here.
+
+Let me explain, how to take your ATS score to 100 & get a lot of Interview calls
+
+ATS score from 38 to 100 is practically shown in attached carousel.
+
+Any score above 85 is considered good to get shortlisted.
+
+There are 2 essentials (primary hygiene) & 5 actions to be performed. 
+
+2 Essentials to be taken care primarily
+
+1. Relevant Keywords should be included in Resume
+ - ATS will give interpretations based on Keywords mentioned
+ - Don’t mention too many keywords which makes the reader confusing
+
+2. Resume Formatting should be very clear
+ - Partition your Resume content
+ - Make it Crisp which fits in 1 Page & follow Margin Rule
+
+5 Steps to be actioned
+
+1. Impact
+ - Quantify impact in numbers, highlighting your responsibilities
+(Eg: Reduced data processing time by 25%, Optimising data retrieval by 20% etc.)
+ - Eliminate Weak Verbs
+(Instead of Using Involved in, Organized, Used, Worked etc. Use Achieved, Attained, Completed, Doubled, Reduced, Transformed, Mastered etc.)
+
+2. Brevity/Concise
+ - Bullet points in core section should ideally fall between 12 to 18
+(Remove less relevant points & older points)
+
+3. Style
+ - Remove Buzz words
+(Don’t use words like hardworking, motivated, fast learner etc.)
+ - Don’t use personal pronouns like I, me, mine, myself
+
+4. Section
+ - Summary section is the most important. Ideal length should be 2 sentences with some numbers included
+ - Consistency - Either use Period(.) in all bullets or don’t use it anywhere
+ - File Readability (File name should have your full name which matches your name in resume)
+
+5. Soft Skills
+ - Mention your Analytical skills (Analysed, Designed etc.)
+ - Include Communication skills (Addressed, Arranged, Awarded etc.)
+
+
+
+
 ### remote job websites
 
 1. Remotive
