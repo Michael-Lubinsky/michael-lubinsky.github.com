@@ -28,6 +28,9 @@ Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
 
 <https://www.youtube.com/watch?v=qO-HpEgmd6U>
 
+### Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
+
+<https://www.inference.org.uk/itprnn/book.pdf>  
 <https://videolectures.net/authors/david_mackay>
 
 <https://github.com/ahammadmejbah/Fueling-Ambitions-Via-Book-Discoveries/tree/main>
