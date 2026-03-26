@@ -1,6 +1,9 @@
 ## The **Haversine formula** 
 is a mathematical equation used to calculate the shortest distance between two points on Earth's surface, given their latitude and longitude coordinates. It's named after the haversine function.
 
+
+<img width="800" height="600" alt="image" src="https://github.com/user-attachments/assets/6318d8db-6ea1-4bbb-aaf8-b2f1d1a235af" />
+
 ## Why Do We Need It?
 
 Earth is not flat—it's a sphere (approximately). When you have two GPS coordinates, you can't just use the Pythagorean theorem because:
