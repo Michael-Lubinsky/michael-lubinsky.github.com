@@ -25,6 +25,8 @@ Josh Starmers books
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/> Linear Models
 
+<https://habr.com/ru/articles/1015102/> linear regression
+
 <https://news.ycombinator.com/item?id=47204964>
 
 <https://r2d3.us/visual-intro-to-machine-learning-part-1/>
