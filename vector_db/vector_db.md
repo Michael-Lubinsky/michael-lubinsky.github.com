@@ -1,5 +1,7 @@
 ## Embedding and vector databases
 
+<https://machinelearningmastery.com/vector-databases-explained-in-3-levels-of-difficulty/>
+
 <https://huggingface.co/spaces/hesamation/primer-llm-embedding>
 
 
