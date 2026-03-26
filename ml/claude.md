@@ -1,20 +1,22 @@
 ## Claude
-
+<https://code.claude.com/docs>  
 <https://habr.com/ru/articles/1014278/> 
 
+### CLI
 <https://cc.storyfox.cz/> CLI commands
-
+<https://code.claude.com/docs/en/cli-reference> 
 <https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
- 
-<https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>
+
+## Skills
+<https://www.claudeskills.org/>
+<https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>  
+<https://anthropic.skilljar.com/claude-code-in-action>  
 
 <https://www.youtube.com/watch?v=dn3CuC-2NiI>
 
-<https://anthropic.skilljar.com/claude-code-in-action>  
-<https://code.claude.com/docs>  
-<https://code.claude.com/docs/en/cli-reference> 
-https://habr.com/ru/articles/983214/ 
+<https://habr.com/ru/articles/983214/>
 
+## Agent
 https://habr.com/ru/articles/984160/ Claude Code  Agent  
 
 <https://habr.com/ru/articles/1015252/> Claude Code  Agent 
