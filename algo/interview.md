@@ -17,6 +17,25 @@
 
 <https://www.shadecoder.com/blogs/12-coding-patterns-for-technical-interviews-with-examples-code>
 
+
+
+#### Bloom filter
+
+https://habr.com/ru/companies/ruvds/articles/864354/
+
+#### Алгоритмы поиска путей
+
+https://habr.com/ru/articles/957050/ Binary tree traversing Python
+
+https://habr.com/ru/articles/856138/ Поиск в ширину Bread First Search
+
+https://habr.com/ru/articles/856166/  Алгоритм Дейкстры
+
+https://habr.com/ru/articles/904508/ dejkstra
+
+https://habr.com/ru/articles/849894/ Поиск соседей в двумерном массиве
+
+
 ## LeetCode
 https://algodrill.io/
 
