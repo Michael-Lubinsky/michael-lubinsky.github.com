@@ -34,7 +34,9 @@ Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
 
 <https://www.amazon.com/Guide-Competitive-Programming-Algorithms-Undergraduate/dp/3031617932>
 
+## Type theory
 
+<https://habr.com/ru/articles/758542/>
 
 
 ## Constraint programming PiCat, MiniZinc, etc
