@@ -9,6 +9,9 @@
 
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
+
+<https://habr.com/ru/articles/1015134/> Web JS API
+
 ### ASGI WSGI Python 
 
 https://habr.com/ru/articles/1003282/
