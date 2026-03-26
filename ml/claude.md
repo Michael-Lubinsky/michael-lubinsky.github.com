@@ -1,6 +1,6 @@
 ## Claude
 <https://code.claude.com/docs>  
-<https://habr.com/ru/articles/1014278/> 
+ 
 
 ### CLI
 <https://cc.storyfox.cz/> CLI commands
