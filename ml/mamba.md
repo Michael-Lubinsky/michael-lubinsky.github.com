@@ -9,8 +9,11 @@
 <https://habr.com/ru/articles/1012998/>
 
 
-Quantization
+## Quantization
+
 <https://ngrok.com/blog/quantization>
+
+<https://habr.com/ru/articles/1015510/>
 
 ## ML Engineering
 
