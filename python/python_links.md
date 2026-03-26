@@ -42,6 +42,9 @@ https://realpython.com/python-loguru/  Loguru , also look into structlog
 <https://habr.com/ru/articles/949314/>
 
 ## Python program template
+
+<https://habr.com/ru/companies/graviton/articles/1015460/>
+
 <https://github.com/mameli/python_template>
 
 <https://github.com/tedivm/robs_awesome_python_template>
