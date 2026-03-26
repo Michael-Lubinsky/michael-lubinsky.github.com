@@ -4,6 +4,8 @@
 
 <https://realpython.com/python-mcp/>
 
+<https://habr.com/ru/articles/1015072/>
+
 <https://habr.com/ru/companies/bitrix/articles/1009150/>
 
 <https://news.ycombinator.com/item?id=47380270>
@@ -12,7 +14,7 @@
 
 <https://github.com/punkpeye/awesome-mcp-clients>
 
-https://mcp.so/
+<https://mcp.so/>
 
 <https://habr.com/ru/articles/890740/>
 
