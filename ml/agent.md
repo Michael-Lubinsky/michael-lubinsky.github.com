@@ -102,6 +102,7 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 
 <https://pi.dev/>
 
+<https://lucumr.pocoo.org/2026/1/31/pi/>
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
 
 <https://github.com/can1357/oh-my-pi>
