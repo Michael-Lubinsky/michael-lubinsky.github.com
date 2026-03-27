@@ -93,6 +93,8 @@ Existing tools (like `pybinding`) are:
 
 ## 3. Spintronics Playground (rare niche → high impact)
 
+<img width="850" height="1205" alt="image" src="https://github.com/user-attachments/assets/bb2be10c-3868-4374-aa56-1a67351b1fcc" />
+
 ![Image](https://www.researchgate.net/publication/271904939/figure/fig1/AS%3A867169269186562%401583760673782/Schematic-picture-of-spin-precession-in-a-magnetic-field-as-seen-by-an-e-detector.png)
 
 ![Image](https://www.researchgate.net/profile/Freddy-Haryanto/publication/221913470/figure/fig2/AS%3A305252210364421%401449789206746/Structure-of-GMR-thin-film-a-Sandwich-b-Spin-valve-c-Multilayer-The-GMR.png)
@@ -279,11 +281,8 @@ Tool that:
 
 👉 Harder, but impactful.
 
----
+ 
 
-# 🧭 What I Recommend  
-
-Given your background (data + pipelines + Python):
 
 ### Best project combo:
 
@@ -317,7 +316,7 @@ Why:
 
 ---
 
-# ⭐ Bonus idea (very strong)
+## Bonus idea (very strong)
 
 Build:
 
