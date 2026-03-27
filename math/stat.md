@@ -15,9 +15,9 @@ Statistical Modeling: The Two Cultures. Leo Breiman
 
 ## Bayes
 
-<https://nchagnet.pages.dev/blog/bayesian-statistics-for-confused-data-scientists/>  
-<https://habr.com/ru/articles/895332/> Bayes
-<https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>
+<https://nchagnet.pages.dev/blog/bayesian-statistics-for-confused-data-scientists/>   
+<https://habr.com/ru/articles/895332/>   
+<https://www.tensortonic.com/ml-math/statistics/bayesian-frequentist>  
 
 <https://www.youtube.com/watch?v=XCEpIBqKogo> Bayesian Inference: Overview Steve Brunton
 
@@ -34,7 +34,7 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
-
+## **rejection sampling** 
 we have a function rand7() that generates a uniform random integer in the range [1,7][1, 7].
 
 Write a function rand10() that generates a uniform random integer in the range [1,10][1, 10].
