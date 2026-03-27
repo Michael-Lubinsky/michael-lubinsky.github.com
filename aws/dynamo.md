@@ -4,6 +4,123 @@
 
 <https://death.andgravity.com/dynamodb-model>
 
+
+### Dowmload DynamoDB table as JSONL
+```python
+import sys
+
+import boto3, json
+from boto3.dynamodb.types import TypeDeserializer
+from decimal import Decimal
+from boto3.dynamodb.types import Binary
+
+if len(sys.argv) != 2:
+        print("Usage: python script.py table_name")
+        sys.exit(1)
+
+table_name = sys.argv[1]
+print(f"Argument received: {table_name}")
+
+PROFILE = "xyz"
+REGION = "us-east-1"
+
+session = boto3.Session(region_name=REGION, profile_name=PROFILE) if PROFILE else boto3.Session(region_name=REGION)
+dynamodb = session.client("dynamodb")
+
+
+
+
+deserializer = TypeDeserializer()
+items = []
+last_key = None
+
+fname='export_'+table_name+'.jsonl'
+
+def find_binary_paths(obj, path="$"):
+    paths = []
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            paths += find_binary_paths(v, f"{path}.{k}")
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            paths += find_binary_paths(v, f"{path}[{i}]")
+    else:
+        if isinstance(obj, (Binary, bytes, bytearray)):
+            paths.append(path)
+    return paths
+
+def preview_binary(obj, path="$"):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            preview_binary(v, f"{path}.{k}")
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            preview_binary(v, f"{path}[{i}]")
+    else:
+        if isinstance(obj, Binary):
+            print("Binary at", path, "=", obj.value)
+
+def convert_decimals(obj):
+    """Recursively convert Decimals to int or float."""
+    if isinstance(obj, list):
+        return [convert_decimals(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: convert_decimals(v) for k, v in obj.items()}
+    elif isinstance(obj, Decimal):
+        # Convert to int if no fractional part, else float
+        return int(obj) if obj % 1 == 0 else float(obj)
+    else:
+        return obj
+
+last_key = None
+
+try:
+  table_desc = dynamodb.describe_table(TableName=table_name)
+  key_attrs = [k["AttributeName"] for k in table_desc["Table"]["KeySchema"]]
+  print("Key attributes:", key_attrs)
+
+
+  with open(fname, 'w') as f:
+    while True:
+        params = {'TableName': table_name}
+        if last_key:
+            params['ExclusiveStartKey'] = last_key
+
+        response = dynamodb.scan(**params)
+
+        for item in response['Items']:
+            python_item = {k: deserializer.deserialize(v) for k, v in item.items()}
+            python_item = convert_decimals(python_item)
+            try:
+              f.write(json.dumps(python_item) + '\n')
+            except TypeError as e:
+                # Identify the item by its primary key(s)
+                key_id = {k: python_item.get(k) for k in key_attrs}
+
+                # Find exactly where Binary values are
+                bin_paths = find_binary_paths(python_item)
+
+                print("\nJSON serialization error:", e)
+                print("Offending item keys:", key_id)
+                print("Binary attribute path(s):")
+                for p in bin_paths:
+                    print("  ", p)
+                    preview_binary(p)
+
+                # Optional: stop immediately (so you can inspect)
+                raise
+
+        last_key = response.get('LastEvaluatedKey')
+        if not last_key:
+            break
+
+  print("Export complete:",  fname)
+
+except Exception as e:
+  print("Error", e)
+
+```
+
 ### Streaming
 
 Those three **DynamoDB Stream view types** control *what data images* get written into the stream whenever an item changes.
