@@ -34,9 +34,87 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
+This is a classic **rejection sampling** problem.
+
+---
+
+## 🎯 Idea
+
+Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
+
+### Step 1: Build a bigger uniform range
+
+Call `rand7()` twice:
+
+[
+\text{num} = (rand7() - 1) \times 7 + rand7()
+]
+
+num = (a-1)\cdot 7 + b
+
+This gives a **uniform integer in [1..49]**.
+
+---
+
+## 🔄 Step 2: Rejection sampling
+
+We only want numbers divisible cleanly into 10 buckets.
+
+* Largest multiple of 10 ≤ 49 is **40**
+* So:
+
+  * If `num ≤ 40` → use it
+  * If `num > 40` → reject and retry
+
+---
+
+## 🧮 Step 3: Map to [1..10]
+
+[
+\text{result} = (num - 1) \bmod 10 + 1
+]
+
+result = (num-1) \bmod 10 + 1
+
+---
+
+## ✅ Final Code (Python)
+
+```python
+import random
+
+def rand7():
+    return random.randint(1, 7)
+
+def rand10():
+    while True:
+        num = (rand7() - 1) * 7 + rand7()  # 1..49
+        if num <= 40:
+            return (num - 1) % 10 + 1
+```
+
+---
+
+## 💡 Why this works
+
+* `(rand7(), rand7())` creates **49 equally likely outcomes**
+* We only keep the first 40 → still uniform
+* 40 splits perfectly into 10 groups → each number has equal probability
+
+---
+
+## ⚡ Efficiency
+
+* Acceptance rate = (40 / 49 \approx 81.6%)
+* Very efficient for this problem
+
+---
+ 
 
 
-https://eyal-kazin.medium.com/
+
+
+<https://eyal-kazin.medium.com/>
 
 https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU
 
