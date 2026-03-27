@@ -5,7 +5,7 @@
 <https://death.andgravity.com/dynamodb-model>
 
 
-### Dowmload DynamoDB table as JSONL
+### Download DynamoDB table as JSONL
 ```python
 import sys
 
