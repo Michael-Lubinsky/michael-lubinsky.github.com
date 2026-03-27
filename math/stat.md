@@ -34,6 +34,10 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
+
+we have a function rand7() that generates a uniform random integer in the range [1,7][1, 7].
+
+Write a function rand10() that generates a uniform random integer in the range [1,10][1, 10].
 This is a classic **rejection sampling** problem.
 
 ---
