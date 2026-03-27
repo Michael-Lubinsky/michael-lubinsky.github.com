@@ -1,6 +1,8 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
+
 <https://github.com/luongnv89/claude-howto> 
 
 ### CLI
