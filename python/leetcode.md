@@ -2790,7 +2790,7 @@ URL: https://leetcode.com/problems/kth-smallest-element-in-a-bst/
                                 return inorder_node.val
                          node = inorder_node.right
                  return None
-
+```
 
 
 
@@ -2798,7 +2798,7 @@ URL: https://leetcode.com/problems/kth-smallest-element-in-a-bst/
 Kth Smallest Element in a BST
 
 
-
+```python
   class Solution(object):
       def kthSmallest(self, root, k):
            """
@@ -2843,7 +2843,6 @@ Note: You may assume that duplicates do not exist in the tree.
   #           self.left = None
   #           self.right = None
 
-
   class Solution(object):
        def buildTree(self, inorder, postorder):
             """
@@ -2851,21 +2850,18 @@ Note: You may assume that duplicates do not exist in the tree.
             :type postorder: List[int]
             :rtype: TreeNode
             """
-            return self.create_tree(inorder, 0, len(inorder) -1 , po
-  storder, 0, len(postorder) - 1)
+            return self.create_tree(inorder, 0, len(inorder) -1 , postorder, 0, len(postorder) - 1)
 
 
 
-       def search_divindex(self, inorder, low_inorder, high_inorder
-  , val):
+       def search_divindex(self, inorder, low_inorder, high_inorder, val):
             for i in range(low_inorder, high_inorder+1):
                   if inorder[i] == val:
                       return i
             return -1
 
 
-       def create_tree(self, inorder, low_inorder, high_inorder, po
-  storder, low_postorder, high_postorder):
+       def create_tree(self, inorder, low_inorder, high_inorder, postorder, low_postorder, high_postorder):
             if (low_inorder > high_inorder) or (low_postorder > high
   _postorder):
                   return None
@@ -2874,33 +2870,30 @@ Note: You may assume that duplicates do not exist in the tree.
 
 
                                                                               89
-Construct Binary Tree from Inorder and Postorder Traversal
+# Construct Binary Tree from Inorder and Postorder Traversal
 
 
            root = TreeNode(postorder[high_postorder])
 
 
-           div_index = self.search_divindex(inorder, low_inorder, h
-  igh_inorder, root.val)
+           div_index = self.search_divindex(inorder, low_inorder, high_inorder, root.val)
 
 
            size_left_subtree = div_index - low_inorder
            size_right_subtree = high_inorder - div_index
 
 
-           root.right = self.create_tree(inorder, div_index + 1, hi
-  gh_inorder, postorder,
-                                              high_postorder - size_righ
-  t_subtree, high_postorder - 1)
+           root.right = self.create_tree(inorder,
+                                         div_index + 1,
+                                         high_inorder,
+                                         postorder,
+                                         high_postorder - size_right_subtree, high_postorder - 1)
 
 
-           root.left = self.create_tree(inorder, low_inorder, div_i
-  ndex - 1,
+           root.left = self.create_tree(inorder, low_inorder, div_index - 1,
                                              postorder,
-                                             high_postorder - size_right
-  _subtree - size_left_subtree,
-                                             high_postorder - size_right
-  _subtree - 1)
+                                             high_postorder - size_right_subtree - size_left_subtree,
+                                             high_postorder - size_right_subtree - 1)
 
 
            return root
@@ -2973,10 +2966,6 @@ URL: https://leetcode.com/problems/binary-tree-right-side-view/
                                                            92
 Sum Root to Leaf Numbers
 
-
-
-
-Sum Root to Leaf Numbers
 Given a binary tree containing digits from 0-9 only, each root-to-leaf path could
 represent a number.
 
@@ -3028,8 +3017,7 @@ Return the sum = 12 + 13 = 25.
                 while stack != []:
                    path = stack.pop()
                    current = stack.pop()
-                   if current.left == None and current.right == Non
- e:
+                   if current.left == None and current.right == None:
                         paths.append(int(path))
                    if current.right:
                         rightstr = path + str(current.right.val)
@@ -3173,8 +3161,7 @@ URL: https://leetcode.com/problems/house-robber-iii/
                  right_res = self.rob_max(root.right)
                  result = [0]*2
                  result[0] = root.val + left_res[1] + right_res[1]
-                 result[1] = max(left_res[0], left_res[1]) + max(righ
-  t_res[0], right_res[1])
+                 result[1] = max(left_res[0], left_res[1]) + max(right_res[0], right_res[1])
                  return result
 
 ```
@@ -3498,9 +3485,9 @@ URL: https://leetcode.com/problems/count-univalue-subtrees/
           right = self.count_univalue_subtrees(root.right)
 
 
-          if (left and right) and (root.left == None or root.left.
-  val == root.val) and (root.right == None or root.right.val == ro
-  ot.val):
+          if (left and right) and
+           (root.left == None or root.left.val == root.val) and
+           (root.right == None or root.right.val == root.val):
                 self.__count += 1
                 return True
           else:
@@ -3632,10 +3619,8 @@ undirected-graph/
                 self.addVertex(to)
 
 
-          self.vertDictionary[frm].addNeighbor(self.vertDictionary
-  [to], cost)
-          self.vertDictionary[to].addNeighbor(self.vertDictionary[
-  frm], cost)
+          self.vertDictionary[frm].addNeighbor(self.vertDictionary[to], cost)
+          self.vertDictionary[to].addNeighbor(self.vertDictionary[frm], cost)
 
 
       def getVertices(self):
@@ -3831,8 +3816,7 @@ URL: https://leetcode.com/problems/course-schedule/
 
 
       def __str__(self):
-          return str(self.id) + ' connectedTo: ' + str([x.id for x
-   in self.adjacent])
+          return str(self.id) + ' connectedTo: ' + str([x.id for x in self.adjacent])
 
 
 
@@ -3882,8 +3866,7 @@ URL: https://leetcode.com/problems/course-schedule/
 
 
           from_vertex.add_neighbor(to_vertex, weight)
-          from_vertex.set_outdegree(from_vertex.get_outdegree() +
- 1)
+          from_vertex.set_outdegree(from_vertex.get_outdegree() + 1)
           to_vertex.set_indegree(to_vertex.get_indegree() + 1)
           self.no_edges += 1
 
@@ -3895,8 +3878,7 @@ URL: https://leetcode.com/problems/course-schedule/
                   u_id = u
                   #print(v)
                   v_id = v.get_id()
-                  edges.append((u_id, v_id, self.vertex_dict[u].ge
- t_weight(v)))
+                  edges.append((u_id, v_id, self.vertex_dict[u].get_weight(v)))
           return edges
 
 
@@ -4351,10 +4333,8 @@ URL: https://leetcode.com/problems/course-schedule-ii/
                 self.addVertex(to)
 
 
-          self.vertDictionary[frm].addNeighbor(self.vertDictionary
-  [to], cost)
-          self.vertDictionary[to].setIndegree(self.vertDictionary[
-  to].getIndegree() + 1)
+          self.vertDictionary[frm].addNeighbor(self.vertDictionary[to], cost)
+          self.vertDictionary[to].setIndegree(self.vertDictionary[to].getIndegree() + 1)
 
 
       def getVertices(self):
@@ -4572,8 +4552,7 @@ URL: https://leetcode.com/problems/merge-k-sorted-lists/
                     p.next = heap_item[2]
                     p = p.next
                     if heap_item[2].next != None:
-                           item = (heap_item[2].next.val, heap_item[1],
-   heap_item[2].next)
+                           item = (heap_item[2].next.val, heap_item[1],heap_item[2].next)
                            heapq.heappush(pq, item)
 
 
@@ -4615,8 +4594,7 @@ URL: https://leetcode.com/problems/kth-largest-element-in-an-array/
 
 
                   for j in range(k, len(nums)):
-                      root_element = [entries for entries in heapq.nsm
-  allest(1, heap)][0]
+                      root_element = [entries for entries in heapq.nsmallest(1, heap)][0]
                       index_root_element = heap.index(root_element)
                       if nums[j] > root_element[0]:
                            heap[index_root_element] = (nums[j], j)
@@ -4723,8 +4701,7 @@ URL: https://leetcode.com/problems/two-sum-iii-data-structure-design/
 
        def find(self, value):
             """
-            Find if there exists any pair of numbers which sum is eq
-  ual to the value.
+            Find if there exists any pair of numbers which sum is equal to the value.
             :type value: int
             :rtype: bool
             """
@@ -4819,14 +4796,13 @@ URL: https://leetcode.com/problems/rotate-array/
 Rotate Array
 
 
-
+```python
   class Solution(object):
       def rotate(self, nums, k):
            """
            :type nums: List[int]
            :type k: int
-           :rtype: void Do not return anything, modify nums in-plac
-  e instead.
+           :rtype: void Do not return anything, modify nums in-place instead.
            """
            n = len(nums)
            if n < 2 or k == 0:
@@ -4855,7 +4831,7 @@ URL: https://leetcode.com/problems/rotate-array/
       nums = [1,2,3,4,5,6,7]
       soln.rotate(nums, 3)
       print(nums)
-
+```
 
 
 
@@ -4885,7 +4861,7 @@ URL: https://leetcode.com/problems/3sum-smaller/
 3 Sum Smaller
 
 
-
+```python
  class Solution(object):
       def threeSumSmaller(self, nums, target):
           """
@@ -4902,27 +4878,24 @@ URL: https://leetcode.com/problems/3sum-smaller/
                    start = i + 1
                    end = len(nums) - 1
                    while start < end:
-                        curr_sum = sorted_nums[i] + sorted_nums[star
- t] + sorted_nums[end]
+                        curr_sum = sorted_nums[i] + sorted_nums[start] + sorted_nums[end]
                         if curr_sum == target:
                            end -= 1
                         elif curr_sum < target:
-                           triplet = (sorted_nums[i], sorted_nums[s
- tart], sorted_nums[end])
+                           triplet = (sorted_nums[i], sorted_nums[start], sorted_nums[end])
                            triplet_list.append(triplet)
                            start += 1
                         elif curr_sum > target:
                            end -= 1
                 print(triplet_list)
-                #return len([list(entries) for entries in set(triple
- t_list)])
+                #return len([list(entries) for entries in set(triplet_list)])
                 return len(triplet_list)
 
 
  if __name__ == "__main__":
       soln = Solution()
       print(soln.threeSumSmaller([3,1,0,-2], 4))
-
+```
 
 
 
@@ -4954,7 +4927,7 @@ URL: https://leetcode.com/problems/3sum-closest/
 3 Sum Closest
 
 
-
+```python
   import sys
   class Solution(object):
       def threeSumClosest(self, nums, target):
@@ -4973,8 +4946,7 @@ URL: https://leetcode.com/problems/3sum-closest/
                    start = i + 1
                    end = len(nums) - 1
                    while start < end:
-                        curr_sum = sorted_nums[i] + sorted_nums[star
-  t] + sorted_nums[end]
+                        curr_sum = sorted_nums[i] + sorted_nums[start] + sorted_nums[end]
                         diff = abs(curr_sum - target)
                         if diff == 0:
                              return curr_sum
@@ -4994,7 +4966,7 @@ URL: https://leetcode.com/problems/3sum-closest/
       soln = Solution()
       print(soln.threeSumClosest([-1, 2, 1, -4], 1))
       print(soln.threeSumClosest([-1, 2, 1, -4], 3))
-
+```
 
 
 
@@ -5029,7 +5001,7 @@ URL: https://leetcode.com/problems/3sum/
 3 Sum
 
 
-
+```python
  class Solution(object):
         def threeSum(self, nums):
            """
@@ -5048,8 +5020,7 @@ URL: https://leetcode.com/problems/3sum/
                         curr_sum = sorted_nums[i] + sorted_nums[star
  t] + sorted_nums[end]
                         if curr_sum == 0:
-                             zero_triplet = (sorted_nums[i], sorted_n
- ums[start], sorted_nums[end])
+                             zero_triplet = (sorted_nums[i], sorted_nums[start], sorted_nums[end])
                              sum_zero_list.append(zero_triplet)
                              start += 1
                              end -= 1
@@ -5059,14 +5030,13 @@ URL: https://leetcode.com/problems/3sum/
                              end -= 1
 
 
-                 return [list(entries) for entries in set(sum_zero_li
- st)]
+                 return [list(entries) for entries in set(sum_zero_list)]
 
 
  if __name__ == "__main__":
         soln = Solution()
         print(soln.threeSum([-1, 0, 1, 2, -1, -4]))
-
+```
 
 
 
@@ -5088,7 +5058,7 @@ Because nums[0] + nums[1] = 2 + 7 = 9, return [0, 1].
 
 URL: https://leetcode.com/problems/two-sum/
 
-
+```python
   class Solution(object):
        def twoSum(self, nums, target):
             """
@@ -5102,7 +5072,7 @@ URL: https://leetcode.com/problems/two-sum/
                   if target-x in dict:
                        return (dict[target-x], i)
                   dict[x] = i
-
+```
 
 
 
@@ -5120,7 +5090,7 @@ The digits are stored such that the most significant digit is at the head of the
 
 URL: https://leetcode.com/problems/plus-one/
 
-
+```python
   class Solution(object):
        def plusOne(self, digits):
             """
@@ -5149,7 +5119,7 @@ URL: https://leetcode.com/problems/plus-one/
                        return new_digits[::-1]
                   else:
                        return new_digits[::-1]
-
+```
 
 
 
@@ -5181,7 +5151,7 @@ In this case, no transaction is done, i.e. max profit = 0.
 
 URL: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
-
+```python
   class Solution(object):
          def maxProfit(self, prices):
             """
@@ -5200,7 +5170,7 @@ URL: https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
 
 
                   return max_profit
-
+```
 
 
 
@@ -5232,7 +5202,7 @@ URL: https://leetcode.com/problems/shortest-word-distance/
 Shortest Word Distance
 
 
-
+```python
   import sys
   class Solution(object):
       def shortestDistance(self, words, word1, word2):
@@ -5265,7 +5235,7 @@ URL: https://leetcode.com/problems/shortest-word-distance/
 
 
           return min_dist
-
+```
 
 
 
@@ -5287,7 +5257,7 @@ total number of operations.
 
 URL:https://leetcode.com/problems/move-zeroes/
 
-
+```python
   class Solution(object):
         def moveZeroes(self, nums):
              """
@@ -5311,7 +5281,7 @@ URL:https://leetcode.com/problems/move-zeroes/
              while i < len(nums):
                    nums[i] = 0
                    i += 1
-
+```
 
 
 
@@ -5328,7 +5298,7 @@ and j is at most k.
 
 URL: https://leetcode.com/problems/contains-duplicate-ii/
 
-
+```python
   class Solution(object):
        def containsNearbyDuplicate(self, nums, k):
             """
@@ -5357,7 +5327,7 @@ URL: https://leetcode.com/problems/contains-duplicate-ii/
                                 return True
                         index_dict[nums[i]] = i
                   return False
-
+```
 
 
 
