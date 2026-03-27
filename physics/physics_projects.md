@@ -30,9 +30,7 @@ Most tools are:
 * either too academic (Matlab scripts)
 * or too black-box (no intuition)
 
-### Your edge
-
-You can build:
+ can build:
 
 * backend: Python (NumPy, PyTorch)
 * frontend: lightweight React or pure JS + plotting
@@ -87,7 +85,7 @@ Existing tools (like `pybinding`) are:
 * heavy
 * not beginner-friendly
 
-👉 You can build a **clean, minimal API** (your strength)
+👉 You can build a **clean, minimal API**
 
 ---
 
@@ -153,11 +151,9 @@ Not competing with big frameworks — instead:
 
 ---
 
-## 5. “Physics Data Pipeline” Toolkit (this fits YOU perfectly)
+## 5. “Physics Data Pipeline” Toolkit
 
 ### Idea
-
-Bring your **data engineering expertise** into physics:
 
 Pipeline:
 
@@ -187,7 +183,7 @@ Most physics code:
 
 ---
 
-## 6. ONNX for Physics Models (very aligned with your interest)
+## 6. ONNX for Physics Models 
 
  
 
@@ -269,7 +265,7 @@ Tool that:
 
 ### Contribution ideas
 
-* integrations (ONNX 👈 your angle)
+* integrations (ONNX)
 * data pipeline improvements
 * benchmarking tools
 
@@ -293,7 +289,6 @@ Why:
 * niche → less competition
 * high educational value
 * can evolve into serious research tool
-* aligns with your backend/data strengths
 
 ---
 
@@ -338,7 +333,7 @@ simulate spin --B 1,0,0 --T2 10 --time 100
 ### Quantum Mechanics
 
 **1. Interactive Schrödinger Equation Solver with Modern UI**
-A web-based tool (FastAPI + React or Datastar/HTMX, given your recent interest) that lets users draw arbitrary 1D/2D potentials and solve the time-dependent or time-independent Schrödinger equation numerically — with real-time animation. NumPy/SciPy for the numerics, rendered via canvas or WebGL. The gap here is that most existing solvers are Jupyter notebooks or CLI tools. A polished, shareable web app would be genuinely useful for students and educators.
+A web-based tool (FastAPI + React or Datastar/HTMX, that lets users draw arbitrary 1D/2D potentials and solve the time-dependent or time-independent Schrödinger equation numerically — with real-time animation. NumPy/SciPy for the numerics, rendered via canvas or WebGL. The gap here is that most existing solvers are Jupyter notebooks or CLI tools. A polished, shareable web app would be genuinely useful for students and educators.
 
 **2. Tight-Binding Model Explorer**
 A Python library + interactive dashboard for building and visualizing tight-binding Hamiltonians on arbitrary lattices (square, honeycomb, kagome, etc.). Computes band structures, density of states, Berry curvature, and Chern numbers. You'd leverage PySpark/Dask for parameter sweeps across thousands of configurations (think materials screening). Nothing in this space has great UX — most are research scripts.
@@ -352,11 +347,11 @@ Useful for researchers prototyping variational quantum eigensolver (VQE) experim
 ### Solid State Physics
 
 **4. Band Structure + Fermi Surface Visualizer (ML-accelerated)**
-Wrap an existing DFT code (GPAW or ASE) with a Python backend that caches results in a vector store and uses an ML surrogate model to interpolate band structures for nearby crystal structures — dramatically reducing compute. Your MLOps background is directly applicable here.   
+Wrap an existing DFT code (GPAW or ASE) with a Python backend that caches results in a vector store and uses an ML surrogate model to interpolate band structures for nearby crystal structures — dramatically reducing compute.    
 The output: a web app where materials scientists can explore band structures interactively.
 
 **5. Phonon Dispersion + Thermal Properties Pipeline**
-Using ASE (Atomic Simulation Environment) + Phonopy, build an automated pipeline that takes a crystal structure file (CIF), computes force constants via finite differences, and produces phonon dispersion curves, heat capacity, and thermal conductivity — packaged as a CLI tool + REST API. Your pipeline architecture experience maps directly.
+Using ASE (Atomic Simulation Environment) + Phonopy, build an automated pipeline that takes a crystal structure file (CIF), computes force constants via finite differences, and produces phonon dispersion curves, heat capacity, and thermal conductivity — packaged as a CLI tool + REST API.  
 
 
 ### Spintronics
