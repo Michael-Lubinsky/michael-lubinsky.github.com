@@ -1,7 +1,10 @@
 ## ML System Design
 
+Data Engineering for Large Models: Architecture, Algorithms & Projects
+<https://datascale-ai.github.io/data_engineering_book/en/>
+
 How to train LLM
-<https://media.licdn.com/dms/document/media/v2/D4E1FAQH1F9YhZuoqCw/feedshare-document-url-metadata-scrapper-pdf/B4EZznNEf1JEBA-/0/1773405499139?e=1774062000&v=beta&t=hgYqIObx6B4XVa24-_9dHVzC-8wWy4pTyADRaY_-k-g>
+<https://media.licdn.com/dms/document/media/v2/D4E1FAQH1F9YhZuoqCw/feedshare-document-url-metadata-scrapper-pdf/B4EZznNEf1JEBA-/0/1773405499139>
 
 <https://jax-ml.github.io/scaling-book/>
 
