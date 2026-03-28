@@ -1,3 +1,7 @@
+
+<https://www.youtube.com/watch?v=R8h_gpSpEVU> 
+Deploying AI Models with Hugging Face – Hands-On Course
+
 <https://arxiv.org/pdf/2403.04807> Math of NN
 
 <https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
