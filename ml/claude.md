@@ -5,6 +5,8 @@
 
 <https://github.com/luongnv89/claude-howto> 
 
+<https://medium.com/data-science-collective/how-to-build-claude-skills-2-0-better-than-99-of-people-af4927dd5335>
+
 ### CLI
 <https://cc.storyfox.cz/> CLI commands  
 <https://code.claude.com/docs/en/cli-reference>   
