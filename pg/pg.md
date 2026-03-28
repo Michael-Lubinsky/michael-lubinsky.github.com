@@ -21,6 +21,8 @@
 
 <https://habr.com/ru/companies/postgrespro/articles/1001194/>
 
+<https://edu.postgrespro.ru/qptbook-16.pdf>
+
 что отличает PostgreSQL от многих других СУБД: всего три уровня изоляции:
 
     - Read Uncommitted / Read Committed — для PostgreSQL это одно и то же. Грязного чтения нет в принципе.
