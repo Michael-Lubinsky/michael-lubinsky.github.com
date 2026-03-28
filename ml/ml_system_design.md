@@ -3,6 +3,8 @@
 Data Engineering for Large Models: Architecture, Algorithms & Projects
 <https://datascale-ai.github.io/data_engineering_book/en/>
 
+<https://www.ssp.sh/brain/data-engineering/>
+
 How to train LLM
 <https://media.licdn.com/dms/document/media/v2/D4E1FAQH1F9YhZuoqCw/feedshare-document-url-metadata-scrapper-pdf/B4EZznNEf1JEBA-/0/1773405499139>
 
