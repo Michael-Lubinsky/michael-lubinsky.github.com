@@ -5,6 +5,10 @@
 <https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
 ## Declarative Pipeline
 <https://www.waitingforcode.com/apache-spark-structured-streaming/spark-declarative-pipelines-101/read>
+
+<https://medium.com/apache-spark/declarative-pipelining-in-apache-spark-part-1-focus-on-your-data-not-your-dags-553a1056d178>
+
+
 ## DataSource API
 
 https://github.com/allisonwang-db/awesome-python-datasources
