@@ -4,6 +4,8 @@
 
 <https://mlbenchmarks.org/>
 
+<https://www.packtpub.com/en-us/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803245423>
+
 <https://medium.com/advanced-deep-learning>
 
 <https://habr.com/ru/articles/1012998/>
