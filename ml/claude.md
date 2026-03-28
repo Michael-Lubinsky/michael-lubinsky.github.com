@@ -139,3 +139,38 @@ Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-out
 <img width="1166" height="1176" alt="image" src="https://github.com/user-attachments/assets/33ca876d-8246-4a60-8efb-2691b12d0184" />
 
 <img width="483" height="428" alt="image" src="https://github.com/user-attachments/assets/66c1407f-b0e6-4ef6-a4cd-7173bdd0ae6e" />
+
+→ Всегда используй режим plan, давай Claude способ проверить результат
+→ Попроси Claude провести с тобой интервью через инструмент AskUserQuestion
+→ Используй Git Worktrees для параллельной разработки
+→ /loop — планируй повторяющиеся задачи до 3 дней
+→ Code Review — новые контекстные окна находят баги, которые пропустил исходный агент
+→ /btw — побочные цепочки диалога, пока Claude работает
+→ Делай поэтапные планы с «гейтами» и тестами для каждого этапа
+→ Используй cross-model (Claude Code + Codex) для ревью плана
+→ CLAUDE.md должен быть меньше 200 строк на файл
+→ Используй команды для workflow вместо саб-агентов
+→ Делай узкоспециализированных саб-агентов с конкретными навыками, а не универсальных QA или backend-инженеров
+→ Обычный Claude Code лучше сложных workflow для небольших задач
+→ Делай скриншоты и отправляй Claude, если застрял
+→ Используй MCP, чтобы Claude видел логи консоли Chrome
+→ Попроси Claude запускать терминал как фоновую задачу для лучшей отладки
+→ Используй cross-model для QA — например, Codex для проверки плана и реализации
+Включённые community workflow:
+→ Cross-Model (Claude Code + Codex) Workflow
+→ RPI (Research Plan Implement)
+→ Ralph Wiggum Loop для автономных задач
+→ Github Speckit (74K звёзд)
+→ obra/superpowers (72K звезды)
+→ OpenSpec OPSX (28K звёзд)
+Ключевые вопросы на миллиард долларов:
+→ Что должно быть внутри CLAUDE.md?
+→ Когда использовать command vs agent vs skill?
+→ Почему Claude игнорирует инструкции из CLAUDE.md?
+→ Можно ли превратить кодовую базу в спецификации и пересоздать код только из них?
+Ежедневные привычки:
+→ Обновляй Claude Code каждый день
+→ Начинай день с чтения changelog
+→ Следи за r/ClaudeAI и r/ClaudeCode на Reddit
+
+<https://github.com/shanraisshan/claude-code-best-practice>
