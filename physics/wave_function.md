@@ -869,3 +869,94 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
 [3]: https://docs.scipy.org/doc/scipy/reference/generated/scipy.sparse.linalg.eigsh.html?utm_source=chatgpt.com "eigsh — SciPy v1.17.0 Manual"
 [4]: https://qutip.readthedocs.io/en/latest/apidoc/solver.html?utm_source=chatgpt.com "Dynamics and Time-Evolution — QuTiP 5.2 Documentation"
 
+
+## Some new features for this application
+
+⏺ Here are feature ideas grouped by category, ordered roughly
+  by value vs effort:
+
+  ---
+  High value, moderate effort
+
+  1. Expectation values panel
+  Show ⟨x⟩, ⟨x²⟩, ⟨p⟩, ⟨p²⟩, ⟨H⟩ as functions of time during
+  evolution. Directly observable physics, easy to compute from
+   existing psi_frames. ⟨p⟩ can be computed via finite
+  differences on ψ.
+
+  2. Probability current j(x,t)
+  j = Im(ψ* ∂ψ/∂x). Animate alongside |ψ|² to show where
+  probability is flowing. Very illuminating for tunneling and
+  scattering cases.
+
+  3. Momentum-space view
+  Show |φ(k,t)|² = |FFT(ψ)|² alongside the position-space
+  plot. Reveals wave-packet spreading in k-space,
+  complementary to x-space view.
+
+  4. Superposition of eigenstates as initial state
+  Let the user pick coefficients c₁, c₂, c₃ for ψ₀ = Σ cₙψₙ.
+  Right now only Gaussian initial states are supported. This
+  would let users build Schrödinger cat states, observe beats,
+   etc.
+
+  ---
+  High value, low effort
+
+  5. Uncertainty principle display
+  Compute Δx·Δp = √(⟨x²⟩-⟨x⟩²) · √(⟨p²⟩-⟨p⟩²) and show it
+  alongside the Heisenberg bound ½. Directly connects to
+  pedagogy.
+
+  6. Download plot as PNG
+  Plotly already has a built-in camera-icon toolbar button —
+  just enable it. Zero backend work.
+
+  7. Shareable URL for time-evolution params
+  URL state is already implemented for stationary mode. Extend
+   it to time-evolution params (x0, sigma, k0, dt, n_steps).
+
+  ---
+  Medium value, higher effort
+
+  8. Side-by-side mode
+  Show two runs simultaneously with different parameters (e.g.
+   different σ or different potential) for direct visual
+  comparison. Good for exploring how parameters affect
+  dynamics.
+
+  9. Custom potential drawing
+  Let the user draw V(x) with a mouse on the plot canvas.
+  Converts drawn curve to an array, bypasses the expression
+  parser entirely. Very appealing for exploratory use.
+
+  10. Finite square well: transmission/reflection coefficients
+  For scattering potentials (step, barrier), compute T and R
+  analytically from the numerical wavefunction at the
+  boundaries after the packet has passed. Show alongside the
+  animation.
+
+  ---
+  Lower priority / longer term
+
+  11. 2D solver — already noted in CLAUDE.md as post-MVP. Grid
+   abstraction is designed for this.
+
+  12. Energy spectrum plot — for parametric exploration, plot
+  E_n vs a parameter (e.g. well width L or barrier height V₀).
+   Requires repeated solves but could be done with a sweep
+  endpoint.
+
+  13. Export animation as GIF/MP4 — useful for papers and
+  presentations. Requires a server-side rendering step
+  (matplotlib animation or similar).
+
+  ---
+  My top 3 recommendations for JOSS readiness
+
+  1. Expectation values — makes the tool scientifically
+  quantitative, not just visual
+  2. Momentum-space view — standard physics pedagogy, very
+  little backend work (just FFT)
+  3. Superposition initial state — unlocks a much richer class
+   of experiments
