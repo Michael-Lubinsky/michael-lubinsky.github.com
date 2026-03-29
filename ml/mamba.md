@@ -4,6 +4,9 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://arxiv.org/pdf/2403.04807> Math of NN
 
+<https://udlbook.github.io/udlbook/>
+
+
 <https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
 
 <https://github.com/girafe-ai/ml-course>
