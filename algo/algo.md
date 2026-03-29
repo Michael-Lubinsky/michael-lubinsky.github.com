@@ -2,6 +2,8 @@
 
 <https://ru.algorithmica.org/>
 
+<https://habr.com/ru/articles/985292/>
+
 <https://cleveralgorithms.com/>
 
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
