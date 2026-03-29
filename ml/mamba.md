@@ -6,6 +6,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
 
+<https://github.com/girafe-ai/ml-course>
+
 <https://mlbenchmarks.org/>
 
 <https://www.manning.com/books/grokking-ai-algorithms-second-edition>
