@@ -512,6 +512,36 @@ Production level insights.
 https://lnkd.in/dvSmYrtc
 
 
+1. All algorithms implemented in Python (219k ⭐)
+https://lnkd.in/g_D3CFf2
+
+2. Machine Learning for beginners by Microsoft (84k ⭐)
+https://lnkd.in/g9FnWuaM
+
+3. Prompt Engineering guide (72k ⭐)
+https://lnkd.in/g6qkJxrC
+
+4. 60+ implementations of Deep Learning papers (66k ⭐)
+https://lnkd.in/gr_Yw7_g
+
+5. AI Agents for Beginners by Microsoft (54k ⭐)
+https://lnkd.in/gbC7yJ2H
+
+6. 100 days of ML coding (50k ⭐)
+https://lnkd.in/gu4Auz33
+
+7. Made with ML (47k ⭐)
+https://lnkd.in/ggG3mbv8
+
+8. RAG techniques (26k ⭐)
+https://lnkd.in/gjr7UEbE
+
+9. Generative AI Agent techniques (21k ⭐)
+https://lnkd.in/gq-c7URx
+
+10. Neural Networks: Zero to Hero (21k ⭐)
+https://lnkd.in/gnusqKFa
+
 ### Feature store
 https://asrathore08.medium.com/feature-store-architecture-1324eff5a573
 
