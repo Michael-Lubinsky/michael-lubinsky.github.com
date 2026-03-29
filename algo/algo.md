@@ -6,6 +6,8 @@
 
 <https://cleveralgorithms.com/>
 
+<https://thealgorithms.github.io/Python/>
+
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
 <https://arxiv.org/pdf/2301.00754> Algos for Massive Data
