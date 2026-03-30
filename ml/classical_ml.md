@@ -4,6 +4,8 @@
 
 <https://www.linkedin.com/pulse/how-linear-classifier-gets-993-mnist-without-learning-taras-tsugrii-1cruc/>
 
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvZA-AvUKhB1lcV1kDaamFgY>
+
 <https://habr.com/ru/articles/804605/>
 
 <https://habr.com/ru/articles/926398/>
