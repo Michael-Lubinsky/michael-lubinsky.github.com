@@ -2,6 +2,10 @@
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
 Deploying AI Models with Hugging Face – Hands-On Course
 
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvbG5NvYYsdc6eDxnAx7l_S1>
+
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvbilBzNF9oxW8VVMXTFyjsn>
+
 <https://arxiv.org/pdf/2403.04807> Math of NN
 
 <https://udlbook.github.io/udlbook/>
