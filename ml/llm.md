@@ -1,5 +1,7 @@
 ### LLM 
 
+<https://www.llm-visualized.com/>
+
 <https://sebastianraschka.com/llm-architecture-gallery/>
 <https://habr.com/ru/articles/1011784/>  LLM architecture gallery
 
