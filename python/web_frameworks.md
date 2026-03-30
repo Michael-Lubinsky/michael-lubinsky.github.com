@@ -4,6 +4,8 @@ https://pybit.es/articles/django-plugin-recommendations-by-antonio-mele-top-10-p
 
 https://vizro.readthedocs.io/en/stable/
 
+https://habr.com/ru/articles/1017036/ REST for Django
+
 ### Where to host python WebApp
 https://www.reddit.com/r/Python/comments/1llwhzr/where_are_people_hosting_their_python_web_apps/
 
