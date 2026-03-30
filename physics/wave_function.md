@@ -1,21 +1,11 @@
-
-
-## Why I Suggested Schrödinger
-
-The reason is mostly **pedagogical/visual pragmatism**, not physics preference:
+## Schrödinger Solver
 
 The wavefunction ψ(x,t) is a **spatial field** — you can plot it, 
 animate its time evolution inside a potential well, show |ψ|² as a probability density in real-time.  
 Users can literally draw a potential V(x) with their mouse and watch the eigenstates appear.  
 That maps naturally to an interactive UI.  
 
-It's the more **visually obvious** choice. 
-
-## What's Actually True Physically
-
-The two formulations are **mathematically equivalent** — Dirac proved this.
-They're related by a unitary transformation:
-
+ 
 - **Schrödinger picture**: states |ψ(t)⟩ evolve, operators Ô are static
 - **Heisenberg picture**: states are frozen, operators Ô(t) carry all time dependence, governed by the equation of motion: dÔ/dt = (i/ℏ)[H, Ô]
 
@@ -224,9 +214,7 @@ Stacked tabs:
 
 This is the most important design choice.
 
-## My recommendation
-
-For MVP:
+## My recommendation For MVP:
 
 > Use **finite difference** as the primary solver.
 
@@ -501,7 +489,6 @@ Use Pydantic models like:
 
 This will keep frontend/backend contracts clean.
 
----
 
 ## 11. Suggested numerical core layout
 
@@ -853,9 +840,7 @@ Those can wait.
 
 ---
 
-## 19. Best MVP tagline
-
-You could position it as:
+## 19. Best MVP tagline - You could position it as:
 
 > **Interactive Schrödinger Studio**
 > Explore 1D quantum systems with live potentials, eigenstates, and wave-packet dynamics.
@@ -960,6 +945,80 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   little backend work (just FFT)
   3. Superposition initial state — unlocks a much richer class
    of experiments
+
+
+
+
+## is it good idea to implement schrodinger equation solution for hydrogen atom?
+
+⏺ It's a natural next step scientifically, but it's a much larger jump than it appears. Here's an
+  honest assessment:
+
+  Why it's appealing
+
+  - Hydrogen is the canonical quantum mechanics problem
+  - Exact analytic solution exists (Bohr energies Eₙ = -13.6 eV / n²) — great for validation
+  - Would make the tool genuinely useful for chemistry/atomic physics courses
+  - Strong JOSS paper story: "from 1D toy problems to real atoms"
+
+  Why it's hard
+
+  It's fundamentally a 3D problem.
+  The full hydrogen atom lives in 3D. The standard simplification exploits spherical symmetry to
+  reduce it to a 1D radial equation for each (n, l) pair:
+
+  -½ d²u/dr² + [l(l+1)/2r² - 1/r] u = E·u
+
+  where u(r) = r·R(r). This is solvable as a 1D problem — but it's a different 1D problem with a
+  singular potential at r=0 and a semi-infinite domain [0, ∞).
+
+  The current infrastructure doesn't handle this without changes:
+  - Grid is uniform on [x_min, x_max] — needs r ∈ [0, ∞), truncated at some r_max
+  - Boundary condition at r=0 is u(0)=0 (already Dirichlet, OK), but the 1/r singularity at the
+  origin causes numerical problems with uniform grids
+  - The 1/r² centrifugal term diverges at r=0 for l > 0
+  - Need to solve for multiple (n,l) pairs and reconstruct the full orbital
+
+  Visualization is a new problem entirely.
+  - Radial wavefunctions R(r) are 1D and easy to plot
+  - But users expect to see hydrogen orbitals — the 3D shapes (s, p, d orbitals)
+  - Rendering |ψ(r,θ,φ)|² in 3D requires volume rendering or isosurface plots — a completely
+  different visualization stack than what you have
+
+  CLAUDE.md explicitly defers 2D (let alone 3D).
+  The 3D orbital visualization would be a substantial new frontend capability.
+
+  What's actually feasible now
+
+  A radial hydrogen solver — solve the 1D radial equation for given (n, l), plot u(r) and R(r),
+  compare energies to Eₙ = -1/(2n²) in atomic units. This is:
+
+  - A new potential preset: V_eff(r) = -1/r + l(l+1)/(2r²)
+  - A new grid type: semi-infinite [r_min, r_max] with small r_min (e.g. 0.01) to avoid the
+  singularity
+  - Validation against exact Bohr energies
+
+  This is realistic without touching the 3D visualization problem at all.
+
+  Verdict
+
+  ┌───────────────────────────────────┬──────────────────────────────┬────────────────────────┐
+  │               Scope               │            Effort            │         Value          │
+  ├───────────────────────────────────┼──────────────────────────────┼────────────────────────┤
+  │ Full 3D hydrogen with orbital     │ Very high — new renderer     │ High, but scope creep  │
+  │ viewer                            │                              │                        │
+  ├───────────────────────────────────┼──────────────────────────────┼────────────────────────┤
+  │ Radial equation only, plot R(r)   │ Moderate — grid +            │ Good validation story  │
+  │                                   │ singularity handling         │                        │
+  ├───────────────────────────────────┼──────────────────────────────┼────────────────────────┤
+  │ Just add -1/r as a custom         │ Low — already works today!   │ Limited (singularity   │
+  │ potential expression              │                              │ issues)                │
+  └───────────────────────────────────┴──────────────────────────────┴────────────────────────┘
+
+  My recommendation: don't make it a dedicated feature yet. First finish the features that make
+  the existing 1D solver publication-ready (expectation values, Ehrenfest, momentum space). The
+  radial hydrogen solver is a good v0.2 milestone once JOSS submission is done.
+
 
 
 
