@@ -16,6 +16,8 @@ Fast Causal Inference (FCI)
 
 <https://arxiv.org/pdf/2305.10032>
 
+<https://nothing-so-practical.com/post/causal-inference-is-easy/>
+
 ### Collider
 
 <https://habr.com/ru/articles/1014586/>
