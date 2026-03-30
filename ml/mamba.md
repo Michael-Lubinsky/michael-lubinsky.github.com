@@ -11,6 +11,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://github.com/girafe-ai/ml-course>
 
+<https://github.com/dreddnafious/thereisnospoon/blob/main/ml-primer.md>
+
 <https://mlbenchmarks.org/>
 
 <https://www.manning.com/books/grokking-ai-algorithms-second-edition>
