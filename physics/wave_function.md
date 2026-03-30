@@ -1020,6 +1020,27 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   radial hydrogen solver is a good v0.2 milestone once JOSS submission is done.
 
 
+  Recommended Order
+
+  ┌───────┬────────────────────────────────────┬───────────────────────────────────────────┐
+  │ Phase │                Work                │                    Why                    │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 1     │ README + installation instructions │ Reviewers start here                      │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 2     │ Expectation values + Ehrenfest     │ Core paper figure                         │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 3     │ Momentum-space view                │ Second paper figure                       │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 4     │ Uncertainty tracker                │ Ties everything together                  │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 5     │ Frontend tests                     │ Reviewer checklist                        │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 6     │ paper.md first draft               │ Can iterate, but start early              │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 7     │ CONTRIBUTING.md                    │ Quick to write                            │
+  ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
+  │ 8     │ Final validation table in paper    │ Use existing exact-solution panel results │
+  └───────┴────────────────────────────────────┴───────────────────────────────────────────┘
 
 
 ## Claude CLI - How To
