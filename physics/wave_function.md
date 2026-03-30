@@ -960,3 +960,440 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   little backend work (just FFT)
   3. Superposition initial state — unlocks a much richer class
    of experiments
+
+
+
+## Claude CLI - How To
+
+Good timing to think about this before starting — how you communicate with Claude Code determines the quality of what gets built significantly more than the specific prompts.
+
+## The Core Principle
+
+Claude Code works best when it has **maximal context upfront and minimal ambiguity about decisions already made**. The enemy is Claude making architectural choices you didn't intend, which then get baked into 500 lines of code you have to undo.
+
+---
+
+## Step 1: Write a CLAUDE.md Before Anything Else
+
+Create a `CLAUDE.md` file in your project root before the first session. Claude Code reads this automatically as persistent context. Put everything you've already decided in it:
+
+```markdown
+# Schrödinger Solver — Project Context
+
+## What this is
+A 1D quantum mechanics solver with browser UI.
+Target: JOSS publication eventually.
+
+## Decisions already made (do not revisit)
+- Time evolution: Crank-Nicolson only for MVP
+- Units: atomic units (ħ = m_e = 1)
+- Boundary conditions: Dirichlet (ψ = 0 at walls) for MVP
+- Grid abstraction must be dimension-agnostic (path to 2D)
+- Backend: FastAPI + Python
+- Frontend: React + TypeScript
+- Animation: precomputed frames for MVP, SSE streaming later
+- Expression parser: asteval or sympy restricted namespace — never eval()
+
+## Validation requirements
+Every solver must pass these before being considered done:
+- Infinite square well: E_n = n²π²/2L² in atomic units
+- Harmonic oscillator: E_n = n + 1/2
+- Norm conservation: ||ψ(t)||² stays within 1e-6 of 1.0
+
+## Primary user
+Explorer — someone varying parameters and comparing results.
+Not a pure tutorial tool.
+
+## What NOT to build yet
+- 2D solver
+- SSE streaming
+- Absorbing boundary conditions
+- GPU acceleration
+```
+
+This file saves you from re-explaining context every session and stops Claude from "helpfully" making decisions you've already settled.
+
+---
+
+## Step 2: Use a Spec File Per Feature
+
+Don't describe features in chat. Write a short spec file and tell Claude to implement it:
+
+```
+implement the spec in specs/01-grid-abstraction.md
+```
+
+The spec file might look like:
+
+```markdown
+# Grid Abstraction
+
+## Goal
+A Grid class that the Hamiltonian builder accepts.
+Must work for 1D now, extensible to 2D without interface change.
+
+## Interface
+Grid(n_points, x_min, x_max) 
+- .x  → ndarray of spatial coordinates
+- .dx → grid spacing
+- .n  → number of points
+- .shape → tuple (n,) in 1D, (nx, ny) in 2D later
+
+## Tests required
+- Grid(100, -10, 10).dx == 20/99
+- Grid(100, -10, 10).shape == (100,)
+- x array is monotonically increasing
+
+## Do not implement
+- Any Hamiltonian logic in this file
+```
+
+This pattern — **spec file → implement → review** — is far more reliable than conversational back-and-forth.
+
+---
+
+## Step 3: Session Structure
+
+Each Claude Code session should have a clear, single objective. Don't do this:
+
+```
+build the backend solver and also add the frontend and hook them up
+```
+
+Do this instead, across separate sessions:
+
+```
+Session 1: Grid + Hamiltonian builder + tests
+Session 2: Crank-Nicolson stepper + tests  
+Session 3: FastAPI endpoints + validation
+Session 4: React scaffold + Plotly integration
+Session 5: Wire frontend to backend
+```
+
+At the start of each session, Claude Code will re-read `CLAUDE.md` automatically. You can also say:
+
+```
+read CLAUDE.md and specs/02-hamiltonian.md before starting
+```
+
+---
+
+## Step 4: Review Checkpoints — Don't Let It Run Too Long
+
+Claude Code can generate a lot of code quickly. The danger is that wrong decisions compound. Use the `/review` pattern:
+
+```
+stop after implementing the Grid class. 
+show me the interface before writing the Hamiltonian builder.
+```
+
+Then inspect and approve before continuing. For numerical code especially, **ask it to show you the tests before the implementation**:
+
+```
+write the tests for the Crank-Nicolson stepper first, 
+then implement until the tests pass
+```
+
+Test-first is the single most effective pattern for getting correct numerical code from Claude Code.
+
+---
+
+## Step 5: Be Explicit About What "Done" Means
+
+Claude Code will stop when it thinks something is done. Define done explicitly:
+
+```
+this task is complete when:
+- pytest passes with no warnings
+- the infinite square well ground state energy is within 0.1% of π²/2
+- there are no bare except clauses
+- no eval() or exec() anywhere in the codebase
+```
+
+---
+
+## Practical Commands to Know
+
+```bash
+# Start a session with context
+claude --context CLAUDE.md
+
+# Ask it to only touch specific files
+claude "implement the Grid class in src/core/grid.py only"
+
+# Have it explain before doing (good for complex numerical parts)
+claude "explain how you will implement Crank-Nicolson 
+        before writing any code"
+
+# Useful for reviewing what it built
+claude "summarize all public interfaces you just created"
+```
+
+---
+
+## The Meta-Advice
+
+Claude Code is very good at **implementing a clear spec** and quite unreliable at **making architectural decisions under ambiguity**. Your job before each session is to eliminate ambiguity. The work you've already done — the design doc, the decisions above — is genuinely the most valuable input you can give it. Most people skip that step and then spend time arguing with generated code.
+
+The CLAUDE.md + spec-per-feature pattern essentially turns Claude Code into a fast, tireless junior developer who follows specs well. That's exactly the right mental model.
+
+ 
+
+---
+
+## The Real Way to Load Context
+
+**CLAUDE.md is the correct mechanism** — and it's automatic. Just place it in your project root and Claude Code reads it at the start of every session. No flag needed:
+
+```bash
+cd ~/QM
+claude                    # CLAUDE.md is read automatically
+```
+ 
+ 
+
+## Actual Useful Flags
+
+These are the commands worth using day-to-day:
+
+```bash
+# Start interactive session (reads CLAUDE.md automatically)
+claude
+
+# One-shot, non-interactive — good for scripting
+claude -p "explain the Grid class interface"
+
+# Continue the most recent session
+claude --continue
+
+# Resume a specific past session
+claude --resume SESSION_ID
+
+# Pipe content in
+cat specs/01-grid.md | claude -p "implement this spec"
+```
+
+For adding instructions beyond CLAUDE.md, the system prompt flags are the right tool — `--append-system-prompt` is the safe choice since it preserves Claude Code's built-in capabilities while adding your requirements. But for your use case, CLAUDE.md alone is sufficient.
+
+---
+
+## Useful In-Session Slash Commands
+
+These are worth knowing once you're inside a session:
+
+```
+/plan        — read-only mode, Claude proposes changes without making them
+               (use this before any large implementation step)
+/compact     — compresses conversation history when context gets large
+/clear       — wipes history, good when switching to a different task
+/rewind      — rolls back to a previous point; can revert code only 
+               while keeping conversation
+```
+
+`/init` is also worth running once at the start — it scans your project and creates a starter CLAUDE.md file automatically.
+
+---
+
+## The Pattern That Actually Works
+
+```bash
+# 1. Go to your project root (where CLAUDE.md lives)
+cd ~/projects/schrodinger-solver
+
+# 2. Start session — CLAUDE.md loads automatically
+claude
+
+# 3. Before any big implementation, use /plan first
+# (inside the session)
+> /plan
+> implement the Grid class per specs/01-grid.md
+
+# 4. Review the plan, then approve
+# 5. Use /compact when context gets long
+```
+
+The key correction: **CLAUDE.md + `claude`** is the right approach, not any flag. The file does the work.
+
+# Eigenvalue Solver (Stationary Mode)
+
+## Goal
+Solve H ψ = E ψ and return the lowest k eigenstates and energies.
+This is the stationary mode core — all outputs must be physically correct
+and validated against analytic solutions.
+
+## Units
+Atomic units throughout: ħ = m_e = 1.
+Document this in every docstring.
+
+## Interface
+```python
+from dataclasses import dataclass
+import numpy as np
+from scipy.sparse import spmatrix
+
+@dataclass
+class EigenstateResult:
+    energies: np.ndarray        # shape (k,), ascending order
+    wavefunctions: np.ndarray   # shape (k, grid.n), each row is one ψ
+    grid_x: np.ndarray          # shape (grid.n,) — x coordinates
+    dx: float                   # grid spacing
+    converged: bool             # did eigensolver converge?
+    norm_errors: np.ndarray     # |1 - ||ψ_i||²| for each eigenstate
+
+def solve_eigenstates(
+    hamiltonian: spmatrix,
+    grid_x: np.ndarray,
+    dx: float,
+    k: int = 5,
+) -> EigenstateResult:
+```
+
+## Implementation details
+- Use scipy.sparse.linalg.eigsh with which='SM' (smallest magnitude)
+- Normalize each wavefunction: ψ_i /= sqrt(sum(|ψ_i|²) * dx)
+- Sort by energy ascending
+- Sign convention: make the first non-negligible element of each ψ positive
+- Return converged=False and log a warning if eigsh raises ArpackNoConvergence
+
+## Tests required
+
+### Infinite square well
+- Domain: x ∈ [0, L], L = 1.0, n = 500 points
+- Analytic: E_n = n²π²/2L² in atomic units (n = 1, 2, 3, ...)
+- Assert first 5 energies within 0.5% of analytic values
+
+### Harmonic oscillator
+- Domain: x ∈ [-8, 8], V(x) = x²/2, n = 500 points
+- Analytic: E_n = n + 1/2 (n = 0, 1, 2, ...)
+- Assert first 5 energies within 0.5% of analytic values
+
+### Normalization
+- ||ψ_i||² * dx == 1.0 within 1e-6 for all returned eigenstates
+
+### Orthogonality
+- |<ψ_i|ψ_j>| * dx < 1e-6 for all i ≠ j
+
+### Ordering
+- energies array is strictly ascending
+
+## Do not implement
+- 2D eigensolvers
+- Degenerate subspace handling
+- Any plotting or visualization
+
+
+
+Good progress. Do these steps in order:
+
+## 1. Verify the Tests Pass First
+
+Before looking at anything else:
+
+```bash
+cd backend
+pip install pytest numpy
+pytest tests/test_grid.py -v
+```
+
+If tests fail — go back to Claude Code and say:
+```
+tests are failing, fix them:
+[paste the error output]
+```
+
+Don't proceed until tests are green.
+
+---
+
+## 2. Review What Was Actually Built
+
+```bash
+cat backend/grid.py
+```
+
+Check specifically:
+- Is the `Grid` class interface what you specified? (`x`, `dx`, `n`, `shape` properties)
+- Is it dimension-agnostic? (no hardcoded 1D assumptions)
+- Any `eval()` or bare `except:` clauses? (red flags)
+
+If something is wrong, tell Claude Code precisely what to fix rather than asking it to redo everything.
+
+---
+
+## 3. Commit What Works
+
+```bash
+cd backend
+git init          # if not already a git repo
+git add grid.py tests/test_grid.py
+git commit -m "feat: Grid abstraction with dimension-agnostic interface"
+```
+
+Commit working code before moving to the next feature. This gives you a safe rollback point and makes `/rewind` in Claude Code more useful.
+
+---
+
+## 4. Move to the Next Spec
+
+Once Grid is green and committed, the natural next step is the **Hamiltonian builder** — it depends on Grid but nothing else yet. Write `specs/02-hamiltonian.md` before asking Claude to implement it:
+
+```markdown
+# Hamiltonian Builder
+
+## Goal
+Build a sparse 1D Hamiltonian matrix H = T + V
+where T is the kinetic energy operator and V is the potential.
+
+## Interface
+build_hamiltonian(grid: Grid, potential: np.ndarray) -> scipy.sparse matrix
+- grid: a Grid instance
+- potential: array of V(x) values, shape (grid.n,)
+- returns: sparse matrix of shape (grid.n, grid.n) in atomic units (ħ=m=1)
+
+## Kinetic energy discretization
+Use 3-point finite difference for second derivative:
+T_ij = -1/2 * (ψ_{i+1} - 2ψ_i + ψ_{i-1}) / dx²
+T is a tridiagonal sparse matrix (use scipy.sparse.diags)
+
+## Tests required
+- Matrix is symmetric: H == H.T within 1e-10
+- Infinite square well ground state energy within 0.1% of π²/2L²
+  (L = x_max - x_min, use eigsh to get lowest eigenvalue)
+- Matrix shape is (grid.n, grid.n)
+
+## Do not implement
+- Time evolution
+- Any eigenvalue solving beyond the test
+```
+
+Then in Claude Code:
+
+```
+read specs/02-hamiltonian.md and implement it.
+write tests first, then implementation.
+do not proceed past the tests without stopping.
+```
+
+---
+
+## The Rhythm Going Forward
+
+```
+write spec → Claude implements → tests pass → review → commit → next spec
+```
+
+ 
+
+
+
+The specs to write in order are:
+
+1. ✅ Grid
+2. Hamiltonian builder (kinetic + potential)
+3. Eigenvalue solver (stationary mode)
+4. Crank-Nicolson stepper (time evolution)
+5. FastAPI endpoints
+6. React frontend scaffold
+7. Wire frontend to backend
+
+Don't let Claude jump ahead to step 5 while step 2 is untested. Each layer depends on the one below it being correct.
