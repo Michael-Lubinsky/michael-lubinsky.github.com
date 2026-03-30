@@ -15,7 +15,7 @@
 <https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
 
 ## Skills
-<https://www.claudeskills.org/>
+<https://www.claudeskills.org/>  
 <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>  
 <https://anthropic.skilljar.com/claude-code-in-action>  
 
