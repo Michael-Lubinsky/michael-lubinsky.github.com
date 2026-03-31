@@ -1,6 +1,52 @@
 ## Spark
 
 
+Driver Node → Cluster Manager → Worker Nodes
+
+→ Driver Node (The Brain)
+
+✓ DAG Scheduler — converts your code into a DAG
+✓ Task Scheduler — assigns tasks to executors
+✓ Driver Memory — stores data needed by driver
+✓ Broadcast Variables — shared across all workers
+
+Driver only plans and coordinates.
+It NEVER executes tasks itself.
+
+→ Cluster Manager (The Traffic Controller 🚦)
+
+Sits between Driver and Worker Nodes.
+Supported: YARN / Mesos / Kubernetes
+
+One job — allocate resources to executors.
+Nothing more. Nothing less.
+
+→ Worker Nodes and Executors (The Muscle 💪)
+
+Worker Node = physical or virtual machine
+Executor = JVM process running ON the worker
+
+Inside Executor:
+✓ JVM — runs Spark tasks
+✓ Python Process — runs your PySpark code
+✓ Py4J Gateway — bridge between Python and JVM
+
+This is why PySpark is slightly slower than Scala.
+Your Python code crosses the Py4J bridge every time.
+
+→ How a Job Actually Runs:
+
+Your code → DAG → Stages → Tasks → Partitions → Executors
+
+→ Narrow vs Wide Transformations:
+
+Narrow → no shuffle → map, filter → FAST
+Wide → shuffle → groupBy, join → SLOW
+
+This is why groupBy is expensive.
+Data moves across the entire cluster.
+
+
 ![](Spark_architecture.png)
 
 <https://books.japila.pl/>  
