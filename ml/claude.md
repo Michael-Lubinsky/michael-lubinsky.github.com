@@ -9,6 +9,8 @@
 
 <https://github.com/shanraisshan/claude-code-best-practice>
 
+<https://github.com/davila7/claude-code-templates>
+
 ### CLI
 <https://cc.storyfox.cz/> CLI commands  
 <https://code.claude.com/docs/en/cli-reference>   
