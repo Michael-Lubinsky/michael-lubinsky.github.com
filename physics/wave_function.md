@@ -936,7 +936,7 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   presentations. Requires a server-side rendering step
   (matplotlib animation or similar).
 
-  ---
+ 
   My top 3 recommendations for JOSS readiness
 
   1. Expectation values — makes the tool scientifically
@@ -949,7 +949,7 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
 
 
 
-## is it good idea to implement schrodinger equation solution for hydrogen atom?
+## Is it good idea to implement schrodinger equation solution for hydrogen atom?
 
 ⏺ It's a natural next step scientifically, but it's a much larger jump than it appears. Here's an
   honest assessment:
@@ -1001,7 +1001,7 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   This is realistic without touching the 3D visualization problem at all.
 
   Verdict
-
+```
   ┌───────────────────────────────────┬──────────────────────────────┬────────────────────────┐
   │               Scope               │            Effort            │         Value          │
   ├───────────────────────────────────┼──────────────────────────────┼────────────────────────┤
@@ -1014,14 +1014,14 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   │ Just add -1/r as a custom         │ Low — already works today!   │ Limited (singularity   │
   │ potential expression              │                              │ issues)                │
   └───────────────────────────────────┴──────────────────────────────┴────────────────────────┘
-
+```
   My recommendation: don't make it a dedicated feature yet. First finish the features that make
   the existing 1D solver publication-ready (expectation values, Ehrenfest, momentum space). The
   radial hydrogen solver is a good v0.2 milestone once JOSS submission is done.
 
 
   Recommended Order
-
+```
   ┌───────┬────────────────────────────────────┬───────────────────────────────────────────┐
   │ Phase │                Work                │                    Why                    │
   ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
@@ -1041,7 +1041,7 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   ├───────┼────────────────────────────────────┼───────────────────────────────────────────┤
   │ 8     │ Final validation table in paper    │ Use existing exact-solution panel results │
   └───────┴────────────────────────────────────┴───────────────────────────────────────────┘
-
+```
 
 ❯ Which other feature you recommend to add to be useful for physics student?
 
@@ -1091,7 +1091,7 @@ Which Gausiian parameters to assign to better see plots are updated in Play mode
 
   ---
   Which plots animate with Play?
-
+```
   ┌──────────────────────────┬───────────┬─────────────────────────────────────────────┐
   │           Plot           │ Animates? │                     Why                     │
   ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
@@ -1108,7 +1108,7 @@ Which Gausiian parameters to assign to better see plots are updated in Play mode
   │ Expectation Values       │ No        │ static time series — all frames always      │
   │                          │           │ visible                                     │
   └──────────────────────────┴───────────┴─────────────────────────────────────────────┘
-
+```
   Norm History and Expectation Values are time-series graphs — the full trajectory is drawn
    at once and doesn't change as you play. Only the three x-space/k-space snapshot plots
   update frame by frame.
@@ -1148,7 +1148,94 @@ Good timing to think about this before starting — how you communicate with Cla
 
 Claude Code works best when it has **maximal context upfront and minimal ambiguity about decisions already made**. The enemy is Claude making architectural choices you didn't intend, which then get baked into 500 lines of code you have to undo.
 
----
+
+❯ Evaluate  possible  new features from implementation perspective:
+Spin in Quatum machanics.
+Bloch sphere.
+Berry phase,
+Josephson effect.
+Quantum Hall Effect.
+Magnetism.
+
+⏺ Honest evaluation of each against the existing architecture (1D single-particle
+  Schrödinger equation, spatial grid, Crank-Nicolson):
+
+  ---
+  Spin in Quantum Mechanics — Medium effort, but requires restructuring
+
+  Spin is an internal discrete degree of freedom. The wavefunction becomes a 2-component
+  spinor (ψ↑, ψ↓). Adding it to the existing 1D solver means the Hamiltonian becomes a 2×2
+  block matrix — the current tridiagonal structure breaks. A pure spin-½ system (no spatial
+   grid, just 2×2 matrices) is a completely separate simple module. Spin-orbit coupling in
+  1D is medium-hard. Worth considering as a new standalone "two-level system" mode.
+
+  Bloch Sphere — Medium effort, completely independent
+
+  The Bloch sphere visualizes a two-level system |ψ⟩ = α|0⟩ + β|1⟩ as a point on a unit
+  sphere. Time evolution under H = h·σ is a rotation. This has zero connection to the grid
+  solver — it's a new mode with 2×2 matrix algebra and a 3D Plotly sphere visualization.
+  Plotly supports 3D surface plots, so the frontend is feasible. This is the most
+  self-contained feature on the list and highly educational for QM courses (Rabi
+  oscillations, qubit gates).
+
+  Berry Phase — Hard, subtle
+
+  Geometric phase γ = i∮⟨n(R)|∇ᴿ|n(R)⟩·dR requires adiabatically varying a parameter around
+   a closed loop and tracking the wavefunction phase. The phase is gauge-dependent and hard
+   to make visually intuitive. A 1D demonstration (Zak phase in SSH model) requires
+  periodic boundary conditions and band structure — significant departure from the current
+  Dirichlet BC setup. Not recommended unless the project pivots toward topology.
+
+  Josephson Effect — Out of scope
+
+  Not a single-particle Schrödinger equation at all. It's a phenomenological ODE for the
+  macroscopic phase difference between two superconductors: dφ/dt = 2eV/ħ, J = J_c sin(φ).
+  Could be implemented as a standalone ODE solver, but it shares nothing with the existing
+  code and would be misleading alongside a wavefunction solver. Wrong tool.
+
+  Quantum Hall Effect — Out of scope (requires 2D)
+
+  Requires a 2D spatial grid, a vector potential A in the Hamiltonian (Landau gauge), and
+  Chern number computation to show the topology. CLAUDE.md explicitly defers 2D. Even 1D
+  Landau levels require periodic boundary conditions. This is a multi-sprint project on its
+   own.
+
+  Magnetism — Out of scope (many-body)
+
+  The Heisenberg/Ising models are many-body lattice spin models — completely different
+  physics from the single-particle Schrödinger equation. For small chains (N ≤ 20 spins)
+  exact diagonalization is feasible but shares nothing with the existing solver. Wrong
+  abstraction level for this project.
+
+  ---
+  Recommendation summary:
+```
+  ┌──────────────────┬─────────────────────────┬────────────┬──────────────────────────┐
+  │     Feature      │   Fits existing arch?   │   Effort   │      Recommendation      │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Bloch sphere     │ No — new module         │ Medium     │ Yes — add as new mode    │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Spin (pure       │ No — new module         │ Low-medium │ Yes — pairs with Bloch   │
+  │ 2-level)         │                         │            │ sphere                   │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Spin-orbit 1D    │ Partial — needs         │ High       │ Maybe later              │
+  │                  │ restructure             │            │                          │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Berry phase      │ Partial — needs         │ High       │ Skip for now             │
+  │ (Zak)            │ periodic BCs            │            │                          │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Josephson        │ No — different physics  │ Medium     │ No                       │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Quantum Hall     │ No — requires 2D        │ Very high  │ No (deferred in          │
+  │                  │                         │            │ CLAUDE.md)               │
+  ├──────────────────┼─────────────────────────┼────────────┼──────────────────────────┤
+  │ Magnetism        │ No — many-body          │ Medium     │ No                       │
+  └──────────────────┴─────────────────────────┴────────────┴──────────────────────────┘
+```
+  The Bloch sphere + two-level system is the only feature on this list that is clean to
+  add, pedagogically valuable, and implementable without restructuring the existing solver.
+   It would be a new independent mode sitting alongside Stationary and Time Evolution.
+
 
 ## Step 1: Write a CLAUDE.md Before Anything Else
 
