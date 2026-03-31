@@ -15,6 +15,7 @@ NVIDIA GenAI & LLMs: Learn and Pass NCA-GENL Certification
 LLAMA   <https://www.youtube.com/watch?v=kt9M82teAUs> LLAMA, 100500 вариантов её файнтюнинга
 Ollama
 <https://www.youtube.com/watch?v=P9qWek5LDUw>
+ <https://realpython.com/ollama-python/>
 
 There are following competitive inference engines on the market: 
 - vLLM
