@@ -1,5 +1,6 @@
 ## Interview
 
+<https://habr.com/ru/articles/1017372/> Dynamic Programming
 
 <https://github.com/LordMoMA/leetcode/tree/main/python>
 
