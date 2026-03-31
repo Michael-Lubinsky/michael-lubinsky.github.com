@@ -1043,6 +1043,42 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   └───────┴────────────────────────────────────┴───────────────────────────────────────────┘
 
 
+❯ Which other feature you recommend to add to be useful for physics student?
+
+⏺ Here are the most pedagogically valuable features, ranked by impact vs effort:
+
+  ---
+  1. Probability current J(x,t) — high impact, medium effort
+
+  J(x,t) = Im(ψ* ∂ψ/∂x) in atomic units. Animated alongside |ψ|², it makes tunneling and
+  reflection visible — students can see probability flowing through a barrier. Directly
+  reinforces the continuity equation ∂|ψ|²/∂t + ∂J/∂x = 0.
+
+  2. Transmission / reflection coefficients — high impact, medium effort
+
+  For scattering potentials (step, barrier), integrate |ψ|² in the transmitted and
+  reflected regions after evolution: T = ∫{right} |ψ|² dx, R = ∫{left} |ψ|² dx. Verify T +
+  R = 1. This connects directly to textbook problems every QM student solves analytically.
+
+  3. Superposition of eigenstates as initial state — high impact, higher effort
+
+  Let students set ψ(0) = c₁φ₁ + c₂φ₂ (+ more) using sliders for the coefficients. This
+  demonstrates quantum beats, wave-packet revival, and makes the energy-eigenstate
+  expansion concrete. Currently only a Gaussian is available.
+
+  4. Δx(t) and Δp(t) plotted separately over time — low effort, good value
+
+  Already computed in the backend. A separate panel showing how Δx grows (spreading) while
+  Δp stays roughly constant makes wave-packet spreading intuitive. The uncertainty product
+  Δx·Δp is already shown — this just separates the two factors.
+
+  ---
+  My recommendation: start with #1 (probability current).
+
+  It requires only a backend change (one new array in the evolve response, computable from
+  the existing complex ψ frames) and a new frontend plot — same pattern as the
+  momentum-space feature. And it's visually striking for students watching a packet tunnel.
+
 ## Claude CLI - How To
 
 Good timing to think about this before starting — how you communicate with Claude Code determines the quality of what gets built significantly more than the specific prompts.
