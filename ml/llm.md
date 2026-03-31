@@ -7,6 +7,10 @@
 
 <https://github.com/springer-llms-deep-dive/llms-deep-dive-tutorials>
 
+LLM Fine Tuning
+<https://www.linkedin.com/posts/analyticalrohit_llms-fine-tuning-guide-ugcPost-7444367096463151104-TSda>
+
+
 NVIDIA GenAI & LLMs: Learn and Pass NCA-GENL Certification
 <https://www.udemy.com/course/nvidia-nca-genl/>
 
