@@ -29,6 +29,8 @@ https://habr.com/ru/articles/984160/ Claude Code  Agent
 <https://habr.com/ru/articles/1015252/> Claude Code  Agent 
 
 ### Superpowers
+
+Ты говоришь Claude: «Добавь авторизацию через JWT». Без Superpowers он сразу начнёт писать код. С Superpowers — вызывает скилл brainstorming, задаёт уточняющие вопросы, предлагает 2-3 подхода, рисует дизайн. И только после твоего одобрения переходит к writing-plans — декомпозирует работу на задачи по 2-5 минут каждая.
 <https://github.com/obra/superpowers>
 
 <https://blog.fsck.com/2025/10/09/superpowers/>
