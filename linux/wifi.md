@@ -1,3 +1,5 @@
+## How WiFi and Radio Works
+<https://habr.com/ru/articles/1017728/>
 
 <https://lcamtuf.substack.com/p/radios-how-do-they-work>
 
