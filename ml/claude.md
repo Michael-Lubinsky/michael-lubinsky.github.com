@@ -28,6 +28,11 @@ https://habr.com/ru/articles/984160/ Claude Code  Agent
 
 <https://habr.com/ru/articles/1015252/> Claude Code  Agent 
 
+### Superpowers
+<https://github.com/obra/superpowers>
+
+<https://blog.fsck.com/2025/10/09/superpowers/>
+
 https://www.dev-log.me/pr_review_navigator_for_claude/  Skill for code review
 
 https://psantanna.com/claude-code-my-workflow/workflow-guide.html
