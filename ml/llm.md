@@ -5,6 +5,8 @@
 <https://sebastianraschka.com/llm-architecture-gallery/>
 <https://habr.com/ru/articles/1011784/>  LLM architecture gallery
 
+<https://github.com/springer-llms-deep-dive/llms-deep-dive-tutorials>
+
 NVIDIA GenAI & LLMs: Learn and Pass NCA-GENL Certification
 <https://www.udemy.com/course/nvidia-nca-genl/>
 
