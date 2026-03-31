@@ -6,6 +6,8 @@
 
 <https://github.com/jawah/niquests> fork of request for HTTP
 
+<https://realpython.com/courses/downloading-files-urls/> Downloading Files From URLs With Python
+
 ## Useful libs
 
 <https://pypi.org/project/duckdb-cli/> 
