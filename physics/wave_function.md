@@ -1079,6 +1079,67 @@ I can next draft a **concrete API schema and folder-by-folder starter implementa
   the existing complex ψ frames) and a new frontend plot — same pattern as the
   momentum-space feature. And it's visually striking for students watching a packet tunnel.
 
+
+❯ On Time Evolution page there is "Play" button.
+I am not clear which plots should be affected: all plots (Momentum distibution,
+Probability Current, Norm History, Expectation values) or only some of them?
+Which Gausiian parameters to assign to better see plots are updated in Play mode?
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Here are the answers to both questions:
+
+  ---
+  Which plots animate with Play?
+
+  ┌──────────────────────────┬───────────┬─────────────────────────────────────────────┐
+  │           Plot           │ Animates? │                     Why                     │
+  ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
+  │ |ψ(x,t)|²                │ Yes       │ shows current frame                         │
+  ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
+  │ |φ(k,t)|² Momentum       │ Yes       │ shows current frame                         │
+  ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
+  │ J(x,t) Probability       │ Yes       │ shows current frame                         │
+  │ Current                  │           │                                             │
+  ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
+  │ Norm History             │ No        │ static time series — all frames always      │
+  │                          │           │ visible                                     │
+  ├──────────────────────────┼───────────┼─────────────────────────────────────────────┤
+  │ Expectation Values       │ No        │ static time series — all frames always      │
+  │                          │           │ visible                                     │
+  └──────────────────────────┴───────────┴─────────────────────────────────────────────┘
+
+  Norm History and Expectation Values are time-series graphs — the full trajectory is drawn
+   at once and doesn't change as you play. Only the three x-space/k-space snapshot plots
+  update frame by frame.
+
+  ---
+  Best parameters to see all three animated plots update clearly
+
+  Option A — Harmonic oscillator, displaced packet (recommended for clean physics)
+  - Potential: Harmonic Oscillator
+  - x₀ = 3, σ = 1, k₀ = 0
+  - dt = 0.01, n_steps = 640, save_every = 10
+
+  The packet oscillates back and forth with period T = 2π ≈ 6.3 a.u. You see:
+  - |ψ|² sweeps left↔right
+  - |φ(k)|² peak shifts from +k to −k as direction reverses
+  - J(x,t) is positive when moving right, negative when moving left — sign flips each half
+  period
+
+  Option B — Gaussian barrier, tunneling (most dramatic for J)
+  - Potential: Gaussian Barrier
+  - x₀ = −4, σ = 0.8, k₀ = 3
+  - dt = 0.005, n_steps = 1000, save_every = 10
+
+  The packet hits the barrier and splits into transmitted + reflected parts. J(x,t) shows
+  the incident current becoming positive on the right (transmitted) and negative on the
+  left (reflected) simultaneously — the most striking demonstration of what probability
+  current means physically.
+
+  ---
+  Option A is better for a first look because the oscillation is slow and periodic. Try
+  Option B once you understand what J means.
 ## Claude CLI - How To
 
 Good timing to think about this before starting — how you communicate with Claude Code determines the quality of what gets built significantly more than the specific prompts.
