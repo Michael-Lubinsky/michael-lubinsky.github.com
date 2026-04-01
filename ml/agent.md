@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=ESBMgZHzfG0> AI Periodic table
 
+<https://buildyourowncodingagent.com/>
+
 <https://docs.fabro.sh/getting-started/why-fabro>
 
 <https://ecc.tools/>
