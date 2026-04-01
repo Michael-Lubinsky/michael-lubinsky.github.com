@@ -35,3 +35,7 @@ query = f"SELECT * from {table_name}"
 cursor = db_conn.execute(query)
 db_conn.close()
 ```
+
+## ORC
+
+<https://habr.com/ru/companies/gnivc/articles/1017106/>
