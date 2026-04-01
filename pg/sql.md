@@ -1,9 +1,11 @@
 ## SQL
-<https://dbml.dbdiagram.io/home/>
+<https://dbml.dbdiagram.io/home/> DB Diagram
 
 <https://datamethods.substack.com/p/sql-anti-patterns-you-should-avoid>
 
 <https://habr.com/ru/companies/otus/articles/942044/> PIVOT/UNPIVOT, CROSS APPLY/LATERAL , partial indexes
+
+<https://boringsql.com/posts/good-cte-bad-cte/> Very Good!
 
 ### COUNT_IF
 
