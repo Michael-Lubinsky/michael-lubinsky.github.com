@@ -1,4 +1,7 @@
 ## SQL
+
+<https://github.com/eduardofuncao/squix> SQL Client in terminal
+
 <https://dbml.dbdiagram.io/home/> DB Diagram
 
 <https://datamethods.substack.com/p/sql-anti-patterns-you-should-avoid>
