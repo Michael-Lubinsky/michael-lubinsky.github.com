@@ -11,6 +11,8 @@
 
 <https://github.com/davila7/claude-code-templates>
 
+<https://ccunpacked.dev/>
+
 ### CLI
 <https://cc.storyfox.cz/> CLI commands  
 <https://code.claude.com/docs/en/cli-reference>   
