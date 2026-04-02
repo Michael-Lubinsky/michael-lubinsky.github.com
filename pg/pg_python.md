@@ -1,6 +1,8 @@
 ## SQL and Python
 <https://realpython.com/python-sql-libraries/>
 
+<https://mkennedy.codes/posts/raw-dc-the-orm-pattern-of-2026/>
+
 ### Postgres and Python
 Here are advanced best practices for using `psycopg2`:
 
