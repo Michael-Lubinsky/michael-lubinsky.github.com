@@ -19,6 +19,9 @@
 
 <https://habr.com/ru/articles/1011996/>
 
+<https://www.youtube.com/watch?v=Z2U7UgiKK2o> 
+Очереди и кэш на Postgres — без Redis, RabbitMQ и Kafka
+
 <https://habr.com/ru/companies/postgrespro/articles/1001194/>
 
 <https://edu.postgrespro.ru/qptbook-16.pdf>
