@@ -1,3 +1,9 @@
+## Big Data Architectures
+
+<https://arxiv.org/abs/2104.00087> Real-Time Data Infrastructure at Uber
+
+## Big Data File Formats
+
 https://lancedb.github.io/lance/  Lance format
 
 https://www.vladsiv.com/big-data-file-formats/
