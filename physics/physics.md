@@ -8,6 +8,8 @@
 
 http://lightcone.ru/
 
+Spin <https://arxiv.org/pdf/2604.00231>
+
 Принцип наименьшего действия [Veritasium]:
 https://www.youtube.com/watch?v=C2tL1A3B3cY
 
