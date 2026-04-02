@@ -21,6 +21,52 @@ Sources:
 <https://slicker.me/sqlite/features.htm>
 
 
+### Strict tables and better typing
+
+SQLite is famous (or infamous) for its flexible typing model. Modern SQLite adds STRICT tables, which enforce type constraints much more like PostgreSQL or other traditional databases.
+
+Example: defining a strict table:
+```sql
+CREATE TABLE users (
+  id        INTEGER PRIMARY KEY,
+  email     TEXT NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 1
+) STRICT;
+```
+With strict tables, invalid types are rejected at insert time, making schemas more predictable and reducing subtle bugs—especially in larger codebases.
+Generated columns for derived data
+
+### Generated columns 
+let you store expressions as virtual or stored columns, keeping derived data close to the source without duplicating logic across your application.
+
+Example: a normalized search field:
+```sql
+CREATE TABLE contacts (
+  id          INTEGER PRIMARY KEY,
+  first_name  TEXT NOT NULL,
+  last_name   TEXT NOT NULL,
+  full_name   TEXT GENERATED ALWAYS AS (
+    trim(first_name || ' ' || last_name)
+  ) STORED
+);
+
+CREATE INDEX idx_contacts_full_name ON contacts(full_name);
+```
+
+Now every insert or update keeps full_name in sync automatically, and you can index and query it efficiently.
+
+### Write-ahead logging and concurrency
+
+Write-ahead logging (WAL) is a journaling mode that improves concurrency and performance for many workloads. Readers don’t block writers, and writers don’t block readers in the common case.
+
+Enabling WAL is a single pragma call:
+
+PRAGMA journal_mode = WAL;
+
+For desktop apps, local-first tools, and small services, WAL mode can dramatically improve perceived performance while keeping SQLite’s simplicity and reliability.
+
+
+
 ### REST API for SQLite 
 <https://github.com/b4fun/sqlite-rest>
 
