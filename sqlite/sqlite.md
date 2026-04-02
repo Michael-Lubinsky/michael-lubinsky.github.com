@@ -18,7 +18,7 @@ Sources:
 <https://kerkour.com/sqlite-for-servers>
 
 
-
+<https://slicker.me/sqlite/features.htm>
 
 
 ### REST API for SQLite 
