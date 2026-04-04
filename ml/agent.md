@@ -1,5 +1,7 @@
 ## Agents
 
+<https://magazine.sebastianraschka.com/p/components-of-a-coding-agent>
+
 <https://www.youtube.com/watch?v=ESBMgZHzfG0> AI Periodic table
 
 <https://buildyourowncodingagent.com/>
