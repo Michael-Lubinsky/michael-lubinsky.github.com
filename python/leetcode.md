@@ -86,7 +86,7 @@ Arrays                                      1.6
     Shortest Word Distance                1.6.11
     Move Zeroes                           1.6.12
     Contains Duplicate II                 1.6.13
-    Majority Element                      1.6.14
+                          1.6.14
     Remove Duplicates from Sorted Array   1.6.15
     Nested List Weight Sum                1.6.16
     Nested List Weighted Sum II           1.6.17
@@ -5359,7 +5359,7 @@ URL: https://leetcode.com/problems/majority-element/
 Majority Element
 
 
-
+```python
   class Solution(object):
       def majorityElement(self, nums):
            """
@@ -5397,7 +5397,7 @@ URL: https://leetcode.com/problems/majority-element/
                  return candidate
            else:
                  return None
-
+```
 
 
 
@@ -5427,7 +5427,7 @@ and 2 respectively. It doesn't matter what you leave beyond the new length.
 
 URL: https://leetcode.com/problems/remove-duplicates-from-sorted-array/
 
-
+```python
   class Solution(object):
        def removeDuplicates(self, nums):
             """
@@ -5447,7 +5447,7 @@ URL: https://leetcode.com/problems/remove-duplicates-from-sorted-array/
                           nums[j] = nums[i]
                           i += 1
                   return j+1
-
+```
 
 
 
@@ -5472,7 +5472,7 @@ and one 6 at depth 3; 1 + 42 + 63 = 27)
 
 URL: https://leetcode.com/problems/nested-list-weight-sum/
 
-
+```python
   # """
   # This is the interface that allows for creating nested lists.
   # You should not implement it, or speculate about its implementa
@@ -5535,7 +5535,7 @@ URL: https://leetcode.com/problems/nested-list-weight-sum/
 
                 return sum
 
-
+```
 
 
                                                                      161
@@ -5588,7 +5588,7 @@ Your function should return length = 2, with the first two elements of nums bein
 
 URL: https://leetcode.com/problems/remove-element/
 
-
+```python
   class Solution(object):
        def removeElement(self, nums, val):
             """
@@ -5612,7 +5612,7 @@ URL: https://leetcode.com/problems/remove-element/
 
                   return len(nums[0:i])
 
-
+```
 
 
                                                                                 163
@@ -5648,7 +5648,7 @@ URL: https://leetcode.com/problems/intersection-of-two-arrays-ii/
 Intersection of Two Arrays II
 
 
-
+```python
   class Solution(object):
        def intersect(self, nums1, nums2):
             """
@@ -5677,7 +5677,7 @@ URL: https://leetcode.com/problems/intersection-of-two-arrays-ii/
 
 
             return intersect_list
-
+```
 
 
 
@@ -5704,7 +5704,7 @@ URL: https://leetcode.com/problems/merge-sorted-array/
 Merge Sorted Arrays
 
 
-
+```python
   class Solution(object):
       def merge(self, nums1, m, nums2, n):
           """
@@ -5736,7 +5736,7 @@ URL: https://leetcode.com/problems/merge-sorted-array/
                 last -= 1
                 last2 -= 1
 
-
+```
 
 
                                                                  168
@@ -5764,7 +5764,7 @@ URL: https://leetcode.com/problems/reverse-vowels-of-a-string/
 Reverse Vowels of a String
 
 
-
+```python
   class Solution(object):
       def __init__(self):
            self.__vowels = {"a" : True, "e" : True, "i" : True, "o"
@@ -5796,7 +5796,7 @@ URL: https://leetcode.com/problems/reverse-vowels-of-a-string/
                        i += 1
                        j -= 1
                  return "".join(s)
-
+```
 
 
 
@@ -5815,7 +5815,7 @@ Note: Each element in the result must be unique. The result can be in any order.
 
 URL: https://leetcode.com/problems/intersection-of-two-arrays/
 
-
+```python
   class Solution(object):
        def intersection(self, nums1, nums2):
             """
@@ -5840,7 +5840,7 @@ URL: https://leetcode.com/problems/intersection-of-two-arrays/
 
 
             return intersection.keys()
-
+```
 
 
 
@@ -5860,7 +5860,7 @@ Note: You may not slant the container and n is at least 2.
 
 URL: https://leetcode.com/problems/container-with-most-water/
 
-
+```python
   class Solution(object):
        def maxArea(self, height):
             """
@@ -5880,7 +5880,7 @@ URL: https://leetcode.com/problems/container-with-most-water/
 
 
             return max_area
-
+```
 
 
 
@@ -5902,7 +5902,7 @@ notcount as extra space for the purpose of space complexity analysis.)
 
 URL: https://leetcode.com/problems/product-of-array-except-self/
 
-
+```python
   class Solution(object):
        def productExceptSelf(self, nums):
              """
@@ -5927,7 +5927,7 @@ URL: https://leetcode.com/problems/product-of-array-except-self/
 
 
              return product
-
+```
 
 
 
@@ -5957,7 +5957,7 @@ URL: https://leetcode.com/problems/trapping-rain-water/
 Trapping Rain Water
 
 
-
+```python
   class Solution(object):
       def trap(self, height):
           """
@@ -5980,14 +5980,13 @@ URL: https://leetcode.com/problems/trapping-rain-water/
 
 
           for i in range(0, len(height)):
-                rainwater = rainwater + max(min(maxseenright_arr[i],
-   maxseenleft) - height[i],0)
+                rainwater = rainwater + max(min(maxseenright_arr[i],  maxseenleft) -height[i],0)
                 if height[i] > maxseenleft:
                       maxseenleft = height[i]
 
 
           return rainwater
-
+```
 
 
 
@@ -6003,7 +6002,7 @@ the contiguous subarray [4,-1,2,1] has the largest sum = 6 .
 
 URL: https://leetcode.com/problems/maximum-subarray/
 
-
+```python
   import sys
   class Solution(object):
        def maxSubArray(self, nums):
@@ -6034,7 +6033,7 @@ URL: https://leetcode.com/problems/maximum-subarray/
                      return max_sum
                  else:
                      return max(nums)
-
+```
 
 
 
@@ -6058,7 +6057,7 @@ times). However, you may not engage in multiple transactions at the same time
 
 URL: https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
 
-
+```python
   class Solution(object):
         def maxProfit(self, prices):
             """
@@ -6074,7 +6073,7 @@ URL: https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
                       if curr_profit > 0:
                            profit += curr_profit
                   return profit
-
+```
 
 
 
@@ -6092,7 +6091,7 @@ You may assume no duplicate exists in the array.
 
 URL: https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
 
-
+```python
   class Solution(object):
       def findMin(self, nums):
            """
@@ -6110,7 +6109,7 @@ URL: https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
                  else:
                      end = mid
            return nums[start]
-
+```
 
 
 
@@ -6143,7 +6142,7 @@ URL: https://leetcode.com/problems/pascals-triangle/
 Pascal's Triangle
 
 
-
+```python
   class Solution(object):
        def generate(self, numRows):
            """
@@ -6173,7 +6172,7 @@ URL: https://leetcode.com/problems/pascals-triangle/
 
 
            return result
-
+```
 
 
 
@@ -6191,7 +6190,7 @@ Could you optimize your algorithm to use only O(k) extra space?
 
 URL: https://leetcode.com/problems/pascals-triangle-ii/
 
-
+```python
   class Solution(object):
         def getRow(self, rowIndex):
             """
@@ -6215,7 +6214,7 @@ URL: https://leetcode.com/problems/pascals-triangle-ii/
 
 
                   return pre
-
+```
 
 
 
@@ -6229,7 +6228,7 @@ For example, given [0,1,2,4,5,7] , return ["0->2","4->5","7"].
 
 URL: https://leetcode.com/problems/summary-ranges/
 
-
+```python
   class Solution(object):
        def summaryRanges(self, nums):
             """
@@ -6263,7 +6262,7 @@ URL: https://leetcode.com/problems/summary-ranges/
                   return str(start)
             else:
                   return str(start)+"->"+str(end)
-
+```
 
 
 
@@ -6283,7 +6282,7 @@ using only constant extra space complexity?
 
 URL: https://leetcode.com/problems/missing-number/
 
-
+```python
   class Solution(object):
         def missingNumber(self, nums):
             """
@@ -6306,7 +6305,7 @@ URL: https://leetcode.com/problems/missing-number/
 
 
                   return xor_prod ^ xor_prod_index
-
+```
 
 
 
@@ -6326,7 +6325,7 @@ Note: You may assume the string contains only lowercase alphabets.
 
 URL: https://leetcode.com/problems/valid-anagram/
 
-
+```python
   class Solution(object):
          def isAnagram(self, s, t):
             """
@@ -6341,7 +6340,7 @@ URL: https://leetcode.com/problems/valid-anagram/
             else:
                   return False
 
-
+```
 
 
                                                                                     185
