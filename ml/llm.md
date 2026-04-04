@@ -103,6 +103,8 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 От RLHF к DPO и дальше: как мы разучились бояться и полюбили выравнивание LLM
 <https://habr.com/ru/articles/1002298/>
 
+MIT Лекция 8 Большие языковые модели (LLM) от Liquid AI!
+<https://www.youtube.com/watch?v=jU9RGIgJyqo>
 ### RAG
 
 <https://habr.com/ru/articles/1002152/>
