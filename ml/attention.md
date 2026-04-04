@@ -13,6 +13,8 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 
 ##  Attention 
 
+<https://www.youtube.com/watch?v=wjZofJX0v4M> Transformers, the tech behind LLMs | Deep Learning Chapter 5
+
 Attention in transformers, step-by-step | Deep Learning Chapter 6  (ru)
 <https://www.youtube.com/watch?v=eMlx5fFNoYc>
 
