@@ -6399,10 +6399,13 @@ Given a pattern and a string str, find if str follows the same pattern.
 Here follow means a full match, such that there is a bijection between a letter in
 pattern and a non-empty word in str.
 
-Examples: pattern = "abba", str = "dog cat cat dog" should return true. pattern =
-"abba", str = "dog cat cat fish" should return false. pattern = "aaaa", str = "dog cat
-cat dog" should return false. pattern = "abba", str = "dog dog dog dog" should
-return false. Notes: You may assume pattern contains only lowercase letters, and
+Examples:  
+pattern = "abba", str = "dog cat cat dog" should return true.  
+pattern = "abba", str = "dog cat cat fish" should return false.  
+pattern = "aaaa", str = "dog cat cat dog" should return false. 
+pattern = "abba", str = "dog dog dog dog" should return false.  
+
+Notes: You may assume pattern contains only lowercase letters, and
 str contains lowercase letters separated by a single space.
 
 URL: https://leetcode.com/problems/word-pattern/
@@ -6414,7 +6417,7 @@ URL: https://leetcode.com/problems/word-pattern/
 Word Pattern
 
 
-
+```python
   class Solution(object):
       def wordPattern(self, pattern, str):
           """
@@ -6451,7 +6454,7 @@ URL: https://leetcode.com/problems/word-pattern/
       str = "dog cat cat dog"
       soln = Solution()
       print(soln.wordPattern(pattern, str))
-
+```
 
 
 
@@ -6477,7 +6480,7 @@ URL: https://leetcode.com/problems/valid-parentheses/
 Valid Parentheses
 
 
-
+```python
   class Solution:
       # @param {string} s
       # @return {boolean}
@@ -6514,7 +6517,7 @@ URL: https://leetcode.com/problems/valid-parentheses/
 
 
            return openings.index(open) == closings.index(close)
-
+```
 
 
 
@@ -6550,7 +6553,7 @@ URL: https://leetcode.com/problems/isomorphic-strings/
 Isomorphic Strings
 
 
-
+```python
   class Solution(object):
       def isIsomorphic(self, s, t):
            """
@@ -6583,7 +6586,7 @@ URL: https://leetcode.com/problems/isomorphic-strings/
 
 
                  return True
-
+```
 
 
 
@@ -6600,7 +6603,7 @@ Example: Given s = "hello", return "olleh".
 
 URL: https://leetcode.com/problems/reverse-string/
 
-
+```python
   class Solution(object):
        def reverseString(self, s):
             """
@@ -6625,7 +6628,7 @@ URL: https://leetcode.com/problems/reverse-string/
 
 
             return "".join(current_str)
-
+```
 
 
 
@@ -6643,7 +6646,7 @@ Example: Given a = 1 and b = 2, return 3.
 
 URL: https://leetcode.com/problems/sum-of-two-integers/
 
-
+```python
   class Solution(object):
        def getSum(self, a, b):
             """
@@ -6656,7 +6659,7 @@ URL: https://leetcode.com/problems/sum-of-two-integers/
             sum = a ^ b
             carry = (a & b) << 1
             return self.getSum(sum, carry)
-
+```
 
 
 
@@ -6675,7 +6678,7 @@ implement it without using extra memory?
 
 URL: https://leetcode.com/problems/single-number/
 
-
+```python
   class Solution(object):
        def singleNumber(self, nums):
               """
@@ -6694,7 +6697,7 @@ URL: https://leetcode.com/problems/single-number/
 
                     return xor_prod
 
-
+```
 
 
                                                                               195
@@ -6725,7 +6728,7 @@ reversed integer overflows.
 
 URL: https://leetcode.com/problems/reverse-integer/
 
-
+```python
   import sys
   class Solution(object):
        def reverse(self, x):
@@ -6742,7 +6745,7 @@ URL: https://leetcode.com/problems/reverse-integer/
                   result = result * 10 + x % 10
                   x /= 10
             return result if result <= 0x7fffffff else 0
-
+```
 
 
 
@@ -6761,8 +6764,6 @@ URL: https://leetcode.com/problems/reverse-integer/
 Palindrome Number
 Determine whether an integer is a palindrome. Do this without extra space.
 
-click to show spoilers.
-
 Some hints: Could negative integers be palindromes? (ie, -1)
 
 If you are thinking of converting the integer to string, note the restriction of using
@@ -6776,7 +6777,7 @@ There is a more generic way of solving this problem.
 
 URL: https://leetcode.com/problems/palindrome-number/
 
-
+```python
   class Solution(object):
        def isPalindrome(self, x):
             """
@@ -6796,7 +6797,7 @@ URL: https://leetcode.com/problems/palindrome-number/
                   return True
             else:
                   return False
-
+```
 
 
 
@@ -6815,7 +6816,7 @@ URL: https://leetcode.com/problems/palindrome-number/
 Pow(x,n)
 Implement pow(x, n).
 
-
+```python
   class Solution(object):
       def myPow(self, x, n):
            """
@@ -6841,7 +6842,7 @@ Implement pow(x, n).
                  return v * v
            else:
                  return v * v * x
-
+```
 
 
 
@@ -6864,7 +6865,7 @@ URL: https://leetcode.com/problems/subsets/
 
 Solution1:
 
-
+```python
   class Solution(object):
          def subsets(self, S):
                def dfs(depth, start, valuelist):
@@ -6876,7 +6877,7 @@ Solution1:
                res = []
                dfs(0, 0, [])
                return res
-
+```
 
 
 Solution2:
