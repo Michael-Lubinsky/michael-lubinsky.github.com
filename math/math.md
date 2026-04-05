@@ -14,6 +14,10 @@ Robotics, and Machine Learning
 
 <https://www.cs.mcgill.ca/~akroit/math/>
 
+
+ЭПОХАЛЬНЫЙ РАЗБОР АНАЛИЗА ЗОРИЧА [ЧАСТЬ 1]
+<https://www.youtube.com/watch?v=jcdPKocIzFA>
+
 <https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
 Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 
