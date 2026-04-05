@@ -1808,5 +1808,641 @@ This is a bit different from the internal token embeddings used during next-toke
 * nearest vectors are retrieved
 * retrieved text is passed to the LLM as context
  
+Yes. Let’s do a **tiny self-attention example completely by hand**.
+
+I’ll keep it very small:
+
+* sequence length = 2 tokens
+* embedding size = 2
+* single attention head
+* no mask
+* no bias
+
+---
+
+# Goal
+
+We want to compute:
+
+[
+\text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+]
+
+with actual numbers.
+
+---
+
+# Step 1. Input token representations
+
+Suppose after token embedding + positional embedding we already have these 2 token vectors:
+
+[
+X =
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+]
+
+Interpretation:
+
+* token 1 vector = ([1,0])
+* token 2 vector = ([0,1])
+
+Shape:
+
+[
+X \in \mathbb{R}^{2 \times 2}
+]
+
+Here:
+
+* number of tokens (n=2)
+* model dimension (d=2)
+
+---
+
+# Step 2. Choose projection matrices
+
+Let’s choose simple matrices for (W_Q), (W_K), (W_V).
+
+## Query matrix
+
+[
+W_Q =
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+]
+
+## Key matrix
+
+[
+W_K =
+\begin{bmatrix}
+1 & 1 \
+0 & 1
+\end{bmatrix}
+]
+
+## Value matrix
+
+[
+W_V =
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+]
+
+All are (2 \times 2).
+
+---
+
+# Step 3. Compute Q, K, V
+
+We use:
+
+[
+Q = XW_Q,\quad K = XW_K,\quad V = XW_V
+]
+
+---
+
+## Compute (Q)
+
+[
+Q=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+=============
+
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+]
+
+So:
+
+* query for token 1 = ([1,0])
+* query for token 2 = ([0,1])
+
+---
+
+## Compute (K)
+
+[
+K=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 1 \
+0 & 1
+\end{bmatrix}
+=============
+
+\begin{bmatrix}
+1 & 1 \
+0 & 1
+\end{bmatrix}
+]
+
+So:
+
+* key for token 1 = ([1,1])
+* key for token 2 = ([0,1])
+
+---
+
+## Compute (V)
+
+[
+V=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+=============
+
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+]
+
+So:
+
+* value for token 1 = ([1,2])
+* value for token 2 = ([3,4])
+
+---
+
+# Step 4. Compute raw attention scores
+
+We calculate:
+
+[
+S = QK^T
+]
+
+First compute (K^T):
+
+[
+K^T=
+\begin{bmatrix}
+1 & 0 \
+1 & 1
+\end{bmatrix}
+]
+
+Now multiply:
+
+[
+S=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+1 & 0 \
+1 & 1
+\end{bmatrix}
+=============
+
+\begin{bmatrix}
+1 & 0 \
+1 & 1
+\end{bmatrix}
+]
+
+So raw scores are:
+
+[
+S=
+\begin{bmatrix}
+1 & 0 \
+1 & 1
+\end{bmatrix}
+]
+
+Interpretation:
+
+* row 1 = how token 1 attends to token 1 and token 2
+* row 2 = how token 2 attends to token 1 and token 2
+
+More explicitly:
+
+* token 1 scores: ([1, 0])
+* token 2 scores: ([1, 1])
+
+---
+
+# Step 5. Scale by (\sqrt{d_k})
+
+Here (d_k = 2), so:
+
+[
+\sqrt{d_k}=\sqrt{2}\approx 1.414
+]
+
+Scaled scores:
+
+[
+\hat S = \frac{S}{\sqrt{2}}
+===========================
+
+\begin{bmatrix}
+1/1.414 & 0/1.414 \
+1/1.414 & 1/1.414
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+0.707 & 0 \
+0.707 & 0.707
+\end{bmatrix}
+]
+
+---
+
+# Step 6. Apply softmax row by row
+
+Softmax is applied to each row separately.
+
+---
+
+## Row 1 softmax
+
+Row 1 is:
+
+[
+[0.707,\ 0]
+]
+
+Exponentials:
+
+[
+e^{0.707}\approx 2.028,\qquad e^0=1
+]
+
+Sum:
+
+[
+2.028+1=3.028
+]
+
+So softmax row 1:
+
+[
+\left[
+\frac{2.028}{3.028},\ \frac{1}{3.028}
+\right]
+\approx
+[0.670,\ 0.330]
+]
+
+So token 1 attends:
+
+* 67.0% to token 1
+* 33.0% to token 2
+
+---
+
+## Row 2 softmax
+
+Row 2 is:
+
+[
+[0.707,\ 0.707]
+]
+
+Exponentials:
+
+[
+e^{0.707}=2.028,\qquad e^{0.707}=2.028
+]
+
+Sum:
+
+[
+2.028+2.028=4.056
+]
+
+Softmax row 2:
+
+[
+[0.5,\ 0.5]
+]
+
+So token 2 attends equally to both tokens.
+
+---
+
+## Full attention-weight matrix
+
+[
+A=\text{softmax}(\hat S)
+========================
+
+\begin{bmatrix}
+0.670 & 0.330 \
+0.500 & 0.500
+\end{bmatrix}
+]
+
+---
+
+# Step 7. Multiply attention weights by V
+
+Now compute the output:
+
+[
+O = AV
+]
+
+That is:
+
+[
+O=
+\begin{bmatrix}
+0.670 & 0.330 \
+0.500 & 0.500
+\end{bmatrix}
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+]
+
+Let’s do it row by row.
+
+---
+
+## Output for token 1
+
+First row:
+
+[
+[0.670,\ 0.330]
+]
+
+Multiply by (V):
+
+### First component
+
+[
+0.670\cdot 1 + 0.330\cdot 3
+= 0.670 + 0.990
+= 1.660
+]
+
+### Second component
+
+[
+0.670\cdot 2 + 0.330\cdot 4
+= 1.340 + 1.320
+= 2.660
+]
+
+So output for token 1 is:
+
+[
+[1.660,\ 2.660]
+]
+
+---
+
+## Output for token 2
+
+Second row:
+
+[
+[0.500,\ 0.500]
+]
+
+### First component
+
+[
+0.5\cdot 1 + 0.5\cdot 3 = 2
+]
+
+### Second component
+
+[
+0.5\cdot 2 + 0.5\cdot 4 = 3
+]
+
+So output for token 2 is:
+
+[
+[2,\ 3]
+]
+
+---
+
+## Final output matrix
+
+[
+O=
+\begin{bmatrix}
+1.660 & 2.660 \
+2.000 & 3.000
+\end{bmatrix}
+]
+
+---
+
+# Final interpretation
+
+We started with:
+
+* token 1 original representation: ([1,0])
+* token 2 original representation: ([0,1])
+
+After self-attention, we got:
+
+* token 1 new representation: ([1.660, 2.660])
+* token 2 new representation: ([2.000, 3.000])
+
+These are now **context-aware** because each token output is a weighted combination of the value vectors of all tokens.
+
+---
+
+# What happened conceptually?
+
+## Token 1
+
+Attention weights:
+
+[
+[0.670,\ 0.330]
+]
+
+So token 1 mostly looked at itself, but also partly at token 2.
+
+Its new vector became:
+
+[
+0.670\cdot [1,2] + 0.330\cdot [3,4]
+]
+
+---
+
+## Token 2
+
+Attention weights:
+
+[
+[0.5,\ 0.5]
+]
+
+So token 2 equally mixed information from both tokens.
+
+Its new vector became:
+
+[
+0.5\cdot [1,2] + 0.5\cdot [3,4]
+]
+
+---
+
+# Compact summary of all matrices
+
+## Input
+
+[
+X=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix}
+]
+
+## Projections
+
+[
+W_Q=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix},
+\quad
+W_K=
+\begin{bmatrix}
+1 & 1 \
+0 & 1
+\end{bmatrix},
+\quad
+W_V=
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+]
+
+## Derived matrices
+
+[
+Q=
+\begin{bmatrix}
+1 & 0 \
+0 & 1
+\end{bmatrix},
+\quad
+K=
+\begin{bmatrix}
+1 & 1 \
+0 & 1
+\end{bmatrix},
+\quad
+V=
+\begin{bmatrix}
+1 & 2 \
+3 & 4
+\end{bmatrix}
+]
+
+## Scores
+
+[
+QK^T=
+\begin{bmatrix}
+1 & 0 \
+1 & 1
+\end{bmatrix}
+]
+
+## Scaled scores
+
+[
+\frac{QK^T}{\sqrt{2}}
+\approx
+\begin{bmatrix}
+0.707 & 0 \
+0.707 & 0.707
+\end{bmatrix}
+]
+
+## Attention weights
+
+[
+A=
+\begin{bmatrix}
+0.670 & 0.330 \
+0.500 & 0.500
+\end{bmatrix}
+]
+
+## Output
+
+[
+O=AV=
+\begin{bmatrix}
+1.660 & 2.660 \
+2.000 & 3.000
+\end{bmatrix}
+]
+
+---
+
+# One very important insight
+
+Self-attention does **not** just copy vectors.
+
+It builds each output token as:
+
+[
+\text{new token representation}
+===============================
+
+\sum_j \text{attention weight}_{ij} \cdot V_j
+]
+
+So each token becomes a **weighted mixture** of all tokens.
+
+That is why transformers can capture context.
+
+---
+
+# If you want to go one step further
+
+The next natural step is to show one of these:
+
+1. **masked self-attention by hand** for GPT-style models
+2. **multi-head attention by hand** with two tiny heads
+3. **full transformer block by hand**: self-attention + residual + layer norm + FFN
 
 
