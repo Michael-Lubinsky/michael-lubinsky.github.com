@@ -783,11 +783,13 @@ Vol.3 (Sequences and NLP): <http://amzn.to/49bh5h2>
 
 Ml by hand : <https://github.com/workofart/ml-by-hand>
 
-https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
+<https://www.amazon.com/dp/1633436586/> Deep Learning with PyTorch
 
-https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/
+<https://machinelearningmastery.com/pytorch-tutorial-develop-deep-learning-models/>
 
-https://habr.com/ru/companies/netologyru/articles/995500/
+<https://habr.com/ru/companies/netologyru/articles/995500/>
+
+<https://www.youtube.com/watch?v=E0bwEAWmVEM>
 
 https://habr.com/ru/companies/otus/articles/975328/ модель множественной регрессии с нуля
 
