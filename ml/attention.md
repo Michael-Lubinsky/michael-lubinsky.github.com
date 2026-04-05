@@ -36,6 +36,7 @@ https://news.ycombinator.com/item?id=45002896
  **2\. Learnable Linear Transformations (Weight Matrices)**
 
 Projecting input strings into Query (Q), Key (K), and Value (V) vectors for each word is a core component of self-attention mechanisms, notably the Transformer architecture.  
+
 The magic of projecting into Q, K, and V vectors lies in **learnable linear transformations**. For each word embedding, you multiply it by three different weight matrices:
 
 $W^Q$ (Weight Matrix for Queries)  
@@ -44,10 +45,11 @@ $W^V$ (Weight Matrix for Values)
 
 These weight matrices are parameters of the model that are learned during the training process (e.g., via backpropagation and gradient descent). Each matrix has a specific dimensionality:
 
-If your word embedding has dimension $d_{model}$ (e.g., 512), and you want your Q, K, V vectors to have dimension $d_k$ (often $d_{model} / h$, where $h$ is the number of attention heads), then:
-$W^Q$ will be of shape $(d_{model}, d_k)$
-$W^K$ will be of shape $(d_{model}, d_k)$
+If your word embedding has dimension $d_{model}$ (e.g., 512), and you want your Q, K, V vectors to have dimension $d_k$ (often $d_{model} / h$, where $h$ is the number of attention heads), then:  
+$W^Q$ will be of shape $(d_{model}, d_k)$  
+$W^K$ will be of shape $(d_{model}, d_k)$  
 $W^V$ will be of shape $(d_{model}, d_v)$ (where $d_v$ is often equal to $d_k$, but can be different)
+
 3. The Projection Calculation
 For each word's embedding ($Emb_{word}$), you perform the following matrix multiplications:
 
@@ -160,7 +162,8 @@ print("Attention Weights:\n", attn_weights)
 print("\nOutput:\n", output)
 ```
 
-What Does This Code Do?
+What Does This Code Do?  
+
 Each "word" is a 4D vector (think embedding).
 
 W_q, W_k, and W_v project the inputs to Query, Key, and Value spaces.
@@ -1113,5 +1116,697 @@ next_token = sample(nucleus)
 
 This is a complex, multi-stage process requiring enormous computational resources (millions of GPU hours), sophisticated engineering, and careful tuning. Modern frontier models (GPT-4, Claude 3, Gemini) represent the culmination of all these techniques applied at unprecedented scale.
 
+Absolutely. I’ll go step by step.
+
+---
+
+# 1. Exact PyTorch code implementing this
+
+Here is a small self-contained example of the main transformer embedding flow:
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+torch.manual_seed(0)
+
+# Example sizes
+batch_size = 2
+seq_len = 4
+vocab_size = 100
+d_model = 8
+d_k = 8
+
+# Example token ids: shape [batch_size, seq_len]
+token_ids = torch.tensor([
+    [5, 12, 7, 9],
+    [3, 7, 0, 0]
+])
+
+# 1) Token embedding table
+token_embedding = nn.Embedding(vocab_size, d_model)
+
+# 2) Positional embedding table
+position_embedding = nn.Embedding(seq_len, d_model)
+
+# Position ids: [0, 1, 2, 3]
+position_ids = torch.arange(seq_len).unsqueeze(0)   # shape [1, seq_len]
+
+# Initial token vectors
+x_tok = token_embedding(token_ids)                  # [2, 4, 8]
+
+# Positional vectors
+x_pos = position_embedding(position_ids)            # [1, 4, 8]
+
+# Add token + position
+x = x_tok + x_pos                                   # [2, 4, 8]
+
+print("x shape:", x.shape)
+
+# 3) Linear layers for Q, K, V
+W_Q = nn.Linear(d_model, d_k, bias=False)
+W_K = nn.Linear(d_model, d_k, bias=False)
+W_V = nn.Linear(d_model, d_k, bias=False)
+
+Q = W_Q(x)                                          # [2, 4, 8]
+K = W_K(x)                                          # [2, 4, 8]
+V = W_V(x)                                          # [2, 4, 8]
+
+print("Q shape:", Q.shape)
+print("K shape:", K.shape)
+print("V shape:", V.shape)
+
+# 4) Attention scores
+scores = torch.matmul(Q, K.transpose(-2, -1)) / (d_k ** 0.5)   # [2, 4, 4]
+print("scores shape:", scores.shape)
+
+# 5) Softmax over keys dimension
+attn_weights = F.softmax(scores, dim=-1)           # [2, 4, 4]
+print("attn_weights shape:", attn_weights.shape)
+
+# 6) Weighted sum of values
+attn_output = torch.matmul(attn_weights, V)        # [2, 4, 8]
+print("attn_output shape:", attn_output.shape)
+
+# 7) Feed-forward layer
+ffn = nn.Sequential(
+    nn.Linear(d_model, 16),
+    nn.ReLU(),
+    nn.Linear(16, d_model)
+)
+
+output = ffn(attn_output)                          # [2, 4, 8]
+print("output shape:", output.shape)
+```
+
+---
+
+## What each tensor means
+
+### Input token IDs
+
+```python
+token_ids.shape == [batch_size, seq_len]
+```
+
+Here:
+
+* batch size = 2
+* sequence length = 4
+
+---
+
+### Embedding lookup
+
+```python
+x_tok = token_embedding(token_ids)
+```
+
+This converts each integer token id into a dense vector.
+
+Shape:
+
+```python
+[2, 4, 8]
+```
+
+Meaning:
+
+* 2 sequences
+* 4 tokens per sequence
+* each token represented by 8 numbers
+
+---
+
+### Add positional embeddings
+
+```python
+x = x_tok + x_pos
+```
+
+Now each token vector contains:
+
+* token identity
+* token position
+
+---
+
+### Compute Q, K, V
+
+```python
+Q = W_Q(x)
+K = W_K(x)
+V = W_V(x)
+```
+
+These are learned linear projections.
+
+Each token vector becomes:
+
+* a query
+* a key
+* a value
+
+---
+
+### Attention scores
+
+```python
+scores = Q @ K.transpose(-2, -1) / sqrt(d_k)
+```
+
+For each token, this computes how strongly it should attend to every other token.
+
+Shape:
+
+```python
+[2, 4, 4]
+```
+
+For each sequence:
+
+* 4 query tokens
+* 4 key tokens
+
+So each token gets 4 attention scores.
+
+---
+
+### Softmax
+
+```python
+attn_weights = softmax(scores, dim=-1)
+```
+
+This converts raw scores into probabilities.
+
+Each row sums to 1.
+
+---
+
+### Weighted sum
+
+```python
+attn_output = attn_weights @ V
+```
+
+Each token now becomes a weighted mixture of all value vectors.
+
+That is the core of self-attention.
+
+---
+
+# 2. How gradients update embeddings
+
+Now the key training idea.
+
+Suppose we have:
+
+* input tokens
+* model output
+* loss function
+
+Then PyTorch computes gradients by backpropagation.
+
+Here is a minimal example:
+
+```python
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+torch.manual_seed(0)
+
+vocab_size = 10
+d_model = 6
+num_classes = 3
+
+embedding = nn.Embedding(vocab_size, d_model)
+linear = nn.Linear(d_model, num_classes)
+
+# Input token ids
+token_ids = torch.tensor([2, 5, 2, 8])   # shape [4]
+
+# Target classes for each token
+targets = torch.tensor([1, 0, 1, 2])     # shape [4]
+
+# Forward pass
+x = embedding(token_ids)                  # [4, 6]
+logits = linear(x)                        # [4, 3]
+loss = F.cross_entropy(logits, targets)
+
+print("loss:", loss.item())
+
+# Backward pass
+loss.backward()
+
+print("Gradient for embedding table shape:", embedding.weight.grad.shape)
+print("Gradient for token 2:", embedding.weight.grad[2])
+print("Gradient for token 5:", embedding.weight.grad[5])
+print("Gradient for token 8:", embedding.weight.grad[8])
+```
+
+---
+
+## What is happening mathematically
+
+Embedding lookup is basically:
+
+[
+x_i = E[t_i]
+]
+
+where:
+
+* (E) is the embedding matrix
+* (t_i) is token index
+* (x_i) is selected row
+
+So if token 5 appears, the model uses row 5 of the embedding table.
+
+During backpropagation, PyTorch computes:
+
+[
+\frac{\partial L}{\partial E}
+]
+
+But only rows corresponding to tokens used in the batch receive nonzero gradients.
+
+So if the input tokens are:
+
+```python
+[2, 5, 2, 8]
+```
+
+then rows:
+
+* 2
+* 5
+* 8
+
+get updated.
+
+Rows not used in this batch get zero gradient.
+
+---
+
+## Update step
+
+A simple SGD update is:
+
+[
+E \leftarrow E - \eta \frac{\partial L}{\partial E}
+]
+
+where:
+
+* (E) = embedding matrix
+* (\eta) = learning rate
+
+So token vectors gradually move to reduce prediction error.
+
+---
+
+## Intuition
+
+If the model made a bad prediction after reading token `"cat"`, then the embedding vector for `"cat"` gets nudged.
+
+Over many examples:
+
+* tokens with similar roles get similar vectors
+* useful semantic structure emerges
+
+---
+
+# 3. Why attention uses (1 / \sqrt{d_k})
+
+The attention formula is:
+
+[
+\text{Attention}(Q,K,V) =
+\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+]
+
+The scaling by (\sqrt{d_k}) is there to keep numbers well behaved.
+
+---
+
+## The problem without scaling
+
+Dot product:
+
+[
+q \cdot k = \sum_{j=1}^{d_k} q_j k_j
+]
+
+If (d_k) is large, this sum can become large in magnitude.
+
+For example, if components are roughly mean 0 and variance 1, then:
+
+[
+\mathrm{Var}(q \cdot k) \approx d_k
+]
+
+So the standard deviation grows like:
+
+[
+\sqrt{d_k}
+]
+
+That means as dimension grows, raw attention scores get bigger.
+
+---
+
+## Why that is bad
+
+Softmax is sensitive to large inputs.
+
+If raw scores become too large, softmax becomes very sharp:
+
+```text
+[12.1, 0.3, -1.2, 8.7]
+```
+
+After softmax, one entry may become almost 1 and the rest almost 0.
+
+That causes:
+
+* poor gradient flow
+* unstable training
+* overly peaky attention too early
+
+---
+
+## Scaling fixes it
+
+Dividing by (\sqrt{d_k}) normalizes the score magnitude:
+
+[
+\frac{q \cdot k}{\sqrt{d_k}}
+]
+
+Now variance stays roughly constant instead of growing with dimension.
+
+This keeps softmax in a healthier range.
+
+---
+
+## Intuition
+
+Without scaling:
+
+* bigger vector dimension → bigger dot products → saturated softmax
+
+With scaling:
+
+* attention scores stay numerically reasonable
+
+---
+
+## Tiny numeric illustration
+
+Suppose:
+
+[
+q \cdot k = 40
+]
+
+Softmax on scores like `[40, 39, 10]` is almost one-hot.
+
+But dividing by (\sqrt{64} = 8):
+
+[
+40 / 8 = 5
+]
+
+Now scores like `[5, 4.875, 1.25]` are less extreme, so gradients remain useful.
+
+---
+
+# 4. How embeddings are used in RAG systems
+
+RAG = Retrieval-Augmented Generation.
+
+Main idea:
+
+* convert documents and question into embeddings
+* find documents whose embeddings are closest to the question embedding
+* give those documents to the LLM as context
+
+---
+
+## RAG pipeline
+
+### Step 1. Split documents into chunks
+
+Example document:
+
+```text
+Databricks supports Delta Lake and Unity Catalog...
+```
+
+Split into chunks, for example 200–500 tokens each.
+
+So you get:
+
+* chunk 1
+* chunk 2
+* chunk 3
+* ...
+
+---
+
+### Step 2. Compute embeddings for chunks
+
+Each chunk becomes a vector:
+
+[
+c_1, c_2, \dots, c_n \in \mathbb{R}^d
+]
+
+Store them in a vector database.
+
+---
+
+### Step 3. Compute embedding for user query
+
+User asks:
+
+```text
+How does Unity Catalog handle permissions?
+```
+
+Convert query into embedding:
+
+[
+q \in \mathbb{R}^d
+]
+
+---
+
+### Step 4. Similarity search
+
+Compare query embedding to document chunk embeddings.
+
+Often cosine similarity:
+
+[
+\cos(q, c_i) = \frac{q \cdot c_i}{|q| |c_i|}
+]
+
+Retrieve top-k most similar chunks.
+
+For example:
+
+* chunk 12
+* chunk 48
+* chunk 103
+
+---
+
+### Step 5. Build prompt for the LLM
+
+The prompt becomes something like:
+
+```text
+Question:
+How does Unity Catalog handle permissions?
+
+Relevant context:
+[chunk 12 text]
+[chunk 48 text]
+[chunk 103 text]
+
+Answer based on the context above.
+```
+
+---
+
+### Step 6. LLM generates answer
+
+Now the LLM answers using:
+
+* its internal knowledge
+* retrieved external context
+
+That is the “retrieval-augmented” part.
+
+---
+
+# Why embeddings help in RAG
+
+Keyword search only matches exact words.
+
+Embedding search matches meaning.
+
+Example:
+
+Document says:
+
+```text
+access control in Unity Catalog is managed through grants
+```
+
+User asks:
+
+```text
+how are permissions handled in Unity Catalog?
+```
+
+Keyword overlap may be limited, but embedding vectors can still be close because they have similar meaning.
+
+---
+
+# Typical RAG architecture
+
+```text
+documents
+   ↓
+chunking
+   ↓
+embedding model
+   ↓
+vector database
+
+user query
+   ↓
+embedding model
+   ↓
+similarity search
+   ↓
+top relevant chunks
+   ↓
+LLM prompt
+   ↓
+answer
+```
+
+---
+
+# Small Python-style pseudocode for RAG
+
+```python
+documents = [
+    "Unity Catalog controls access to data using grants and privileges.",
+    "Delta Lake provides ACID transactions for data lakes.",
+    "Databricks clusters can run batch and streaming jobs."
+]
+
+# Offline indexing
+doc_embeddings = embed(documents)   # shape [3, d]
+
+# User query
+query = "How does Unity Catalog manage permissions?"
+query_embedding = embed([query])    # shape [1, d]
+
+# Similarity search
+scores = cosine_similarity(query_embedding, doc_embeddings)
+top_docs = pick_top_k(documents, scores, k=2)
+
+# Build LLM prompt
+prompt = f"""
+Answer the question using the context below.
+
+Question:
+{query}
+
+Context:
+{top_docs[0]}
+{top_docs[1]}
+"""
+```
+
+---
+
+# Important detail: sentence/document embeddings vs token embeddings
+
+Inside transformers, every token has its own contextual vector.
+
+But RAG usually needs one vector per whole chunk.
+
+So embedding models often do one of these:
+
+## CLS token
+
+Use the final hidden state of a special token:
+
+[
+e_{\text{doc}} = h_{\text{[CLS]}}
+]
+
+## Mean pooling
+
+Average all token embeddings:
+
+[
+e_{\text{doc}} = \frac{1}{n} \sum_{i=1}^{n} h_i
+]
+
+Mean pooling is very common.
+
+---
+
+# One subtle but important point
+
+The embeddings used for RAG are usually produced by a model trained specifically for retrieval.
+
+That means:
+
+* queries with similar intent map near relevant passages
+* passages that answer a query are near that query
+
+This is a bit different from the internal token embeddings used during next-token prediction.
+
+---
+
+# Big picture summary
+
+## In transformers
+
+1. Token id is mapped to embedding vector
+2. Positional info is added
+3. Self-attention mixes token information
+4. Feed-forward layers transform representations
+5. Final token embeddings become context-aware
+
+## During training
+
+* loss is computed
+* gradients flow backward
+* embedding rows for used tokens are updated
+
+## The (1/\sqrt{d_k}) factor
+
+* prevents dot products from getting too large
+* keeps softmax stable
+* improves gradient flow
+
+## In RAG
+
+* documents and queries are converted to vectors
+* nearest vectors are retrieved
+* retrieved text is passed to the LLM as context
+ 
 
 
