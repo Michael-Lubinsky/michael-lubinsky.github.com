@@ -4,6 +4,8 @@
 
 <https://poloclub.github.io/transformer-explainer/>
 
+<https://imaddabbura.github.io/posts/nlp/Transformer-Architecture-Explained.html>
+
 <https://habr.com/ru/articles/1012218/>
 
 <https://www.vizuaranewsletter.com/p/the-transformers>   
@@ -29,17 +31,17 @@
 <https://www.youtube.com/watch?v=1vPqIweQh_U>
 LLM, трансформеры, внимательно разбираем внутренности
 
-Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов: https://habr.com/ru/companies/yandex_praktikum/articles/986742/
+Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов: <https://habr.com/ru/companies/yandex_praktikum/articles/986742/>
 
 <https://bbycroft.net/llm>
 
-https://www.youtube.com/watch?v=iOrNbK2T92M
+<https://www.youtube.com/watch?v=iOrNbK2T92M>
 
 https://habr.com/ru/companies/wunderfund/articles/974300/ Transformer, explained in detail | Igor Kotenkov | NLP Lecture (in Russian)
 
-https://habr.com/ru/articles/982820/
+<https://habr.com/ru/articles/982820/>
 
-https://arpitbhayani.me/blogs/qkv-matrices
+<https://arpitbhayani.me/blogs/qkv-matrices>
 
 https://news.ycombinator.com/item?id=46523887
 
