@@ -66,12 +66,14 @@ https://stasosphere.com/machine-learning/
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
-## Activation Functions GLU, SwiGLU, ReLU, softmax
+## Activation Functions GLU, SwiGLU, ReLU, softmax, cross-entropy
 
 https://www.byhand.ai/p/swiglu-the-activation-function-behind?
 
 
 <https://newsletter.systemdesign.one/p/what-is-reinforcement-learning>
+
+<https://imaddabbura.github.io/posts/dl/why-not-softmax.html>
 
 ## ML Books
 
