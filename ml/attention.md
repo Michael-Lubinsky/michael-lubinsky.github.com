@@ -1370,11 +1370,11 @@ print("Gradient for token 8:", embedding.weight.grad[8])
 ## What is happening mathematically
 
 Embedding lookup is basically:
-
+$
 [
 x_i = E[t_i]
 ]
-
+$
 where:
 
 * (E) is the embedding matrix
@@ -1453,25 +1453,25 @@ The scaling by (\sqrt{d_k}) is there to keep numbers well behaved.
 ## The problem without scaling
 
 Dot product:
-
+$
 [
 q \cdot k = \sum_{j=1}^{d_k} q_j k_j
 ]
-
+$
 If (d_k) is large, this sum can become large in magnitude.
 
 For example, if components are roughly mean 0 and variance 1, then:
-
+$
 [
 \mathrm{Var}(q \cdot k) \approx d_k
 ]
-
+$
 So the standard deviation grows like:
-
+$
 [
 \sqrt{d_k}
 ]
-
+$
 That means as dimension grows, raw attention scores get bigger.
 
 ---
@@ -1499,11 +1499,11 @@ That causes:
 ## Scaling fixes it
 
 Dividing by (\sqrt{d_k}) normalizes the score magnitude:
-
+$
 [
 \frac{q \cdot k}{\sqrt{d_k}}
 ]
-
+$
 Now variance stays roughly constant instead of growing with dimension.
 
 This keeps softmax in a healthier range.
@@ -1525,19 +1525,19 @@ With scaling:
 ## Tiny numeric illustration
 
 Suppose:
-
+$
 [
 q \cdot k = 40
 ]
-
+$
 Softmax on scores like `[40, 39, 10]` is almost one-hot.
 
 But dividing by (\sqrt{64} = 8):
-
+$
 [
 40 / 8 = 5
 ]
-
+$
 Now scores like `[5, 4.875, 1.25]` are less extreme, so gradients remain useful.
 
 ---
@@ -1578,11 +1578,11 @@ So you get:
 ### Step 2. Compute embeddings for chunks
 
 Each chunk becomes a vector:
-
+$4
 [
 c_1, c_2, \dots, c_n \in \mathbb{R}^d
 ]
-
+$
 Store them in a vector database.
 
 ---
@@ -1596,11 +1596,11 @@ How does Unity Catalog handle permissions?
 ```
 
 Convert query into embedding:
-
+$
 [
 q \in \mathbb{R}^d
 ]
-
+$
 ---
 
 ### Step 4. Similarity search
@@ -1608,11 +1608,11 @@ q \in \mathbb{R}^d
 Compare query embedding to document chunk embeddings.
 
 Often cosine similarity:
-
+$
 [
 \cos(q, c_i) = \frac{q \cdot c_i}{|q| |c_i|}
 ]
-
+$
 Retrieve top-k most similar chunks.
 
 For example:
@@ -1748,19 +1748,19 @@ So embedding models often do one of these:
 ## CLS token
 
 Use the final hidden state of a special token:
-
+$
 [
 e_{\text{doc}} = h_{\text{[CLS]}}
 ]
-
+$
 ## Mean pooling
 
 Average all token embeddings:
-
+$
 [
 e_{\text{doc}} = \frac{1}{n} \sum_{i=1}^{n} h_i
 ]
-
+$
 Mean pooling is very common.
 
 ---
@@ -1821,11 +1821,11 @@ I’ll keep it very small:
 # Goal
 
 We want to compute:
-
+$
 [
 \text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
 ]
-
+$
 with actual numbers.
 
 ---
@@ -1833,7 +1833,7 @@ with actual numbers.
 # Step 1. Input token representations
 
 Suppose after token embedding + positional embedding we already have these 2 token vectors:
-
+$
 [
 X =
 \begin{bmatrix}
@@ -1841,18 +1841,18 @@ X =
 0 & 1
 \end{bmatrix}
 ]
-
+$
 Interpretation:
 
 * token 1 vector = ([1,0])
 * token 2 vector = ([0,1])
 
 Shape:
-
+$
 [
 X \in \mathbb{R}^{2 \times 2}
 ]
-
+$
 Here:
 
 * number of tokens (n=2)
@@ -1865,7 +1865,7 @@ Here:
 Let’s choose simple matrices for (W_Q), (W_K), (W_V).
 
 ## Query matrix
-
+$
 [
 W_Q =
 \begin{bmatrix}
@@ -1873,9 +1873,9 @@ W_Q =
 0 & 1
 \end{bmatrix}
 ]
-
+$
 ## Key matrix
-
+$
 [
 W_K =
 \begin{bmatrix}
@@ -1883,9 +1883,9 @@ W_K =
 0 & 1
 \end{bmatrix}
 ]
-
+$
 ## Value matrix
-
+$
 [
 W_V =
 \begin{bmatrix}
@@ -1893,7 +1893,7 @@ W_V =
 3 & 4
 \end{bmatrix}
 ]
-
+$
 All are (2 \times 2).
 
 ---
@@ -1901,15 +1901,15 @@ All are (2 \times 2).
 # Step 3. Compute Q, K, V
 
 We use:
-
+$
 [
 Q = XW_Q,\quad K = XW_K,\quad V = XW_V
 ]
-
+$
 ---
 
 ## Compute (Q)
-
+$
 [
 Q=
 \begin{bmatrix}
@@ -1920,14 +1920,14 @@ Q=
 1 & 0 \
 0 & 1
 \end{bmatrix}
-=============
+ 
 
 \begin{bmatrix}
 1 & 0 \
 0 & 1
 \end{bmatrix}
 ]
-
+$
 So:
 
 * query for token 1 = ([1,0])
@@ -1936,7 +1936,7 @@ So:
 ---
 
 ## Compute (K)
-
+$
 [
 K=
 \begin{bmatrix}
@@ -1954,7 +1954,7 @@ K=
 0 & 1
 \end{bmatrix}
 ]
-
+$
 So:
 
 * key for token 1 = ([1,1])
@@ -1963,7 +1963,7 @@ So:
 ---
 
 ## Compute (V)
-
+$
 [
 V=
 \begin{bmatrix}
@@ -1981,7 +1981,7 @@ V=
 3 & 4
 \end{bmatrix}
 ]
-
+$
 So:
 
 * value for token 1 = ([1,2])
@@ -1992,13 +1992,13 @@ So:
 # Step 4. Compute raw attention scores
 
 We calculate:
-
+$
 [
 S = QK^T
 ]
-
+$
 First compute (K^T):
-
+$
 [
 K^T=
 \begin{bmatrix}
@@ -2006,9 +2006,9 @@ K^T=
 1 & 1
 \end{bmatrix}
 ]
-
+$
 Now multiply:
-
+$
 [
 S=
 \begin{bmatrix}
@@ -2026,9 +2026,9 @@ S=
 1 & 1
 \end{bmatrix}
 ]
-
+$
 So raw scores are:
-
+$
 [
 S=
 \begin{bmatrix}
@@ -2036,7 +2036,7 @@ S=
 1 & 1
 \end{bmatrix}
 ]
-
+$
 Interpretation:
 
 * row 1 = how token 1 attends to token 1 and token 2
@@ -2052,13 +2052,13 @@ More explicitly:
 # Step 5. Scale by (\sqrt{d_k})
 
 Here (d_k = 2), so:
-
+$
 [
 \sqrt{d_k}=\sqrt{2}\approx 1.414
 ]
-
+$
 Scaled scores:
-
+$
 [
 \hat S = \frac{S}{\sqrt{2}}
 ===========================
@@ -2073,7 +2073,7 @@ Scaled scores:
 0.707 & 0.707
 \end{bmatrix}
 ]
-
+$
 ---
 
 # Step 6. Apply softmax row by row
@@ -2085,25 +2085,25 @@ Softmax is applied to each row separately.
 ## Row 1 softmax
 
 Row 1 is:
-
+$
 [
 [0.707,\ 0]
 ]
-
+$
 Exponentials:
-
+$
 [
 e^{0.707}\approx 2.028,\qquad e^0=1
 ]
-
+$
 Sum:
-
+$
 [
 2.028+1=3.028
 ]
-
+$
 So softmax row 1:
-
+$
 [
 \left[
 \frac{2.028}{3.028},\ \frac{1}{3.028}
@@ -2111,7 +2111,7 @@ So softmax row 1:
 \approx
 [0.670,\ 0.330]
 ]
-
+$
 So token 1 attends:
 
 * 67.0% to token 1
@@ -2122,35 +2122,35 @@ So token 1 attends:
 ## Row 2 softmax
 
 Row 2 is:
-
+$
 [
 [0.707,\ 0.707]
 ]
-
+$
 Exponentials:
-
+$
 [
 e^{0.707}=2.028,\qquad e^{0.707}=2.028
 ]
-
+$
 Sum:
-
+$
 [
 2.028+2.028=4.056
 ]
-
+$
 Softmax row 2:
-
+$
 [
 [0.5,\ 0.5]
 ]
-
+$
 So token 2 attends equally to both tokens.
 
 ---
 
 ## Full attention-weight matrix
-
+$
 [
 A=\text{softmax}(\hat S)
 ========================
@@ -2160,19 +2160,19 @@ A=\text{softmax}(\hat S)
 0.500 & 0.500
 \end{bmatrix}
 ]
-
+$
 ---
 
 # Step 7. Multiply attention weights by V
 
 Now compute the output:
-
+$
 [
 O = AV
 ]
-
+$
 That is:
-
+$
 [
 O=
 \begin{bmatrix}
@@ -2184,7 +2184,7 @@ O=
 3 & 4
 \end{bmatrix}
 ]
-
+$
 Let’s do it row by row.
 
 ---
@@ -2192,67 +2192,67 @@ Let’s do it row by row.
 ## Output for token 1
 
 First row:
-
+$
 [
 [0.670,\ 0.330]
 ]
-
+$
 Multiply by (V):
 
 ### First component
-
+$
 [
 0.670\cdot 1 + 0.330\cdot 3
 = 0.670 + 0.990
 = 1.660
 ]
-
+$
 ### Second component
-
+$
 [
 0.670\cdot 2 + 0.330\cdot 4
 = 1.340 + 1.320
 = 2.660
 ]
-
+$
 So output for token 1 is:
-
+$
 [
 [1.660,\ 2.660]
 ]
-
+$
 ---
 
 ## Output for token 2
 
 Second row:
-
+$
 [
 [0.500,\ 0.500]
 ]
-
+$
 ### First component
-
+$
 [
 0.5\cdot 1 + 0.5\cdot 3 = 2
 ]
-
+$
 ### Second component
-
+$
 [
 0.5\cdot 2 + 0.5\cdot 4 = 3
 ]
-
+$
 So output for token 2 is:
-
+$
 [
 [2,\ 3]
 ]
-
+$
 ---
 
 ## Final output matrix
-
+$
 [
 O=
 \begin{bmatrix}
@@ -2260,7 +2260,7 @@ O=
 2.000 & 3.000
 \end{bmatrix}
 ]
-
+$
 ---
 
 # Final interpretation
@@ -2284,43 +2284,43 @@ These are now **context-aware** because each token output is a weighted combinat
 ## Token 1
 
 Attention weights:
-
+$
 [
 [0.670,\ 0.330]
 ]
-
+$
 So token 1 mostly looked at itself, but also partly at token 2.
 
 Its new vector became:
-
+$
 [
 0.670\cdot [1,2] + 0.330\cdot [3,4]
 ]
-
+$
 ---
 
 ## Token 2
 
 Attention weights:
-
+$
 [
 [0.5,\ 0.5]
 ]
-
+$
 So token 2 equally mixed information from both tokens.
 
 Its new vector became:
-
+$
 [
 0.5\cdot [1,2] + 0.5\cdot [3,4]
 ]
-
+$
 ---
 
 # Compact summary of all matrices
 
 ## Input
-
+$
 [
 X=
 \begin{bmatrix}
@@ -2328,9 +2328,9 @@ X=
 0 & 1
 \end{bmatrix}
 ]
-
+$
 ## Projections
-
+$
 [
 W_Q=
 \begin{bmatrix}
@@ -2350,9 +2350,9 @@ W_V=
 3 & 4
 \end{bmatrix}
 ]
-
+$
 ## Derived matrices
-
+$
 [
 Q=
 \begin{bmatrix}
@@ -2372,9 +2372,9 @@ V=
 3 & 4
 \end{bmatrix}
 ]
-
+$
 ## Scores
-
+$
 [
 QK^T=
 \begin{bmatrix}
@@ -2382,9 +2382,9 @@ QK^T=
 1 & 1
 \end{bmatrix}
 ]
-
+$
 ## Scaled scores
-
+$
 [
 \frac{QK^T}{\sqrt{2}}
 \approx
@@ -2393,9 +2393,9 @@ QK^T=
 0.707 & 0.707
 \end{bmatrix}
 ]
-
+$
 ## Attention weights
-
+$
 [
 A=
 \begin{bmatrix}
@@ -2403,9 +2403,9 @@ A=
 0.500 & 0.500
 \end{bmatrix}
 ]
-
+$
 ## Output
-
+$
 [
 O=AV=
 \begin{bmatrix}
@@ -2413,7 +2413,7 @@ O=AV=
 2.000 & 3.000
 \end{bmatrix}
 ]
-
+$
 ---
 
 # One very important insight
@@ -2421,14 +2421,14 @@ O=AV=
 Self-attention does **not** just copy vectors.
 
 It builds each output token as:
-
+$
 [
 \text{new token representation}
 ===============================
 
 \sum_j \text{attention weight}_{ij} \cdot V_j
 ]
-
+$
 So each token becomes a **weighted mixture** of all tokens.
 
 That is why transformers can capture context.
