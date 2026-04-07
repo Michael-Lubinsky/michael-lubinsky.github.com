@@ -261,8 +261,6 @@ Tokenization: Split the string into tokens (e.g., words or subwords). For simpli
 Embedding: Convert each token into a dense vector (embedding) using an embedding layer.
 
 For a vocabulary and embedding dimension 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_{model} </annotation></semantics>
-</math> 
 
 $$  d_{model}  $$
 
@@ -402,7 +400,7 @@ These Q, K, V vectors are then used in the self-attention mechanism to compute a
 
 
 
-# Deep Dive: How LLM Training Works
+## Deep Dive: How LLM Training Works
 
 ## **1. Foundation: The Transformer Architecture**
 
@@ -1414,11 +1412,11 @@ Rows not used in this batch get zero gradient.
 ## Update step
 
 A simple SGD update is:
-
+$
 [
 E \leftarrow E - \eta \frac{\partial L}{\partial E}
 ]
-
+$
 where:
 
 * (E) = embedding matrix
@@ -1442,12 +1440,12 @@ Over many examples:
 # 3. Why attention uses (1 / \sqrt{d_k})
 
 The attention formula is:
-
+$
 [
 \text{Attention}(Q,K,V) =
 \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
 ]
-
+$
 The scaling by (\sqrt{d_k}) is there to keep numbers well behaved.
 
 ---
