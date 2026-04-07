@@ -1387,9 +1387,9 @@ So if token 5 appears, the model uses row 5 of the embedding table.
 
 During backpropagation, PyTorch computes:
 
-[
+$$
 \frac{\partial L}{\partial E}
-]
+$$
 
 But only rows corresponding to tokens used in the batch receive nonzero gradients.
 
