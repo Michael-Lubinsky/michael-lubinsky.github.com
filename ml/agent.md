@@ -78,6 +78,7 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 ## Skills
 
+<https://habr.com/ru/articles/1020786/>
  
 Это папка с файлом SKILL.md (YAML-метаданные + инструкции для агента) и опциональными скриптами/файлами/всё что может пригодиться:
 
