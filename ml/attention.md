@@ -55,11 +55,15 @@ $W^V$ will be of shape $(d_{model}, d_v)$
 3. The Projection Calculation
 For each word's embedding ($Emb_{word}$), you perform the following matrix multiplications:
 
-Query (Q) for word i: $ Q_i = Emb_{word_i} \cdot W^Q $
+Query (Q) for word i:  
+$Q_i = Emb_{word_i} \cdot W^Q$
 
-Key (K) for word i: $ K_i = Emb_{word_i} \cdot W^K $
+Key (K) for word i:   
+$ K_i = Emb_{word_i} \cdot W^K $
 
-Value (V) for word i: $ V_i = Emb_{word_i} \cdot W^V $
+Value (V) for word i: 
+$ V_i = Emb_{word_i} \cdot W^V $
+
 Example with "The quick brown fox":
 
 Let's assume our word embeddings ($Emb$) are 512-dimensional vectors, and we want our Q, K, V vectors to be 64-dimensional.
