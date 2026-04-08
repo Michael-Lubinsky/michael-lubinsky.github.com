@@ -59,10 +59,10 @@ Query (Q) for word i:
 $Q_i = Emb_{word_i} \cdot W^Q$
 
 Key (K) for word i:   
-$ K_i = Emb_{word_i} \cdot W^K $
+$K_i = Emb_{word_i} \cdot W^K$
 
 Value (V) for word i: 
-$ V_i = Emb_{word_i} \cdot W^V $
+$V_i = Emb_{word_i} \cdot W^V$
 
 Example with "The quick brown fox":
 
