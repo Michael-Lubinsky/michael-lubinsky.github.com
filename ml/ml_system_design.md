@@ -1,6 +1,6 @@
 ## ML System Design
 
-Data Engineering for Large Models: Architecture, Algorithms & Projects
+Data Engineering for Large Models: Architecture, Algorithms & Projects  
 <https://datascale-ai.github.io/data_engineering_book/en/>
 
 <https://www.ssp.sh/brain/data-engineering/>
@@ -17,22 +17,23 @@ I own this Manning book: Machine Learning Platform Engineering.
 Build an internal developer platform for ML and AI systems.  
 Benjamin Tan, Wei Hao, Shanoop Padmanabhan , Varun Mallya
 
+<https://habr.com/ru/companies/ruvds/articles/1013854/>
 
-https://datascale-ai.github.io/data_engineering_book/  for LLMs
+<https://datascale-ai.github.io/data_engineering_book/>  for LLMs
 
-https://habr.com/ru/companies/tochka/articles/976892/
+<https://habr.com/ru/companies/tochka/articles/976892/>
 
-https://habr.com/ru/companies/ruvds/articles/990814/
+<https://habr.com/ru/companies/ruvds/articles/990814/>
 
 https://metaflow.org/
 
-https://mlip-cmu.github.io/book/
+<https://mlip-cmu.github.io/book/>
 
-https://github.com/EthicalML/awesome-production-machine-learning/
+<https://github.com/EthicalML/awesome-production-machine-learning/>
 
-https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md   
+<https://github.com/alirezadir/Machine-Learning-Interviews/blob/main/src/MLSD/ml-system-design.md>   
 
-https://habr.com/ru/articles/920030/
+<https://habr.com/ru/articles/920030/>
 
 https://habr.com/ru/companies/wunderfund/articles/927894/  Uber pipeline
 
