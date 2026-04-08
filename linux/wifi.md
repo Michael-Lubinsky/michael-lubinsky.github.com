@@ -1,4 +1,8 @@
 ## How WiFi and Radio Works
+
+<img width="1560" height="794" alt="image" src="https://github.com/user-attachments/assets/013fd697-4d36-42f6-a2ea-afa5def4d744" />
+
+
 <https://habr.com/ru/articles/1017728/>
 
 <https://lcamtuf.substack.com/p/radios-how-do-they-work>
@@ -6,6 +10,8 @@
 book   by Paul Nahin, 'The Science of Radio'.
 
 <https://habr.com/ru/companies/yadro/articles/921236/>
+
+<https://habr.com/ru/companies/bastion/articles/1019404/>
 
 ## 📡 Wireless KPI Metrics and Events
 
