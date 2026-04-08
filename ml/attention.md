@@ -48,7 +48,9 @@ These weight matrices are parameters of the model that are learned during the tr
 If your word embedding has dimension $d_{model}$ (e.g., 512), and you want your Q, K, V vectors to have dimension $d_k$ (often $d_{model} / h$, where $h$ is the number of attention heads), then:  
 $W^Q$ will be of shape $(d_{model}, d_k)$  
 $W^K$ will be of shape $(d_{model}, d_k)$  
-$W^V$ will be of shape $(d_{model}, d_v)$ (where $d_v$ is often equal to $d_k$, but can be different)
+$W^V$ will be of shape $(d_{model}, d_v)$ 
+
+(where $d_v$ is often equal to $d_k$, but can be different)
 
 3. The Projection Calculation
 For each word's embedding ($Emb_{word}$), you perform the following matrix multiplications:
