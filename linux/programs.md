@@ -7,6 +7,7 @@
 MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>  
 Visidata <https://www.visidata.org/>
 
+<https://panwriter.com/> Markdown editor
 
 ### JSON tools
 command-line json viewer <https://jless.io/> 
