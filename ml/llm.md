@@ -2,6 +2,9 @@
 
 <https://www.llm-visualized.com/>
 
+<https://www.intoai.pub/p/build-and-train-an-llm-from-scratch>
+
+
 <https://sebastianraschka.com/llm-architecture-gallery/>
 <https://habr.com/ru/articles/1011784/>  LLM architecture gallery
 
