@@ -1,5 +1,8 @@
 ## Auto-differentiation
 
+backpropagation
+<https://www.youtube.com/watch?v=tIeHLnjs5U8&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&index=4&pp=iAQB>
+
 <https://imaddabbura.github.io/posts/mlsys/automatic-differentiation.html>
 
 <https://habr.com/ru/articles/960970/>  gradient decent
