@@ -382,7 +382,7 @@ Repeat for "cat" (<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><m
 In practice, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_{model} </annotation></semantics></math> is larger (e.g., 512), and weight matrices are learned to capture meaningful projections.
 
 
-### Multi-Head Attention (Optional Context):
+### Multi-Head Attention:
 
 In Transformers, the above process is often done in multiple "heads," where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>Q</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>K</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> W^Q, W^K, W^V </annotation></semantics></math> are split into smaller matrices for each head, and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mi mathvariant="normal">/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model}/h </annotation></semantics></math>. 
 
