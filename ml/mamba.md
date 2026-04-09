@@ -27,6 +27,7 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://habr.com/ru/articles/1012998/>
 
+<https://www.youtube.com/watch?v=SAjIqNTyjJk> постобучение с RLVR и RLHF | Лекс Фридман
 
 ## Quantization
 
