@@ -1776,7 +1776,7 @@ I’ll keep it very small:
 
 # Goal
 
-We want to compute:
+We want to compute:  
 $[
 \text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
 ]$
@@ -1787,6 +1787,7 @@ with actual numbers.
 # Step 1. Input token representations
 
 Suppose after token embedding + positional embedding we already have these 2 token vectors:
+
 $[
 X =
 \begin{bmatrix}
@@ -1800,10 +1801,8 @@ Interpretation:
 * token 1 vector = ([1,0])
 * token 2 vector = ([0,1])
 
-Shape:
-$[
-X \in \mathbb{R}^{2 \times 2}
-]$
+Shape:  
+$[X \in \mathbb{R}^{2 \times 2}]$
 
 Here:
 
@@ -1817,6 +1816,7 @@ Here:
 Let’s choose simple matrices for (W_Q), (W_K), (W_V).
 
 ## Query matrix
+
 $[
 W_Q =
 \begin{bmatrix}
@@ -1826,6 +1826,7 @@ W_Q =
 ]$
 
 ## Key matrix
+
 $[
 W_K =
 \begin{bmatrix}
@@ -1835,6 +1836,7 @@ W_K =
 ]$
 
 ## Value matrix
+
 $[
 W_V =
 \begin{bmatrix}
@@ -1850,9 +1852,7 @@ All are (2 \times 2).
 # Step 3. Compute Q, K, V
 
 We use:
-$[
-Q = XW_Q,\quad K = XW_K,\quad V = XW_V
-]$
+$[Q = XW_Q,\quad K = XW_K,\quad V = XW_V]$
 
 
 ## Compute (Q)
