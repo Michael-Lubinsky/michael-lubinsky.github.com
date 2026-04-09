@@ -1789,7 +1789,7 @@ Suppose after token embedding + positional embedding we already have these 2 tok
 $$
 X =
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
 $$
@@ -1815,33 +1815,33 @@ Let’s choose simple matrices for (W_Q), (W_K), (W_V).
 
 ## Query matrix
 
-$[
+$$
 W_Q =
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
-]$
+$$
 
 ## Key matrix
 
-$[
+$$
 W_K =
 \begin{bmatrix}
-1 & 1 \
+1 & 1 \\
 0 & 1
 \end{bmatrix}
-]$
+$$
 
 ## Value matrix
 
-$[
+$$
 W_V =
 \begin{bmatrix}
-1 & 2 \
+1 & 2 \\
 3 & 4
 \end{bmatrix}
-]$
+$$
 
 All are (2 \times 2).
 
@@ -1854,23 +1854,23 @@ $[Q = XW_Q,\quad K = XW_K,\quad V = XW_V]$
 
 
 ## Compute (Q)
-$[
+$$
 Q=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
  
 
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
-]$
+$$
 
 So:
 
@@ -1880,23 +1880,23 @@ So:
 ---
 
 ## Compute (K)
-$[
+$$
 K=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
 \begin{bmatrix}
-1 & 1 \
+1 & 1 \\
 0 & 1
 \end{bmatrix}
 
 
 \begin{bmatrix}
-1 & 1 \
+1 & 1 \\
 0 & 1
 \end{bmatrix}
-]$
+$$
 
 So:
 
@@ -1906,23 +1906,23 @@ So:
 ---
 
 ## Compute (V)
-$[
+$$
 V=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
 \begin{bmatrix}
-1 & 2 \
+1 & 2 \\
 3 & 4
 \end{bmatrix}
 
 
 \begin{bmatrix}
-1 & 2 \
+1 & 2 \\
 3 & 4
 \end{bmatrix}
-]$
+$$
 
 So:
 
@@ -1934,45 +1934,43 @@ So:
 # Step 4. Compute raw attention scores
 
 We calculate:
-$[
-S = QK^T
-]$
+$S = QK^T$
 
 First compute (K^T):
-$[
+$$
 K^T=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 1 & 1
 \end{bmatrix}
-]$
+$$
 
 Now multiply:
-$[
+$$
 S=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 0 & 1
 \end{bmatrix}
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 1 & 1
 \end{bmatrix}
  
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 1 & 1
 \end{bmatrix}
-]$
+$$
 
 So raw scores are:
-$[
+$$
 S=
 \begin{bmatrix}
-1 & 0 \
+1 & 0 \\
 1 & 1
 \end{bmatrix}
-]$
+$$
 
 Interpretation:
 
@@ -1989,24 +1987,22 @@ More explicitly:
 # Step 5. Scale by (\sqrt{d_k})
 
 Here (d_k = 2), so:
-$[
-\sqrt{d_k}=\sqrt{2}\approx 1.414
-]$
+$\sqrt{d_k}=\sqrt{2}\approx 1.414]$
 
 Scaled scores:
-$[
+$$
 \hat S = \frac{S}{\sqrt{2}}
 
 \begin{bmatrix}
-1/1.414 & 0/1.414 \
+1/1.414 & 0/1.414 \\
 1/1.414 & 1/1.414
 \end{bmatrix}
 \approx
 \begin{bmatrix}
-0.707 & 0 \
+0.707 & 0 \\
 0.707 & 0.707
 \end{bmatrix}
-]$
+$$
 
 
 # Step 6. Apply softmax row by row
