@@ -1786,13 +1786,13 @@ with actual numbers.
 
 Suppose after token embedding + positional embedding we already have these 2 token vectors:
 
-$[
+$$
 X =
 \begin{bmatrix}
 1 & 0 \
 0 & 1
 \end{bmatrix}
-]$
+$$
 
 Interpretation:
 
