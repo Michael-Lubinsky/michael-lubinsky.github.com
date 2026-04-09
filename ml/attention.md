@@ -256,9 +256,7 @@ Designed to process entire sequences in parallel.
 
 In the context of self-attention mechanisms in machine learning, particularly in models like Transformers, projecting an input string into Query (Q), Key (K), and Value (V) vectors is a crucial step. 
 
-Below, I explain how this process works for each word in the input string, assuming the input is tokenized into words or subwords and represented as embeddings. The
-
-explanation is concise yet detailed to aid your learning.
+Below, I explain how this process works for each word in the input string, assuming the input is tokenized into words or subwords and represented as embeddings. 
 
 ## Step-by-Step Process to Project Input String into Q, K, V Vectors
 
@@ -2222,18 +2220,17 @@ $[
 # Compact summary of all matrices
 
 ## Input
-$
-[
+$[
 X=
 \begin{bmatrix}
 1 & 0 \
 0 & 1
 \end{bmatrix}
-]
-$
+]$
+
 ## Projections
-$
-[
+
+$[
 W_Q=
 \begin{bmatrix}
 1 & 0 \
@@ -2251,11 +2248,11 @@ W_V=
 1 & 2 \
 3 & 4
 \end{bmatrix}
-]
-$
+]$
+
 ## Derived matrices
-$
-[
+
+$[
 Q=
 \begin{bmatrix}
 1 & 0 \
@@ -2273,49 +2270,45 @@ V=
 1 & 2 \
 3 & 4
 \end{bmatrix}
-]
-$
+]$
+
 ## Scores
-$
-[
+$[
 QK^T=
 \begin{bmatrix}
 1 & 0 \
 1 & 1
 \end{bmatrix}
-]
-$
+]$
+
 ## Scaled scores
-$
-[
+$[
 \frac{QK^T}{\sqrt{2}}
 \approx
 \begin{bmatrix}
 0.707 & 0 \
 0.707 & 0.707
 \end{bmatrix}
-]
-$
+]$
+
 ## Attention weights
-$
-[
+$[
 A=
 \begin{bmatrix}
 0.670 & 0.330 \
 0.500 & 0.500
 \end{bmatrix}
-]
-$
+]$
+
 ## Output
-$
-[
+$[
 O=AV=
 \begin{bmatrix}
 1.660 & 2.660 \
 2.000 & 3.000
 \end{bmatrix}
-]
-$
+]$
+
 ---
 
 # One very important insight
@@ -2323,14 +2316,11 @@ $
 Self-attention does **not** just copy vectors.
 
 It builds each output token as:
-$
-[
+$[
 \text{new token representation}
-===============================
-
 \sum_j \text{attention weight}_{ij} \cdot V_j
-]
-$
+]$
+
 So each token becomes a **weighted mixture** of all tokens.
 
 That is why transformers can capture context.
