@@ -2,6 +2,10 @@
 
 <https://www.llm-visualized.com/>
 
+<https://www.youtube.com/@jbhuang0604>
+
+<https://arxiv.org/abs/2501.09223>
+
 <https://www.intoai.pub/p/build-and-train-an-llm-from-scratch>
 
 
