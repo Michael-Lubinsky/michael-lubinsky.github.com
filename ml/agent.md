@@ -75,6 +75,22 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 <https://habr.com/ru/articles/985990/>
 
+## MCP vs Skills
+
+<https://david.coffee/i-still-prefer-mcp-over-skills/>
+
+This isn't a zero-sum game or a choice of one over the other. They solve different layers of the developer experience: MCP provides a standardized, portable interface for external data/tools (the infrastructure), while Skills offer project-specific, high-level behavioral context (the orchestration). A robust workflow uses MCP to ensure tool reliability and Skills to define when and how to deploy those tools.
+
+
+<https://news.ycombinator.com/item?id=47712718>
+
+### MCP
+
+<https://habr.com/ru/articles/1005028/>
+
+<https://habr.com/ru/articles/1006756/>
+
+<https://habr.com/ru/articles/1006756/>
 
 ## Skills
 
@@ -184,13 +200,6 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 
 <https://habr.com/ru/articles/1006602/>
  
-### MCP
-
-<https://habr.com/ru/articles/1005028/>
-
-<https://habr.com/ru/articles/1006756/>
-
-<https://habr.com/ru/articles/1006756/>
 
 ## Pi
 
