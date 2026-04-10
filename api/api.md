@@ -9,6 +9,8 @@ https://habr.com/ru/articles/968114/ FluentAPI
 
 ### Rest API
 
+<https://habr.com/ru/companies/otus/articles/1008370/>
+
 <https://habr.com/ru/articles/946276/>
 
 <https://habr.com/ru/articles/955574/>
