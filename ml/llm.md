@@ -30,6 +30,9 @@ Ollama
 <https://www.youtube.com/watch?v=P9qWek5LDUw>
  <https://realpython.com/ollama-python/>
 
+
+<https://habr.com/ru/articles/1021832/> KV cache optimization
+
 There are following competitive inference engines on the market: 
 - vLLM
 - SGLang
