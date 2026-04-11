@@ -7,6 +7,8 @@
 
 <https://github.com/luongnv89/claude-howto> 
 
+<https://habr.com/ru/articles/1021810/> Claude links
+
 <https://medium.com/data-science-collective/how-to-build-claude-skills-2-0-better-than-99-of-people-af4927dd5335>
 
 <https://github.com/shanraisshan/claude-code-best-practice>
