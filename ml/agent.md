@@ -69,6 +69,8 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 ### Spec Driven Development, OpenSpec
 
+<https://habr.com/ru/articles/1022050/>
+
 <https://openspec.dev/>
 
 <https://habr.com/ru/articles/1007048/>
