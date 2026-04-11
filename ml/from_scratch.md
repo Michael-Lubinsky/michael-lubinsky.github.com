@@ -1,5 +1,7 @@
 ## Build From Scratch
 
+<https://habr.com/ru/companies/piter/articles/1021738/> simple NN with C++
+
 <https://imaddabbura.github.io/posts/nlp/GPT2-From-Scratch.html>
 
 <img width="472" height="51" alt="image" src="https://github.com/user-attachments/assets/0ee72af4-ba9a-407c-8554-774d4a061b1c" />
