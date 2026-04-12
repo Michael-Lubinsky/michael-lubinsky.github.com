@@ -2,6 +2,8 @@
 
 <img width="1008" height="1056" alt="image" src="https://github.com/user-attachments/assets/8f5bdbee-dfae-4095-8317-0cf71493eacb" />
 
+<https://www.youtube.com/playlist?list=PL4SocSG0rCX9UqI2iFLFJ_iMKgcboNgwr> Full cource ru
+
 <https://poloclub.github.io/transformer-explainer/>
 
 <https://imaddabbura.github.io/posts/nlp/Transformer-Architecture-Explained.html>
