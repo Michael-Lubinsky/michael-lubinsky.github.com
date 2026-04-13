@@ -2,6 +2,8 @@
 
 <https://machinelearningmastery.com/vector-databases-explained-in-3-levels-of-difficulty/>
 
+<https://habr.com/ru/companies/wunderfund/articles/1022820/>
+
 <https://huggingface.co/spaces/hesamation/primer-llm-embedding>
 
 
