@@ -2,6 +2,8 @@
 
 <img width="1560" height="794" alt="image" src="https://github.com/user-attachments/assets/013fd697-4d36-42f6-a2ea-afa5def4d744" />
 
+<img width="523" height="700" alt="image" src="https://github.com/user-attachments/assets/7a08b7d8-7a50-4310-aa39-604c83bb8ea7" />
+
 
 <https://habr.com/ru/articles/1017728/>
 
