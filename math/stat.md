@@ -12,6 +12,8 @@ https://www.youtube.com/watch?v=nKmYjFoiuYM
 Statistical Modeling: The Two Cultures. Leo Breiman
 <https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726>
 
+Hypotesis testing
+<https://www.youtube.com/watch?v=AvUtMSI_4pM>
 
 ## Bayes
 
