@@ -6,6 +6,8 @@
 
 <https://javaevolved.github.io/>
 
+<https://habr.com/ru/articles/1021808/> Type Erasure
+
 <https://openjdk.org/projects/amber/design-notes/beyond-records>
 
 <https://habr.com/ru/articles/1004906/>  Performance
