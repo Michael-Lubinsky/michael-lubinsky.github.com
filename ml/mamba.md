@@ -10,6 +10,7 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://udlbook.github.io/udlbook/>
 
+<https://fleuret.org/francois/lbdl.html> Small book of ML
 
 <https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
 
