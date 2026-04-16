@@ -3,7 +3,7 @@
 High-Dimensional Probability. Roman Vershinin 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
-https://www.youtube.com/watch?v=nKmYjFoiuYM
+<https://www.youtube.com/watch?v=nKmYjFoiuYM>
 
 <https://leanpub.com/TOBoML2> The Orange Book of Machine Learning - Green edition
 
@@ -14,6 +14,9 @@ Statistical Modeling: The Two Cultures. Leo Breiman
 
 Hypotesis testing
 <https://www.youtube.com/watch?v=AvUtMSI_4pM>
+
+Производящая функция моментов:
+<https://habr.com/ru/articles/1020734/>
 
 ## Bayes
 
