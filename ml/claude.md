@@ -159,6 +159,9 @@ Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-out
 
 <img width="483" height="428" alt="image" src="https://github.com/user-attachments/assets/66c1407f-b0e6-4ef6-a4cd-7173bdd0ae6e" />
 
+<img width="764" height="1024" alt="image" src="https://github.com/user-attachments/assets/711c8732-befb-4b71-a65c-ef8774825feb" />
+
+
 → Всегда используй режим plan, давай Claude способ проверить результат
 → Попроси Claude провести с тобой интервью через инструмент AskUserQuestion
 → Используй Git Worktrees для параллельной разработки
