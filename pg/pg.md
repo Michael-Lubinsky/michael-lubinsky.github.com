@@ -620,6 +620,10 @@ FROM daily_balance;
 
 
 ### JSON_TABLE() function (Postgres 17)
+
+
+<https://habr.com/ru/companies/otus/articles/1015526/>
+
 ```sql
 SELECT *
 FROM JSON_TABLE(
