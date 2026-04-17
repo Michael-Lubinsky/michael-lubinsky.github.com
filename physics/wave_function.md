@@ -1898,3 +1898,90 @@ Your current solver uses Dirichlet. Periodic BCs are what you would need to add 
 ## Dirichlet BCs (boundary conditions) - Where it appears in code?
 
 In your Hamiltonian builder (`hamiltonian.py`), Dirichlet BCs are implicit in the finite difference matrix. The tridiagonal kinetic energy matrix simply has no entries outside the first and last grid points — the boundary rows enforce ψ = 0 without any explicit code. It is the **default behavior** of the finite difference discretization on a bounded grid.
+
+
+ this program implements 1D solver, finite difference grid, Crank-Nicolson, is
+it right?
+
+  Searched for 2 patterns, read 9 files (ctrl+o to expand)
+
+⏺ The implementation is largely correct. Here's a thorough review:
+
+  ---
+  Overall: Correct ✓
+
+  The physics and numerics are sound. Below are specifics.
+
+  ---
+  Grid (grid.py) — Correct
+
+  - np.linspace(x_min, x_max, n_points) includes both endpoints, consistent with Dirichlet ψ=0 at walls. ✓
+
+  Hamiltonian (hamiltonian.py) — Correct
+
+  In atomic units, T = −½ d²/dx². The 3-point finite difference for d²/dx² gives:
+  - diagonal: 1/dx² ✓  (from −½ × −2/dx²)
+  - off-diagonal: −0.5/dx² ✓
+
+  One design concern — the large-sentinel BC approach:
+  large = diag[0] * n ** 2   # ≈ n⁴/L² for uniform grid
+  T[b, :] = 0; T[:, b] = 0; T[b, b] = large
+  This works when ψ is already negligible at the boundaries. But if ψ is not near-zero at the wall (e.g., wide Gaussian close to
+  the boundary, sigma too large), the sentinel amplifies that leakage in the RH matrix. A cleaner approach is to work with
+  interior points only (indices 1:n-1), which enforces BCs exactly. Not wrong for your current test cases, but worth noting.
+
+  Crank-Nicolson (crank_nicolson.py) — Correct
+
+  From iħ ∂ψ/∂t = Hψ with ħ=1, the CN discretization is:
+
+  (I + i·dt/2·H) ψ(t+dt) = (I - i·dt/2·H) ψ(t)
+
+  The code does exactly this (0.5j * dt * H). LU-factorizing the left side once is the right optimization — O(n) per step after
+  O(n) setup for a tridiagonal. ✓
+
+  Frame counting: n_frames = n_steps // save_every + 1, with frame 0 = t=0 saved before the loop. For n_steps=1000, save_every=10
+  → 101 frames at t=0,10dt,…,1000dt. ✓
+
+  Eigenvalue solver (eigenvalue_solver.py) — One Issue
+
+  eigenvalues, eigenvectors = eigsh(hamiltonian, k=k, which="SM")
+
+  which="SM" = smallest magnitude (closest to 0). This works for ISW and HO where all eigenvalues are positive. But for a deep
+  attractive potential (negative eigenvalues), which="SM" would return states near E=0, not the ground state. Use which="SA"
+  (smallest algebraic) for robustness.
+
+  Also, normalization uses psi**2 not np.abs(psi)**2:
+  psi /= np.sqrt(np.sum(psi ** 2) * dx)
+  eigsh returns real eigenvectors, so psi**2 == |psi|² here — technically fine, but inconsistent with how you normalize elsewhere.
+
+  Momentum density (momentum.py) — Correct
+
+  |φ(k)|² = dx²/(2π) · |FFT(ψ)|² ✓
+
+  Parseval check: Σ|φ(k)|²·dk = (dx²/2π)·Σ|FFT|²·(2π/N·dx) = (dx/N)·N·Σ|ψ|² = dx·Σ|ψ|² = 1 ✓
+
+  Expectation values (expectation_values.py) — Correct
+
+  ⟨p²⟩ = 2(⟨H⟩ − ⟨V⟩) via the virial shortcut is exact for this H. ✓
+  ⟨p⟩ = −i ∫ ψ* ∂ψ/∂x dx with np.gradient (second-order central differences) ✓
+
+  Probability current (probability_current.py) — Correct
+
+  J = Im[ψ* ∂ψ/∂x] ✓ (matches continuity equation ∂|ψ|²/∂t + ∂J/∂x = 0)
+
+  ---
+  Summary of items to fix
+
+  ┌──────────┬─────────────────────────┬───────────────────────────────────────────────────────────────────────────────────────┐
+  │ Priority │        Location         │                                         Issue                                         │
+  ├──────────┼─────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────┤
+  │ Medium   │ eigenvalue_solver.py:44 │ which="SM" → which="SA" for correctness with attractive/negative-potential wells      │
+  ├──────────┼─────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────┤
+  │ Low      │ hamiltonian.py:17-21    │ Large-sentinel BCs are fine for contained states but fragile; interior-only is        │
+  │          │                         │ cleaner                                                                               │
+  ├──────────┼─────────────────────────┼───────────────────────────────────────────────────────────────────────────────────────┤
+  │ Cosmetic │ eigenvalue_solver.py:60 │ psi**2 should be np.abs(psi)**2 for consistency (correct only because eigsh returns   │
+  │          │                         │ real)                                                                                 │
+  └──────────┴─────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────┘
+
+  The CN scheme itself, the grid, and all the physics formulas are implemented correctly.
