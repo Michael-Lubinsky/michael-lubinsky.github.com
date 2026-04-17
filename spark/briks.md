@@ -18,6 +18,9 @@ Catalog (top-level container)
 │   └── Function (UDF)
 ```
 
+Databricks Masterclass
+<https://www.youtube.com/playlist?list=PLWAuYt0wgRcJ9tUB9HszUJjzxg4-A4QmV>
+
 <https://blog.dataengineerthings.org/>
 
 <https://books.japila.pl/>
@@ -26,9 +29,9 @@ Catalog (top-level container)
 
 <https://www.waitingforcode.com/>  Bartosz Konieczny
 
-https://buf.build/resources/data-engineering-design-patterns
+<https://buf.build/resources/data-engineering-design-patterns>
 
-https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf
+<https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf>
 
 <https://sympathetic.ink/2025/12/11/Column-Storage-for-the-AI-era.html>
 
