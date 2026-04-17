@@ -1866,3 +1866,35 @@ Given your existing architecture, here is a prioritized roadmap:
 
 Items 1–4 require **no new solver infrastructure**. Items 5–7 each require one architectural extension (periodic BCs, spin Hilbert space, 2D grid). Dirac equation, general magnetism, and laser are out of scope for this application.
 
+
+## Dirichlet boundary conditions
+
+means the wavefunction is forced to be **exactly zero at the walls** of your simulation domain:
+
+$$\psi(x_{\min}) = 0 \qquad \psi(x_{\max}) = 0$$
+
+That is the entire definition. "Dirichlet" is just the mathematician's name for "fix the value at the boundary."
+
+## Why your solver uses them
+
+Your finite difference grid has a finite domain, say x ∈ [−10, 10]. The wavefunction has to have some value at x = −10 and x = 10. You have to choose something. Dirichlet (set to zero) is the simplest physically motivated choice — it is equivalent to putting **infinitely hard walls** at the edges of the domain.
+
+This means every potential you simulate is secretly inside an infinite square well of width 20 a.u. For most potentials with bound states that decay to zero well before the walls, this has negligible effect. For scattering potentials (step, gaussian barrier) it is the source of the fake discrete energy levels we discussed earlier.
+
+---
+
+## The three common choices
+
+| Boundary condition | Mathematical meaning | Physical meaning |
+|---|---|---|
+| **Dirichlet** | ψ = 0 at walls | Infinite potential walls — particle cannot escape |
+| **Periodic** | ψ(x_min) = ψ(x_max) | Particle on a ring — needed for Kronig-Penney / band theory |
+| **Absorbing** | ψ → 0 smoothly near walls | Particle escapes — needed for true scattering problems |
+
+Your current solver uses Dirichlet. Periodic BCs are what you would need to add for the Kronig-Penney band theory feature. Absorbing BCs are the most complex and would be needed to correctly handle the step potential and Gaussian barrier as scattering problems.
+
+---
+
+## Dirichlet BCs (boundary conditions) - Where it appears in code?
+
+In your Hamiltonian builder (`hamiltonian.py`), Dirichlet BCs are implicit in the finite difference matrix. The tridiagonal kinetic energy matrix simply has no entries outside the first and last grid points — the boundary rows enforce ψ = 0 without any explicit code. It is the **default behavior** of the finite difference discretization on a bounded grid.
