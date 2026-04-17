@@ -21,6 +21,8 @@ Catalog (top-level container)
 Databricks Masterclass
 <https://www.youtube.com/playlist?list=PLWAuYt0wgRcJ9tUB9HszUJjzxg4-A4QmV>
 
+<https://github.com/jrlasak/databricks-code-practice>
+
 <https://blog.dataengineerthings.org/>
 
 <https://books.japila.pl/>
