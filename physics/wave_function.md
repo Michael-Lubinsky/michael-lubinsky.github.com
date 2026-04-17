@@ -1985,3 +1985,168 @@ it right?
   └──────────┴─────────────────────────┴───────────────────────────────────────────────────────────────────────────────────────┘
 
   The CN scheme itself, the grid, and all the physics formulas are implemented correctly.
+
+
+## NEW FEATURE qubits and Rabi oscillations
+  Great choice — qubits and Rabi oscillations are probably the **highest value addition** you can make right now, for three reasons:
+
+1. **Zero new solver infrastructure** — a qubit is a 2×2 matrix, solved analytically or with a tiny ODE integrator
+2. **Direct connection to quantum computing** — the most asked-about topic in quantum mechanics today
+3. **Spectacular visuals** — the Bloch sphere is one of the most beautiful visualizations in physics
+
+---
+
+## The Physics
+
+A qubit is a two-level quantum system. The state is:
+
+$$|\psi\rangle = \alpha|0\rangle + \beta|1\rangle \qquad |\alpha|^2 + |\beta|^2 = 1$$
+
+The most general single-qubit Hamiltonian involves the three Pauli matrices:
+
+$$\hat{H} = -\frac{\hbar}{2}\left(\omega_0 \hat{\sigma}_z + \Omega\cos(\omega t)\hat{\sigma}_x\right)$$
+
+where:
+- **ω₀** is the qubit frequency (energy splitting between |0⟩ and |1⟩)
+- **Ω** is the Rabi frequency (strength of the driving field)
+- **ω** is the drive frequency
+
+---
+
+## Rabi Oscillations
+
+When the drive is on resonance (ω = ω₀), the system undergoes **Rabi oscillations** — the population coherently oscillates between |0⟩ and |1⟩ at frequency Ω:
+
+$$P_{|1\rangle}(t) = \sin^2\left(\frac{\Omega t}{2}\right)$$
+
+This is the mechanism behind every quantum gate in a real quantum computer. A π-pulse (Ωt = π) flips |0⟩ → |1⟩ — that is a NOT gate. A π/2-pulse creates an equal superposition — that is a Hadamard gate.
+
+Off resonance (ω ≠ ω₀), the oscillations are faster but incomplete — the population never fully transfers. The **generalized Rabi frequency** is:
+
+$$\Omega_R = \sqrt{\Omega^2 + \Delta^2} \qquad \Delta = \omega - \omega_0$$
+
+where Δ is the **detuning**.
+
+---
+
+## The Bloch Sphere
+
+The qubit state maps to a point on the unit sphere:
+
+$$|\psi\rangle \leftrightarrow \begin{pmatrix}\cos(\theta/2) \\ e^{i\phi}\sin(\theta/2)\end{pmatrix} \leftrightarrow (\sin\theta\cos\phi,\ \sin\theta\sin\phi,\ \cos\theta)$$
+
+- **North pole** = |0⟩
+- **South pole** = |1⟩  
+- **Equator** = equal superpositions
+- Time evolution = rotation of the Bloch vector
+
+Rabi oscillations look like the Bloch vector spinning around an axis — one of the most intuitive visualizations in all of quantum mechanics.
+
+---
+
+## What the Module Should Show
+
+Three panels working together:
+
+```
+┌──────────────────┬─────────────────┬──────────────────┐
+│                  │                 │                  │
+│   Controls       │  Bloch Sphere   │  Population      │
+│                  │  (3D animated)  │  Plot            │
+│  ω₀ slider       │                 │                  │
+│  Ω  slider       │    • ←vector    │  P|1⟩(t) ~~~~   │
+│  ω  slider       │   /             │                  │
+│  t  slider       │  /              │  Δ = ω - ω₀      │
+│                  │ •               │  shown live      │
+│  Preset gates:   │                 │                  │
+│  [π-pulse]       │                 │  Rabi freq Ω_R   │
+│  [π/2-pulse]     │                 │  shown live      │
+│  [Hadamard]      │                 │                  │
+└──────────────────┴─────────────────┴──────────────────┘
+```
+
+---
+
+## Preset Buttons — Key Teaching Moments
+
+Rather than just sliders, add named preset buttons that configure the parameters to demonstrate specific quantum gates:
+
+| Button | Parameters | What it shows |
+|---|---|---|
+| **π-pulse** | ω=ω₀, Ωt=π | Full population inversion — quantum NOT gate |
+| **π/2-pulse** | ω=ω₀, Ωt=π/2 | Equal superposition — Hadamard gate |
+| **Off resonance** | ω≠ω₀, Δ=2Ω | Incomplete oscillations, faster frequency |
+| **Free precession** | Ω=0 | Bloch vector precesses around Z axis |
+| **Spin echo** | π/2 → wait → π → wait | Refocusing — basis of NMR and MRI |
+
+---
+
+## Connection to Your Existing App
+
+This module is **architecturally separate** from the Schrödinger solver — it does not use the grid, Hamiltonian builder, or Crank-Nicolson stepper. The time evolution is a 2×2 matrix ODE, solved with:
+
+```python
+# backend: qubit_solver.py
+from scipy.integrate import solve_ivp
+import numpy as np
+
+sigma_x = np.array([[0, 1], [1, 0]])
+sigma_y = np.array([[0, -1j], [1j, 0]])
+sigma_z = np.array([[1, 0], [0, -1]])
+
+def rabi_rhs(t, psi, omega0, Omega, omega_drive):
+    H = -0.5 * (omega0 * sigma_z + 
+                Omega * np.cos(omega_drive * t) * sigma_x)
+    return -1j * H @ psi
+
+def solve_rabi(omega0, Omega, omega_drive, t_max, n_points):
+    psi0 = np.array([1.0, 0.0], dtype=complex)  # start in |0⟩
+    t_span = (0, t_max)
+    t_eval = np.linspace(0, t_max, n_points)
+    sol = solve_ivp(rabi_rhs, t_span, psi0, t_eval=t_eval,
+                    args=(omega0, Omega, omega_drive),
+                    method='RK45', rtol=1e-8)
+    return sol.t, sol.y  # y shape: (2, n_points)
+```
+
+The Bloch sphere coordinates at each time step are:
+
+```python
+def bloch_vector(psi):
+    # psi = [alpha, beta]
+    x = 2 * np.real(psi[0] * np.conj(psi[1]))
+    y = 2 * np.imag(psi[0] * np.conj(psi[1]))
+    z = np.abs(psi[0])**2 - np.abs(psi[1])**2
+    return x, y, z
+```
+
+---
+
+## Bloch Sphere Rendering
+
+For the 3D animated Bloch sphere, use **Plotly** in React — it has a built-in 3D scatter/surface mode and handles animation frames well:
+
+```tsx
+// Sphere surface + axes + animated vector arrow
+// Plotly 3D scene with:
+// - Sphere: surface trace
+// - Axes: X (|+⟩/|−⟩), Y (|i⟩/|−i⟩), Z (|0⟩/|1⟩)  
+// - Bloch vector: scatter3d trace updated each frame
+// - Trail: last N positions of the vector tip
+```
+
+This reuses Plotly which is already in your frontend — no new visualization library needed.
+
+---
+
+## Spec File
+
+Want me to write the full spec (`specs/09-qubit-rabi.md`) for Claude Code to implement this? It would cover:
+
+- `backend/qubit_solver.py`
+- `backend/routers/qubit.py` (new FastAPI router)
+- `frontend/src/components/QubitModule/` (self-contained module)
+- Bloch sphere component using Plotly 3D
+- Population plot component
+- Preset gate buttons
+- Tests for the solver (π-pulse gives P|1⟩ = 1.0, π/2 gives P|1⟩ = 0.5)
