@@ -1661,3 +1661,208 @@ The specs to write in order are:
 7. Wire frontend to backend
 
 Don't let Claude jump ahead to step 5 while step 2 is untested. Each layer depends on the one below it being correct.
+
+
+
+
+## I would like to add new features to this quantum mechanics application.
+I am considering following features:
+* matrix formulation of quantum mechanics with examples
+* Paul Dirac relativistic formula of QM
+* spin examples
+* Ising model
+* magnetism
+* quantum theory of metals and semiconductors
+* Zeeman effect
+* hydrogen atom wave function 
+* double slit experiment
+* laser
+
+Please review the proposed features and suggest which of them to implement
+
+Great list — but they are very different in nature. Let me evaluate each one honestly against your existing architecture.
+
+## Your Existing Architecture
+
+Before reviewing features, the constraints matter:
+
+- **1D solver** — NumPy/SciPy, finite difference grid, Crank-Nicolson
+- **FastAPI backend** — returns eigenvalues, wavefunctions, time evolution frames
+- **React frontend** — plots wavefunctions, energy levels, animations
+- **Atomic units, Dirichlet BCs**
+
+Each proposed feature gets evaluated against: does it extend what you have, or does it require a completely different engine?
+
+---
+
+## Feature-by-Feature Review
+
+### ✅ Matrix formulation of QM — Strong Yes
+
+**Fit with existing architecture: excellent.**
+
+Your Hamiltonian builder already constructs H as a sparse matrix. The matrix formulation is not a new solver — it is a new **visualization layer** on top of what you already have.
+
+You can show:
+- H as a matrix in the energy eigenbasis (diagonal)
+- Position operator X as a matrix — visually non-diagonal, illustrates the Heisenberg picture
+- Matrix elements ⟨m|X|n⟩, ⟨m|P|n⟩ as heatmaps
+- Time evolution of operator matrix elements O(t) = e^{iHt} O e^{-iHt}
+
+This directly connects to the conversation we had early on about Heisenberg vs Schrödinger formulations. It would make your app genuinely unique — no existing educational tool shows both pictures side by side. **Implement this.**
+
+---
+
+### ❌ Dirac relativistic equation — No for now
+
+**Fit with existing architecture: poor.**
+
+The Dirac equation requires:
+- 4-component spinor wavefunctions (not scalar ψ)
+- Coupling between particle and antiparticle components
+- Relativistic dispersion — fundamentally different Hamiltonian structure
+- New numerical methods (the naive finite difference approach has the **fermion doubling problem**)
+
+This is essentially a separate application. The physics is beautiful but the implementation complexity is out of proportion with what you would gain. **Defer indefinitely.**
+
+---
+
+### ✅ Spin examples — Yes, high value
+
+**Fit with existing architecture: good, with extension.**
+
+Spin is pure matrix mechanics — finite-dimensional Hilbert space, no spatial grid needed. A spin-½ system lives in ℂ², a spin-1 in ℂ³. The Hamiltonian is a small matrix involving Pauli matrices:
+
+$$\hat{H} = -\gamma B_z \hat{S}_z = -\frac{\gamma B_z \hbar}{2}\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$$
+
+You can show:
+- Spin precession on a Bloch sphere (animated)
+- Rabi oscillations between |↑⟩ and |↓⟩ under oscillating field
+- Stern-Gerlach measurement visualization
+- Two-spin entanglement (Bell states)
+
+This is a **self-contained module** — it does not need the spatial grid at all. Small scope, high educational payoff, directly connects to quantum computing. **Implement this.**
+
+---
+
+### ✅ Zeeman effect — Yes, natural extension
+
+**Fit with existing architecture: excellent.**
+
+The Zeeman effect is what happens to energy levels when you add a magnetic field term to an existing Hamiltonian:
+
+$$\hat{H} = \hat{H}_0 + \mu_B B \hat{L}_z$$
+
+In 1D this is limited, but it is a natural motivator for the **hydrogen atom** module (see below). The normal Zeeman effect (splitting of spectral lines) can be shown by:
+
+1. Solving H₀ eigenstates (already implemented)
+2. Adding the B field perturbation term to H
+3. Showing how degenerate levels split as B increases — a slider for B field strength
+
+This reuses your entire existing eigenvalue solver with minimal change. **Implement this alongside hydrogen atom.**
+
+---
+
+### ⚠️ Hydrogen atom wavefunction — Yes, but requires 2D/3D
+
+**Fit with existing architecture: requires extension.**
+
+The hydrogen atom in full 3D requires spherical coordinates and radial + angular parts. However the **radial equation** after separating angular momentum is a 1D problem:
+
+$$\left[-\frac{1}{2}\frac{d^2}{dr^2} + \frac{l(l+1)}{2r^2} - \frac{1}{r}\right]u(r) = E\,u(r)$$
+
+where u(r) = r·R(r). This is **directly solvable with your existing 1D solver** on a radial grid, for each angular momentum quantum number l. You get the exact hydrogen energy levels Eₙ = -1/2n² and the radial wavefunctions.
+
+The angular parts (spherical harmonics Yₗᵐ) can be shown analytically as separate 3D visualizations.
+
+This is a high-value feature with a clear path. **Implement the radial solver first, add 3D visualization later.**
+
+---
+
+### ⚠️ Ising model — Maybe, different physics
+
+**Fit with existing architecture: partial.**
+
+The Ising model is a spin lattice model — N spins on a chain, each ±1, with nearest-neighbor coupling:
+
+$$\hat{H} = -J\sum_i \hat{\sigma}_i^z \hat{\sigma}_{i+1}^z - h\sum_i \hat{\sigma}_i^x$$
+
+The **quantum** Ising model (with the transverse field h) is a legitimate quantum mechanics problem solvable by exact diagonalization — and your Hamiltonian builder can construct it as a sparse matrix. The Hilbert space is 2^N dimensional so you are limited to N ≈ 20 spins.
+
+What you can show:
+- Ground state phase transition at J = h (quantum phase transition)
+- Energy gap closing at the critical point
+- Entanglement entropy across the chain
+
+This is genuinely research-adjacent (quantum phase transitions are a hot topic) and connects to your earlier discussion about making the app research-grade. **Implement this as a separate module after spin examples.**
+
+---
+
+### ❌ Magnetism — Too broad
+
+**Fit with existing architecture: unclear.**
+
+"Magnetism" is not a single feature — it encompasses classical magnetism, ferromagnetism, spin waves, magnons, domain walls, and more. The quantum treatment requires either the Ising/Heisenberg spin model (which is the Ising feature above) or DFT-level electronic structure (which is a separate application).
+
+As stated this is too vague to implement. **Reframe as "Heisenberg spin chain" and fold into the Ising model module.**
+
+---
+
+### ⚠️ Quantum theory of metals and semiconductors — Ambitious, partially feasible
+
+**Fit with existing architecture: partial.**
+
+The core of this topic is **band theory** — periodic potentials producing allowed and forbidden energy bands. The Kronig-Penney model (periodic rectangular barriers) is a **1D periodic potential** directly solvable with your existing solver. You can show:
+
+- Band gaps opening in a periodic potential
+- Bloch wavefunctions
+- Effective mass from band curvature
+
+The full semiconductor physics (doping, carrier statistics, p-n junctions) goes beyond what a Schrödinger solver can show. **Implement the Kronig-Penney model as a new preset — it requires only a new potential function and a periodic BC option.**
+
+---
+
+### ✅ Double slit experiment — Yes, requires 2D
+
+**Fit with existing architecture: requires 2D extension.**
+
+The double slit is the most iconic quantum mechanics demonstration. In 1D it is not meaningful — you need a 2D wavefunction propagating through two slits. This means:
+
+- 2D grid (the `Grid` abstraction you designed for this from day one)
+- 2D Crank-Nicolson (tensor product of 1D operators)
+- Visualization of |ψ(x,y,t)|² as a 2D heatmap
+
+This is your **2D extension milestone**. The double slit is the perfect first demo for 2D because the physics is universally known and the interference pattern is visually spectacular. **Make this the 2D milestone target.**
+
+---
+
+### ❌ Laser — Out of scope
+
+**Fit with existing architecture: poor.**
+
+A laser requires:
+- Multi-level atomic systems (rate equations or Bloch equations)
+- Electromagnetic field quantization (quantum optics)
+- Cavity QED or semiclassical field models
+- Population inversion dynamics
+
+This is a quantum optics application, not a quantum mechanics solver. The physics is fascinating but completely outside your architecture. **Out of scope.**
+
+---
+
+## Recommended Implementation Order
+
+Given your existing architecture, here is a prioritized roadmap:
+
+| Priority | Feature | Why |
+|---|---|---|
+| 1 | **Matrix formulation visualizer** | Zero new solver code, high uniqueness, connects Heisenberg/Schrödinger |
+| 2 | **Spin examples + Bloch sphere** | Self-contained, connects to quantum computing |
+| 3 | **Hydrogen radial equation** | Reuses 1D solver directly, iconic physics |
+| 4 | **Zeeman effect** | Slider on top of hydrogen, minimal extra work |
+| 5 | **Kronig-Penney / band theory** | New potential preset + periodic BCs |
+| 6 | **Quantum Ising model** | Research-adjacent, extends spin module |
+| 7 | **Double slit experiment** | 2D milestone, most spectacular visual |
+
+Items 1–4 require **no new solver infrastructure**. Items 5–7 each require one architectural extension (periodic BCs, spin Hilbert space, 2D grid). Dirac equation, general magnetism, and laser are out of scope for this application.
+
