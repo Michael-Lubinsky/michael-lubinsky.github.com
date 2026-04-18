@@ -1,4 +1,9 @@
 
+
+
+
+<https://stepik.org/course/240191/promo>
+
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
 Deploying AI Models with Hugging Face – Hands-On Course
 
