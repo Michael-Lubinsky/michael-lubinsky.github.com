@@ -1,6 +1,4 @@
-Here are **high-value feature ideas** for your QM project, grouped by **impact vs difficulty**, with concrete technical direction (not just vague ideas).
-
----
+Here are **high-value feature ideas** for your QM project, grouped by **impact vs difficulty**
 
 # 🟢 EASY (low effort, high polish / usability wins)
 
