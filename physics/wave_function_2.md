@@ -342,6 +342,9 @@ These give **maximum visible improvement per effort**.
  You can sort the table by Impact, Ease, or Overall Score by clicking the buttons.
 
 ---
+<img width="1440" height="1986" alt="image" src="https://github.com/user-attachments/assets/5ec7be40-d84d-4e67-8ea5-c6503a145b43" />
+
+
 
 ## How to read the ranking
 
