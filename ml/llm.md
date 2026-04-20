@@ -6,6 +6,9 @@
 
 <https://arxiv.org/abs/2501.09223>
 
+<https://www.youtube.com/watch?v=T3dCGPaCu5w> 
+Теоретический туториал: Как учить большие языковые модели
+
 <https://www.intoai.pub/p/build-and-train-an-llm-from-scratch>
 
 
