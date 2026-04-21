@@ -18,9 +18,9 @@ It was introduced in 2022 to dramatically speed up training and inference of lar
 
 In a Transformer, attention computes:
 
-[
+$$
 Attention(Q,K,V) = softmax\left(\frac{QK^T}{\sqrt{d}}\right)V
-]
+$$
 
 where:
 
