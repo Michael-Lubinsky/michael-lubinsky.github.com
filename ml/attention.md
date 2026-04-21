@@ -276,7 +276,11 @@ Example: For "The", the embedding might be a 512-dimensional vector <math xmlns=
 
 for "cat" <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex"> x_2 </annotation></semantics></math>, and for "sleeps" <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex"> x_3 </annotation></semantics></math>.
 
-Result: An input matrix <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> X \in \mathbb{R}^{n \times d_{model}} </annotation></semantics></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex"> n </annotation></semantics></math> is the number of tokens (here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex"> n = 3 </annotation></semantics></math>).
+Result: An input matrix
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> X \in \mathbb{R}^{n \times d_{model}} </annotation></semantics></math>, 
+
+where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex"> n </annotation></semantics></math> is the number of tokens (here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex"> n = 3 </annotation></semantics></math>).
 
 
 
@@ -286,53 +290,80 @@ Result: An input matrix <math xmlns="http://www.w3.org/1998/Math/MathML"><semant
 For self-attention, three weight matrices are defined to project the input embeddings into Query, Key, and Value vectors:
 
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>Q</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^Q \in \mathbb{R}^{d_{model} \times d_k} </annotation></semantics></math>: Weight matrix for Queries.
+
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>K</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^K \in \mathbb{R}^{d_{model} \times d_k} </annotation></semantics></math>: Weight matrix for Keys.
+
+
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>V</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>v</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^V \in \mathbb{R}^{d_{model} \times d_v} </annotation></semantics></math>: Weight matrix for Values.
 
 
-Here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex"> d_k </annotation></semantics></math> and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex"> d_v </annotation></semantics></math> 
-are the dimensions of the Query/Key and Value vectors, respectively (often <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mi mathvariant="normal">/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model}/h </annotation></semantics></math> in multi-head attention, where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi></mrow><annotation encoding="application/x-tex"> h </annotation></semantics></math> is the number of heads, but for simplicity, assume <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model} </annotation></semantics></math>).
+Here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex"> d_k </annotation></semantics></math> and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex"> d_v </annotation></semantics></math>
+
+are the dimensions of the Query/Key and Value vectors, respectively (often <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mi mathvariant="normal">/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model}/h </annotation></semantics></math> in multi-head attention, where 
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi></mrow><annotation encoding="application/x-tex"> h </annotation></semantics></math> is the number of heads, but for simplicity, assume  
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model} </annotation></semantics></math>).
 
 These matrices are learned during training and are part of the model's parameters.
 
 
 ### Project Each Word’s Embedding into Q, K, V Vectors:
 
-For each token’s embedding vector <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></msup></mrow><annotation encoding="application/x-tex"> x_i \in \mathbb{R}^{d_{model}} </annotation></semantics></math> (e.g., <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> x_1 </annotation></semantics></math> for "The"):
+For each token’s embedding vector 
 
-Query Vector: Compute <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>Q</mi></msup></mrow><annotation encoding="application/x-tex"> q_i = x_i W^Q </annotation></semantics></math>.
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></msup></mrow><annotation encoding="application/x-tex"> x_i \in \mathbb{R}^{d_{model}} </annotation></semantics></math> (e.g., <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> x_1 </annotation></semantics></math> for "The"):
 
-This projects the embedding <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> x_i </annotation></semantics></math> into a Query vector <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>k</mi></msub></msup></mrow><annotation encoding="application/x-tex"> q_i \in \mathbb{R}^{d_k} </annotation></semantics></math>.
+Query Vector: Compute 
 
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>Q</mi></msup></mrow><annotation encoding="application/x-tex"> q_i = x_i W^Q </annotation></semantics></math>.
 
-Key Vector: Compute <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>K</mi></msup></mrow><annotation encoding="application/x-tex"> k_i = x_i W^K </annotation></semantics></math>.
+This projects the embedding  
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> x_i </annotation></semantics></math> into a Query vector 
 
-This projects the embedding into a Key vector <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>k</mi></msub></msup></mrow><annotation encoding="application/x-tex"> k_i \in \mathbb{R}^{d_k} </annotation></semantics></math>.
-
-
-Value Vector: Compute <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> v_i = x_i W^V </annotation></semantics></math>.
-
-This projects the embedding into a Value vector <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>v</mi></msub></msup></mrow><annotation encoding="application/x-tex"> v_i \in \mathbb{R}^{d_v} </annotation></semantics></math>.
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>k</mi></msub></msup></mrow><annotation encoding="application/x-tex"> q_i \in \mathbb{R}^{d_k} </annotation></semantics></math>.
 
 
+Key Vector: Compute 
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>K</mi></msup></mrow><annotation encoding="application/x-tex"> k_i = x_i W^K </annotation></semantics></math>.
+
+This projects the embedding into a Key vector 
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>k</mi></msub></msup></mrow><annotation encoding="application/x-tex"> k_i \in \mathbb{R}^{d_k} </annotation></semantics></math>.
 
 
-Mathematically, for the entire input matrix <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex"> X </annotation></semantics></math>:
+Value Vector: Compute 
 
-Queries: <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>Q</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> Q = X W^Q \in \mathbb{R}^{n \times d_k} </annotation></semantics></math>
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> v_i = x_i W^V </annotation></semantics></math>.
 
-Keys: 
+This projects the embedding into a Value vector 
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><msub><mi>d</mi><mi>v</mi></msub></msup></mrow><annotation encoding="application/x-tex"> v_i \in \mathbb{R}^{d_v} </annotation></semantics></math>.
+
+
+Mathematically, for the entire input matrix 
+
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex"> X </annotation></semantics></math>:
+
+Queries:   
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>Q</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> Q = X W^Q \in \mathbb{R}^{n \times d_k} </annotation></semantics></math>
+
+Keys:   
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>K</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> K = X W^K \in \mathbb{R}^{n \times d_k} </annotation></semantics></math>
 
-Values: 
+Values:  
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>V</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mi>v</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> V = X W^V \in \mathbb{R}^{n \times d_v} </annotation></semantics></math>
 
 
-Example: For the input string with <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex"> n = 3 </annotation></semantics></math>:
+Example: For the input string with   
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex"> n = 3 </annotation></semantics></math>:
 
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>q</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>q</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>q</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex"> Q = [q_1, q_2, q_3] </annotation></semantics></math>, where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> q_1 </annotation></semantics></math> is the Query vector for "The", etc.
 
-Similarly, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex"> K = [k_1, k_2, k_3] </annotation></semantics></math> and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>v</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>v</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>v</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex"> V = [v_1, v_2, v_3] </annotation></semantics></math>.
+Similarly,    
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>k</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>k</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex"> K = [k_1, k_2, k_3] </annotation></semantics></math> and   
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>v</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>v</mi><mn>2</mn></msub><mo separator="true">,</mo><msub><mi>v</mi><mn>3</mn></msub><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex"> V = [v_1, v_2, v_3] </annotation></semantics></math>.
 
 
 
@@ -350,9 +381,12 @@ The projections allow the model to learn different representations of the same i
 
 Matrix Operations for Efficiency:
 
-Instead of computing <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>k</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> q_i, k_i, v_i </annotation></semantics></math> for each token individually, the projections are performed in a single matrix multiplication for the entire sequence:
+Instead of computing   
+<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>k</mi><mi>i</mi></msub><mo separator="true">,</mo><msub><mi>v</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex"> q_i, k_i, v_i </annotation></semantics></math> 
 
-Input embeddings:
+for each token individually, the projections are performed in a single matrix multiplication for the entire sequence:
+
+Input embeddings:  
 <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>=</mo><mo stretchy="false">[</mo><msub><mi>x</mi><mn>1</mn></msub><mo separator="true">;</mo><msub><mi>x</mi><mn>2</mn></msub><mo separator="true">;</mo><msub><mi>x</mi><mn>3</mn></msub><mo stretchy="false">]</mo><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mn>3</mn><mo>×</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> X = [x_1; x_2; x_3] \in \mathbb{R}^{3 \times d_{model}} </annotation></semantics></math>.
 
 Compute: 
