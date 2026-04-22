@@ -1469,7 +1469,7 @@ Over many examples:
 
 ---
 
-# 3. Why attention uses (1 / \sqrt{d_k})
+# 3. Why attention uses $1 / \sqrt{d_k}$
 
 The attention formula is:  
 $\text{Attention}(Q,K,V) =\text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
@@ -1877,7 +1877,7 @@ W_V =
 \end{bmatrix}
 $$
 
-All are (2 \times 2).
+All are (2 x 2).
 
 
 
@@ -1982,6 +1982,7 @@ K^T=
 $$
 
 Now multiply:
+
 $$
 S=
 \begin{bmatrix}
@@ -2108,6 +2109,7 @@ So token 2 attends equally to both tokens.
 
  
 ## Full attention-weight matrix
+
 $$
 A=\text{softmax}(\hat S)
  
