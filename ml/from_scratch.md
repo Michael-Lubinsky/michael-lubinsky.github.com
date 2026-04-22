@@ -1,5 +1,6 @@
 ## Build From Scratch
 
+
 <https://www.gilesthomas.com/llm-from-scratch>
 
 <https://www.youtube.com/playlist?list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV>
