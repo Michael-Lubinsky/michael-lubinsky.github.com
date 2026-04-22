@@ -1,5 +1,7 @@
 ## Build From Scratch
 
+<https://www.youtube.com/playlist?list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV>
+
 <https://habr.com/ru/companies/piter/articles/1021738/> simple NN with C++
 
 <https://imaddabbura.github.io/posts/nlp/GPT2-From-Scratch.html>
