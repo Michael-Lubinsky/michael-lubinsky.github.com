@@ -6,16 +6,19 @@
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
-http://lightcone.ru/
+<http://lightcone.ru/>
 
 Spin <https://arxiv.org/pdf/2604.00231>
 
 Принцип наименьшего действия [Veritasium]:
-https://www.youtube.com/watch?v=C2tL1A3B3cY
+<https://www.youtube.com/watch?v=C2tL1A3B3cY>
 
-https://www.amazon.com/Introduction-Modern-Physics-Theoretical-Foundations/dp/9812812253
+<https://www.amazon.com/Introduction-Modern-Physics-Theoretical-Foundations/dp/9812812253>
 
-https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb
+
+## Quantum Mechanics
+
+<https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
 
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 https://www.youtube.com/watch?v=qJZ1Ez28C-A
@@ -25,11 +28,11 @@ https://www.youtube.com/playlist?list=PLTLLDTOgMz4WzAHQM7iDzWuae-Y2qpWZi
 
 https://saykind.github.io/teaching/
 
-https://interactivetextbooks.tudelft.nl/mqp/ Math for QM
+<https://interactivetextbooks.tudelft.nl/mqp/> Math for QM
 
-https://arxiv.org/abs/1508.06951 Math for QM
+<https://arxiv.org/abs/1508.06951> Math for QM
 
-https://commons.library.stonybrook.edu/egp/
+<https://commons.library.stonybrook.edu/egp/>
 
 https://faculty.washington.edu/seattle/physics441/441index.html
 
@@ -56,15 +59,15 @@ http://cleonis.nl/physics/phys256/physics.php
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf
 
-https://www.mathpages.com/home/iphysics.htm
+<https://www.mathpages.com/home/iphysics.htm>
 
-https://habr.com/ru/articles/951100/
+<https://habr.com/ru/articles/951100/>
 
-https://habr.com/ru/articles/966786/
+<https://habr.com/ru/articles/966786/>
 
-https://habr.com/ru/articles/966744/
+<https://habr.com/ru/articles/966744/>
 
-https://habr.com/ru/articles/945102/
+<https://habr.com/ru/articles/945102/>
 
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
 https://www.youtube.com/watch?v=MqhnyTEaNZ8
@@ -73,6 +76,12 @@ Why sky is blue?
 https://explainers.blog/posts/why-is-the-sky-blue/
 
 https://news.ycombinator.com/item?id=46946401
+
+### Special relativity
+
+<https://habr.com/ru/articles/809803/>
+
+<https://habr.com/ru/articles/773826/>
 
 ### Geometric Algebra
 https://habr.com/ru/articles/958088/ 
