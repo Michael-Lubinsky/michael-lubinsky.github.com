@@ -21,7 +21,9 @@ Attention in transformers, step-by-step | Deep Learning Chapter 6  (ru)
 <https://eli.thegreenplace.net/2025/notes-on-implementing-attention/>
 
 Writing an LLM from scratch:
-<https://www.gilesthomas.com/python>
+<https://www.gilesthomas.com/llm-from-scratch>
+
+
 
 <https://medium.com/@royrimo2006/understanding-and-implementing-transformers-from-scratch-3da5ddc0cdd6>
 
