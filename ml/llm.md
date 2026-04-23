@@ -11,6 +11,8 @@
 
 <https://www.intoai.pub/p/build-and-train-an-llm-from-scratch>
 
+Building AI Agents with Local Small Language Models
+<https://machinelearningmastery.com/building-ai-agents-with-local-small-language-models/>
 
 <https://sebastianraschka.com/llm-architecture-gallery/>
 <https://habr.com/ru/articles/1011784/>  LLM architecture gallery
