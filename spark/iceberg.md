@@ -399,3 +399,9 @@ High-volume jobs will reveal practical differences (e.g., Iceberg’s metadata e
 If you’re starting fresh and prioritize openness, Iceberg’s momentum (e.g., AWS S3 Tables, Snowflake Polaris) makes it a strong contender for 2025 and beyond.
 If you’re in Databricks, Delta’s optimizations and UniForm provide immediate value with future Iceberg compatibility.
 
+- Apache Iceberg overview: https://lnkd.in/gfpwZU5D
+- Iceberg deep dive: https://lnkd.in/gUErShUy
+- How Netflix operates Iceberg at scale: https://lnkd.in/ghRv8Xxu
+- Netflix data quality with Iceberg: https://lnkd.in/gQ8ZZ7ru
+- DoorDash evolves real-time platform with Iceberg: https://lnkd.in/gcQxGVyB
+- Stream Kafka topics to Iceberg with zero-ETL: https://lnkd.in/g2bsGQRH
