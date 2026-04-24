@@ -1,7 +1,7 @@
 ## ML Links
 
 
-
+Stepic
 <https://stepik.org/course/240191/promo>
 
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
@@ -20,6 +20,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 <https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
 
 <https://github.com/girafe-ai/ml-course>
+
+<https://ml-visualized.com/>
 
 <https://github.com/dreddnafious/thereisnospoon/blob/main/ml-primer.md>
 
