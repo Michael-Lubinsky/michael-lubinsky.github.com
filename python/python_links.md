@@ -10,10 +10,12 @@
 
 ## Useful libs
 
-<https://pypi.org/project/duckdb-cli/>  
+<https://habr.com/ru/articles/1027354/> Nuitka (convertor to C)
+
+<https://pypi.org/project/duckdb-cli/>   DuckDB  
 <https://www.reddit.com/r/Python/comments/1rrz3kx/what_hidden_gem_python_modules_do_you_use_and_why/>
 
-<https://pypi.org/project/pyparsing/>
+<https://pypi.org/project/pyparsing/> Parsing 
 
 <https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/>
 
