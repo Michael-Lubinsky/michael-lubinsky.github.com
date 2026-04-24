@@ -10,33 +10,34 @@
 
 ## Useful libs
 
-<https://pypi.org/project/duckdb-cli/> 
+<https://pypi.org/project/duckdb-cli/>  
 <https://www.reddit.com/r/Python/comments/1rrz3kx/what_hidden_gem_python_modules_do_you_use_and_why/>
 
+<https://pypi.org/project/pyparsing/>
 
-https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/
+<https://www.reddit.com/r/Python/comments/1ku6th8/which_useful_python_libraries_did_you_learn_on/>
 
-https://www.reddit.com/r/Python/comments/1l43i8z/what_are_your_favorite_modern_libraries_or/
+<https://www.reddit.com/r/Python/comments/1l43i8z/what_are_your_favorite_modern_libraries_or/>
 
 
 <https://medium.com/codrift/15-python-snippets-that-i-keep-in-my-personal-dev-toolbox-37d8421b274b>
 
-https://tryolabs.com/blog/top-python-libraries-2025
+<https://tryolabs.com/blog/top-python-libraries-2025>
 
-https://github.com/ritwiktiwari/awesome-python-rs Rust Libraries
+<https://github.com/ritwiktiwari/awesome-python-rs> Rust Libraries
 
 
-https://www.reddit.com/r/Python/comments/1n1hkls/i_bundled_my_common_python_utilities_into_a/
+<https://www.reddit.com/r/Python/comments/1n1hkls/i_bundled_my_common_python_utilities_into_a/>
 
-https://github.com/EntilZha/PyFunctional
+<https://github.com/EntilZha/PyFunctional>
 
-https://github.com/mahmoud/boltons  Boltons useful lib
+<https://github.com/mahmoud/boltons>  Boltons useful lib
 
-https://github.com/jlevy/strif  string, file, and object utilities
+<https://github.com/jlevy/strif>  string, file, and object utilities
 
-https://github.com/Erotemic/ubelt  Ubelt
+<https://github.com/Erotemic/ubelt>  Ubelt
 
-https://realpython.com/python-loguru/  Loguru , also look into structlog
+<https://realpython.com/python-loguru/>  Loguru , also look into structlog
 
 
 <https://dev.to/siddharth_pogul_1ba2cbfe0/building-rapidlog-why-i-made-a-3x-faster-python-logger-4cde>
