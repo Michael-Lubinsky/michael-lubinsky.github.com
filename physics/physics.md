@@ -69,6 +69,8 @@ https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariat
 
 <https://habr.com/ru/articles/945102/>
 
+<https://habr.com/ru/articles/474638/> Суперпозиция 
+
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
 https://www.youtube.com/watch?v=MqhnyTEaNZ8
 
