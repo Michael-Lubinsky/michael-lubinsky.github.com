@@ -3,6 +3,8 @@
 
 <https://www.gilesthomas.com/llm-from-scratch>
 
+<https://github.com/analyticalrohit/llms-from-scratch>
+
 <https://www.youtube.com/playlist?list=PLoROMvodv4rMqXOcazWaTUHhq-yembLCV>
 
 <https://habr.com/ru/companies/piter/articles/1021738/> simple NN with C++
