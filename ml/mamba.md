@@ -1,7 +1,8 @@
 ## ML Links
 
+<https://www.freecodecamp.org/news/learn-the-foundations-of-machine-learning-and-artificial-intelligence/>
 
-Stepic
+Stepik course
 <https://stepik.org/course/240191/promo>
 
 <https://arxiv.org/abs/2604.21691>
