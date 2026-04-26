@@ -8,6 +8,8 @@ Fact of Linear Algebra: matrices are graphs, and graphs are matrices.
  <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for Computer Vision,
 Robotics, and Machine Learning
 
+Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
+
 <https://longformmath.com/proofs-book/>
 
 <https://markelic.de/>
