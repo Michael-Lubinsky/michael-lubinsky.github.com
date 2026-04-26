@@ -3,6 +3,12 @@
 
 <https://mkennedy.codes/posts/raw-dc-the-orm-pattern-of-2026/>
 
+<https://github.com/litestar-org/sqlspec>
+
+<https://pypika.readthedocs.io/>
+
+<https://www.reddit.com/r/Python/comments/1ss23d4/sqlalchemy_vs_psycopg3/>
+
 ### Postgres and Python
 Here are advanced best practices for using `psycopg2`:
 
