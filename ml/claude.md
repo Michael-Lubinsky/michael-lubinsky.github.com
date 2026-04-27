@@ -166,6 +166,7 @@ Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-out
 
 <img width="1206" height="1607" alt="image" src="https://github.com/user-attachments/assets/8b3e7cdf-320e-4ede-853a-c2851cd2712b" />
 
+<img width="1440" height="1920" alt="image" src="https://github.com/user-attachments/assets/11a8e1e4-b87f-4a82-ae83-188ccb3fbc9b" />
 
 
 → Всегда используй режим plan, давай Claude способ проверить результат
