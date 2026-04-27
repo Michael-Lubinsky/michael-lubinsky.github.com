@@ -2,6 +2,35 @@
 
 <https://habr.com/ru/articles/1023316/>  Что такое Harness?
 
+## Hooks 
+<https://docs.claude.com/en/docs/claude-code/hooks>
+<https://code.claude.com/docs/ru/hooks>
+<https://habr.com/ru/companies/rostelecom/articles/1028570/>
+```
+хуки — это механизм, который позволяет вклиниться в жизненный цикл агента своим кодом.
+Ваш shell-скрипт (или HTTP-эндпоинт, или вспомогательный sub-agent) исполняется в строго заданные моменты:
+старт сессии, отправка prompt, до tool call, после tool call, запуск sub-agent, остановка, перед компактификацией контекста, завершение сессии.
+В одних точках вы можете только наблюдать;
+в других — заблокировать действие агента до того, как оно произойдёт.
+```
+
+В Claude Code хуки описываются под ключом hooks в .claude/settings.json (project-level, едет в git) или ~/.claude/settings.json (global). Минимальный конфиг:
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/log-prompt.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
 
 <https://magazine.sebastianraschka.com/p/components-of-a-coding-agent>
 
