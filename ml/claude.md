@@ -1,6 +1,8 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://habr.com/ru/articles/1028260/>
+
 <https://anthropic.skilljar.com/>
 
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
