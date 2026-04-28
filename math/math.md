@@ -10,6 +10,8 @@ Robotics, and Machine Learning
 
 Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
+<https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich
+
 <https://longformmath.com/proofs-book/>
 
 <https://markelic.de/>
