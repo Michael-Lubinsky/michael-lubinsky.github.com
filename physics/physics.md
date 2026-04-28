@@ -21,18 +21,20 @@ Spin <https://arxiv.org/pdf/2604.00231>
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
 
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
-https://www.youtube.com/watch?v=qJZ1Ez28C-A
+<https://www.youtube.com/watch?v=qJZ1Ez28C-A>
 
 100 лет (и задач по) квантовой механике:
-https://www.youtube.com/playlist?list=PLTLLDTOgMz4WzAHQM7iDzWuae-Y2qpWZi
+<https://www.youtube.com/playlist?list=PLTLLDTOgMz4WzAHQM7iDzWuae-Y2qpWZi>
 
-https://saykind.github.io/teaching/
+<https://saykind.github.io/teaching/>
 
 <https://interactivetextbooks.tudelft.nl/mqp/> Math for QM
 
 <https://arxiv.org/abs/1508.06951> Math for QM
 
 <https://commons.library.stonybrook.edu/egp/>
+
+<https://www.youtube.com/watch?v=abuSn-A0dRQ>
 
 https://faculty.washington.edu/seattle/physics441/441index.html
 
