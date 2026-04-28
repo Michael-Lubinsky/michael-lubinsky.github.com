@@ -6,6 +6,8 @@
 
 <https://www.youtube.com/watch?v=8GieMMkLzMQ>
 
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvbV381iK1q2d73h7FuIX8Rk>
+
 <img width="471" height="143" alt="image" src="https://github.com/user-attachments/assets/1bfe9d36-f93c-464b-afd1-217a9149eccc" />
 
 
