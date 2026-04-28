@@ -2,6 +2,8 @@
 
 <img width="374" height="268" alt="image" src="https://github.com/user-attachments/assets/7ec8e369-c70e-41e1-9ddd-6f7328e0942f" />
 
+<https://www.youtube.com/watch?v=r1bquDz5GGA>
+
 ```python
 class NeuralNetwork(nn.Module):          # define model class
     def __init__(self):
