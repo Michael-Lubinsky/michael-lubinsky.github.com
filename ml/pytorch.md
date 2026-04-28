@@ -770,7 +770,7 @@ Each row corresponds to **one training example**.
 
 <https://0byte.io/articles/helloml.html>
 
-<https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/
+<https://www.deeplearning.ai/courses/pytorch-for-deep-learning-professional-certificate/>
 
 Free book: <https://zekcrates.quarto.pub/deep-learning-library/>
 
@@ -793,23 +793,23 @@ Ml by hand : <https://github.com/workofart/ml-by-hand>
 
 <https://www.youtube.com/watch?v=E0bwEAWmVEM>
 
-https://habr.com/ru/companies/otus/articles/975328/ модель множественной регрессии с нуля
+<https://habr.com/ru/companies/otus/articles/975328/> модель множественной регрессии с нуля
 
-https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision
+<https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision>
 
-https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html
+<https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html>
 
-https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
+<https://news.ycombinator.com/item?id=44276476> I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
 
 <https://www.youtube.com/watch?v=r1bquDz5GGA>
 
 ### torchvista
 
 An interactive tool to visualize the forward pass of a PyTorch model directly in the notebook
-https://github.com/sachinhosmani/torchvista/
+<https://github.com/sachinhosmani/torchvista/>
 
-https://www.reddit.com/r/learnmachinelearning/comments/1qyjjui/interactive_visualisation_of_pytorch_models_from/
+<https://www.reddit.com/r/learnmachinelearning/comments/1qyjjui/interactive_visualisation_of_pytorch_models_from/>
 
 ### ONNX C++
 
-https://habr.com/ru/articles/991430/
+<https://habr.com/ru/articles/991430/>
