@@ -51,6 +51,8 @@ There are following competitive inference engines on the market:
 <https://www.youtube.com/watch?v=Y1SygpzRlns> (part 1) ru 
 <https://www.youtube.com/watch?v=L1eculdyjPE>  (part 2) ru
 
+<https://www.youtube.com/watch?v=zA_zJdUE-m8> ru
+
 1️⃣ 𝗜𝗻𝘁𝗿𝗼 𝘁𝗼 𝗟𝗟𝗠𝘀 - Karpathy Best 1-hour overview of LLMs that exists.
  <youtu.be/zjkBMFhNj_g>
 
