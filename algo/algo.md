@@ -11,7 +11,7 @@
 <img width="471" height="143" alt="image" src="https://github.com/user-attachments/assets/1bfe9d36-f93c-464b-afd1-217a9149eccc" />
 
 
-<https://habr.com/ru/articles/985292/>
+<https://habr.com/ru/articles/985292/>  <https://habr.com/ru/articles/1024570/>
 
 <https://cleveralgorithms.com/>
 
