@@ -11,12 +11,15 @@
 ```
 хуки — это механизм, который позволяет вклиниться в жизненный цикл агента своим кодом.
 Ваш shell-скрипт (или HTTP-эндпоинт, или вспомогательный sub-agent) исполняется в строго заданные моменты:
-старт сессии, отправка prompt, до tool call, после tool call, запуск sub-agent, остановка, перед компактификацией контекста, завершение сессии.
+старт сессии, отправка prompt, до tool call, после tool call, запуск sub-agent, остановка,
+перед компактификацией контекста, завершение сессии.
 В одних точках вы можете только наблюдать;
 в других — заблокировать действие агента до того, как оно произойдёт.
 ```
 
-В Claude Code хуки описываются под ключом hooks в .claude/settings.json (project-level, едет в git) или ~/.claude/settings.json (global). Минимальный конфиг:
+В Claude Code хуки описываются под ключом hooks в .claude/settings.json (project-level, едет в git)  
+или ~/.claude/settings.json (global).
+Минимальный конфиг:
 ```json
 {
   "hooks": {
@@ -243,8 +246,10 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 
 <https://pi.dev/>
 
-<https://lucumr.pocoo.org/2026/1/31/pi/>
+<https://lucumr.pocoo.org/2026/1/31/pi/>  
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
+
+<https://github.com/badlogic/pi-mono>
 
 <https://github.com/can1357/oh-my-pi>
 
