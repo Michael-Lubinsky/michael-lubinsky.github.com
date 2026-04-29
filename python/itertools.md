@@ -1,6 +1,9 @@
 ###  itertools
 
-Since iterators are iterable, you can compose zip() and map() to produce an iterator over combinations of elements in more than one iterable. For example, the following sums corresponding elements of two lists:
+Since iterators are iterable, you can compose zip() and map()  
+to produce an iterator over combinations of elements in more than one iterable. 
+For example, the following sums corresponding elements of two lists:
+
 ```python
  list(map(sum, zip([1, 2, 3], [4, 5, 6])))
 [5, 7, 9]
