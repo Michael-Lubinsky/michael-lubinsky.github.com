@@ -127,7 +127,69 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 
 MIT Лекция 8 Большие языковые модели (LLM) от Liquid AI!
 <https://www.youtube.com/watch?v=jU9RGIgJyqo>
+
+
 ### RAG
+
+<https://habr.com/ru/articles/1029740/>
+
+<img width="1448" height="1086" alt="image" src="https://github.com/user-attachments/assets/5ce8b88f-6e94-4f21-9c85-5438da21853e" />
+
+<img width="1560" height="780" alt="image" src="https://github.com/user-attachments/assets/6a492817-fb27-4a5f-bdbe-61ef203f7523" />
+
+A document is split into multiple **chunks**, and each chunk gets its own vector. Here's the full picture:
+
+**What actually happens when you upload a document:**
+
+```
+Document
+    ↓
+Chunking  (split into N chunks by size/overlap/paragraph etc.)
+    ↓
+[chunk_1, chunk_2, chunk_3, ... chunk_N]
+    ↓
+Embedding model runs on each chunk
+    ↓
+[vector_1, vector_2, vector_3, ... vector_N]  ← all stored in vector DB
+```
+
+---
+
+**Why chunking instead of one vector?**
+
+| Reason | Detail |
+|---|---|
+| **Context window limits** | Embedding models have a token limit (e.g. 512 tokens for many models) — a whole document won't fit |
+| **Retrieval precision** | A single vector for a 100-page doc would be too diluted — you'd lose the ability to pinpoint the relevant section |
+| **Granularity** | At query time you want to retrieve the 2-3 most relevant *passages*, not the whole document |
+
+---
+
+**At query time:**
+
+```
+User question  →  embedded into a query vector
+                        ↓
+              similarity search against ALL chunk vectors
+                        ↓
+              top-K most similar chunks retrieved
+                        ↓
+              those chunks passed to LLM as context
+```
+
+So the key insight is: **indexing is one-to-many** (1 document → N vectors), but **retrieval is many-to-few** (N vectors → top K chunks relevant to the query).
+
+
+
+
+### Graph Knowlage Base and RAG:
+<https://habr.com/ru/companies/sberbank/articles/1029580/>  
+
+<https://github.com/microsoft/graphrag>
+
+
+
+
 
 <https://habr.com/ru/articles/1002152/>
 
@@ -136,6 +198,8 @@ MIT Лекция 8 Большие языковые модели (LLM) от Liqui
 <https://habr.com/ru/articles/1006662/>
 
 <https://habr.com/ru/articles/1005776/>
+
+
 
 RAG vs Fine Tuning
 <https://habr.com/ru/articles/1003212/>
