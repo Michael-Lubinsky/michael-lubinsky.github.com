@@ -1,4 +1,8 @@
-## Comp vision
+## Computer Vision
+
+<https://pbr-book.org/4ed/contents>
+
+<https://habr.com/ru/articles/908168/>
 
 <https://www.youtube.com/@cv-gml>  (ru)
 
