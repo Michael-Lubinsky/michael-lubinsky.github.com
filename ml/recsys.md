@@ -21,6 +21,8 @@
 
 <https://habr.com/ru/articles/1029318/>
 
+<https://habr.com/ru/articles/1019070/>
+
 <https://habr.com/ru/articles/951428/>
 
 **LightFM** is a **Python library** for building **hybrid recommendation systems**. It combines:
