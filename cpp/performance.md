@@ -1,27 +1,32 @@
-https://abseil.io/fast/hints.html
+## Performance
 
-https://github.com/dendibakh/perf-book
+<https://abseil.io/fast/hints.html>
 
-https://www.youtube.com/watch?v=-HNpim5x-IE How CPU works
+<https://github.com/dendibakh/perf-book>
 
+<https://www.youtube.com/watch?v=-HNpim5x-IE> How CPU works
 
-https://nostarch.com/linux-memory-manager
+<https://habr.com/ru/articles/1029320/>
 
-https://icl.utk.edu/papi/
+<https://nostarch.com/linux-memory-manager>
 
-https://news.ycombinator.com/item?id=44035125
+<https://icl.utk.edu/papi/>
+
+<https://news.ycombinator.com/item?id=44035125>
 
 https://github.com/KDAB/hotspot
 
 ```
-The Performance Application Programming Interface (PAPI) offers a universal interface and methodology for gathering performance counter information from diverse hardware and software components.
+The Performance Application Programming Interface (PAPI) offers a universal interface and methodology
+for gathering performance counter information from diverse hardware and software components.
  This includes major CPUs, GPUs, accelerators, interconnects, I/O systems, power interfaces,
 and even virtual cloud environments.
- Collaborations with industry leaders like AMD, Cray/HPE, IBM, Intel, NVIDIA, and others ensure seamless integration of PAPI with new architectures as they are introduced or come close to release.
+ Collaborations with industry leaders like AMD, Cray/HPE, IBM, Intel, NVIDIA, and others ensure seamless integration of PAPI
+with new architectures as they are introduced or come close to release.
 As the PAPI component architecture expands, 3rd-party performance tools interfacing with PAPI gain the capability to measure data from these emerging architectures.
 ```
 
-http://www.brendangregg.com/linuxperf.html
+<http://www.brendangregg.com/linuxperf.html>
 
 The width of each rectangle represents the relative resource usage for a function,   
 including the time spent in its child functions.
