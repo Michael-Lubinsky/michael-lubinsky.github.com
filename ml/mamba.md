@@ -5,7 +5,7 @@
 Stepik course
 <https://stepik.org/course/240191/promo>
 
-<https://arxiv.org/abs/2604.21691>
+<https://arxiv.org/abs/2604.21691> There Will Be a Scientific Theory of Deep Learning
 
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
 Deploying AI Models with Hugging Face – Hands-On Course
@@ -86,9 +86,6 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 
 <https://www.byhand.ai/p/swiglu-the-activation-function-behind>
 
-
-
-
 <https://imaddabbura.github.io/posts/dl/why-not-softmax.html>
 
 ## ML Books
@@ -97,7 +94,6 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 <https://mlbook.dataschool.io/>
 
 <https://github.com/AniruddhaChattopadhyay/Books>
-
 
 <https://artint.info/3e/html/ArtInt3e.html>
 
@@ -112,10 +108,9 @@ https://news.ycombinator.com/item?id=47204964
  <https://github.com/roboticcam/machine-learning-notes> ML Learning Notes
 
 
-
 <https://deeplearningwithpython.io/chapters/>
 
-https://github.com/Dyakonov/MLDM_BOOK   ML book
+<https://github.com/Dyakonov/MLDM_BOOK>   ML book
 
 
 
@@ -190,7 +185,7 @@ https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
 https://news.ycombinator.com/item?id=46523887
 
 
-https://pixelbank.dev/ Leetcode for ML
+
 
  применение теории информации в машинном обучении
 https://habr.com/ru/companies/wunderfund/articles/978786/
@@ -336,6 +331,7 @@ https://habr.com/ru/companies/pgk/articles/921596/ Прокачаться в dat
 
 <https://habr.com/ru/articles/972178/> Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
 
+<https://pixelbank.dev/> Leetcode for ML
 
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
 What Are Neural Networks Even Doing? (Manifold Hypothesis)
@@ -361,9 +357,6 @@ https://habr.com/ru/articles/917664/ основополагающих стате
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
-
-
- 
 
 https://github.com/ageron/handson-ml3
 
