@@ -10,6 +10,8 @@
 
 Spin <https://arxiv.org/pdf/2604.00231>
 
+Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/>
+
 Принцип наименьшего действия [Veritasium]:
 <https://www.youtube.com/watch?v=C2tL1A3B3cY>
 
