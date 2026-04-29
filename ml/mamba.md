@@ -267,24 +267,6 @@ https://huggingface.co/learn
 
 https://ma-lab-berkeley.github.io/deep-representation-learning-book/ 
 
-### Reinforcement learning
-
-https://www.understandingai.org/p/reinforcement-learning-explained
-
-https://descent-visualisers.netlify.app/
-
-
-https://habr.com/ru/articles/979394/
-
-https://habr.com/ru/articles/956890/
-
-https://www.youtube.com/watch?v=q9972BRoXzQ
-
-https://habr.com/ru/articles/919556/
-
-https://habr.com/ru/articles/958062/
-
-https://habr.com/ru/companies/otus/articles/951412/ Q-learning
 
 https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse Data
 
