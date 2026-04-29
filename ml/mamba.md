@@ -48,6 +48,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://habr.com/ru/articles/1015510/>
 
+<https://habr.com/ru/articles/975468/> Model Quantization
+
 ## ML Engineering
 
 Chris Fregly “AI Systems Performance Engineering” book 
@@ -123,10 +125,6 @@ https://github.com/Dyakonov/MLDM_BOOK   ML book
 
 <https://physo.readthedocs.io/en/latest/> -SO’s symbolic regression module uses deep reinforcement learning to infer analytical physical laws that fit data points, searching in the space of functional forms.
 
-##
-
-
- 
 
 1. Foundations of Machine Learning
 https://cs.nyu.edu/~mohri/mlbook/
@@ -201,11 +199,10 @@ https://mlsysbook.ai/tinytorch/intro.html
 
 https://arpitbhayani.me/blogs/qkv-matrices
 
-https://habr.com/ru/articles/975468/ Model Quantization
+
 
 https://habr.com/ru/articles/976576/
 
-<https://habr.com/ru/articles/972178/> Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
 
 https://www.dailydoseofds.com/
 
@@ -337,6 +334,7 @@ https://habr.com/ru/companies/pgk/articles/921596/ Прокачаться в dat
 
 <https://habr.com/ru/articles/955636/> Топ вопросов с Data Science собеседований
 
+<https://habr.com/ru/articles/972178/> Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
 
 
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
