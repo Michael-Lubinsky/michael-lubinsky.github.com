@@ -8,7 +8,13 @@
 
 <http://lightcone.ru/>
 
-Spin <https://arxiv.org/pdf/2604.00231>
+### Spin 
+<https://arxiv.org/pdf/2604.00231>
+
+<https://ufn.ru/ru/articles/2008/12/f/> Spintronics Nobel lecture
+
+<https://postnauka.org/longreads/157461>
+
 
 Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/>
 
