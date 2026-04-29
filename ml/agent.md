@@ -108,7 +108,11 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 ### Spec Driven Development, OpenSpec
 
+<https://habr.com/ru/companies/yadro/articles/1007480/>
+
 <https://habr.com/ru/articles/1022050/>
+
+<https://habr.com/ru/companies/yadro/articles/1029288/>
 
 <https://openspec.dev/>
 
