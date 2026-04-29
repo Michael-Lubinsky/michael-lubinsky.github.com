@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1028260/>
 
+<https://habr.com/ru/articles/1028988/>
+
 <https://anthropic.skilljar.com/>
 
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
