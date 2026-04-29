@@ -1,5 +1,8 @@
 ## ONNX
 
+ ONNX book
+<https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/>
+
 <https://machinelearningmastery.com/export-your-ml-model-in-onnx-format/>
 
 <https://habr.com/ru/companies/otus/articles/991542/>
