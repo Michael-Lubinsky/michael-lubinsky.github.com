@@ -1,8 +1,8 @@
 ### PyTorch
 
-<img width="374" height="268" alt="image" src="https://github.com/user-attachments/assets/7ec8e369-c70e-41e1-9ddd-6f7328e0942f" />
-
 <https://www.youtube.com/watch?v=r1bquDz5GGA>
+
+Below _B_ stands for Batch Size — the number of samples processed together in a single forward pass.
 
 ```python
 class NeuralNetwork(nn.Module):          # define model class
