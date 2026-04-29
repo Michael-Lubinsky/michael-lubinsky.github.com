@@ -2,11 +2,12 @@
 
 https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
+<https://newsletter.systemdesign.one/p/what-is-reinforcement-learning>
+
 https://habr.com/ru/articles/991622/
 
 https://habr.com/ru/articles/1002298/
 
-Reinforcement learning
 
 https://www.understandingai.org/p/reinforcement-learning-explained
 
