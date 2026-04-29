@@ -18,6 +18,12 @@ Fast Causal Inference (FCI)
 
 <https://nothing-so-practical.com/post/causal-inference-is-easy/>
 
+
+
+<https://matheusfacure.github.io/python-causality-handbook/landing-page.html>
+
+<https://www.dailydoseofds.com/a-crash-course-on-causality-part-1>
+
 ### Collider
 
 <https://habr.com/ru/articles/1014586/>
