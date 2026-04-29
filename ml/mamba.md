@@ -69,10 +69,10 @@ Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and Fas
 <https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
 
 
-https://www.youtube.com/watch?v=IBJUt9JPKHk    Building resilient ML Engineering skills
+<https://www.youtube.com/watch?v=IBJUt9JPKHk>    Building resilient ML Engineering skills
 
 https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
-https://stasosphere.com/machine-learning/ 
+<https://stasosphere.com/machine-learning/> 
 
 
 <https://habr.com/ru/companies/piter/articles/1001790/> Как в Netflix масштабируют постобучение LLM
@@ -82,10 +82,10 @@ https://stasosphere.com/machine-learning/
 
 ## Activation Functions GLU, SwiGLU, ReLU, softmax, cross-entropy
 
-https://www.byhand.ai/p/swiglu-the-activation-function-behind?
+<https://www.byhand.ai/p/swiglu-the-activation-function-behind>
 
 
-<https://newsletter.systemdesign.one/p/what-is-reinforcement-learning>
+
 
 <https://imaddabbura.github.io/posts/dl/why-not-softmax.html>
 
@@ -109,36 +109,21 @@ https://news.ycombinator.com/item?id=47204964
  
  <https://github.com/roboticcam/machine-learning-notes> ML Learning Notes
 
-### Decision Trees
-<https://mlu-explain.github.io/decision-tree/>
-
-<https://www.youtube.com/playlist?list=PLgPbN3w-ia_PeT1_c5jiLW3RJdR7853b9>
 
 
-
-
-https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-debugging  
-https://stasosphere.com/machine-learning/  
-
-https://deeplearningwithpython.io/chapters/
+<https://deeplearningwithpython.io/chapters/>
 
 https://github.com/Dyakonov/MLDM_BOOK   ML book
 
-https://www.amazon.com/dp/1633436586/ Deep Learning with PyTorch
 
-https://habr.com/ru/articles/804605/ ML algos
+
+<https://habr.com/ru/articles/804605/> ML algos
  
-## Reinforcement learning 
-https://habr.com/ru/articles/991622/
 
-https://habr.com/ru/articles/1002298/
-
-https://rlhfbook.com/  Reinforcement learning human feedback
 
 <https://physo.readthedocs.io/en/latest/> -SO’s symbolic regression module uses deep reinforcement learning to infer analytical physical laws that fit data points, searching in the space of functional forms.
 
-## ONNX book
-https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/ 
+##
 
 
  
@@ -181,7 +166,7 @@ https://fairmlbook.org
   Part 2 : https://probml.github.io/pml-book/book2.html
 
  
-Chris Bishop (all 3 books)
+#### Chris Bishop (all 3 books)
 https://www.bishopbook.com
 
 https://habr.com/ru/companies/yandex_praktikum/articles/986742/ Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов
@@ -202,7 +187,7 @@ https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
  
 
-https://arpitbhayani.me/blogs/qkv-matrices/
+<https://arpitbhayani.me/blogs/qkv-matrices/>
 
 https://news.ycombinator.com/item?id=46523887
 
@@ -220,7 +205,7 @@ https://habr.com/ru/articles/975468/ Model Quantization
 
 https://habr.com/ru/articles/976576/
 
-https://habr.com/ru/articles/972178/ Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
+<https://habr.com/ru/articles/972178/> Топ вопросов с NLP собеседований: трансформеры и внимание до малейших деталей
 
 https://www.dailydoseofds.com/
 
@@ -394,15 +379,7 @@ https://habr.com/ru/articles/917664/ основополагающих стате
 
 https://eli.thegreenplace.net/2025/notes-on-implementing-attention/
 
-## PyTorch
 
-https://habr.com/ru/companies/otus/articles/975328/
-
-https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision
-
-https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html 
-
-https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
 
  
 
