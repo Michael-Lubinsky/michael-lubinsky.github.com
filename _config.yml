@@ -4,7 +4,7 @@
 markdown: kramdown
 highlighter: rouge
 kramdown:
-  input: GFM
+#  input: GFM
   syntax_highlighter: rouge
   parse_block_html: true
-# auto_links: true
+  auto_links: true
