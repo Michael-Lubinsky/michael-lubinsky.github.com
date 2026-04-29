@@ -22,4 +22,8 @@ https://joshuawise.com/resources/ofdm/
 
 <https://www.byhand.ai/p/28-discrete-fourier-transform>
 
+### Fouroer Series
+
+<img width="1440" height="1800" alt="image" src="https://github.com/user-attachments/assets/4731109a-63a6-41ec-ab2a-f9e42c7a7cf9" />
+
 
