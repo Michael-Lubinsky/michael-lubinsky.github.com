@@ -1,4 +1,4 @@
-## Classical ML ( no deep learning)
+## Classical ML (no deep learning)
 
 <https://mlbook.dataschool.io/>
 
@@ -39,10 +39,10 @@ Josh Starmers books
 
 <https://p.migdal.pl/interactive-machine-learning-list/>
 
-https://visxai.io/ has a bunch more too — see the Hall of Fame section at the bottom for some of the highlights.
+<https://visxai.io/> has a bunch more too — see the Hall of Fame section at the bottom for some of the highlights.
 I also made a dozen of these a couple years ago, my two favorites:
 
-- https://pair.withgoogle.com/explorables/fill-in-the-blank/
+- <https://pair.withgoogle.com/explorables/fill-in-the-blank/>
 
 - <https://pair.withgoogle.com/explorables/grokking/>
 - <https://growingswe.com/blog>
