@@ -291,11 +291,7 @@ https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse
 Free book:
 https://www.manning.com/books/grokking-ai-algorithms-second-edition
 
-## Casual Inference
 
-https://matheusfacure.github.io/python-causality-handbook/landing-page.html
-
-https://www.dailydoseofds.com/a-crash-course-on-causality-part-1
 
 
 ### Book
@@ -350,7 +346,16 @@ https://github.com/Dyakonov/DL
 
 https://habr.com/ru/companies/pgk/articles/921596/ Прокачаться в data science: блоги и каналы
 
-https://habr.com/ru/articles/926398/  ML interview preparation
+### Interview
+<https://habr.com/ru/articles/926398/>  ML interview preparation
+
+<https://habr.com/ru/articles/1019194/>
+
+<https://habr.com/ru/articles/918438/> Фундаментальные вопросы по ML/DL
+
+<https://habr.com/ru/articles/955636/> Топ вопросов с Data Science собеседований
+
+
 
 https://www.youtube.com/watch?v=pdNYw6qwuNc 
 What Are Neural Networks Even Doing? (Manifold Hypothesis)
@@ -361,9 +366,6 @@ https://habr.com/ru/articles/918188/ Как устроено глубокое о
 
 https://github.com/gavinkhung/machine-learning-visualized   ML visualized
 
-https://habr.com/ru/articles/918438/ Фундаментальные вопросы по ML/DL
-
-https://habr.com/ru/articles/955636/ Топ вопросов с Data Science собеседований
 
 https://habr.com/ru/articles/926398/
 
