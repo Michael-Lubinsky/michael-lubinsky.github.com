@@ -6,6 +6,8 @@
 
 <https://poloclub.github.io/transformer-explainer/>
 
+<https://www.youtube.com/watch?v=KCEEfH1RQuA>
+
 <https://imaddabbura.github.io/posts/nlp/Transformer-Architecture-Explained.html>
 
 <https://habr.com/ru/articles/1012218/>
