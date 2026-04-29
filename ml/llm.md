@@ -133,6 +133,8 @@ MIT Лекция 8 Большие языковые модели (LLM) от Liqui
 
 <https://habr.com/ru/articles/1029740/>
 
+<https://habr.com/ru/articles/1029616/>
+
 <img width="1448" height="1086" alt="image" src="https://github.com/user-attachments/assets/5ce8b88f-6e94-4f21-9c85-5438da21853e" />
 
 <img width="1560" height="780" alt="image" src="https://github.com/user-attachments/assets/6a492817-fb27-4a5f-bdbe-61ef203f7523" />
