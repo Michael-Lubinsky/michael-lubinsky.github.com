@@ -8,6 +8,13 @@
 
 <https://realpython.com/courses/downloading-files-urls/> Downloading Files From URLs With Python
 
+## How to publish on PyPi
+
+<https://habr.com/ru/articles/1024972/>
+
+<https://habr.com/ru/articles/1029354/>
+
+
 ## Useful libs
 
 <https://habr.com/ru/articles/1027354/> Nuitka (convertor to C)
