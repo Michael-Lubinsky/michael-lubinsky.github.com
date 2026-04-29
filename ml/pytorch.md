@@ -1,5 +1,7 @@
 ### PyTorch
 
+<https://habr.com/ru/articles/1029440/>NumPy
+
 <https://www.youtube.com/watch?v=r1bquDz5GGA>
 
 <https://www.amazon.com/dp/1633436586/> Deep Learning with PyTorch
