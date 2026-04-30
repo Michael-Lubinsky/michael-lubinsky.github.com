@@ -565,7 +565,7 @@ def flatten_json(df):
         complex_fields = get_complex_fields(df)
 
     return df
-    ```
+```
 
 ### Calculate the monthly average balance for banking customers.
 ```python
@@ -592,7 +592,8 @@ display(df_final)
 
 ### UDTF
 
-https://habr.com/ru/companies/otus/articles/942148/
+<https://habr.com/ru/companies/otus/articles/942148/>
+
 ```python
 from pyspark.sql.functions import udtf
 from pyspark.sql.types import Row
