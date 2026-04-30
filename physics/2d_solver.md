@@ -16,7 +16,7 @@
 
   These are the core QM concepts. A student learns all of them from 1D.
 
-  What 2D genuinely adds
+  ## What 2D genuinely adds
 
   Degeneracy — the most valuable addition. A 2D square box has states (n,m) and (m,n) with
   identical energies. Students can see that degenerate states can be mixed arbitrarily, and that
@@ -49,7 +49,131 @@
   Each of those stays 1D, is fast to compute, and directly connects to topics students are
   simultaneously learning analytically.
 
-  Bottom line: 2D is a better fit for a computational physics showcase than a QM teaching tool.
+
+##  Perturbation theory panel - what it would show
+
+  The app already computes exact numerical eigenvalues for any potential. The idea is to split
+  the potential into a known base H₀ and a small perturbation V′, compute the first-order
+  correction analytically from the already-computed eigenstates, then display both alongside the
+   exact numerical answer:
+
+  ┌───────┬──────────────────┬─────────────────┬──────────────┬────────────────────┬───────┐
+  │ State │      E_n        │   E_n^(1) =     │  E_n (1st    │    E_n (exact      │ Error  │
+  │       │  (unperturbed)  │    ⟨n|V′|n⟩     │    order)    │     numerical)     │        │
+  ├───────┼─────────────────┼─────────────────┼──────────────┼────────────────────┼────────┤
+  │ n=1   │ 4.935           │ 0.333           │ 5.268        │ 5.271              │ 0.06%  │
+  ├───────┼─────────────────┼─────────────────┼──────────────┼────────────────────┼────────┤
+  │ n=2   │ 19.739          │ 0.333           │ 20.072       │ 20.075             │ 0.01%  │
+  ├───────┼─────────────────┼─────────────────┼──────────────┼────────────────────┼────────┤
+  │ n=3   │ 44.413          │ 0.333           │ 44.746       │ 44.748             │ 0.004% │
+  └───────┴─────────────────┴─────────────────┴──────────────┴────────────────────┴────────┘
+
+  The student sees perturbation theory working — or failing when the perturbation is too large.
+
+  ---
+  Concrete example: ISW + small constant bump
+
+  Base potential: infinite square well, V₀ = 0.
+  Perturbation: V′ = ε·x² (turning it slightly toward a harmonic oscillator).
+
+  First-order correction:
+  E_n^(1) = ⟨ψ_n | εx² | ψ_n⟩ = ε ∫ |ψ_n(x)|² x² dx
+
+  This integral is already computed — it's just expect_x2 from expectation_values.py, evaluated
+  on the unperturbed eigenstates. No new numerics needed.
+
+  The exact answer is obtained by running the solver on H₀ + V′ directly. The panel compares the
+   two.
+
+  ---
+  What makes it pedagogically powerful
+
+  Students learn perturbation theory by writing down the formula, but rarely get to see it work
+  or fail. This panel makes three things concrete:
+
+  1. When it works well
+  Small ε, non-degenerate states, smooth perturbation → first-order is excellent. Students see
+  the error column shrink as ε → 0. The formula isn't just a derivation step — it's a genuinely
+  accurate prediction.
+
+  2. When it breaks down
+  Increase ε until first-order is noticeably wrong. Students discover the regime boundary
+  themselves rather than being told "assume V′ is small."
+
+  3. Degenerate perturbation theory
+  Use a 2D-like situation: two states with nearly equal energies. First-order fails badly — the
+  corrected energies are wrong. This motivates why degenerate PT needs a separate treatment.
+
+  ---
+  Implementation
+
+  The computation is almost free — the unperturbed eigenstates are already available from the
+  solve.
+
+  Backend: one new function:
+
+  def first_order_corrections(
+      wavefunctions: np.ndarray,   # unperturbed eigenstates (k, N)
+      V_prime: np.ndarray,         # perturbation on grid (N,)
+      dx: float,
+  ) -> np.ndarray:                 # shape (k,)
+      # E_n^(1) = ∫ |ψ_n|² V′ dx
+      return np.array([
+          np.sum(np.abs(psi)**2 * V_prime) * dx
+          for psi in wavefunctions
+      ])
+
+  That's it. The integral is a dot product — a few microseconds.
+
+  The user workflow:
+
+  1. User picks a base potential (e.g. ISW) and solves → gets unperturbed energies and
+  wavefunctions
+  2. User adds a perturbation expression in a new "Perturbation V′" input field
+  3. Panel computes E_n^(1) instantly (no second solve needed)
+  4. User optionally clicks "Solve perturbed H" to get the exact answer for comparison
+  5. Table shows all three: E_n⁰, E_n⁰ + E_n^(1), E_n (exact)
+
+  The "Solve perturbed H" step is already implemented — it's just a normal eigensolve on H₀ +
+  V′.
+
+  ---
+  What the student learns that's hard to get from a textbook
+
+  - The correction is just an expectation value — not some abstract formula but a concrete
+  integral of a known function. Seeing ⟨x²⟩ appear as the correction for an x² perturbation
+  makes the formula intuitive.
+  - Accuracy depends on level spacing — perturbing a state whose nearest neighbor is far away
+  gives a very accurate first-order correction. Perturbing near a degeneracy fails visibly. The
+  error column makes this self-evident.
+  - Second-order corrections can be added later: E_n^(2) = Σ_{m≠n} |⟨m|V′|n⟩|² / (E_n⁰ - E_m⁰).
+  The off-diagonal matrix elements ⟨m|V′|n⟩ are also just dot products of already-computed
+  wavefunctions.
+
+  ---
+  Estimated effort
+```
+  ┌───────────────────────────────────────┬────────┐
+  │                 Piece                 │ Effort │
+  ├───────────────────────────────────────┼───────────┤
+  │ perturbation.py backend function      │ 1 hour    │
+  ├───────────────────────────────────────┼───────────┤
+  │ New API field in EigensolveResponse   │ 30 min    │
+  ├───────────────────────────────────────┼───────────┤
+  │ Perturbation V′ input in ControlPanel │ 1 hour    │
+  ├───────────────────────────────────────┼───────────┤
+  │ PerturbationPanel table component     │ 2–3 hours │
+  ├───────────────────────────────────────┼───────────┤
+  │ Tests                                 │ 2 hours   │
+  └───────────────────────────────────────┴───────────┘
+```
+  Total: about 1 day. The heaviest part is the UI table, not the numerics — the math is already
+  done by the eigenvalue solver.
+
+
+
+
+##  Bottom line: 2D is a better fit for a computational physics showcase than a QM teaching tool.
   For JOSS, the 1D solver with strong validation and documentation will be more useful to more
   courses.
   
