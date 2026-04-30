@@ -141,6 +141,9 @@ MIT Лекция 8 Большие языковые модели (LLM) от Liqui
 
 <img width="1560" height="780" alt="image" src="https://github.com/user-attachments/assets/6a492817-fb27-4a5f-bdbe-61ef203f7523" />
 
+<img width="1650" height="2048" alt="image" src="https://github.com/user-attachments/assets/851d8c4f-b9fe-4f28-80ec-6854bb92997a" />
+
+
 A document is split into multiple **chunks**, and each chunk gets its own vector. Here's the full picture:
 
 **What actually happens when you upload a document:**
