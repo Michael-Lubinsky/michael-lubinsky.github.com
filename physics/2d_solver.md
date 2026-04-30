@@ -1,5 +1,58 @@
-  Current solver is 1-D only. How difficult it would be to make 2-D solver and add 2-D
+##  Current solver is 1-D only. How difficult it would be to make 2-D solver and add 2-D
   potential to the app and visualize it?
+
+
+❯ what is pedagogical value of 2-D solver?
+
+⏺ Honestly, not much beyond what 1D already teaches.
+
+  What 1D already covers completely
+
+  - Quantization of energy levels
+  - Wavefunctions, probability densities, normalization
+  - Tunneling, superposition, time evolution
+  - Expectation values, uncertainty principle
+  - All the standard potentials (HO, square well, double well, barriers)
+
+  These are the core QM concepts. A student learns all of them from 1D.
+
+  What 2D genuinely adds
+
+  Degeneracy — the most valuable addition. A 2D square box has states (n,m) and (m,n) with
+  identical energies. Students can see that degenerate states can be mixed arbitrarily, and that
+   any linear combination is also an eigenstate. This is hard to motivate in 1D.
+
+  Angular momentum — a 2D circular well produces states with definite angular momentum quantum
+  number. Students see why the hydrogen atom wavefunctions have the shapes they do.
+
+  Symmetry breaking — slightly break the 2D square well (make it rectangular) and watch
+  degenerate states split. Connects to perturbation theory.
+
+  The honest assessment
+
+  Most undergraduate QM courses never need a 2D solver. The concepts above are better taught
+  analytically, and a 1D solver with good potentials covers everything on a typical syllabus.
+
+  2D becomes valuable in a computational physics course where students are learning numerical
+  methods themselves — the Kronecker product Hamiltonian, sparse solvers, and visualization are
+  the lesson, not the physics.
+
+  Better use of the same effort
+
+  If the goal is pedagogical value, these 1D additions would teach more than going to 2D:
+
+  - Perturbation theory panel — show E_n^(1) = ⟨n|V'|n⟩ alongside the numerical result
+  - WKB approximation overlay — compare semiclassical to exact for smooth potentials
+  - Time-dependent potential — drive the system with an oscillating field, show resonance
+  - Scattering coefficients — compute T and R for barrier potentials, plot vs energy
+
+  Each of those stays 1D, is fast to compute, and directly connects to topics students are
+  simultaneously learning analytically.
+
+  Bottom line: 2D is a better fit for a computational physics showcase than a QM teaching tool.
+  For JOSS, the 1D solver with strong validation and documentation will be more useful to more
+  courses.
+  
 
 ⏺ This is a significant but tractable extension. Here's the honest breakdown:
 
