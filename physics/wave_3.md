@@ -4,7 +4,13 @@ The roadmap lays out your path across 5 phases. Here's the logic behind the orde
 come first because they are exact, analytically solvable problems. The hydrogen atom is the bridge between your 1D Schrödinger solver and full 3D QM — it introduces spherical harmonics, radial wavefunctions, and the quantum numbers n/l/m in a clean context. Spin is conceptually independent and short to learn, but you need it before anything else.
 
 
-Here is the full study plan broken into 6 sequential stages, each building on the last. Click through the steps — the final stage is the app spec.A few things worth emphasizing as you work through this:
+Here is the full study plan broken into 6 sequential stages, each building on the last. 
+
+<img width="878" height="1032" alt="image" src="https://github.com/user-attachments/assets/4ae889c9-f9ea-416a-a743-eaa585520a84" />
+
+Click through the steps — the final stage is the app spec.
+
+A few things worth emphasizing as you work through this:
 
 **The separation of variables in Stage 1 is the most important conceptual step.** Once you see that ψ = R(r)·Y(θ,φ) splits the problem cleanly, everything else is "just" solving two known ODEs. The angular part gives you orbital shapes; the radial part gives you energy quantization.
 
