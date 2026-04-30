@@ -327,6 +327,91 @@ If you’d like, I can sketch the exact Lambda code that:
 * writes **one JSON per line** to S3 in a partitioned folder layout that’s easy for Databricks.
 
 
+## How to caplure REMOVEd records in lambda
+
+
+DynamoDB Streams captures deletes — you just need to handle the `REMOVE` event type in your Lambda code.
+
+**Step 1 — Ensure your Stream is capturing the right data:**
+
+In DynamoDB console → your table → **Exports and Streams** → **DynamoDB stream details**, the stream view type must be set to capture old images:
+
+| Stream View Type | What you get on DELETE |
+|---|---|
+| `KEYS_ONLY` | Only the key attributes |
+| `OLD_IMAGE` | ✅ Full item as it was before deletion |
+| `NEW_AND_OLD_IMAGES` | ✅ Full old item (new image is absent on delete) |
+| `NEW_IMAGE` | ❌ Nothing useful — new image doesn't exist on delete |
+
+If you need the full deleted record content, use `OLD_IMAGE` or `NEW_AND_OLD_IMAGES`. To change it:
+
+```python
+# Via boto3 if needed
+dynamodb.update_table(
+    TableName='your-table',
+    StreamSpecification={
+        'StreamEnabled': True,
+        'StreamViewType': 'NEW_AND_OLD_IMAGES'  
+    }
+)
+```
+
+---
+
+**Step 2 — Handle `REMOVE` events in Lambda:**
+
+```python
+import json
+import boto3
+from boto3.dynamodb.types import TypeDeserializer
+
+deserializer = TypeDeserializer()
+s3 = boto3.client('s3')
+BUCKET = 'your-bucket'
+
+def deserialize(dynamo_item):
+    return {k: deserializer.deserialize(v) for k, v in dynamo_item.items()}
+
+def lambda_handler(event, context):
+    for record in event['Records']:
+        event_name = record['eventName']  # INSERT | MODIFY | REMOVE
+
+        if event_name == 'REMOVE':
+            # Deleted item is in OldImage
+            old_item = deserialize(record['dynamodb']['OldImage'])
+            write_to_s3(old_item, event_name, record)
+
+        elif event_name in ('INSERT', 'MODIFY'):
+            new_item = deserialize(record['dynamodb']['NewImage'])
+            write_to_s3(new_item, event_name, record)
+
+def write_to_s3(item, event_name, record):
+    # Include event metadata so downstream knows it was a delete
+    payload = {
+        'event_name': event_name,
+        'approximate_creation_time': record['dynamodb']['ApproximateCreationDateTime'],
+        'item': item
+    }
+    key = f"{event_name}/{item['your_pk_field']}.json"
+    s3.put_object(
+        Bucket=BUCKET,
+        Key=key,
+        Body=json.dumps(payload, default=str)
+    )
+```
+
+---
+
+**Key points:**
+
+| Point | Detail |
+|---|---|
+| `OldImage` vs `NewImage` | On `REMOVE`, only `OldImage` is populated — always read from there |
+| `ApproximateCreationDateTime` | Useful for ordering events downstream |
+| S3 key prefix | Separating by `INSERT/MODIFY/REMOVE` prefix makes it easy to filter in downstream Spark/Auto Loader jobs |
+| Idempotency | If Lambda retries, the same delete record could be written twice — consider using the stream sequence number as part of the S3 key |
+
+
 
 
 ### ✅ **AWS CLI**
