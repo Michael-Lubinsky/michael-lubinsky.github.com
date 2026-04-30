@@ -130,6 +130,7 @@ https://github.com/HandsOnLLM/Hands-On-Large-Language-Models
 MIT Лекция 8 Большие языковые модели (LLM) от Liquid AI!
 <https://www.youtube.com/watch?v=jU9RGIgJyqo>
 
+<img width="1650" height="2048" alt="image" src="https://github.com/user-attachments/assets/aa06cd15-54f0-432b-82cc-4d8a52b35999" />
 
 ### RAG
 
