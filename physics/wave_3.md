@@ -1,10 +1,17 @@
 The roadmap lays out your path across 5 phases. Here's the logic behind the ordering:
 
 # Phase 1 — Hydrogen atom + Spin** 
-come first because they are exact, analytically solvable problems. The hydrogen atom is the bridge between your 1D Schrödinger solver and full 3D QM — it introduces spherical harmonics, radial wavefunctions, and the quantum numbers n/l/m in a clean context. Spin is conceptually independent and short to learn, but you need it before anything else.
+come first because they are exact, analytically solvable problems.   
+The hydrogen atom is the bridge between your 1D Schrödinger solver and full 3D QM :  
+it introduces spherical harmonics, radial wavefunctions,   
+and the quantum numbers n/l/m in a clean context.  
+Spin is conceptually independent and short to learn, but you need it before anything else.
 
 
 Here is the full study plan broken into 6 sequential stages, each building on the last. 
+
+<img width="878" height="1052" alt="image" src="https://github.com/user-attachments/assets/fa553b02-da82-400a-b5d7-546aedda7bcc" />
+
 
 <img width="878" height="1032" alt="image" src="https://github.com/user-attachments/assets/4ae889c9-f9ea-416a-a743-eaa585520a84" />
 
