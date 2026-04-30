@@ -9,6 +9,9 @@
 <http://lightcone.ru/>
 
 ### Spin 
+
+<https://ufn.ru/ru/articles/2026/1/f/>
+
 <https://arxiv.org/pdf/2604.00231>
 
 <https://ufn.ru/ru/articles/2008/12/f/> Spintronics Nobel lecture
@@ -16,7 +19,7 @@
 <https://postnauka.org/longreads/157461>
 
 
-Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/>
+Classic Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/>
 
 Принцип наименьшего действия [Veritasium]:
 <https://www.youtube.com/watch?v=C2tL1A3B3cY>
