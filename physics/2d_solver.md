@@ -56,7 +56,7 @@
   the potential into a known base H₀ and a small perturbation V′, compute the first-order
   correction analytically from the already-computed eigenstates, then display both alongside the
    exact numerical answer:
-
+```
   ┌───────┬──────────────────┬─────────────────┬──────────────┬────────────────────┬───────┐
   │ State │      E_n        │   E_n^(1) =     │  E_n (1st    │    E_n (exact      │ Error  │
   │       │  (unperturbed)  │    ⟨n|V′|n⟩     │    order)    │     numerical)     │        │
@@ -67,7 +67,7 @@
   ├───────┼─────────────────┼─────────────────┼──────────────┼────────────────────┼────────┤
   │ n=3   │ 44.413          │ 0.333           │ 44.746       │ 44.748             │ 0.004% │
   └───────┴─────────────────┴─────────────────┴──────────────┴────────────────────┴────────┘
-
+```
   The student sees perturbation theory working — or failing when the perturbation is too large.
 
   ---
