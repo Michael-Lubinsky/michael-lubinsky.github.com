@@ -27,6 +27,9 @@ Stage 4
 Stage 5
 <img width="878" height="1032" alt="image" src="https://github.com/user-attachments/assets/4ae889c9-f9ea-416a-a743-eaa585520a84" />
 
+<img width="878" height="1302" alt="image" src="https://github.com/user-attachments/assets/07cdd1b9-36dd-444c-8331-b248e206210a" />
+
+
 Click through the steps — the final stage is the app spec.
 
 A few things worth emphasizing as you work through this:
