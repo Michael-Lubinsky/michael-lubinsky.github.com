@@ -412,7 +412,124 @@ def write_to_s3(item, event_name, record):
 | Idempotency | If Lambda retries, the same delete record could be written twice — consider using the stream sequence number as part of the S3 key |
 
 
+The cleanest approach is to write deletes to a **separate S3 prefix** with just the key fields. This keeps the Databricks logic simple — the upsert job stays unchanged, and a separate delete job reads from the deletes prefix.
 
+**Updated Lambda:**
+
+```python
+import json
+import boto3
+import os
+import time
+from datetime import datetime, timezone
+from decimal import Decimal
+from boto3.dynamodb.types import TypeDeserializer
+import uuid
+
+s3_client = boto3.client('s3')
+deser = TypeDeserializer()
+
+print("Starting Lambda function!")
+S3_BUCKET = "chargeminder-2"
+S3_PREFIX         = "raw/dynamodb/chargeminder-in-app-interventions"
+S3_PREFIX_DELETES = "raw/dynamodb/chargeminder-in-app-interventions-deletes"  # ← new
+
+def _key(prefix, n):
+    """Build S3 object key."""
+    now = time.gmtime()
+    ts = time.strftime("%Y-%m-%d-%H-%M-%S", now)
+    unique_id = str(uuid.uuid4())[:8]
+    return f"{prefix}/dt={time.strftime('%Y-%m-%d', now)}/HH={time.strftime('%H', now)}/interventions_{ts}_{unique_id}_{n}.jsonl"
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj) if obj % 1 else int(obj)
+        return super().default(obj)
+
+
+def write_to_s3(prefix, lines):
+    """Write NDJSON lines to S3."""
+    if not lines:
+        return
+    key = _key(prefix, len(lines))
+    ndjson_content = "\n".join(lines) + "\n"
+    s3_client.put_object(
+        Bucket=S3_BUCKET,
+        Key=key,
+        Body=ndjson_content.encode("utf-8"),
+        ContentType="application/x-ndjson"
+    )
+    print(f"Written {len(lines)} items to s3://{S3_BUCKET}/{key}")
+
+
+def lambda_handler(event, context):
+    upsert_lines = []
+    delete_lines = []
+
+    for r in event.get("Records", []):
+        if r.get("eventSource") != "aws:dynamodb":
+            continue
+
+        event_name = r.get("eventName")
+
+        if event_name in ("INSERT", "MODIFY") and "NewImage" in r["dynamodb"]:
+            obj = {k: deser.deserialize(v) for k, v in r["dynamodb"]["NewImage"].items()}
+            upsert_lines.append(json.dumps(obj, separators=(",", ":"), cls=DecimalEncoder))
+
+        elif event_name == "REMOVE" and "OldImage" in r["dynamodb"]:
+            # For deletes we only need the key fields Databricks will match on.
+            # OldImage has the full item — extract only what you need.
+            old = {k: deser.deserialize(v) for k, v in r["dynamodb"]["OldImage"].items()}
+            delete_record = {
+                "user_id":    old.get("user_id"),      # ← your PK field
+                "created_at": old.get("created_at"),   # ← your SK field if composite key
+                "_deleted_at": datetime.now(timezone.utc).isoformat()
+            }
+            delete_lines.append(json.dumps(delete_record, separators=(",", ":"), cls=DecimalEncoder))
+
+    write_to_s3(S3_PREFIX,         upsert_lines)
+    write_to_s3(S3_PREFIX_DELETES, delete_lines)
+
+    total = len(upsert_lines) + len(delete_lines)
+    if total == 0:
+        return {'statusCode': 200, 'body': 'No items to process'}
+
+    return {
+        'statusCode': 200,
+        'body': f'Upserted {len(upsert_lines)}, deleted {len(delete_lines)} records'
+    }
+```
+
+---
+
+**Databricks side — delete job reads from the deletes prefix:**
+
+```python
+deletes_df = spark.read.format("json") \
+    .load("s3://chargeminder-2/raw/dynamodb/chargeminder-in-app-interventions-deletes/")
+
+from delta.tables import DeltaTable
+
+target = DeltaTable.forName(spark, "your_catalog.your_schema.interventions")
+
+target.alias("t").merge(
+    deletes_df.alias("d"),
+    "t.user_id = d.user_id AND t.created_at = d.created_at"
+).whenMatchedDelete() \
+ .execute()
+```
+
+---
+
+**Why separate prefix rather than a single prefix with an `_op` flag:**
+
+| Approach | Pro | Con |
+|---|---|---|
+| Separate prefix ✅ | Upsert job unchanged, delete job independent | Two jobs to orchestrate |
+| Single prefix + `_op` flag | One Auto Loader stream | Upsert job needs to handle both ops, more complex MERGE |
+
+Separate prefix is simpler to reason about and keeps your existing upsert pipeline completely untouched.
 
 ### ✅ **AWS CLI**
 
