@@ -15,6 +15,9 @@ Stage 1
 Stage 2  
 <img width="878" height="1260" alt="image" src="https://github.com/user-attachments/assets/4bf45edc-1f8a-448c-bb22-4713aff453f0" />
 
+Stage 3
+
+<img width="878" height="1132" alt="image" src="https://github.com/user-attachments/assets/489ad7be-7a0d-450d-8591-10c7cde433c2" />
 
 Stage 5
 <img width="878" height="1032" alt="image" src="https://github.com/user-attachments/assets/4ae889c9-f9ea-416a-a743-eaa585520a84" />
