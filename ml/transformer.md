@@ -6,6 +6,8 @@
 
 <https://www.youtube.com/watch?v=tsee8mosj5U> ru
 
+<https://www.youtube.com/@razinkov>
+
 <https://poloclub.github.io/transformer-explainer/>
 
 <https://www.youtube.com/watch?v=KCEEfH1RQuA>
