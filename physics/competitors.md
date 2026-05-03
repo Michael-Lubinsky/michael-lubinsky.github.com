@@ -1,4 +1,17 @@
-Here is a structured comparison of all the meaningful overlapping projects, organized by how closely they compete with your specific feature set.The three tabs give you cards, a full feature matrix, and a honest diff. A few things worth calling out beyond the table:
+## QM Software
+
+https://github.com/euphoricrhino/sakurai-notes
+
+https://github.com/osscar-org/quantum-mechanics
+
+https://github.com/mholtrop/QMPython
+
+https://github.com/mkuznets/quantum-mechanics-lectures
+
+
+Here is a structured comparison of all the meaningful overlapping projects, organized by how closely they compete with your specific feature set.
+
+The three tabs give you cards, a full feature matrix, and a honest diff. A few things worth calling out beyond the table:
 
 **Your closest competitor is qmsolve.** It overlaps on the core physics (1D Schrödinger, hydrogen, custom potentials, atomic units) but goes wider with 2D/3D and two-particle systems. The critical difference is interface: qmsolve is a Python library that produces matplotlib windows — you need to write code to use it. Your project is a running web app a student can open and immediately interact with. That's a fundamentally different user.
 
