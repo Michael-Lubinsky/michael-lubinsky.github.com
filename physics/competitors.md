@@ -8,6 +8,8 @@ https://github.com/mholtrop/QMPython
 
 https://github.com/mkuznets/quantum-mechanics-lectures
 
+https://github.com/kirsion/Quantum-Mechanics-Mcintyre-solutions
+
 
 Here is a structured comparison of all the meaningful overlapping projects, organized by how closely they compete with your specific feature set.
 
