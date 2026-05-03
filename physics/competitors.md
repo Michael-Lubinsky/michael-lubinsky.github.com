@@ -112,6 +112,75 @@ Here are the most relevant open-source alternatives (focusing on Schrödinger eq
   - **Research/Scripting**: QMsolve or QuTiP.
   - **Quick Demos**: Web 1D sims.
 
-QM fills a nice niche as a "full-stack" interactive QM laboratory. If expanded with 2D capabilities or cloud deployment (e.g., via Docker/Streamlit alternative), it could become the go-to tool. Its combination of backend power + modern frontend + educational extras makes it particularly strong.
+QM fills a nice niche as a "full-stack" interactive QM laboratory. If expanded with 2D capabilities or cloud deployment (e.g., via Docker/Streamlit alternative), it could become the go-to tool.
+
+
+ TODO:
+ **Here’s a prioritized set of feature recommendations** to make **QM** more competitive with **QMsolve** (deeper multi-dimensional/multi-particle physics + scripting) and **PhET** (polished educational intuition, accessibility, and "wow" factor). 
+
+QM already leads in **integrated browser UX**, **spin/hydrogenic modules**, **Grotrian diagrams**, and **educational depth** (references, diagnostics, URL sharing). These suggestions build on that strength while closing key gaps.
+
+### 1. High-Impact Quick Wins (Easy → Medium Effort)
+**Target: Match PhET’s educational polish and QMsolve’s flexibility.**
+
+- **2D Support (Biggest Gap vs. QMsolve)**  
+  Add time-dependent and stationary 2D solver (e.g., double-slit, 2D harmonic oscillator, quantum billiards). Use finite-difference or split-step Fourier.  
+  *Visualization*: Heatmap + contour for |ψ|², optional vector field for probability current.  
+  *Why competitive?* QMsolve shines here; PhET has wave interference simulations. This would be a major differentiator for QM.
+
+- **Preset "Labs" / Guided Scenarios** (Strong PhET alignment)  
+  Curated experiments with explanations:  
+  - Tunneling resonance  
+  - Coherent states in HO (no spreading)  
+  - Double-slit interference  
+  - Hydrogen Stark/Zeeman effect  
+  - Sequential Stern-Gerlach  
+  Include one-paragraph physics background + "what to observe" prompts.
+
+- **Classical Comparison Overlays**  
+  For harmonic oscillator: overlay classical probability density.  
+  For free particle/wave packet: group vs. phase velocity.  
+  *Educational value*: Directly addresses correspondence principle (QMsolve/PhET strength).
+
+- **Improved Initial State Composer**  
+  Drag-and-drop or graphical superposition builder (bars for |cₙ|² with phases). Eigen-decomposition chart for any initial state (already in TODO).
+
+### 2. Medium-Term Features (Differentiation)
+**Target: Broaden appeal and usability.**
+
+- **Export / Shareable Animations**  
+  GIF/MP4 export of time evolutions + parameter summary. Embeddable links or WebGL snapshots. PhET excels at shareability.
+
+- **Keyboard Shortcuts + Accessibility**  
+  Space = play/pause, arrow keys for stepping, high-contrast mode, screen-reader support for plots. Makes it more PhET-like for classrooms.
+
+- **Multi-Particle / Entanglement Mode** (vs. QMsolve)  
+  Start with two non-interacting particles (symmetric/antisymmetric states) → identical particles visualization. Later add interaction potentials.
+
+- **Perturbation Theory Tools**  
+  First-order corrections, visualize perturbed vs. unperturbed states (already in TODO). Great for undergrad quantum courses.
+
+- **Wigner Function** (Advanced but distinctive)  
+  Phase-space visualization for time evolution — shows negative regions (purely quantum). Few educational tools have this interactively.
+
+### 3. Longer-Term / Ambitious Enhancements
+- **3D Visualization** (e.g., hydrogen orbitals in full 3D with volume rendering or isosurfaces) — builds on existing 2D cross-sections.
+- **AI Assistant** — Natural language queries ("show me tunneling through a barrier with E < V0") that auto-configures parameters and explains results. Leverages QM’s strong physics backend.
+- **Mobile / Touch Optimization** — Better for classroom tablets.
+- **Standalone Web Version** (e.g., WASM backend or hosted demo) — reduces barrier vs. PhET’s zero-install.
+- **Python / API Export** — Allow exporting a Python script reproducing the current setup (bridges to QMsolve users).
+
+### Prioritization Advice
+1. **First**: 2D solver + Preset Labs + Classical overlays (biggest immediate competitiveness boost).
+2. **Second**: Export/share + accessibility + eigenstate decomposition.
+3. **Then**: Multi-particle and Wigner.
+
+### Why These Close the Gaps
+- **Vs. QMsolve**: Adds multi-dimensional depth and scripting-like reproducibility while keeping superior web interactivity.
+- **Vs. PhET**: Adds deeper numerical control, custom potentials, exact solvers, and advanced topics (spin, hydrogen fine structure) that PhET keeps conceptual.
+
+**QM’s current advantages** (browser app feel, spin module, Grotrian, URL state, API) are already excellent — lean into **"the most complete interactive QM laboratory"** positioning rather than trying to become a pure Python library.
+
+
 
 
