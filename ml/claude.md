@@ -5,6 +5,8 @@
 
 <https://habr.com/ru/articles/1028988/>
 
+<https://habr.com/ru/articles/1030832/>
+
 <https://anthropic.skilljar.com/>
 
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
