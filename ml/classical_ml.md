@@ -2,6 +2,9 @@
 
 <https://mlbook.dataschool.io/>
 
+scikit-learn
+<https://habr.com/ru/articles/1031044/>
+
 <https://www.linkedin.com/pulse/how-linear-classifier-gets-993-mnist-without-learning-taras-tsugrii-1cruc/>
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvZA-AvUKhB1lcV1kDaamFgY>
