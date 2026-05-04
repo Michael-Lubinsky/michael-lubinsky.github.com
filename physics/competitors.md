@@ -2,6 +2,8 @@
 
 https://www.youtube.com/watch?v=vt8YawqL61A
 
+https://www.youtube.com/watch?v=hxGA1Je1P-s
+
 https://www.youtube.com/watch?v=DF1SnjXZcbM  2-D Shrodinger
 
 https://marl0ny.github.io/split-operator-simulations/js/2d.html
