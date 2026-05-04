@@ -1,5 +1,9 @@
 ## QM Software
 
+https://marl0ny.github.io/split-operator-simulations/js/2d.html
+
+https://github.com/marl0ny/split-operator-simulations/tree/new-web-version/js
+
 https://github.com/euphoricrhino/sakurai-notes
 
 https://github.com/osscar-org/quantum-mechanics
