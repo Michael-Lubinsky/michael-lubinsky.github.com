@@ -10,7 +10,7 @@ https://www.youtube.com/watch?v=0geg1mar9Xw
 
 https://www.youtube.com/watch?v=vt8YawqL61A
 
-https://www.youtube.com/watch?v=hxGA1Je1P-s
+https://www.youtube.com/watch?v=hxGA1Je1P-s Solve Schrödinger Equation in Seconds with Python & GPU
 
 https://www.youtube.com/watch?v=kVjg3jbM3Pw
 Time-Dependent Schrodinger Equation in Python: Two Different Techniques
