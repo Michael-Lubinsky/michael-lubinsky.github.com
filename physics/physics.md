@@ -6,6 +6,8 @@
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
+<https://chaosbook.org/>
+
 <http://lightcone.ru/>
 
 ### Spin 
