@@ -33,6 +33,8 @@ Classic Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/
 
 ## Quantum Mechanics
 
+<https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
+
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
 
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
