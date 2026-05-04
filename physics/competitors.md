@@ -1,5 +1,6 @@
 ## QM Software
 
+https://www.youtube.com/watch?v=vt8YawqL61A
 
 https://www.youtube.com/watch?v=DF1SnjXZcbM  2-D Shrodinger
 
