@@ -6,6 +6,8 @@
 
 <https://github.com/ydjin0602/fastapi-template>
 
+<https://habr.com/ru/articles/1031190/> Fast API , Docker
+
 <https://levelup.gitconnected.com/7-fastapi-extensions-so-powerful-i-stopped-using-flask-forever-9c6e9a4fbb5a>
 
 <https://github.com/jaehyeon-kim/nicegui-fastapi-template>
