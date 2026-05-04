@@ -1,4 +1,8 @@
 ## QM Software
+1-D
+https://blog.gwlab.page/solving-1-d-schrodinger-equation-in-python-dcb3518ce454
+
+
 2-D
 https://paul-g2.github.io/SchrodingerSandbox/
 https://github.com/Paul-G2/SchrodingerSandbox
