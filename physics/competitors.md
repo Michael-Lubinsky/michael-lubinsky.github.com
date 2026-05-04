@@ -1,4 +1,8 @@
 ## QM Software
+2-D
+https://paul-g2.github.io/SchrodingerSandbox/
+https://github.com/Paul-G2/SchrodingerSandbox
+https://paul-g2.github.io/SchrodingerSandbox/docs/algorithm.html
 
 https://www.youtube.com/watch?v=E8N1yskPN28
 
