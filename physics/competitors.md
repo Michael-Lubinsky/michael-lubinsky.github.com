@@ -1,5 +1,7 @@
 ## QM Software
 
+https://www.youtube.com/watch?v=E8N1yskPN28
+
 https://www.youtube.com/watch?v=vt8YawqL61A
 
 https://www.youtube.com/watch?v=hxGA1Je1P-s
