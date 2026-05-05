@@ -2,7 +2,9 @@
 
 <https://habr.com/ru/articles/1023316/>  Что такое Harness?
 
-<https://habr.com/ru/articles/1028260/>
+<https://habr.com/ru/articles/1028260/> обширный материал по Context Engineering
+
+<https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
 
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
