@@ -1,5 +1,8 @@
+## Scikit-learn
 
-https://habr.com/ru/companies/netologyru/articles/911216/ Гайд по Scikit-learn в 2025: собираем пайплайн,
+<https://habr.com/ru/companies/netologyru/articles/911216/>  Scikit-learn в 2025 
+
+scikit-learn <https://habr.com/ru/articles/1031044/>
 
 ### Decision Trees
 <https://miptgirl.medium.com/mining-rules-from-data-4fd9f559c608>
