@@ -76,7 +76,7 @@ Free book online
 
 <https://github.com/BerriAI/litellm>
 
-## Agents orchestration via md files
+## Agents orcerstration via md files
 <https://habr.com/ru/articles/1009534/>
 
 The 100 line AI agent that solves GitHub issues or helps you in your command line.
@@ -121,6 +121,8 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 <https://habr.com/ru/articles/985990/>
 
 ## MCP vs Skills
+
+<https://habr.com/ru/articles/1031670/>
 
 <https://david.coffee/i-still-prefer-mcp-over-skills/>
 
