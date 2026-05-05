@@ -1,5 +1,6 @@
 ## Build From Scratch
 
+<https://habr.com/ru/articles/1031568/>
 
 <https://www.gilesthomas.com/llm-from-scratch>
 
