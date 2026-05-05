@@ -15,6 +15,8 @@
 
 ### Rest API
 
+<https://habr.com/ru/companies/psb/articles/1031002/>
+
 <https://habr.com/ru/companies/otus/articles/1008370/>
 
 <https://habr.com/ru/articles/946276/>
