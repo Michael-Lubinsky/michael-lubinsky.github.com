@@ -17,12 +17,6 @@
 <img width="472" height="51" alt="image" src="https://github.com/user-attachments/assets/0ee72af4-ba9a-407c-8554-774d4a061b1c" />
 
 
-**FlashAttention** 
-```
-is a fast and memory-efficient algorithm for computing the **attention operation**
-used in Transformer models (like GPT, BERT, etc.).
-It was introduced in 2022 to dramatically speed up training and inference of large language models.
-```
 
 ### 1. Reminder: What Attention Does
 
@@ -64,6 +58,14 @@ This is why long-context LLMs are difficult.
 FlashAttention does **not change the math** of attention.
 
 It changes **how the computation is executed on GPU**.
+
+
+**FlashAttention** 
+```
+is a fast and memory-efficient algorithm for computing the **attention operation**
+used in Transformer models (like GPT, BERT, etc.).
+It was introduced in 2022 to dramatically speed up training and inference of large language models.
+```
 
 Key idea:
 
