@@ -18,6 +18,7 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
 <https://www.cs.mcgill.ca/~akroit/math/>
 
+<https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random MAtrix Theory
 
 ЭПОХАЛЬНЫЙ РАЗБОР АНАЛИЗА ЗОРИЧА [ЧАСТЬ 1]
 <https://www.youtube.com/watch?v=jcdPKocIzFA>
