@@ -1,6 +1,8 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively>
+
 <https://habr.com/ru/articles/1028260/>
 
 <https://habr.com/ru/articles/1028988/>
