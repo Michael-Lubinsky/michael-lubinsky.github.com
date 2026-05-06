@@ -1,6 +1,6 @@
 ### PyTorch
 
-<https://habr.com/ru/articles/1029440/>NumPy
+<https://habr.com/ru/articles/1029440/>  NumPy
 
 <https://www.youtube.com/watch?v=r1bquDz5GGA>
 
@@ -8,14 +8,15 @@
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
+<https://blog.jetbrains.com/pycharm/2026/05/pytorch-vs-tensorflow-choosing-framework-2026/>
 
-https://habr.com/ru/companies/otus/articles/975328/
+<https://habr.com/ru/companies/otus/articles/975328/>
 
-https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision
+<https://www.iamtk.co/mastering-pytorch-from-linear-regression-to-computer-vision>
 
 https://www.clcoding.com/2024/10/deep-learning-with-pytorch-image.html 
 
-https://news.ycombinator.com/item?id=44276476 I have reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
+<https://news.ycombinator.com/item?id=44276476>  reimplemented Stable Diffusion 3.5 from scratch in pure PyTorch (github.com/yousef-rafat)
 
 Below __B__ stands for Batch Size — the number of samples processed together in a single forward pass.
 
