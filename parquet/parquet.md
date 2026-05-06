@@ -1,5 +1,7 @@
 ### Parquet 
 
+<https://vutr.substack.com/p/the-overview-of-parquet-file-format>
+
 <https://habr.com/ru/articles/1013604/>
 
 <https://medium.com/@2nick2patel2/parquet-is-the-new-csv-for-python-0c0630afb57c>
