@@ -1,5 +1,6 @@
 ## Spark
 
+<https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
 Driver Node → Cluster Manager → Worker Nodes
 
