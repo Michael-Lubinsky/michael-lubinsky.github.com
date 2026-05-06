@@ -1,12 +1,13 @@
 ### Iceberg catalog
 
-Iceberg’s documentation: apache.iceberg.io  
-Delta Lake’s documentation: delta.io  
+Iceberg’s documentation: <http://www.apache.iceberg.io>
+Delta Lake’s documentation: <http://www.delta.io>
 <https://habr.com/ru/companies/vktech/articles/959398/>
 
 **Iceberg catalog** is a **metadata management system** used by **Apache Iceberg**, a high-performance table format designed for large-scale analytic datasets.
 
- 
+ <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/b2d9c9c9-cd2e-40c4-91a3-09a34ee22435" />
+
 
 Apache Iceberg is an open table format for huge analytic datasets, designed to work with engines like:
 
@@ -18,6 +19,73 @@ It solves problems with traditional Hive-style tables such as:
 -   Lack of ACID guarantees
 -   Poor performance on large datasets
 -   Difficulty managing metadata
+
+
+
+💡 Iceberg is a table storage format that abstracts many files (Avro, Parquet or Orc) as if they were a single database table.
+
+Database tables allow you to run SQL against them. When I run a "WHERE id=1" query, the engine needs to know where to look for that record with ID 1 inside the storage.
+
+This is more complex than it sounds. One reason for this is that these files are immutable. When you "update a record", the underlying old value that was stored on the file system does not change. The reference to it does.
+
+Here's how Iceberg handles these things:
+
+The latest state (metadata) of the table is itself stored in different files. These are stored in your data lake (e.g S3).
+
+Read carefully because their names are similar:
+1. metadata root (JSON file)
+2. metadata snapshot
+3. manifest LIST
+4. manifest FILE
+5. data file
+
+Starting from the bottom. 👇
+1️⃣ The data file is a simple Parquet file. It's literally just your data. 🙂
+
+2️⃣ The manifest file is a sort of mini-metadata file that contains information about a set of data files. Stuff like:
+• partition info - e.g "these 200 files from June". If your query is searching for May, it would skip searching through them. 👌
+• per-file min/max column statistics 📊
+
+When you have many manifest files - you have to reference to them somewhere:
+
+3️⃣ Manifest list
+
+It contains pointers to every manifest file. (& other metadata for efficient querying)
+
+4️⃣ Metadata Snapshot
+
+Defines the latest state of an Iceberg table.
+
+This snapshot links to a manifest list with pointers to the latest data.
+
+Notice that there are a couple of snapshot files. These forms a sort of linked list representing snapshot lineage and is what allows Iceberg to traverse back in time to previous versions. 🕰️
+
+💡 Every new write in Iceberg creates a new snapshot and a new manifest list.
+
+The new list tries to reuse as many old manifest files as possible, but the updates may make it dereference old ones and reference new freshly-created ones too.
+
+5️⃣ Metadata Root (JSON)
+
+It's a simple JSON file. It tells us what the latest snapshot is.
+
+At any given time, there is only one metadata snapshot that's the latest.
+
+How do we know which one it is?
+
+It's whatever the Metadata Root points to.
+
+This file is owned by the Iceberg catalog and is updated atomically That's how Iceberg serializes updates.
+
+As you can see - there is a TON of indirection here.
+
+Catalog -> Metadata Root -> Snapshot(s) -> Manifest List -> Manifest File(s) -> Data File(s).
+
+That's the point.
+
+Clients never re-write the whole table state. They only re-write the minimal set of data, and then just update the pointers.
+
+💡 Iceberg was created to succeed Hive, which had an undocumented spec, non-atomic writes to multiple partitions, problems renaming columns, implicit dependencies and other gotchas.
+
 
 * * *
 
