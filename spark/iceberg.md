@@ -1,7 +1,7 @@
 ### Iceberg catalog
 
-Iceberg’s documentation: <http://www.apache.iceberg.io>
-Delta Lake’s documentation: <http://www.delta.io>
+Iceberg’s documentation: <http://www.apache.iceberg.io>  
+Delta Lake’s documentation: <http://www.delta.io>  
 <https://habr.com/ru/companies/vktech/articles/959398/>
 
 **Iceberg catalog** is a **metadata management system** used by **Apache Iceberg**, a high-performance table format designed for large-scale analytic datasets.
