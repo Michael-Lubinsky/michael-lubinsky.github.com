@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
 
+<https://habr.com/ru/articles/1031440/>
+
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
 <https://code.claude.com/docs/ru/hooks>
