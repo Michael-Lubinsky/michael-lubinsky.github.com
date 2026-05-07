@@ -12,6 +12,8 @@ https://medium.com/@hugolu87/databricks-vs-snowflake-the-final-chapter-long-read
 
 https://www.databricks.com/sites/default/files/2026-04/databricks-certified-data-engineer-associate-exam-guide-may-4-2026-new.pdf
 
+https://www.linkedin.com/feed/update/urn:li:activity:7454845458109198336/
+
 https://www.alexcole.net/databricks-data-engineer-associate-certification-guide/
 
 https://medium.com/@gema.correa/how-i-prepared-for-and-passed-the-databricks-certified-machine-learning-professional-exam-c741cfca259e
