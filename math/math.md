@@ -51,6 +51,8 @@ Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
 <https://link.springer.com/book/10.1007/978-981-99-2951-1> Linear Algebra with Python
 
+<https://medium.com/@tomkob99_89317/eigenvalues-and-eigenvectors-how-they-really-emerge-c8fc0978fe1f>
+
 <https://link.springer.com/book/10.1007/978-3-031-46270-2> Exploring University Mathematics with Python
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
