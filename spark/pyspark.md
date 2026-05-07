@@ -20,6 +20,8 @@ df.select(countDistinct("name", "department")).show()
 df.groupBy("department").agg(countDistinct("name").alias("unique_employees")).show()
 ```
 
+<https://medium.com/@Rohan_Dutt/10-pyspark-optimization-patterns-that-work-without-advanced-tuning-for-data-engineers-3e497bd8e186>
+
 ### From SQL to PySpark
 
 ```sql
