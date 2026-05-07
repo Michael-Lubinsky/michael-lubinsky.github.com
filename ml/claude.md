@@ -37,6 +37,8 @@
 ## Skills
 <https://habr.com/ru/articles/1030502/>
 
+<https://ai.plainenglish.io/build-your-first-claude-code-skill-a-simple-project-memory-system-that-saves-hours-1d13f21aff9e>
+
 <https://www.claudeskills.org/>  
 <https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf>  
 <https://anthropic.skilljar.com/claude-code-in-action>  
