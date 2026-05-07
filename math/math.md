@@ -26,7 +26,7 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 <https://www.youtube.com/watch?v=jcdPKocIzFA>
 
 <https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
-Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
+Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
 <https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
 
@@ -55,6 +55,8 @@ Optimization TheoryFor Computer Science and Machine Learning (~2,000 pages)
 <https://www.kvant.digital/> Kvant
 
 <https://www.ega-math.narod.ru/>
+
+<https://www.cantorsparadise.com/>
 
 <https://github.com/valeman/Awesome_Math_Books>
 
