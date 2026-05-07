@@ -22,6 +22,10 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
 <https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>
 
+<<https://www.cantorsparadise.com>
+
+<https://medium.com/tag/mathematics>
+
 ЭПОХАЛЬНЫЙ РАЗБОР АНАЛИЗА ЗОРИЧА [ЧАСТЬ 1]
 <https://www.youtube.com/watch?v=jcdPKocIzFA>
 
