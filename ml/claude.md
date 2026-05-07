@@ -9,6 +9,8 @@
 
 <https://habr.com/ru/articles/1030832/>
 
+<https://habr.com/ru/companies/alpinadigital/articles/1032134/>
+
 <https://anthropic.skilljar.com/>
 
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
