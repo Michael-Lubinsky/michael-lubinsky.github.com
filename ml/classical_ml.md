@@ -19,6 +19,7 @@ scikit-learn
 
 <https://machine-learning-with-python.readthedocs.io>
 
+<https://medium.com/@guyko81/stop-predicting-numbers-start-predicting-distributions-0d4975db52ae>
 
 Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
 
