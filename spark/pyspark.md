@@ -50,7 +50,7 @@ col2: The name of the column for the columns of the resulting table.
 The method then computes the frequency of each pair of distinct values from these two columns. The result is a new DataFrame. 
  
 Both of the following syntaxes are aliases and produce the same result:
-df.crosstab(col1, col2)
+df.crosstab(col1, col2)  
 df.stat.crosstab(col1, col2)
 
 Important characteristics & limitations:
@@ -1565,7 +1565,7 @@ These operate on **Vector columns**, not raw columns.
 * Use `freqItems()` to detect data quality issues
 
  
-
+<https://mayursurani.medium.com/data-engineer-interview-playbook-pyspark-aws-sql-part-02-f2c1f647915b>
 
 <https://medium.com/@udayjagga/top-10-production-grade-reusable-pyspark-scripts-for-data-engineers-aaa088d424ab>
 
@@ -1578,7 +1578,9 @@ These operate on **Vector columns**, not raw columns.
 <https://medium.com/@shubham.shardul2019/chapter-4-pyspark-advanced-aggregations-pivoting-conditional-logic-and-joins-924ef5d7b82a>
 
 <https://medium.com/@krthiak/pyspark-sql-and-python-hands-on-interview-questions-day-92-of-100-days-of-data-engineering-ai-ef14419c98a6>  
-https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b  
+
+<https://medium.com/@krthiak/15-pyspark-interview-questions-day-95-of-100-days-of-data-engineering-ai-and-azure-challenge-93eda757088b>
+
 https://medium.com/@krthiak/pysparks-interview-questions-on-friday-day-80-of-100-days-of-data-engineering-ai-and-azure-a4c920bf8ab0  
 
 https://medium.com/towards-data-engineering/discover-how-spark-functions-like-collect-set-concat-ws-collect-list-explode-and-array-union-e506a63bd571
