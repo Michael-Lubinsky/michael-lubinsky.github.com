@@ -1,5 +1,7 @@
 ## Spark
 
+<https://blog.dataengineerthings.org/i-spent-8-hours-understanding-apache-sparks-memory-management-92b9e06d7e19>
+
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
 Driver Node → Cluster Manager → Worker Nodes
