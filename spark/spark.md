@@ -4,6 +4,8 @@
 
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
+<https://medium.com/towards-data-engineering/processing-10-tb-data-in-apache-spark-in-3-hours-a-cost-effective-tuning-guide-5e52908c98fb>
+
 Driver Node → Cluster Manager → Worker Nodes
 
 → Driver Node (The Brain)
