@@ -18,7 +18,9 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
 <https://www.cs.mcgill.ca/~akroit/math/>
 
-<https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random MAtrix Theory
+<https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random Matrix Theory
+
+<https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>
 
 ЭПОХАЛЬНЫЙ РАЗБОР АНАЛИЗА ЗОРИЧА [ЧАСТЬ 1]
 <https://www.youtube.com/watch?v=jcdPKocIzFA>
