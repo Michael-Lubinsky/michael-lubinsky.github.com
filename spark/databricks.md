@@ -1,12 +1,17 @@
-Book:
-https://github.com/bartosz25/data-engineering-design-patterns-book
+## Databricks
 
-https://login.databricks.com/
+Book:
+<https://github.com/bartosz25/data-engineering-design-patterns-book>
+
+<https://login.databricks.com/>
+
+<https://medium.com/towards-data-engineering/databricks-data-engineering-interview-questions-expert-level-part-5-2f4724d3d607>
 
 DLT 
-https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5
+<https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5>
 
-https://medium.com/@hugolu87/databricks-vs-snowflake-the-final-chapter-long-read-371cf3d7e572
+Databricks vs Snowflake
+<https://medium.com/@hugolu87/databricks-vs-snowflake-the-final-chapter-long-read-371cf3d7e572>
 
 ## Databricks certification
 
