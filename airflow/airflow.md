@@ -16,6 +16,8 @@ https://medium.com/apache-airflow/how-to-install-apache-airflow-3-0-using-docker
 -->
 ### Airflow
 
+<https://medium.com/@adhilparthi/mastering-apache-airflow-a-complete-guide-to-workflow-orchestration-for-data-engineers-b01f2ad718ef>
+
 A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 
 DagBag is a collection of DAGs, typically from a directory on the file system. It parses and loads DAGs for the scheduler to manage.
