@@ -7,7 +7,143 @@ Book:
 
 <https://medium.com/towards-data-engineering/databricks-data-engineering-interview-questions-expert-level-part-5-2f4724d3d607>
 
-DLT 
+ examples to prepare candidates for in-depth discussions during interviews.
+
+Question 17: How do you optimize Spark jobs for performance in Databricks?
+Optimizing Apache Spark jobs in Databricks requires efficient resource allocation, data processing optimizations, and query tuning. Below are the key best practices:
+
+1. Optimize Data Handling
+Use Delta Lake instead of Parquet for transactional consistency and faster query performance.
+
+Partitioning & Z-Ordering:
+
+Partition data on high-cardinality columns.
+Use Z-ORDER BY for optimizing frequently queried columns.
+df.write.format("delta").partitionBy("year").save("/mnt/delta_table") 
+OPTIMIZE delta.`/mnt/delta_table` ZORDER BY (customer_id);
+Automatic Cleanup:
+
+VACUUM delta.`/mnt/delta_table` 
+
+RETAIN 168 HOURS;
+2. Computation Tuning
+Use DataFrames Instead of RDDs: DataFrames leverage Catalyst optimizer for better execution plans.
+Optimize Shuffle Operations:
+Reduce shuffle partitions:
+spark.conf.set("spark.sql.shuffle.partitions", "200")
+Avoid Skewed Joins using salting:
+
+from pyspark.sql.functions 
+import col, lit 
+
+df = df.withColumn("salt", (col("id") % 10))
+Broadcast Small Tables:
+
+from pyspark.sql.functions 
+
+import broadcast 
+df_result = df_large.join(broadcast(df_small), "join_key")
+3. Cluster Configuration
+Enable Auto Scaling: Dynamically adjust resources based on workload.
+
+Use Compute-Optimized Instances (c5d.2xlarge) for transformations and Memory-Optimized Instances (r5d.2xlarge) for joins.
+
+Enable Photon Engine for SQL Processing:
+
+SET spark.databricks.photon.enabled = true;
+4. Optimizing Structured Streaming
+Use Watermarking to Handle Late Arriving Data:
+
+df.withWatermark("event_time", "10 minutes")
+Trigger-Based Execution:
+
+df.writeStream.trigger(processingTime="1 minute").start()
+Question 18: How does Databricks handle schema evolution in Delta Lake?
+Schema evolution in Delta Lake ensures that as data changes, tables adapt without breaking pipelines.
+
+1. Schema Enforcement
+By default, Delta Lake rejects schema mismatches to prevent accidental corruptions.
+
+df.write.format("delta").mode("append").save("/mnt/delta_table")
+If a new column is added without explicitly enabling schema evolution, Spark throws an error.
+
+2. Enabling Schema Evolution (mergeSchema)
+To allow new columns dynamically:
+
+df.write.option("mergeSchema", "true").mode("append").format("delta").save("/mnt/delta_table")
+This adds new columns but does not modify existing columns.
+
+3. Auto Schema Evolution in MERGE
+For updates in MERGE statements, use:
+
+spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
+
+deltaTable.alias("tgt").merge(
+    df_new.alias("src"), "tgt.id = src.id"
+).whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()
+4. Handling Schema Evolution in Streaming
+Use Auto-Merge for Streaming Writes:
+
+spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true") 
+
+df.writeStream.format("delta").option("checkpointLocation", "/mnt/checkpoint").start("/mnt/delta_table")
+5. Safe Schema Updates with Deep Cloning
+To preserve old schema while evolving the new one:
+
+CREATE TABLE delta_clone DEEP CLONE delta_table;
+Question 19: Explain the use of Databricks Workflows and their benefits.
+1. What are Databricks Workflows?
+Databricks Workflows is a fully-managed orchestration service for scheduling and automating tasks within Databricks. It serves as a simplified alternative to Apache Airflow.
+
+2. Key Benefits of Databricks Workflows
+Press enter or click to view image in full size
+
+3. Creating a Workflow
+
+Define a workflow with two dependent tasks:
+
+from databricks.sdk import WorkspaceClient
+
+w = WorkspaceClient()
+job = w.jobs.create(
+    name="Data Pipeline Workflow",
+    tasks=[
+        {
+            "task_key": "extract",
+            "notebook_task": {"notebook_path": "/Repos/extract_data"},
+            "job_cluster_key": "compute-cluster"
+        },
+        {
+            "task_key": "transform",
+            "depends_on": [{"task_key": "extract"}],
+            "notebook_task": {"notebook_path": "/Repos/transform_data"}
+        }
+    ]
+)
+4. Handling Failures and Alerts
+Automatic Retries:
+
+"max_retries": 3
+Email Notifications:
+
+"email_notifications": {"on_failure": ["user@example.com"]}
+Question 20: What are the key differences between Delta Lake and Parquet?
+1. Overview
+Delta Lake builds on top of Parquet but provides ACID transactions, schema enforcement, and time travel.
+
+2. Key Differences
+Press enter or click to view image in full size
+
+3. Querying Delta Lake with Time Travel
+df = spark.read.format("delta").option("versionAsOf", 5).load("/mnt/delta_table")
+4. Converting Parquet to Delta
+spark.read.parquet("/mnt/parquet_table").write.format("delta").save("/mnt/delta_table")
+5. When to Use Parquet Over Delta?
+Cold Storage: If data is archived and infrequently accessed, Parquet is more cost-effective.
+
+Cross-Platform Interoperability: Parquet is widely supported across platforms, whereas Delta Lake requires Databricks or Delta connectors.
+
+This concludes Part 5 of the Databricks Data Engineering Interview Series. 
 <https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5>
 
 Databricks vs Snowflake
