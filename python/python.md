@@ -4,11 +4,16 @@ python -m py_compile my_script.py
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/960812/>
 
-<https://habr.com/ru/articles/1010290/>
+<https://habr.com/ru/articles/1010290/> Python Standard Library для спортивного программирования
 
-https://habr.com/ru/articles/965170/ 
+<https://habr.com/ru/articles/965170/> почему list — не список, а dict находит всё мгновенно
+
+<https://realpython.com/python-list/> list
+
+<https://habr.com/ru/articles/1032834/> Collections module
 
 ### Sorting dictionary
+<https://realpython.com/sort-python-dictionary/>
 Given: python dictionary d where key is the word, and value is tuple(frequency, language)
 
 Sort by language (ascending) and frequency (descending)
