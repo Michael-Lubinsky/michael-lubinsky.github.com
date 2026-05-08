@@ -1,7 +1,10 @@
+## Geo
 
 <https://en.wikipedia.org/wiki/Spatial_reference_system>
 
 <https://en.wikipedia.org/wiki/Geographic_coordinate_system>
+
+<https://engineering.kablamo.com.au/posts/falsehoods-about-map-coordinates/index.html>
 
 | Type          | Range            | Description                            |
 | ------------- | ---------------- | -------------------------------------- |
