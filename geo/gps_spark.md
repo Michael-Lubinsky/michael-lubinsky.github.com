@@ -241,6 +241,7 @@ Based on a mid-latitude U.S. location (around 38° N), here's the approximate pr
 
 
 ### GeoJSON 
+<https://news.ycombinator.com/item?id=48060918>
  GeoJSON  is a widely-used format for encoding geographic data structures using JSON. 
 It’s supported by many tools like Mapbox, Leaflet, PostGIS, and others.
 
