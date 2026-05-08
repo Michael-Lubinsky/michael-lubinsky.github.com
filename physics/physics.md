@@ -30,6 +30,8 @@ Classic Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/
 
 <https://www.amazon.com/Introduction-Modern-Physics-Theoretical-Foundations/dp/9812812253>
 
+Vitaly Vanchurin
+<https://www.researchgate.net/publication/404659508_The_Self-Learning_Universe>
 
 ## Quantum Mechanics
 
