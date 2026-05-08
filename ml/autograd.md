@@ -2,6 +2,7 @@
 
 <https://algebrica.org/backpropagation/>
 
+<https://hollyemblem.github.io/tiny-toy-network/>
 
 <https://www.youtube.com/watch?v=tIeHLnjs5U8&list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi&index=4&pp=iAQB>
 
