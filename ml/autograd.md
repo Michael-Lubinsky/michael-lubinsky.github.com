@@ -1,5 +1,7 @@
 ## Auto-differentiation, backpropagation
 
+<https://habr.com/ru/articles/1031986/>
+
 <https://algebrica.org/backpropagation/>
 
 <https://hollyemblem.github.io/tiny-toy-network/>
