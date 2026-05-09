@@ -8,6 +8,12 @@
 
 <https://habr.com/ru/articles/1031440/>
 
+<https://habr.com/ru/articles/1033136/>
+
+<https://habr.com/ru/articles/1019652/> MCP
+
+<https://habr.com/ru/articles/1032932/> 
+
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
 <https://code.claude.com/docs/ru/hooks>
