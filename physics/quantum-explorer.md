@@ -12,8 +12,8 @@ Coulomb potential (a.u.)  to top line instead of current location
 
 ## ChatGPT review:
 
-Stationary states
-Yes — specific issues in **Stationary States**:
+ 
+### Specific issues in **Stationary States**:
 
 1. **Harmonic oscillator matrix panel uses the wrong x-grid**
 
@@ -86,6 +86,87 @@ Highest-priority fix: fix the **HO grid passed into `MatrixPanel`**, because it 
 [3]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/components/MatrixPanel.tsx "raw.githubusercontent.com"
 [4]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/App.tsx "raw.githubusercontent.com"
 
+## Time Evolution
+Yes — specific issues in **Time Evolution**:
+
+1. **Re(ψ) / Im(ψ) buttons do not work for HO modes**
+
+The UI always shows:
+
+```ts
+prob | re | im
+```
+
+but `hoData` and `hoSqData` only compute `yProb`, not `yPsi`. So for **HO Coherent** and **HO Squeezed**, selecting `Re(ψ)` or `Im(ψ)` cannot show the actual wavefunction phase. Either hide these buttons for HO modes, or implement complex HO wavefunctions. ([GitHub][1])
+
+2. **Squeezed state notation is misleading**
+
+The UI/help says squeezed state is:
+
+```text
+S(r)|α⟩
+```
+
+but the code evolves the center exactly like an unsqueezed coherent state:
+
+```ts
+hoCoherentExpectX(...)
+hoCoherentExpectP(...)
+```
+
+That corresponds more naturally to a **displaced squeezed state** like:
+
+```text
+D(α)S(r)|0⟩
+```
+
+not necessarily `S(r)|α⟩`. This is a physics-label issue, but important for students. ([GitHub][1])
+
+3. **Energy decomposition for squeezed state is wrong**
+
+For both `ho` and `ho-sq`, `decompData` uses the same Poisson distribution based only on `alpha`:
+
+```ts
+exp(-alpha²) alpha^(2n) / n!
+```
+
+That is correct for coherent states, but **not** for squeezed states. Squeezed states have a different number-state distribution depending on `r`. ([GitHub][1])
+
+4. **Momentum distribution for ISW has a pole-sign bug**
+
+`iswMomentumAmplitude()` says:
+
+```ts
+sign depends on which branch; use +i for simplicity
+```
+
+For a time-evolving superposition, this relative phase matters. The probability `|φ(k,t)|²` can be wrong near `k = ±nπ/L`. ([GitHub][2])
+
+5. **Norm history is not actually computed**
+
+The norm plot is hardcoded as a flat line at `1.0`. That is okay for an analytical demo, but the label “Norm history” makes it look like the app numerically checked normalization. Better label:
+
+```text
+Analytic norm = 1
+```
+
+or actually integrate the plotted grid. ([GitHub][1])
+
+6. **History can mix different parameter regimes**
+
+`histRef` is appended whenever `t`, `subMode`, `L`, `alpha`, `omega`, `r`, etc. change, but it is not clearly reset when all physical parameters change. So expectation-value history can contain old values after parameter edits. Add reset effects for mode and parameter changes. ([GitHub][1])
+
+Highest-priority fixes:
+
+```ts
+// Hide Re/Im buttons for HO modes
+{subMode === 'isw' && displayModeButtons}
+```
+
+and fix squeezed-state energy decomposition; currently that is the most serious physics issue.
+
+[1]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/components/TimeEvolutionExplorer.tsx "raw.githubusercontent.com"
+[2]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/momentumSpace.ts "raw.githubusercontent.com"
 
 
 1. **Hydrogen 2D orbital density bug at origin**
