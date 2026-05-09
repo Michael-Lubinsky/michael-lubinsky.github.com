@@ -13,7 +13,7 @@ Coulomb potential (a.u.)  to top line instead of current location
 ## ChatGPT review:
 
  
-### Specific issues in **Stationary States**:
+### Issues in **Stationary States**:
 
 1. **Harmonic oscillator matrix panel uses the wrong x-grid**
 
@@ -204,7 +204,93 @@ Overall: the project structure is good, and the separation of physics formulas f
 
 
 ## Hydrogen
-Yes. The Grotrian diagram is useful, but I see several issues.
+
+Yes — beyond Grotrian, I see these hydrogen-specific issues:
+
+1. **2D orbital density is wrong at the origin**
+
+```ts
+if (r < 1e-12) return 0
+```
+
+This is wrong for `s` orbitals. For `1s`, density at the nucleus should be maximum, not zero. `orbitalDensity3D()` handles this correctly, but `orbitalDensity2D()` does not. ([GitHub][1])
+
+Fix:
+
+```ts
+if (r < 1e-12) {
+  if (l > 0) return 0
+  const R0 = radialWavefunction(n, 0, 0, Z)
+  return R0 * R0 / (4 * Math.PI)
+}
+```
+
+2. **2D cross-section ignores real spherical-harmonic φ-dependence**
+
+`orbitalDensity2D()` uses only:
+
+```ts
+R * R * angularDensity(l, m, theta)
+```
+
+but real orbitals with `m > 0` and `m < 0` differ by `cos(mφ)` vs `sin(mφ)`. Your `orbitalDensity3D()` correctly includes this `phiFactor`, but the 2D plot does not. So `m = +1` and `m = -1` look identical in the xz-plane, which is physically misleading. ([GitHub][1])
+
+3. **Angular shape plot also cannot distinguish `+m` from `-m`**
+
+`angularShape(l, m)` depends on `abs(m)` through `angularDensity()`, so `m = +1` and `m = -1` have the same shape. That is fine for complex spherical harmonics, where `|Y_l^m|²` is independent of sign, but your 3D code uses **real orbitals**, where the sign of `m` changes orientation. ([GitHub][1])
+
+Better label:
+
+```text
+Angular θ-profile only; real-orbital φ-orientation not shown.
+```
+
+4. **Radial wavefunction comment has a normalization typo**
+
+The comment says:
+
+```ts
+((n+l)!)^3
+```
+
+but the code uses only:
+
+```ts
+Math.log(factNpL)
+```
+
+The code is closer to the standard formula; the comment is misleading and should be fixed. ([GitHub][1])
+
+5. **3D isosurface resolution is too coarse for high n**
+
+For `n = 5`, the grid is at most:
+
+```ts
+N = Math.min(32, 24 + n * 2)
+```
+
+and the spatial box is very large because `rMax` grows quickly. This can miss nodes/lobes or make high-n orbitals look blocky/incorrect. ([GitHub][2])
+
+6. **2D heatmap normalizes every orbital to peak = 1**
+
+```ts
+density = raw.map(row => row.map(v => v / peak))
+```
+
+This is good for visualization, but it hides real scale differences between orbitals and between different `Z`. Add label:
+
+```text
+Color normalized to each orbital’s maximum density.
+```
+
+Otherwise students may think densities are directly comparable. ([GitHub][2])
+
+Highest-priority fixes: **origin bug**, **2D φ-dependence**, and **comment typo**.
+
+[1]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/hydrogen.ts "raw.githubusercontent.com"
+[2]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/components/HydrogenExplorer.tsx "raw.githubusercontent.com"
+
+## Grotrian diagram is useful, but I see several issues.
 
 1. **It implies `ℓ` sublevels have different positions, but pure hydrogen energy depends only on `n`**
 
