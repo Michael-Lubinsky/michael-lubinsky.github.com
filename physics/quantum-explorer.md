@@ -1828,7 +1828,7 @@ because that quickly becomes many-body quantum mechanics and complexity rises sh
 
 ---
 
-# 1. HEISENBERG / MATRIX MECHANICS
+##   HEISENBERG / MATRIX MECHANICS
 
 This is an excellent direction for your project.
 
@@ -1850,7 +1850,7 @@ Adding Heisenberg-picture tools would make it much more intellectually distincti
 
 ---
 
-# WHY THIS IS A GREAT FIT
+### WHY THIS IS A GREAT FIT
 
 Very few educational QM tools properly teach:
 
@@ -1871,11 +1871,11 @@ Your app could visualize this beautifully.
 
 ---
 
-# HIGH-VALUE FEATURES
+## HIGH-VALUE FEATURES
 
 ---
 
-# A. Operator Evolution Explorer
+### A. Operator Evolution Explorer
 
 Show:
 
@@ -1890,7 +1890,7 @@ A_H(t)=e^{iHt/\hbar}A e^{-iHt/\hbar}
 
 ---
 
-# B. Commutator Explorer
+### B. Commutator Explorer
 
 This would be AMAZING educationally.
 
@@ -1911,7 +1911,7 @@ Examples:
 
 ---
 
-# C. Ladder Operator Visualizer
+### C. Ladder Operator Visualizer
 
 Very high value.
 
@@ -1928,7 +1928,7 @@ Examples:
 
 ---
 
-# D. Matrix Mechanics Mode
+## D. Matrix Mechanics Mode
 
 This could differentiate your project enormously.
 
@@ -1941,14 +1941,14 @@ Instead of wavefunctions:
 
 ---
 
-# E. Ehrenfest Theorem Explorer
+## E. Ehrenfest Theorem Explorer
 
 You already have expectation values.
 
 Could explicitly show:
-
+$$
 \frac{d}{dt}\langle A \rangle = \frac{i}{\hbar}\langle [H,A] \rangle + \left\langle \frac{\partial A}{\partial t} \right\rangle
-
+$$
 This would connect:
 
 * classical mechanics
@@ -1969,13 +1969,13 @@ Browser performance is trivial.
 
 ---
 
-# 2. FERMIONS / BOSONS
+## 2. FERMIONS / BOSONS
 
 This is more complicated.
 
 ---
 
-# SIMPLE VERSION: YES
+## SIMPLE VERSION: YES
 
 You can absolutely add:
 
@@ -1988,11 +1988,11 @@ These are very educational.
 
 ---
 
-# GREAT EDUCATIONAL DEMOS
+## GREAT EDUCATIONAL DEMOS
 
 ---
 
-# A. Two-particle Symmetry Explorer
+## A. Two-particle Symmetry Explorer
 
 Show:
 
@@ -2009,7 +2009,7 @@ Very visually powerful.
 
 ---
 
-# B. Pauli Exclusion Principle
+## B. Pauli Exclusion Principle
 
 Excellent feature.
 
@@ -2021,7 +2021,7 @@ Examples:
 
 ---
 
-# C. Second Quantization Intro
+## C. Second Quantization Intro
 
 Could show:
 
@@ -2032,7 +2032,7 @@ This connects beautifully to your proposed Heisenberg features.
 
 ---
 
-# D. Bose-Einstein vs Fermi-Dirac Distributions
+## D. Bose-Einstein vs Fermi-Dirac Distributions
 
 Very educational and easy.
 
@@ -2044,7 +2044,7 @@ Interactive:
 
 ---
 
-# E. Hong–Ou–Mandel Effect
+## E. Hong–Ou–Mandel Effect
 
 Fantastic boson demo.
 
@@ -2054,7 +2054,7 @@ Very visually striking.
 
 ---
 
-# HARD PART
+## HARD PART
 
 Once you go beyond 2–3 particles,
 Hilbert space explodes.
@@ -2070,7 +2070,7 @@ This becomes a fundamentally different project.
 
 ---
 
-# WHAT I WOULD AVOID FOR NOW
+## WHAT I WOULD AVOID FOR NOW
 
 Until the project matures, avoid:
 
@@ -2087,11 +2087,11 @@ These are:
 
 ---
 
-# MY STRONGEST RECOMMENDATION
+## MY STRONGEST RECOMMENDATION
 
 For your project’s current stage:
 
-# PRIORITY ORDER
+## PRIORITY ORDER
 
 ## Highest value:
 
@@ -2108,7 +2108,7 @@ Then later:
 
 ---
 
-# WHY HEISENBERG FEATURES ARE STRATEGIC
+## WHY HEISENBERG FEATURES ARE STRATEGIC
 
 Most QM educational software already shows:
 
