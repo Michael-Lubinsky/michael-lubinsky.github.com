@@ -1,5 +1,5 @@
 ## Quantum Explorer. 
-TODO:
+### TODO:
   - README behind of implemented features
   - Top level URL https://mlubinsky.github.io/quantum-explorer/ does not reflect current button
   - Line "Exact analytical quantum mechanics — no backend, no approximations" is useless
@@ -1807,3 +1807,314 @@ That would significantly deepen the conceptual power of the project.
 These suggestions expand the educational value while preserving the "no approximations" purity that makes the project special. The **Spin/Entanglement** and **Ring/Aharonov-Bohm** directions feel particularly natural next steps, as they build directly on existing code.
 
 Would you like me to expand on any of these (e.g., specific formulas, UI sketches, or implementation order)? Or prioritize based on a particular audience (undergrad QM course, self-learners, etc.)?
+
+
+
+## Visitor 
+For a GitHub Pages educational project like yours, the best solutions are lightweight privacy-friendly analytics that work entirely with static sites.
+
+Recommended options:
+
+# 1. Google Analytics 4 (most common)
+
+Easy to add to GitHub Pages.
+
+Pros:
+
+* free
+* detailed traffic stats
+* geography
+* page views
+* referrers
+* device info
+
+Cons:
+
+* heavier
+* cookies/privacy concerns
+* overkill for small educational project
+
+---
+
+## Setup
+
+Create:
+
+```text
+https://analytics.google.com
+```
+
+Get Measurement ID like:
+
+```text
+G-XXXXXXXXXX
+```
+
+Add to your `index.html` or Vite template.
+
+For Vite React:
+usually:
+
+```text
+index.html
+```
+
+inside `<head>`:
+
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-XXXXXXXXXX');
+</script>
+```
+
+Then redeploy GitHub Pages.
+
+---
+
+# 2. Plausible Analytics (my strongest recommendation)
+
+Excellent for open-source educational projects.
+
+Pros:
+
+* privacy-friendly
+* lightweight
+* simple dashboard
+* no cookie popup needed in many jurisdictions
+* much faster than Google Analytics
+
+Cons:
+
+* hosted version paid
+* self-hosting possible
+
+---
+
+## Setup
+
+Add:
+
+```html
+<script defer data-domain="mlubinsky.github.io"
+src="https://plausible.io/js/script.js"></script>
+```
+
+Very easy.
+
+---
+
+# 3. GoatCounter (excellent free option)
+
+Very popular for open-source projects.
+
+Pros:
+
+* lightweight
+* free tier
+* privacy-oriented
+* extremely simple
+
+---
+
+## Setup
+
+Add:
+
+```html
+<script data-goatcounter="https://YOUR.goatcounter.com/count"
+async src="//gc.zgo.at/count.js"></script>
+```
+
+---
+
+# 4. Cloudflare Web Analytics
+
+Very good if you use Cloudflare.
+
+Pros:
+
+* privacy-focused
+* free
+* lightweight
+* simple
+
+Cons:
+
+* requires Cloudflare setup
+
+---
+
+# 5. GitHub-native signals (limited)
+
+GitHub itself gives:
+
+* stars
+* forks
+* clones
+* traffic to repo
+
+but NOT actual GitHub Pages visits in detail.
+
+You can see:
+
+```text
+Repo → Insights → Traffic
+```
+
+But this tracks repository usage, not your live app accurately.
+
+---
+
+# WHAT I RECOMMEND FOR YOUR PROJECT
+
+For:
+
+* educational physics tool
+* GitHub Pages
+* static site
+* browser-only app
+
+I would strongly recommend:
+
+# GoatCounter or Plausible
+
+because:
+
+* minimal JS
+* no backend needed
+* fast loading
+* privacy friendly
+* simple dashboards
+
+---
+
+# EXTRA IMPORTANT METRICS
+
+For your kind of app, pageviews alone are not enough.
+
+You should track:
+
+## 1. Which modules are used most
+
+Example:
+
+* Bloch sphere
+* Hydrogen
+* Tunneling
+* Time evolution
+
+---
+
+## 2. Session duration
+
+Very important educational signal.
+
+---
+
+## 3. Which controls people interact with
+
+Example:
+
+* Bell simulator runs
+* parameter changes
+* preset usage
+
+---
+
+# SIMPLE CUSTOM EVENT TRACKING
+
+Example:
+
+```ts
+gtag('event', 'open_module', {
+  module_name: 'bloch_sphere'
+})
+```
+
+or:
+
+```ts
+plausible('open_module', {
+  props: { module: 'hydrogen' }
+})
+```
+
+This is MUCH more valuable than raw page visits.
+
+---
+
+# MOST IMPORTANT SUGGESTION
+
+Add:
+
+# “Share current configuration”
+
+via URL encoding.
+
+Example:
+
+```text
+https://mlubinsky.github.io/quantum-explorer/?mode=hydrogen&n=3&l=2&m=1
+```
+
+Then analytics become far more meaningful because you can see:
+
+* which simulations are popular
+* which presets are shared
+
+This can dramatically help improve the project.
+
+**Yes, you can track visits to https://mlubinsky.github.io/quantum-explorer/** effectively. GitHub itself does **not** provide built-in traffic analytics for GitHub Pages sites (only for the repository page itself under Insights → Traffic). You need a third-party solution.
+
+### Recommended Options (Ranked for Your Project)
+
+| Method                  | Ease of Setup | Privacy / Ethics | Detail Level          | Cost     | Best For                          | Recommendation |
+|-------------------------|---------------|------------------|-----------------------|----------|-----------------------------------|----------------|
+| **Cloudflare Web Analytics** | Very Easy    | High (privacy-first) | Good (visits, countries, top pages) | Free    | Simple & clean tracking          | **Strongly Recommended** |
+| **Plausible**           | Easy         | Very High        | Good                 | Free tier / Paid | Privacy-focused, lightweight     | Excellent alternative |
+| **Google Analytics 4 (GA4)** | Easy        | Lower (Google tracking) | Excellent (behavior, events) | Free    | Detailed user journeys           | Most popular |
+| **Simple hit counter** (e.g. hits.seeyoufarm) | Easiest     | Medium           | Very basic (just count) | Free    | Quick "how many visits" only     | Good for starters |
+
+### 1. Best Quick & Balanced Choice: Cloudflare Web Analytics
+
+This is one of the cleanest solutions for GitHub Pages users.
+
+- **How to do it**:
+  1. Create a free Cloudflare account.
+  2. Add your domain (or just the subdomain mlubinsky.github.io) — you don’t need to change DNS or proxy everything.
+  3. Add the small JavaScript snippet to your site (in the `<head>` of your main HTML or via React Helmet / layout component).
+  4. Enable Web Analytics in the dashboard.
+
+- You get: page views, unique visitors, countries, top pages, etc., without heavy tracking.
+
+### 2. Google Analytics 4 (Most Popular)
+
+1. Go to [analytics.google.com](https://analytics.google.com) and create a new GA4 property for your site.
+2. Copy the tracking script (gtag).
+3. Add it to your React app (e.g., in `index.html` or a component that loads on every page).
+
+**Pro**: Very detailed reports, events (e.g., which quantum module is most popular), real-time views.  
+**Con**: More invasive tracking; many users block it with ad blockers.
+
+### 3. Privacy-Focused Alternative: Plausible
+
+Lightweight, GDPR-friendly, no cookies by default. Excellent dashboard and very easy to self-host if you want.
+
+### 4. Super Simple Hit Counter (Minimal Effort)
+
+If you just want a rough total number of visits:
+- Use **https://hits.seeyoufarm.com** — generate a badge/image and embed it on your page. Every visit increments the counter.
+
+### Implementation Tips for Your React + Vite App
+
+- Add the tracking script in `index.html` (inside `<head>`).
+- For better control, use `react-helmet-async` or Vite plugin to inject it conditionally.
+- Track specific features (e.g., visits to Hydrogen demo, time spent on squeezed states) by sending custom events.
+- Test in a staging deployment first.
+
+**Would you like step-by-step instructions for any specific option** (e.g., exact code to add Cloudflare or GA4 to your Vite/React project)? Or help choosing based on whether you prioritize privacy vs. detailed analytics?
