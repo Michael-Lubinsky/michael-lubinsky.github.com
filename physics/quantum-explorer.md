@@ -837,6 +837,448 @@ For your project specifically:
 
 ### 5. 2D TDSE
 
+
+Your project already covers a surprisingly broad range for a QM learning tool. The strongest differentiator is that it combines:
+
+* stationary states
+* time evolution
+* Bloch sphere / spin
+* hydrogen orbitals
+* Bell physics
+
+inside one consistent browser application.
+
+The best next features are the ones that:
+
+1. deepen conceptual understanding,
+2. produce visually distinctive demos,
+3. are still feasible for a solo project.
+
+Here are the highest-value additions grouped by difficulty.
+
+---
+
+# HIGH VALUE / LOW-MEDIUM DIFFICULTY
+
+## 1. Double-Slit + Interference Simulator
+
+This is probably the single most important missing QM visualization.
+
+### Features
+
+* Gaussian packet incident on two slits
+* Time evolution after slit passage
+* Interference buildup
+* Which-path detector toggle
+* Partial decoherence slider
+
+### Why valuable
+
+Students immediately connect:
+
+* wavefunction
+* probability
+* measurement
+* decoherence
+
+### Strong extension
+
+Add:
+
+* delayed-choice experiment
+* quantum eraser
+
+### Difficulty
+
+Medium
+
+### Visual value
+
+Extremely high
+
+---
+
+# 2. Density Matrix + Decoherence Explorer
+
+Currently your Bloch sphere mostly uses pure states.
+
+Add:
+
+* density matrix ρ
+* purity Tr(ρ²)
+* mixed states inside Bloch sphere
+* dephasing
+* amplitude damping
+* depolarization channels
+
+### Visuals
+
+* Bloch vector shrinking
+* purity gauge
+* entropy display
+
+### Educational impact
+
+Huge.
+
+Most QM educational tools completely skip open quantum systems.
+
+### Difficulty
+
+Medium
+
+---
+
+# 3. Quantum Measurement Explorer
+
+A dedicated module for:
+
+* projective measurement
+* POVMs
+* repeated measurement
+* weak measurement
+
+### Features
+
+* collapse animation
+* expectation value before/after
+* non-commuting observables
+* measurement disturbance
+
+### Nice demo
+
+Measure:
+
+* σx then σz
+* compare to σz then σx
+
+### Difficulty
+
+Medium
+
+---
+
+# 4. Entanglement Explorer
+
+You already have Bell.
+
+Extend to:
+
+* arbitrary 2-qubit states
+* Schmidt decomposition
+* concurrence
+* partial trace
+* reduced density matrices
+
+### Visuals
+
+* correlation matrix heatmap
+* entanglement entropy
+* separable vs entangled states
+
+### Difficulty
+
+Medium-high
+
+### Very valuable for students.
+
+---
+
+# 5. Interactive Fourier Transform Explorer
+
+This naturally connects:
+
+* x-space
+* momentum-space
+* uncertainty principle
+
+### Features
+
+* draggable wavepacket
+* live Fourier transform
+* phase visualization
+* chirped packet
+* windowing effects
+
+### Difficulty
+
+Low-medium
+
+---
+
+# HIGH VALUE / HIGHER DIFFICULTY
+
+## 6. 2D Schrödinger Equation Solver
+
+This would dramatically elevate the project.
+
+### Examples
+
+* double slit
+* 2D harmonic oscillator
+* finite well
+* tunneling through barriers
+
+### Numerical methods
+
+* split-step Fourier
+* Crank–Nicolson ADI
+
+### Visuals
+
+* animated 2D density maps
+* phase coloring
+
+### Difficulty
+
+High
+
+### But:
+
+This would make the project much more unique than existing educational tools.
+
+---
+
+# 7. Path Integral Visualization
+
+Very few educational apps do this well.
+
+### Features
+
+* sum over paths
+* classical limit emergence
+* phase cancellation
+
+### Amazing demo
+
+Show:
+
+* many random paths
+* constructive/destructive interference
+
+### Difficulty
+
+High conceptually
+Medium numerically
+
+### Huge educational value.
+
+---
+
+# 8. Quantum Computing Bridge
+
+Since you already have Bloch sphere:
+
+Add:
+
+* Hadamard
+* phase gates
+* CNOT
+* simple circuits
+
+### Then:
+
+show the actual statevector evolution.
+
+### Bonus
+
+Export OpenQASM or Qiskit.
+
+### Difficulty
+
+Medium-high
+
+---
+
+# VERY DISTINCTIVE / UNIQUE FEATURES
+
+These could make your project stand out from almost every open-source QM visualizer.
+
+---
+
+## 9. Wigner Function Visualization
+
+For:
+
+* coherent states
+* squeezed states
+* cat states
+
+### Visual
+
+Quasi-probability with negative regions.
+
+### Educational value
+
+Extremely high.
+
+### Difficulty
+
+Medium-high
+
+---
+
+# 10. Adiabatic Theorem / Landau-Zener Explorer
+
+Show:
+
+* slowly changing Hamiltonian
+* avoided crossings
+* transition probabilities
+
+### Visuals
+
+* instantaneous eigenstates
+* state tracking
+
+### Excellent for advanced students.
+
+---
+
+# 11. Berry Phase / Geometric Phase
+
+Since you already have Bloch sphere:
+this is a natural extension.
+
+### Show
+
+* cyclic evolution
+* geometric phase accumulation
+
+### Very visually compelling.
+
+---
+
+# 12. Relativistic QM / Dirac Spinors
+
+Long-term ambitious feature.
+
+### Examples
+
+* Zitterbewegung
+* Klein paradox
+* spinor rotations
+
+### Difficulty
+
+Very high
+
+But almost nobody has this in browser educational tools.
+
+---
+
+# INFRASTRUCTURE / QUALITY FEATURES
+
+These are not flashy, but would greatly improve the project.
+
+---
+
+## 13. Formula Derivation Panel
+
+For every visualization:
+
+* “Show derivation”
+* expandable math steps
+
+This would transform the project from demo → learning platform.
+
+---
+
+# 14. Preset Scenarios
+
+Example:
+
+* coherent state
+* minimum uncertainty packet
+* Rabi oscillation
+* Bell singlet
+* tunneling resonance
+
+One-click loading helps beginners enormously.
+
+---
+
+# 15. Save/Share URLs
+
+Encode state in URL:
+
+```text
+?mode=bell&theta=45&n=1000
+```
+
+Very useful for teaching.
+
+---
+
+# 16. Phase Coloring
+
+Instead of only density:
+display:
+
+* complex phase hue
+* magnitude brightness
+
+This dramatically improves understanding of complex wavefunctions.
+
+---
+
+# 17. Interactive Eigenstate Builder
+
+Allow:
+
+```text
+ψ = Σ c_n φ_n
+```
+
+with draggable complex coefficients.
+
+### Then animate:
+
+* revival
+* beating
+* interference
+
+Very educational.
+
+---
+
+# 18. GPU/WebGL Acceleration
+
+For:
+
+* 2D evolution
+* large grids
+* many particles
+
+Potential stack:
+
+* regl
+* three.js
+* WebGPU
+
+---
+
+# MOST STRATEGIC FEATURES
+
+If your goal is to make the project genuinely notable/open-source-popular:
+
+## Best ROI:
+
+1. Double slit
+2. Decoherence / density matrix
+3. Wigner function
+4. 2D solver
+5. Interactive Fourier transform
+
+These would clearly differentiate the project from:
+
+* PhET
+* QMsolve
+* typical Bloch demos
+
+because they connect foundational QM ideas into one coherent system.
+
+
 These are:
 
 * feasible,
