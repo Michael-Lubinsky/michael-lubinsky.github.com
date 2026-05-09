@@ -1,0 +1,42 @@
+Quantum Explorer.
+ChatGPT review:
+I reviewed the repo from GitHub. Main issues I found:
+
+1. **Hydrogen 2D orbital density bug at origin**
+   `orbitalDensity2D()` returns `0` when `r < 1e-12`, but for `s` orbitals, especially `1s`, density at `r=0` is **maximum**, not zero. Fix similarly to `orbitalDensity3D()`: return finite value for `l === 0`. ([GitHub][1])
+
+2. **README overclaims “no approximations”**
+   README says “no approximations” and “every feature uses exact analytical solution,” but `iswExpectX2()` explicitly computes an integral numerically on a 400-point grid. This is fine educationally, but README should say “mostly analytical; some visualization/expectation plots use numerical quadrature.” ([GitHub][2])
+
+3. **Scattering wavefunction inside barrier is likely approximate / phase-inconsistent**
+   `scatteringPsiSq()` claims exact stationary wavefunction, but the evanescent inside coefficients use real `sqrtT` and discard the complex transmission phase. This can make inside-barrier density visually wrong or discontinuous near boundaries. ([GitHub][3])
+
+4. **Potential numerical overflow in tunnelling**
+   For thick/high barriers, `Math.sinh(kappaTilde * L)` and `Math.exp(kappa * half)` can overflow. Transmission can become `0`, but inside wavefunction plotting may become `Infinity`/`NaN`. Add clamping or log-domain handling. ([GitHub][3])
+
+5. **No CI quality gates before deploy**
+   GitHub Actions runs only `npm ci` and `npm run build`; it does **not** run `npm run typecheck`, `npm run lint`, or `npm run test`, even though these scripts exist. Add them before build. ([GitHub][4]) ([GitHub][5])
+
+Suggested deploy change:
+
+```yaml
+- run: npm ci
+- run: npm run typecheck
+- run: npm run lint
+- run: npm run test
+- run: npm run build
+  env:
+    VITE_BASE: /quantum-explorer/
+```
+
+6. **Minor UI issue**
+   `ParameterSlider` always shows `value.toFixed(2)`. For quantum numbers or integer-like parameters this can look strange, e.g. `n = 3.00`. Add optional `digits` prop. ([GitHub][6])
+
+Overall: the project structure is good, and the separation of physics formulas from React UI is a strong design choice. The highest-priority fixes are hydrogen density at origin, README accuracy, and adding test/lint/typecheck to CI.
+
+[1]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/hydrogen.ts "raw.githubusercontent.com"
+[2]: https://github.com/mlubinsky/quantum-explorer "GitHub - mlubinsky/quantum-explorer · GitHub"
+[3]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/tunnelling.ts "raw.githubusercontent.com"
+[4]: https://github.com/mlubinsky/quantum-explorer/blob/main/package.json "quantum-explorer/package.json at main · mlubinsky/quantum-explorer · GitHub"
+[5]: https://github.com/mlubinsky/quantum-explorer/blob/main/.github/workflows/deploy.yml "quantum-explorer/.github/workflows/deploy.yml at main · mlubinsky/quantum-explorer · GitHub"
+[6]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/ParameterSlider.tsx "quantum-explorer/src/components/ParameterSlider.tsx at main · mlubinsky/quantum-explorer · GitHub"
