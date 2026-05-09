@@ -424,3 +424,424 @@ Most important fix: rewrite `scatteringPsiSq()` using one consistent complex-num
 [4]: https://github.com/mlubinsky/quantum-explorer/blob/main/package.json "quantum-explorer/package.json at main · mlubinsky/quantum-explorer · GitHub"
 [5]: https://github.com/mlubinsky/quantum-explorer/blob/main/.github/workflows/deploy.yml "quantum-explorer/.github/workflows/deploy.yml at main · mlubinsky/quantum-explorer · GitHub"
 [6]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/ParameterSlider.tsx "quantum-explorer/src/components/ParameterSlider.tsx at main · mlubinsky/quantum-explorer · GitHub"
+
+
+## TODO
+
+Almost all of the proposed features can be implemented fully in-browser with modern JavaScript/TypeScript.
+
+Your current architecture (React + TypeScript + browser-only numerical computation) is actually a very good fit for educational QM simulations.
+
+The main limitation is not “can it run in browser,” but:
+
+* numerical grid size,
+* animation FPS,
+* memory,
+* GPU usage,
+* complexity of PDE solvers.
+
+Here is a realistic breakdown.
+
+---
+
+# EASY TO IMPLEMENT FULLY IN BROWSER
+
+These are very suitable for pure browser execution.
+
+---
+
+## 1. Double Slit / Interference
+
+YES — absolutely.
+
+### Typical implementation
+
+* 2D complex grid
+* Split-step Fourier method
+* FFT in browser
+
+### Browser tech
+
+* ndarray
+* fft.js
+* gpu.js
+* WebGL canvas
+
+### Complexity
+
+Medium
+
+### Browser performance
+
+Very good for:
+
+```text
+256×256
+512×512
+```
+
+even on laptops.
+
+---
+
+# 2. Density Matrix + Decoherence
+
+YES — ideal for browser.
+
+These are tiny matrices:
+
+* 2×2
+* 4×4
+* maybe 8×8
+
+Computational cost is negligible.
+
+### Can easily support
+
+* Lindblad evolution
+* Kraus channels
+* entropy
+* purity
+* Bloch shrinkage
+
+### Performance
+
+Instantaneous.
+
+---
+
+# 3. Entanglement Explorer
+
+YES.
+
+Even:
+
+* 2 qubits
+* 3 qubits
+* small Hilbert spaces
+
+are tiny computationally.
+
+### Browser can easily handle:
+
+```text
+2^10 = 1024 amplitudes
+```
+
+without issue.
+
+---
+
+# 4. Fourier Transform Explorer
+
+YES.
+
+Browser FFT libraries are mature.
+
+### Excellent fit for:
+
+* live dragging
+* uncertainty demos
+* momentum-space visualization
+
+---
+
+# 5. Wigner Function
+
+YES.
+
+For 1D states:
+
+* entirely feasible
+* very visually impressive
+
+### Complexity
+
+Mostly FFTs and matrix transforms.
+
+### Browser performance
+
+Good for:
+
+```text
+128×128
+256×256
+```
+
+phase-space grids.
+
+---
+
+# 6. Quantum Gates / Quantum Circuits
+
+YES.
+
+This is trivial computationally for small qubit counts.
+
+You can even support:
+
+* small circuit simulator
+* tensor products
+* gate animations
+
+fully client-side.
+
+---
+
+# 7. Berry Phase
+
+YES.
+
+Computationally tiny.
+
+---
+
+# 8. Path Integral Visualization
+
+YES.
+
+Monte Carlo path sampling works well in browser.
+
+Could even use Web Workers for smooth animation.
+
+---
+
+# MEDIUM DIFFICULTY BUT STILL GOOD IN BROWSER
+
+---
+
+# 9. 2D Schrödinger Solver
+
+YES — but careful.
+
+This is probably the largest feature still realistically browser-only.
+
+### Feasible:
+
+* 256×256 grids
+* split-step FFT
+* finite differences
+
+### Potential issues
+
+* mobile devices
+* battery
+* FPS
+
+### Solution
+
+Use:
+
+* WebGL
+* GPU.js
+* WebGPU
+* OffscreenCanvas
+* Web Workers
+
+### Very realistic today.
+
+Modern browsers are surprisingly powerful.
+
+---
+
+# 10. Time-dependent Potentials
+
+YES.
+
+Examples:
+
+* moving barrier
+* oscillating well
+* driven oscillator
+
+Still browser-feasible.
+
+---
+
+# BORDERLINE / NEED OPTIMIZATION
+
+---
+
+# 11. Large-scale Many-body Systems
+
+NOT ideal browser-only.
+
+Examples:
+
+* exact diagonalization of large spin chains
+* large Hilbert spaces
+* many-electron systems
+
+Hilbert space grows exponentially.
+
+### Example
+
+```text
+20 qubits = 1,048,576 amplitudes
+```
+
+Already heavy.
+
+---
+
+# 12. Advanced 3D PDE Solvers
+
+Possible but difficult.
+
+Examples:
+
+* full 3D time-dependent Schrödinger equation
+* fine volumetric grids
+
+Memory explodes quickly.
+
+### Example
+
+```text
+256^3 ≈ 16 million voxels
+```
+
+Too heavy for casual browser execution.
+
+---
+
+# 13. Relativistic Dirac 3D Solver
+
+Possible in theory,
+but not ideal browser-only.
+
+---
+
+# WHAT MODERN BROWSERS CAN ACTUALLY HANDLE
+
+Modern browsers + WebGL/WebGPU are much stronger than many people expect.
+
+Reasonable browser-only targets:
+
+| Feature                  | Browser Feasible? |
+| ------------------------ | ----------------- |
+| Bloch sphere             | Excellent         |
+| Bell states              | Excellent         |
+| Density matrices         | Excellent         |
+| Wigner functions         | Excellent         |
+| 1D TDSE                  | Excellent         |
+| 2D TDSE                  | Good              |
+| Double slit              | Excellent         |
+| Decoherence              | Excellent         |
+| Quantum circuits (small) | Excellent         |
+| Path integrals           | Good              |
+| 3D orbitals              | Good              |
+| Large many-body          | Poor              |
+
+---
+
+# IMPORTANT ARCHITECTURAL SUGGESTION
+
+Your current architecture is already good.
+
+But for future advanced features, consider adding:
+
+---
+
+# 1. Web Workers
+
+Move heavy numerics off UI thread.
+
+Perfect for:
+
+* FFT
+* PDE stepping
+* Monte Carlo
+
+This prevents UI freezing.
+
+---
+
+# 2. Typed Arrays
+
+Use:
+
+```ts
+Float64Array
+Float32Array
+```
+
+instead of nested JS arrays.
+
+Huge speedup.
+
+---
+
+# 3. Complex Number Struct Optimization
+
+Avoid:
+
+```ts
+{re: x, im: y}
+```
+
+inside large grids.
+
+Instead:
+
+```ts
+re[] and im[]
+```
+
+Much faster.
+
+---
+
+# 4. WebGL / WebGPU
+
+Very important for:
+
+* 2D wave evolution
+* Wigner
+* volumetric plots
+
+---
+
+# 5. WASM (optional future)
+
+For:
+
+* FFT
+* LAPACK
+* sparse solvers
+
+Possible stack:
+
+* Rust → WASM
+* C++ → WASM
+* Eigen
+* FFTW
+
+But not immediately necessary.
+
+---
+
+# MY STRONGEST RECOMMENDATION
+
+For your project specifically:
+
+## Best fully-browser-only next features:
+
+### 1. Double slit
+
+### 2. Density matrix + decoherence
+
+### 3. Wigner function
+
+### 4. Fourier transform explorer
+
+### 5. 2D TDSE
+
+These are:
+
+* feasible,
+* visually impressive,
+* educationally deep,
+* differentiating,
+* performant in browser.
+
