@@ -1,5 +1,17 @@
-## Quantum Explorer. ChatGPT review:
-I reviewed the repo from GitHub. Main issues I found:
+## Quantum Explorer. 
+TODO:
+  - README behind of implemented features
+  - Top level URL https://mlubinsky.github.io/quantum-explorer/ does not reflect current button
+  - Line "Exact analytical quantum mechanics — no backend, no approximations" is useless
+  -  it is better to have individual line per button just below with shrodinger equation;
+  -  for hydrogen atom move the line with equation to the top
+ -   for free particle button move Schrödinger equation:
+Coulomb potential (a.u.)  to top line instead of current location
+   
+
+
+## ChatGPT review:
+
 
 1. **Hydrogen 2D orbital density bug at origin**
    `orbitalDensity2D()` returns `0` when `r < 1e-12`, but for `s` orbitals, especially `1s`, density at `r=0` is **maximum**, not zero. Fix similarly to `orbitalDensity3D()`: return finite value for `l === 0`. ([GitHub][1])
