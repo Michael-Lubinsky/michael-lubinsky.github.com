@@ -1,5 +1,4 @@
-Quantum Explorer.
-ChatGPT review:
+## Quantum Explorer. ChatGPT review:
 I reviewed the repo from GitHub. Main issues I found:
 
 1. **Hydrogen 2D orbital density bug at origin**
