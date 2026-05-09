@@ -102,6 +102,74 @@ export function simulatePairs(theta: number, n: number, rng = Math.random) {
 
 And pass measurement axis into the sphere, possibly by lifting `axisPreset/customTheta/customPhi` state from `SternGerlachPanel` into `SpinExplorer`.
 
+
+## Free Particle
+Yes. I see a few issues.
+
+1. **Main bug: Re(ψ) / Im(ψ) are not exact**
+
+`fpProb()` is correct for the probability density, but `fpRePsi()` / `fpImPsi()` use an “approximate carrier”:
+
+```ts
+phase = k0 * (x - x0) - k0 * k0 * t / 2
+```
+
+This misses the quadratic chirp phase created by free-particle spreading. So the app says “Exact Gaussian wavepacket solution,” but Re/Im plots are only approximate. ([GitHub][1])
+
+2. **x-grid is wrong for negative k₀**
+
+```ts
+const xLeft = x0 - 4 * sigma0
+const xRight = x0 + Math.max(Math.abs(k0) * tMax, 1) + 4 * sigmaFinal
+```
+
+For `k0 < 0`, the packet moves left, but the grid does not extend left enough. Use center positions at both start and end:
+
+```ts
+const c0 = x0
+const c1 = x0 + k0 * tMax
+const xLeft = Math.min(c0, c1) - 4 * sigmaFinal
+const xRight = Math.max(c0, c1) + 4 * sigmaFinal
+```
+
+Current code is at `makeProbGrid()`. ([GitHub][1])
+
+3. **Changing x₀ or k₀ does not reset time/history**
+
+You reset only when `sigma0` changes. If user changes `x0` or `k0`, the history plot mixes old and new parameter regimes. Reset should depend on all physical parameters:
+
+```ts
+useEffect(() => {
+  setT(0)
+  setPlaying(false)
+  histRef.current = []
+}, [x0, k0, sigma0])
+```
+
+Current reset is only `[sigma0]`. ([GitHub][1])
+
+4. **History is updated after every render**
+
+This effect has no dependency array:
+
+```ts
+useEffect(() => {
+  histRef.current.push(...)
+})
+```
+
+It can add duplicate points when unrelated state changes, e.g. opening help or toggling sections. Use `[t, expectX, deltaX, uxp]`. ([GitHub][1])
+
+5. **Norm history is misleading**
+
+It always plots `1.0`, not computed normalization. That is okay as a statement of theory, but the label “history” can mislead users into thinking the app verified the plotted finite grid. Better label: **“Analytic norm = 1”**.
+
+[1]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/FreeParticleExplorer.tsx "quantum-explorer/src/components/FreeParticleExplorer.tsx at main · mlubinsky/quantum-explorer · GitHub"
+
+
+
+
+
 [1]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/physics/bell.ts "quantum-explorer/src/physics/bell.ts at main · mlubinsky/quantum-explorer · GitHub"
 [2]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/utils/spinMath.ts "quantum-explorer/src/utils/spinMath.ts at main · mlubinsky/quantum-explorer · GitHub"
 [3]: https://github.com/mlubinsky/quantum-explorer/raw/refs/heads/main/src/components/BlochSphere.tsx "raw.githubusercontent.com"
