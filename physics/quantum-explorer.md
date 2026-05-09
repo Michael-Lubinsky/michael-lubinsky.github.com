@@ -7,6 +7,8 @@ TODO:
   -  for hydrogen atom move the line with equation to the top
  -   for free particle button move Schrödinger equation:
 Coulomb potential (a.u.)  to top line instead of current location
+
+Use dropdown instead buttons on top
    
 ###  it is both technically possible and advisable to have individual URL per feature
 — with some important caveats and recommended approaches.
