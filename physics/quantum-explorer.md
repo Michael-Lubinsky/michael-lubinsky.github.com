@@ -169,6 +169,7 @@ and fix squeezed-state energy decomposition; currently that is the most serious 
 [2]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/momentumSpace.ts "raw.githubusercontent.com"
 
 
+
 1. **Hydrogen 2D orbital density bug at origin**
    `orbitalDensity2D()` returns `0` when `r < 1e-12`, but for `s` orbitals, especially `1s`, density at `r=0` is **maximum**, not zero. Fix similarly to `orbitalDensity3D()`: return finite value for `l === 0`. ([GitHub][1])
 
@@ -200,6 +201,56 @@ Suggested deploy change:
    `ParameterSlider` always shows `value.toFixed(2)`. For quantum numbers or integer-like parameters this can look strange, e.g. `n = 3.00`. Add optional `digits` prop. ([GitHub][6])
 
 Overall: the project structure is good, and the separation of physics formulas from React UI is a strong design choice. The highest-priority fixes are hydrogen density at origin, README accuracy, and adding test/lint/typecheck to CI.
+
+
+## Hydrogen
+Yes. The Grotrian diagram is useful, but I see several issues.
+
+1. **It implies `ℓ` sublevels have different positions, but pure hydrogen energy depends only on `n`**
+
+Your diagram draws separate `s/p/d/f/g` columns. That is fine for a Grotrian diagram, but because energy is computed only as:
+
+```ts
+E_n = -Z² / (2n²)
+```
+
+all same-`n` sublevels are degenerate. The UI should explicitly say: **“In this simplified hydrogen model, all same-n levels are degenerate; columns show allowed angular-momentum states, not different energies.”** ([GitHub][1])
+
+2. **Selection rule is incomplete**
+
+Allowed transitions use only:
+
+```ts
+|Δℓ| === 1
+```
+
+For electric dipole transitions this is the main orbital rule, but a full rule also involves magnetic quantum number:
+
+```text
+Δm = 0, ±1
+```
+
+Your Grotrian diagram ignores `m`, so it should say **“orbital-only E1 selection rule.”** ([GitHub][1])
+
+3. **Metastable 2s label is simplified**
+
+The 2s note says two-photon lifetime ≈ 0.12 s, which is reasonable, but in a simplified diagram it may confuse students because real hydrogen also has Lamb shift and fine/hyperfine structure. Add: **“In this nonrelativistic model 2s and 2p are degenerate; real hydrogen splits them slightly.”** ([GitHub][1])
+
+4. **Only shows up to `n = 5`**
+
+```ts
+const N_MAX = 5
+```
+
+That is okay visually, but Balmer/Paschen/Brackett series look incomplete. Consider making `N_MAX` adjustable, maybe 5–10. ([GitHub][1])
+
+5. **Wavelength colors are approximate**
+
+The wavelength calculation is fine for the simplified model, but visible color mapping is coarse and maps all UV/IR to pseudo-colors. The legend should say UV/IR are **not actual visible colors**. Your code partly does this in tooltip, but the diagram itself still uses visible-looking colors. ([GitHub][1])
+
+Overall: no fatal bug, but the feature should more clearly label itself as a **simplified nonrelativistic hydrogen Grotrian diagram with E1 orbital selection rules only**.
+
+[1]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/HydrogenExplorer.tsx "quantum-explorer/src/components/HydrogenExplorer.tsx at main · mlubinsky/quantum-explorer · GitHub"
 
 
 ## Specific issues in **Spin 1/2 Bloch Sphere: Precession, Measurements, Bell**:
