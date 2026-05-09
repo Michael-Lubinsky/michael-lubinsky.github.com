@@ -8,7 +8,82 @@ TODO:
  -   for free particle button move Schrödinger equation:
 Coulomb potential (a.u.)  to top line instead of current location
    
+###  it is both technically possible and advisable to have individual URL per feature
+— with some important caveats and recommended approaches.
 
+### Technical Feasibility
+
+Your project is a **React + Vite SPA** (single-page application) with client-side navigation via React state (`active` module in `App.tsx`). GitHub Pages serves static files and does **not** natively support clean client-side routing (BrowserRouter / History API) for deep paths.
+
+**Options ranked by practicality:**
+
+| Option | URLs Example | Difficulty | Pros | Cons | Recommendation |
+|--------|--------------|------------|------|------|----------------|
+| **Hash routing** (`/#stationary`) | `.../quantum-explorer/#hydrogen` | Very easy | Works out of the box on GH Pages; no 404s | URLs less clean | Good short-term |
+| **Browser routing + 404.html hack** | Clean `/hydrogen` | Medium | Cleanest URLs | Requires 404.html redirect script; initial load shows 404 briefly | Best for polish |
+| **Multiple `index.html` in subfolders** | `/stationary/index.html` | High | Truly separate pages | Heavy duplication, larger repo, complex build | Not recommended |
+| **Separate repos** | Separate GH Pages | High | Complete isolation | Maintenance nightmare | Avoid |
+
+**Recommended path: Add React Router with the 404.html trick** (most common & clean solution for Vite/React on GitHub Pages).
+
+### Advisability (Pros & Cons)
+
+**Yes, advisable because:**
+
+- **Better UX & Shareability**: Direct links like `.../hydrogen` or `.../time-evolution?state=coherent` are much more useful for educators, students, and social sharing.
+- **SEO & Discoverability**: Cleaner URLs help if people link to specific features.
+- **Future-proofing**: As you add Hydrogen, Entanglement, Ring, etc., the app will grow. Modular URLs make it feel like a proper web app.
+- **Performance**: Lazy-loading components per route becomes natural.
+
+**Potential Downsides:**
+
+- Slight added complexity (routing library + deploy config).
+- GitHub Pages limitations require the 404 workaround.
+- Need to handle deep linking for parameters (e.g., sliders values).
+
+### Implementation Outline
+
+1. **Install React Router**
+   ```bash
+   npm install react-router-dom
+   ```
+
+2. **Refactor `App.tsx`** to use `<BrowserRouter>` + `<Routes>`.
+
+3. **Update Vite config** (optional but useful):
+   ```ts
+   // vite.config.ts
+   export default defineConfig({
+     base: '/quantum-explorer/',   // Important for GH Pages subpath
+     // ...
+   })
+   ```
+
+4. **Add 404.html workaround** (standard for SPAs on GH Pages):
+   - Create `public/404.html` with a script that redirects to `index.html` while preserving the path.
+   - Popular template: https://github.com/rafgraph/spa-github-pages
+
+5. **Deep linking for parameters**:
+   - Use URLSearchParams or React Router's `useSearchParams` so links like `/time-evolution?mode=squeezed&r=1.2` restore state.
+
+6. **Build & Deploy**:
+   - `npm run build`
+   - The `dist` folder goes to the `gh-pages` branch (or `/docs` folder).
+
+### Alternative Simpler Approach (If You Want Minimal Change)
+
+Keep the current tab navigation but add **shareable deep links** using the URL hash or query params, without full routing. For example, a "Share this view" button that copies a link with current parameters encoded.
+
+### My Suggestion for Your Project
+
+Go with **React Router + 404.html trick**. It’s a very standard setup and will make the project feel significantly more professional. Since you already have clean component separation (`StationaryExplorer`, `TimeEvolutionExplorer`, etc.), the refactor will be straightforward.
+
+Would you like me to:
+- Provide a sample `App.tsx` with routing?
+- Show the exact 404.html + redirect script?
+- Suggest how to encode/restore slider states in URLs?
+
+This change pairs very well with the new features we discussed earlier.
 
 ## ChatGPT review:
 
