@@ -46,7 +46,7 @@ Suggested deploy change:
 Overall: the project structure is good, and the separation of physics formulas from React UI is a strong design choice. The highest-priority fixes are hydrogen density at origin, README accuracy, and adding test/lint/typecheck to CI.
 
 
-Specific issues in **Spin 1/2 Bloch Sphere: Precession, Measurements, Bell**:
+## Specific issues in **Spin 1/2 Bloch Sphere: Precession, Measurements, Bell**:
 
 1. **Bell simulation repeats the same “random” result**
    In `simulatePairs()`, the LCG seed is reset every call:
