@@ -164,6 +164,91 @@ It can add duplicate points when unrelated state changes, e.g. opening help or t
 
 It always plots `1.0`, not computed normalization. That is okay as a statement of theory, but the label “history” can mislead users into thinking the app verified the plotted finite grid. Better label: **“Analytic norm = 1”**.
 
+
+## Scattering
+
+Yes — specifically in **Scattering / Tunnelling**, I see several important issues.
+
+1. **`scatteringPsiSq()` is not really exact**
+
+The comment says:
+
+```ts
+Exact stationary scattering wavefunction |ψ(x)|²
+```
+
+but the implementation contains approximations / phase hacks. For example, near `E ≈ V0`, inside the barrier it simply returns:
+
+```ts
+return transmissionT(E, V0, L)
+```
+
+That makes `|ψ|²` constant inside the barrier, which is not the correct linear-solution limit. ([GitHub][1])
+
+2. **Evanescent inside-barrier wavefunction is wrong**
+
+For `E < V0`, the code assumes real coefficients:
+
+```ts
+const { ARe, BRe } = insideCoeffsEvanescent(...)
+const val = ARe * exp(kappa*x) + BRe * exp(-kappa*x)
+return val * val
+```
+
+But the real stationary scattering solution generally has **complex** coefficients inside the barrier. Using only real coefficients loses phase information and can produce wrong density inside the barrier. ([GitHub][1])
+
+3. **Reflection amplitude phase is suspicious**
+
+The code computes `r`, then rescales it to force the magnitude:
+
+```ts
+const scale = rCalcSq > 1e-14 ? rMag / Math.sqrt(rCalcSq) : 1
+return { rRe: rRe * scale, rIm: rIm * scale, tRe, tIm }
+```
+
+That may preserve `R = |r|²`, but it does not guarantee the correct phase. Since the left-side interference pattern depends on the phase of `r`, `|ψ(x)|²` on the incident side can be shifted incorrectly. ([GitHub][1])
+
+4. **Possible overflow for thick/high barriers**
+
+This can overflow:
+
+```ts
+Math.sinh(kappaTilde * L)
+Math.cosh(kappaTilde * L)
+Math.exp(kappaTilde * x)
+```
+
+For large `V0`, large `L`, or small `E`, this can create `Infinity`, `NaN`, or a broken plot. ([GitHub][1])
+
+5. **WKB comparison is visually misleading near/above barrier**
+
+`wkbT()` returns `1` for `E >= V0`, but WKB tunnelling formula is only meaningful below the barrier. The UI currently hides it above the barrier with `null`, which is good, but the function itself is mathematically misleading as a reusable API. Better:
+
+```ts
+export function wkbT(E: number, V0: number, L: number): number | null {
+  if (E >= V0) return null
+  const kappa = Math.sqrt(2 * (V0 - E))
+  return Math.exp(-2 * kappa * L)
+}
+```
+
+6. **Spatial plot range depends only on external wavelength**
+
+```ts
+const xL = -half - 6 / k
+const xR = half + 6 / k
+```
+
+For very low `E`, this becomes huge; for high `E`, it may show too little interference structure. A better UI would let the user choose plot width or use a bounded adaptive range. ([GitHub][2])
+
+Most important fix: rewrite `scatteringPsiSq()` using one consistent complex-number solution for `r`, `t`, `A`, and `B`, then verify continuity of both `ψ` and `ψ'` at `x = ±L/2`.
+
+[1]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/physics/tunnelling.ts "quantum-explorer/src/physics/tunnelling.ts at main · mlubinsky/quantum-explorer · GitHub"
+[2]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/TunnellingExplorer.tsx "quantum-explorer/src/components/TunnellingExplorer.tsx at main · mlubinsky/quantum-explorer · GitHub"
+
+
+
+
 [1]: https://github.com/mlubinsky/quantum-explorer/blob/main/src/components/FreeParticleExplorer.tsx "quantum-explorer/src/components/FreeParticleExplorer.tsx at main · mlubinsky/quantum-explorer · GitHub"
 
 
