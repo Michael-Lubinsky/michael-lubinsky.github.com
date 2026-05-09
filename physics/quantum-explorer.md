@@ -12,6 +12,81 @@ Coulomb potential (a.u.)  to top line instead of current location
 
 ## ChatGPT review:
 
+Stationary states
+Yes — specific issues in **Stationary States**:
+
+1. **Harmonic oscillator matrix panel uses the wrong x-grid**
+
+In `StationaryExplorer`, `gridX` is always created as:
+
+```ts
+const dx = L / (N_POINTS - 1)
+const gridX = Array.from({ length: N_POINTS }, (_, i) => i * dx)
+```
+
+This is correct for the infinite square well, but **wrong for harmonic oscillator**, whose eigenfunctions are generated on a symmetric grid `[-xMax, xMax]`. Then `MatrixPanel` receives HO wavefunctions on one grid but `gridX/dx` from `[0, L]`, so HO `X` and `P` matrix elements are wrong. ([GitHub][1])
+
+Fix: get `x` and `dx` from the generated eigenstate:
+
+```ts
+const states = Array.from({ length: N_LEVELS }, (_, i) =>
+  hoEigenstate(i, omega, N_POINTS)
+)
+
+const gridX = states[0].x
+const dx = gridX[1] - gridX[0]
+const wavefunctions = states.map(s => s.psi)
+```
+
+2. **HO momentum distribution formula has wrong normalization for `ω ≠ 1`**
+
+Current code says:
+
+```ts
+|φₙ(k; ω)|² = |ψₙ(k; 1/ω)|²
+```
+
+and implements:
+
+```ts
+const psi = hoWavefunction(n, k, 1 / omega)
+return psi * psi
+```
+
+But the correct scaling needs an extra factor:
+
+```ts
+|φ_n(k;ω)|² = (1/ω) |ψ_n(k/ω; 1/ω)|²
+```
+
+Without this, the momentum distribution is not normalized correctly and `σ_p` will be wrong for `ω ≠ 1`. ([GitHub][2])
+
+3. **`P` matrix animation is conceptually wrong**
+
+`MatrixPanel` stores only `Im⟨m|p|n⟩`, but `heisenbergRe()` treats the input as a real matrix and multiplies by `cos((Em-En)t)`. For a purely imaginary operator matrix element, the real part evolves with a **sine**, not cosine. So animated `P(t)` is wrong. ([GitHub][3])
+
+4. **Infinite well momentum amplitude pole sign is simplified incorrectly**
+
+In `iswMomentumAmplitude()`, the pole case says:
+
+```ts
+// sign depends on which branch; use +i for simplicity
+```
+
+That is dangerous because time-evolved superpositions depend on relative complex phases. This can make momentum-space interference wrong in time evolution. ([GitHub][2])
+
+5. **README/App overclaim “no approximations”**
+
+The stationary feature uses finite grids for plotting and matrix elements, and `P` uses finite-difference derivatives. That is normal and useful, but the app text says “no approximations.” Better wording: **“Analytical formulas with numerical visualization/matrix-element evaluation where needed.”** ([GitHub][4])
+
+Highest-priority fix: fix the **HO grid passed into `MatrixPanel`**, because it directly makes displayed matrix elements incorrect.
+
+[1]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/components/StationaryExplorer.tsx "raw.githubusercontent.com"
+[2]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/physics/momentumSpace.ts "raw.githubusercontent.com"
+[3]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/components/MatrixPanel.tsx "raw.githubusercontent.com"
+[4]: https://raw.githubusercontent.com/mlubinsky/quantum-explorer/main/src/App.tsx "raw.githubusercontent.com"
+
+
 
 1. **Hydrogen 2D orbital density bug at origin**
    `orbitalDensity2D()` returns `0` when `r < 1e-12`, but for `s` orbitals, especially `1s`, density at `r=0` is **maximum**, not zero. Fix similarly to `orbitalDensity3D()`: return finite value for `l === 0`. ([GitHub][1])
