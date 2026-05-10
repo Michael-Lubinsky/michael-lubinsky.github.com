@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/1015072/>
 
+<https://habr.com/ru/articles/1033388/>
+
 <https://habr.com/ru/articles/1027508/>
 
 <https://habr.com/ru/companies/bitrix/articles/1009150/>
