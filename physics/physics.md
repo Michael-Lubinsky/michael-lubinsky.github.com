@@ -8,6 +8,11 @@
 
 <https://arxiv.org/abs/quant-ph/0212010> The hydrogen atom in electric and magnetic fields : Pauli's 1926 article
 
+<https://www.youtube.com/watch?v=KEQKp_qU0EI> 
+Quantization of Angular Momentum - Explained Visually
+
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNBa26USx0UsphbvAG7zUQUE> Naumov
+
 <https://chaosbook.org/>
 
 <http://lightcone.ru/>
