@@ -17,6 +17,8 @@ Quantization of Angular Momentum - Explained Visually
 
 <http://lightcone.ru/>
 
+<https://www.youtube.com/watch?v=XKSjCOKDtpk> MAgnetism
+
 ### Spin 
 
 <https://ufn.ru/ru/articles/2026/1/f/>
