@@ -4,6 +4,8 @@ Iceberg’s documentation: <http://www.apache.iceberg.io>
 Delta Lake’s documentation: <http://www.delta.io>  
 <https://habr.com/ru/companies/vktech/articles/959398/>
 
+<https://habr.com/ru/articles/1033546/>
+
 **Iceberg catalog** is a **metadata management system** used by **Apache Iceberg**, a high-performance table format designed for large-scale analytic datasets.
 
  <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/b2d9c9c9-cd2e-40c4-91a3-09a34ee22435" />
