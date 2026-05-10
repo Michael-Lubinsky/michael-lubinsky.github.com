@@ -16,15 +16,17 @@ similarity =
         1 if vectors are aligned
         -1 if vectors are in opposite direction
 ```
-https://vickiboykis.com/what_are_embeddings/
+<https://vickiboykis.com/what_are_embeddings/>
 
-https://habr.com/ru/companies/ruvds/articles/983958/ Embedding
+<https://habr.com/ru/companies/beeline_cloud/articles/1033544/>
 
-https://habr.com/ru/articles/992928/
+<https://habr.com/ru/companies/ruvds/articles/983958/> Embedding
 
-https://habr.com/ru/articles/947216/
+<https://habr.com/ru/articles/992928/>
 
-https://habr.com/ru/companies/tensor/articles/970480/
+<https://habr.com/ru/articles/947216/>
+
+<https://habr.com/ru/companies/tensor/articles/970480/>
 
 https://machinelearningmastery.com/top-5-vector-databases-for-high-performance-llm-applications/
 
