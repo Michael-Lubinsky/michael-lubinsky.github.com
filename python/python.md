@@ -4,6 +4,8 @@ python -m py_compile my_script.py
 
 <https://realpython.com/python-memory-management/>
 
+<https://habr.com/ru/articles/1033432/> dunder methods
+
 <https://habr.com/ru/companies/yandex_praktikum/articles/960812/>
 
 <https://habr.com/ru/articles/1010290/> Python Standard Library для спортивного программирования
