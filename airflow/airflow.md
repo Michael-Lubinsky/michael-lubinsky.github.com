@@ -18,7 +18,7 @@ https://medium.com/apache-airflow/how-to-install-apache-airflow-3-0-using-docker
 
 <https://medium.com/@adhilparthi/mastering-apache-airflow-a-complete-guide-to-workflow-orchestration-for-data-engineers-b01f2ad718ef>
 
-<https://habr.com/ru/articles/1033750/> TaskAPI
+<https://habr.com/ru/articles/1033750/> TaskFlow API
 
 A DAG Run is an instance of a DAG, representing a specific execution of the DAG.
 
