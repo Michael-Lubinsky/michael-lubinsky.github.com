@@ -1,6 +1,6 @@
 ### SQLite
-<https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>
-<https://visualdb.com/sqlite/>  
+<https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>  
+<https://visualdb.com/sqlite/>   <https://github.com/Maxteabag/sqlit>
 ```
             "PRAGMA foreign_keys=ON;"
             "PRAGMA journal_mode = WAL;"
