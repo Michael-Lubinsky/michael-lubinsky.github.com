@@ -1,5 +1,7 @@
 ### Physics
 
+<https://news.ycombinator.com/item?id=48096842>
+
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
 <https://www.youtube.com/@AbideByReason>
