@@ -8,6 +8,8 @@
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
+<https://www.youtube.com/watch?v=XKSjCOKDtpk> Magnetism
+
 <https://arxiv.org/abs/quant-ph/0212010> The hydrogen atom in electric and magnetic fields : Pauli's 1926 article
 
 <https://www.youtube.com/watch?v=KEQKp_qU0EI> 
