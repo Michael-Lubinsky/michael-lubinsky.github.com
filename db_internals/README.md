@@ -1,4 +1,6 @@
-## DB Internals
+## DB and System Internals
+
+<https://eatonphil.com/bookclub.html>
 
 <https://www.bitsxpages.com/p/frameworks-for-understanding-databases>
 
@@ -23,7 +25,7 @@ Postgres internals  <https://www.interdb.jp/pg/index.html>
 <https://memoizethebackend.substack.com/p/optimistic-or-pessimistic-understanding>
 
 ### Storage
-https://www.youtube.com/watch?v=i-FFVM4cIXQ База по Базам Данных - Storage (Индексы, Paging, LSM, B+-Tree, R-Tree) | Влад Тен 
+<https://www.youtube.com/watch?v=i-FFVM4cIXQ> База по Базам Данных - Storage (Индексы, Paging, LSM, B+-Tree, R-Tree) | Влад Тен 
 
 <https://www.deepintodev.com/blog/how-databases-store-your-tables-on-disk>
 
@@ -44,9 +46,9 @@ https://www.paradedb.com/blog/etl_vs_logical_replication
 
 <https://habr.com/ru/companies/ydb/articles/901816/>
 
-https://web.stanford.edu/class/cs345d-01/rl/chaudhuri98.pdf
+<https://web.stanford.edu/class/cs345d-01/rl/chaudhuri98.pdf>
 
-https://www.microsoft.com/en-us/research/publication/extensible-query-optimizers-in-practice/
+<https://www.microsoft.com/en-us/research/publication/extensible-query-optimizers-in-practice/>
 
 <https://build-your-own.org/blog/20251015_db_in_3000/>
 
