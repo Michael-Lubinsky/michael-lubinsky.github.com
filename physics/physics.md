@@ -19,7 +19,7 @@ Quantization of Angular Momentum - Explained Visually
 
 <http://lightcone.ru/>
 
-<https://www.youtube.com/watch?v=XKSjCOKDtpk> MAgnetism
+<https://www.youtube.com/watch?v=XKSjCOKDtpk> Magnetism
 
 ### Spin 
 
@@ -33,6 +33,8 @@ Quantization of Angular Momentum - Explained Visually
 
 
 Classic Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/>
+
+<https://pubs.aip.org/aapt/ajp/article/93/5/437/3344550/The-right-way-to-introduce-complex-numbers-in>
 
 Принцип наименьшего действия [Veritasium]:
 <https://www.youtube.com/watch?v=C2tL1A3B3cY>
