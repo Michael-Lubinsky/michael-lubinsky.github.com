@@ -13,11 +13,13 @@ Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-e
 
 <https://habr.com/ru/companies/garage8/articles/920226/> Anomaly detection, Z-score with SQL
 
-https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet
+<https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet>
 
-https://github.com/business-science/pytimetk
+<https://github.com/business-science/pytimetk>
 
 <https://habr.com/ru/companies/otus/articles/1003098/>  Darts
+
+<https://timecopilot.dev/>
 
 <https://habr.com/ru/articles/953154/>  Как ИИ-агенты учатся работать с временными рядами
 
