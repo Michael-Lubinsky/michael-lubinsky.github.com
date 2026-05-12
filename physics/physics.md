@@ -56,6 +56,8 @@ Vitaly Vanchurin
 
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
 
+<https://www.youtube.com/playlist?list=PLy8F8dLvbGgATSyLBO4rXWi0ksfN9tpo3>
+
 Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 <https://www.youtube.com/watch?v=qJZ1Ez28C-A>
 
