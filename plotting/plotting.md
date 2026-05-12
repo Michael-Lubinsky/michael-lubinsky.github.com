@@ -1,3 +1,7 @@
+##  Dashoboard tool: rill 
+
+https://github.com/rilldata/rill
+
 ## 3D with python
 
 <https://github.com/Robertleoj/slamd>
