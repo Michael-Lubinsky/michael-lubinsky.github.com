@@ -8,7 +8,9 @@
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
-<https://www.youtube.com/watch?v=XKSjCOKDtpk> Magnetism
+Hall Effect, Quantum anomalous Hall effecy
+<https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
+
 
 <https://arxiv.org/abs/quant-ph/0212010> The hydrogen atom in electric and magnetic fields : Pauli's 1926 article
 
