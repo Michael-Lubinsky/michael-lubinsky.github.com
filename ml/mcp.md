@@ -6,6 +6,8 @@
 
 <https://inventwithpython.com/blog/basic-mcp-python-example.html>
 
+<https://habr.com/ru/companies/otus/articles/1032890/>
+
 <https://habr.com/ru/articles/1015072/>
 
 <https://habr.com/ru/articles/1033388/>
