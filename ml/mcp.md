@@ -4,6 +4,8 @@
 
 <https://realpython.com/python-mcp/>
 
+<https://inventwithpython.com/blog/basic-mcp-python-example.html>
+
 <https://habr.com/ru/articles/1015072/>
 
 <https://habr.com/ru/articles/1033388/>
