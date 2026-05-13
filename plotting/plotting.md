@@ -1,29 +1,32 @@
 ##  Dashoboard tool: rill 
 
-https://github.com/rilldata/rill
+<https://github.com/rilldata/rill>
 
 ## 3D with python
 
 <https://github.com/Robertleoj/slamd>
 
-## Plotting and UI
+## Plotting and UI: Tauri Wails
 
-  UI for go lang apps  https://wails.io/
+  <https://github.com/deeleeramone/PyWry>
+
+  UI for GoLang apps  <https://wails.io/>
 
 ### C++ plus plotly
-https://www.reddit.com/r/cpp/comments/1qf1v12/plotlypp_plotly_for_c_create_interactive_plots/
+<https://www.reddit.com/r/cpp/comments/1qf1v12/plotlypp_plotly_for_c_create_interactive_plots/>
 
 https://python.plainenglish.io/8-python-visualization-tricks-that-make-data-pop-5585ea5f84d7
 
 
-https://lets-plot.org/
+<https://lets-plot.org/>
 
 https://altair-viz.github.io/index.html
 
 https://vizro.readthedocs.io/en/stable/
 
-### detroit is a Python implementation of d3js.
-https://detroit.readthedocs.io/en/latest/
+### Detroit is a Python implementation of d3js.
+
+<https://detroit.readthedocs.io/en/latest/>
 
 ### LabPlot
 <https://labplot.org/>
@@ -61,7 +64,7 @@ Available for Windows, macOS, Linux and FreeBSD
 
 
 
-https://github.com/rilldata/rill
+<https://github.com/rilldata/rill>
 
 ### minimalytics
 GO standalone minimalist analytics tool built on SQLite.  
@@ -72,13 +75,13 @@ It provides a lightweight solution for tracking and visualizing event data with 
 
 ### Plotting Libs
 
-https://news.ycombinator.com/item?id=46706528  JavaScript libs
+<https://news.ycombinator.com/item?id=46706528>  JavaScript libs
 
 <https://habr.com/ru/companies/otus/articles/929938/>
 
 <https://github.com/d3blocks/d3blocks>
 
-https://medium.com/data-science-collective/d3blocks-the-python-library-to-create-interactive-standalone-and-beautiful-d3-js-charts-ef8c65286e86
+<https://medium.com/data-science-collective/d3blocks-the-python-library-to-create-interactive-standalone-and-beautiful-d3-js-charts-ef8c65286e86>
 
 <https://lets-plot.org/>
 
