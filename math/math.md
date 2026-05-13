@@ -8,6 +8,8 @@
 <https://www.youtube.com/watch?v=3fgZlpH0N_M> 
 Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
 
+<https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
+
 ### Linear Algebra
 
 <https://allendowney.github.io/ThinkLinearAlgebra/index.html>
