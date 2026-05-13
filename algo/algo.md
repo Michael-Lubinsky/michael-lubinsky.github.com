@@ -2,6 +2,8 @@
 
 <https://ru.algorithmica.org/>
 
+<https://github.com/TheAlgorithms>  <https://the-algorithms.com>
+
 <https://habr.com/ru/articles/1016636/>
 
 <https://www.youtube.com/watch?v=8GieMMkLzMQ>
