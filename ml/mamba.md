@@ -2,6 +2,8 @@
 
 <https://www.freecodecamp.org/news/learn-the-foundations-of-machine-learning-and-artificial-intelligence/>
 
+<https://udlbook.github.io/udlbook/>
+
 <https://elonlit.com/scrivings/a-theory-of-deep-learning/>
 
 Stepik course
