@@ -11,7 +11,9 @@
 <https://www.youtube.com/watch?v=3fgZlpH0N_M> 
 Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
 
-<https://www.youtube.com/watch?v=yWo2Cto5074>
+<https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1
+
+<https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
 
 
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
