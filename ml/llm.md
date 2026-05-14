@@ -4,6 +4,8 @@
 
 <https://www.youtube.com/@jbhuang0604>
 
+<https://www.youtube.com/@underthehood444>
+
 <https://github.com/HandsOnLLM/Hands-On-Large-Language-Models>
 
 <https://arxiv.org/abs/2501.09223>
