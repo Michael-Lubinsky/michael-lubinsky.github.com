@@ -11,6 +11,9 @@
 <https://www.youtube.com/watch?v=3fgZlpH0N_M> 
 Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
 
+<https://www.youtube.com/watch?v=yWo2Cto5074>
+
+
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
 
 ### Linear Algebra
