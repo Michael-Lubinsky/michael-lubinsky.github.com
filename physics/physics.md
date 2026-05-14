@@ -4,6 +4,8 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<https://www.scribd.com/document/777989228/B-K-Ridley-Quantum-processes-in-semiconductors-Oxford-University-Press-2013>
+
 <https://www.youtube.com/@AbideByReason>
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
