@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
 
+<https://github.com/defendend/Claude-ast-index-search>
+
 <https://habr.com/ru/articles/1031440/>
 
 <https://habr.com/ru/articles/1033136/>
