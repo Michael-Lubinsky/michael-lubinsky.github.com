@@ -4,6 +4,8 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<https://www.anthropic.com/research/vibe-physics>
+
 <https://quantum-matters.com/>
 
 <https://www.scribd.com/document/777989228/B-K-Ridley-Quantum-processes-in-semiconductors-Oxford-University-Press-2013>
