@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/companies/wunderfund/articles/1022820/>
 
+<https://habr.com/ru/companies/wunderfund/articles/1031042/> Word2Vec
+
 <https://huggingface.co/spaces/hesamation/primer-llm-embedding>
 
 
