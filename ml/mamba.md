@@ -2,6 +2,8 @@
 
 <https://www.freecodecamp.org/news/learn-the-foundations-of-machine-learning-and-artificial-intelligence/>
 
+<https://www.youtube.com/watch?v=M-GWvdyOkIo> GPU и акселераторы для нейросетей / Тензорные компиляторы / Инференс LLM
+
 <https://udlbook.github.io/udlbook/>
 
 <https://elonlit.com/scrivings/a-theory-of-deep-learning/>
