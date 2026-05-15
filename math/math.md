@@ -52,6 +52,8 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 <https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
 Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
+Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
+
 <https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
