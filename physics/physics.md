@@ -14,6 +14,8 @@
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
+<https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ>
+
 Hall Effect, Quantum anomalous Hall effecy
 <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
 
