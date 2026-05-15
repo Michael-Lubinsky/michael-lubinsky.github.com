@@ -1,5 +1,7 @@
 ## Agents
 
+<https://github.com/DrCatHicks/learning-opportunities>
+
 <https://habr.com/ru/articles/1023316/>  Что такое Harness?
 
 <https://habr.com/ru/articles/1028260/> обширный материал по Context Engineering
