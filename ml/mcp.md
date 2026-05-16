@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/companies/otus/articles/1032890/>
 
+<https://habr.com/ru/companies/bothub/articles/1035002/>
+
 <https://habr.com/ru/articles/1015072/>
 
 <https://habr.com/ru/articles/1033388/>
