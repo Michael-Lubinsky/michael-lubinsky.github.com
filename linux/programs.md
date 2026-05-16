@@ -7,9 +7,14 @@
 MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>  
 Visidata <https://www.visidata.org/>
 
+## Markdown tools
+
 <https://panwriter.com/> Markdown editor  
-<https://github.com/omibranch/qnote> Markdown tool viewer
+<https://github.com/omibranch/qnote> Markdown tool viewer  
+<https://github.com/microsoft/markitdown> Convert everything to markdown
 <https://github.com/Michaelliv/markit> Convert everything to markdown
+
+## CSV in terminal
 
 <https://github.com/gurgeous/tennis>  CLI for printing stylish CSV tables in your terminal.
 ```
