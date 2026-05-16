@@ -26,6 +26,8 @@ Building AI Agents with Local Small Language Models
 LLM Fine Tuning
 <https://www.linkedin.com/posts/analyticalrohit_llms-fine-tuning-guide-ugcPost-7444367096463151104-TSda>
 
+<https://www.youtube.com/watch?v=c9pLgg0w488> Olga Pavlova
+
 
 NVIDIA GenAI & LLMs: Learn and Pass NCA-GENL Certification
 <https://www.udemy.com/course/nvidia-nca-genl/>
