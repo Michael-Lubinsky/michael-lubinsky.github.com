@@ -54,6 +54,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://habr.com/ru/articles/1015510/>
 
+ <https://habr.com/ru/articles/1035626/>
+ 
 <https://habr.com/ru/articles/975468/> Model Quantization
 
 ## ML Engineering
