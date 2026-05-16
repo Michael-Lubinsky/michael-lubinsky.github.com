@@ -154,10 +154,6 @@ https://medium.datadriveninvestor.com/mastering-advanced-python-40-pro-level-sni
 
 https://python.plainenglish.io/mastering-python-100-advanced-python-cheatsheets-for-developers-a5da6f176667
 
-### Decorators  
-https://habr.com/ru/articles/910424/
-
-https://towardsdatascience.com/pythons-most-powerful-decorator-6bc39e6a8dd8
 
 ### Links
 
