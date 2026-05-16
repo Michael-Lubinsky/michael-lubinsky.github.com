@@ -3,3 +3,5 @@
 
 ## Message Queue
 <https://habr.com/ru/companies/otus/articles/1022192/>
+
+<https://concerningquality.com/queue-simulations/>
