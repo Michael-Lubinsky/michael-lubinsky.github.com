@@ -9,6 +9,15 @@ Visidata <https://www.visidata.org/>
 
 <https://panwriter.com/> Markdown editor
 
+<https://github.com/gurgeous/tennis>  CLI for printing stylish CSV tables in your terminal.
+```
+auto-detect CSV vs TSV (or semis, or pipes)
+also works great with JSON/JSONL or SQLite
+titles, row numbers, zebra stripes, border styles
+sorting, filtering, head/tail
+--peek to get a quick summary
+```
+
 ### JSON tools
 command-line json viewer <https://jless.io/> 
 
