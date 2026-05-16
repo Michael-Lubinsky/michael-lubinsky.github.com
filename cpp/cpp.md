@@ -39,42 +39,44 @@ reinterpret_cast<T>(x)
 
 <https://geocar.sdf1.org/alloc.html>
 
-https://www.gingerbill.org/series/memory-allocation-strategies/
+<https://www.gingerbill.org/series/memory-allocation-strategies/>
 
 https://habr.com/ru/articles/996452/ new , new[]. delete and delete[]
 
-https://habr.com/ru/companies/piter/articles/977658/ RAII в современном C++: как правильно организовать автоматическое управление ресурсами
+<https://habr.com/ru/companies/piter/articles/977658/> RAII в современном C++: как правильно организовать автоматическое управление ресурсами
 
-https://www.reddit.com/r/cpp/comments/1ibxuyn/how_do_you_decide_when_to_use_smart_pointers_vs/
+<https://habr.com/ru/articles/1035874/>
 
-https://habr.com/ru/companies/otus/articles/914262/ Ссылки и указатели в C++
+<https://www.reddit.com/r/cpp/comments/1ibxuyn/how_do_you_decide_when_to_use_smart_pointers_vs/>
 
-https://en.wikipedia.org/wiki/Region-based_memory_management
+<https://habr.com/ru/companies/otus/articles/914262/> Ссылки и указатели в C++
 
-https://habr.com/ru/articles/896958/  Memory management
+<https://en.wikipedia.org/wiki/Region-based_memory_management>
 
-https://habr.com/ru/companies/otus/articles/988086/ Custom allocators
+<https://habr.com/ru/articles/896958/>  Memory management
+
+<https://habr.com/ru/companies/otus/articles/988086/> Custom allocators
 
 
-https://habr.com/ru/articles/270009/ Управление памятью: Взгляд изнутри  
+<https://habr.com/ru/articles/270009/> Управление памятью: Взгляд изнутри  
 
 
-https://www.reddit.com/r/programming/comments/1lb5zzb/cc_headeronly_fast_arena_allocator_works_with_stl/ Arena Allocator
+<https://www.reddit.com/r/programming/comments/1lb5zzb/cc_headeronly_fast_arena_allocator_works_with_stl/>  Arena Allocator
 
 ## Static Analysis
 
-https://superjamie.github.io/2022/05/24/c-static-analysis-tools  
-https://superjamie.github.io/2022/11/04/c-static-analysis-tools-part-2  
+<https://superjamie.github.io/2022/05/24/c-static-analysis-tools>   
+<https://superjamie.github.io/2022/11/04/c-static-analysis-tools-part-2> 
 
-https://www.amazon.com/dp/0136905692   C++20 for Programmers: An Objects-Natural Approach (Deitel Developer Series) 3
+<https://www.amazon.com/dp/0136905692>   C++20 for Programmers: An Objects-Natural Approach (Deitel Developer Series) 3
 
-https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/
+<https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/>
 
-https://habr.com/ru/articles/912926/  Performance Traps
+<https://habr.com/ru/articles/912926/>  Performance Traps
 
 ## Very useful links
-https://habr.com/ru/companies/pvs-studio/articles/708138/
-https://github.com/JoshuaJakowlew/cppfaq
+<https://habr.com/ru/companies/pvs-studio/articles/708138/>  
+<https://github.com/JoshuaJakowlew/cppfaq>
 
 https://accu.org/    
 https://www.learncpp.com/  
