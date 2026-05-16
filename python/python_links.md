@@ -90,7 +90,7 @@
 
 <https://pydevtools.com/handbook/>
 
-https://pypi.org/project/json-stream/
+<https://pypi.org/project/json-stream/>
 
 EuroPython 2025
 <https://www.youtube.com/watch?v=4gotVjbeluY&list=PL8uoeex94UhFQY9cYBQOVkj9fSHMHf5x9>
@@ -98,7 +98,7 @@ EuroPython 2025
 <https://levelup.gitconnected.com/python-stop-waiting-for-your-python-code-to-finish-f20516db1d02>
 
 
-https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e
+<https://medium.com/the-pythonworld/the-ultimate-guide-to-writing-cleaner-python-code-in-2025-bca83d72549e>
 
 
 
@@ -291,6 +291,8 @@ scheduler.run()
 ## Dunder methods and descriptors 
 are two different Python language mechanisms, 
 although both are part of Python’s object model and are often used together internally.
+
+<https://www.thepythoncodingstack.com/p/do-you-get-it-now-getitem-getattr-getattribute-get>
 
 ### 1. Dunder methods (`__something__`)
 
