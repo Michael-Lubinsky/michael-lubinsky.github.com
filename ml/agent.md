@@ -18,6 +18,8 @@
 
 <https://habr.com/ru/articles/1032932/> 
 
+<https://habr.com/ru/articles/1035300/> метрики характерные для почти любой агентской системы
+
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
 <https://code.claude.com/docs/ru/hooks>
