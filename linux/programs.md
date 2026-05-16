@@ -9,6 +9,7 @@ Visidata <https://www.visidata.org/>
 
 <https://panwriter.com/> Markdown editor  
 <https://github.com/omibranch/qnote> Markdown tool viewer
+<https://github.com/Michaelliv/markit> Convert everything to markdown
 
 <https://github.com/gurgeous/tennis>  CLI for printing stylish CSV tables in your terminal.
 ```
