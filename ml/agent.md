@@ -12,6 +12,8 @@
 
 <https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
 
+<https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
+
 <https://github.com/defendend/Claude-ast-index-search>
 
 <https://habr.com/ru/articles/1031440/>
