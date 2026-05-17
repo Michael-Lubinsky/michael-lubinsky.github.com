@@ -15,7 +15,9 @@
 
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
 
+## Stochasic calculus
 
+<https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
 
 ### Linear Algebra
