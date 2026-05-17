@@ -8,17 +8,23 @@
 Летняя школа «Современная математика» имени Виталия Арнольда, 2024
  <https://www.mathnet.ru/conf2462>
 
-<https://www.youtube.com/watch?v=3fgZlpH0N_M> 
-Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
+## ТРИВИУМ АРНОЛЬДА
+<https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172
+<https://www.youtube.com/watch?v=3fgZlpH0N_M>  Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
 
+## Zorich
 <https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1
-
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
-
+ 
+ 
 ## Stochasic calculus
 
 <https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
+
+<https://synset.com/pdf/ito.pdf> Stochastic world. Stepanov  (in russian)
+
+<https://news.ycombinator.com/item?id=45116849> Random walk
 
 ### Linear Algebra
 
@@ -30,44 +36,6 @@ Fact of Linear Algebra: matrices are graphs, and graphs are matrices.
  <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for Computer Vision,
 Robotics, and Machine Learning
 
-Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
-
-<https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich
-
-<https://longformmath.com/proofs-book/>
-
-<https://markelic.de/>
-
-<https://www.cs.mcgill.ca/~akroit/math/>
-
-<https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random Matrix Theory
-
-<https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>
-
-<<https://www.cantorsparadise.com>
-
-<https://medium.com/tag/mathematics>
-
-ЭПОХАЛЬНЫЙ РАЗБОР АНАЛИЗА ЗОРИЧА [ЧАСТЬ 1]
-<https://www.youtube.com/watch?v=jcdPKocIzFA>
-
-<https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
-Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
-
-Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
-
-<https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
-
-<https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
-
-<https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
-
-<https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work>
-
-<https://www.youtube.com/watch?v=YYfrAk0KZGg> Advanced Mathematical Courses in Virtual Setup
-
-<https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory
-
 <https://www.axler.net/DwD.pdf> Linear Algebra without determinants
 
 Суть линейной алгебры:
@@ -75,12 +43,78 @@ Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 
 <https://link.springer.com/book/10.1007/978-981-99-2951-1> Linear Algebra with Python
 
+
 <https://medium.com/@tomkob99_89317/eigenvalues-and-eigenvectors-how-they-really-emerge-c8fc0978fe1f>
+
+<https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
+
+Matrix
+<https://habr.com/ru/articles/949084/>
+
+<https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
+
+<https://www2.math.upenn.edu/~ghrist/preprints/LAEF.pdf>  Linear Algebra
+
+<https://habr.com/ru/articles/949084/> Matrix theory
+
+<https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random Matrix Theory
+
+## Lie 
+<https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory
+<https://news.ycombinator.com/item?id=46138632> Lie Groups 
+Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
+
+## Fourie 
+<https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>
+<https://news.ycombinator.com/item?id=45132810> Fourier Transform
+
+<https://www.youtube.com/watch?v=-j8PzkZ70Lg>  Laplace Transform
+
+## Probability and Stats
+<https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
+
+<https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
+
+<https://samwho.dev/reservoir-sampling/> <https://news.ycombinator.com/item?id=43928315>  reservoir sampling
+
+<https://www.mathpages.com/home/iprobabi.htm>
+
+## Other topics 
+Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
+
+<https://longformmath.com/proofs-book/>
+
+<https://markelic.de/>
+
+<https://www.cs.mcgill.ca/~akroit/math/>
+
+
+<<https://www.cantorsparadise.com>
+
+<https://medium.com/tag/mathematics>
+
+
+<https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
+Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
+
+
+
+<https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
+
+
+
+<https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
+
+<https://blog.wolfram.com/2026/01/13/two-new-wolfram-book-series-to-advance-computational-work>
+
+<https://www.youtube.com/watch?v=YYfrAk0KZGg> Advanced Mathematical Courses in Virtual Setup
+
+
 
 <https://link.springer.com/book/10.1007/978-3-031-46270-2> Exploring University Mathematics with Python
 
-<https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
-<https://news.ycombinator.com/item?id=46138632> Lie Groups  
+
+ 
 <https://toomanydigits.online/index.html> Вычислительная математика  
 <https://www.kvant.digital/> Kvant
 
@@ -92,14 +126,13 @@ Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 
 <https://en.wikipedia.org/wiki/Jensen%27s_inequality>
 
-Matrix
-<https://habr.com/ru/articles/949084/>
+
 
 ###  Lebegue integration
 
-https://www.youtube.com/watch?v=y7rTbl__fp0
+<https://www.youtube.com/watch?v=y7rTbl__fp0>
 
-https://www.youtube.com/watch?v=Fb2ei6lD-d8&t=381s
+<https://www.youtube.com/watch?v=Fb2ei6lD-d8>
 
 ### Koopman Operator
 <https://www.youtube.com/watch?v=bPvLRppwB9o>
@@ -109,21 +142,10 @@ https://www.youtube.com/watch?v=Fb2ei6lD-d8&t=381s
 
 <https://habr.com/ru/articles/953338/>
 
-<https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
 
-<https://www2.math.upenn.edu/~ghrist/preprints/LAEF.pdf>  Linear Algebra
 
 <https://algorithmsbook.com/files/dm.pdf> Algos for Decision Making
 
-<https://synset.com/pdf/ito.pdf> Stochastic world. Stepanov  (in russian)
-
-<https://news.ycombinator.com/item?id=45116849> Random walk
- 
-<https://news.ycombinator.com/item?id=45132810> Fourier Transform
-
-<https://www.youtube.com/watch?v=-j8PzkZ70Lg>  Laplace Transform
-
-<https://habr.com/ru/articles/949084/> Matrix theory
 
 <https://vk.com/mathhedgehog>
 
@@ -151,18 +173,14 @@ Answer: All three should move in the same direction - clockwise or anticlockwise
 ### Two eggs
 https://medium.com/puzzle-sphere/egg-dropping-interview-recursive-coding-optimization-puzzle-google-amazon-microsoft-dynamic-programming-d7572abb1f1b
 
+
+
+
 ## Links
-
-<https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
-
-<https://samwho.dev/reservoir-sampling/> <https://news.ycombinator.com/item?id=43928315>  reservoir sampling
-
-<https://www.mathpages.com/home/iprobabi.htm>
-
 <https://cain.math.gatech.edu/textbooks/onlinebooks.html>
 
 <https://no-idle.github.io/conspecta/>
 
 Complex Analysis and physical applications: 
-https://www.youtube.com/watch?v=0Won5Vs_65E
+<https://www.youtube.com/watch?v=0Won5Vs_65E>
 
