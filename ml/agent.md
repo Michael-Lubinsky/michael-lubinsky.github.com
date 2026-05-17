@@ -12,10 +12,6 @@
 
 <https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
 
-<https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
-
-<https://github.com/defendend/Claude-ast-index-search>
-
 <https://habr.com/ru/articles/1031440/>
 
 <https://habr.com/ru/articles/1033136/>
@@ -25,6 +21,14 @@
 <https://habr.com/ru/articles/1032932/> 
 
 <https://habr.com/ru/articles/1035300/> метрики характерные для почти любой агентской системы
+
+## Code search - better then grep
+
+How does it compare to context-mode or serina that are both well established now?
+
+<https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
+
+<https://github.com/defendend/Claude-ast-index-search>
 
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
