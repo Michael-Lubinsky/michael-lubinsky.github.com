@@ -9,11 +9,11 @@
  <https://www.mathnet.ru/conf2462>
 
 ## ТРИВИУМ АРНОЛЬДА
-<https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172
+<https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172   
 <https://www.youtube.com/watch?v=3fgZlpH0N_M>  Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
 
 ## Zorich
-<https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1
+<https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1  
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
  
  
@@ -48,8 +48,7 @@ Robotics, and Machine Learning
 
 <https://www.cis.upenn.edu/~cis5150/linalg-I-f.pdf> Linear Algebra for ML  
 
-Matrix
-<https://habr.com/ru/articles/949084/>
+Matrix <https://habr.com/ru/articles/949084/>
 
 <https://personal.math.ubc.ca/~tbjw/ila/index.html> Interactive Linear Algebra
 
@@ -60,13 +59,13 @@ Matrix
 <https://www.youtube.com/watch?v=Y4mnlIvVJEs> Random Matrix Theory
 
 ## Lie 
-<https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory
-<https://news.ycombinator.com/item?id=46138632> Lie Groups 
+<https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory  
+<https://news.ycombinator.com/item?id=46138632> Lie Groups   
 Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 
 ## Fourie 
-<https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>
-<https://news.ycombinator.com/item?id=45132810> Fourier Transform
+<https://www.cantorsparadise.com/infinite-secrets-of-the-fourier-transform-b8928e8ce2cb>  
+<https://news.ycombinator.com/item?id=45132810> Fourier Transform  
 
 <https://www.youtube.com/watch?v=-j8PzkZ70Lg>  Laplace Transform
 
