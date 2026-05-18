@@ -1,4 +1,5 @@
 ### Physics
+<https://zenodo.org/communities/physicsinrussian>
 
 <https://news.ycombinator.com/item?id=48096842>
 
