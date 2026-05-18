@@ -2,6 +2,8 @@
 
 <https://www.mdpi.com/>
 
+<https://old.mccme.ru/dubna/>
+
 Летняя школа "Современная математика" имени Виталия Арнольда, г. Дубна   2023 г. 
  <https://www.youtube.com/watch?v=9iSxJJ_Htww&list=PLUbD59ZHv1GTva-a5LplKQA4slq9Bwlmj&index=27>
 
