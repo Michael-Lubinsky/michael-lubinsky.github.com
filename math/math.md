@@ -86,6 +86,8 @@ Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 ## Other topics 
 Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
+<https://www.youtube.com/@QuantiaYT>
+
 <https://longformmath.com/proofs-book/>
 
 <https://markelic.de/>
