@@ -22,7 +22,7 @@
 <https://www.youtube.com/watch?v=RMFt-9PzF54&list=PLTcPERDxgHxm7TzJ9W92S-l5pGRuhZz10>
 
  
-## Stochasic calculus
+## Stochastic calculus
 
 <https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
