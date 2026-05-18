@@ -15,7 +15,12 @@
 ## Zorich
 <https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1  
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
- 
+
+## Riemann Zeta function
+
+<https://www.youtube.com/watch?v=pyEGbhwYOeo> 
+<https://www.youtube.com/watch?v=RMFt-9PzF54&list=PLTcPERDxgHxm7TzJ9W92S-l5pGRuhZz10>
+
  
 ## Stochasic calculus
 
