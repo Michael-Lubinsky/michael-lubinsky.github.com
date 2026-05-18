@@ -26,7 +26,13 @@
 
 ## Code search - better then grep
 
-How does it compare to context-mode or serina that are both well established now?
+https://maki.sh/
+
+https://github.com/lightonai/next-plaid/tree/main/colgrep
+
+https://github.com/DeusData/codebase-memory-mcp
+
+How does it compare to _context-mode_ or _serina_ that are both well established now?
 
 <https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
 
