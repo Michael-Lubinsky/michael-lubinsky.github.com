@@ -2,7 +2,9 @@
 
 <https://github.com/DrCatHicks/learning-opportunities>
 
-<https://www.youtube.com/watch?v=VctYHtCap3o>
+<https://www.youtube.com/watch?v=VctYHtCap3o> Agents Week 2026 (ru)
+
+<https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week 2026 (ru)
 
 <https://habr.com/ru/companies/netologyru/articles/1034130/>
 
