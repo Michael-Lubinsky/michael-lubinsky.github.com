@@ -422,6 +422,7 @@ openclaw cron add --name "Утро" --cron "0 9 * * *" \
 <https://habr.com/ru/articles/981624/> How to use ChatGPT effectively  
 
 ## Codex from OpenAI
+<https://habr.com/ru/articles/1036396/>  
 <https://habr.com/ru/companies/ods/articles/1001012/>
 Claude Code написан на TypeScript.  
 Codex CLI написан на Rust. 
