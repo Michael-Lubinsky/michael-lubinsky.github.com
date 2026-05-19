@@ -1,5 +1,9 @@
 ### LLM 
 
+<https://simonwillison.net/2026/May/19/5-minute-llms/>
+
+<https://news.ycombinator.com/item?id=48188183>
+
 <https://www.llm-visualized.com/>
 
 <https://www.youtube.com/@jbhuang0604>
