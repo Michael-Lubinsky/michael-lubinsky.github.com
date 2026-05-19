@@ -2,9 +2,7 @@
 
 <https://github.com/DrCatHicks/learning-opportunities>
 
-<https://www.youtube.com/watch?v=VctYHtCap3o> Agents Week 2026 (ru)
-
-
+<https://www.youtube.com/watch?v=VctYHtCap3o>  Agents Week 2026 | Лекция 1.2 2026 (ru)
 
 <https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week | Лекция 4 | 2026 (ru)
 
