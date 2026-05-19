@@ -6,7 +6,7 @@
 
 
 
-<https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week 2026 (ru)
+<https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week | Лекция 4 | 2026 (ru)
 
 <https://www.youtube.com/watch?v=sNemTIFlz08> Agents Week 2026 | Лекция 5.1 
 
