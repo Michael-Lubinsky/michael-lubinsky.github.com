@@ -50,6 +50,8 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 ## Quantization
 
+<https://habr.com/ru/articles/975468/> 
+
 <https://ngrok.com/blog/quantization>
 
 <https://habr.com/ru/articles/1015510/>
