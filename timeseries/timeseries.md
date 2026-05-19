@@ -52,9 +52,11 @@ https://python.plainenglish.io/feature-engineering-for-time-series-forecasting-i
 
 https://habr.com/ru/articles/899408/  Gaps in TS
 
-### Outlier detections
+### Outliers and Anomaly  Detections
 
-https://habr.com/ru/companies/otus/articles/918832/
+<https://habr.com/ru/companies/yandex/articles/1035520/>
+
+<https://habr.com/ru/companies/otus/articles/918832/>
 
 https://medium.com/top-python-libraries/how-to-identify-outliers-of-your-data-with-python-codes-e9e53e912f8c
 
