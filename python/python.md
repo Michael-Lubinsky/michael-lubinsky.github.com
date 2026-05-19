@@ -402,6 +402,9 @@ from collections import defaultdict
 groups = defaultdict(list)
 groups["fruits"].append("apple")
 ```
+
+## Map, Filter, Any
+<https://habr.com/ru/articles/1036696/>
 ### map
 ```python
 colors = ["red", "blue", "yellow", "gray", "green"]
