@@ -10,6 +10,8 @@
 
 <https://www.youtube.com/@razinkov>
 
+<https://deeprevision.github.io/posts/001-transformer/>
+
 <https://poloclub.github.io/transformer-explainer/>
 
 <https://www.youtube.com/watch?v=KCEEfH1RQuA>
