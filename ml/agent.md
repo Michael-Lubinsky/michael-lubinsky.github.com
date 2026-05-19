@@ -4,7 +4,13 @@
 
 <https://www.youtube.com/watch?v=VctYHtCap3o> Agents Week 2026 (ru)
 
+
+
 <https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week 2026 (ru)
+
+<https://www.youtube.com/watch?v=sNemTIFlz08> Agents Week 2026 | Лекция 5.1 
+
+<https://www.youtube.com/watch?v=UxgjgvI_wKY> Agents Week 2026 | Лекция 5.2 
 
 <https://habr.com/ru/companies/netologyru/articles/1034130/>
 
