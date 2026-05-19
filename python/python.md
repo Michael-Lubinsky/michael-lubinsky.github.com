@@ -403,7 +403,7 @@ groups = defaultdict(list)
 groups["fruits"].append("apple")
 ```
 
-## Map, Filter, Any
+## map, filter, reduce, any, all, zip, enumerate 
 <https://habr.com/ru/articles/1036696/>
 ### map
 ```python
