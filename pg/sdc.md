@@ -243,3 +243,7 @@ INSERT (customer_id, name, current_address, previous_address, start_date, end_da
 VALUES (source.customer_id, source.name, source.address, NULL, current_date(), NULL);
  ```
 <https://github.com/bartosz25/data-engineering-design-patterns-book/tree/master/chapter-05/01-data-enrichment/01-static-joiner-data-at-rest>
+
+<https://habr.com/ru/companies/X5Tech/articles/911716/>
+
+<https://habr.com/ru/companies/X5Tech/articles/1034656/>
