@@ -455,7 +455,7 @@ LEFT JOIN employees t2 ON t1.id + 1 = t2.id
 WHERE t2.id IS NULL;
 ```
 ## Window functions
-
+<https://habr.com/ru/companies/otus/articles/1036212/>
 <https://habr.com/ru/articles/1009552/>  
 <https://sqltest.online/ru/lesson/window-functions/window-frames>
 <https://medium.com/@Rohan_Dutt/10-hard-window-join-problems-in-sql-and-how-to-solve-them-f94d1f27b573>
