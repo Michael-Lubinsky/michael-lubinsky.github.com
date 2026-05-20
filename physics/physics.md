@@ -20,7 +20,7 @@
 
 <https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ>
 
-Hall Effect, Quantum anomalous Hall effecy
+Hall Effect, Quantum anomalous Hall effect
 <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
 
 
@@ -39,9 +39,11 @@ Quantization of Angular Momentum - Explained Visually
 
 ### Spin 
 
-<https://ufn.ru/ru/articles/2026/1/f/>
+<https://ufn.ru/ufn67/ufn67_9/Russian/r679f.pdf>  <https://ufn.ru/ru/articles/1967/9/f/> Открытие спина электрона
 
-<https://arxiv.org/pdf/2604.00231>
+<https://ufn.ru/ru/articles/2026/1/f/> Spin 1/2
+
+<https://arxiv.org/pdf/2604.00231> 100 years of spin
 
 <https://ufn.ru/ru/articles/2008/12/f/> Spintronics Nobel lecture
 
@@ -88,22 +90,22 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 
 <https://www.youtube.com/watch?v=abuSn-A0dRQ>
 
-https://faculty.washington.edu/seattle/physics441/441index.html
+<https://faculty.washington.edu/seattle/physics441/441index.html>
 
-https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf
+<https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf>
 
-https://arxiv.org/pdf/2602.04484  Fermi statistics origin
+<https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
-https://www.youtube.com/watch?v=CByk-raQ3Lg  Problem Solving in QM - Part I 
+<https://www.youtube.com/watch?v=CByk-raQ3Lg>  Problem Solving in QM - Part I 
 
-https://www.youtube.com/watch?v=3WvrO1kb_zM  Problem Solving in QM - Part II 
+<https://www.youtube.com/watch?v=3WvrO1kb_zM>  Problem Solving in QM - Part II 
 
-https://arxiv.org/abs/1602.04182 Feynman Diagrams  
+<https://arxiv.org/abs/1602.04182> Feynman Diagrams  
 
-http://cleonis.nl/
+<http://cleonis.nl/>
 
 Density matrix in QM
-https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d>
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html
 
@@ -126,7 +128,7 @@ https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariat
 <https://habr.com/ru/articles/474638/> Суперпозиция 
 
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
-https://www.youtube.com/watch?v=MqhnyTEaNZ8
+<https://www.youtube.com/watch?v=MqhnyTEaNZ8>
 
 Why sky is blue?
 https://explainers.blog/posts/why-is-the-sky-blue/
