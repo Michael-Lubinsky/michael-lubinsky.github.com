@@ -1,5 +1,7 @@
 ## ML Links
 
+<https://habr.com/ru/articles/1037066/>
+
 <https://habr.com/ru/articles/1037110/>
 
 <https://www.freecodecamp.org/news/learn-the-foundations-of-machine-learning-and-artificial-intelligence/>
