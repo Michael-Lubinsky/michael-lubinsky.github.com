@@ -64,6 +64,8 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
+<https://arxiv.org/pdf/quant-ph/0511002> Indistinguishable Particles in Quantum Mechanics
+
 <https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
 
 <https://www.youtube.com/playlist?list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
@@ -107,13 +109,13 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 Density matrix in QM
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d>
 
-https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html
+<https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html>
 
 https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/
 
 http://cleonis.nl/physics/phys256/physics.php
 
-https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf
+<https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf>
 
 <https://www.mathpages.com/home/iphysics.htm>
 
@@ -131,7 +133,7 @@ https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariat
 <https://www.youtube.com/watch?v=MqhnyTEaNZ8>
 
 Why sky is blue?
-https://explainers.blog/posts/why-is-the-sky-blue/
+<https://explainers.blog/posts/why-is-the-sky-blue/>
 
 https://news.ycombinator.com/item?id=46946401
 
