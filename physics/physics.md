@@ -64,6 +64,8 @@ Vitaly Vanchurin
 
 <https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
 
+<https://www.youtube.com/playlist?list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
+
 <https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
 
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
