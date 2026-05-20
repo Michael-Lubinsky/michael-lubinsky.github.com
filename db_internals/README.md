@@ -1,5 +1,7 @@
 ## DB and System Internals
 
+<https://questdb.com/blog/window-join-parallel-vectorized/>
+
 <https://eatonphil.com/bookclub.html>
 
 <https://www.bitsxpages.com/p/frameworks-for-understanding-databases>
