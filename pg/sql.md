@@ -121,8 +121,27 @@ HAVING COUNT(*) > (
 ### Handling NULL in NOT IN close
 
 If the set of data inside the NOT IN subquery contains any values that have a NULL value, then the outer query returns no rows.
-To avoid this issue, add a check for NULL to the inner query:
+To avoid this issue, there are several ways 
+- add a check for NULL to the inner query or
+- use NOT EXISTS:
+- use LEFT JOIN
+
 ```sql
+
+SELECT e.name
+FROM employees e
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM employees sub
+    WHERE sub.manager_id = e.id
+);
+
+SELECT e.name
+FROM employees e
+LEFT JOIN employees sub ON sub.manager_id = e.id
+WHERE sub.id IS NULL;
+
+ 
 SELECT * FROM department
 WHERE department_id NOT IN (
     SELECT department_id
@@ -130,6 +149,7 @@ WHERE department_id NOT IN (
     WHERE department_id IS NOT NULL
 );
 ```
+<https://habr.com/ru/companies/otus/articles/1036198/>
 
 ### Handle NULL in aggregation using COALESCE
 ```sql
