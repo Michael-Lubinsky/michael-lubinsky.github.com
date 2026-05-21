@@ -72,6 +72,8 @@ Pauli’s Exclusion Principle — No two electrons can share the same quantum nu
 
 <https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
 
+<https://arxiv.org/pdf/1303.2137> Why Heisenberg Captures Nonlocality Better Than Schrödinger
+
 <https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> 
 Full Course on Quantum Mechanics - Introduction | Weinberg’s Lectures on Quantum Mechanics (ru)
 
