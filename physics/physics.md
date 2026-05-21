@@ -64,13 +64,21 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
+<https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
+
 <https://arxiv.org/pdf/quant-ph/0511002> Indistinguishable Particles in Quantum Mechanics
 
-<https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
-
-<https://www.youtube.com/playlist?list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL>
+Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. <https://arxiv.org/pdf/quant-ph/0511002.pdf>
 
 <https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
+
+<https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> 
+Full Course on Quantum Mechanics - Introduction | Weinberg’s Lectures on Quantum Mechanics (ru)
+
+<https://www.youtube.com/playlist?list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> Weinberg Lectures on QM
+
+
+
 
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
 
@@ -90,13 +98,13 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 
 <https://commons.library.stonybrook.edu/egp/>
 
-<https://www.youtube.com/watch?v=abuSn-A0dRQ>
+<https://www.youtube.com/watch?v=abuSn-A0dRQ> Физика с Сасскиндом
 
 <https://faculty.washington.edu/seattle/physics441/441index.html>
 
 <https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf>
 
-<https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
+
 
 <https://www.youtube.com/watch?v=CByk-raQ3Lg>  Problem Solving in QM - Part I 
 
