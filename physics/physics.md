@@ -16,9 +16,8 @@
 
 <https://www.youtube.com/@AbideByReason>
 
-<https://www.youtube.com/watch?v=xEyQwSV3swQ>
 
-<https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ>
+<https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ> Advanced Statistical Physics, LMU Munich, Summer Semester 2026
 
 Hall Effect, Quantum anomalous Hall effect
 <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
@@ -63,6 +62,8 @@ Vitaly Vanchurin
 <https://www.researchgate.net/publication/404659508_The_Self-Learning_Universe>
 
 ## Quantum Mechanics
+
+<https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
