@@ -74,7 +74,7 @@ https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a co
 
 ## Quantum Mechanics
 
-https://arxiv.org/pdf/2011.12671 Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
+<https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
@@ -82,7 +82,16 @@ https://arxiv.org/pdf/2011.12671 Sidney Coleman’s Dirac Lecture “Quantum Mec
 
 <https://arxiv.org/pdf/quant-ph/0511002> Indistinguishable Particles in Quantum Mechanics
 
-Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. <https://arxiv.org/pdf/quant-ph/0511002.pdf>
+### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
+<https://arxiv.org/pdf/quant-ph/0511002.pdf>
+<https://arxiv.org/pdf/1902.00499>  
+<https://arxiv.org/pdf/1311.5999>  The Pauli principle and magnetism  
+<https://arxiv.org/pdf/0904.2009> The Pauli exclusion principle and beyond  
+<https://arxiv.org/pdf/0802.0918>  
+
+<https://arxiv.org/pdf/quant-ph/9906046> Derivation of the Pauli exchange principle  
+<https://arxiv.org/pdf/quant-ph/0608141>  Useful entanglement from the Pauli principle
+
 
 https://arxiv.org/pdf/quant-ph/0605180 Lecture Notes in Quantum Mechanics Doron Cohen
 
