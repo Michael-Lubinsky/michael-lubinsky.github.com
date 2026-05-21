@@ -19,8 +19,10 @@
 
 <https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ> Advanced Statistical Physics, LMU Munich, Summer Semester 2026
 
-Hall Effect, Quantum anomalous Hall effect
+## Hall Effect, Quantum anomalous Hall effect
 <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
+
+https://arxiv.org/pdf/1606.06687
 
 
 <https://arxiv.org/abs/quant-ph/0212010> The hydrogen atom in electric and magnetic fields : Pauli's 1926 article
@@ -61,7 +63,18 @@ Classic Pendulum  <https://www.johndcook.com/blog/2026/04/24/nonlinear-pendulum/
 Vitaly Vanchurin
 <https://www.researchgate.net/publication/404659508_The_Self-Learning_Universe>
 
+
+## QFT
+
+https://arxiv.org/pdf/2207.02243 Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
+
+https://arxiv.org/pdf/2005.06355 Lectures: From quantum mechanics to the Standard Model
+
+https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
+
 ## Quantum Mechanics
+
+https://arxiv.org/pdf/2011.12671 Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
@@ -71,9 +84,25 @@ Vitaly Vanchurin
 
 Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. <https://arxiv.org/pdf/quant-ph/0511002.pdf>
 
+https://arxiv.org/pdf/quant-ph/0605180 Lecture Notes in Quantum Mechanics Doron Cohen
+
+<https://arxiv.org/pdf/2304.04247> Quantum Mechanics Lecture Notes. Selected Chapters S. Levit
+
+https://arxiv.org/pdf/1907.05786 Lectures on Quantum Mechanics for mathematicians A.I. Komech
+
+https://arxiv.org/pdf/1803.07098 “Thinking Quantum”: Lectures on Quantum Theory Barak Shoshany
+
+https://arxiv.org/pdf/quant-ph/0608140 Dyson ADVANCED QUANTUM MECHANICS Second Edition
+
+https://arxiv.org/pdf/math-ph/0505059 Lectures on Quantum Mechanics (nonlinear PDE point of view) A.I.Komech
+
 <https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
 
 <https://arxiv.org/pdf/1303.2137> Why Heisenberg Captures Nonlocality Better Than Schrödinger
+
+
+https://arxiv.org/pdf/1704.07260 Lecture Notes on Quantum Simulation
+
 
 <https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> 
 Full Course on Quantum Mechanics - Introduction | Weinberg’s Lectures on Quantum Mechanics (ru)
