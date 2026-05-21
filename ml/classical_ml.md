@@ -11,6 +11,8 @@ scikit-learn
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvYwERTJvDSNRMMN8bcdtzia>
 
+<https://habr.com/ru/articles/1037892/>
+
 <https://habr.com/ru/articles/804605/>
 
 <https://habr.com/ru/articles/926398/>
