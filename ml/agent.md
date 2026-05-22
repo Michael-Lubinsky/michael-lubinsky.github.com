@@ -30,7 +30,63 @@
 
 <https://habr.com/ru/articles/1035300/> метрики характерные для почти любой агентской системы
 
-## Code search - better then grep
+
+### which skills, tools and MCP are available in this session?
+
+
+###  Skills (via /skill-name or Skill tool)
+```
+  ┌──────────────────────────┬─────────────────────────────────────────────────────────┐
+  │          Skill           │                         Purpose                         │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ update-config            │ Configure Claude Code settings.json, hooks, permissions │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ keybindings-help         │ Customize keyboard shortcuts                            │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ simplify                 │ Review changed code for quality/efficiency              │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ fewer-permission-prompts │ Add allowlist to reduce permission prompts              │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ loop                     │ Run a prompt on a recurring interval                    │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ schedule                 │ Schedule recurring remote agents (cron jobs)            │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ claude-api               │ Build/debug Anthropic SDK apps                          │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ init                     │ Initialize CLAUDE.md                                    │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ review                   │ Review a pull request                                   │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ security-review          │ Security review of pending changes                      │
+  └──────────────────────────┴─────────────────────────────────────────────────────────┘
+```
+### Tools (built-in)
+
+  File & Shell: Read, Edit, Write, Bash
+
+  Agents: Agent (with subtypes: claude, claude-code-guide, Explore, general-purpose, Plan,
+  statusline-setup)
+
+  UI/Flow: AskUserQuestion, Skill, ToolSearch
+
+  #### Deferred (require ToolSearch to load schema before use):
+  CronCreate/Delete/List, EnterPlanMode/ExitPlanMode, EnterWorktree/ExitWorktree, Monitor,
+  NotebookEdit, PushNotification, RemoteTrigger, TaskCreate/Get/List/Output/Stop/Update, WebFetch,
+  WebSearch
+
+  Misc: ShareOnboardingGuide, ScheduleWakeup
+
+ ### MCP Servers
+
+  Three Google integrations (all require OAuth authentication):   
+  - mcp__claude_ai_Gmail — Gmail read/send
+  - mcp__claude_ai_Google_Calendar — Calendar access
+  - mcp__claude_ai_Google_Drive — Drive file access
+
+
+
+
+## Code search - better then grep, saves tokens
 
 https://maki.sh/
 
