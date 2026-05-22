@@ -173,7 +173,7 @@ Free book online
 
 <https://github.com/BerriAI/litellm>
 
-## Agents orcerstration via md files
+## Agents orcestration via md files
 <https://habr.com/ru/articles/1009534/>
 
 The 100 line AI agent that solves GitHub issues or helps you in your command line.
@@ -204,6 +204,8 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 <https://habr.com/ru/articles/951428/> Что такое AI-агент и из каких основных частей он состоит
 
 ### Spec Driven Development, OpenSpec
+
+<https://habr.com/ru/companies/yadro/articles/1038084/>
 
 <https://habr.com/ru/companies/yadro/articles/1007480/>
 
