@@ -1,12 +1,14 @@
 ## QM Software
-1-D
-https://blog.gwlab.page/solving-1-d-schrodinger-equation-in-python-dcb3518ce454
 
+<https://www.falstad.com/mathphysics.html>
+
+1-D
+<https://blog.gwlab.page/solving-1-d-schrodinger-equation-in-python-dcb3518ce454>
 
 2-D
-https://paul-g2.github.io/SchrodingerSandbox/
-https://github.com/Paul-G2/SchrodingerSandbox
-https://paul-g2.github.io/SchrodingerSandbox/docs/algorithm.html
+<https://paul-g2.github.io/SchrodingerSandbox/>
+<https://github.com/Paul-G2/SchrodingerSandbox>
+<https://paul-g2.github.io/SchrodingerSandbox/docs/algorithm.html>
 
 https://www.youtube.com/watch?v=E8N1yskPN28
 
@@ -21,17 +23,17 @@ Time-Dependent Schrodinger Equation in Python: Two Different Techniques
 
 https://www.youtube.com/watch?v=DF1SnjXZcbM  2-D Shrodinger
 
-https://marl0ny.github.io/split-operator-simulations/js/2d.html
+<https://marl0ny.github.io/split-operator-simulations/js/2d.html>
 
-https://github.com/marl0ny/split-operator-simulations/tree/new-web-version/js
+<https://github.com/marl0ny/split-operator-simulations/tree/new-web-version/js>
 
 https://github.com/euphoricrhino/sakurai-notes
 
-https://github.com/osscar-org/quantum-mechanics
+<https://github.com/osscar-org/quantum-mechanics>
 
-https://github.com/mholtrop/QMPython
+<https://github.com/mholtrop/QMPython>
 
-https://github.com/mkuznets/quantum-mechanics-lectures
+<https://github.com/mkuznets/quantum-mechanics-lectures>
 
 https://github.com/kirsion/Quantum-Mechanics-Mcintyre-solutions
 
