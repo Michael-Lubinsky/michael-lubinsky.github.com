@@ -4,7 +4,10 @@
 
 <https://phys.org/>
 
+<https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
+
 <https://scholar.google.com/>
+
 
 <https://www.sciencejournals.ru/catalog/rubrics/>
 
@@ -37,7 +40,7 @@ https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a co
 
 <https://news.ycombinator.com/item?id=48096842>
 
-<https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
+
 
 <https://www.anthropic.com/research/vibe-physics>
 
@@ -53,7 +56,7 @@ https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a co
 ## Hall Effect, Quantum anomalous Hall effect
 <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.96.064106>
 
-https://arxiv.org/pdf/1606.06687
+<https://arxiv.org/pdf/1606.06687>
 
 
 <https://arxiv.org/abs/quant-ph/0212010> The hydrogen atom in electric and magnetic fields : Pauli's 1926 article
