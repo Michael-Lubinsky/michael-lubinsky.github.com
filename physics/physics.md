@@ -6,6 +6,14 @@
 
 <https://scholar.google.com/>
 
+## QFT
+
+https://arxiv.org/pdf/2207.02243 Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
+
+https://arxiv.org/pdf/2005.06355 Lectures: From quantum mechanics to the Standard Model
+
+https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
+
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
 Том 1:
@@ -16,6 +24,12 @@
 До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
 Промокод: YXFCQXX7VQHXX
 
+Ахмедов Э.Т. - Элементы КТП для математиков - 1.
+<https://www.youtube.com/watch?v=MqhnyTEaNZ8>
+
+<https://teach-in.ru/course/quantum-electrodynamics>  QED
+
+---
 
 <https://zenodo.org/communities/physicsinrussian>
 
@@ -79,13 +93,7 @@ Vitaly Vanchurin
 <https://www.researchgate.net/publication/404659508_The_Self-Learning_Universe>
 
 
-## QFT
 
-https://arxiv.org/pdf/2207.02243 Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
-
-https://arxiv.org/pdf/2005.06355 Lectures: From quantum mechanics to the Standard Model
-
-https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
 
 ## Quantum Mechanics
 
@@ -193,8 +201,6 @@ http://cleonis.nl/physics/phys256/physics.php
 
 <https://habr.com/ru/articles/474638/> Суперпозиция 
 
-Ахмедов Э.Т. - Элементы КТП для математиков - 1.
-<https://www.youtube.com/watch?v=MqhnyTEaNZ8>
 
 Why sky is blue?
 <https://explainers.blog/posts/why-is-the-sky-blue/>
@@ -217,7 +223,7 @@ https://habr.com/ru/articles/959852/
  Geometric Algebra: 
 https://habr.com/ru/search/?target_type=posts&order=relevance&q=%5B%D0%B3%D0%B5%D0%BE%D0%BC%D0%B5%D1%82%D1%80%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0%5D
 
-https://teach-in.ru/course/quantum-electrodynamics  QED
+
 
 https://habr.com/ru/articles/965372/ QM
 
