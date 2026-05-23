@@ -6,6 +6,8 @@
 
 <https://scholar.google.com/>
 
+<https://www.sciencejournals.ru/catalog/rubrics/>
+
 ## QFT
 
 https://arxiv.org/pdf/2207.02243 Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
@@ -104,6 +106,9 @@ Vitaly Vanchurin
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
 <https://arxiv.org/pdf/quant-ph/0511002> Indistinguishable Particles in Quantum Mechanics
+
+
+<https://habr.com/ru/articles/965372/> QM
 
 ### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
 <https://arxiv.org/pdf/quant-ph/0511002.pdf>
@@ -225,9 +230,6 @@ https://habr.com/ru/search/?target_type=posts&order=relevance&q=%5B%D0%B3%D0%B5%
 
 
 
-https://habr.com/ru/articles/965372/ QM
-
-https://www.sciencejournals.ru/catalog/rubrics/
 
 В.В. Бражкин « Почему статистическая механика «работает» в конденсированных средах?» УФН, 191 No 10(2021) 1107
 
