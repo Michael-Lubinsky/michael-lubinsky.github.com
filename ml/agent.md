@@ -89,11 +89,13 @@
 
 ## Code search - better then grep, saves tokens
 
-https://maki.sh/
+<https://habr.com/ru/articles/1038474/> CodeGraph
 
-https://github.com/lightonai/next-plaid/tree/main/colgrep
+<https://maki.sh/>
 
-https://github.com/DeusData/codebase-memory-mcp
+<https://github.com/lightonai/next-plaid/tree/main/colgrep>
+
+<https://github.com/DeusData/codebase-memory-mcp>
 
 How does it compare to _context-mode_ or _serina_ that are both well established now?
 
