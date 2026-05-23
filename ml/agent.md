@@ -91,6 +91,8 @@
 
 <https://habr.com/ru/articles/1038474/> CodeGraph
 
+<https://habr.com/ru/articles/1031878/> SocratiCode
+
 <https://maki.sh/>
 
 <https://github.com/lightonai/next-plaid/tree/main/colgrep>
