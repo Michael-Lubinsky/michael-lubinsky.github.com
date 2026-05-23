@@ -1,4 +1,11 @@
 ### Physics
+
+<https://en.wikipedia.org/wiki/List_of_open-access_journals>
+
+<https://phys.org/>
+
+<https://scholar.google.com/>
+
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
 Том 1:
