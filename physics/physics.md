@@ -1,6 +1,14 @@
 ### Physics
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
+Том 1:
+<https://play.google.com/store/books/details?id=uLXTEQAAQBAJ&hl=en_US> 
+
+Том 2: https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US 
+ 
+До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
+Промокод: YXFCQXX7VQHXX
+
 
 <https://zenodo.org/communities/physicsinrussian>
 
