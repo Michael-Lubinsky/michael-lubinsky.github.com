@@ -1,6 +1,6 @@
 ### Physics
 
-<https://qutip.org/>
+<https://qutip.org/> Python and QM
 
 <https://en.wikipedia.org/wiki/List_of_open-access_journals>
 
@@ -12,6 +12,8 @@
 
 
 <https://www.sciencejournals.ru/catalog/rubrics/>
+
+<https://habr.com/ru/articles/1038576/> эволюция, биология, геном, ландшафт приспособленности
 
 ## QFT
 
