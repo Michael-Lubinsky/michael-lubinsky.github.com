@@ -26,6 +26,9 @@
  
 ## Stochastic calculus
 
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvbf7JvGVSlB9Jgts4VNNwS-> MPTI
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvaBTsYELeTKY76rhcweh1Ly> MPTI
+
 <https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
 
