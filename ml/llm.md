@@ -1,5 +1,9 @@
 ### LLM 
 
+Умножаем матрицы в библиотеке для LLM-расчётов • C • Live coding
+<https://www.youtube.com/watch?v=gvFgDEq0cok>
+Olga Pavlova
+
 <https://simonwillison.net/2026/May/19/5-minute-llms/>
 
 <https://news.ycombinator.com/item?id=48188183>
