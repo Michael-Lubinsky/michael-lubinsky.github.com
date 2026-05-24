@@ -21,8 +21,10 @@ https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a co
 
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
+
 Том 1:
 <https://play.google.com/store/books/details?id=uLXTEQAAQBAJ&hl=en_US> 
+<https://play.google.com/books/reader?id=uLXTEQAAQBAJ&pg=GBS.PA2&hl=en_US>
 
 Том 2: https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US 
  
