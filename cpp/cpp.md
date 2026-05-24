@@ -2,6 +2,8 @@
 
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
+<https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
+
 <https://awesomecpp.com/>
 
 <https://leanpub.com/cppinterview>
