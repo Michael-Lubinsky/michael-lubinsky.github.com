@@ -1,5 +1,7 @@
 ### Physics
 
+<https://qutip.org/>
+
 <https://en.wikipedia.org/wiki/List_of_open-access_journals>
 
 <https://phys.org/>
