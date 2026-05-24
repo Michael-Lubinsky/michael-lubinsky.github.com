@@ -2,6 +2,9 @@
 
 <https://mlbook.dataschool.io/>
 
+Precision, Recall, F-score, ROC-AUC
+<https://habr.com/ru/articles/1038730/>
+
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
