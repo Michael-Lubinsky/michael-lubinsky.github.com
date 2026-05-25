@@ -54,10 +54,7 @@ This is a classic **rejection sampling** problem.
 Call `rand7()` twice:
 
 $$
-\begin{aligned}
-\text{num} &= (\operatorname{rand7}() - 1)\times 7 + \operatorname{rand7}() \\
-           &= (a - 1)\cdot 7 + b
-\end{aligned}
+num = (rand7() - 1) \times 7 + rand7()
 $$
 
 $$
