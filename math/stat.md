@@ -40,9 +40,9 @@ https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
 ## **Rejection sampling** 
-we have a function rand7() that generates a uniform random integer in the range [1,7][1, 7].
+we have a function rand7() that generates a uniform random integer in the range [1,7].
 
-Write a function rand10() that generates a uniform random integer in the range [1,10][1, 10].
+Write a function rand10() that generates a uniform random integer in the range [1,10].
 This is a classic **rejection sampling** problem.
 
 ---
@@ -53,11 +53,11 @@ This is a classic **rejection sampling** problem.
 
 Call `rand7()` twice:
 
-[
+$$
 \text{num} = (rand7() - 1) \times 7 + rand7()
-]
 
 num = (a-1)\cdot 7 + b
+$$
 
 This gives a **uniform integer in [1..49]**.
 
