@@ -13,6 +13,7 @@
 Data modeling
 <https://medium.com/projectpro/4-advanced-data-modelling-techniques-every-data-engineer-must-learn-1113bcf7f5e9>
 
+<https://medium.com/@Rohan_Dutt/10-sql-patterns-for-capturing-variance-that-averages-completely-hide-b8bed145f53c>
 
 ### COUNT_IF
 
