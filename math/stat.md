@@ -76,22 +76,13 @@ We only want numbers divisible cleanly into 10 buckets.
 
 ####  Step 3: Map to [1..10]
 
-$$
-result = ((num - 1)\%10) + 1
-$$
-
+ 
 $$
 result = ((num - 1)\bmod 10) + 1
 $$
 
--- $$
--- \text{result} = (num - 1) \bmod 10 + 1
-
--- result = (num-1) \bmod 10 + 1
--- $$
----
-
-## ✅ Final Code (Python)
+ 
+###  Final Code For Rejection Sampling (Python)
 
 ```python
 import random
@@ -124,9 +115,9 @@ def rand10():
 ---
  
 
-## Biased Coin from Unbiased Coin
+## Make Biased Coin from Unbiased Coin
 
-Say we want to simulate a p-biased coin,  
+We want to simulate a p-biased coin,  
 that is, one which flips heads with probability p and tails with probability 1-p. 
 But all we have access to is a stream of uniformly random bits.  
 The result is that our algorithm will pick a result in an average of two bits, which might be kind of surprising.
@@ -141,23 +132,31 @@ def biased_coin(p):
     return 1 if flip == 1 else biased_coin(2 * p - 1)
   return flip
 ```
-It's easy to run some simulations and see that this works. 
-Here's why it works: generating an infinite sequence of random bits can be seen as generating a random binary fraction, which we then compare to p. It's a way to compute rand() < p.
+ 
+Here's why it works:   
+generating an infinite sequence of random bits can be seen as generating a random binary fraction,  
+which we then compare to p.   
+It's a way to compute rand() < p.
 
-But we actually only need a finite number of bits to determine whether that number is less than or greater than p.
+But we actually only need a finite number of bits   
+to determine whether that number is less than or greater than p.
 
 b_1 b_2 ...
 Where b_i contributes 2^-i to the final number if it's 1, and 0 otherwise.
 
-Imagine the interval [0, 1]. Each time we learn a new digit to this number, we're slicing in half the point in space where it could live. If the first digit is 1, we know that it lives in [0.5, 1], for example. And in that case, if we know p is less than 0.5, we know the number we generated is greater than p.
+Imagine the interval [0, 1]. Each time we learn a new digit to this number, we're slicing in half the point in space where it could live.   
+If the first digit is 1, we know that it lives in [0.5, 1], for example.   
+And in that case, if we know p is less than 0.5,   
+we know the number we generated is greater than p.
 
 
 <https://eyal-kazin.medium.com/>
 
-https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU
+Bayesian hierarchical time series with Prophet and PyMC3
+<https://www.youtube.com/watch?v=jo12CWZ00Lo&list=PLGVZCDnMOq0rLLb519Ah3EntCUAAHPnfU>
 
 РУКОВОДСТВО К РЕШЕНИЮ ЗАДАЧ ПО ТЕОРИИ ВЕРОЯТНОСТЕЙ И МАТЕМАТИЧЕСКОЙ СТАТИСТИКЕ
-https://elenagavrile.narod.ru/ms/gmurman.pdf
+<https://elenagavrile.narod.ru/ms/gmurman.pdf>
 
 
 
@@ -289,7 +288,6 @@ which means:
 a = c, b = d
 
 Thus: X and Y are identically distributed on the same interval [a,b].
-
  
 
 ### 2) Distribution of Z = X + Y
@@ -298,24 +296,25 @@ If X and Y are independent and uniform on the same interval [a,b], then:
 - The distribution of Z = X + Y will be the Irwin-Hall distribution of order 2  
   (the convolution of two uniform distributions).
 
-Specifically:
-- The support will be: [2a, 2b]  
+Specifically:  
+- The support will be: [2a, 2b]    
 - The probability density function (PDF) of Z will be:
-
+  
+```
 f_Z(z) =
     (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b  
     (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b  
     0 ,                         otherwise  
-
+```
 ---
 
 ### 3) Properties of Z
 - Shape: Triangular distribution (tent shape).
-- Mean:
+- Mean:  
 E[Z] = E[X] + E[Y] = 2 * E[X] = 2 * mu
-- Variance:
+- Variance:  
 Var[Z] = Var[X] + Var[Y] = 2 * sigma^2
-- Standard deviation:
+- Standard deviation:  
 sigma_Z = sqrt(2) * sigma
 
 
@@ -325,11 +324,12 @@ The distribution of X + Y where X, Y are independent uniform distributions
 with the same mean and standard deviation is a triangular distribution on [2a, 2b] with a peak at a + b.  
 
 The PDF is explicitly:
+```
 f_Z(z) =
     (z - 2a) / (b - a)^2 ,      for 2a <= z < a + b  
     (2b - z) / (b - a)^2 ,      for a + b <= z <= 2b  
     0 ,                         otherwise  
-
+```
 
 
 <https://habr.com/ru/articles/924770/>
@@ -346,14 +346,14 @@ f_Z(z) =
 #### Gini index 
 <https://medium.com/data-science-collective/what-the-gini-index-really-tells-us-3624cf4189ac>
 
-### reservoir sampling
+### Reservoir Sampling
 
 <https://samwho.dev/reservoir-sampling/>
 
 #### Monte Carlo 
 <https://thenumb.at/Sampling/>
 
-### Stat rethinking
+### Stat Rethinking
 https://xcelab.net/rm/statistical-rethinking/  
 https://www.goodreads.com/book/show/26619686-statistical-rethinking  
 https://github.com/rmcelreath/stat_rethinking_2024
