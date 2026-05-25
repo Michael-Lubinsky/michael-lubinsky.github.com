@@ -49,7 +49,7 @@ This is a classic **rejection sampling** problem.
 
 ### Solution: Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
 
-### Step 1: Build a bigger uniform range
+#### Step 1: Build a bigger uniform range
 
 Call `rand7()` twice:
 
@@ -57,17 +57,12 @@ $$
 num = (rand7() - 1) \times 7 + rand7()
 $$
 
-$$
-\text{num} = (rand7() - 1) \times 7 + rand7()
-
-num = (a-1)\cdot 7 + b
-$$
 
 This gives a **uniform integer in [1..49]**.
 
 ---
 
-## 🔄 Step 2: Rejection sampling
+####  Step 2: Rejection sampling
 
 We only want numbers divisible cleanly into 10 buckets.
 
@@ -79,14 +74,17 @@ We only want numbers divisible cleanly into 10 buckets.
 
 ---
 
-## 🧮 Step 3: Map to [1..10]
+####  Step 3: Map to [1..10]
 
-[
-\text{result} = (num - 1) \bmod 10 + 1
-]
+$$
+result = ((num - 1)\%10) + 1
+$$
 
-result = (num-1) \bmod 10 + 1
+-- $$
+-- \text{result} = (num - 1) \bmod 10 + 1
 
+-- result = (num-1) \bmod 10 + 1
+-- $$
 ---
 
 ## ✅ Final Code (Python)
