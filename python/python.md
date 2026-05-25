@@ -267,6 +267,7 @@ for i, num in enumerate(numbers):
 print(f"Loop: {time.time() - start:.4f}s")
 ```
 ### Context manager
+<https://habr.com/ru/companies/otus/articles/1034686/>
 
 ```python
 class DatabaseConnection:  
