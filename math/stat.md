@@ -39,7 +39,7 @@ https://xcelab.net/rm/ Book: Statistical Rethinking by Richard McElreath
 https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
-## **rejection sampling** 
+## **Rejection sampling** 
 we have a function rand7() that generates a uniform random integer in the range [1,7][1, 7].
 
 Write a function rand10() that generates a uniform random integer in the range [1,10][1, 10].
@@ -47,9 +47,7 @@ This is a classic **rejection sampling** problem.
 
 ---
 
-## 🎯 Idea
-
-Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
+### Solution: Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
 
 ### Step 1: Build a bigger uniform range
 
@@ -120,7 +118,32 @@ def rand10():
 ---
  
 
+## Biased Coin from Unbiased Coin
 
+Say we want to simulate a p-biased coin,  
+that is, one which flips heads with probability p and tails with probability 1-p. 
+But all we have access to is a stream of uniformly random bits.  
+The result is that our algorithm will pick a result in an average of two bits, which might be kind of surprising.
+
+The algorithm is:
+```python
+def biased_coin(p):
+  flip = get_random_bit()
+  if p < 0.5:
+    return 0 if flip == 0 else biased_coin(2 * p)
+  if p > 0.5:
+    return 1 if flip == 1 else biased_coin(2 * p - 1)
+  return flip
+```
+It's easy to run some simulations and see that this works. 
+Here's why it works: generating an infinite sequence of random bits can be seen as generating a random binary fraction, which we then compare to p. It's a way to compute rand() < p.
+
+But we actually only need a finite number of bits to determine whether that number is less than or greater than p.
+
+b_1 b_2 ...
+Where b_i contributes 2^-i to the final number if it's 1, and 0 otherwise.
+
+Imagine the interval [0, 1]. Each time we learn a new digit to this number, we're slicing in half the point in space where it could live. If the first digit is 1, we know that it lives in [0.5, 1], for example. And in that case, if we know p is less than 0.5, we know the number we generated is greater than p.
 
 
 <https://eyal-kazin.medium.com/>
