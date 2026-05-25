@@ -80,6 +80,10 @@ $$
 result = ((num - 1)\%10) + 1
 $$
 
+$$
+result = ((num - 1)\bmod 10) + 1
+$$
+
 -- $$
 -- \text{result} = (num - 1) \bmod 10 + 1
 
