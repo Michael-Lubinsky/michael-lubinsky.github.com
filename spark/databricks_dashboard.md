@@ -11,7 +11,17 @@ WHERE date > :start_date
   AND date < :end_date
   AND user_id = :user_id
 ```
+As soon as Databricks sees :start_date, :end_date, and :user_id, it automatically recognizes them as parameters.
 
+Then:
+```
+Save the query.
+Open the visualization/dashboard.
+Databricks will usually show parameter controls automatically.
+If not:
+click Add → Filter
+bind the filter to the parameter.
+```
 Then in the Databricks dashboard:
 
 1. Open the dashboard in **Edit** mode.
