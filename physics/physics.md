@@ -76,7 +76,9 @@ Quantization of Angular Momentum - Explained Visually
 
 <http://lightcone.ru/>
 
-<https://www.youtube.com/watch?v=XKSjCOKDtpk> Magnetism
+### Magnetism
+<https://www.youtube.com/watch?v=XKSjCOKDtpk> 
+<https://www.youtube.com/watch?v=Ej-gd8fUHmE>
 
 ### Spin 
 
