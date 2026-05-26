@@ -1,5 +1,46 @@
 ## Databricks dashboards 
 
+### **Dashboard parameters**.
+
+Change SQL to:
+
+```sql
+SELECT x
+FROM T
+WHERE date > :start_date
+  AND date < :end_date
+  AND user_id = :user_id
+```
+
+Then in the Databricks dashboard:
+
+1. Open the dashboard in **Edit** mode.
+2. Open the dataset/query behind the plot.
+3. Add parameters:
+
+   * `start_date` → type **Date**
+   * `end_date` → type **Date**
+   * `user_id` → type **Number** or **Text**
+4. Add dashboard **Filter widgets**.
+5. Connect each filter widget to the corresponding parameter.
+6. Publish the dashboard.
+
+Databricks AI/BI dashboards support named SQL parameters using `:parameter_name`, and viewers can change values through filter widgets at runtime. ([Databricks Documentation][1])
+
+For a date range, you can also use one date-range parameter:
+
+```sql
+SELECT x
+FROM T
+WHERE date BETWEEN :date_range.min AND :date_range.max
+  AND user_id = :user_id
+```
+
+Databricks supports parameter filters such as single value, multiple values, date picker, and date range. ([docs.azure.cn][2])
+
+[1]: https://docs.databricks.com/aws/en/dashboards/manage/filters/parameters?utm_source=chatgpt.com "Work with dashboard parameters | Databricks on AWS"
+[2]: https://docs.azure.cn/en-us/databricks/dashboards/filters?utm_source=chatgpt.com "Use dashboard filters - Azure Databricks"
+
 support **filters** that apply to the SQL queries powering the visualizations.
 
 There are two types:
