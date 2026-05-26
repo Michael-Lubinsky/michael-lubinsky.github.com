@@ -2,6 +2,8 @@
 
 <https://vutr.substack.com/p/the-overview-of-parquet-file-format>
 
+<https://lasha-dolenjashvili.medium.com/how-columnar-storage-actually-works-17a4c5a0a3d3>
+
 <https://habr.com/ru/articles/1013604/>
 
 <https://medium.com/@2nick2patel2/parquet-is-the-new-csv-for-python-0c0630afb57c>
