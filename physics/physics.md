@@ -132,6 +132,9 @@ Vitaly Vanchurin
 Квантовая механика - 2, Толстихин О. И., 6 семестр, 2025
 <https://www.youtube.com/playlist?list=PLti61wgkUWHxj6mBPmhXEDpzJU3FGIMZf>
 
+Quantum Mechanics For Mathematicians
+<https://www.youtube.com/watch?v=RqVkMU_8z_o&list=PLqX5gFCSJtMBA62lNda_l5jRV09LklQ0s&index=1>
+
 ### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
 <https://arxiv.org/pdf/quant-ph/0511002.pdf>
 <https://arxiv.org/pdf/1902.00499>  
