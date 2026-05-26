@@ -51,6 +51,178 @@ Databricks supports parameter filters such as single value, multiple values, dat
 [1]: https://docs.databricks.com/aws/en/dashboards/manage/filters/parameters?utm_source=chatgpt.com "Work with dashboard parameters | Databricks on AWS"
 [2]: https://docs.azure.cn/en-us/databricks/dashboards/filters?utm_source=chatgpt.com "Use dashboard filters - Azure Databricks"
 
+In Databricks AI/BI dashboards (and also in SQL Editor), parameters are created directly inside the SQL text.
+
+Example — replace constants with parameter names:
+
+```sql
+SELECT x
+FROM T
+WHERE date > :start_date
+  AND date < :end_date
+  AND user_id = :user_id
+```
+
+As soon as Databricks sees `:start_date`, `:end_date`, and `:user_id`, it automatically recognizes them as parameters.
+
+Then:
+
+1. Save the query.
+2. Open the visualization/dashboard.
+3. Databricks will usually show parameter controls automatically.
+4. If not:
+
+   * click **Add → Filter**
+   * bind the filter to the parameter.
+
+---
+
+
+## Method 1 — directly from dashboard
+
+### 1. Edit dashboard
+
+Open dashboard → click **Edit**.
+
+---
+
+### 2. Open dataset/query
+
+Click the chart/plot.
+
+Choose:
+
+* **Edit visualization**
+  or
+* **Edit query**
+
+(depending on dashboard type/UI version)
+
+---
+
+### 3. Replace hardcoded values
+
+Before:
+
+```sql
+SELECT x
+FROM T
+WHERE date < '2025-12-01'
+  AND date > '2025-01-01'
+  AND user_id = 5
+```
+
+After:
+
+```sql
+SELECT x
+FROM T
+WHERE date < :end_date
+  AND date > :start_date
+  AND user_id = :user_id
+```
+
+---
+
+### 4. Run query
+
+Click **Run**.
+
+Databricks detects parameters automatically.
+
+You should see parameter controls appear near the top.
+
+---
+
+### 5. Configure parameter type
+
+For each parameter:
+
+* Date
+* Number
+* Text
+* Dropdown
+* Multi-select
+
+You can optionally:
+
+* set default values
+* allow multiple values
+* map dropdown values from query results
+
+---
+
+### Optional: dropdown populated from table
+
+Example:
+
+```sql
+SELECT DISTINCT user_id
+FROM T
+ORDER BY user_id
+```
+
+Use this query as source for dropdown values.
+
+---
+
+### Multiple selection example
+
+```sql
+SELECT x
+FROM T
+WHERE user_id IN (:user_ids)
+```
+
+Then configure parameter as:
+
+* multi-select
+
+---
+
+### Dynamic date shortcuts
+
+Databricks date filters also support:
+
+* Last 7 days
+* Last month
+* This year
+* etc.
+
+through dashboard filter widgets.
+
+---
+
+### Important syntax
+
+Use:
+
+```sql
+:param_name
+```
+
+NOT:
+
+* `${param}`
+* `{{param}}`
+
+Those belong to other BI tools.
+
+---
+
+### Legacy dashboards vs AI/BI dashboards
+
+Databricks currently has:
+
+* classic SQL dashboards
+* AI/BI dashboards
+
+Both support parameters, but UI differs slightly.
+
+The SQL syntax with `:param` is the important part.
+
+
+### Claude 
 support **filters** that apply to the SQL queries powering the visualizations.
 
 There are two types:
