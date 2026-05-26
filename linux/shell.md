@@ -1,6 +1,8 @@
 ## Linux shell scripting
 
 echo $?
+
+### nohup 
 ```
 runs it immune to hangups (nohup) so it keeps running after you log out/SSH drops;
 sends stdout to output.log, truncating the file first (> output.log);
@@ -8,7 +10,7 @@ sends stderr to the same place as stdout (2>&1), so both go into output.log;
 runs it in the background (&), returning you to the shell immediately.
 ```
 
-### nohup 
+
 ```bash
 nohup python3 app.py > output.log 2>&1 &
 tail -f output.log
