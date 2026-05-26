@@ -119,6 +119,19 @@ Vitaly Vanchurin
 
 <https://habr.com/ru/articles/965372/> QM
 
+
+Квантовая механика, Киселёв В. В. 2024
+<https://www.youtube.com/watch?v=fBBUtObnF-s&list=PLti61wgkUWHzlcM13Rh1LD3BwLkqB0WOO>
+
+Квантовая механика - 2, Киселев В. В.,  2025
+<https://www.youtube.com/watch?v=Zm3ql2QRACQ&list=PLti61wgkUWHzWScUtbHCWfev59cjJTkX4>
+
+Квантовая механика-II, лекции, Дрофеенко
+<https://www.youtube.com/playlist?list=PLti61wgkUWHyFlfESgtlNSoV_FnvnBlik>
+
+Квантовая механика - 2, Толстихин О. И., 6 семестр, 2025
+<https://www.youtube.com/playlist?list=PLti61wgkUWHxj6mBPmhXEDpzJU3FGIMZf>
+
 ### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
 <https://arxiv.org/pdf/quant-ph/0511002.pdf>
 <https://arxiv.org/pdf/1902.00499>  
