@@ -485,6 +485,11 @@ WHERE t2.id IS NULL;
 <https://sqltest.online/ru/lesson/window-functions/window-frames>
 <https://medium.com/@Rohan_Dutt/10-hard-window-join-problems-in-sql-and-how-to-solve-them-f94d1f27b573>
 
+
+## Qualify
+
+<https://medium.com/@Rohan_Dutt/why-qualify-clause-for-window-filtering-in-sql-powerful-than-you-think-and-how-to-master-them-42792a2758ad>
+
 ### Running total and avg
 
 
