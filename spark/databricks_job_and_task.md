@@ -1,4 +1,495 @@
-Gotcha — so right now you have:
+# Databricks has several related concepts that are easy to confuse:
+
+* **Databricks Workflows**
+* **Delta Live Tables (DLT)** / Lakeflow Declarative Pipelines
+* General “data pipelines”
+* Jobs
+* dbt pipelines
+
+They overlap but are different.
+
+---
+
+# 1. Databricks Workflows
+
+Databricks Workflows is the orchestration/scheduling system inside Databricks.
+
+Official docs:
+
+[Databricks Workflows](https://docs.databricks.com/workflows/index.html?utm_source=chatgpt.com)
+
+Think of it as:
+
+> Databricks-native Airflow-lite orchestration.
+
+A Workflow lets you schedule and coordinate tasks such as:
+
+* notebooks
+* SQL queries
+* dbt commands
+* Python scripts
+* JARs
+* Delta Live Tables
+* conditionals
+
+---
+
+# Example workflow
+
+```text
+Ingest data
+      ↓
+Transform bronze → silver
+      ↓
+Run dbt models
+      ↓
+Refresh dashboard
+      ↓
+Send alert
+```
+
+Each block is a task.
+
+---
+
+# Workflow capabilities
+
+## Scheduling
+
+Example:
+
+* every hour
+* every day at 2 AM
+* cron expressions
+
+---
+
+## Dependencies
+
+Task B waits for Task A.
+
+```text
+A → B → C
+```
+
+---
+
+## Retries
+
+If task fails:
+
+* retry automatically
+
+---
+
+## Monitoring
+
+UI shows:
+
+* running jobs
+* failures
+* logs
+* durations
+
+---
+
+## Clusters
+
+Workflow can:
+
+* create temporary clusters
+* reuse existing clusters
+* use serverless
+
+---
+
+# Typical tasks inside Workflows
+
+| Task type        | Example            |
+| ---------------- | ------------------ |
+| Notebook         | PySpark ETL        |
+| Python script    | Data processing    |
+| SQL              | Aggregation        |
+| dbt task         | `dbt run`          |
+| DLT pipeline     | Streaming pipeline |
+| Conditional task | IF success/failure |
+| Webhook          | Notify Slack       |
+
+---
+
+# Example workflow for your environment
+
+Very similar to your EventHub/ADLS/Databricks pipelines:
+
+```text
+EventHub
+   ↓
+Bronze ingestion notebook
+   ↓
+Silver transformation notebook
+   ↓
+dbt Gold models
+   ↓
+Dashboard refresh
+```
+
+Workflow orchestrates all steps.
+
+---
+
+# 2. Databricks Data Pipeline
+
+“Data pipeline” is more generic.
+
+It means:
+
+> sequence of steps moving and transforming data
+
+Example:
+
+```text
+Kafka/EventHub
+    ↓
+ADLS/S3
+    ↓
+Bronze Delta
+    ↓
+Silver Delta
+    ↓
+Gold marts
+    ↓
+Dashboards
+```
+
+This is conceptual architecture.
+
+---
+
+# 3. Delta Live Tables (DLT)
+
+Now called:
+
+> Lakeflow Declarative Pipelines
+
+Official docs:
+
+[Lakeflow Declarative Pipelines](https://docs.databricks.com/en/delta-live-tables/index.html?utm_source=chatgpt.com)
+
+This is Databricks’ managed ETL/pipeline framework.
+
+---
+
+# Main idea of DLT
+
+Instead of manually orchestrating tables, you declare dependencies.
+
+Example:
+
+```python
+@dlt.table
+def silver_users():
+    return spark.read.table("bronze_users")
+```
+
+DLT handles:
+
+* execution order
+* checkpointing
+* retries
+* streaming state
+* monitoring
+* expectations
+* lineage
+
+---
+
+# DLT vs Workflow
+
+Important distinction.
+
+---
+
+## Workflow
+
+General orchestrator.
+
+Like:
+
+* Airflow
+* Prefect
+* Dagster
+
+It schedules tasks.
+
+---
+
+## DLT
+
+Managed ETL framework specialized for Delta pipelines.
+
+It manages:
+
+* tables
+* streaming
+* lineage
+* quality checks
+
+---
+
+# Workflow example
+
+```text
+Notebook A
+    ↓
+Notebook B
+    ↓
+dbt run
+```
+
+---
+
+# DLT example
+
+```text
+bronze table
+    ↓
+silver table
+    ↓
+gold table
+```
+
+all managed automatically.
+
+---
+
+# 4. Bronze / Silver / Gold architecture
+
+Databricks strongly promotes this pattern.
+
+---
+
+## Bronze
+
+Raw ingestion.
+
+Example:
+
+* raw EventHub JSON
+* raw DynamoDB stream
+
+---
+
+## Silver
+
+Cleaned/transformed data.
+
+Example:
+
+* deduplicated
+* normalized
+* parsed timestamps
+
+---
+
+## Gold
+
+Business-level aggregates.
+
+Example:
+
+* daily KPIs
+* dashboard tables
+
+---
+
+# Example DLT pipeline
+
+```python
+import dlt
+
+@dlt.table
+def bronze_events():
+    return spark.readStream.format("cloudFiles").load("/raw")
+
+@dlt.table
+def silver_events():
+    return spark.sql("""
+        SELECT *
+        FROM LIVE.bronze_events
+        WHERE user_id IS NOT NULL
+    """)
+
+@dlt.table
+def gold_daily():
+    return spark.sql("""
+        SELECT
+            date,
+            COUNT(*) AS cnt
+        FROM LIVE.silver_events
+        GROUP BY date
+    """)
+```
+
+---
+
+# 5. Databricks Jobs
+
+Historically:
+
+* Workflows evolved from Jobs
+
+People still say:
+
+* “Job”
+* “Workflow”
+
+almost interchangeably sometimes.
+
+---
+
+# 6. dbt inside Databricks
+
+Databricks Workflows can run dbt tasks.
+
+Example:
+
+```text
+Bronze notebook
+    ↓
+Silver notebook
+    ↓
+dbt Gold models
+```
+
+where:
+
+* notebooks handle heavy ETL
+* dbt handles SQL business transformations
+
+Very common modern architecture.
+
+---
+
+# 7. Workflow task types
+
+Databricks Workflows supports:
+
+| Task         | Purpose             |
+| ------------ | ------------------- |
+| Notebook     | PySpark             |
+| Python wheel | packaged apps       |
+| SQL          | SQL Warehouse       |
+| dbt          | dbt transformations |
+| DLT          | pipeline execution  |
+| JAR          | Scala/Java          |
+| Condition    | branching           |
+| Run Job      | nested workflows    |
+
+---
+
+# 8. File-arrival triggers
+
+Very relevant to your work.
+
+Workflow can start when:
+
+* file arrives in S3
+* file arrives in ADLS
+
+You discussed this before for JSONL ingestion.
+
+Example:
+
+```text
+S3 JSONL arrives
+      ↓
+Workflow triggers
+      ↓
+Ingest notebook
+      ↓
+Transform
+```
+
+---
+
+# 9. Monitoring & lineage
+
+Databricks provides:
+
+* DAG UI
+* logs
+* retry history
+* table lineage
+* data quality metrics
+
+especially strong in DLT.
+
+---
+
+# 10. Comparison with Airflow
+
+| Feature                     | Workflows | Airflow      |
+| --------------------------- | --------- | ------------ |
+| Databricks-native           | Yes       | No           |
+| General orchestration       | Moderate  | Excellent    |
+| Python DAG flexibility      | Limited   | Very high    |
+| Easy Databricks integration | Excellent | Good         |
+| UI simplicity               | Easier    | More complex |
+
+---
+
+# Simple mental model
+
+## Databricks Workflow
+
+> “Scheduler + orchestrator”
+
+Runs tasks.
+
+---
+
+## DLT/Lakeflow Pipeline
+
+> “Managed ETL framework”
+
+Builds data tables.
+
+---
+
+## Data pipeline
+
+> Generic term for data flow architecture.
+
+---
+
+# Your likely best architecture
+
+Based on your previous pipelines:
+
+```text
+EventHub / DynamoDB Streams
+        ↓
+ADLS/S3 JSONL
+        ↓
+Databricks Bronze ingestion
+        ↓
+Silver normalization
+        ↓
+dbt Gold marts
+        ↓
+Dashboards
+```
+
+Orchestrated by:
+
+* Databricks Workflows
+
+Potentially using:
+
+* DLT for streaming/bronze/silver layers.
+
+
+### Wrong approach — so right now you have:
 
 * Job trigger: **File arrival**
 * Code: **Auto Loader** with `readStream()` + `writeStream()`
