@@ -317,6 +317,347 @@ dbt can materialize models as:
 | ephemeral   | inline CTE     |
 
 ---
+dbt has many built-in Jinja functions, macros, configurations, and special keywords.
+They are not all the same category, but people often loosely call all of them “dbt keywords”.
+
+The most important groups are:
+
+* Jinja functions/macros (`ref`, `source`, `config`)
+* Materializations (`table`, `view`, `incremental`)
+* Config keys (`materialized`, `schema`, `tags`)
+* Special variables (`this`, `target`)
+* Control structures (`is_incremental`)
+* YAML resource properties
+
+Official reference:
+
+[dbt Jinja Reference](https://docs.getdbt.com/reference/dbt-jinja-functions?utm_source=chatgpt.com)
+
+---
+
+### 1. Most important dbt functions/macros
+
+| Keyword                             | Purpose                         |
+| ----------------------------------- | ------------------------------- |
+| `ref()`                             | Reference another model         |
+| `source()`                          | Reference source table          |
+| `config()`                          | Configure model                 |
+| `var()`                             | Read project variable           |
+| `env_var()`                         | Read environment variable       |
+| `run_query()`                       | Execute SQL during compilation  |
+| `log()`                             | Write to logs                   |
+| `exceptions.raise_compiler_error()` | Throw compilation error         |
+| `adapter.dispatch()`                | Adapter-specific macro dispatch |
+| `return()`                          | Return value from macro         |
+| `print()`                           | Print debug output              |
+| `doc()`                             | Reference documentation block   |
+| `fromjson()`                        | Parse JSON                      |
+| `tojson()`                          | Convert to JSON                 |
+| `fromyaml()`                        | Parse YAML                      |
+| `toyaml()`                          | Convert YAML                    |
+| `as_bool()`                         | Cast to boolean                 |
+| `as_number()`                       | Cast to number                  |
+| `as_native()`                       | Native Python conversion        |
+
+---
+
+### 2. Most important special objects
+
+| Keyword          | Meaning                    |
+| ---------------- | -------------------------- |
+| `this`           | Current model relation     |
+| `target`         | Current target profile     |
+| `model`          | Current model metadata     |
+| `graph`          | DAG graph                  |
+| `project_name`   | dbt project name           |
+| `schema`         | Current schema             |
+| `execute`        | Whether actually executing |
+| `flags`          | CLI flags                  |
+| `invocation_id`  | Current run UUID           |
+| `run_started_at` | Run timestamp              |
+| `adapter`        | Current warehouse adapter  |
+
+---
+
+### 3. Most important config keywords
+
+Usually used inside:
+
+```jinja
+{{ config(...) }}
+```
+
+---
+
+## Materialization
+
+| Keyword                | Meaning                    |
+| ---------------------- | -------------------------- |
+| `materialized`         | view/table/incremental/etc |
+| `incremental_strategy` | merge/append/etc           |
+| `unique_key`           | incremental merge key      |
+
+Example:
+
+```sql
+{{ config(
+    materialized='incremental',
+    unique_key='user_id'
+) }}
+```
+
+---
+
+## Storage/layout configs
+
+| Keyword         | Meaning             |
+| --------------- | ------------------- |
+| `schema`        | Target schema       |
+| `database`      | Target database     |
+| `alias`         | Override table name |
+| `partition_by`  | Partition columns   |
+| `cluster_by`    | Clustering columns  |
+| `file_format`   | Delta/Parquet/etc   |
+| `location_root` | External location   |
+
+Databricks-specific configs exist too.
+
+---
+
+## Metadata configs
+
+| Keyword        | Meaning               |
+| -------------- | --------------------- |
+| `tags`         | Tag models            |
+| `meta`         | Custom metadata       |
+| `persist_docs` | Persist comments/docs |
+
+---
+
+### 4. Materialization keywords
+
+| Keyword       | Meaning                 |
+| ------------- | ----------------------- |
+| `table`       | Physical table          |
+| `view`        | SQL view                |
+| `incremental` | Incremental processing  |
+| `ephemeral`   | Inline CTE              |
+| `snapshot`    | Slowly changing history |
+| `seed`        | CSV-loaded table        |
+
+---
+
+### 5. Incremental keywords
+
+| Keyword              | Meaning                     |
+| -------------------- | --------------------------- |
+| `is_incremental()`   | True during incremental run |
+| `unique_key`         | Merge key                   |
+| `_dbt_max_partition` | Internal partition tracking |
+
+Example:
+
+```sql
+{% if is_incremental() %}
+WHERE updated_at > (
+    SELECT max(updated_at)
+    FROM {{ this }}
+)
+{% endif %}
+```
+
+---
+
+### 6. Source-related keywords
+
+| Keyword           | Meaning             |
+| ----------------- | ------------------- |
+| `source()`        | Reference source    |
+| `freshness`       | Freshness checks    |
+| `loaded_at_field` | Freshness timestamp |
+
+Example:
+
+```sql
+SELECT *
+FROM {{ source('raw', 'events') }}
+```
+
+---
+
+### 7. Testing keywords
+
+In YAML:
+
+| Keyword           | Meaning                  |
+| ----------------- | ------------------------ |
+| `tests`           | Attach tests             |
+| `unique`          | Built-in uniqueness test |
+| `not_null`        | Null check               |
+| `accepted_values` | Allowed values           |
+| `relationships`   | FK relationship test     |
+
+Example:
+
+```yaml
+columns:
+  - name: user_id
+    tests:
+      - unique
+      - not_null
+```
+
+---
+
+### 8. Snapshot keywords
+
+| Keyword                   | Meaning            |
+| ------------------------- | ------------------ |
+| `strategy`                | timestamp/check    |
+| `updated_at`              | Timestamp column   |
+| `check_cols`              | Columns to compare |
+| `invalidate_hard_deletes` | Track deletes      |
+
+---
+
+### 9. Macro keywords
+
+| Keyword    | Meaning             |
+| ---------- | ------------------- |
+| `macro`    | Define macro        |
+| `endmacro` | End macro           |
+| `call`     | Call block macro    |
+| `set`      | Variable assignment |
+| `do`       | Execute expression  |
+
+Example:
+
+```jinja
+{% macro hello(name) %}
+    hello {{ name }}
+{% endmacro %}
+```
+
+---
+
+### 10. Jinja control flow keywords
+
+These come from Jinja itself:
+
+| Keyword   | Meaning          |
+| --------- | ---------------- |
+| `if`      | Conditional      |
+| `elif`    | Else-if          |
+| `else`    | Else             |
+| `for`     | Loop             |
+| `endfor`  | End loop         |
+| `endif`   | End if           |
+| `set`     | Variable         |
+| `include` | Include template |
+
+Example:
+
+```jinja
+{% for col in cols %}
+    {{ col }}
+{% endfor %}
+```
+
+---
+
+### 11. Common CLI commands
+
+Not keywords, but very important.
+
+| Command             | Meaning          |
+| ------------------- | ---------------- |
+| `dbt run`           | Build models     |
+| `dbt test`          | Run tests        |
+| `dbt seed`          | Load CSVs        |
+| `dbt snapshot`      | Run snapshots    |
+| `dbt docs generate` | Generate docs    |
+| `dbt docs serve`    | Serve docs       |
+| `dbt compile`       | Compile SQL      |
+| `dbt debug`         | Validate setup   |
+| `dbt clean`         | Remove artifacts |
+| `dbt deps`          | Install packages |
+
+---
+
+### 12. Databricks-specific dbt configs
+
+Very relevant for your environment.
+
+| Keyword               | Meaning            |
+| --------------------- | ------------------ |
+| `file_format='delta'` | Delta Lake         |
+| `partition_by`        | Delta partitioning |
+| `cluster_by`          | Clustering         |
+| `tblproperties`       | Delta table props  |
+| `liquid_clustered_by` | Liquid clustering  |
+
+Example:
+
+```sql
+{{ config(
+    materialized='table',
+    file_format='delta',
+    partition_by=['date']
+) }}
+```
+
+---
+
+### Most commonly used in real projects
+
+These are the ones you will constantly see:
+
+```jinja
+ref()
+source()
+config()
+var()
+this
+target
+is_incremental()
+```
+
+and:
+
+```jinja
+materialized='table'
+materialized='incremental'
+unique_key=
+partition_by=
+tags=
+```
+
+---
+
+### Small realistic example
+
+```sql
+{{ config(
+    materialized='incremental',
+    unique_key='event_id',
+    partition_by=['date']
+) }}
+
+SELECT
+    *
+FROM {{ source('raw', 'events') }}
+
+{% if is_incremental() %}
+WHERE updated_at >
+(
+    SELECT max(updated_at)
+    FROM {{ this }}
+)
+{% endif %}
+```
+
+This single file already demonstrates many core dbt concepts.
+
 
 ### dbt vs Airflow - Very important distinction.
 
