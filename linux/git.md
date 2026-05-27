@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/companies/amvera/articles/1010466/> reset revert restore
 
+<https://reg.cloud/blog/git-reset-kak-upravlyat-istoriej> Git reset
+
 <https://dangitgit.com/>
 
 ```git
