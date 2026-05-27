@@ -1,4 +1,6 @@
-# Databricks has several related concepts that are easy to confuse:
+## Databricks Jobs and Workflows
+
+ Databricks has several related concepts that are easy to confuse:
 
 * **Databricks Workflows**
 * **Delta Live Tables (DLT)** / Lakeflow Declarative Pipelines
