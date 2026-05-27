@@ -3,6 +3,7 @@
 
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
 
+<https://lobste.rs/s/2jdvxa/what_are_some_your_favourite_developer>
 
 MongoDB TUI <https://github.com/kopecmaciej/vi-mongo>  
 Visidata <https://www.visidata.org/>
@@ -102,18 +103,18 @@ https://github.com/houqp/kiorg
 ### Others
 <https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
 
-https://github.com/navig-me/telert sends notifications when your terminal commands or Python code completes
+<https://github.com/navig-me/telert> sends notifications when your terminal commands or Python code completes
 
 гайд по настройке рабочего окружения: Linux, VScode, Python  
 <https://habr.com/ru/companies/timeweb/articles/916040/>
 
 ### Others
 
-https://tools.simonwillison.net/
+<https://tools.simonwillison.net/>
 
 <https://toolbrew.co/>
 
-https://cobalt.tools
+<https://cobalt.tools>
 
 https://www.thateasy.me/ 
 
