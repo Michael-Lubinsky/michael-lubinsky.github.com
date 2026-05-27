@@ -8,6 +8,8 @@ https://news.ycombinator.com/item?id=46336947
 <https://habr.com/ru/companies/otus/articles/1012266/> Vaccum, reindex    
 <https://news.ycombinator.com/item?id=46692116> 	Unconventional PostgreSQL Optimizations 
 
+<https://habr.com/ru/articles/1039800/>
+
 <https://habr.com/ru/articles/1012922/> Как мы ускорили SQL-запросы: реальные кейсы оптимизации PostgreSQL
 
 <https://www.youtube.com/watch?v=sNCKlklvGO0&list=PLt0vzWoDuwcTdFnp-QWtx2yEvKMDlPw7l> indexes ru
