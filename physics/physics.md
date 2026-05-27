@@ -112,6 +112,8 @@ Vitaly Vanchurin
 
 <https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
+<https://arxiv.org/pdf/2605.26375> Bohr’s complementarity
+
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
