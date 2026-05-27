@@ -46,8 +46,6 @@ https://arxiv.org/pdf/math-ph/0204014 QUANTUM FIELD THEORY Notes taken from a co
 
 <https://news.ycombinator.com/item?id=48096842>
 
-
-
 <https://www.anthropic.com/research/vibe-physics>
 
 <https://quantum-matters.com/>
@@ -118,12 +116,10 @@ Vitaly Vanchurin
 
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
-<https://arxiv.org/pdf/quant-ph/0511002> Indistinguishable Particles in Quantum Mechanics
-
 
 <https://habr.com/ru/articles/965372/> QM
 
-
+## QM Youtube links
 Квантовая механика, Киселёв В. В. 2024
 <https://www.youtube.com/watch?v=fBBUtObnF-s&list=PLti61wgkUWHzlcM13Rh1LD3BwLkqB0WOO>
 
@@ -139,43 +135,11 @@ Vitaly Vanchurin
 Quantum Mechanics For Mathematicians
 <https://www.youtube.com/watch?v=RqVkMU_8z_o&list=PLqX5gFCSJtMBA62lNda_l5jRV09LklQ0s&index=1>
 
-### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
-<https://arxiv.org/pdf/quant-ph/0511002.pdf>
-<https://arxiv.org/pdf/1902.00499>  
-<https://arxiv.org/pdf/1311.5999>  The Pauli principle and magnetism  
-<https://arxiv.org/pdf/0904.2009> The Pauli exclusion principle and beyond  
-<https://arxiv.org/pdf/0802.0918>  
-
-<https://arxiv.org/pdf/quant-ph/9906046> Derivation of the Pauli exchange principle  
-<https://arxiv.org/pdf/quant-ph/0608141>  Useful entanglement from the Pauli principle
-
-
-https://arxiv.org/pdf/quant-ph/0605180 Lecture Notes in Quantum Mechanics Doron Cohen
-
-<https://arxiv.org/pdf/2304.04247> Quantum Mechanics Lecture Notes. Selected Chapters S. Levit
-
-https://arxiv.org/pdf/1907.05786 Lectures on Quantum Mechanics for mathematicians A.I. Komech
-
-https://arxiv.org/pdf/1803.07098 “Thinking Quantum”: Lectures on Quantum Theory Barak Shoshany
-
-https://arxiv.org/pdf/quant-ph/0608140 Dyson ADVANCED QUANTUM MECHANICS Second Edition
-
-https://arxiv.org/pdf/math-ph/0505059 Lectures on Quantum Mechanics (nonlinear PDE point of view) A.I.Komech
-
-<https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
-
-<https://arxiv.org/pdf/1303.2137> Why Heisenberg Captures Nonlocality Better Than Schrödinger
-
-
-https://arxiv.org/pdf/1704.07260 Lecture Notes on Quantum Simulation
-
 
 <https://www.youtube.com/watch?v=xjuWuwcNqZA&list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> 
 Full Course on Quantum Mechanics - Introduction | Weinberg’s Lectures on Quantum Mechanics (ru)
 
 <https://www.youtube.com/playlist?list=PLy8F8dLvbGgAzZOng2Gc5OLpU1VRLh9jL> Weinberg Lectures on QM
-
-
 
 
 <https://sciencespectrumu.com/the-baffling-simplicity-of-quantum-mechanics-55217f4356cb>
@@ -187,6 +151,46 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 
 100 лет (и задач по) квантовой механике:
 <https://www.youtube.com/playlist?list=PLTLLDTOgMz4WzAHQM7iDzWuae-Y2qpWZi>
+
+<https://www.youtube.com/watch?v=CByk-raQ3Lg>  Problem Solving in QM - Part I 
+
+<https://www.youtube.com/watch?v=3WvrO1kb_zM>  Problem Solving in QM - Part II 
+
+Density matrix in QM
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d>
+
+### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
+ 
+<https://arxiv.org/pdf/quant-ph/0511002.pdf>  Indistinguishable Particles in Quantum Mechanics  
+<https://arxiv.org/pdf/1902.00499>  
+<https://arxiv.org/pdf/1311.5999>  The Pauli principle and magnetism  
+<https://arxiv.org/pdf/0904.2009> The Pauli exclusion principle and beyond  
+<https://arxiv.org/pdf/0802.0918>  
+
+<https://arxiv.org/pdf/quant-ph/9906046> Derivation of the Pauli exchange principle  
+<https://arxiv.org/pdf/quant-ph/0608141>  Useful entanglement from the Pauli principle
+
+
+<https://arxiv.org/pdf/quant-ph/0605180> Lecture Notes in Quantum Mechanics Doron Cohen
+
+<https://arxiv.org/pdf/2304.04247> Quantum Mechanics Lecture Notes. Selected Chapters S. Levit
+
+<https://arxiv.org/pdf/1907.05786> Lectures on Quantum Mechanics for mathematicians A.I. Komech
+
+<https://arxiv.org/pdf/1803.07098> “Thinking Quantum”: Lectures on Quantum Theory Barak Shoshany
+
+https://arxiv.org/pdf/quant-ph/0608140 Dyson ADVANCED QUANTUM MECHANICS Second Edition
+
+<https://arxiv.org/pdf/math-ph/0505059> Lectures on Quantum Mechanics (nonlinear PDE point of view) A.I.Komech
+
+<https://arxiv.org/pdf/2604.26325> Shrodinger Eq.
+
+<https://arxiv.org/pdf/1303.2137> Why Heisenberg Captures Nonlocality Better Than Schrödinger
+
+
+<https://arxiv.org/pdf/1704.07260> Lecture Notes on Quantum Simulation
+
+
 
 <https://saykind.github.io/teaching/>
 
@@ -204,22 +208,19 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 
 
 
-<https://www.youtube.com/watch?v=CByk-raQ3Lg>  Problem Solving in QM - Part I 
 
-<https://www.youtube.com/watch?v=3WvrO1kb_zM>  Problem Solving in QM - Part II 
 
 <https://arxiv.org/abs/1602.04182> Feynman Diagrams  
 
 <http://cleonis.nl/>
 
-Density matrix in QM
-<https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d>
+
 
 <https://pages.jh.edu/rrynasi1/PhysicalPrinciples/PhysicalPrinciples.html>
 
-https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/
+<https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/>
 
-http://cleonis.nl/physics/phys256/physics.php
+<http://cleonis.nl/physics/phys256/physics.php>
 
 <https://pages.jh.edu/rrynasi1/PhysicalPrinciples/literature/Lanczos1949TheVariationalPrinciplesOfMechanics.pdf>
 
