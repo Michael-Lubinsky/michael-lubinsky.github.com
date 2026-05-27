@@ -495,6 +495,8 @@ openclaw cron add --name "Утро" --cron "0 9 * * *" \
 <https://habr.com/ru/articles/1036396/>   
 <https://habr.com/ru/companies/ods/articles/1001012/>  
 
+<https://habr.com/ru/articles/1040296/> CODEX CLI
+
 Claude Code написан на TypeScript.  
 Codex CLI написан на Rust. 
 
