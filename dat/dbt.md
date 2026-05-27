@@ -2,12 +2,111 @@
 
 It is a tool for transforming data inside a data warehouse using SQL.
 
+Below is a simple **dbt pipeline** .
 
-[dbt Labs](https://www.getdbt.com/?utm_source=chatgpt.com)
+Assume source tables:
+
+```text
+T(d, user_id, value)
+K(user_id, user_name)
+```
+
+Goal table:
+
+```text
+daily_user_value_summary(d, user_name, value_sum)
+```
+
+## 1. dbt model: `models/daily_user_value_summary.sql`
+
+```sql
+{{ config(
+    materialized='incremental',
+    unique_key=['d', 'user_name']
+) }}
+
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM {{ source('raw', 'T') }} t
+JOIN {{ source('raw', 'K') }} k
+    ON t.user_id = k.user_id
+
+{% if is_incremental() %}
+WHERE t.d > (
+    SELECT COALESCE(MAX(d), DATE '1900-01-01')
+    FROM {{ this }}
+)
+{% endif %}
+
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+This creates/updates an incremental summary table.
+
+---
+
+## 2. Define sources: `models/sources.yml`
+
+```yaml
+version: 2
+
+sources:
+  - name: raw
+    schema: your_schema_name
+    tables:
+      - name: T
+      - name: K
+```
+
+Replace:
+
+```yaml
+schema: your_schema_name
+```
+
+with your real schema.
+
+---
+
+## 3. Run dbt
+
+```bash
+dbt run --select daily_user_value_summary
+```
+
+---
+
+## 4. If you want materialized view instead
+
+For a simple view:
+
+```sql
+{{ config(materialized='view') }}
+
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM {{ source('raw', 'T') }} t
+JOIN {{ source('raw', 'K') }} k
+    ON t.user_id = k.user_id
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+For most Databricks/Snowflake pipelines,   use the **incremental table** version, not a view, especially if table `T` is large.
+
+
+[dbt Labs](https://www.getdbt.com/)
 
 Documentation:
 
-[dbt Documentation](https://docs.getdbt.com/?utm_source=chatgpt.com)
+[dbt Documentation](https://docs.getdbt.com/)
 
 GitHub:
 
