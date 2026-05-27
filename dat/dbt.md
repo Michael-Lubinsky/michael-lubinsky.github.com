@@ -468,6 +468,340 @@ GitHub:
 
 ---
 
+There are many useful options for `dbt run` besides `--select`.
+The official reference is here:
+
+[dbt run command reference](https://docs.getdbt.com/reference/commands/run?utm_source=chatgpt.com)
+
+---
+
+# Most commonly used `dbt run` options
+
+| Option              | Meaning                                 |
+| ------------------- | --------------------------------------- |
+| `--select`          | Run selected models                     |
+| `--exclude`         | Exclude models                          |
+| `--full-refresh`    | Rebuild incremental models from scratch |
+| `--target`          | Choose target environment               |
+| `--vars`            | Pass runtime variables                  |
+| `--threads`         | Parallel execution threads              |
+| `--fail-fast`       | Stop immediately on first failure       |
+| `--profiles-dir`    | Custom profiles.yml location            |
+| `--project-dir`     | Custom dbt project location             |
+| `--profile`         | Select profile                          |
+| `--defer`           | Use previous state artifacts            |
+| `--state`           | Compare against previous manifest       |
+| `--empty`           | Build empty schemas only                |
+| `--debug`           | Verbose logging                         |
+| `--log-format json` | JSON logs                               |
+| `--quiet`           | Reduce output                           |
+| `--warn-error`      | Treat warnings as errors                |
+
+---
+
+# 1. `--select`
+
+Run specific models:
+
+```bash
+dbt run --select my_model
+```
+
+Run several:
+
+```bash
+dbt run --select model1 model2
+```
+
+Run by tag:
+
+```bash
+dbt run --select tag:daily
+```
+
+Run folder:
+
+```bash
+dbt run --select marts.finance
+```
+
+Run parents/children:
+
+```bash
+dbt run --select +my_model+
+```
+
+Very important in real projects.
+
+---
+
+# 2. `--exclude`
+
+Exclude some models:
+
+```bash
+dbt run --select marts --exclude tag:slow
+```
+
+---
+
+# 3. `--full-refresh`
+
+Very important for incremental models.
+
+Normally incremental model only processes new rows.
+
+This forces full rebuild:
+
+```bash
+dbt run --full-refresh
+```
+
+or:
+
+```bash
+dbt run --select events_incremental --full-refresh
+```
+
+dbt drops/recreates table. ([PopSQL][1])
+
+---
+
+# 4. `--target`
+
+Choose environment.
+
+Example profiles:
+
+```yaml
+dev
+prod
+qa
+```
+
+Run against prod:
+
+```bash
+dbt run --target prod
+```
+
+Very common.
+
+---
+
+# 5. `--vars`
+
+Pass variables dynamically.
+
+Example:
+
+```bash
+dbt run --vars '{"run_date": "2026-05-01"}'
+```
+
+Inside model:
+
+```jinja
+{{ var('run_date') }}
+```
+
+Databricks docs explicitly show this usage. ([Databricks Documentation][2])
+
+---
+
+# 6. `--threads`
+
+Parallelism.
+
+Example:
+
+```bash
+dbt run --threads 8
+```
+
+Runs multiple independent models simultaneously.
+
+---
+
+# 7. `--fail-fast`
+
+Stop immediately after first failure:
+
+```bash
+dbt run --fail-fast
+```
+
+Useful in CI/CD. ([Fig][3])
+
+---
+
+# 8. `--project-dir`
+
+Run from another folder:
+
+```bash
+dbt run --project-dir /path/to/project
+```
+
+---
+
+# 9. `--profiles-dir`
+
+Specify custom `profiles.yml` location:
+
+```bash
+dbt run --profiles-dir ~/.dbt-prod
+```
+
+---
+
+# 10. `--profile`
+
+Choose profile from profiles.yml:
+
+```bash
+dbt run --profile my_profile
+```
+
+---
+
+# 11. `--defer`
+
+Advanced CI/CD feature.
+
+Use production objects for unresolved refs:
+
+```bash
+dbt run --defer --state path/to/artifacts
+```
+
+Very common in slim CI pipelines.
+
+---
+
+# 12. `--state`
+
+Compare against previous manifest:
+
+```bash
+dbt run --select state:modified --state ./prod_artifacts
+```
+
+Runs only changed models.
+
+Huge optimization for large projects.
+
+---
+
+# 13. `--empty`
+
+Build schemas without loading data:
+
+```bash
+dbt run --empty
+```
+
+Useful for testing structure only.
+
+---
+
+# Examples of real-world usage
+
+# Run only one model
+
+```bash
+dbt run --select daily_user_summary
+```
+
+---
+
+# Run all downstream dependencies
+
+```bash
+dbt run --select daily_user_summary+
+```
+
+---
+
+# Run upstream + downstream
+
+```bash
+dbt run --select +daily_user_summary+
+```
+
+---
+
+# Run only changed models
+
+```bash
+dbt run --select state:modified --state ./artifacts
+```
+
+---
+
+# Rebuild incremental table
+
+```bash
+dbt run --select events --full-refresh
+```
+
+---
+
+# Production deployment
+
+```bash
+dbt run --target prod --threads 16
+```
+
+---
+
+# Pass dynamic date
+
+```bash
+dbt run --vars '{"processing_date":"2026-05-26"}'
+```
+
+---
+
+# Extremely common command in production
+
+```bash
+dbt build --select tag:daily
+```
+
+because `dbt build` runs:
+
+* models
+* tests
+* snapshots
+* seeds
+
+together.
+
+---
+
+# Important related commands
+
+| Command             | Meaning                    |
+| ------------------- | -------------------------- |
+| `dbt run`           | Build models               |
+| `dbt build`         | Run models + tests + seeds |
+| `dbt test`          | Run tests                  |
+| `dbt compile`       | Generate SQL only          |
+| `dbt seed`          | Load CSV files             |
+| `dbt snapshot`      | Track history              |
+| `dbt docs generate` | Generate docs              |
+| `dbt clean`         | Remove artifacts           |
+| `dbt deps`          | Install packages           |
+
+([docs.getdbt.com][4])
+
+[1]: https://popsql.com/learn-dbt/dbt-run-command?utm_source=chatgpt.com "dbt run Command: Usage & Examples"
+[2]: https://docs.databricks.com/gcp/en/jobs/dbt?utm_source=chatgpt.com "dbt task for jobs | Databricks on Google Cloud"
+[3]: https://fig.io/manual/dbt/run?utm_source=chatgpt.com "dbt run"
+[4]: https://docs.getdbt.com/reference/dbt-commands?utm_source=chatgpt.com "dbt Command reference | dbt Developer Hub"
+
+
 ### Main idea
 
 Suppose raw data already exists in:
