@@ -101,6 +101,360 @@ GROUP BY
 
 For most Databricks/Snowflake pipelines,   use the **incremental table** version, not a view, especially if table `T` is large.
 
+Correct — in dbt you usually **do not write `INSERT` or `UPDATE` manually**.
+
+You write only a `SELECT` model:
+
+```sql
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM T t
+JOIN K k
+    ON t.user_id = k.user_id
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+Then dbt generates the actual SQL behind the scenes.
+
+For example:
+
+```sql
+{{ config(
+    materialized='table'
+) }}
+
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM {{ source('raw', 'T') }} t
+JOIN {{ source('raw', 'K') }} k
+    ON t.user_id = k.user_id
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+With:
+
+```sql
+materialized='table'
+```
+
+dbt effectively does something like:
+
+```sql
+CREATE OR REPLACE TABLE daily_user_value_summary AS
+SELECT ...
+```
+
+With:
+
+```sql
+materialized='incremental'
+```
+
+dbt generates warehouse-specific `INSERT` or `MERGE` logic for you.
+
+Example:
+
+```sql
+{{ config(
+    materialized='incremental',
+    unique_key=['d', 'user_name']
+) }}
+
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM {{ source('raw', 'T') }} t
+JOIN {{ source('raw', 'K') }} k
+    ON t.user_id = k.user_id
+
+{% if is_incremental() %}
+WHERE t.d >= (
+    SELECT COALESCE(MAX(d), DATE '1900-01-01')
+    FROM {{ this }}
+)
+{% endif %}
+
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+On an incremental run, dbt may generate something conceptually like:
+
+```sql
+MERGE INTO daily_user_value_summary AS target
+USING new_data AS source
+ON target.d = source.d
+AND target.user_name = source.user_name
+
+WHEN MATCHED THEN UPDATE SET
+    value_sum = source.value_sum
+
+WHEN NOT MATCHED THEN INSERT (
+    d,
+    user_name,
+    value_sum
+)
+VALUES (
+    source.d,
+    source.user_name,
+    source.value_sum
+);
+```
+
+So the important idea is:
+
+```text
+You write SELECT.
+dbt writes CREATE / INSERT / MERGE / UPDATE depending on materialization.
+```
+
+For your case, the best dbt model is probably:
+
+```sql
+{{ config(
+    materialized='incremental',
+    unique_key=['d', 'user_name']
+) }}
+
+SELECT
+    t.d,
+    k.user_name,
+    SUM(t.value) AS value_sum
+FROM {{ source('raw', 'T') }} t
+JOIN {{ source('raw', 'K') }} k
+    ON t.user_id = k.user_id
+
+{% if is_incremental() %}
+WHERE t.d >= current_date() - INTERVAL 1 DAY
+{% endif %}
+
+GROUP BY
+    t.d,
+    k.user_name
+```
+
+This recalculates recent daily summaries and lets dbt merge them into the target table.
+
+Not exactly.
+
+In:
+
+```bash
+dbt run --select daily_user_value_summary
+```
+
+the value after `--select` is **not the destination table name**.
+
+It is the **dbt model name**.
+
+Usually the model name comes from the SQL filename.
+
+Example:
+
+```text
+models/daily_user_value_summary.sql
+```
+
+Then:
+
+```bash
+dbt run --select daily_user_value_summary
+```
+
+means:
+
+> “Run this dbt model.”
+
+---
+
+# How destination table is determined
+
+The actual destination table is determined by:
+
+* model name
+* schema
+* database
+* alias config
+* target profile
+
+---
+
+# Default behavior
+
+Suppose file:
+
+```text
+models/daily_user_value_summary.sql
+```
+
+contains:
+
+```sql
+{{ config(materialized='table') }}
+
+SELECT ...
+```
+
+dbt will typically create:
+
+```text
+<database>.<schema>.daily_user_value_summary
+```
+
+---
+
+# Example
+
+Suppose profile target is:
+
+```yaml
+database: analytics
+schema: gold
+```
+
+Then dbt creates:
+
+```text
+analytics.gold.daily_user_value_summary
+```
+
+---
+
+# You can override table name
+
+Using:
+
+```sql
+{{ config(
+    alias='user_daily_summary'
+) }}
+```
+
+Then model:
+
+```text
+daily_user_value_summary.sql
+```
+
+creates table:
+
+```text
+user_daily_summary
+```
+
+even though command remains:
+
+```bash
+dbt run --select daily_user_value_summary
+```
+
+because selection uses model name, not final table name.
+
+---
+
+# Important distinction
+
+## dbt model name
+
+Derived from file name:
+
+```text
+daily_user_value_summary.sql
+```
+
+---
+
+## Database table name
+
+Derived from:
+
+* model name
+* alias
+* schema
+* database
+* target
+
+---
+
+# Mental model
+
+Think of:
+
+```bash
+dbt run --select X
+```
+
+as:
+
+> “Execute transformation X”
+
+NOT:
+
+> “Insert into table X”
+
+---
+
+# You can see generated SQL
+
+Useful command:
+
+```bash
+dbt compile
+```
+
+Then inspect:
+
+```text
+target/compiled/
+```
+
+to see actual generated SQL including:
+
+* CREATE TABLE
+* MERGE
+* INSERT
+* etc.
+
+---
+
+# Example full flow
+
+File:
+
+```text
+models/summaries/daily_user_value_summary.sql
+```
+
+Command:
+
+```bash
+dbt run --select daily_user_value_summary
+```
+
+Generated target table:
+
+```text
+analytics.gold.user_daily_summary
+```
+
+if config contains:
+
+```sql
+{{ config(
+    schema='gold',
+    alias='user_daily_summary'
+) }}
+```
 
 [dbt Labs](https://www.getdbt.com/)
 
