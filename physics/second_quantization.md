@@ -23,9 +23,9 @@ Suppose you have three electrons.
 
 In ordinary quantum mechanics you write
 
-[
+$$
 \Psi(x_1,x_2,x_3)
-]
+$$
 
 where (x_1,x_2,x_3) are coordinates of the three electrons.
 
