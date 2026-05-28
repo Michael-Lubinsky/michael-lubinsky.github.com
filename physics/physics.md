@@ -10,6 +10,7 @@
 
 <https://scholar.google.com/>
 
+<https://link.springer.com/article/10.1007/s10773-023-05368-y> Tutorial: Topology, Waves, and the Refractive Index
 
 <https://www.sciencejournals.ru/catalog/rubrics/>
 
