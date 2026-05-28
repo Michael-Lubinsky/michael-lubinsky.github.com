@@ -6,6 +6,9 @@
 
 <https://habr.com/ru/companies/ruvds/articles/978320/>
 
+### Fix Git issues
+<https://habr.com/ru/companies/wildberries/articles/1039630/>
+
 <https://habr.com/ru/companies/amvera/articles/1010466/> reset revert restore
 
 <https://reg.cloud/blog/git-reset-kak-upravlyat-istoriej> Git reset
