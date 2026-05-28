@@ -31,9 +31,9 @@ where (x_1,x_2,x_3) are coordinates of the three electrons.
 
 For (N) particles:
 
-[
+$$
 \Psi(x_1,\ldots,x_N)
-]
+$$
 
 This becomes cumbersome when:
 
@@ -51,23 +51,23 @@ Instead of tracking particles, we track **occupation numbers** of quantum states
 
 Suppose available states are:
 
-[
+$$
 |1\rangle,\ |2\rangle,\ |3\rangle,\ldots
-]
+$$
 
 A state of the system is described by
 
-[
+$$
 |n_1,n_2,n_3,\ldots\rangle
-]
+$$
 
 where (n_i) tells how many particles occupy state (i).
 
 Example:
 
-[
+$$
 |2,0,1,0,\ldots\rangle
-]
+$$
 
 means:
 
@@ -81,29 +81,29 @@ means:
 
 The creation operator
 
-[
+$$
 a^\dagger_i
-]
+$$
 
 adds a particle to state (i).
 
 For bosons:
 
-[
+$$
 a^\dagger_i |n_i\rangle
 =======================
 
 \sqrt{n_i+1},|n_i+1\rangle
-]
+$$
 
 Example:
 
-[
+$$
 a^\dagger_3|2,0,1\rangle
 ========================
 
 \sqrt2,|2,0,2\rangle
-]
+$$
 
 One more particle appears in state 3.
 
@@ -113,27 +113,27 @@ One more particle appears in state 3.
 
 The annihilation operator
 
-[
+$$
 a_i
-]
+$$
 
 removes a particle.
 
-[
+$$
 a_i |n_i\rangle
 ===============
 
 \sqrt{n_i},|n_i-1\rangle
-]
+$$
 
 Example:
 
-[
+$$
 a_1|2,0,1\rangle
 ================
 
 \sqrt2,|1,0,1\rangle
-]
+$$
 
 ---
 
