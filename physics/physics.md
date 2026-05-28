@@ -15,7 +15,8 @@
 <https://link.springer.com/article/10.1007/s10773-023-05368-y> Tutorial: Topology, Waves, and the Refractive Index
 
 <https://matterviz.janosh.dev/>  Interactive web UIs for materials science  
-<https://www.hzdr.de/projects/fermisur/> Fermi Surfice
+<https://www.hzdr.de/projects/fermisur/> Fermi Surface
+<https://github.com/fermisurfaces/IFermi> Python Fermi Surface
 
 <https://www.sciencejournals.ru/catalog/rubrics/>
 
