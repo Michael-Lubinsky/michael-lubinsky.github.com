@@ -2,6 +2,8 @@
 
 <https://www.compadre.org/quantum/index.cfm>
 
+<https://www.st-andrews.ac.uk/physics/quvis/>
+
 <https://qutip.org/> Python and QM
 
 <https://en.wikipedia.org/wiki/List_of_open-access_journals>
