@@ -149,18 +149,18 @@ Examples:
 
 Their operators satisfy
 
-[
+$$
 [a_i,a_j^\dagger]
 =================
 
 \delta_{ij}
-]
+$$
 
 where
 
-[
+$$
 [A,B]=AB-BA.
-]
+$$
 
 ---
 
@@ -170,9 +170,9 @@ Fermions obey the Pauli principle.
 
 A state can contain only:
 
-[
+$$
 n_i=0 \quad \text{or} \quad 1.
-]
+$$
 
 Examples:
 
@@ -183,18 +183,18 @@ Examples:
 
 Operators satisfy anticommutation relations:
 
-[
+$$
 {c_i,c_j^\dagger}
 =================
 
 \delta_{ij}
-]
+$$
 
 where
 
-[
+$$
 {A,B}=AB+BA.
-]
+$$
 
 This automatically enforces the Pauli exclusion principle.
 
@@ -204,23 +204,23 @@ This automatically enforces the Pauli exclusion principle.
 
 Instead of writing
 
-[
+$$
 \Psi(x_1,x_2,\ldots,x_N),
-]
+$$
 
 we write
 
-[
+$$
 |\text{occupation numbers}\rangle.
-]
+$$
 
 For example:
 
-[
+$$
 |1s\uparrow,,
 1s\downarrow,,
 2s\uparrow\rangle.
-]
+$$
 
 The operators automatically handle exchange symmetry.
 
@@ -230,20 +230,20 @@ The operators automatically handle exchange symmetry.
 
 The next step is to define
 
-[
+$$
 \hat{\psi}(\mathbf r)
 =====================
 
 \sum_i \phi_i(\mathbf r),a_i.
-]
+$$
 
 This operator destroys a particle at position (\mathbf r).
 
 Its adjoint
 
-[
+$$
 \hat{\psi}^\dagger(\mathbf r)
-]
+$$
 
 creates a particle at position (\mathbf r).
 
@@ -257,17 +257,17 @@ This is the bridge to quantum field theory.
 
 The creation and annihilation operators first appear in the quantum harmonic oscillator:
 
-[
+$$
 a^\dagger,\ a.
-]
+$$
 
 There they raise and lower energy levels:
 
-[
+$$
 |n\rangle
 \to
 |n+1\rangle.
-]
+$$
 
 Second quantization generalizes this idea:
 
@@ -282,9 +282,9 @@ A photon is literally one quantum of excitation of an electromagnetic field mode
 
 A crystal may contain
 
-[
+$$
 10^{23}
-]
+$$
 
 electrons.
 
@@ -292,10 +292,10 @@ Writing a giant wavefunction is impossible.
 
 Using second quantization:
 
-[
+$$
 H=
 \sum_k \epsilon_k,c_k^\dagger c_k
-]
+$$
 
 describes the whole electron gas compactly.
 
