@@ -5,3 +5,8 @@
 <https://habr.com/ru/companies/otus/articles/1022192/>
 
 <https://concerningquality.com/queue-simulations/>
+
+
+## Semantic Layer
+
+<https://habr.com/ru/companies/axenix/articles/1040468/>
