@@ -2,11 +2,15 @@
 
 <https://mlbook.dataschool.io/>
 
+<https://habr.com/ru/articles/1040682/> ML без воды: от базы до Attention. Часть 6: Логистическая регрессия
+
 Precision, Recall, F-score, ROC-AUC
 <https://habr.com/ru/articles/1038730/>
 
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
+
+
 
 <https://www.linkedin.com/pulse/how-linear-classifier-gets-993-mnist-without-learning-taras-tsugrii-1cruc/>
 
