@@ -89,11 +89,7 @@ adds a particle to state (i).
 
 For bosons:
 
-$$
-a^\dagger_i |n_i\rangle
-=
-\sqrt{n_i+1},|n_i+1\rangle
-$$
+$$a^\dagger_i |n_i\rangle=\sqrt{n_i+1},|n_i+1\rangle$$
 
 Example:
 
