@@ -93,12 +93,7 @@ $$a^\dagger_i |n_i\rangle=\sqrt{n_i+1},|n_i+1\rangle$$
 
 Example:
 
-$$
-a^\dagger_3|2,0,1\rangle
-========================
-
-\sqrt2,|2,0,2\rangle
-$$
+$$a^\dagger_3|2,0,1\rangle= \sqrt2,|2,0,2\rangle$$
 
 One more particle appears in state 3.
 
@@ -115,19 +110,13 @@ $$
 removes a particle.
 
 $$
-a_i |n_i\rangle
-===============
-
-\sqrt{n_i},|n_i-1\rangle
+a_i |n_i\rangle=\sqrt{n_i},|n_i-1\rangle
 $$
 
 Example:
 
 $$
-a_1|2,0,1\rangle
-================
-
-\sqrt2,|1,0,1\rangle
+a_1|2,0,1\rangle=\sqrt2,|1,0,1\rangle
 $$
 
 ---
@@ -145,10 +134,7 @@ Examples:
 Their operators satisfy
 
 $$
-[a_i,a_j^\dagger]
-=================
-
-\delta_{ij}
+[a_i,a_j^\dagger]=\delta_{ij}
 $$
 
 where
@@ -179,10 +165,7 @@ Examples:
 Operators satisfy anticommutation relations:
 
 $$
-{c_i,c_j^\dagger}
-=================
-
-\delta_{ij}
+{c_i,c_j^\dagger}=\delta_{ij}
 $$
 
 where
@@ -226,10 +209,7 @@ The operators automatically handle exchange symmetry.
 The next step is to define
 
 $$
-\hat{\psi}(\mathbf r)
-=====================
-
-\sum_i \phi_i(\mathbf r),a_i.
+\hat{\psi}(\mathbf r)=\sum_i \phi_i(\mathbf r),a_i.
 $$
 
 This operator destroys a particle at position (\mathbf r).
@@ -288,8 +268,7 @@ Writing a giant wavefunction is impossible.
 Using second quantization:
 
 $$
-H=
-\sum_k \epsilon_k,c_k^\dagger c_k
+H=\sum_k \epsilon_k,c_k^\dagger c_k
 $$
 
 describes the whole electron gas compactly.
