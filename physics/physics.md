@@ -13,6 +13,8 @@
 
 <https://www.sciencejournals.ru/catalog/rubrics/>
 
+<https://arxiv.org/abs/2306.16165> Application of spin glass ideas in social sciences, economics and finance
+
 <https://habr.com/ru/articles/1038576/> эволюция, биология, геном, ландшафт приспособленности
 
 <img width="299" height="231" alt="image" src="https://github.com/user-attachments/assets/f1f046a4-8bb4-4517-b2bf-8ad641a74223" />
