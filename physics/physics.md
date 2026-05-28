@@ -15,6 +15,9 @@
 
 <https://habr.com/ru/articles/1038576/> эволюция, биология, геном, ландшафт приспособленности
 
+<img width="299" height="231" alt="image" src="https://github.com/user-attachments/assets/f1f046a4-8bb4-4517-b2bf-8ad641a74223" />
+
+
 ## QFT
 
 https://arxiv.org/pdf/2207.02243 Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
