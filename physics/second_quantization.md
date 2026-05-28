@@ -275,4 +275,133 @@ describes the whole electron gas compactly.
 
 Most of modern condensed matter theory—superconductivity, phonons, magnons, excitons, quantum Hall effect, topological matter—is written almost entirely in second-quantized language.
 
- 
+ The square root factor
+
+$$
+a^\dagger |n\rangle=
+\sqrt{n+1},|n+1\rangle
+$$
+
+is not arbitrary. It is required so that the creation and annihilation operators satisfy the bosonic commutation relation
+
+$$
+[a,a^\dagger] = 1.
+[a,a^\dagger]=1
+$$
+
+### Why can't we simply write
+
+$$
+a^\dagger |n\rangle = |n+1\rangle ?
+$$
+
+Suppose we tried
+
+$$
+a^\dagger |n\rangle = c_n |n+1\rangle,
+$$
+
+where (c_n) is some unknown coefficient.
+
+Similarly,
+
+$$
+a |n\rangle = d_n |n-1\rangle.
+$$
+
+The coefficients must be chosen so that
+
+$$
+[a,a^\dagger]|n\rangle = |n\rangle.
+$$
+
+Solving this condition gives
+
+$$
+c_n=\sqrt{n+1},
+\qquad
+d_n=\sqrt{n}.
+$$
+
+Therefore
+
+$$
+a^\dagger |n\rangle=\sqrt{n+1},|n+1\rangle,
+$$
+
+$$
+a |n\rangle=\sqrt{n},|n-1\rangle.
+$$
+
+### Physical interpretation
+
+The probability amplitude for adding a boson to a state containing (n) bosons grows as
+
+$$
+\sqrt{n+1}.
+$$
+
+Therefore the probability itself grows as
+
+$$
+|\sqrt{n+1}|^2 = n+1.
+$$
+
+This is called **bosonic enhancement** or **stimulated emission**.
+
+A boson prefers to enter a state that already contains bosons.
+
+Examples:
+
+* Laser photons
+* Bose-Einstein condensates
+* Phonons in a crystal
+
+If a mode already contains (n) photons, emission into that mode is (n+1) times more likely than emission into an empty mode.
+
+### Example
+
+For (n=0):
+
+$$
+a^\dagger|0\rangle=|1\rangle.
+$$
+
+The coefficient is
+
+$$
+\sqrt{1}=1.
+$$
+
+For (n=3):
+
+$$
+a^\dagger|3\rangle=
+
+2|4\rangle.
+$$
+
+because
+
+$$
+\sqrt{4}=2.
+$$
+
+The amplitude doubles, and the probability of creating another boson in that state is four times larger than for the vacuum.
+
+### Connection to the harmonic oscillator
+
+The same square roots appear in the quantum harmonic oscillator:
+
+$$
+a^\dagger|n\rangle=
+
+\sqrt{n+1}|n+1\rangle,
+$$
+
+$$
+a|n\rangle=\sqrt{n}|n-1\rangle.
+]
+
+Second quantization essentially treats each quantum state as a harmonic oscillator. The occupation number (n) becomes the oscillator's excitation number, which is why the same square-root factors appear.
+
