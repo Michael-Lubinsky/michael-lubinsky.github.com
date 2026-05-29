@@ -125,7 +125,7 @@ Vitaly Vanchurin
 
 
 ## Quantum Mechanics
-<https://www.amazon.com/dp/B0GPLHZH42> Book
+<https://www.amazon.com/stores/Taeryeon-Kim/author/B0GP5PJM23> Books
 
 <https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
