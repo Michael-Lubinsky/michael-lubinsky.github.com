@@ -1,5 +1,7 @@
 ## Math
 
+<https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
+
 <https://www.mdpi.com/>  Open Access Journals
 
 <https://old.mccme.ru/dubna/>
