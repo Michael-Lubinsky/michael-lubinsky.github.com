@@ -178,8 +178,12 @@ Veritasium: Something Strange Happens When You Trust Quantum Mechanics
 Density matrix in QM
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNCI6YfyHm4-NDgcXs9TQp9d>
 
-### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers. 
- 
+### Pauli’s Exclusion Principle — No two electrons can share the same quantum numbers
+
+<https://www.nature.com/articles/d41586-025-00731-x>
+
+<https://habr.com/ru/articles/1040858/> translation of link above
+
 <https://arxiv.org/pdf/quant-ph/0511002.pdf>  Indistinguishable Particles in Quantum Mechanics  
 <https://arxiv.org/pdf/1902.00499>  
 <https://arxiv.org/pdf/1311.5999>  The Pauli principle and magnetism  
