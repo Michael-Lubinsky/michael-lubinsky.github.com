@@ -2,6 +2,9 @@
 
 <https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
 
+<img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
+
+
 <https://www.mdpi.com/>  Open Access Journals
 
 <https://old.mccme.ru/dubna/>
