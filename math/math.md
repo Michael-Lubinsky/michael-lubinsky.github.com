@@ -15,6 +15,8 @@
 Летняя школа «Современная математика» имени Виталия Арнольда, 2024
  <https://www.mathnet.ru/conf2462>
 
+ <https://www.klex.ru/razdel/math/>
+
 ## ТРИВИУМ АРНОЛЬДА
 <https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172   
 <https://www.youtube.com/watch?v=3fgZlpH0N_M>  Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
