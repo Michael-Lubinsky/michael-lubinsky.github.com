@@ -4,6 +4,8 @@
 
 <https://death.andgravity.com/dynamodb-model>
 
+<https://death.andgravity.com/dynamodb-patterns>
+
 
 ### Download DynamoDB table as JSONL
 ```python
