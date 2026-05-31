@@ -1,3 +1,6 @@
+
+<https://github.com/Jerry-0821/ml-dl-formula-cheatsheet>
+
 ## Activation Function
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/8c2c29f6-8347-4293-a636-463702307afc" />
 
