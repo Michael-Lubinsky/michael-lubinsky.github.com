@@ -4,6 +4,10 @@
 
 <https://shbhmrzd.github.io/ai/ml-foundations/llm-training/2026/05/29/how-llms-learn.html>
 
+<https://medium.com/@the_turingetic_guy/large-scale-distributed-llm-inference-part-1-54343375c2c4>
+
+<https://medium.com/@rtxtdfs/large-scale-distributed-llm-inference-part-2-modern-attention-mechanisms-that-make-large-scale-09ba8d6581e1>
+
 Умножаем матрицы в библиотеке для LLM-расчётов • C • Live coding
 <https://www.youtube.com/watch?v=gvFgDEq0cok>
 Olga Pavlova
