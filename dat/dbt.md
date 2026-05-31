@@ -1317,13 +1317,7 @@ columns:
 | `set`      | Variable assignment |
 | `do`       | Execute expression  |
 
-Example:
-
-```jinja
-{% macro hello(name) %}
-    hello {{ name }}
-{% endmacro %}
-```
+ 
 
 ---
 
