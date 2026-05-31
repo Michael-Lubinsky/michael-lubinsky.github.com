@@ -1,4 +1,8 @@
-## CUDA
+## GPU CUDA
+
+ <https://enccs.github.io/gpu-programming/2-gpu-ecosystem/>
+ 
+<https://leetarxiv.substack.com/p/learning-cuda-on-a-budget-on-google>
 
 <<https://www.packtpub.com/en-us/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803245423>>
 
