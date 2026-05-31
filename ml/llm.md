@@ -1,5 +1,7 @@
 ### LLM 
 
+<https://shbhmrzd.github.io/ai/ml-foundations/llm-training/2026/05/27/how-llms-process-text.html>
+
 <https://shbhmrzd.github.io/ai/ml-foundations/llm-training/2026/05/29/how-llms-learn.html>
 
 Умножаем матрицы в библиотеке для LLM-расчётов • C • Live coding
