@@ -12,6 +12,10 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+## QM Done Right
+<https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
+<https://www.amazon.com/Quantum-Mechanics-Done-Right-Researcher/dp/3031878442>
+
 <https://scholar.google.com/>
 
 <https://link.springer.com/article/10.1007/s10773-023-05368-y> Tutorial: Topology, Waves, and the Refractive Index
