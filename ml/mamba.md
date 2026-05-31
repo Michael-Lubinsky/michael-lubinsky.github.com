@@ -3,13 +3,15 @@
 
 ## ML Links
 
+<https://ainewshub.live/concepts>
+
 <https://github.com/ATOM00blue/machine-learning-library>
 
 <https://jshn9515.github.io/deep-learning-notes/en/index.html>
 
 <https://habr.com/ru/articles/1037066/> почему глубокие нейросети умнее
 
-<https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
+
 
 <https://www.freecodecamp.org/news/learn-the-foundations-of-machine-learning-and-artificial-intelligence/>
 
