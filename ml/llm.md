@@ -1,5 +1,7 @@
 ### LLM 
 
+<https://shbhmrzd.github.io/ai/ml-foundations/llm-training/2026/05/29/how-llms-learn.html>
+
 Умножаем матрицы в библиотеке для LLM-расчётов • C • Live coding
 <https://www.youtube.com/watch?v=gvFgDEq0cok>
 Olga Pavlova
