@@ -4,8 +4,8 @@
 <https://www.youtube.com/watch?v=gvFgDEq0cok>
 Olga Pavlova
 
-<https://github.com/jmaczan/tiny-vllm> implementation on CUDA 
-<https://www.deep-ml.com/projects> implementation on CUDA
+<https://github.com/jmaczan/tiny-vllm> C++ implementation on CUDA 
+<https://www.deep-ml.com/projects> implementation from scratch
 
 <https://simonwillison.net/2026/May/19/5-minute-llms/>
 
