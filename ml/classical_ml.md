@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/1041488/>  ML без воды: от базы до Attention. Часть 7: SVM и SGD
 
+<https://habr.com/ru/articles/1042260/>  ML без воды: от базы до Attention. Часть 8: Kernel Trick
+
 Precision, Recall, F-score, ROC-AUC
 <https://habr.com/ru/articles/1038730/>
 
