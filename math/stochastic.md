@@ -9,6 +9,8 @@
 
 ## Stochastic calculus
 
+<https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
+
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbf7JvGVSlB9Jgts4VNNwS-> MPTI
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvaBTsYELeTKY76rhcweh1Ly> MPTI
 
