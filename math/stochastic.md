@@ -11,6 +11,10 @@
 
 <https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
 
+<https://synset.com/pdf/ito.pdf> Stochastic world. Stepanov  (in russian)
+
+<https://en.wikipedia.org/wiki/Stratonovich_integral> Stratonovich
+
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbf7JvGVSlB9Jgts4VNNwS-> MPTI
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvaBTsYELeTKY76rhcweh1Ly> MPTI
 
@@ -18,7 +22,7 @@
 <https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
 
-<https://synset.com/pdf/ito.pdf> Stochastic world. Stepanov  (in russian)
+
 
 <https://news.ycombinator.com/item?id=45116849> Random walk
 
