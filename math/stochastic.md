@@ -1,3 +1,7 @@
+## Gaussian Process
+
+<https://en.wikipedia.org/wiki/Gaussian_process>
+
 
 ## Stochastic calculus
 
