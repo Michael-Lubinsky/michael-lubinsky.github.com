@@ -71,14 +71,7 @@ Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 
 
 
-## Probability and Stats
-<https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-book.html> High-Dimensional Probability. Roman Vershynin
 
-<https://medium.com/pythoneers/5-underrated-statistical-tests-you-didnt-know-you-needed-4224095233e8>
-
-<https://samwho.dev/reservoir-sampling/> <https://news.ycombinator.com/item?id=43928315>  reservoir sampling
-
-<https://www.mathpages.com/home/iprobabi.htm>
 
 ## Other topics 
 Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
