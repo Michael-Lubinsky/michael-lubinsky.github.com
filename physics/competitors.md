@@ -2,6 +2,8 @@
 
 <https://www.falstad.com/mathphysics.html>
 
+<https://github.com/r0yb0t1th3s3/Schrodinger-Explorer>
+
 1-D
 <https://blog.gwlab.page/solving-1-d-schrodinger-equation-in-python-dcb3518ce454>
 
