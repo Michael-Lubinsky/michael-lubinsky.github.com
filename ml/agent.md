@@ -89,6 +89,8 @@
 
 ## Code search - better then grep, saves tokens
 
+<https://habr.com/ru/articles/1042930/>
+
 <https://habr.com/ru/articles/1038474/> CodeGraph
 
 <https://habr.com/ru/articles/1031878/> SocratiCode
