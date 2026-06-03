@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/companies/doubletapp/articles/1036872/>
 
+<https://habr.com/ru/companies/svoi_ru/articles/1043188/>
+
 <https://www.youtube.com/watch?v=VctYHtCap3o>  Agents Week 2026 | Лекция 1.2 2026 (ru)
 
 <https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week | Лекция 4 | 2026 (ru)
