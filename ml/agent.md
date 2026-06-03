@@ -30,6 +30,8 @@
 
 <https://habr.com/ru/articles/1035300/> метрики характерные для почти любой агентской системы
 
+<https://habr.com/ru/articles/1043198/> Как превратить стохастический ИИ в детерминированную машину
+
 
 ### which skills, tools and MCP are available in this session?
 
