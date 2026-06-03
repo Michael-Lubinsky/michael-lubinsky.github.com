@@ -63,6 +63,9 @@ In the language of groups and harmonic analysis, both are instances of the same 
 
 This is Pontryagin duality — the deeper reason they're the same phenomenon.
 
+<https://www.youtube.com/watch?v=r18Gi8lSkfM> Videos by Eugene Khutoryansky
+
+
 <https://www.youtube.com/watch?v=08mmKNLQVHU>
 
 <https://www.youtube.com/watch?v=9bqrTYCS6DQ>
