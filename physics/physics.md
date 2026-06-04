@@ -55,6 +55,8 @@
 
 <https://arxiv.org/pdf/math-ph/0204014> QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
 
+<https://github.com/manjunath5496/13-Best-Quantum-Field-Theory-Books-for-Beginners/tree/master>
+
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
 
