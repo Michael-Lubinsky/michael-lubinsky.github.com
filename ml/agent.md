@@ -34,8 +34,9 @@
 
 <https://habr.com/ru/articles/1043198/> Как превратить стохастический ИИ в детерминированную машину
 
+<https://agenticeng.ru/>
 
-### which skills, tools and MCP are available in this session?
+Claude quastion: which skills, tools and MCP are available in this session?
 
 
 ###  Skills (via /skill-name or Skill tool)
