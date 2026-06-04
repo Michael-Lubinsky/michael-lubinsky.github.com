@@ -36,7 +36,7 @@
 
 <https://agenticeng.ru/>
 
-Claude quastion: which skills, tools and MCP are available in this session?
+Claude question: which skills, tools and MCP are available in this session?
 
 
 ###  Skills (via /skill-name or Skill tool)
