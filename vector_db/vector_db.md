@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=Q6TBHDgWCDQ> Embedding
 
+<https://www.youtube.com/watch?v=EOgwODW67PE&list=PL0Ks75aof3ThuLLtLIVl_KPUDDQlTDyJI>
+
 <https://habr.com/ru/companies/beeline_cloud/articles/1040100/>
 
 <https://machinelearningmastery.com/vector-databases-explained-in-3-levels-of-difficulty/>
