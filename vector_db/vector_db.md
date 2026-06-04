@@ -1,5 +1,7 @@
 ## Embedding and vector databases
 
+<https://www.youtube.com/watch?v=Q6TBHDgWCDQ> Embedding
+
 <https://habr.com/ru/companies/beeline_cloud/articles/1040100/>
 
 <https://machinelearningmastery.com/vector-databases-explained-in-3-levels-of-difficulty/>
