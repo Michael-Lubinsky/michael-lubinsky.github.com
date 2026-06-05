@@ -7,6 +7,9 @@ scikit-learn <https://habr.com/ru/articles/1031044/>
 ### Decision Trees
 <https://miptgirl.medium.com/mining-rules-from-data-4fd9f559c608>
 
+## Gaussian Process
+https://www.youtube.com/watch?v=qXbv3x03MIw
+
 ### RandomForest
 
 <https://towardsdatascience.com/understanding-random-forest-using-python-scikit-learn/>
