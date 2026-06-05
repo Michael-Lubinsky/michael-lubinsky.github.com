@@ -16,7 +16,7 @@ Precision, Recall, F-score, ROC-AUC
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
-Gaussian Process <https://www.youtube.com/watch?v=5Cqi-RAwAu8>
+Gaussian Process <https://www.youtube.com/watch?v=zquAOOjG2iI>
 
 <https://www.linkedin.com/pulse/how-linear-classifier-gets-993-mnist-without-learning-taras-tsugrii-1cruc/>
 
