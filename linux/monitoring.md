@@ -446,7 +446,9 @@ To manually remove old data (not recommended unless necessary), you can:
 2. Delete older TSDB blocks from the `data/` directory
 3. Restart Prometheus
 
----
+## VictoriaMetrics
+
+<https://habr.com/ru/companies/kts/articles/1044102/>
 
 ### 🗃 Long-Term Retention Solution
 
