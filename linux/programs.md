@@ -1,4 +1,8 @@
 ## Tools and Programs
+
+Extract plain text from any image
+<https://github.com/kouhxp/textsnap>
+
 <https://apps.apple.com/us/app/windows-app/id1295203466?mt=12> Remote Desktop from Mac To Windows
 
 <https://github.com/crescentpartha/CheatSheets-for-Developers>
