@@ -450,6 +450,8 @@ To manually remove old data (not recommended unless necessary), you can:
 
 <https://habr.com/ru/companies/kts/articles/1044102/>
 
+<https://habr.com/ru/companies/t2/articles/922168/>
+
 ### 🗃 Long-Term Retention Solution
 
 If you need metrics for **months or years**, Prometheus alone isn't ideal.
