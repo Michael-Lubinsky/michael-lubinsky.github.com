@@ -3,6 +3,10 @@
 
 <https://github.com/LukasMasuch/best-of-ml-python>
 
+## FAISS Facebook AI Similarity Search)
+
+<https://fremaconsulting.ch/blog/faiss>
+
 ## Activation Function
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/8c2c29f6-8347-4293-a636-463702307afc" />
 
