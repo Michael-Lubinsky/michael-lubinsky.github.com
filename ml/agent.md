@@ -1,6 +1,6 @@
 ## Agents
 
-<https://news.ycombinator.com/item?id=48413629>
+<https://news.ycombinator.com/item?id=48413629>  SDD , harness, etc
 
 <https://github.com/DrCatHicks/learning-opportunities>
 
@@ -218,6 +218,10 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 ### Spec Driven Development, OpenSpec
 
+<https://github.com/cameronsjo/spec-compare>
+
+<https://news.ycombinator.com/item?id=48398925>
+
 <https://habr.com/ru/companies/yadro/articles/1038084/>
 
 <https://habr.com/ru/companies/yadro/articles/1007480/>
@@ -231,6 +235,12 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 <https://habr.com/ru/articles/1007048/>
 
 <https://habr.com/ru/articles/985990/>
+
+<https://github.com/sermakarevich/sddw>
+
+<https://news.ycombinator.com/item?id=48231575>
+
+<https://docs.google.com/presentation/d/1SjKXF7hkoqyiN9-3tBGY4PDGvS3iqVyovDlJC_hYvMA/edit?usp=sharing>
 
 ## MCP vs Skills
 
