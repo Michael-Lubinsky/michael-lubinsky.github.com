@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1005390/>
 
+<https://habr.com/ru/articles/1044300/>
+
 <https://medium.com/@shouke.wei/fastapi-fastapi-new-launch-a-new-fastapi-project-in-seconds-00c450254c00>
 
 <https://github.com/ydjin0602/fastapi-template>
