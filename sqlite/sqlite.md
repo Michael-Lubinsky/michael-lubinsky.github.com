@@ -1,6 +1,9 @@
 ### SQLite
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>  
 <https://visualdb.com/sqlite/>   <https://github.com/Maxteabag/sqlit>
+
+
+<https://andersmurphy.com/2026/06/05/the-perils-of-uuid-primary-keys-in-sqlite.html>
 ```
             "PRAGMA foreign_keys=ON;"
             "PRAGMA journal_mode = WAL;"
