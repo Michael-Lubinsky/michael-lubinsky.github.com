@@ -1,5 +1,7 @@
 ## Agents
 
+<https://news.ycombinator.com/item?id=48413629>
+
 <https://github.com/DrCatHicks/learning-opportunities>
 
 <https://habr.com/ru/companies/doubletapp/articles/1036872/>
