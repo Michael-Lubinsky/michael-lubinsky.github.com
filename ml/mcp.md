@@ -1,5 +1,7 @@
 ## MCP
 
+<https://realpython.com/courses/connecting-llms-data-python-mcp-servers/>
+
 <https://modelcontextprotocol.io/>
 
 <https://realpython.com/python-mcp/>
