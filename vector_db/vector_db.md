@@ -1,5 +1,7 @@
 ## Embedding and vector databases
 
+<https://sgnt.ai/p/embeddings-explainer/>
+
 <https://www.youtube.com/watch?v=Q6TBHDgWCDQ> Embedding
 
 <https://www.youtube.com/watch?v=EOgwODW67PE&list=PL0Ks75aof3ThuLLtLIVl_KPUDDQlTDyJI>
