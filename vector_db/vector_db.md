@@ -1,5 +1,7 @@
 ## Embedding and vector databases
 
+<https://vickiboykis.com/what_are_embeddings/>
+
 <https://sgnt.ai/p/embeddings-explainer/>
 
 <https://www.youtube.com/watch?v=Q6TBHDgWCDQ> Embedding
@@ -17,7 +19,7 @@
 <https://huggingface.co/spaces/hesamation/primer-llm-embedding>
 
 
-cosine similarity: 
+## Cosine Similarity: 
 ```
 similarity = (a*b) / (|a| * |b|)
 
@@ -26,7 +28,18 @@ similarity =
         1 if vectors are aligned
         -1 if vectors are in opposite direction
 ```
-<https://vickiboykis.com/what_are_embeddings/>
+
+### Problems with cosine similarity as a measure of similarity
+```
+Using cosine similarity as a training objective for machine learning models is perfectly valid and mathematically sound.
+It’s a combination of two fundamental operations in deep learning: dot product and normalization.
+ The trouble begins when we venture beyond its comfort zone, specifically when:
+
+- The cost function used in model training isn’t cosine similarity (usually it is the case!).
+- The training objective differs from what we actually care about.
+```
+
+
 
 <https://habr.com/ru/companies/beeline_cloud/articles/1033544/>
 
