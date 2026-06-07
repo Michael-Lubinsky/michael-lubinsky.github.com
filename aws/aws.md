@@ -139,6 +139,7 @@ Here's a concise comparison:
 | Consumer Model | One message = one consumer     | Multiple consumers possible    |
 | Use Case       | Decoupling apps, simple queues | Stream processing, analytics   |
 
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/b0d6a84f-8995-4bb6-8d62-749dbae2ebbd" />
 
 
 <!--
