@@ -10,6 +10,8 @@
 
 <https://medium.com/@rtxtdfs/large-scale-distributed-llm-inference-part-2-modern-attention-mechanisms-that-make-large-scale-09ba8d6581e1>
 
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNAz_J4tGrLSI--CzdYyhnj3>
+
 Умножаем матрицы в библиотеке для LLM-расчётов • C • Live coding
 <https://www.youtube.com/watch?v=gvFgDEq0cok>
 Olga Pavlova
