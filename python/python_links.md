@@ -4,6 +4,9 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+### HTTP
+<https://github.com/pydantic/httpx2>
+
 <https://github.com/jawah/niquests> fork of request for HTTP
 
 <https://realpython.com/courses/downloading-files-urls/> Downloading Files From URLs With Python
