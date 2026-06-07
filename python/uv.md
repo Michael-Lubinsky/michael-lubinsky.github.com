@@ -2,6 +2,8 @@ pip install uv
 
 <https://mathspp.com/blog/uv-cheatsheet>
 
+<https://habr.com/ru/articles/1044550/>
+
 <https://habr.com/ru/articles/969296/>
 
 ### uv init
