@@ -28,6 +28,7 @@ similarity =
         1 if vectors are aligned
         -1 if vectors are in opposite direction
 ```
+<https://p.migdal.pl/blog/2025/01/dont-use-cosine-similarity/>
 
 ### Problems with cosine similarity as a measure of similarity
 ```
