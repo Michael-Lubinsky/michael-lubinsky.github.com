@@ -1,5 +1,7 @@
 ## Agents
 
+<https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
+
 <https://news.ycombinator.com/item?id=48413629>  SDD , harness, etc
 
 <https://github.com/DrCatHicks/learning-opportunities>
