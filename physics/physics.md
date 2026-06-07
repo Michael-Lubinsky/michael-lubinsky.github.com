@@ -26,6 +26,8 @@
 
 <https://www.klex.ru/razdel/science/>
 
+## Solid State Physics
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X>
 ## Fermi Surface
 <https://en.wikipedia.org/wiki/Fermi_surface> Fermi Surface  
 <https://iopscience.iop.org/article/10.1088/0031-8949/91/5/053009/pdf>  
