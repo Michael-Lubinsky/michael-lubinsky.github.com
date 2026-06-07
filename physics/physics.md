@@ -16,7 +16,7 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
-## QM Done Right
+### QM Done Right book
 <https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
 <https://www.amazon.com/Quantum-Mechanics-Done-Right-Researcher/dp/3031878442>
 
@@ -48,6 +48,7 @@
 
 
 ## QFT
+<https://www.youtube.com/@dmitrynaumov6099>
 
 <https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
 
