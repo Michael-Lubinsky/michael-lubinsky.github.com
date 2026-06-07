@@ -1,3 +1,25 @@
+## ACID
+
+<https://en.wikipedia.org/wiki/ACID>
+
+ACID safety properties:
+
+### Atomicity: 
+either all parts of the transaction are committed or all parts are aborted. Martin Kleppmann suggests calling this property “Abortability” because it reflects the meaning more accurately and avoids confusion between atomic commit/abort and atomic visibility.
+
+### Consistency: 
+historically added for a better-sounding acronym and rather application-specific than DBMS-specific.
+
+### Isolation: 
+concurrently executed transactions are isolated from each other. The results of transaction execution should look like the transactions have been executed serially, one by one.
+
+### Durability: 
+committed data is never lost.
+
+
+## Serializable isolation level
+<https://blog.ydb.tech/do-we-fear-the-serializable-isolation-level-more-than-we-fear-subtle-bugs-5a025401b609>
+
 ## Теория: уровни изоляции Postgres
 
 <https://habr.com/ru/articles/1044190/>
