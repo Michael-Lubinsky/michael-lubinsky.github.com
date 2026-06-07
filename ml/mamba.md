@@ -3,6 +3,8 @@
 
 <https://github.com/LukasMasuch/best-of-ml-python>
 
+<https://habr.com/ru/articles/1044422/> Как дообучить LLM. Рассказываю шаг за шагом
+
 ## FAISS Facebook AI Similarity Search)
 
 <https://fremaconsulting.ch/blog/faiss>
