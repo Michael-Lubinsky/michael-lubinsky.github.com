@@ -2,7 +2,11 @@
 
 <https://en.wikipedia.org/wiki/ACID>
 
-ACID safety properties:
+https://habr.com/ru/companies/otus/articles/968212/
+
+<https://habr.com/ru/articles/961134/>
+
+ACID  properties:
 
 ### Atomicity: 
 either all parts of the transaction are committed or all parts are aborted. Martin Kleppmann suggests calling this property “Abortability” because it reflects the meaning more accurately and avoids confusion between atomic commit/abort and atomic visibility.
