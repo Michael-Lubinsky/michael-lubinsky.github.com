@@ -9,6 +9,8 @@
 
 ## Stochastic calculus
 
+<https://www.youtube.com/watch?v=Devm4ElEhGc>
+
 <https://www.youtube.com/@stochastip>
 
 <https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
