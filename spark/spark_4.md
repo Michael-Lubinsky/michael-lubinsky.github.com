@@ -7,6 +7,9 @@
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
 ## Declarative Pipeline
+
+<https://spark.apache.org/docs/latest/declarative-pipelines-programming-guide.html>
+
 <https://www.waitingforcode.com/apache-spark-structured-streaming/spark-declarative-pipelines-101/read>
 
 <https://medium.com/apache-spark/declarative-pipelining-in-apache-spark-part-1-focus-on-your-data-not-your-dags-553a1056d178>
