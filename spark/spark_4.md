@@ -11,6 +11,7 @@
 
 <https://medium.com/apache-spark/declarative-pipelining-in-apache-spark-part-1-focus-on-your-data-not-your-dags-553a1056d178>
 
+<https://medium.com/apache-spark/apache-spark-patterns-for-agent-safe-data-pipelines-0d58d6d84fa4>
 
 ## DataSource API
 
