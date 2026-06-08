@@ -9,6 +9,8 @@
 
 ## Stochastic calculus
 
+<https://www.youtube.com/@stochastip>
+
 <https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
 
 <https://synset.com/pdf/ito.pdf> Stochastic world. Stepanov  (in russian)
