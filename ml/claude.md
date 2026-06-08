@@ -215,3 +215,56 @@ Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-out
 → Следи за r/ClaudeAI и r/ClaudeCode на Reddit
 
 <https://github.com/shanraisshan/claude-code-best-practice>
+
+1. Claude 101
+🔗 https://lnkd.in/dZcGAhHE
+
+2. AI Fluency: Framework & Foundations
+🔗 https://lnkd.in/d9ga4Q5C
+
+📌 For developers:
+
+3. Building With The Claude API
+🔗 https://lnkd.in/dz3_CNxG
+
+4. Introduction To Agent Skills
+🔗 https://lnkd.in/dkDsEnr8
+
+5. Claude Code In Action
+🔗 https://lnkd.in/d4RQw-KE
+
+6. Introduction To Model Context Protocol
+🔗 https://lnkd.in/djUQjceP
+
+7. Model Context Protocol: Advanced Topics
+🔗 https://lnkd.in/dJu_sHn9
+
+8. Claude With Amazon Bedrock
+🔗 https://lnkd.in/dNASRppt
+
+9. Claude With Google Cloud's Vertex AI
+🔗 https://lnkd.in/dY3MWeRm
+
+📌 For educators & institutions:
+
+10. Teaching AI Fluency
+🔗 https://lnkd.in/dF8CVXSM
+
+11. AI Fluency For Educators
+🔗 https://lnkd.in/duThtzpE
+
+12. AI Fluency For Students
+🔗 https://lnkd.in/dSur3SQe
+
+13. AI Fluency For Nonprofits
+🔗 https://lnkd.in/dVfyS-vT
+
+All self-paced
+All free
+
+And beyond Skilljar, Anthropic also has free Jupyter Notebook tutorials on GitHub :
+API Fundamentals 
+→ Prompt Engineering 
+→ Real World Prompting 
+→ Evaluations 
+→ Tool Use
