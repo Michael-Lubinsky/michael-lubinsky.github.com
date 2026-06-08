@@ -9,3 +9,5 @@
 <https://www.deep-ml.com/projects/flash-attention-in-cuda-from-scratch>
 
 <https://github.com/jmaczan/tiny-vllm> C++ implementation on CUDA
+
+<https://habr.com/ru/companies/selectel/articles/1042820/>
