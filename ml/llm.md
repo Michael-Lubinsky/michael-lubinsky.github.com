@@ -6,6 +6,10 @@
 
 <https://shbhmrzd.github.io/ai/ml-foundations/llm-training/2026/05/29/how-llms-learn.html>
 
+<https://awesomeneuron.substack.com/p/a-visual-guide-to-llms-part-1>
+
+<https://awesomeneuron.substack.com/p/a-visual-guide-to-llms-part-2>
+
 <https://medium.com/@the_turingetic_guy/large-scale-distributed-llm-inference-part-1-54343375c2c4>
 
 <https://medium.com/@rtxtdfs/large-scale-distributed-llm-inference-part-2-modern-attention-mechanisms-that-make-large-scale-09ba8d6581e1>
