@@ -19,6 +19,8 @@ scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
 ## Gaussian Process 
+
+<https://kelvinpaschal.com/blog/kernel-functions/>  
 <https://distill.pub/2019/visual-exploration-gaussian-processes/>
 <https://www.youtube.com/watch?v=zquAOOjG2iI>
 
