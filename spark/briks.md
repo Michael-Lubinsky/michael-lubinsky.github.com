@@ -33,6 +33,8 @@ Databricks Masterclass
 
 <https://www.waitingforcode.com/>  Bartosz Konieczny
 
+<https://www.waitingforcode.com/databricks/hints-databricks/read>
+
 <https://buf.build/resources/data-engineering-design-patterns>
 
 <https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf>
