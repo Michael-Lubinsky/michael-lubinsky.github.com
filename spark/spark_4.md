@@ -1,12 +1,27 @@
+## Spark Structured Streaming
+
+<https://vutr.substack.com/p/everything-you-need-to-know-about-46d>
+
+<https://medium.com/@lisancao/spark-structured-streaming-the-full-latency-spectrum-cc2231998763>
+
+## Autoloader
+
+<https://medium.com/@asindugayangana/databricks-auto-loader-best-practices-for-reliable-and-scalable-data-ingestion-30e65bf4c520>
+
+## Handling Late Arrival
+
+<https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
+
 ## SPARK 4
 
 <https://codecut.ai/pyspark-4-0-whats-new/>
 
-<https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
 
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
 ## Declarative Pipeline
+
+<https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
 
 <https://spark.apache.org/docs/latest/declarative-pipelines-programming-guide.html>
 
