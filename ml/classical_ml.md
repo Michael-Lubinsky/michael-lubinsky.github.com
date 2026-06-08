@@ -12,6 +12,9 @@
 
 <https://habr.com/ru/articles/1044364/> ML без воды: от базы до Attention. Часть 9: Дерево решений
 
+
+<https://habr.com/ru/articles/1045016/>  ML без воды: от базы до Attention. Часть 10: Бэггинг и случайный лес
+
 Precision, Recall, F-score, ROC-AUC
 <https://habr.com/ru/articles/1038730/>
 
