@@ -1,33 +1,44 @@
-Stream processing with Apache Spark Structured Streaming, Apache Kafka, and Apache Flink:
-https://www.youtube.com/playlist?list=PLI1kSUAlZf2U71IAu_wxBJB9a2jsbz6Xe
+## Stream processing with Apache Spark Structured Streaming, Apache Kafka, and Apache Flink
 
-https://github.com/bartosz25/master-stream-processing  
-https://github.com/bartosz25/master-stream-processing-homework
+<https://www.youtube.com/playlist?list=PLI1kSUAlZf2U71IAu_wxBJB9a2jsbz6Xe>
+
+<https://github.com/bartosz25/master-stream-processing>
+
+<https://github.com/bartosz25/master-stream-processing-homework>
 
 Databricks X PySpark INTERVIEW QUESTIONS (2026 Guide) | PySpark Real-Time Scenarios
-https://www.youtube.com/watch?v=__9tqYjEJhE
+<https://www.youtube.com/watch?v=__9tqYjEJhE>
 
-https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4
+Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
+<https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f>
 
-https://medium.com/@gilles.philippart/build-a-streaming-data-lakehouse-with-apache-flink-kafka-iceberg-and-polaris-473c47e04525
+<https://medium.com/@lisancao/spark-structured-streaming-the-full-latency-spectrum-cc2231998763>
 
-https://medium.com/pythoneers/unlocking-pythons-hidden-power-how-i-built-a-lightning-fast-real-time-data-pipeline-in-just-7-98051ca1eb20
+<https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
 
+<https://medium.com/pythoneers/building-a-real-time-data-pipeline-in-python-with-zero-bloat-e097377c10c4>
 
+<https://medium.com/@gilles.philippart/build-a-streaming-data-lakehouse-with-apache-flink-kafka-iceberg-and-polaris-473c47e04525>
+
+<https://medium.com/pythoneers/unlocking-pythons-hidden-power-how-i-built-a-lightning-fast-real-time-data-pipeline-in-just-7-98051ca1eb20>
+
+## CDC
+
+<https://blog.picnic.nl/using-change-data-capture-for-warehouse-analytics-a1b23c074781>  
+
+<https://medium.com/towards-data-engineering/there-are-5-types-of-cdc-techniques-but-most-engineers-use-the-wrong-one-53c37b97d8da>
 
 ## Kafka Streams
 
-https://habr.com/ru/articles/913652/
+<https://habr.com/ru/articles/913652/>
 
 https://github.com/quixio/quix-streams Kafta Stream  + Python
 
-https://blog.picnic.nl/using-change-data-capture-for-warehouse-analytics-a1b23c074781 CDC change dta capture
 
 
 https://medium.com/@seanfalconer/a-data-scientists-guide-to-data-streaming-2b2b78dd8486 
 
-Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
-https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f
+
 
 https://habr.com/ru/articles/927862/
 
