@@ -405,6 +405,7 @@ partitioning is often a more efficient approach.
 
 #### ReduceByKey over GroupByKey: 
 Use reduceByKey instead of groupByKey to minimize the amount of data shuffled.
+<img width="800" height="1161" alt="image" src="https://github.com/user-attachments/assets/fe5a4b42-7c8a-4c8c-afe8-ca3f51891d74" />
 
 
 #### Spark Config
