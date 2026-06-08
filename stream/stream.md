@@ -12,6 +12,9 @@ Databricks X PySpark INTERVIEW QUESTIONS (2026 Guide) | PySpark Real-Time Scenar
 Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
 <https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f>
 
+
+<https://vutr.substack.com/p/everything-you-need-to-know-about-46d>
+ 
 <https://medium.com/@lisancao/spark-structured-streaming-the-full-latency-spectrum-cc2231998763>
 
 <https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
