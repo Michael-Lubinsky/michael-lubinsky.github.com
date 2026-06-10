@@ -52,6 +52,8 @@
 ## QFT Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
+<https://www.rospexpublishing.com/books/qft-bundle.html> 
+
 <https://shop.rcd.ru/catalog/fizika/20099/> Naumov 2 volumes
 
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
