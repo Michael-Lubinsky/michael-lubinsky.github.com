@@ -19,6 +19,10 @@
 
 <https://www.sandordargo.com/blog/2025/10/29/three-meanings-of-reference>
 
+Aliasing
+<https://habr.com/ru/companies/yadro/articles/1045947/>
+
+
 <https://habr.com/ru/articles/1003004/>  Type casting
 ```
 static_cast<T>(x)
