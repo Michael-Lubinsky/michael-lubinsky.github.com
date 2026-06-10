@@ -49,18 +49,10 @@
 <img width="299" height="231" alt="image" src="https://github.com/user-attachments/assets/f1f046a4-8bb4-4517-b2bf-8ad641a74223" />
 
 
-## QFT
+## QFT Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
-<https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
-
-<https://arxiv.org/pdf/2005.06355> Lectures: From quantum mechanics to the Standard Model
-
-<https://www.youtube.com/watch?v=4O9XWLaNoZE> Квантовая теория поля, Н. М. Заиграев, лекция 1, 10.09.2022
-
-<https://arxiv.org/pdf/math-ph/0204014> QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
-
-<https://github.com/manjunath5496/13-Best-Quantum-Field-Theory-Books-for-Beginners/tree/master>
+<https://shop.rcd.ru/catalog/fizika/20099/> Naumov 2 volumes
 
 Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
 <https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
@@ -73,6 +65,18 @@
  
 До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
 Промокод: YXFCQXX7VQHXX
+
+## QFT
+
+<https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
+
+<https://arxiv.org/pdf/2005.06355> Lectures: From quantum mechanics to the Standard Model
+
+<https://www.youtube.com/watch?v=4O9XWLaNoZE> Квантовая теория поля, Н. М. Заиграев, лекция 1, 10.09.2022
+
+<https://arxiv.org/pdf/math-ph/0204014> QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
+
+<https://github.com/manjunath5496/13-Best-Quantum-Field-Theory-Books-for-Beginners/tree/master>
 
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
 <https://www.youtube.com/watch?v=MqhnyTEaNZ8>
