@@ -13,6 +13,8 @@
 
 <https://habr.com/ru/articles/1015134/> Web JS API
 
+<https://habr.com/ru/articles/1040752/>  Работа с большими файлами в браузере. Часть 2
+
 <https://habr.com/ru/companies/timeweb/articles/1041940/> Blob API для обработки файлов
 
 ### lynx
