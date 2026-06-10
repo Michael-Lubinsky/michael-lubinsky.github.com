@@ -6,11 +6,13 @@
 
 <https://github.com/Robertleoj/slamd>
 
-## Plotting and UI: Tauri Wails
+## App with HTML UI: Electron, Tauri(Rust), Wails (Go), Neutralinojs (C++)
 
   <https://github.com/deeleeramone/PyWry>
 
   UI for GoLang apps  <https://wails.io/>
+
+  <https://habr.com/ru/articles/1046187/>
 
 ### C++ plus plotly
 <https://www.reddit.com/r/cpp/comments/1qf1v12/plotlypp_plotly_for_c_create_interactive_plots/>
