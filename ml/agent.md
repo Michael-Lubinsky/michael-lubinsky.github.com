@@ -4,6 +4,8 @@
 
 <https://news.ycombinator.com/item?id=48413629>  SDD , harness, etc
 
+<https://news.ycombinator.com/item?id=48406174>
+
 <https://news.ycombinator.com/item?id=48449187>  tools you have made for yourself since the advent of AI?
 
 <https://github.com/DrCatHicks/learning-opportunities>
