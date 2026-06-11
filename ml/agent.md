@@ -2,6 +2,8 @@
 
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
+<https://habr.com/ru/companies/postgrespro/articles/1045532/>
+
 <https://news.ycombinator.com/item?id=48413629>  SDD , harness, etc
 
 <https://news.ycombinator.com/item?id=48406174>
