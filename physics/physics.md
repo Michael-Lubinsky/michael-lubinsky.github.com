@@ -90,7 +90,7 @@
 <https://teach-in.ru/course/quantum-electrodynamics>  QED
 
 <https://www.youtube.com/playlist?list=PLgaZ6JcYetK60tVC3-J92t9WVen5TmtiM>
----
+ 
 
 <https://zenodo.org/communities/physicsinrussian>
 
