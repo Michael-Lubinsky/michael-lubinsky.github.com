@@ -1,5 +1,7 @@
 ## Graph 
 
+<https://ladybugdb.com/>
+
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
 
 <https://www.postgresql.org/docs/19/ddl-property-graphs.html> Postgres 19 Graph
