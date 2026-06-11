@@ -1,8 +1,10 @@
 ## Graph 
 
+<https://graphology.github.io/> JS graph 
+
 <https://www.sigmajs.org/> JS graph visualisation
 
-<https://ladybugdb.com/>
+<https://ladybugdb.com/> Graph DB
 
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
 
