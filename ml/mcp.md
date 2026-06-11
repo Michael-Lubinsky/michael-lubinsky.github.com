@@ -8,7 +8,7 @@
 
 
 
-<https://www.youtube.com/watch?v=kIjt0Jt94nI&list=PLtPJ9lKvJ4ojl7flbGuiKDm30FPUjHDba>
+<https://www.youtube.com/watch?v=kIjt0Jt94nI&list=PLtPJ9lKvJ4ojl7flbGuiKDm30FPUjHDba> Протокол MCP 
 
 <https://inventwithpython.com/blog/basic-mcp-python-example.html>
 
