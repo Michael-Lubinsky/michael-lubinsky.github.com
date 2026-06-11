@@ -1,6 +1,51 @@
 ## DBT and SQLMesh
 
 ### SQLMesh
+
+## SQLMesh
+
+SQLMesh is an open-source **DataOps framework** for building, testing, and deploying data transformations — think of it as a next-generation alternative to dbt, built with stronger engineering rigor.
+
+**Core concepts:**
+
+- **Models** — SQL or Python files defining transformations (like dbt models)
+- **Virtual Environments** — each development branch gets its own isolated logical environment *without copying data*, using table references/views instead
+- **State awareness** — SQLMesh tracks what has changed and only reruns what's necessary (true incremental intelligence)
+- **Automatic backfills** — when you change a model, SQLMesh figures out what historical data needs to be reprocessed
+- **Built-in scheduler** — can run without Airflow/Prefect (though it integrates with them too)
+
+**Supported engines:** Databricks, Spark, Snowflake, BigQuery, DuckDB, Redshift, Trino, and more.
+
+---
+
+## Is it a dbt competitor? Yes, directly.
+
+| Feature | dbt | SQLMesh |
+|---|---|---|
+| Primary language | SQL + Jinja | SQL or Python |
+| Virtual environments | No (dev = separate schemas) | Yes (zero-copy) |
+| Change detection | Manual `--select` | Automatic diff |
+| Backfills | Manual | Automatic |
+| State tracking | None | Full |
+| Scheduler | External only | Built-in + external |
+| Column-level lineage | Limited | Native |
+| Unit testing | Basic | Strong |
+| License | Apache 2 (core) | Apache 2 |
+
+**SQLMesh's main pitch over dbt:**
+- No accidental full refreshes — it knows exactly what changed
+- True isolated dev environments without data duplication
+- More Pythonic — models can be pure Python (Pandas, Spark)
+- Better suited for large-scale/complex pipelines where dbt's lack of state becomes painful
+
+**dbt's advantages:**
+- Massive ecosystem, community, and package library (dbt Hub)
+- Much wider adoption → easier hiring, more tooling integrations
+- dbt Cloud as a managed platform
+
+---
+
+**Bottom line:** SQLMesh is a serious dbt competitor targeting teams that have hit dbt's scaling or workflow limitations. For your Databricks/Delta Lake work on ChargeMinder, it'd be a relevant alternative — it has first-class Databricks support and handles incremental models more intelligently than dbt.
 https://habr.com/ru/articles/1046427/
 
 ### DBT **data build tool**
