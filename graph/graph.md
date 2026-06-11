@@ -21,3 +21,5 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 <https://github.com/HelixDB/helix-db/tree/main> HelixDB is an OLTP graph-vector database built in Rust.
 
 <https://habr.com/ru/articles/1044164/> AlloyDB
+
+ <https://github.com/ontograph/ontoindex>
