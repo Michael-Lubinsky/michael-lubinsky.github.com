@@ -1,10 +1,14 @@
 ## MCP
 
+<https://realpython.com/python-mcp/>
+
 <https://realpython.com/courses/connecting-llms-data-python-mcp-servers/>
 
 <https://modelcontextprotocol.io/>
 
-<https://realpython.com/python-mcp/>
+
+
+<https://www.youtube.com/watch?v=kIjt0Jt94nI&list=PLtPJ9lKvJ4ojl7flbGuiKDm30FPUjHDba>
 
 <https://inventwithpython.com/blog/basic-mcp-python-example.html>
 
