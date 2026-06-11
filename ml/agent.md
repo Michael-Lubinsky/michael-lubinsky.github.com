@@ -104,6 +104,8 @@ Claude question: which skills, tools and MCP are available in this session?
 
 ## Code search - better then grep, saves tokens
 
+<https://habr.com/ru/articles/1046672/>
+
 <https://habr.com/ru/articles/1042930/>
 
 <https://habr.com/ru/articles/1038474/> CodeGraph
