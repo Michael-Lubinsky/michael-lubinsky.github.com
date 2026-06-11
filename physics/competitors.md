@@ -2,6 +2,8 @@
 
 <https://www.falstad.com/mathphysics.html>
 
+<https://sourceforge.net/projects/quantx/>
+
 <https://github.com/r0yb0t1th3s3/Schrodinger-Explorer>
 
 1-D
