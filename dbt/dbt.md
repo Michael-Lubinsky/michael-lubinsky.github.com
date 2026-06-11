@@ -2,7 +2,7 @@
 
 ### SQLMesh
 
-## SQLMesh
+ 
 
 SQLMesh is an open-source **DataOps framework** for building, testing, and deploying data transformations — think of it as a next-generation alternative to dbt, built with stronger engineering rigor.
 
@@ -18,7 +18,7 @@ SQLMesh is an open-source **DataOps framework** for building, testing, and deplo
 
 ---
 
-## Is it a dbt competitor? Yes, directly.
+### Is it a dbt competitor? Yes, directly.
 
 | Feature | dbt | SQLMesh |
 |---|---|---|
