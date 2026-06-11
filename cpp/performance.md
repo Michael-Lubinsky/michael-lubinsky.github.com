@@ -3,6 +3,8 @@
 
 <https://faculty.cs.niu.edu/~winans/notes/patmc.pdf> Book. Denis Bakhvalov Performance Analysis and Tuning. 1st ed
 
+<https://agner.org/optimize/>
+
 <https://abseil.io/fast/hints.html>
 
 <https://github.com/dendibakh/perf-book>
