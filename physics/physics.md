@@ -2,7 +2,11 @@
 
 <https://physicist-ai-production-d292.up.railway.app/landing>
 
+<https://www.anthropic.com/research/vibe-physics>
+
 <https://assumptionsofphysics.org/>
+
+<https://ocw.mit.edu/>
 
 <https://www.compadre.org/quantum/index.cfm>
 
@@ -91,7 +95,7 @@
 
 <https://news.ycombinator.com/item?id=48096842>
 
-<https://www.anthropic.com/research/vibe-physics>
+
 
 <https://quantum-matters.com/>
 
