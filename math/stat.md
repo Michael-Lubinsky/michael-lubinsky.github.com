@@ -457,6 +457,9 @@ https://stat110.hsites.harvard.edu/
 
 https://www.pymc.io/projects/docs/en/stable/learn.html
 
+
+<img width="1080" height="1385" alt="image" src="https://github.com/user-attachments/assets/77dc4728-71e8-47e9-b0aa-f1c279d46b8c" />
+
 ### Paradoxes in Statistics
 
 https://neerc.ifmo.ru/wiki/index.php?title=%D0%9F%D0%B0%D1%80%D0%B0%D0%B4%D0%BE%D0%BA%D1%81%D1%8B_%D1%82%D0%B5%D0%BE%D1%80%D0%B8%D0%B8_%D0%B2%D0%B5%D1%80%D0%BE%D1%8F%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9
