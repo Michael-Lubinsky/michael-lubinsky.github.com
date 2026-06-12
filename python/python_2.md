@@ -1,5 +1,8 @@
 
 ## Python notes continued
+
+<https://realpython.com/python-serialize-data/> Data Serialization Formats
+
 <https://habr.com/ru/articles/1000378/>
 
 
