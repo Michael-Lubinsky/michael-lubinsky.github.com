@@ -20,6 +20,11 @@ Precision, Recall, F-score, ROC-AUC
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
+### xgboost lightgbm catboost
+
+<https://kishanakbari.medium.com/xgboost-vs-catboost-vs-lightgbm-a-guide-to-boosting-algorithms-47d40d944dab>
+
+<https://apxml.com/posts/xgboost-vs-lightgbm-vs-catboost>
 
 ## Clustering
 
