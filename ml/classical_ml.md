@@ -20,8 +20,33 @@ Precision, Recall, F-score, ROC-AUC
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
-### xgboost lightgbm catboost
+### XGBoost Lightgbm GatBoost
+XGBoost, LightGBM, and CatBoost are **gradient boosting algorithms**, used primarily for **supervised learning** (classification and regression), not clustering.
 
+| Algorithm | Type | Typical use |
+|---|---|---|
+| XGBoost | Gradient boosted decision trees | Classification, regression, ranking |
+| LightGBM | Gradient boosted decision trees | Same — optimized for speed/large datasets |
+| CatBoost | Gradient boosted decision trees | Same — strong native categorical feature handling |
+
+**Key distinction:**
+
+- **Clustering** = unsupervised — groups data points by similarity without labels (e.g., K-Means, DBSCAN, hierarchical clustering, Gaussian Mixture Models)
+- **Gradient boosting** = supervised — learns to predict a target variable (label) from features, by sequentially building an ensemble of decision trees, each correcting the errors of the previous ones
+
+**Common applications for XGBoost/LightGBM/CatBoost:**
+- Fraud detection (classification)
+- Price/demand forecasting (regression)
+- Click-through-rate prediction (classification)
+- Risk scoring, churn prediction, ranking systems (search/recommendation)
+
+If you need clustering, the standard options are:
+- **K-Means** — fast, simple, requires specifying number of clusters
+- **DBSCAN** — density-based, finds arbitrary-shaped clusters, no need to specify cluster count
+- **Hierarchical clustering** — builds a tree of clusters (dendrogram)
+- **Gaussian Mixture Models (GMM)** — soft/probabilistic clustering
+
+If your use case involves vehicle telemetry  boosting algorithms could be useful for predicting things like battery degradation or failure risk (supervised), while clustering could group vehicles/drivers by usage patterns (unsupervised).
 <https://kishanakbari.medium.com/xgboost-vs-catboost-vs-lightgbm-a-guide-to-boosting-algorithms-47d40d944dab>
 
 <https://apxml.com/posts/xgboost-vs-lightgbm-vs-catboost>
