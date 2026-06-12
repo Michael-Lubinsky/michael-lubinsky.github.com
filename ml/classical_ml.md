@@ -12,7 +12,6 @@
 
 <https://habr.com/ru/articles/1044364/> ML без воды: от базы до Attention. Часть 9: Дерево решений
 
-
 <https://habr.com/ru/articles/1045016/>  ML без воды: от базы до Attention. Часть 10: Бэггинг и случайный лес
 
 Precision, Recall, F-score, ROC-AUC
@@ -20,6 +19,11 @@ Precision, Recall, F-score, ROC-AUC
 
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
+
+
+## Clustering
+
+<https://habr.com/ru/articles/1046942/>
 
 ## Gaussian Process 
 
@@ -75,15 +79,15 @@ I also made a dozen of these a couple years ago, my two favorites:
 - <https://pair.withgoogle.com/explorables/grokking/>
 - <https://growingswe.com/blog>
 
-- https://ciechanow.ski/archives/
+- <https://ciechanow.ski/archives/>
 
-- https://mlu-explain.github.io/
+- <https://mlu-explain.github.io/>
 
-- https://seeing-theory.brown.edu/index.html#firstPage
+- <https://seeing-theory.brown.edu/index.html>
 
-- https://svg-tutorial.com/
+- <https://svg-tutorial.com/>
 
-- https://www.lumafield.com/scan-of-the-month/health-wearables
+- <https://www.lumafield.com/scan-of-the-month/health-wearables>
 
 ### Decision Trees
 
