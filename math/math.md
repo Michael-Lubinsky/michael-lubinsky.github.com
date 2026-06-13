@@ -118,14 +118,21 @@ Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 <https://toomanydigits.online/index.html> Вычислительная математика  
 <https://www.kvant.digital/> Kvant
 
-<https://www.ega-math.narod.ru/>
-
 <https://www.cantorsparadise.com/>
+
+## Books
+
+<https://www.ega-math.narod.ru/>
 
 <https://github.com/valeman/Awesome_Math_Books>
 
-<https://en.wikipedia.org/wiki/Jensen%27s_inequality>
+<https://freemathematicsbooks.com/>
 
+<https://en.wikipedia.org/wiki/Jensen%27s_inequality>
+ 
+<https://cain.math.gatech.edu/textbooks/onlinebooks.html>
+
+<https://no-idle.github.io/conspecta/>
 
 
 ###  Lebegue integration
@@ -171,16 +178,13 @@ Answer: All three should move in the same direction - clockwise or anticlockwise
 ### Question: how many 0s at the end of  n!
 
 ### Two eggs
-https://medium.com/puzzle-sphere/egg-dropping-interview-recursive-coding-optimization-puzzle-google-amazon-microsoft-dynamic-programming-d7572abb1f1b
+<https://medium.com/puzzle-sphere/egg-dropping-interview-recursive-coding-optimization-puzzle-google-amazon-microsoft-dynamic-programming-d7572abb1f1b>
 
 
 
 
-## Links
-<https://cain.math.gatech.edu/textbooks/onlinebooks.html>
 
-<https://no-idle.github.io/conspecta/>
 
-Complex Analysis and physical applications: 
+Complex Analysis and Physical Applications: 
 <https://www.youtube.com/watch?v=0Won5Vs_65E>
 
