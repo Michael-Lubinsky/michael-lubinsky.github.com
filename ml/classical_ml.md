@@ -20,7 +20,10 @@ Precision, Recall, F-score, ROC-AUC
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
-### XGBoost Lightgbm GatBoost
+### XGBoost Lightgbm GatBoost Градиентный бустинг
+
+<https://habr.com/ru/articles/1047130/> ML без воды: от базы до Attention. Часть 11: Градиентный бустинг
+
 XGBoost, LightGBM, and CatBoost are **gradient boosting algorithms**, used primarily for **supervised learning** (classification and regression), not clustering.
 
 | Algorithm | Type | Typical use |
