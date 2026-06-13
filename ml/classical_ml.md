@@ -58,6 +58,8 @@ If your use case involves vehicle telemetry  boosting algorithms could be useful
 
 ## Clustering
 
+<https://habr.com/ru/articles/1046974/>
+
 <https://habr.com/ru/articles/1046942/>
 
 ## Gaussian Process 
