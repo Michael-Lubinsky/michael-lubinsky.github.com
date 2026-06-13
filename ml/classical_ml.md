@@ -4,6 +4,9 @@
 
 <https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
 
+Precision, Recall, F-score, ROC-AUC
+<https://habr.com/ru/articles/1038730/> ML без воды: от базы до Attention. Часть 5: Метрики качества
+
 <https://habr.com/ru/articles/1040682/> ML без воды: от базы до Attention. Часть 6: Логистическая регрессия
 
 <https://habr.com/ru/articles/1041488/>  ML без воды: от базы до Attention. Часть 7: SVM и SGD
@@ -14,8 +17,7 @@
 
 <https://habr.com/ru/articles/1045016/>  ML без воды: от базы до Attention. Часть 10: Бэггинг и случайный лес
 
-Precision, Recall, F-score, ROC-AUC
-<https://habr.com/ru/articles/1038730/>
+
 
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
