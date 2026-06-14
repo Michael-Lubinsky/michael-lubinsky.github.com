@@ -5,6 +5,13 @@
 
 <https://dbml.dbdiagram.io/home/> DB Diagram
 
+https://github.com/ondras/wwwsqldesigner
+
+https://mdview.io/mermaid?example=working-er
+
+https://datagram.studio/
+
+https://azimutt.app/gallery
 
 
 <https://github.com/eduardofuncao/squix> SQL Client in terminal
