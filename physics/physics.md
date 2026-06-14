@@ -161,6 +161,8 @@ Vitaly Vanchurin
 ## Quantum Mechanics
 <https://www.amazon.com/stores/Taeryeon-Kim/author/B0GP5PJM23> Books
 
+<https://www.youtube.com/playlist?list=PLRlVmXqzHjURgLDcqG9xgwk0LWhJYOjbS>
+
 <https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
 <https://arxiv.org/pdf/2605.26375> Bohr’s complementarity
