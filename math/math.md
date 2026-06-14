@@ -73,6 +73,7 @@ Matrix <https://habr.com/ru/articles/949084/>
 <https://news.ycombinator.com/item?id=46138632> Lie Groups   
 Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4>
 
+<https://www.youtube.com/watch?v=fXJcoXeiPD8>
 
 
 
