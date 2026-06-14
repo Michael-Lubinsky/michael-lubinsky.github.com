@@ -8,6 +8,11 @@
 
 ## App with HTML UI: Electron, Tauri(Rust), Wails (Go), Neutralinojs (C++)
 
+
+<https://saucer.app/> C++
+
+<https://github.com/nzxy-dev/Catcheer> C++
+
   <https://github.com/deeleeramone/PyWry>
 
   UI for GoLang apps  <https://wails.io/>
