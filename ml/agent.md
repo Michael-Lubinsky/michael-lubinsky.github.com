@@ -2,6 +2,8 @@
 
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
+<https://habr.com/ru/articles/1047230/>
+
 <https://habr.com/ru/companies/postgrespro/articles/1045532/>
 
 <https://habr.com/ru/companies/cloud_ru/articles/1045728/>
@@ -48,7 +50,7 @@
 
 <https://agenticeng.ru/>
 
-Claude question: which skills, tools and MCP are available in this session?
+## Claude question: which skills, tools and MCP are available in this session?
 
 
 ###  Skills (via /skill-name or Skill tool)
