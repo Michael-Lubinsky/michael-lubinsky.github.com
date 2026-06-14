@@ -74,6 +74,8 @@
 
 ## QFT
 
+<https://www.youtube.com/playlist?list=PLRlVmXqzHjURrQfMx6o_Ji0926mPKkzOw>
+
 <https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
 
 <https://arxiv.org/pdf/2005.06355> Lectures: From quantum mechanics to the Standard Model
