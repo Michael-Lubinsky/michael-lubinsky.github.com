@@ -1,8 +1,15 @@
 ## SQL
 
-<https://github.com/eduardofuncao/squix> SQL Client in terminal
+<https://sqltoerdiagram.com/>  ER Diagram  
+<https://github.com/royalbhati/sqltoerdiagram/blob/main/src/main.js>
 
 <https://dbml.dbdiagram.io/home/> DB Diagram
+
+
+
+<https://github.com/eduardofuncao/squix> SQL Client in terminal
+
+
 
 <https://datamethods.substack.com/p/sql-anti-patterns-you-should-avoid>
 
