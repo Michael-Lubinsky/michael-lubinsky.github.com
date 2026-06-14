@@ -9,6 +9,8 @@
 
 ## Stochastic calculus
 
+<https://www.youtube.com/playlist?list=PL4_hYwCyhAvZpKAdF_TjR8lbMsfeaRQ0u>  (ru)
+
 <https://www.youtube.com/watch?v=Devm4ElEhGc>
 
 <https://www.youtube.com/@stochastip>
