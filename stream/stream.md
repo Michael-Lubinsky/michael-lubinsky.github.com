@@ -1,5 +1,7 @@
 ## Stream processing with Apache Spark Structured Streaming, Apache Kafka, and Apache Flink
 
+<https://habr.com/ru/articles/1047304/>
+
 <https://www.youtube.com/playlist?list=PLI1kSUAlZf2U71IAu_wxBJB9a2jsbz6Xe>
 
 <https://github.com/bartosz25/master-stream-processing>
