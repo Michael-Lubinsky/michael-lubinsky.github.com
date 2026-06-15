@@ -8,6 +8,8 @@
 
 <https://www.youtube.com/watch?v=jxbr6GV9h4o> Word embedding ru
 
+<https://www.youtube.com/watch?v=-KZ3vWy1g2s> ru
+
 <https://sgnt.ai/p/embeddings-explainer/>
 
 <https://www.youtube.com/watch?v=Q6TBHDgWCDQ> Embedding
