@@ -4,6 +4,8 @@ https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
+<https://www.youtube.com/watch?v=BqdSIxSy7BE>
+
 алгоритмы HBOS и ECOD,  и их реализации в библиотеке PyOD: 
 
 https://habr.com/ru/companies/garda/articles/895148/
