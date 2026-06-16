@@ -9,6 +9,8 @@
 
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
+<https://habr.com/ru/companies/ruvds/articles/1045072/> HTML
+
 <https://habr.com/ru/articles/1027304/> Server site rendering, no JavaScript
 
 <https://habr.com/ru/articles/1015134/> Web JS API
