@@ -6,6 +6,8 @@
 
 <https://medium.com/towards-data-engineering/processing-10-tb-data-in-apache-spark-in-3-hours-a-cost-effective-tuning-guide-5e52908c98fb>
 
+<https://www.youtube.com/watch?v=52qCanKuCYs> Spark vs Snowflake
+
 Driver Node → Cluster Manager → Worker Nodes
 
 → Driver Node (The Brain)
