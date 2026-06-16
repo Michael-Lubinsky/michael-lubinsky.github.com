@@ -31,6 +31,9 @@
 <https://www.youtube.com/watch?v=RMFt-9PzF54&list=PLTcPERDxgHxm7TzJ9W92S-l5pGRuhZz10>  
 <https://www.youtube.com/watch?v=yCZgKep5iBc>
 
+### Group Theory
+
+<https://www.youtube.com/playlist?list=PLWlFXymvoaJ9JsrMvKejB7NIUAAJNuqHf>
 
 ### Funcional Analysis
 
