@@ -50,6 +50,10 @@ and has native bindings written in zig.
 
 <https://habr.com/ru/articles/1032830/>
 
+<https://www.robinwieruch.de/react-libraries/>
+
+<https://visx.airbnb.tech/> visualization primitives for React
+
 ### DataStar
 
 Datastar is **not a Python web framework** — it's a **frontend JavaScript library** (similar to HTMX) that enables hypermedia-driven, reactive UIs without writing custom JavaScript. 
