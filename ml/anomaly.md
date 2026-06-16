@@ -1,6 +1,8 @@
 ### Outliers and Anomaly  detection
 
-https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/
+<https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/>
+
+<https://habr.com/ru/articles/1048196/>
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
