@@ -2,6 +2,9 @@
 
 <https://testmysearch.com/my-books.html>
 
+Рекомендательные системы и матричные разложения. Корреляционные модели. Латентные модели
+<https://www.youtube.com/watch?v=_ZNm6KQX5c8>
+
 <https://habr.com/ru/companies/yandex/articles/1037766/>
 
 <https://www.youtube.com/watch?v=bIc58LpxLrs&list=PL5J4s9eyVap9qX1CePqEPGT_aGX0MvpnI>
