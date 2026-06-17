@@ -21,7 +21,47 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
 
+### Postgres Graph
 <https://www.postgresql.org/docs/19/ddl-property-graphs.html> Postgres 19 Graph
+
+
+SQL/PGQ: графовые запросы без отдельной графовой БД
+
+ нативные property-graph запросы по стандарту SQL/PGQ (часть SQL:2023, GRAPH_TABLE).   
+ Ключевое, что многие пропускают: это не новое хранилище. Граф описывается как метаданные поверх таблиц, которые у вас уже есть — фактически view.   
+ Данные не дублируются и не синхронизируются, Postgres переписывает graph-паттерн в обычные джойны на этапе планирования.
+
+-- граф — это метаданные над существующими users/posts/follows
+```sql
+CREATE PROPERTY GRAPH social_graph
+  VERTEX TABLES (
+    users LABEL person PROPERTIES (id, name),
+    posts LABEL post   PROPERTIES (id, title)
+  )
+  EDGE TABLES (
+    follows
+      SOURCE KEY (follower_id) REFERENCES users (id)
+      DESTINATION KEY (followed_id) REFERENCES users (id)
+      LABEL follows
+  );
+
+-- на кого подписана Alice
+SELECT followed_name
+FROM GRAPH_TABLE (social_graph
+  MATCH (a IS person WHERE a.name = 'Alice')
+        -[IS follows]->
+        (b IS person)
+  COLUMNS (b.name AS followed_name)
+);
+```
+
+То, что раньше было лесенкой из самоджойнов или рекурсивного CTE, становится читаемым паттерном (a)-[follows]->(b).   
+Для follower-графов, деревьев зависимостей, тегов и прочих связей средней глубины это снимает реальную боль — и убирает из стека отдельный Neo4j, который держали только ради двух графовых запросов.  
+
+
+Но честная граница Beta 1: переменной длины пути пока нет. Т
+о есть «найди всех, до кого можно дойти за 1…N переходов» (классический обход графа неизвестной глубины) этим синтаксисом ещё не выразить — это всё ещё территория рекурсивных CTE или специализированных графовых движков. 
+Так что SQL/PGQ закрывает паттерны фиксированной глубины, а не заменяет графовую БД целиком.
 
 <https://www.puppygraph.com/>
 
