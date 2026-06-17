@@ -29,6 +29,25 @@ Data modeling
 
 <https://medium.com/@Rohan_Dutt/10-sql-patterns-for-capturing-variance-that-averages-completely-hide-b8bed145f53c>
 
+### Filter
+```sql
+WITH filtered_order_hist AS (
+    SELECT 
+        order_id, 
+        status,
+        dt_finish - dt_start AS status_time
+    FROM order_hist
+    WHERE status IN ('COLLECTING', 'SHIPPING', 'PICKUP')
+)
+SELECT 
+    order_id,
+    SUM(status_time) FILTER (WHERE status = 'COLLECTING') AS collecting_time,
+    SUM(status_time) FILTER (WHERE status = 'SHIPPING') AS shipping_time,
+    SUM(status_time) FILTER (WHERE status = 'PICKUP') AS pickup_time
+FROM filtered_order_hist
+GROUP BY order_id;
+```
+
 ### COUNT_IF
 
 **Supports `COUNT_IF`:**
