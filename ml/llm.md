@@ -2,7 +2,9 @@
 
 <https://www.0xkato.xyz/how-llms-actually-work/>
 
-<https://pawankjha.substack.com/p/architecting-llm-inference-part-1> Inference
+<https://pawankjha.substack.com/p/architecting-llm-inference-part-1> Inference Part 1
+
+<https://pawankjha.substack.com/p/architecting-llm-inference-part-6> Inference Part 6
 
 <https://github.com/analyticalrohit/llms-from-scratch>
 
