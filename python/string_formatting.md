@@ -38,9 +38,9 @@ https://habr.com/ru/articles/911196/
 
 ### glom jmespath pydash
 
-# Comparison: glom vs jmespath vs pydash
+#### Comparison: glom vs jmespath vs pydash
 
-## 🔍 High-Level Comparison
+#### 🔍 High-Level Comparison
 
 | Feature / Library       | `glom`                                | `jmespath`                          | `pydash`                              |
 |-------------------------|----------------------------------------|-------------------------------------|----------------------------------------|
@@ -56,7 +56,7 @@ https://habr.com/ru/articles/911196/
 
 ---
 
-## 🧪 Example Comparison
+#### 🧪 Example Comparison
 
 Given:
 
@@ -76,7 +76,7 @@ data = {
 }
 ```
 
-### 🔸 `glom`
+#### 🔸 `glom`
 
 ```python
 from glom import glom
@@ -85,7 +85,7 @@ glom(data, 'person.info.email')             # 'alice@example.com'
 glom(data, ('friends', ['name']))           # ['Bob', 'Carol']
 ```
 
-### 🔸 `jmespath`
+#### 🔸 `jmespath`
 
 ```python
 import jmespath
@@ -94,7 +94,7 @@ jmespath.search('person.info.email', data)  # 'alice@example.com'
 jmespath.search('friends[*].name', data)    # ['Bob', 'Carol']
 ```
 
-### 🔸 `pydash`
+#### 🔸 `pydash`
 
 ```python
 import pydash
@@ -105,14 +105,14 @@ pydash.map_(data['friends'], 'name')        # ['Bob', 'Carol']
 
 ---
 
-## 🧠 When to Use Each
+### 🧠 When to Use Each
 
-### ✅ `glom`
+#### ✅ `glom`
 - You want **Python-native syntax** for data access and transformations.
 - Need **default handling**, **deep traversal**, or **custom logic**.
 - Useful for **pipeline-like transformations**.
 
-### ✅ `jmespath`
+#### ✅ `jmespath`
 - You want a **compact and powerful query language**.
 - Mostly **read/query only** operations on JSON.
 - You work with APIs, AWS, or structured JSON responses.
@@ -124,7 +124,7 @@ pydash.map_(data['friends'], 'name')        # ['Bob', 'Carol']
 
 ---
 
-## 🔚 Summary
+#### 🔚 Summary
 
 | Use Case                         | Best Tool     |
 |----------------------------------|---------------|
