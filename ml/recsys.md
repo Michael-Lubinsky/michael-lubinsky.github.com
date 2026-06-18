@@ -28,6 +28,11 @@
 
 <https://habr.com/ru/articles/1019070/>
 
+## ANNOY recsys
+<https://www.youtube.com/watch?v=4XRsM1ACzhs>
+
+<https://github.com/spotify/annoy>
+
 <https://habr.com/ru/articles/951428/>
 
 **LightFM** is a **Python library** for building **hybrid recommendation systems**. It combines:
