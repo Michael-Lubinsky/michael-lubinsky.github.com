@@ -9,7 +9,7 @@
 
 <https://habr.com/ru/articles/1044422/> Как дообучить LLM. Рассказываю шаг за шагом
 
-## FAISS Facebook AI Similarity Search)
+## FAISS - Facebook AI Similarity Search
 
 <https://fremaconsulting.ch/blog/faiss>
 
@@ -43,6 +43,9 @@ Stepik course
 
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
 Deploying AI Models with Hugging Face – Hands-On Course
+
+
+<https://www.youtube.com/playlist?list=PLUPiJfRFZJSYm1jnKuKOtK8eN3d52v2tq>
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbG5NvYYsdc6eDxnAx7l_S1>
 
