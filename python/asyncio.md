@@ -1,6 +1,7 @@
 ## Asyncio
 <https://github.com/anordin95/a-conceptual-overview-of-asyncio/blob/main/readme.md>
 
+<https://habr.com/ru/articles/1048886/> Threading, Multiprocessing
 
 <https://habr.com/ru/articles/1044508/>
 
