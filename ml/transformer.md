@@ -6,6 +6,8 @@
 
 <https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
 
+<https://madhavpr191221.github.io/transformers_for_perception/posts/self-attention-from-first-principles/index.html>
+
 <https://www.youtube.com/watch?v=Co0n6DPtx_A>
 
 <https://www.youtube.com/watch?v=WEvOt5mpRj8>
