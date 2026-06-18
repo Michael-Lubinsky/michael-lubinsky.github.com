@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/1048462/>
 
+<https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
+
 <https://www.youtube.com/watch?v=Co0n6DPtx_A>
 
 <https://www.youtube.com/watch?v=WEvOt5mpRj8>
