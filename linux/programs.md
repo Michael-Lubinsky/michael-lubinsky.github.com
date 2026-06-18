@@ -21,16 +21,7 @@ Visidata <https://www.visidata.org/>
 <https://github.com/microsoft/markitdown> Convert everything to markdown
 <https://github.com/Michaelliv/markit> Convert everything to markdown
 
-## CSV in terminal
 
-<https://github.com/gurgeous/tennis>  CLI for printing stylish CSV tables in your terminal.
-```
-auto-detect CSV vs TSV (or semis, or pipes)
-also works great with JSON/JSONL or SQLite
-titles, row numbers, zebra stripes, border styles
-sorting, filtering, head/tail
---peek to get a quick summary
-```
 
 ### JSON tools
 command-line json viewer <https://jless.io/> 
@@ -45,8 +36,22 @@ For example:
 https://news.ycombinator.com/item?id=44637716  jq  
 https://github.com/noperator/jqfmt  
 
+## CSV in terminal
+
+<https://github.com/gurgeous/tennis>  CLI for printing stylish CSV tables in your terminal.
+```
+auto-detect CSV vs TSV (or semis, or pipes)
+also works great with JSON/JSONL or SQLite
+titles, row numbers, zebra stripes, border styles
+sorting, filtering, head/tail
+--peek to get a quick summary
+```
+  
+
 ### CSV toolkits
 https://github.com/medialab/xan   XAN is a command line tool to process CSV files  
+https://github.com/medialab/xan/blob/master/docs/cookbook/dataviz.md
+
 https://bioinf.shenwei.me/csvtk/  
 https://qsv.dathere.com/  
 https://miller.readthedocs.io/  CSV, JSON processing
