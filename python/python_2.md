@@ -285,6 +285,9 @@ print([p.name for p in sorted_people])  # ['Bob', 'Alice']
 ```
 
 ### @staticmethod 
+
+<https://belderbos.dev/blog/classmethod-vs-staticmethod-vs-instance-method-python/>
+
 Use @staticmethod when you have a method inside a class 
 that doesn't access the instance (self) or the class (cls) — it’s just logically grouped under the class.
 
