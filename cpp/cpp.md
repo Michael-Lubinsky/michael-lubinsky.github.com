@@ -6,6 +6,8 @@
 
 <https://awesomecpp.com/>
 
+<https://habr.com/ru/companies/yadro/articles/1048932/>
+
 <https://leanpub.com/cppinterview>
 
 <https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/>
