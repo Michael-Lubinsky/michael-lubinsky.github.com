@@ -22,6 +22,9 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<img width="352" height="467" alt="image" src="https://github.com/user-attachments/assets/d6437af5-be98-4e2c-b185-1de3588fb866" />
+
+
 ### QM Done Right book
 <https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
 <https://www.amazon.com/Quantum-Mechanics-Done-Right-Researcher/dp/3031878442>
