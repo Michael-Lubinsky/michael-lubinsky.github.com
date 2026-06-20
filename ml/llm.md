@@ -1,12 +1,15 @@
-### LLM 
+## LLM 
 
 <https://www.0xkato.xyz/how-llms-actually-work/>
 
 <https://web.stanford.edu/~jurafsky/slp3/>
 
+### Inference
 <https://pawankjha.substack.com/p/architecting-llm-inference-part-1> Inference Part 1
 
 <https://pawankjha.substack.com/p/architecting-llm-inference-part-6> Inference Part 6
+
+<https://medium.com/@the_turingetic_guy/large-scale-distributed-llm-inference-part-1-54343375c2c4>
 
 <https://github.com/analyticalrohit/llms-from-scratch>
 
@@ -22,9 +25,11 @@
 
 <https://arxiv.org/abs/2605.25998> Causal methods for LLM development and evaluation
 
-<https://medium.com/@the_turingetic_guy/large-scale-distributed-llm-inference-part-1-54343375c2c4>
+
 
 <https://medium.com/@rtxtdfs/large-scale-distributed-llm-inference-part-2-modern-attention-mechanisms-that-make-large-scale-09ba8d6581e1>
+
+<https://habr.com/ru/articles/1049872/>
 
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNAz_J4tGrLSI--CzdYyhnj3>
 
