@@ -103,10 +103,11 @@
   - mcp__claude_ai_Google_Drive — Drive file access
 
 
-### Caveman - saves tokens
- https://github.com/JuliusBrussee/caveman/tree/main
+
 
 ## Code search - better then grep, saves tokens
+
+<https://habr.com/ru/articles/1049814/>
 
 <https://habr.com/ru/articles/1046672/>
 
@@ -127,6 +128,9 @@ How does it compare to _context-mode_ or _serina_ that are both well established
 <https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
 
 <https://github.com/defendend/Claude-ast-index-search>
+
+### Caveman - saves tokens
+ https://github.com/JuliusBrussee/caveman/tree/main
 
 ## Hooks 
 <https://docs.claude.com/en/docs/claude-code/hooks>
