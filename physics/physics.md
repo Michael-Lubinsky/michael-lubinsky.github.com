@@ -138,6 +138,9 @@ Quantization of Angular Momentum - Explained Visually
 
 <https://physics.mcmaster.ca/phys3mm3/notes/whatisspin.pdf>
 
+<https://spindynamics.org/?page_id=18>
+
+
 <https://ufn.ru/ufn67/ufn67_9/Russian/r679f.pdf>  <https://ufn.ru/ru/articles/1967/9/f/> Открытие спина электрона
 
 <https://ufn.ru/ru/articles/2026/1/f/> Spin 1/2
