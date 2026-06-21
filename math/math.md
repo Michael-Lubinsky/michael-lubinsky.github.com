@@ -78,7 +78,8 @@ Matrix <https://habr.com/ru/articles/949084/>
 ## Lie 
 <https://www.youtube.com/watch?v=yVji26jB2h4> Lie Theory  
 <https://news.ycombinator.com/item?id=46138632> Lie Groups   
-Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4> Michael Penn
+Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4> Michael Penn  
+<https://www.youtube.com/watch?v=Sxy4WDIUs6M> Michael Penn  
 
 <https://www.youtube.com/playlist?list=PLHA6eeiAqIiP3G2Vwm0cXXRXDrnWASouK> Timothy Budd
 <https://www.youtube.com/watch?v=fXJcoXeiPD8>
