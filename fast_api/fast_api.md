@@ -32,6 +32,7 @@
 
 <https://fastlaunchapi.dev/blog/async-secure-scalable-fastapi>
 
+<https://habr.com/ru/articles/1044536/>
 
 
 ### Litestar
