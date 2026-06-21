@@ -24,6 +24,7 @@
 ## Zorich
 <https://www.youtube.com/watch?v=jcdPKocIzFA> Zorich 1  
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
+<https://www.youtube.com/watch?v=3EiwgdlXAow&pp=0gcJCT8LAYcqIYzv> Zorich 3
 
 ## Riemann Zeta function
 
