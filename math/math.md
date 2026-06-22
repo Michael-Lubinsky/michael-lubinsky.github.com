@@ -84,6 +84,9 @@ Lie Algebra <https://www.youtube.com/watch?v=tY7jac-iPA4> Michael Penn
 <https://www.youtube.com/playlist?list=PLHA6eeiAqIiP3G2Vwm0cXXRXDrnWASouK> Timothy Budd
 <https://www.youtube.com/watch?v=fXJcoXeiPD8>
 
+<https://www.youtube.com/watch?v=kpeP3ioiHcw> Alex Flournoy introduces abstract methods for analyzing continuous groups in physics, 
+Particle Physics Topic 6: Lie Groups and Lie Algebras
+
 
 
 
