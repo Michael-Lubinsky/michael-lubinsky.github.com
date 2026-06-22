@@ -4,6 +4,8 @@
 
 <https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
 
+<https://github.com/justxor/cpproadmap2026>
+
 <https://awesomecpp.com/>
 
 <https://habr.com/ru/companies/yadro/articles/1048932/>
