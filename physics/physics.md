@@ -176,6 +176,8 @@ Vitaly Vanchurin
 
 <https://arxiv.org/pdf/2605.26375> Bohr’s complementarity
 
+<https://quantum.intofuture.org/> software
+
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
