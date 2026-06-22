@@ -5,6 +5,9 @@
 <https://web.stanford.edu/~jurafsky/slp3/>
 
 ### Inference
+
+<https://habr.com/ru/companies/cloud_ru/articles/1050512/>
+
 <https://pawankjha.substack.com/p/architecting-llm-inference-part-1> Inference Part 1
 
 <https://pawankjha.substack.com/p/architecting-llm-inference-part-6> Inference Part 6
