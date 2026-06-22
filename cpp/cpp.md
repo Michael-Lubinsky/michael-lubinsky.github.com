@@ -6,6 +6,8 @@
 
 <https://github.com/justxor/cpproadmap2026>
 
+<https://habr.com/ru/articles/1044450/> C++101
+
 <https://awesomecpp.com/>
 
 <https://habr.com/ru/companies/yadro/articles/1048932/>
@@ -44,6 +46,8 @@ reinterpret_cast<T>(x)
 <https://habr.com/ru/articles/1005564/>
 
 <https://www.cppnext.com/>
+
+STL Alternatives <https://habr.com/ru/articles/1042198/>
 
 ### Memory management
 
