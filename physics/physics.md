@@ -180,6 +180,7 @@ Vitaly Vanchurin
 
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
+<https://habr.com/ru/articles/949788/> Pauli Matrix
 
 <https://habr.com/ru/articles/965372/> QM
 
