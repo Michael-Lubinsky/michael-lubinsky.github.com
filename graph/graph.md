@@ -16,6 +16,7 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://gdb-engines.com/>
 
+<https://habr.com/ru/companies/yandex/articles/1046483/>
 
 <https://ladybugdb.com/> Graph DB
 
