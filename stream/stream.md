@@ -11,6 +11,8 @@
 Databricks X PySpark INTERVIEW QUESTIONS (2026 Guide) | PySpark Real-Time Scenarios
 <https://www.youtube.com/watch?v=__9tqYjEJhE>
 
+https://habr.com/ru/companies/magnit/articles/1049072/ Реалтайм-аналитика «без боли»: миграция из PostgreSQL и Kafka в ClickHouse и визуализация в Superset
+
 Master ETL Pipelines with PySpark: 8 Real-World Challenges Solved
 <https://medium.com/@mayursurani/master-etl-pipelines-with-pyspark-8-real-world-challenges-solved-507711d0c26f>
 
