@@ -10,6 +10,8 @@
 
 <https://habr.com/ru/articles/1013520/>
 
+<https://habr.com/ru/articles/1050692/>
+
 Jinja templating  
 CSS templates/customizations   
 Hyperlink between dashboards   
