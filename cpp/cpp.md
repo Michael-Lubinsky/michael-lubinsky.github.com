@@ -17,6 +17,9 @@
 
 <https://leanpub.com/cppinterview>
 
+
+<https://habr.com/ru/companies/otus/articles/1049280/>  C++ move semantic
+
 <https://techfortalk.co.uk/2025/12/24/optimal-c-containers-for-performance-efficiency/>
 
 <https://habr.com/ru/companies/vk/articles/660265/> STL implementation
