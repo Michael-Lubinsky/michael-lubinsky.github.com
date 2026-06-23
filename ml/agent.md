@@ -1,5 +1,7 @@
 ## Agents
 
+<https://habr.com/ru/articles/1050736/>
+
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
 <https://habr.com/ru/articles/1047230/>
