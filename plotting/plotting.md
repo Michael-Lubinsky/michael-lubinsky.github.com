@@ -35,6 +35,14 @@ https://vizro.readthedocs.io/en/stable/
 
 <https://detroit.readthedocs.io/en/latest/>
 
+### Lets Plot
+https://lets-plot.org/python/
+
+### Plotnine
+https://y-sunflower.github.io/ninejs/
+
+https://news.ycombinator.com/item?id=48596488
+
 ### LabPlot
 <https://labplot.org/>
 <https://invent.kde.org/education/labplot>
