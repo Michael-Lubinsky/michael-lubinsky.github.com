@@ -11,6 +11,8 @@
 
 <https://habr.com/ru/companies/ruvds/articles/1045072/> HTML
 
+<https://habr.com/ru/companies/ruvds/articles/1048812/>  HTML instead JS
+
 <https://habr.com/ru/articles/1027304/> Server site rendering, no JavaScript
 
 <https://habr.com/ru/articles/1015134/> Web JS API
