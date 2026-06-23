@@ -58,6 +58,8 @@
 
 <https://habr.com/ru/articles/949314/>
 
+<https://aleksul.space/posts/choosing-python-task-queue-library/> Task Queues
+
 ## Python program template
 
 <https://habr.com/ru/companies/graviton/articles/1015460/>
