@@ -18,6 +18,8 @@
 
 <https://github.com/DrCatHicks/learning-opportunities>
 
+<https://www.youtube.com/watch?v=V9j4smzlVCw> Book and repo: Crack Any Codebase with AI: Zachary Huang on Understanding Code You Didn’t Write
+
 <https://habr.com/ru/companies/doubletapp/articles/1036872/>
 
 <https://habr.com/ru/companies/svoi_ru/articles/1043188/>
