@@ -6,6 +6,9 @@
 
 <https://github.com/justxor/cpproadmap2026>
 
+<https://medium.com/@martin00001313/advanced-c-optimization-techniques-for-high-performance-applications-part-3-4602df9284d8> Hight Performance C++
+
+
 <https://habr.com/ru/articles/1044450/> C++101
 
 <https://awesomecpp.com/>
