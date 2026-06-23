@@ -39,6 +39,9 @@ https://vizro.readthedocs.io/en/stable/
 https://lets-plot.org/python/
 
 ### Plotnine
+
+https://plotnine.org/
+
 https://y-sunflower.github.io/ninejs/
 
 https://news.ycombinator.com/item?id=48596488
