@@ -8,6 +8,8 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://www.sigmajs.org/> JS graph visualisation
 
+<https://github.com/dominikbraun/graph/> Graphjs in GO
+
 ### Boost Graph Library
 
 <https://491.graph.prtest3.cppalliance.org/graph/index.html>
