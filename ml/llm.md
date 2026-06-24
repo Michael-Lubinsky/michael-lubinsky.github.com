@@ -1,5 +1,7 @@
 ## LLM 
 
+<https://habr.com/ru/articles/1044418/>
+
 <https://www.0xkato.xyz/how-llms-actually-work/>
 
 <https://web.stanford.edu/~jurafsky/slp3/>
