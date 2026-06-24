@@ -8,6 +8,8 @@
 
 <https://ocw.mit.edu/>
 
+<https://www.youtube.com/watch?v=Q6Gw08pwhws> Lecture Series on Classical Physics by Prof.V.Balakrishnan
+
 <https://www.compadre.org/quantum/index.cfm>
 
 <https://nazat02.github.io/Quantum-Tunneling>
