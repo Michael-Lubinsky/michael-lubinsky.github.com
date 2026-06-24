@@ -2,6 +2,8 @@
 
 <https://cpu.land/> how computer works
 
+<https://habr.com/ru/companies/selectel/articles/1051080/> Анатомия процесса загрузки Linux — от инициализации ядра до systemd
+
 <https://habr.com/ru/articles/1036444/> How program starts
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
