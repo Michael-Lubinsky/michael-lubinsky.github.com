@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1050736/>
 
+<https://habr.com/ru/articles/1051166/> Tools, Hooks, Skills, MCP — что есть что?
+
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
 <https://habr.com/ru/articles/1051346/>  Аналитику, которую нельзя выразить в SQL запрос, выносить в Python в песочницу. И описывать данные и схему так, чтобы модель не гадала, что внутри. Эти три вещи мы и зашили в свой MCP-сервер: фронт на Next.js (ai-sdk), бэкенд на FastMCP, под капотом DuckDB, модель ходит в данные только через инструменты.
