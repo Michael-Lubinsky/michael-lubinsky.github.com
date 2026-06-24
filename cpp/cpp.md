@@ -1,4 +1,6 @@
 ## C/C++
+ 
+<https://habr.com/ru/companies/otus/articles/1049298/>  Пять ошибок начинающих C++ разработчиков при работе с памятью
 
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
