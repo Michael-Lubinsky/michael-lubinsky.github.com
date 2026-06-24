@@ -13,6 +13,8 @@
 
 <https://anthropic.skilljar.com/>
 
+<https://habr.com/ru/articles/1050290/> Skill compass
+
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
 
 <https://github.com/luongnv89/claude-howto> 
