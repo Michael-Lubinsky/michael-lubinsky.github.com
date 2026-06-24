@@ -1,6 +1,6 @@
 ## LLM 
 
-<https://habr.com/ru/articles/1044418/>
+<https://habr.com/ru/articles/1044418/> Топ вопросов по LLM: стратегии генерации текста и метрики оценки LLM
 
 <https://www.0xkato.xyz/how-llms-actually-work/>
 
