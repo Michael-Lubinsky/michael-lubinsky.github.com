@@ -15,6 +15,8 @@
 
 <https://habr.com/ru/companies/postgrespro/articles/1012716/> Apache AGE ( A Graph Extension)
 
+<https://gist.github.com/cpursley/c8fb81fe8a7e5df038158bdfe0f06dbb> PG is enough
+
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
 
 <https://habr.com/ru/articles/1011996/>
