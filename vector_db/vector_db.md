@@ -2,6 +2,8 @@
 
 <https://vickiboykis.com/what_are_embeddings/>
 
+<https://habr.com/ru/companies/bothub/articles/1048210/>
+
 <https://habr.com/ru/companies/selectel/articles/1044854/>
 
 <https://habr.com/ru/articles/1046654/> Алгоритмы векторного поиска: IVF и HNSW
