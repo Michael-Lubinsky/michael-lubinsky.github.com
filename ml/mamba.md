@@ -13,7 +13,11 @@
 
 <https://fremaconsulting.ch/blog/faiss>
 
-## Activation Function
+
+## Loss Functions in Deep Learning - Overview
+<https://arxiv.org/pdf/2504.04242v1>
+
+## Activation Functions
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/8c2c29f6-8347-4293-a636-463702307afc" />
 
 ## ML Links
