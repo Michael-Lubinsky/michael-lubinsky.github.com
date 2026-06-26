@@ -1,6 +1,7 @@
 ## Postgres
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
+<https://www.augusteo.com/blog/how-pgbouncer-works/> PG Bouncer
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
 <https://youjustneedpostgres.com/>
 <https://www.tigerdata.com/blog/its-2026-just-use-postgres>
