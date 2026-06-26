@@ -8,6 +8,8 @@ Data Engineering for Large Models: Architecture, Algorithms & Projects
 
 <https://www.ssp.sh/brain/data-engineering/>
 
+<https://habr.com/ru/companies/uzum/articles/1050824/>
+
 How to train LLM
 <https://media.licdn.com/dms/document/media/v2/D4E1FAQH1F9YhZuoqCw/feedshare-document-url-metadata-scrapper-pdf/B4EZznNEf1JEBA-/0/1773405499139>
 
