@@ -104,6 +104,9 @@
 
 <https://news.ycombinator.com/item?id=48096842>
 
+Quantum Field Theory in Condensed Matter Physics 2ed  
+by Alexei M. Tsvelik 
+<https://www.amazon.com/Quantum-Thry-Cond-Matt-Phys/dp/0521529808/>
 
 
 <https://quantum-matters.com/>
