@@ -6,6 +6,8 @@
 
 <https://assumptionsofphysics.org/>
 
+<https://jakobschwichtenberg.com>
+
 <https://ocw.mit.edu/>
 
 <https://www.youtube.com/watch?v=Q6Gw08pwhws> Lecture Series on Classical Physics by Prof.V.Balakrishnan
