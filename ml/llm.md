@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1044418/> Топ вопросов по LLM: стратегии генерации текста и метрики оценки LLM
 
+<https://habr.com/ru/companies/bothub/articles/1052350/> LLM benchmarking
+
 <https://www.0xkato.xyz/how-llms-actually-work/>
 
 <https://web.stanford.edu/~jurafsky/slp3/>
