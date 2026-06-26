@@ -11,6 +11,8 @@
 
 <https://news.ycombinator.com/item?id=47995037>
 
+<https://habr.com/ru/articles/1051864/>
+
 <https://habr.com/ru/companies/otus/articles/991542/>
 
 <https://habr.com/ru/articles/1029338/>
