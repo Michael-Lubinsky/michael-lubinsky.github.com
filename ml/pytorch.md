@@ -4,6 +4,8 @@
 
 <https://www.youtube.com/watch?v=r1bquDz5GGA>
 
+<https://paulsbrookes.github.io/2026/06/20/the-mechanics-of-pytorch-inference.html>
+
 <https://www.amazon.com/dp/1633436586/> Deep Learning with PyTorch
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
