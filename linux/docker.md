@@ -8,6 +8,8 @@
 <https://codingplainenglish.medium.com/docker-is-dead-and-its-about-time-b457d14b0a72>   
 <https://bitnami.com/stacks?stack=containers>
 
+<https://habr.com/ru/companies/netologyru/articles/1051714/> Многоэтапные сборки в Docker: как уменьшить образ с 1,2 ГБ до 50 МБ
+
  The Bitnami image packs Hadoop and Spark in a cluster:
 ```
 docker pull bitnami/spark:3
