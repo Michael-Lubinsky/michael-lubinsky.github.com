@@ -7,6 +7,8 @@
 <https://habr.com/ru/companies/timeweb/articles/1046345/> HyperLogLog: как найти уникальные значения в терабайте данных,
 
 
+<https://habr.com/ru/articles/1034790/> Bloom Filter
+
 <https://habr.com/ru/articles/1016636/>
 
 <https://www.youtube.com/watch?v=8GieMMkLzMQ>
