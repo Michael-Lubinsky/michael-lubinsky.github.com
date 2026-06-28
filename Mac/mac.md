@@ -1,4 +1,10 @@
+## Mac
+
 <https://github.com/open-saas-directory/awesome-native-macosx-apps>
+
+caffeinate - prevents your MacBook from sleeping even with the lid closed
+
+<https://news.ycombinator.com/item?id=48701512>
 
 ## brew
 ```
