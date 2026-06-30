@@ -1,5 +1,7 @@
 ## GPU CUDA
 
+<https://fergusfinn.com/blog/what-happens-when-you-run-a-gpu-kernel/>
+
  <https://enccs.github.io/gpu-programming/2-gpu-ecosystem/>
  
 <https://leetarxiv.substack.com/p/learning-cuda-on-a-budget-on-google>
