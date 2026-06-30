@@ -1,5 +1,7 @@
 ## Tools and Programs
 
+https://pdfmergely.com/
+
 Extract plain text from any image
 <https://github.com/kouhxp/textsnap>
 
