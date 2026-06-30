@@ -1,5 +1,7 @@
 ## DB and System Internals
 
+<https://www.buraksen.dev/articles/internals-of-postgresql-db-cluster-and-tables>
+
 <https://questdb.com/blog/window-join-parallel-vectorized/>
 
 <https://eatonphil.com/bookclub.html>
