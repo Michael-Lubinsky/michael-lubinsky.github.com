@@ -24,6 +24,9 @@ scikit-learn
 
 ### XGBoost Lightgbm GatBoost Градиентный бустинг
 
+<img width="1080" height="1386" alt="image" src="https://github.com/user-attachments/assets/e7f4b274-f4aa-469b-a908-8489ca3376e3" />
+
+
 <https://habr.com/ru/articles/1047130/> ML без воды: от базы до Attention. Часть 11: Градиентный бустинг
 
 XGBoost, LightGBM, and CatBoost are **gradient boosting algorithms**, used primarily for **supervised learning** (classification and regression), not clustering.
