@@ -1,4 +1,5 @@
 ## Postgres
+<https://habr.com/ru/companies/netologyru/articles/1051792/>
 <https://postgres.ai/docs/postgres-howtos>  
 <https://planet.postgresql.org/>  
 <https://www.augusteo.com/blog/how-pgbouncer-works/> PG Bouncer
