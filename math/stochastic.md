@@ -13,6 +13,8 @@
 
 <https://www.youtube.com/watch?v=Devm4ElEhGc>
 
+<https://www.youtube.com/watch?v=uQ7bYH2CkoA&pp=ugUHEgVlbi1DQQ%3D%3D>
+
 <https://www.youtube.com/@stochastip>
 
 <https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
