@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
+<https://habr.com/ru/companies/yandex/articles/1047072/>
+
 <https://dzen.ru/a/aYzCnsI1iDpbtiPj> memory types
 
 <https://habr.com/ru/companies/yadro/articles/1014630/> FPGA
