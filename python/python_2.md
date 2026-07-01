@@ -3,6 +3,8 @@
 
 <https://realpython.com/python-serialize-data/> Data Serialization Formats
 
+<https://www.crumpledpaper.tech/2026-06-21-python-struct-profiling/>
+
 <https://habr.com/ru/articles/1000378/>
 
 
