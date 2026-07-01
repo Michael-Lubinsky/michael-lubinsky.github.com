@@ -1,3 +1,6 @@
+## DB Internals
+
+<https://postgrespro.ru/education/books/internals> PostgreSQL 18 изнутри
 
 https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b
 
