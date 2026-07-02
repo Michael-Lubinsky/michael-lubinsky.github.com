@@ -8,6 +8,8 @@
  
 <https://leetarxiv.substack.com/p/learning-cuda-on-a-budget-on-google>
 
+<https://developer.nvidia.com/topics/ai/data-science/cuda-x-data-science-libraries/cudf>
+
 <https://mlc.ai/modern-gpu-programming-for-mlsys/>
 
 <<https://www.packtpub.com/en-us/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803245423>>
