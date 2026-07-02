@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/951324/>
 
+<https://habr.com/ru/companies/sberbank/articles/1054286/>
+
 ### сегментация и кластеризация клиентской базы
 https://medium.com/data-science/building-effective-metrics-to-describe-users-3212727c5a9e
 https://habr.com/ru/articles/423597/
