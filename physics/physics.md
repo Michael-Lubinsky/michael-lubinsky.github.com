@@ -30,6 +30,7 @@
 
 <img width="352" height="467" alt="image" src="https://github.com/user-attachments/assets/d6437af5-be98-4e2c-b185-1de3588fb866" />
 
+<https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
 
 ### QM Done Right book
 <https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
