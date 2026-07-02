@@ -4,9 +4,15 @@
 <https://planet.postgresql.org/>  
 <https://www.augusteo.com/blog/how-pgbouncer-works/> PG Bouncer
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
+
+## Just Use Postgres
 <https://youjustneedpostgres.com/>
 <https://www.tigerdata.com/blog/its-2026-just-use-postgres>
 <https://www.manning.com/books/just-use-postgres> Book Just Use Postgres
+
+<https://www.youtube.com/watch?v=ytCoB20a4BQ> 
+Postgres вместо Redis, Kafka и Elasticsearch: где предел
+
 <https://habr.com/ru/companies/otus/articles/941456/>  
 <https://habr.com/ru/companies/ppr/articles/947852/> Dynamic SQL  
 <https://learn.microsoft.com/en-us/azure/postgresql/extensions/how-to-allow-extensions>  Postgres on Azure Extensions  
