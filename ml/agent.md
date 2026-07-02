@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1050736/>
 
+<https://www.kdnuggets.com/10-agentic-ai-frameworks-you-should-know-in-2026?>
+
 <https://habr.com/ru/articles/1051166/> Tools, Hooks, Skills, MCP — что есть что?
 
 <https://belderbos.dev/blog/build-minimal-ai-agent-python/>
