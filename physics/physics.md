@@ -26,6 +26,8 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<https://news.ycombinator.com/item?id=48692946> Why does kinetic energy increase quadratically, not linearly, with speed
+
 <img width="352" height="467" alt="image" src="https://github.com/user-attachments/assets/d6437af5-be98-4e2c-b185-1de3588fb866" />
 
 
