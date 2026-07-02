@@ -17,3 +17,5 @@
 <https://github.com/jmaczan/tiny-vllm> C++ implementation on CUDA
 
 <https://habr.com/ru/companies/selectel/articles/1042820/>
+
+<https://developer.nvidia.com/blog/designing-gpu-accelerated-query-engines-with-nvidia-gqe/>
