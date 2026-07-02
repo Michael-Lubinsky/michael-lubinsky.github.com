@@ -29,13 +29,15 @@ Postgres вместо Redis, Kafka и Elasticsearch: где предел
 
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
 
-<https://habr.com/ru/articles/1011996/>
+<https://habr.com/ru/articles/1011996/> PostgreSQL: транзакции, блокировки и почему Serializable падает
 
 
 
-<https://habr.com/ru/companies/postgrespro/articles/1001194/>
+<https://habr.com/ru/companies/postgrespro/articles/1001194/> Нетипичные оптимизации в PostgreSQL, или Креативное ускорение запросов
 
-<https://edu.postgrespro.ru/qptbook-16.pdf>
+Postgres 18 internals
+<https://edu.postgrespro.ru/postgresql_internals-18.pdf>
+<https://edu.postgrespro.ru/qptbook-16.pdf> Optimizing PG 16 query
 
 что отличает PostgreSQL от многих других СУБД: всего три уровня изоляции:
 
