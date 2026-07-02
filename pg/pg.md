@@ -7,9 +7,11 @@
 
 ## Just Use Postgres
 <https://youjustneedpostgres.com/>
-<https://www.tigerdata.com/blog/its-2026-just-use-postgres>
+<https://www.tigerdata.com/blog/its-2026-just-use-postgres>  
+<https://gist.github.com/cpursley/c8fb81fe8a7e5df038158bdfe0f06dbb> PG is enough  
 <https://www.manning.com/books/just-use-postgres> Book Just Use Postgres
-
+<https://www.youtube.com/watch?v=Z2U7UgiKK2o> 
+Очереди и кэш на Postgres — без Redis, RabbitMQ и Kafka  
 <https://www.youtube.com/watch?v=ytCoB20a4BQ> 
 Postgres вместо Redis, Kafka и Elasticsearch: где предел
 
@@ -23,14 +25,13 @@ Postgres вместо Redis, Kafka и Elasticsearch: где предел
 
 <https://habr.com/ru/companies/postgrespro/articles/1012716/> Apache AGE ( A Graph Extension)
 
-<https://gist.github.com/cpursley/c8fb81fe8a7e5df038158bdfe0f06dbb> PG is enough
+
 
 <https://habr.com/ru/articles/996560/> 25 rules for postgres design
 
 <https://habr.com/ru/articles/1011996/>
 
-<https://www.youtube.com/watch?v=Z2U7UgiKK2o> 
-Очереди и кэш на Postgres — без Redis, RabbitMQ и Kafka
+
 
 <https://habr.com/ru/companies/postgrespro/articles/1001194/>
 
