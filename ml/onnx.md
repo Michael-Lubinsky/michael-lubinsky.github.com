@@ -6,6 +6,8 @@
 
 <https://manticoresearch.com/blog/onnx-embeddings-speedup/>
 
+<https://news.ycombinator.com/item?id=48770477>
+
  ONNX book
 <https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/>
 
