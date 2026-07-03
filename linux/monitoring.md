@@ -16,6 +16,8 @@ https://habr.com/ru/articles/1005210/ Victoria metrics, etc
 
 <https://habr.com/ru/companies/otus/articles/971082/> Observability Tools
 
+<https://matduggan.com/clickhouse-is-winning-the-observability-wars/> Clickhouse
+
 <https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
 
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
