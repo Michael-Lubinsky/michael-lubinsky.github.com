@@ -6,6 +6,9 @@
 
 <https://habr.com/ru/companies/timeweb/articles/1046345/> HyperLogLog: как найти уникальные значения в терабайте данных,
 
+Advanced Algos by Jelani Nelson
+<https://www.youtube.com/playlist?list=PL2SOU6wwxB0uP4rJgf5ayhHWgw7akUWSf>
+
 
 <https://habr.com/ru/articles/1034790/> Bloom Filter
 
