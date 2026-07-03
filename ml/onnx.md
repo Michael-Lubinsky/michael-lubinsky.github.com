@@ -4,6 +4,8 @@
 
 <https://onnxruntime.ai/>
 
+<https://manticoresearch.com/blog/onnx-embeddings-speedup/>
+
  ONNX book
 <https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/>
 
@@ -16,6 +18,8 @@
 <https://habr.com/ru/companies/otus/articles/991542/>
 
 <https://habr.com/ru/articles/1029338/>
+
+
 
 ```bash
 pip install onnx
