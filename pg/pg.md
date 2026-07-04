@@ -427,6 +427,8 @@ tracks statistics on the queries executed by a Postgres database.
 
 ### Table partitioning
 
+<https://explainanalyze.com/p/designing-partitioning-you-dont-have-to-babysit/>
+
 <https://www.tigerdata.com/learn/when-to-consider-postgres-partitioning>
 
 #### pg_partman extension
