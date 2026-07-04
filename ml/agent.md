@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/1051166/> Tools, Hooks, Skills, MCP — что есть что?
 
+<https://habr.com/ru/companies/otus/articles/1054590/> sub agent 
+
 <https://belderbos.dev/blog/build-minimal-ai-agent-python/>
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
