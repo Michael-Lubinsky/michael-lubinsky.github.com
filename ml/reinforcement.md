@@ -6,6 +6,8 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 https://habr.com/ru/articles/991622/
 
+https://habr.com/ru/articles/1055446/
+
 https://habr.com/ru/articles/1002298/
 
 
