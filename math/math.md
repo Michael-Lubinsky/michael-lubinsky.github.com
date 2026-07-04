@@ -17,6 +17,10 @@
 
  <https://www.klex.ru/razdel/math/> <https://www.klex.ru/razdel/mathematical_physics/>
 
+ <https://archive.org/details/mir-titles>
+
+ <https://pdf.lib.vntu.edu.ua/books/Springer/>
+
 ## ТРИВИУМ АРНОЛЬДА
 <https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172   
 <https://www.youtube.com/watch?v=3fgZlpH0N_M>  Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
