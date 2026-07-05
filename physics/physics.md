@@ -181,7 +181,9 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
-<https://www.youtube.com/playlist?list=PLxGo9dxQkqWA-SD1lyrtltt8KxfLk9z4f>
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNA4PyhnlugbKhdVbJUUeBxj> Квантовая теория - Сущёв Иван
+
+<https://www.youtube.com/playlist?list=PLxGo9dxQkqWA-SD1lyrtltt8KxfLk9z4f> KhanAcademyRussian
 
 <https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
