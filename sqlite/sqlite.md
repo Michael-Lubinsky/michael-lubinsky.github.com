@@ -8,6 +8,127 @@ It provides an extensive set of higher-level operations on top of Python’s def
 
 <https://answerdotai.github.io/apswutils/> another Python Lib for working with SQLite
 
+**APSW** stands for **Another Python SQLite Wrapper**. It is a Python library by Roger Binns that provides an extremely thin wrapper around the **native SQLite C API**. Rather than hiding SQLite behind the standard Python DB-API abstraction, APSW exposes almost all of SQLite's functionality directly to Python. ([GitHub][1])
+
+## Why does APSW exist?
+
+Python already ships with the built-in `sqlite3` module:
+
+```python
+import sqlite3
+```
+
+However, `sqlite3` was designed to conform to the generic **DB-API 2.0** specification, making it look similar to drivers for PostgreSQL, MySQL, Oracle, etc.
+
+APSW takes a different approach:
+
+> "SQLite is unique, so Python should expose SQLite as it really is."
+
+It maps the SQLite C API almost one-to-one into Python. ([Debian Packages][2])
+
+---
+
+## What does APSW provide?
+
+Besides basic SQL execution, APSW exposes advanced SQLite features that are unavailable or limited in `sqlite3`:
+
+| Feature               | sqlite3                   | APSW                     |
+| --------------------- | ------------------------- | ------------------------ |
+| Latest SQLite release | Sometimes behind          | ✅ Usually current        |
+| Virtual Tables        | Limited                   | ✅ Full support           |
+| FTS5                  | Partial                   | ✅ Full                   |
+| JSON functions        | Depends on bundled SQLite | ✅ Current SQLite support |
+| Session extension     | ❌                         | ✅                        |
+| Backup API            | Limited                   | ✅                        |
+| Blob streaming        | Basic                     | ✅ Full                   |
+| Authorizer callbacks  | ❌                         | ✅                        |
+| Progress handlers     | Limited                   | ✅                        |
+| Update hooks          | ❌                         | ✅                        |
+| Commit/Rollback hooks | ❌                         | ✅                        |
+| Custom VFS            | ❌                         | ✅                        |
+| Tracing               | Basic                     | ✅ Extensive              |
+
+([Roger Binns][3])
+
+---
+
+## Example
+
+Using `sqlite3`:
+
+```python
+import sqlite3
+
+conn = sqlite3.connect("test.db")
+conn.execute("CREATE TABLE people(name)")
+conn.execute("INSERT INTO people VALUES(?)", ("Alice",))
+conn.commit()
+```
+
+Using APSW:
+
+```python
+import apsw
+
+conn = apsw.Connection("test.db")
+
+conn.execute("CREATE TABLE IF NOT EXISTS people(name)")
+conn.execute("INSERT INTO people VALUES(?)", ("Alice",))
+```
+
+Notice there is no `commit()` by default. APSW follows SQLite's own transaction semantics more closely rather than hiding them behind the DB-API interface. ([Roger Binns][3])
+
+---
+
+## Philosophy
+
+The APSW project describes itself as a way to:
+
+* expose the **complete SQLite C API**
+* stay synchronized with new SQLite releases
+* avoid unnecessary abstraction
+* provide a better developer experience for SQLite-specific applications ([GitHub][1])
+
+---
+
+## When should you use APSW?
+
+Use APSW if you're:
+
+* building an application where SQLite is the primary database
+* using modern SQLite features (FTS5, JSON, virtual tables, sessions)
+* writing custom SQL functions, collations, or virtual tables
+* interested in SQLite internals and performance
+* developing tools like Datasette or SQLite extensions
+
+Use the built-in `sqlite3` if you're:
+
+* writing portable code that may switch databases later
+* following tutorials or ORMs that expect DB-API
+* performing straightforward CRUD operations
+
+---
+
+## Given your interests
+
+From our previous discussions, you've been exploring advanced SQL features, ETL pipelines, and modern SQLite utilities. APSW is a strong fit because it gives you access to nearly everything SQLite can do, including:
+
+* custom SQL functions and aggregates (similar to UDFs in other databases),
+* virtual tables,
+* FTS5 full-text search,
+* JSON capabilities,
+* tracing and profiling,
+* incremental BLOB I/O,
+* and extensions such as Sessions and CARRAY.
+
+Those capabilities are particularly valuable if you're treating SQLite as an embedded analytical database rather than just a lightweight file-based store.
+
+[1]: https://github.com/rogerbinns/apsw?utm_source=chatgpt.com "rogerbinns/apsw: Another Python SQLite wrapper"
+[2]: https://packages.debian.org/sid/python-apsw-doc?utm_source=chatgpt.com "Details of package python-apsw-doc in sid"
+[3]: https://rogerbinns.github.io/apsw/index.html?utm_source=chatgpt.com "APSW 3.53.2.0 documentation"
+
+
+
 Although the names are similar, these libraries have different goals and different foundations.
 
 | Feature                  | `sqlite-utils`                      | `apswutils`                            |
