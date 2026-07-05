@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=w0cxRr93G9o> Transformer from scratch
 
+<https://www.youtube.com/playlist?list=PLweJS2YZCfkeXXdfCKGaxAhm2w8p0u1z6>
+
 <https://habr.com/ru/articles/1031568/>
 
 <https://www.gilesthomas.com/llm-from-scratch>
