@@ -2,8 +2,14 @@
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>  
 <https://visualdb.com/sqlite/>   <https://github.com/Maxteabag/sqlit>
 
+<https://sqlite-utils.datasette.io/en/latest/>
+sqlite-utils is   Python library and CLI tool for working with SQLite databases.
+It provides an extensive set of higher-level operations on top of Python’s default sqlite3 package, including support for complex table transformations, automatic table creation from JSON data and a whole lot more.
 
-<https://answerdotai.github.io/apswutils/>
+<https://answerdotai.github.io/apswutils/> another Python Lib for working with SQLite
+
+
+
 
 <https://andersmurphy.com/2026/06/05/the-perils-of-uuid-primary-keys-in-sqlite.html>
 ```
