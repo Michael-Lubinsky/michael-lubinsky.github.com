@@ -181,6 +181,8 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
+<https://www.youtube.com/playlist?list=PLxGo9dxQkqWA-SD1lyrtltt8KxfLk9z4f>
+
 <https://arxiv.org/pdf/2011.12671> Sidney Coleman’s Dirac Lecture “Quantum Mechanics in Your Face”
 
 <https://www.amazon.com/stores/Taeryeon-Kim/author/B0GP5PJM23> Books
