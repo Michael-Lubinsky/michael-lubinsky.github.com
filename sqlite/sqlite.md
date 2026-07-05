@@ -3,6 +3,8 @@
 <https://visualdb.com/sqlite/>   <https://github.com/Maxteabag/sqlit>
 
 
+<https://answerdotai.github.io/apswutils/>
+
 <https://andersmurphy.com/2026/06/05/the-perils-of-uuid-primary-keys-in-sqlite.html>
 ```
             "PRAGMA foreign_keys=ON;"
