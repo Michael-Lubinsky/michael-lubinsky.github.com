@@ -8,6 +8,161 @@ It provides an extensive set of higher-level operations on top of Python’s def
 
 <https://answerdotai.github.io/apswutils/> another Python Lib for working with SQLite
 
+Although the names are similar, these libraries have different goals and different foundations.
+
+| Feature                  | `sqlite-utils`                      | `apswutils`                            |
+| ------------------------ | ----------------------------------- | -------------------------------------- |
+| SQLite driver            | Python's built-in `sqlite3`         | APSW (Another Python SQLite Wrapper)   |
+| Primary goal             | High-level SQLite utilities and CLI | Same high-level API, but built on APSW |
+| CLI included             | ✅ Extensive                         | ❌ Primarily Python library             |
+| Datasette integration    | Excellent                           | Not specifically                       |
+| Latest SQLite features   | Limited by `sqlite3` version        | Full SQLite API via APSW               |
+| Performance              | Good                                | Usually slightly better                |
+| Advanced SQLite features | Some                                | Nearly all SQLite capabilities         |
+
+## sqlite-utils
+
+`sqlite-utils` is Simon Willison's mature library. It is intended to make SQLite pleasant to use from Python and from the command line. It is **not an ORM**—instead it focuses on manipulating databases with very little code. ([SQLite Utils][1])
+
+Example:
+
+```python
+from sqlite_utils import Database
+
+db = Database("movies.db")
+
+db["movies"].insert({
+    "title": "Alien",
+    "year": 1979
+})
+```
+
+Features include:
+
+* automatic table creation
+* automatic schema evolution
+* upsert
+* bulk inserts
+* JSON support
+* table transformations
+* migrations (added in the 4.x series)
+* excellent CLI
+* plugin ecosystem ([Simon Willison’s Weblog][2])
+
+This library is ideal for:
+
+* ETL
+* data science
+* importing CSV/JSON
+* quick scripts
+* Datasette projects
+
+---
+
+## apswutils
+
+`apswutils` is **Answer.AI's fork** of `sqlite-minutils` (a smaller sibling of `sqlite-utils`), rewritten to use **APSW** instead of the standard `sqlite3` module. ([GitHub][3])
+
+The philosophy is:
+
+> Keep the convenient high-level API while replacing the underlying driver with APSW.
+
+Notable differences include:
+
+* WAL enabled by default
+* APSW exceptions instead of DB-API exceptions
+* better transaction handling
+* more correct handling of SQLite defaults
+* access to all APSW capabilities ([GitHub][3])
+
+Example:
+
+```python
+from apswutils import Database
+
+db = Database("example.db")
+```
+
+The API intentionally resembles the original library.
+
+---
+
+# The real difference is APSW vs sqlite3
+
+The biggest distinction is not the utility layer—it's the database driver underneath.
+
+### sqlite3
+
+Python's standard library wrapper:
+
+* DB-API 2.0 compliant
+* hides many SQLite-specific details
+* limited to what the bundled SQLite version supports
+* thread restrictions
+* fewer advanced SQLite APIs
+
+### APSW
+
+APSW is almost a one-to-one wrapper around SQLite's C API.
+
+Advantages include:
+
+* newest SQLite releases
+* virtual tables
+* VFS
+* FTS5
+* sessions
+* incremental BLOB I/O
+* tracing
+* backup API
+* custom VFS
+* busy handlers
+* authorizers
+* complete SQLite extension support
+* better diagnostics and error reporting ([Roger Binns][4])
+
+Roger Binns (the APSW author) recommends APSW when you want direct access to SQLite's full functionality, while `sqlite3` is appropriate for simpler, database-agnostic code. ([Roger Binns][4])
+
+---
+
+# Which should you choose?
+
+### Choose `sqlite-utils` if
+
+* you want a mature, widely used library
+* you use Datasette
+* you need the CLI
+* you mainly perform ETL or scripting
+* portability is more important than advanced SQLite features
+
+---
+
+### Choose `apswutils` if
+
+* you're building SQLite-heavy applications
+* you want the latest SQLite features immediately
+* you need virtual tables, custom extensions, or advanced SQLite APIs
+* you expect high concurrency
+* you already prefer APSW over `sqlite3`
+
+---
+
+# For your background
+
+Based on our previous conversations (Databricks, ETL pipelines, SQL tooling, analytics, and your interest in modern SQLite features), I would lean toward **APSW** as the underlying driver.
+
+A practical combination would be:
+
+* **APSW** for database access.
+* **apswutils** for convenient CRUD operations.
+* **sqlite-utils CLI** as a separate installation if you want its excellent command-line import/export and database manipulation tools.
+
+That gives you both the full power of modern SQLite and the productivity of higher-level utilities.
+
+[1]: https://sqlite-utils.datasette.io/?utm_source=chatgpt.com "sqlite-utils"
+[2]: https://simonwillison.net/series/sqlite-utils-features/?utm_source=chatgpt.com "New features in sqlite-utils"
+[3]: https://github.com/AnswerDotAI/apswutils?utm_source=chatgpt.com "AnswerDotAI/apswutils: A fork of sqlite-minutils for apsw"
+[4]: https://rogerbinns.github.io/apsw/pysqlite.html?utm_source=chatgpt.com "sqlite3 module differences — APSW 3.53.2.0 documentation"
 
 
 
