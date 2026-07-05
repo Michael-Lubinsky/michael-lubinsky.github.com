@@ -4,6 +4,7 @@
 
 <img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
 
+<https://forallxyz.net/>
 
 <https://www.mdpi.com/>  Open Access Journals
 
