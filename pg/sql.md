@@ -5,6 +5,8 @@
 
 <https://dbml.dbdiagram.io/home/> DB Diagram
 
+<https://www.dbpro.app/>
+
 https://github.com/ondras/wwwsqldesigner
 
 https://mdview.io/mermaid?example=working-er
