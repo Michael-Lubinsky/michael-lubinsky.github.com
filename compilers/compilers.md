@@ -4,6 +4,8 @@ https://eli.thegreenplace.net/2025/revisiting-lets-build-a-compiler/
 
 https://news.ycombinator.com/item?id=46214693
 
+<https://dthain.github.io/books/compiler/>
+
 https://habr.com/ru/companies/postgrespro/articles/922260/
 
 https://github.com/IUCompilerCourse/Essentials-of-Compilation
