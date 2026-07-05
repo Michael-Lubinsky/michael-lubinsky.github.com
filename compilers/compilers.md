@@ -1,8 +1,10 @@
 ### Compilers
 
-https://eli.thegreenplace.net/2025/revisiting-lets-build-a-compiler/
+<https://eli.thegreenplace.net/2025/revisiting-lets-build-a-compiler/>
 
-https://news.ycombinator.com/item?id=46214693
+<https://news.ycombinator.com/item?id=46214693>
+
+<https://www.plai.org/>
 
 <https://dthain.github.io/books/compiler/>
 
