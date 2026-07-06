@@ -12,6 +12,8 @@ High-Dimensional Probability. Roman Vershinin
 Statistical Modeling: The Two Cultures. Leo Breiman
 <https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726>
 
+<https://colah.github.io/posts/2015-09-Visual-Information/>
+
 Hypotesis testing
 <https://www.youtube.com/watch?v=AvUtMSI_4pM>
 
