@@ -3,7 +3,20 @@
 <https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
 
 <img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
-
+```
+Scott Cunningham's "Causal Inference: The Mixtape"
+E.T. Jaynes's "Probability Theory: The Logic of Science"
+David MacKay's "Information Theory, Inference, and Learning Algorithms"
+"The Elements of Statistical Learning," by Hastie, Tibshirani, and Friedman
+J.R. Norris's "Markov Chains" 
+Steven Strogatz's "Nonlinear Dynamics and Chaos"
+Christian Robert and George Casella's "Monte Carlo Statistical Methods"
+Richard Gorsuch's "Factor Analysis"
+"Latent Class and Latent Transition Analysis," by Linda Collins and Stephanie Lanza
+"Computational Modeling of Cognition and Behavior," by Simon Farrell and Stephan Lewandowsky
+"AP Statistics" by Barron's 
+Shlomo Sternberg's "Dynamical Systems"
+```
 <https://forallxyz.net/>
 
 <https://www.youtube.com/watch?v=Iz7PSlTpjyI> Matrix exponentials, determinants, and Lie algebras.
