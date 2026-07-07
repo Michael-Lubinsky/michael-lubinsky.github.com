@@ -88,9 +88,12 @@ https://stasosphere.com/machine-learning/
 <https://habr.com/ru/companies/piter/articles/1001790/> Как в Netflix масштабируют постобучение LLM
 
 ## Inference
-https://news.ycombinator.com/item?id=47355410  
 
-https://habr.com/ru/articles/1008206/
+<https://habr.com/ru/companies/raft/articles/1056460/>
+
+<https://news.ycombinator.com/item?id=47355410>  
+
+<https://habr.com/ru/articles/1008206/>
 
 <https://habr.com/ru/companies/bothub/articles/1011608/>
 
