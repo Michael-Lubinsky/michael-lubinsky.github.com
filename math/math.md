@@ -6,6 +6,8 @@
 
 <https://forallxyz.net/>
 
+<https://www.youtube.com/watch?v=Iz7PSlTpjyI> Matrix exponentials, determinants, and Lie algebras.
+
 <https://www.mdpi.com/>  Open Access Journals
 
 <https://old.mccme.ru/dubna/>
