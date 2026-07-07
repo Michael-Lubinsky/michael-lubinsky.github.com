@@ -34,6 +34,8 @@
 
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
 
+<https://arxiv.org/abs/0904.1501> Origin of the Canonical Ensemble: Thermalization with Decoherence
+
 ### QM Done Right book
 <https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
 <https://www.amazon.com/Quantum-Mechanics-Done-Right-Researcher/dp/3031878442>
