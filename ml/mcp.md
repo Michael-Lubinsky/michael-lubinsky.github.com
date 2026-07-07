@@ -1,5 +1,7 @@
 ## MCP
 
+<https://habr.com/ru/companies/avito/articles/1056028/>
+
 <https://realpython.com/python-mcp/>
 
 <https://realpython.com/courses/connecting-llms-data-python-mcp-servers/>
