@@ -3,6 +3,7 @@
 Data Engineering for Large Models: Architecture, Algorithms & Projects  
 <https://datascale-ai.github.io/data_engineering_book/en/>
 
+<https://habr.com/ru/companies/yandex_praktikum/articles/1054782/> MetaFlow
 
 <https://habr.com/ru/companies/avito/articles/1050838/>
 
