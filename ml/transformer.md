@@ -100,6 +100,8 @@ https://habr.com/ru/companies/wunderfund/articles/974300/
 
 https://rti.github.io/gptvis/ Understanding Transformers Using A Minimal Example  
 
+https://www.linkedin.com/pulse/ml-engineer-interview-myths-2-can-attention-work-d-maksim-metelskii-egpyc/
+
 https://news.ycombinator.com/item?id=35990118
 
 https://news.ycombinator.com/item?id=45116957
