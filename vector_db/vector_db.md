@@ -10,6 +10,8 @@
 
 <https://habr.com/ru/articles/1057136/>
 
+<https://habr.com/ru/companies/garage8/articles/1057100/>
+
 <https://www.youtube.com/watch?v=jxbr6GV9h4o> Word embedding ru
 
 <https://www.youtube.com/watch?v=-KZ3vWy1g2s> Лекция №8. Курс: Методы машинного обучения. Лектор: Воронцов К.В. ВМК МГУ, 3 курс, 6 семестр.
