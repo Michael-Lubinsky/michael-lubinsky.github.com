@@ -13,6 +13,10 @@
 <https://belderbos.dev/blog/build-minimal-ai-agent-python/>
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
+### Claude/Codex skill for geospatial data 
+<https://github.com/dekart-xyz/geosql>  
+<https://news.ycombinator.com/item?id=48829242>
+
 Postgres + Agent
 <https://www.reddit.com/r/PostgreSQL/comments/1tyewxr/how_an_ai_agent_with_50_tools_queries_postgresql/>
 
