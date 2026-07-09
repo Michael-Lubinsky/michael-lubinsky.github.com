@@ -30,6 +30,8 @@
 
 <https://news.ycombinator.com/item?id=48692946> Why does kinetic energy increase quadratically, not linearly, with speed
 
+Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
+
 <img width="352" height="467" alt="image" src="https://github.com/user-attachments/assets/d6437af5-be98-4e2c-b185-1de3588fb866" />
 
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
