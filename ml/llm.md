@@ -4,6 +4,9 @@
 
 <https://habr.com/ru/companies/bothub/articles/1052350/> LLM benchmarking
 
+<img width="1080" height="1412" alt="image" src="https://github.com/user-attachments/assets/adc9480b-07cc-4103-a029-d159e22495b7" />
+
+
 <https://habr.com/ru/companies/gpugo/articles/1056192/> local LLMs
 
 <https://habr.com/ru/articles/1055054/>
