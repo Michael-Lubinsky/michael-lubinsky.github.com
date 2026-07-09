@@ -54,6 +54,8 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <https://www.quantamagazine.org/how-many-elementary-particles-are-there-really-20260615/>
 
+<https://news.ycombinator.com/item?id=48697746>
+
 ## Solid State Physics
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X> Клёнов Н.В.
 
