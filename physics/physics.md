@@ -48,6 +48,10 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <https://www.klex.ru/razdel/science/>
 
+
+## Elementary Particles
+<https://habr.com/ru/articles/1057576/>
+
 ## Solid State Physics
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X> Клёнов Н.В.
 
