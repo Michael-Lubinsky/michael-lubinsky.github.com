@@ -47,6 +47,7 @@ https://habr.com/ru/articles/543950/
 https://habr.com/ru/articles/497356/  
 https://habr.com/ru/companies/plarium/articles/431520/  
 
+https://habr.com/ru/companies/yandex_praktikum/articles/1055208/
 
 ### Customer metrics analysis
 https://habr.com/ru/companies/otus/articles/893964/
