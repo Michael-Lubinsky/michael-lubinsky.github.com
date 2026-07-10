@@ -39,6 +39,7 @@ Shlomo Sternberg's "Dynamical Systems"
 
  <https://pdf.lib.vntu.edu.ua/books/Springer/>
 
+< https://habr.com/ru/articles/1049898/> как доказать неразрешимость уравнений пятой степени
  <https://habr.com/ru/articles/1055326/> Часть II: как доказать неразрешимость уравнений пятой степени
 
 ## ТРИВИУМ АРНОЛЬДА
