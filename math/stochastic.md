@@ -16,9 +16,11 @@
 <https://www.youtube.com/playlist?list=PL1dqPc_qxc0esLUl13_nPEDVREIvXWeXz> Stochastic Calculus for Absolute Beginners. 6 videos. Math with Ming.
 
 
-<https://www.youtube.com/watch?v=Devm4ElEhGc> Stochastic Calculus for Quants | Understanding Geometric Brownian Motion using Itô Calculus
 
-<https://www.youtube.com/watch?v=uQ7bYH2CkoA&pp=ugUHEgVlbi1DQQ%3D%3D>
+<https://www.youtube.com/watch?v=uQ7bYH2CkoA> Einstein, Brownian Motion, and Heat Equation | Stochastic Calculus ep.5. Math with Ming.
+
+
+<https://www.youtube.com/watch?v=Devm4ElEhGc> Stochastic Calculus for Quants | Understanding Geometric Brownian Motion using Itô Calculus
 
 <https://www.youtube.com/@stochastip> Stochastic Calculus for Quantitative Finance
 
