@@ -58,6 +58,10 @@ Shlomo Sternberg's "Dynamical Systems"
 <https://www.youtube.com/watch?v=yCZgKep5iBc>
 
 ### Group Theory
+
+<https://www.youtube.com/watch?v=aG5mJKh6zbM> 
+New series! Intro to Pure Math
+
 <https://habr.com/ru/articles/739822/>
 <https://habr.com/ru/articles/979748/>
 <https://habr.com/ru/articles/1046053/>
