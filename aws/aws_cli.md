@@ -1,5 +1,162 @@
 ## AWS CLI
 
+**AWS CLI (Amazon Web Services Command Line Interface)** is a command-line tool that lets you interact with AWS services from a terminal instead of using the AWS web console.
+
+Using AWS CLI, you can manage almost every AWS service, including:
+
+* **EC2** virtual machines
+* **S3** object storage
+* **Lambda** functions
+* **DynamoDB** databases
+* **CloudFormation** stacks
+* **IAM** users and roles
+* **EKS** Kubernetes clusters
+* **RDS** databases
+
+The AWS CLI sends requests directly to AWS APIs and displays the results in JSON, table, or text format.
+
+## Example: List S3 buckets
+
+```bash
+aws s3 ls
+```
+
+Output:
+
+```text
+2026-01-12 09:20:11 my-backup-bucket
+2026-03-15 14:05:07 photos-archive
+2026-06-30 08:14:52 logs-production
+```
+
+## Example: List EC2 instances
+
+```bash
+aws ec2 describe-instances
+```
+
+This returns a large JSON document describing all EC2 virtual machines in your account.
+
+## Example: Upload a file to S3
+
+```bash
+aws s3 cp report.pdf s3://my-bucket/reports/
+```
+
+## Example: Create a DynamoDB table
+
+```bash
+aws dynamodb create-table \
+    --table-name Users \
+    --attribute-definitions \
+        AttributeName=user_id,AttributeType=S \
+    --key-schema \
+        AttributeName=user_id,KeyType=HASH \
+    --billing-mode PAY_PER_REQUEST
+```
+
+## Installation
+
+AWS provides installers for:
+
+* Linux
+* macOS
+* Windows
+
+The official installation instructions are available at:
+
+[AWS CLI Installation Guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html?utm_source=chatgpt.com)
+
+## Authentication
+
+Before using AWS CLI, you usually configure credentials:
+
+```bash
+aws configure
+```
+
+You will be asked for:
+
+```text
+AWS Access Key ID:
+AWS Secret Access Key:
+Default region:
+Default output format:
+```
+
+The credentials are typically stored in:
+
+```text
+~/.aws/credentials
+~/.aws/config
+```
+
+For modern AWS environments, it is increasingly common to use:
+
+* AWS SSO / IAM Identity Center
+* IAM Roles
+* Temporary credentials via STS
+
+rather than long-lived access keys.
+
+## AWS CLI v2
+
+The current major version is **AWS CLI v2**:
+
+[AWS CLI Official Site](https://aws.amazon.com/cli/?utm_source=chatgpt.com)
+
+Version check:
+
+```bash
+aws --version
+```
+
+Example output:
+
+```text
+aws-cli/2.28.5 Python/3.13.5 Darwin/24.5.0 exe/x86_64
+```
+
+## AWS CLI vs AWS Console
+
+| Task                             | AWS Console | AWS CLI   |
+| -------------------------------- | ----------- | --------- |
+| One-time manual operations       | Excellent   | Good      |
+| Automation and scripting         | Limited     | Excellent |
+| Repeatable deployments           | Limited     | Excellent |
+| Bulk operations                  | Difficult   | Excellent |
+| CI/CD integration                | Limited     | Excellent |
+| Infrastructure as Code workflows | Limited     | Excellent |
+
+## Relationship to other AWS tools
+
+```text
+AWS CLI
+    ↓
+AWS APIs
+    ↑
+AWS Console
+AWS SDKs (Python boto3, Java, Go, C++, ...)
+Terraform
+CloudFormation
+```
+
+All of these tools ultimately communicate with the same AWS service APIs.
+
+Since you've worked with S3, DynamoDB Streams, Lambda, and Databricks pipelines, AWS CLI is particularly useful for tasks such as:
+
+```bash
+aws s3 ls s3://chargeminder-2/raw/dynamodb/
+
+aws dynamodb scan --table-name chargeminder-car-telemetry
+
+aws sts get-caller-identity
+
+aws sso login --profile PowerUserAccess-447759255101
+```
+
+These commands are commonly used for debugging permissions, inspecting S3 data, and verifying which AWS account and role are currently active.
+
 ## JMESPath
 
 **JMESPath** is a query language for JSON. AWS CLI includes it through the global `--query` option, letting you filter, select, sort, and reshape an AWS command’s response before it is printed. ([AWS Documentation][1])
