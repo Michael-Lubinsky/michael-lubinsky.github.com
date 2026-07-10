@@ -1,3 +1,306 @@
+## AWS CLI
+
+## JMESPath
+
+**JMESPath** is a query language for JSON. AWS CLI includes it through the global `--query` option, letting you filter, select, sort, and reshape an AWS command’s response before it is printed. ([AWS Documentation][1])
+
+Think of it as roughly:
+
+* SQL-like querying for JSON
+* `jq`-like filtering built directly into AWS CLI
+* Python list/dictionary operations expressed as a compact command-line language
+
+## Basic example
+
+Without JMESPath:
+
+```bash
+aws ec2 describe-instances
+```
+
+This returns a large nested JSON document.
+
+With JMESPath:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[].InstanceId'
+```
+
+Output:
+
+```json
+[
+  "i-0123456789abcdef0",
+  "i-0987654321abcdef0"
+]
+```
+
+The expression means:
+
+```text
+Reservations[]
+    take every reservation
+
+.Instances[]
+    take every instance inside each reservation
+
+.InstanceId
+    return only the InstanceId field
+```
+
+## Selecting multiple fields
+
+You can transform each instance into a smaller object:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[].{
+      InstanceId: InstanceId,
+      Type: InstanceType,
+      State: State.Name,
+      PrivateIp: PrivateIpAddress
+  }'
+```
+
+Result:
+
+```json
+[
+  {
+    "InstanceId": "i-0123456789abcdef0",
+    "Type": "t3.medium",
+    "State": "running",
+    "PrivateIp": "10.0.1.25"
+  }
+]
+```
+
+This is called a **multiselect hash**.
+
+## Filtering records
+
+Return only running instances:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[?State.Name==`running`].InstanceId'
+```
+
+Important syntax:
+
+```text
+[? condition ]
+```
+
+JMESPath literal values commonly use backticks:
+
+```text
+`running`
+`true`
+`10`
+```
+
+For example:
+
+```bash
+aws s3api list-buckets \
+  --query 'Buckets[?contains(Name, `production`)].Name'
+```
+
+## Sorting
+
+Sort EC2 instances by launch time:
+
+```bash
+aws ec2 describe-instances \
+  --query 'sort_by(Reservations[].Instances[], &LaunchTime)[].{
+      ID: InstanceId,
+      Launched: LaunchTime
+  }'
+```
+
+Reverse the result to show newest first:
+
+```bash
+aws ec2 describe-instances \
+  --query 'reverse(sort_by(Reservations[].Instances[], &LaunchTime))[].{
+      ID: InstanceId,
+      Launched: LaunchTime
+  }'
+```
+
+## Extracting tags
+
+EC2 tags have a structure such as:
+
+```json
+"Tags": [
+  {"Key": "Name", "Value": "web-server"},
+  {"Key": "Environment", "Value": "production"}
+]
+```
+
+Extract the `Name` tag:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[].{
+      ID: InstanceId,
+      Name: Tags[?Key==`Name`].Value | [0]
+  }'
+```
+
+The pipe:
+
+```text
+|
+```
+
+passes one expression’s result into the next expression.
+
+Here:
+
+```text
+Tags[?Key==`Name`].Value
+```
+
+may produce:
+
+```json
+["web-server"]
+```
+
+Then:
+
+```text
+| [0]
+```
+
+selects the first value.
+
+## Producing table output
+
+JMESPath controls the data; `--output` controls its final presentation:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[].[
+      InstanceId,
+      InstanceType,
+      State.Name,
+      PrivateIpAddress
+  ]' \
+  --output table
+```
+
+Example:
+
+```text
+-------------------------------------------------
+|               DescribeInstances               |
++----------------------+-----------+-------------+
+| i-0123456789abcdef0  | t3.medium | running     |
++----------------------+-----------+-------------+
+```
+
+For predictable tables, select fields in a fixed list or object rather than returning the original complex JSON.
+
+## Common JMESPath constructs
+
+| Expression                 | Meaning                                     |
+| -------------------------- | ------------------------------------------- |
+| `Field`                    | Select a field                              |
+| `A.B`                      | Select nested field                         |
+| `Items[]`                  | Flatten or iterate over an array            |
+| `Items[0]`                 | First item                                  |
+| `Items[-1]`                | Last item                                   |
+| `Items[0:5]`               | First five items                            |
+| `Items[*].Name`            | Select `Name` from all items                |
+| `Items[?State==\`active`]` | Filter items                                |
+| `{ID: Id, Name: Name}`     | Create an object                            |
+| `[Id, Name]`               | Create a list                               |
+| `sort_by(Items, &Name)`    | Sort by a field                             |
+| `length(Items)`            | Count items                                 |
+| `contains(Name, \`prod`)`  | Test whether a value contains another value |
+| `A \| B`                   | Pass result of A into B                     |
+
+JMESPath has a formally specified grammar and supports projections, filters, pipes, multiselects, slices, and functions. ([jmespath.org][2])
+
+## Server-side versus client-side filtering
+
+This distinction is important.
+
+### Server-side filtering
+
+```bash
+aws ec2 describe-instances \
+  --filters 'Name=instance-state-name,Values=running'
+```
+
+The AWS service filters the records before sending them to your computer.
+
+### JMESPath client-side filtering
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[?State.Name==`running`]'
+```
+
+AWS returns the API response first, and then AWS CLI applies the JMESPath expression locally. Therefore, `--query` normally does not reduce network transfer or API processing. ([AWS Documentation][1])
+
+They can be combined:
+
+```bash
+aws ec2 describe-instances \
+  --filters 'Name=instance-state-name,Values=running' \
+  --query 'Reservations[].Instances[].{
+      ID: InstanceId,
+      Type: InstanceType,
+      IP: PrivateIpAddress
+  }'
+```
+
+Use server-side filters to reduce the result set and `--query` to reshape the remaining data.
+
+## JMESPath versus `jq`
+
+AWS CLI:
+
+```bash
+aws ec2 describe-instances \
+  --query 'Reservations[].Instances[].InstanceId'
+```
+
+Equivalent general idea with `jq`:
+
+```bash
+aws ec2 describe-instances |
+jq '.Reservations[].Instances[].InstanceId'
+```
+
+JMESPath’s advantages are that it is built into AWS CLI and works directly with `--output json`, `text`, `table`, or `yaml`. `jq` is generally more powerful for complex transformations, arithmetic, custom object manipulation, and scripting.
+
+## One pagination caveat
+
+AWS documents an important difference for paginated commands:
+
+* With `--output json`, `yaml`, or `yaml-stream`, the CLI processes the complete native result and applies the query to the combined structure.
+* With `--output text`, the query can be applied separately to each response page, potentially producing unexpected repeated results. ([AWS Documentation][3])
+
+For complicated or paginated queries, prefer:
+
+```bash
+--output json
+```
+
+and convert to text afterward when necessary.
+
+[1]: https://docs.aws.amazon.com/cli/v1/userguide/cli-usage-filter.html?utm_source=chatgpt.com "Filtering output in the AWS CLI"
+[2]: https://jmespath.org/?utm_source=chatgpt.com "JMESPath — JMESPath"
+[3]: https://docs.aws.amazon.com/ko_kr/cli/latest/userguide/cli-usage-filter.html?utm_source=chatgpt.com "AWS CLI에서 출력 필터링"
+
+
 How to get your AWS Access Key ID and Secret Access Key from the AWS Console 
 
 ## Getting Your Access Keys from AWS Console
