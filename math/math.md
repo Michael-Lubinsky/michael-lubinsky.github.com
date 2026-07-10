@@ -4,6 +4,8 @@
 
 <img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
 
+<https://www.youtube.com/watch?v=ie6OKXBgoxc>  Определитель. Илья Молотов
+
 ```
 Scott Cunningham's "Causal Inference: The Mixtape"  
 E.T. Jaynes's "Probability Theory: The Logic of Science"  
