@@ -11,11 +11,16 @@
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvZpKAdF_TjR8lbMsfeaRQ0u>  (ru)
 
-<https://www.youtube.com/watch?v=Devm4ElEhGc>
+<https://www.youtube.com/watch?v=3Ar1aw7IRds> all of basic stochastic calculus (~90 minute speedrun)
+
+<https://www.youtube.com/playlist?list=PL1dqPc_qxc0esLUl13_nPEDVREIvXWeXz> Stochastic Calculus for Absolute Beginners. 6 videos. Math with Ming.
+
+
+<https://www.youtube.com/watch?v=Devm4ElEhGc> Stochastic Calculus for Quants | Understanding Geometric Brownian Motion using Itô Calculus
 
 <https://www.youtube.com/watch?v=uQ7bYH2CkoA&pp=ugUHEgVlbi1DQQ%3D%3D>
 
-<https://www.youtube.com/@stochastip>
+<https://www.youtube.com/@stochastip> Stochastic Calculus for Quantitative Finance
 
 <https://en.wikipedia.org/wiki/It%C3%B4_calculus> Ito's calculus
 
@@ -26,7 +31,7 @@
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbf7JvGVSlB9Jgts4VNNwS-> MPTI
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvaBTsYELeTKY76rhcweh1Ly> MPTI
 
-<https://www.youtube.com/watch?v=a5lZQA3sw0U>  
+<https://www.youtube.com/watch?v=a5lZQA3sw0U>   Stochastic Calculus, Beginning Level Texts for every field. Math with Ming.
 <https://www.youtube.com/watch?v=ErJp91YBXbo>  
 <https://freemathematicsbooks.com/B.aspx?FileName=Stochastic-DE-Models-Numerics--Jesper-Carlsson>
 
