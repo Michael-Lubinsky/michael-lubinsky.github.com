@@ -61,6 +61,8 @@ Shlomo Sternberg's "Dynamical Systems"
 
 ### Group Theory
 
+<https://www.youtube.com/watch?v=gO4P9l6bOm4> Шиз 596 минут изучает теорию групп 
+
 <https://www.youtube.com/watch?v=aG5mJKh6zbM> 
 New series! Intro to Pure Math
 
