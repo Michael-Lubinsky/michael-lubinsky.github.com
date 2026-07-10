@@ -56,6 +56,8 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <https://news.ycombinator.com/item?id=48697746>
 
+<https://habr.com/ru/articles/1057670/>
+
 ## Solid State Physics
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X> Клёнов Н.В.
 
