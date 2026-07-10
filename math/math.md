@@ -39,6 +39,8 @@ Shlomo Sternberg's "Dynamical Systems"
 
  <https://pdf.lib.vntu.edu.ua/books/Springer/>
 
+ <https://habr.com/ru/articles/1055326/> Часть II: как доказать неразрешимость уравнений пятой степени
+
 ## ТРИВИУМ АРНОЛЬДА
 <https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172   
 <https://www.youtube.com/watch?v=3fgZlpH0N_M>  Шиз и 10 часов ТРИВИУМА АРНОЛЬДА
