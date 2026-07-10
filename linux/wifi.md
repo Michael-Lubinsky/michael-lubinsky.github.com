@@ -15,6 +15,9 @@ book   by Paul Nahin, 'The Science of Radio'.
 
 <https://habr.com/ru/companies/bastion/articles/1019404/>
 
+
+<https://habr.com/ru/companies/ru_mts/articles/1057122/> 5G
+
 ## 📡 Wireless KPI Metrics and Events
 
 Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance Indicators (KPIs)** and **event logs** to assess and optimize performance. These metrics span **radio access**, **core network**, and **user experience** layers.
