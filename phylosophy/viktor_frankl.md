@@ -1,3 +1,5 @@
+## Viktor Frankl
+```
 Imagine reaching the end of your life and realizing that the person you became was not the person you could have been.
 Not because you lacked talent.
 Not because you lacked intelligence.
@@ -42,6 +44,7 @@ Why?
 The answer wasn’t physical strength.
 It wasn’t optimism.
 It wasn’t luck.
+
 Again and again, Frankl observed that those most likely to survive often possessed a powerful reason to continue.
 A child waiting at home.
 A spouse they hoped to see again.
@@ -159,3 +162,4 @@ And whether you have the courage to stop asking what you expect from life—
 and start asking what life expects from you.
 Because the people who ultimately become extraordinary are rarely the most talented.
 They are the ones who discover a reason larger than themselves—and refuse to abandon it.
+```
