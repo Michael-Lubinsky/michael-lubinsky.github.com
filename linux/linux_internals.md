@@ -20,6 +20,8 @@
 
 <https://habr.com/ru/companies/yandex/articles/1047072/> Микрочипы, CPU, GPU, TPU
 
+<https://linkmeup.ru/blog/3146/>  Микрочипы, CPU, GPU, TPU - Part 2
+
 <https://dzen.ru/a/aYzCnsI1iDpbtiPj> memory types
 
 <https://habr.com/ru/companies/yadro/articles/1014630/> FPGA
