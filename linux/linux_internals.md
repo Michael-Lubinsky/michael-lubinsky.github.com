@@ -8,7 +8,17 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
-<https://habr.com/ru/companies/yandex/articles/1047072/>
+<https://fazamhd.com/mental-models/networking/> Networking and the Internet, from First Principles
+
+<https://explained-from-first-principles.com/internet/>
+
+<https://www.networksfromscratch.com/>
+
+
+
+
+
+<https://habr.com/ru/companies/yandex/articles/1047072/> Микрочипы, CPU, GPU, TPU
 
 <https://dzen.ru/a/aYzCnsI1iDpbtiPj> memory types
 
