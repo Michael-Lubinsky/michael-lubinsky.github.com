@@ -22,6 +22,7 @@
 
 ## Useful libs
 
+
 <https://habr.com/ru/articles/1027354/> Nuitka (convertor to C)
 
 <https://pypi.org/project/duckdb-cli/>   DuckDB  
@@ -71,6 +72,8 @@
 <https://medium.com/the-pythonworld/the-cleanest-way-to-structure-a-python-project-in-2025-6758f7bb57e8>
 
 ## Python internals
+
+<https://labs.quansight.org/blog/python-abi-abi3t>
 
 <https://habr.com/ru/companies/vk/articles/454324/>
 
