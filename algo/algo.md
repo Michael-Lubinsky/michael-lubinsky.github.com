@@ -2,6 +2,8 @@
 
 <https://ru.algorithmica.org/>
 
+<https://www.algorithmsilluminated.org/>
+
 <https://github.com/TheAlgorithms>  <https://the-algorithms.com>
 
 <https://habr.com/ru/companies/timeweb/articles/1046345/> HyperLogLog: как найти уникальные значения в терабайте данных,
