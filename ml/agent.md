@@ -2,6 +2,8 @@
 
 <https://iitog.ru/>
 
+<https://fossy.dev/msitarzewski/agency-agents>
+
 <https://habr.com/ru/articles/1050736/>
 
 <https://www.kdnuggets.com/10-agentic-ai-frameworks-you-should-know-in-2026?>
