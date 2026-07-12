@@ -2,6 +2,8 @@
 
 <https://iitog.ru/>
 
+<https://addyosmani.com/blog/agent-harness-engineering/>
+
 <https://fossy.dev/msitarzewski/agency-agents>
 
 <https://habr.com/ru/articles/1050736/>
