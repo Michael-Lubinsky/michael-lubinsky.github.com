@@ -4,6 +4,8 @@
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
+<https://github.com/sshwarts/skillscript>
+
 <https://fossy.dev/msitarzewski/agency-agents>
 
 <https://habr.com/ru/articles/1050736/>
