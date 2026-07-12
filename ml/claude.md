@@ -13,12 +13,7 @@
 
 <https://habr.com/ru/companies/alpinadigital/articles/1032134/>
 
-## Skill
-<https://anthropic.skilljar.com/>
 
-<https://habr.com/ru/articles/1050290/> Skill compass
-
-<https://habr.com/ru/articles/1058312/> В начале июля в Claude Code появился встроенный скилл /dataviz
 
 
 
@@ -44,6 +39,14 @@
 <https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
 
 ## Skills
+
+## Skill
+<https://anthropic.skilljar.com/>
+
+<https://habr.com/ru/articles/1050290/> Skill compass
+
+<https://habr.com/ru/articles/1058312/> В начале июля в Claude Code появился встроенный скилл /dataviz
+
 <https://habr.com/ru/articles/1030502/>
 
 <https://ai.plainenglish.io/build-your-first-claude-code-skill-a-simple-project-memory-system-that-saves-hours-1d13f21aff9e>
