@@ -13,9 +13,14 @@
 
 <https://habr.com/ru/companies/alpinadigital/articles/1032134/>
 
+## Skill
 <https://anthropic.skilljar.com/>
 
 <https://habr.com/ru/articles/1050290/> Skill compass
+
+<https://habr.com/ru/articles/1058312/> В начале июля в Claude Code появился встроенный скилл /dataviz
+
+
 
 <https://blog.dailydoseofds.com/p/anatomy-of-the-claude-folder>
 
