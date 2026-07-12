@@ -40,7 +40,6 @@
 
 ## Skills
 
-## Skill
 <https://anthropic.skilljar.com/>
 
 <https://habr.com/ru/articles/1050290/> Skill compass
