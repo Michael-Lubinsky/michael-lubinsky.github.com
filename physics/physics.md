@@ -38,6 +38,9 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <img width="352" height="467" alt="image" src="https://github.com/user-attachments/assets/d6437af5-be98-4e2c-b185-1de3588fb866" />
 
+<img width="248" height="354" alt="image" src="https://github.com/user-attachments/assets/5c462ed3-21d7-4374-ac7a-8730156f08e6" />
+
+### Spinors
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
 
 <https://arxiv.org/abs/0904.1501> Origin of the Canonical Ensemble: Thermalization with Decoherence
