@@ -32,6 +32,8 @@
 
 <https://pubs.aip.org/aapt/ajp/issue/browse-by-year>
 
+<https://curtjaimungal.substack.com/p/what-is-energy-actually>  What is Energy
+
 <https://news.ycombinator.com/item?id=48692946> Why does kinetic energy increase quadratically, not linearly, with speed
 
 Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
