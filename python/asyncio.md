@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1048886/> Threading, Multiprocessing
 
+<https://habr.com/ru/articles/1058626/>
+
 <https://habr.com/ru/articles/1044508/>
 
 <https://habr.com/ru/articles/1011544/>
