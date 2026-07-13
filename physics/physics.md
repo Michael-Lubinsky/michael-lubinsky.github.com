@@ -362,7 +362,9 @@ Why sky is blue?
 
 https://news.ycombinator.com/item?id=46946401
 
-### Special relativity
+### Special Relativity
+
+<https://arxiv.org/abs/2605.21660> Relativity for Retired Engineers
 
 <https://habr.com/ru/articles/809803/>
 
