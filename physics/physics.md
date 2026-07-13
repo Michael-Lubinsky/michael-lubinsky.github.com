@@ -1,5 +1,7 @@
 ### Physics
 
+<https://www.susanrigetti.com/physics>
+
 <https://www.youtube.com/watch?v=QeDFbny74v4>
 
 <https://physicist-ai-production-d292.up.railway.app/landing>
