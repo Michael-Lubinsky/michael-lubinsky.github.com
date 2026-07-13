@@ -4,7 +4,9 @@
 
 <https://www.youtube.com/@RichBehiel> Richard Behiel
 
-<https://www.youtube.com/@getaclass_physics>
+<https://www.youtube.com/@getaclass_physics> GetClass (eng and ru)
+
+<https://www.youtube.com/@PhysicsExplainedVideos/videos>
 
 <https://www.youtube.com/watch?v=QeDFbny74v4>  из лекций физиков Эмиля Ахмедова, Сергея Попова и Дмитрия Казакова «Основы фундаментальной физики». 
 
