@@ -1,4 +1,5 @@
 ## Math
+<https://www.youtube.com/live/btlQl93qOhc> Symmetry is everywhere
 
 <https://www.susanrigetti.com/math>
 
