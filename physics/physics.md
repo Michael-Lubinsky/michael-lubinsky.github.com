@@ -370,7 +370,8 @@ https://news.ycombinator.com/item?id=46946401
 
 ### Special Relativity
 
-<https://arxiv.org/abs/2605.21660> Relativity for Retired Engineers
+<https://arxiv.org/abs/2605.21660> Relativity for Retired Engineers  
+<https://www.youtube.com/watch?v=Pw1J6hHi_zk> Илья Молотов
 
 <https://habr.com/ru/articles/809803/>
 
