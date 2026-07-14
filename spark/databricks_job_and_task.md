@@ -462,10 +462,14 @@ query = (
 query.awaitTermination()
 ```
 
-This is more robust than trying to thread a single filename through anyway, because file-arrival triggers can batch multiple files together (especially with the "wait after last change" debounce option) — so even if Databricks did expose a filename, you'd often get several, not one. Auto Loader's checkpoint naturally handles "process everything new since last run," including batches.
+This is more robust than trying to thread a single filename through anyway, because file-arrival triggers can batch multiple files together (especially with the "wait after last change" debounce option)   
+— so even if Databricks did expose a filename, you'd often get several, not one.   
+Auto Loader's checkpoint naturally handles "process everything new since last run,"\ including batches.
 
-**If you truly need the exact filename passed as a parameter** (e.g., for per-file branching logic), the file-arrival trigger can't do it — you'd need to build it yourself: an S3 event notification → Lambda → call the Databricks Jobs `run-now` API with the S3 key passed explicitly in `notebook_params`. That bypasses the built-in File Arrival trigger entirely and gives you full control over what's passed in.
----
+ If you truly need the exact filename passed as a parameter** (e.g., for per-file branching logic), the file-arrival trigger can't do it — you'd need to build it yourself:   
+ an S3 event notification → Lambda → call the Databricks Jobs `run-now` API with the S3 key passed explicitly in `notebook_params`.   
+ That bypasses the built-in File Arrival trigger entirely and gives you full control over what's passed in.
+ 
 
 # 9. Monitoring & lineage
 
