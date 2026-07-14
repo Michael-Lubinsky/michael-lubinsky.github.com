@@ -1,5 +1,8 @@
 ## Build From Scratch
 
+coding a machine learning library in c from scratch
+<https://www.youtube.com/watch?v=hL_n_GljC0I>
+
 <https://www.youtube.com/watch?v=w0cxRr93G9o> Transformer from scratch
 
 <https://www.youtube.com/playlist?list=PLweJS2YZCfkeXXdfCKGaxAhm2w8p0u1z6>
