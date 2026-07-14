@@ -391,14 +391,12 @@ Databricks Workflows supports:
 
 # 8. File-arrival triggers
 
-Very relevant to your work.
 
 Workflow can start when:
 
 * file arrives in S3
 * file arrives in ADLS
 
-You discussed this before for JSONL ingestion.
 
 Example:
 
@@ -412,6 +410,61 @@ Ingest notebook
 Transform
 ```
 
+ **File Arrival trigger does not pass the specific triggering file name to the notebook.** 
+ This is a known limitation — Databricks confirmed it's on their backlog with no ETA for now, and for now we do not send the file details as part of the trigger.
+
+What you *can* get is the monitored **directory** (not the specific file), via a task parameter:
+
+```
+{{job.trigger.file_arrival.location}}
+```
+
+A couple of gotchas from real-world reports on this:
+- This has to be set as a task-level parameter, not a job-level parameter — setting it at the job level throws "not allowed".
+- It resolves to the storage location you configured on the trigger (e.g. `s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/`), not the individual file key.
+
+So in your job's task parameters you'd add something like:
+
+```
+base_parameters = {"trigger_location": "{{job.trigger.file_arrival.location}}"}
+```
+
+and in the notebook:
+
+```python
+trigger_location = dbutils.widgets.get("trigger_location")
+```
+
+That tells you *where* something landed, not *what* landed.
+
+**The recommended workaround — don't try to get the filename, use Auto Loader instead**
+
+Since Databricks' own suggestion is to use Auto Loader as part of the triggered job to get the details of the file that arrived, the standard pattern is: let the trigger just kick off the job (it's just a "wake-up call"), and let Auto Loader (`cloudFiles`) do the actual incremental discovery of new files via its own checkpoint:
+
+```python
+df = (
+    spark.readStream
+    .format("cloudFiles")
+    .option("cloudFiles.format", "json")  # or csv, parquet, etc.
+    .load("s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/")
+)
+
+# input_file_name() gives you the actual file path per row if you need it
+from pyspark.sql.functions import input_file_name
+df = df.withColumn("source_file", input_file_name())
+
+query = (
+    df.writeStream
+    .option("checkpointLocation", "s3://chargeminder-2/checkpoints/car-telemetry/")
+    .trigger(availableNow=True)  # process what's new, then stop — good fit for triggered jobs
+    .toTable("hcai_databricks_dev.chargeminder2.car_telemetry_raw")
+)
+query.awaitTermination()
+```
+
+This is more robust than trying to thread a single filename through anyway, because file-arrival triggers can batch multiple files together (especially with the "wait after last change" debounce option) — so even if Databricks did expose a filename, you'd often get several, not one. Auto Loader's checkpoint naturally handles "process everything new since last run," including batches.
+
+**If you truly need the exact filename passed as a parameter** (e.g., for per-file branching logic), the file-arrival trigger can't do it — you'd need to build it yourself: an S3 event notification → Lambda → call the Databricks Jobs `run-now` API with the S3 key passed explicitly in `notebook_params`. That bypasses the built-in File Arrival trigger entirely and gives you full control over what's passed in.
 ---
 
 # 9. Monitoring & lineage
