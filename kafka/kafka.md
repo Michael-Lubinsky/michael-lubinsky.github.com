@@ -1,6 +1,7 @@
 ## Kafka
 <img width="1080" height="1351" alt="image" src="https://github.com/user-attachments/assets/18afd3b5-774d-4e79-b49e-174616f90399" />
 
+<https://habr.com/ru/articles/1052700/>
 
 <https://habr.com/ru/articles/989590/>
 
