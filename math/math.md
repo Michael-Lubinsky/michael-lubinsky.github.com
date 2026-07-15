@@ -3,6 +3,7 @@
 
 <https://www.susanrigetti.com/math>
 
+<https://www.youtube.com/watch?v=1vnJ4gfcmB8> Linear Algebra 3Blue1brown ru
 <https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
 
 <img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
