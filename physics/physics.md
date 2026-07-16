@@ -231,6 +231,8 @@ Vitaly Vanchurin
 
 <https://arxiv.org/pdf/2605.26375> Bohr’s complementarity
 
+<https://habr.com/ru/articles/1059630/>
+
 <https://quantum.intofuture.org/> software
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
