@@ -9,6 +9,9 @@ caffeinate - prevents your MacBook from sleeping even with the lid closed
 <https://scottwillsey.com/building-and-shipping-mac-and-ios-apps-without-ever-opening-xcode/>  
 <https://news.ycombinator.com/item?id=48896665>
 
+<https://www.open-notebook.ai/>
+<https://github.com/eryabyshev/open-notebook-app>
+
 ## brew
 ```
 ==> New Formulae
