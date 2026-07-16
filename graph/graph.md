@@ -24,7 +24,10 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
 
-### Postgres Graph
+### Postgres 19 Graph
+
+<https://habr.com/ru/articles/1059810/>
+
 <https://www.postgresql.org/docs/19/ddl-property-graphs.html> Postgres 19 Graph
 
 
