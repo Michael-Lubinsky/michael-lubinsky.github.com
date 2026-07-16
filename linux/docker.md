@@ -3,6 +3,8 @@
 <https://habr.com/ru/articles/1011268/>
 <https://habr.com/ru/companies/ruvds/articles/1043544/>
 
+<https://habr.com/ru/companies/ruvds/articles/1049924/> How to store data in Docker
+
 <https://github.com/jesseduffield/lazydocker> LazyDocker  
 <https://github.com/anilrajrimal1/dockedup> DockedUp   
 <https://codingplainenglish.medium.com/docker-is-dead-and-its-about-time-b457d14b0a72>   
