@@ -2,11 +2,13 @@
 
 <https://postgrespro.ru/education/books/internals> PostgreSQL 18 изнутри
 
-https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b
+<https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b>
 
-https://planetscale.com/blog/btrees-and-database-indexes B-trees
+<https://planetscale.com/blog/btrees-and-database-indexes> B-trees
 
-https://materialize.com/blog/how-filter-pushdown-works/
+<https://habr.com/ru/companies/tantor/articles/1060058/>  Bloom filter
+
+<https://materialize.com/blog/how-filter-pushdown-works/>
 
 https://habr.com/ru/companies/ydb/articles/907024/
 
