@@ -1,8 +1,13 @@
+<https://hpaulkeeler.com/wp-content/uploads/2018/08/StochasticProcess.pdf>
+
 ## Gaussian Process
 
 <https://en.wikipedia.org/wiki/Gaussian_process>
 
 <https://news.ycombinator.com/item?id=45116849> Random Walk in 10 dimentions
+
+https://hpaulkeeler.com/wp-content/uploads/2018/08/PoissonPointProcess.pdf
+
 
 ## Wiener process  - also known as Brownian motion
 <https://en.wikipedia.org/wiki/Wiener_process>
