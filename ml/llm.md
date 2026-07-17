@@ -10,6 +10,9 @@
 
 <https://habr.com/ru/companies/cloud_ru/articles/1058608/>
 
+World models
+<https://arstechnica.com/ai/2026/07/simulating-everything-sort-of-the-promise-and-limits-of-world-models/>
+
 <img width="1080" height="1412" alt="image" src="https://github.com/user-attachments/assets/adc9480b-07cc-4103-a029-d159e22495b7" />
 
 
