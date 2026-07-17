@@ -3,6 +3,8 @@
 
 <https://gyanendrachaubey.github.io/AI-Engineering-Notes/>
 
+<https://arxiv.org/abs/2607.11938> Math of ML
+
 <https://github.com/Jerry-0821/ml-dl-formula-cheatsheet>
 
 <https://github.com/LukasMasuch/best-of-ml-python>
