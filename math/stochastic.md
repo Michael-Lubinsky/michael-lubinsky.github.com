@@ -9,6 +9,12 @@
 
 (also known as Brownian motion) is the integral of a white noise generalized Gaussian process. It is not stationary, but it has stationary increments.
 
+A Wiener process is simply a Gaussian process with  
+- A mean function \(\mu(t) = 0\)  
+- A covariance function \(k(s, t) = \min(s, t)\)  
+  
+  To picture this: think of a Gaussian process as a broad category, like "automobiles," and the Wiener process as a specific type, like a "Ford Model T."
+The Wiener process gets its specific shape and properties from its unique covariance formula \(\min(s, t)\), which forces the variance of the process to grow constantly as time goes forward.
 
 ## Stochastic calculus
 
