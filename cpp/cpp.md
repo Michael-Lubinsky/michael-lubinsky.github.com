@@ -59,6 +59,8 @@ STL Alternatives <https://habr.com/ru/articles/1042198/>
 
 ### Memory management
 
+<https://habr.com/ru/articles/1060238/> how malloc works
+
 <https://geocar.sdf1.org/alloc.html>
 
 <https://www.gingerbill.org/series/memory-allocation-strategies/>
