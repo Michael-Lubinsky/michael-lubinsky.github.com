@@ -2,7 +2,10 @@
 
 <https://en.wikipedia.org/wiki/Gaussian_process>
 
-## Wiener process  <https://en.wikipedia.org/wiki/Wiener_process>
+<https://news.ycombinator.com/item?id=45116849> Random Walk in 10 dimentions
+
+## Wiener process  - also known as Brownian motion
+<https://en.wikipedia.org/wiki/Wiener_process>
 
 (also known as Brownian motion) is the integral of a white noise generalized Gaussian process. It is not stationary, but it has stationary increments.
 
