@@ -4,6 +4,8 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 <https://newsletter.systemdesign.one/p/what-is-reinforcement-learning>
 
+<https://github.com/alxndrTL/little-book-rl/> 
+
 https://habr.com/ru/articles/991622/
 
 https://habr.com/ru/articles/1055446/
