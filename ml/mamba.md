@@ -7,6 +7,8 @@
 
 <https://habr.com/ru/articles/1060392/> Матричное дифференцирование в машинном обучении: градиент, якобиан и линейная регрессия
 
+<https://ai-news.ru/2025/07/slyshali_li_vy_kogda_nibud_pro_proizvodnye_virtingera.html>
+
 <https://github.com/Jerry-0821/ml-dl-formula-cheatsheet>
 
 <https://github.com/LukasMasuch/best-of-ml-python>
