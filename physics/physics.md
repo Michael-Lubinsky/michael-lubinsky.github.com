@@ -54,6 +54,8 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <img width="383" height="425" alt="image" src="https://github.com/user-attachments/assets/0ea875c1-832f-4380-9a16-f99d704a4ab6" />
 
+<img width="340" height="432" alt="image" src="https://github.com/user-attachments/assets/f667f3f4-c4b4-4598-8ad4-3f86c9359ab7" />
+
 
 ### Spinors
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
