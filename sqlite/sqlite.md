@@ -6,6 +6,8 @@
 <https://evanhahn.com/prefer-strict-tables-in-sqlite/>
 <https://news.ycombinator.com/item?id=48873940>
 
+<https://jvns.ca/blog/2026/07/17/learning-about-running-sqlite/>
+
 <https://sqlite-utils.datasette.io/en/latest/>
 sqlite-utils is   Python library and CLI tool for working with SQLite databases.
 It provides an extensive set of higher-level operations on top of Python’s default sqlite3 package, including support for complex table transformations, automatic table creation from JSON data and a whole lot more.
