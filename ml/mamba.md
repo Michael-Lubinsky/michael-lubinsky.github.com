@@ -5,6 +5,8 @@
 
 <https://arxiv.org/abs/2607.11938> Math of ML
 
+<https://habr.com/ru/articles/1060392/> Матричное дифференцирование в машинном обучении: градиент, якобиан и линейная регрессия
+
 <https://github.com/Jerry-0821/ml-dl-formula-cheatsheet>
 
 <https://github.com/LukasMasuch/best-of-ml-python>
