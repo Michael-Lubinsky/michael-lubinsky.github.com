@@ -319,6 +319,8 @@ This isn't a zero-sum game or a choice of one over the other. They solve differe
 
 ## Skills
 
+<https://github.com/mattpocock/skills>
+
 <https://habr.com/ru/articles/1020786/>
 
 <https://habr.com/ru/companies/haulmont/articles/1027460/>
