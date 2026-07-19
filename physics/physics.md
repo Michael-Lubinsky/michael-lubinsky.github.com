@@ -1,5 +1,7 @@
 ### Physics
 
+<https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>
+
 <https://www.susanrigetti.com/physics>
 
 <https://www.youtube.com/@RichBehiel> Richard Behiel
