@@ -10,6 +10,7 @@ Delta Lake’s documentation: <http://www.delta.io>
 
  <img width="800" height="450" alt="image" src="https://github.com/user-attachments/assets/b2d9c9c9-cd2e-40c4-91a3-09a34ee22435" />
 
+<https://davidgomes.com/understanding-parquet-iceberg-and-data-lakehouses-at-broad/>
 
 Apache Iceberg is an open table format for huge analytic datasets, designed to work with engines like:
 
