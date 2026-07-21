@@ -3,6 +3,9 @@
 
 <https://gyanendrachaubey.github.io/AI-Engineering-Notes/>
 
+<https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
+
+
 <https://arxiv.org/abs/2607.11938> Math of ML
 
 <https://habr.com/ru/articles/1060392/> Матричное дифференцирование в машинном обучении: градиент, якобиан и линейная регрессия
