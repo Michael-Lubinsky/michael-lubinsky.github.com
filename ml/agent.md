@@ -4,6 +4,12 @@
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
+<https://docs.bmad-method.org/>
+
+<https://github.com/bmad-code-org/BMAD-METHOD>
+
+<https://openrouter.ai/apps>
+
 <https://github.com/Mathews-Tom/Agentic-Design-Patterns>
 
 <https://github.com/AnkunHuang/Agentic_Design_Patterns>
