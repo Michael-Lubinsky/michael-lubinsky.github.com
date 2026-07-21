@@ -127,6 +127,8 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 ## QFT
 
+<http://web.ihep.su/spitsky/mipt/literature/literature.html>
+
 <https://www.youtube.com/playlist?list=PLRlVmXqzHjURrQfMx6o_Ji0926mPKkzOw>
 
 <https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
