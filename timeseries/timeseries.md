@@ -5,6 +5,8 @@ Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-e
 
 <https://tabicl.readthedocs.io/en/latest/tutorials/time_series_forecasting.html>
 
+<https://suzyahyah.github.io/machine%20learning/2026/06/27/trouble-with-time-series.html>
+
 <https://machinelearningmastery.com/the-2026-time-series-toolkit-5-foundation-models-for-autonomous-forecasting/>
 
 <https://github.com/RussellSB/pytrendy>
