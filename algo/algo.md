@@ -14,7 +14,8 @@ Advanced Algos by Jelani Nelson
 <https://www.youtube.com/playlist?list=PL2SOU6wwxB0uP4rJgf5ayhHWgw7akUWSf>
 
 
-<https://habr.com/ru/articles/1034790/> Bloom Filter
+<https://habr.com/ru/articles/1034790/> Bloom Filter  
+<https://habr.com/ru/companies/timeweb/articles/1055544/> Bloom Filter implemented in C
 
 <https://habr.com/ru/articles/1016636/>
 
