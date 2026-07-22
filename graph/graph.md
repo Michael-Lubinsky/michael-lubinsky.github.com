@@ -10,6 +10,8 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://github.com/dominikbraun/graph/> Graphjs in GO
 
+https://habr.com/ru/articles/1060786/ Graph Drawing
+
 ### Boost Graph Library
 
 <https://491.graph.prtest3.cppalliance.org/graph/index.html>
