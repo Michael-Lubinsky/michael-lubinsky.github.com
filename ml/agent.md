@@ -453,6 +453,8 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 
 <https://github.com/can1357/oh-my-pi>
 
+<https://omp.sh/docs>
+
 <https://news.ycombinator.com/item?id=47143754>
 
 ## OpenClaw
