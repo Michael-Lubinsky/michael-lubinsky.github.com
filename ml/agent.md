@@ -6,6 +6,11 @@
 
 <https://trustedagents.manzia.com/articles/research/ai-agentic-landscape-2026>
 
+
+<https://habr.com/ru/companies/veai/articles/1061254/>
+
+
+## BMAD
 <https://docs.bmad-method.org/>
 
 <https://github.com/bmad-code-org/BMAD-METHOD>
