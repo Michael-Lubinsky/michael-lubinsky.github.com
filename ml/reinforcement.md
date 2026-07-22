@@ -6,9 +6,11 @@ https://www.coursera.org/learn/deep-learning-reinforcement-learning
 
 <https://github.com/alxndrTL/little-book-rl/> 
 
+<https://www.youtube.com/playlist?list=PLwRJQ4m4UJjNymuBM9RdmB3Z9N5-0IlY0> Deep RL
+
 <https://rlhfbook.com/> RL Human Feedback
 
-https://habr.com/ru/articles/991622/
+<https://habr.com/ru/articles/991622/>
 
 https://habr.com/ru/articles/1055446/
 
