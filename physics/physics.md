@@ -4,6 +4,8 @@
 
 <https://www.susanrigetti.com/physics>
 
+<https://www.dissercat.com/>
+
 <https://www.youtube.com/@RichBehiel> Richard Behiel
 
 <https://www.youtube.com/@getaclass_physics> GetClass (eng and ru)
