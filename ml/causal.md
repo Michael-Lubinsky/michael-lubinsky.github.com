@@ -620,6 +620,8 @@ https://habr.com/ru/companies/megafon/articles/657747/
 
 https://habr.com/ru/companies/ru_mts/articles/485980/ uplift
 
+https://habr.com/ru/companies/avito/articles/1061032/
+
 https://habr.com/ru/companies/vk/articles/518100/
 
 https://habr.com/ru/companies/uzum/articles/817473/
