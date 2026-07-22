@@ -1,5 +1,9 @@
 ## Spark
 
+<https://sinja.io/blog/data-landscape-guide-for-developers>
+
+<https://news.ycombinator.com/item?id=48935510>
+
 <https://blog.dataengineerthings.org/i-spent-8-hours-understanding-apache-sparks-memory-management-92b9e06d7e19>
 
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
