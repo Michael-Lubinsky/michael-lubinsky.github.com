@@ -4,6 +4,8 @@
 
 <https://en.wikipedia.org/wiki/Lists_of_open-source_artificial_intelligence_software>
 
+<https://habr.com/ru/articles/1061750/>
+
 <https://habr.com/ru/articles/1044418/> Топ вопросов по LLM: стратегии генерации текста и метрики оценки LLM
 
 <https://habr.com/ru/companies/netologyru/articles/1052454/> Context engineering
