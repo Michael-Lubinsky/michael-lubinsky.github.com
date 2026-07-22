@@ -14,9 +14,13 @@
 <https://docs.bmad-method.org/>
 
 <https://github.com/bmad-code-org/BMAD-METHOD>
+
 ## Hermes
+<https://habr.com/ru/companies/amvera/articles/1061646/>
 <https://github.com/NousResearch/hermes-agent>  Hermes
 <https://github.com/0xNyk/awesome-hermes-agent>
+
+
 
 <https://openrouter.ai/apps>
 
