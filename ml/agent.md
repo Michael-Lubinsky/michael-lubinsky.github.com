@@ -4,6 +4,8 @@
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
+<https://trustedagents.manzia.com/articles/research/ai-agentic-landscape-2026>
+
 <https://docs.bmad-method.org/>
 
 <https://github.com/bmad-code-org/BMAD-METHOD>
