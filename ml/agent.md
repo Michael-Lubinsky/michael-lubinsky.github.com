@@ -8,6 +8,8 @@
 
 <https://github.com/bmad-code-org/BMAD-METHOD>
 
+<https://github.com/NousResearch/hermes-agent>  Hermes
+
 <https://openrouter.ai/apps>
 
 <https://github.com/Mathews-Tom/Agentic-Design-Patterns>
