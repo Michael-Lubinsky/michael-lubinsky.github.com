@@ -1,5 +1,8 @@
 ### Statistics and Probability
 
+
+https://habr.com/ru/articles/1061846/
+
 High-Dimensional Probability. Roman Vershinin 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
