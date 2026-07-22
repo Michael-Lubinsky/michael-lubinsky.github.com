@@ -1,5 +1,6 @@
 ## ML Links
 
+<https://mmkuznecov.github.io/posts/>
 
 <https://gyanendrachaubey.github.io/AI-Engineering-Notes/>
 
