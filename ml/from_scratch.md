@@ -3,8 +3,9 @@
 coding a machine learning library in c from scratch
 <https://www.youtube.com/watch?v=hL_n_GljC0I>
 
-<https://habr.com/ru/articles/1056226/>
+
 <https://habr.com/ru/articles/1056212/>
+<https://habr.com/ru/articles/1056226/>
 <https://habr.com/ru/articles/1060454/>
 
 
