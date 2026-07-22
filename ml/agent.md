@@ -9,6 +9,8 @@
 
 <https://habr.com/ru/companies/veai/articles/1061254/>
 
+https://habr.com/ru/articles/1061696/
+
 
 ## BMAD
 <https://docs.bmad-method.org/>
