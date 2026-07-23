@@ -57,6 +57,7 @@
 <https://news.ycombinator.com/item?id=48829242>
 
 ### Text to SQL
+<https://nchammas.com/writing/custom-query-language-design#why-not-use-an-llm>
 
 <https://news.ycombinator.com/item?id=49013995>
 
