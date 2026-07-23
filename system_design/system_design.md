@@ -4,7 +4,7 @@
 
 <https://en.wikipedia.org/wiki/Complex_event_processing> CEP complex event processing
 
-<https://habr.com/ru/articles/1052938/>
+<https://habr.com/ru/articles/1052938/> создаем систему сокращения ссылок
 
 <https://habr.com/ru/companies/selectel/articles/1050288/>
 
