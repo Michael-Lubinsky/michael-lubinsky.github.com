@@ -6,7 +6,7 @@
 
 <https://habr.com/ru/articles/1052938/> создаем систему сокращения ссылок
 
-<https://habr.com/ru/companies/selectel/articles/1050288/>
+<https://habr.com/ru/companies/selectel/articles/1050288/> недопонимания между разработчиками и аналитиками в части ТЗ.
 
 <https://medium.com/@emilyhustlenyc/i-failed-ubers-system-design-interview-last-month-here-s-every-question-they-asked-bdaf1bd6e64b>
 
