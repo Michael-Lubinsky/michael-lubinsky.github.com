@@ -3,6 +3,7 @@
 Azure Stream Analytics
 <https://learn.microsoft.com/en-us/stream-analytics-query/stream-analytics-query-language-reference>
 
+MATCH_RECOGNIZE - keyword in SQL
 <https://learn.microsoft.com/en-us/stream-analytics-query/match-recognize-stream-analytics>
 ```sql
 SELECT *
