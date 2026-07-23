@@ -1,6 +1,8 @@
 ## Microsoft Azure Cloud Platform
 
 Azure Stream Analytics
+<https://learn.microsoft.com/en-us/stream-analytics-query/stream-analytics-query-language-reference>
+
 <https://learn.microsoft.com/en-us/stream-analytics-query/match-recognize-stream-analytics>
 ```sql
 SELECT *
