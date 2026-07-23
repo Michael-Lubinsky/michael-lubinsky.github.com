@@ -4,6 +4,8 @@
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
+<https://www.youtube.com/watch?v=GrNbuWWJYiI>
+
 <https://trustedagents.manzia.com/articles/research/ai-agentic-landscape-2026>
 
 
