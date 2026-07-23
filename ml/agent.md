@@ -56,6 +56,13 @@
 <https://github.com/dekart-xyz/geosql>  
 <https://news.ycombinator.com/item?id=48829242>
 
+### Text to SQL
+
+<https://news.ycombinator.com/item?id=49013995>
+
+<https://github.com/malloydata/malloyyo> MCP. AI + a Malloy semantic layer + your analytical database = consistent results. Measures, dimensions, and joins are defined once, correctly; the AI composes queries against the model instead of writing SQL
+
+
 Postgres + Agent
 <https://www.reddit.com/r/PostgreSQL/comments/1tyewxr/how_an_ai_agent_with_50_tools_queries_postgresql/>
 
