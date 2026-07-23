@@ -6,6 +6,8 @@
 
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
+Text to SQL
+<https://cacm.acm.org/blogcacm/if-you-think-you-can-do-real-world-text-to-sql/>
 
 <https://arxiv.org/abs/2607.11938> Math of ML
 
