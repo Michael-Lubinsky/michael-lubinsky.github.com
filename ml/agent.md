@@ -13,6 +13,7 @@
 
 https://habr.com/ru/articles/1061696/
 
+<https://habr.com/ru/articles/1062238/> Бесплатные API для 150+ ИИ-моделей
 
 ## BMAD
 <https://docs.bmad-method.org/>
