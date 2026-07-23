@@ -1,5 +1,8 @@
 ## Microsoft Azure Cloud Platform
 
+Azure Stream Analytics
+<https://learn.microsoft.com/en-us/stream-analytics-query/match-recognize-stream-analytics>
+
 CLI
 
 <https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest>
@@ -69,12 +72,9 @@ Here’s a breakdown:
 * **Event Hubs**: Big data event ingestion (millions of telemetry events, e.g., IoT).
 * **Service Bus**: Enterprise messaging with queues and topics (commands, reliable delivery, ordered processing).
 
----
+ 
 
-Would you like me to also create a **comparison table of Event Grid vs Event Hubs vs Service Bus** (side-by-side) so you can clearly see when to use each?
-
-
-# 1. Azure Bolob Storage
+# 1. Azure Blob Storage
 
 <https://azure.github.io/Storage/docs/analytics/hitchhikers-guide-to-the-datalake/>
 
