@@ -6,14 +6,14 @@
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
-<https://www.youtube.com/watch?v=GrNbuWWJYiI>
+<https://www.youtube.com/watch?v=GrNbuWWJYiI>  Learn AI Agent Harness & Loop Engineering In 19 Min 
 
 <https://trustedagents.manzia.com/articles/research/ai-agentic-landscape-2026>
 
 
-<https://habr.com/ru/companies/veai/articles/1061254/>
+<https://habr.com/ru/companies/veai/articles/1061254/> Как работать с ИИ-агентом предсказуемо: SDD, TDD, самопроверка и субагенты
 
-https://habr.com/ru/articles/1061696/
+<https://habr.com/ru/articles/1061696/>  Четыре месяца с Claude Code: что в итоге осталось лежать в .claude/
 
 <https://habr.com/ru/articles/1062238/> Бесплатные API для 150+ ИИ-моделей
 
