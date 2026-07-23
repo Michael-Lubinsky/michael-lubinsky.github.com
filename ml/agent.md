@@ -1,5 +1,7 @@
 ## Agents
 
+<https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
+
 <https://iitog.ru/>
 
 <https://addyosmani.com/blog/agent-harness-engineering/>
@@ -14,6 +16,8 @@
 https://habr.com/ru/articles/1061696/
 
 <https://habr.com/ru/articles/1062238/> Бесплатные API для 150+ ИИ-моделей
+
+<https://www.aihero.dev/grill-with-docs>  interviews you relentlessly about a plan or design, one question at a time, until you and the agent reach a shared understanding — and it writes the vocabulary and decisions down as you go.
 
 ## BMAD
 <https://docs.bmad-method.org/>
