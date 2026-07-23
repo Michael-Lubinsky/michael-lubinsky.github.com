@@ -2,7 +2,23 @@
 
 Azure Stream Analytics
 <https://learn.microsoft.com/en-us/stream-analytics-query/match-recognize-stream-analytics>
-
+```sql
+SELECT *
+INTO output FROM input TIMESTAMP BY time
+	MATCH_RECOGNIZE (
+		LIMIT DURATION (minute, 1)
+		PARTITION BY tollBoothId
+		MEASURES
+			Last(Toyota.LicensePlate) AS toyotaLicensePlate,
+			Last(Lexus.LicensePlate) AS lexusLicensePlate
+		AFTER MATCH SKIP TO NEXT ROW
+		PATTERN (Toyota+ Ford* Lexus+)
+		DEFINE
+			Toyota AS Toyota.make = 'Toyota',
+			Ford AS Ford.make = 'Ford',
+			Lexus AS Lexus.make = 'Lexus'
+	) AS T
+``` 
 CLI
 
 <https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest>
