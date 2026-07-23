@@ -2,6 +2,8 @@
 
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 
+<https://en.wikipedia.org/wiki/Complex_event_processing> CEP complex event processing
+
 <https://habr.com/ru/articles/1052938/>
 
 <https://habr.com/ru/companies/selectel/articles/1050288/>
