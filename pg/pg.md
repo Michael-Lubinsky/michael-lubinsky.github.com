@@ -10,6 +10,11 @@
 How to Achieve Pruning When Querying by Non-Partitioned Columns
 <https://hakibenita.com/postgresql-partition-pruning>
 
+## SELECT FOR UPDATE SKIP LOCKED
+
+https://news.ycombinator.com/item?id=37636841
+
+
 ## Just Use Postgres
 <https://youjustneedpostgres.com/>
 <https://www.tigerdata.com/blog/its-2026-just-use-postgres>  
