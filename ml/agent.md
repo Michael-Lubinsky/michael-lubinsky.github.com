@@ -356,6 +356,8 @@ This isn't a zero-sum game or a choice of one over the other. They solve differe
 
 ## Skills
 
+<https://habr.com/ru/articles/1062626/>
+
 <https://github.com/mattpocock/skills>
 
 <https://www.youtube.com/watch?v=M6mYodf0dJM>
