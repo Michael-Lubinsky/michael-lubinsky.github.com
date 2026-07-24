@@ -10,9 +10,14 @@
 How to Achieve Pruning When Querying by Non-Partitioned Columns
 <https://hakibenita.com/postgresql-partition-pruning>
 
-## SELECT FOR UPDATE SKIP LOCKED
+## Queue in Postgres  SELECT FOR UPDATE SKIP LOCKED
 
-https://news.ycombinator.com/item?id=37636841
+
+<https://chbussler.medium.com/implementing-queues-in-postgresql-3f6e9ab724fa>
+
+<https://news.ycombinator.com/item?id=37636841>
+
+<https://taylor.town/pg-task>
 
 
 ## Just Use Postgres
