@@ -24,9 +24,15 @@ https://habr.com/ru/articles/1060786/ Graph Drawing
 
 <https://habr.com/ru/companies/yandex/articles/1046483/>
 
-<https://ladybugdb.com/> Graph DB
+### LadyBugDB
+<https://ladybugdb.com/> Graph DB 
+<https://github.com/LadybugDB/ladybug>
 
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
+
+### DuckDB Graphs
+
+https://duckpgq.org/
 
 ### Postgres 19 Graph
 
