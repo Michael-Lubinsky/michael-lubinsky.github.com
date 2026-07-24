@@ -707,6 +707,10 @@ cursor.execute(
 
 ## 14. LISTEN/NOTIFY for Pub/Sub
 
+<https://www.dbos.dev/blog/postgres-listen-notify-scalability>
+<https://news.ycombinator.com/item?id=49040296>
+
+
 ```python
 conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
 cursor = conn.cursor()
