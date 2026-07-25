@@ -60,6 +60,10 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <img width="340" height="432" alt="image" src="https://github.com/user-attachments/assets/f667f3f4-c4b4-4598-8ad4-3f86c9359ab7" />
 
+
+Аркадий Пиковский - 1. Введение в теорию синхронизации
+https://www.youtube.com/watch?v=GM-AVdjd2Lg
+
 ### 
 Илья Грузберг - Физика фазовых переходов и критических явлений 
 https://www.youtube.com/watch?v=OaStQZtP3xw
