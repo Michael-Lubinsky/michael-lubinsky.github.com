@@ -211,6 +211,39 @@ How does it compare to _context-mode_ or _serina_ that are both well established
 <https://docs.claude.com/en/docs/claude-code/hooks>
 <https://code.claude.com/docs/ru/hooks>
 <https://habr.com/ru/companies/rostelecom/articles/1028570/>
+<https://habr.com/ru/articles/1062206/>
+
+Хук — это скрипт, объявленный в .claude/settings.json проекта.   
+Он вешается на событие жизненного цикла:   
+PreToolUse (перед вызовом инструмента, может запретить),   
+PostToolUse (после),   
+Stop (агент завершает ход, может не пустить) и ещё десяток других.  
+На stdin скрипт получает JSON с деталями события, дальше два способа вмешаться:
+
+exit code 2 — жёсткий блок, stderr уходит агенту как причина;
+
+exit 0 + JSON в stdout — структурированное решение: для PreToolUse это permissionDecision: "deny" с причиной, для Stop — decision: "block", и любой хук может добавить агенту контекст через additionalContext.
+
+Конфигурация выглядит так:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/gate-commit.sh" }]
+    }],
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/track-test-edit.sh" }]
+    }],
+    "Stop": [{
+      "matcher": "*",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/gate-stop.sh" }]
+    }]
+  }
+}
+```
+
 ```
 хуки — это механизм, который позволяет вклиниться в жизненный цикл агента своим кодом.
 Ваш shell-скрипт (или HTTP-эндпоинт, или вспомогательный sub-agent) исполняется в строго заданные моменты:
