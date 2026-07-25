@@ -60,6 +60,14 @@ Effective Field Theories for Material Media <https://arxiv.org/abs/2607.06666>
 
 <img width="340" height="432" alt="image" src="https://github.com/user-attachments/assets/f667f3f4-c4b4-4598-8ad4-3f86c9359ab7" />
 
+### 
+Илья Грузберг - Физика фазовых переходов и критических явлений 
+https://www.youtube.com/watch?v=OaStQZtP3xw
+
+Илья Грузберг
+https://www.lektorium.tv/speaker/2902 Введение в статистическую теорию поля
+https://www.youtube.com/watch?v=brfyf4RLwr0 Введение в статистическую теорию поля
+
 
 ### Spinors
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
