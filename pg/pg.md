@@ -7,6 +7,8 @@
 <https://www.augusteo.com/blog/how-pgbouncer-works/> PG Bouncer
 <https://www.manning.com/books/postgresql-mistakes-and-how-to-avoid-them>  book  
 
+<https://pgext.cloud/>  PG extenstions catalog
+
 How to Achieve Pruning When Querying by Non-Partitioned Columns
 <https://hakibenita.com/postgresql-partition-pruning>
 
