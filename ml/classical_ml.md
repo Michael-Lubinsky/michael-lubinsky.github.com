@@ -2,6 +2,7 @@
 
 <https://mlbook.dataschool.io/>
 
+В чём идея алгоритмов снижения размеренности:
 <https://habr.com/ru/companies/bothub/articles/1062924/> UMAP  t-SNE
 
 <https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
