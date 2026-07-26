@@ -4,6 +4,8 @@
 
 <https://gyanendrachaubey.github.io/AI-Engineering-Notes/>
 
+<https://github.com/rohitg00/ai-engineering-from-scratch>
+
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
 Text to SQL
