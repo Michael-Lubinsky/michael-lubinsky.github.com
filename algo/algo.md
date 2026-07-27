@@ -70,6 +70,7 @@ Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
 
 <https://habr.com/ru/articles/758542/>
 
+<https://habr.com/ru/articles/1063190/>
 
 ## Constraint programming PiCat, MiniZinc, etc
 https://cpmpy.readthedocs.io/en/latest/
