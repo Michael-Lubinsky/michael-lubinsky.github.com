@@ -65,6 +65,9 @@ This is Pontryagin duality — the deeper reason they're the same phenomenon.
 
 <https://www.youtube.com/watch?v=r18Gi8lSkfM> Videos by Eugene Khutoryansky
 
+Book
+
+<https://scholarworks.iu.edu/dspace/items/b9cc4ab5-13e3-4c18-b581-23ffb462146f>
 
 <https://www.youtube.com/watch?v=08mmKNLQVHU>
 
