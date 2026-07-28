@@ -49,9 +49,9 @@ Shlomo Sternberg's "Dynamical Systems"
  <https://habr.com/ru/articles/1055326/> Часть II: как доказать неразрешимость уравнений пятой степени
 
 ## Mean distance between two random points in a unit square
-<https://www.youtube.com/watch?v=KuRJh2otOi4>. 
+<https://www.youtube.com/watch?v=KuRJh2otOi4>  
 <https://www.youtube.com/watch?v=YJU4iy3cnK4> Michael Penn
-
+<https://www.youtube.com/watch?v=i4VqXRRXi68>
 
 ## ТРИВИУМ АРНОЛЬДА
 <https://www.youtube.com/watch?v=rbK1aUVdrKw> Пикирующая Cesssna 172   
