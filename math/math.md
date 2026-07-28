@@ -10,6 +10,10 @@
 
 <https://www.youtube.com/watch?v=ie6OKXBgoxc>  Определитель. Илья Молотов
 
+Interactive Linear Algebra <https://immersivemath.com/ila/>  <https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab>
+https://news.ycombinator.com/item?id=48935951
+
+
 ```
 Scott Cunningham's "Causal Inference: The Mixtape"  
 E.T. Jaynes's "Probability Theory: The Logic of Science"  
