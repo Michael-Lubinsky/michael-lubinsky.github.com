@@ -69,6 +69,8 @@ Shlomo Sternberg's "Dynamical Systems"
 <https://www.youtube.com/watch?v=yCZgKep5iBc>
 
 ### Group Theory
+<https://www.youtube.com/watch?v=O5YISYYVlTQ> Math with Ming  3.5 hours
+
 <https://www.youtube.com/watch?v=s-Ohlk0HE28>
 <https://www.youtube.com/watch?v=gO4P9l6bOm4> Шиз 596 минут изучает теорию групп 
 
