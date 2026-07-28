@@ -66,6 +66,8 @@ Available for Windows, macOS, Linux and FreeBSD
 
 ### Python advanced plots
 
+<https://github.com/reflex-dev/xy>
+
 <https://towardsdatascience.com/practical-tips-for-improving-exploratory-data-analysis-1c43b3484577>
 
 <https://blog.devgenius.io/data-profiling-in-python-common-ways-to-explore-your-data-part-2-396384522e91>
