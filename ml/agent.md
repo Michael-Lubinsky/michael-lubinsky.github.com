@@ -4,6 +4,8 @@
 
 <https://iitog.ru/>
 
+<https://www.facebook.com/theaiempire/>
+
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
 <https://www.youtube.com/watch?v=GrNbuWWJYiI>  Learn AI Agent Harness & Loop Engineering In 19 Min 
