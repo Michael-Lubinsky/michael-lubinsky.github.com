@@ -7,6 +7,8 @@
 <https://news.ycombinator.com/item?id=48873940>
 
 <https://jvns.ca/blog/2026/07/17/learning-about-running-sqlite/>
+<https://micrologics.org/blog/sqlite-in-production-optimizing-wal-mode-concurrency-and-vfs-layers-for-low-latency-app-servers>
+<https://news.ycombinator.com/item?id=49094346>
 
 <https://sqlite-utils.datasette.io/en/latest/>
 sqlite-utils is   Python library and CLI tool for working with SQLite databases.
