@@ -35,3 +35,8 @@ https://tratt.net/laurie/blog/2020/which_parsing_approach.html
 https://github.com/lark-parser/lark  Lark
 
 <https://habr.com/ru/articles/1016632/> Парсер‑комбинаторы с нуля Typescript
+
+
+### Func Programming
+
+<https://www.endoflineblog.com/functional-programming-from-first-principles-part-1-motivation>
