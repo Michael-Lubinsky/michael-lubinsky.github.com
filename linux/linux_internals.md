@@ -15,7 +15,7 @@
 <https://www.networksfromscratch.com/>
 
 
-
+<https://deepsystemstuff.com/difference-between-epoll-and-io_uring/>  Difference between epoll and io_uring
 
 
 <https://habr.com/ru/companies/yandex/articles/1047072/> Микрочипы, CPU, GPU, TPU
