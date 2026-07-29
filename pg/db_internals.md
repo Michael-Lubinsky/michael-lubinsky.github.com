@@ -2,6 +2,8 @@
 
 <https://postgrespro.ru/education/books/internals> PostgreSQL 18 изнутри
 
+<https://boringsql.com/posts/mvcc-bad-bad/>
+
 <https://medium.com/@CodeWithHannan/how-modern-sql-engines-optimize-queries-inside-the-query-planner-5f0885db7b8b>
 
 <https://planetscale.com/blog/btrees-and-database-indexes> B-trees
