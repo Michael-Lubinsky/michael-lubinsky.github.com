@@ -1,5 +1,6 @@
 ## Mac
 
+<https://habr.com/ru/companies/ringo_mdm/articles/1064572/> Mac console commands not available on Linux
 <https://github.com/open-saas-directory/awesome-native-macosx-apps>
 
 caffeinate - prevents your MacBook from sleeping even with the lid closed
