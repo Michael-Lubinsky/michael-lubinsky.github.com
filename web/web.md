@@ -23,7 +23,9 @@
 
 ### JavaScript
 
-https://habr.com/ru/companies/otus/articles/1062056/ как работает цикл событий в JavaScript
+<https://habr.com/ru/companies/otus/articles/1062056/> как работает цикл событий в JavaScript
+
+<https://habr.com/ru/articles/1064906/>
 
 ### lynx
 
