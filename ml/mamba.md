@@ -8,6 +8,9 @@
 
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
+ML interview
+<https://www.youtube.com/@mark_mirgaleev_mentori>
+
 Text to SQL
 <https://cacm.acm.org/blogcacm/if-you-think-you-can-do-real-world-text-to-sql/>
 
