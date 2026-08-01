@@ -1,6 +1,14 @@
 ## Math
 <https://www.youtube.com/live/btlQl93qOhc> Symmetry is everywhere
 
+<https://www.youtube.com/@molotov_ilya> Илья Молотов
+
+<https://www.youtube.com/@nochusg5453>
+
+Павел Шестопалов:
+
+<https://www.youtube.com/@%D0%9F%D0%B0%D0%B2%D0%B5%D0%BB%D0%A8%D0%B5%D1%81%D1%82%D0%BE%D0%BF%D0%B0%D0%BB%D0%BE%D0%B2/videos>
+
 <https://www.susanrigetti.com/math>
 
 <https://www.youtube.com/watch?v=1vnJ4gfcmB8> Linear Algebra 3Blue1brown ru
