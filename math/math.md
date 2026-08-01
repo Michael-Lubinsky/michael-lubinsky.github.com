@@ -52,6 +52,12 @@ Shlomo Sternberg's "Dynamical Systems"
 < https://habr.com/ru/articles/1049898/> как доказать неразрешимость уравнений пятой степени
  <https://habr.com/ru/articles/1055326/> Часть II: как доказать неразрешимость уравнений пятой степени
 
+
+ ## Information Theory
+
+ <https://www.youtube.com/watch?v=BHlzIgyCSOk> Math with Ming
+ 
+
 ## Mean distance between two random points in a unit square
 <https://www.youtube.com/watch?v=KuRJh2otOi4>  
 <https://www.youtube.com/watch?v=YJU4iy3cnK4> Michael Penn
