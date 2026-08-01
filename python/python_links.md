@@ -2,6 +2,8 @@
 
 <https://realpython.com/ydata-profiling-eda/>
 
+<https://sgolev.github.io/blog/2026-07-28-celery-recipes/> Celery
+
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
 ### HTTP
