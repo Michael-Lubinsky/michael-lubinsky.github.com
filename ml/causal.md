@@ -12,6 +12,8 @@ Causal Discovery Algorithms: FCI and others
 Fast Causal Inference (FCI)  
 <https://www.shadecoder.com/topics/fci-algorithm-a-comprehensive-guide-for-2025>
 
+<https://www.causal-rl-bridges.com/>
+
 <https://arxiv.org/pdf/2502.17030>
 
 <https://arxiv.org/pdf/2305.10032>
