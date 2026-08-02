@@ -4,6 +4,8 @@
 
 <https://www.youtube.com/@nowinterview> System Design Interview ru
 
+<https://www.youtube.com/watch?v=-gX31P91FIA> ru
+
 <https://en.wikipedia.org/wiki/Complex_event_processing> CEP complex event processing
 
 <https://habr.com/ru/articles/1052938/> создаем систему сокращения ссылок
