@@ -15,6 +15,8 @@
 
 <https://habr.com/ru/companies/veai/articles/1061254/> Как работать с ИИ-агентом предсказуемо: SDD, TDD, самопроверка и субагенты
 
+<https://habr.com/ru/companies/cloud_ru/articles/1065290/> Agent long term Memory
+
 <https://habr.com/ru/articles/1061696/>  Четыре месяца с Claude Code: что в итоге осталось лежать в .claude/
 
 <https://habr.com/ru/articles/1062238/> Бесплатные API для 150+ ИИ-моделей
