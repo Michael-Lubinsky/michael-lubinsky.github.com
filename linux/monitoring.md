@@ -20,6 +20,10 @@ https://habr.com/ru/articles/1005210/ Victoria metrics, etc
 
 <https://habr.com/ru/articles/959430/>  Prometheus + Grafana 
 
+## OpenTelemetry (OTel)
+
+<https://habr.com/ru/companies/otus/articles/1059546/>
+
 <https://signoz.io/blog/what-is-opentelemetry/> What is opentelemetry
 
 <https://levelup.gitconnected.com/how-i-built-a-real-time-python-monitoring-dashboard-for-my-entire-system-without-grafana-beca3a17777f>
