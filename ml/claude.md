@@ -27,7 +27,7 @@
 
 <https://habr.com/ru/articles/1021696/> Claude folders
 
-<https://medium.com/data-science-collective/how-to-build-claude-skills-2-0-better-than-99-of-people-af4927dd5335>
+
 
 <https://github.com/shanraisshan/claude-code-best-practice>
 
@@ -41,6 +41,13 @@
 <https://habr.com/ru/companies/cloud4y/articles/1014386/> CLI commands
 
 ## Skills
+
+ 
+<https://medium.com/data-science-collective/how-to-build-claude-skills-2-0-better-than-99-of-people-af4927dd5335>
+
+<https://habr.com/ru/articles/1066212/>
+
+<https://habr.com/ru/articles/1062626/>
 
 <https://anthropic.skilljar.com/>
 
