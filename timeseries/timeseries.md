@@ -11,6 +11,8 @@ Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-e
 
 <https://github.com/RussellSB/pytrendy>
 
+<https://habr.com/ru/articles/1066070/> Anomaly in time series
+
 <https://machinelearningmastery.com/transformer-vs-lstm-for-time-series-which-works-better/>
 
 <https://github.com/predict-idlab/plotly-resampler>
