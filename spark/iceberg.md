@@ -45,11 +45,11 @@ Read carefully because their names are similar:
 4. manifest FILE
 5. data file
 
-Starting from the bottom. 👇
-1️⃣ The data file is a simple Parquet file. It's literally just your data. 🙂
+Starting from the bottom of list above.     
+1️⃣ The data file is a simple Parquet file. It's literally just your data.  
 
 2️⃣ The manifest file is a sort of mini-metadata file that contains information about a set of data files. Stuff like:
-• partition info - e.g "these 200 files from June". If your query is searching for May, it would skip searching through them. 👌
+• partition info - e.g "these 200 files from June". If your query is searching for May, it would skip searching through them.   
 • per-file min/max column statistics 📊
 
 When you have many manifest files - you have to reference to them somewhere:
