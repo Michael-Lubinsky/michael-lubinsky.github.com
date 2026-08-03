@@ -1,7 +1,10 @@
-### Iceberg catalog
+### Iceberg Catalog
 
 Iceberg’s documentation: <http://www.apache.iceberg.io>  
 Delta Lake’s documentation: <http://www.delta.io>  
+
+<https://habr.com/ru/articles/1065864/>
+
 <https://habr.com/ru/companies/vktech/articles/959398/>
 
 <https://habr.com/ru/articles/1033546/>
