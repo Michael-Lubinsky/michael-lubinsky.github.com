@@ -9,3 +9,5 @@
 <https://matduggan.com/clickhouse-is-winning-the-observability-wars/> Clickhouse
 
 <https://clickhouse.com/blog/postgres-to-clickhouse-data-modeling-tips-v2>
+
+<https://www.youtube.com/watch?v=96WlANDXmAc>
