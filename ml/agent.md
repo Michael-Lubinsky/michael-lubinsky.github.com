@@ -6,6 +6,9 @@
 
 <https://www.facebook.com/theaiempire/>
 
+## Harness
+<https://lilianweng.github.io/posts/2026-07-04-harness/>
+
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
 <https://www.youtube.com/watch?v=GrNbuWWJYiI>  Learn AI Agent Harness & Loop Engineering In 19 Min 
@@ -309,7 +312,7 @@ exit 0 + JSON в stdout — структурированное решение: �
 
  <https://habr.com/ru/companies/alfa/articles/1000342/>  
 
-Free book online
+### Free book online - Build multi agent system from scratch
 <https://www.manning.com/books/build-a-multi-agent-system-from-scratch>
 
 <https://openrouter.ai/>
