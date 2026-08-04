@@ -6,8 +6,10 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
-<https://www.facebook.com/techpulsepage>
-<https://www.facebook.com/groups/770988810895106/>
+### Facebook
+<https://www.facebook.com/techpulsepage>. 
+<https://www.facebook.com/groups/770988810895106/>. 
+<https://www.facebook.com/groups/512304400704122/>
 
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
