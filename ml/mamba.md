@@ -6,6 +6,8 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+<https://www.facebook.com/techpulsepage>
+
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
 Inference Engineering
