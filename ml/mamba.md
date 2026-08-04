@@ -8,6 +8,9 @@
 
 <https://github.com/aishwaryanr/awesome-generative-ai-guide/blob/main/interview_prep/README.md> AI Interview
 
+Inference Engineering
+<https://www.youtube.com/playlist?list=PLqO45Dg1pMhlDBZTMqVL2GU-14xYip2y2>
+
 ML interview
 <https://www.youtube.com/@mark_mirgaleev_mentori>
 
