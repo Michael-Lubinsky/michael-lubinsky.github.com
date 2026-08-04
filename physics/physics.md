@@ -237,6 +237,8 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
+<https://www.youtube.com/@valerykiselev6883/playlists> Kiselev
+
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA4PyhnlugbKhdVbJUUeBxj> Квантовая теория - Сущёв Иван
 
 <https://www.youtube.com/playlist?list=PLxGo9dxQkqWA-SD1lyrtltt8KxfLk9z4f> KhanAcademyRussian
