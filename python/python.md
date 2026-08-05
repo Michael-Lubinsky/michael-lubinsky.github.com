@@ -7,6 +7,8 @@ python -m py_compile my_script.py
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/960812/>
 
+<https://habr.com/ru/articles/207988/>
+
 <https://habr.com/ru/companies/yandex_praktikum/articles/1031556/>
 
 <https://realpython.com/python-memory-management/>
