@@ -152,6 +152,8 @@ https://www.facebook.com/groups/197964893963666/permalink/1793728821053924/?mibe
 
 ### PG_vector
 
+<https://www.youtube.com/watch?v=cDawEAaAmew> PostgreSQL как векторная база данных:
+
 <https://habr.com/ru/articles/1006364/>
 
 <https://habr.com/ru/companies/selectel/articles/920824/>
