@@ -9,6 +9,9 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+
+Applied Machine Learning for Tabular Data <https://aml4td.org/>
+
 ### Facebook
 <https://www.facebook.com/techpulsepage>. 
 <https://www.facebook.com/groups/770988810895106/>. 
