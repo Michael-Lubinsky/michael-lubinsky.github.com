@@ -520,6 +520,10 @@ Instead of relying solely on pretrained knowledge, an AI system with tool-callin
 <https://lucumr.pocoo.org/2026/1/31/pi/>  
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
 
+<https://earendil.com/posts/pi-autoresearch-and-databricks/>
+
+<https://news.ycombinator.com/item?id=49176038>
+
 <https://github.com/badlogic/pi-mono>
 
 <https://github.com/can1357/oh-my-pi>
