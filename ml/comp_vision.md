@@ -2,6 +2,8 @@
 
 <https://pbr-book.org/4ed/contents>
 
+<https://adriansieber.com/announcing-perspec-1-0/> Util to enchance image
+
 <https://habr.com/ru/articles/908168/>
 
 <https://www.augusteo.com/blog/unified-vision-stack>
