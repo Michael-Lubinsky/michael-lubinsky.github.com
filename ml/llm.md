@@ -1,5 +1,12 @@
 ## LLM 
 
+How to study any subject with LLM using Socratic method
+<https://news.ycombinator.com/item?id=49092499>
+
+
+<https://github.com/bevibing/socrates-skill>
+
+
 <https://en.wikipedia.org/wiki/List_of_large_language_models>
 
 <https://en.wikipedia.org/wiki/Lists_of_open-source_artificial_intelligence_software>
