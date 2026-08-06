@@ -1,4 +1,4 @@
-## Lambda
+## AWS Lambda
 
 
 An **AWS Lambda function can be associated with (triggered by) many different event sources at the same time**.
@@ -149,7 +149,7 @@ In those cases → split Lambdas.
 
 
 
-## Lambda Example
+### Lambda Example
 
 ```python
 import json
@@ -227,7 +227,7 @@ def lambda_handler(event, context):
     }
 ```
 
-## DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
+### DynamoDB Streams → Lambda → S3 → Databricks (Auto Loader)  
 
 <https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html>
 
@@ -436,16 +436,16 @@ def lambda_handler(event, context):
     return {"status": "ok", "count": len(lines), "s3_key": key}
 ```
 
-----------------------------------------------------------------------
-LAMBDA ENV VARS
-----------------------------------------------------------------------
+
+### LAMBDA ENV VARS
+```ini
 TABLE_NAME=chargeminder-car-telemetry
 S3_BUCKET=chargeminder-2
 S3_PREFIX=raw/dynamodb/chargeminder-car-telemetry
+```
 
-----------------------------------------------------------------------
-EVENT SOURCE MAPPING (CONNECT LAMBDA TO THE STREAM)
-----------------------------------------------------------------------
+### EVENT SOURCE MAPPING (CONNECT LAMBDA TO THE STREAM)
+
 ```bash
 # 1) Get the stream ARN (example CLI)
 aws dynamodb describe-table \
@@ -465,9 +465,9 @@ aws lambda create-event-source-mapping \
  - Batch size up to 1000 is allowed; 100–500 is typical.  
  - maximum-batching-window-in-seconds (0–300) can trade latency vs. S3 object count.  
 
-----------------------------------------------------------------------
-RELIABILITY / OPERATIONS
-----------------------------------------------------------------------
+
+### RELIABILITY / OPERATIONS
+
 • Retries & DLQ:
   - Configure Lambda on-failure destination to SQS or use an SQS DLQ.
   - Set maximum retry attempts on the event source mapping (bisect on function error if needed).
@@ -482,9 +482,9 @@ RELIABILITY / OPERATIONS
 • Re-sharding:
   - Streams can re-shard; Lambda mapping handles this automatically.
 
-----------------------------------------------------------------------
-DATABRICKS: AUTO LOADER (BRONZE INGEST)
-----------------------------------------------------------------------
+
+## DATABRICKS: AUTO LOADER (BRONZE INGEST)
+
 -- Python in a Databricks notebook (Serverless or classic cluster)
 
 ```python
@@ -517,14 +517,14 @@ df = (spark.readStream
  - Ensure your workspace/cluster has access to the S3 bucket (instance profile / assumed role).  
  - If you prefer to keep it entirely path-based instead of Unity catalog table, use .start("s3://.../delta/bronze/...").
 
-----------------------------------------------------------------------
-TYPICAL SILVER TRANSFORM (DEDUP + LATEST IMAGE PER KEY)
-----------------------------------------------------------------------
+
+### TYPICAL SILVER TRANSFORM (DEDUP + LATEST IMAGE PER KEY)
+```
 -- Example idea (Delta SQL), adjust keys/columns to your table
 -- Deduplicate CDC events by (keys, sequence_number) and pick latest per key.
 -- For MODIFY/INSERT, prefer new_image; for REMOVE, you can tombstone.
-
--- Pseudocode sketch:
+```
+ Pseudocode sketch:
 
 ```sql
 
@@ -544,9 +544,9 @@ SELECT * FROM (
 )
 WHERE rn = 1;
 ```
-----------------------------------------------------------------------
-VALIDATION / SMOKE TESTS
-----------------------------------------------------------------------
+
+### VALIDATION / SMOKE TESTS
+ 
 • Put a test item into the table and confirm a new object arrives in:
   s3://chargeminder-2/raw/dynamodb/chargeminder-car-telemetry/ingest_dt=YYYY-MM-DD/hour=HH/
 
@@ -555,24 +555,24 @@ VALIDATION / SMOKE TESTS
 
 • CloudWatch Logs for Lambda should show batch counts and s3_key.
 
-----------------------------------------------------------------------
-KNOBS YOU CAN TUNE
-----------------------------------------------------------------------
+
+### KNOBS YOU CAN TUNE
+``` 
 • Lambda batch-size: 100–500 strikes a balance between latency and S3 object overhead.
 • Maximum batching window: 0–5s for “near real-time”; increase for fewer objects.
 • Compression: gzip (default here). You can switch to snappy or write Parquet in Lambda if you want schema-on-write (requires pyarrow).
 • Partitioning: ingest time (as shown) is robust; if you have a stable “event time” field, you can partition on that instead.
-
-----------------------------------------------------------------------
-ALTERNATIVES (WHEN THROUGHPUT OR SCHEMA EVOLUTION DEMANDS GROW)
-----------------------------------------------------------------------
+```
+ 
+### ALTERNATIVES (WHEN THROUGHPUT OR SCHEMA EVOLUTION DEMANDS GROW)
+ 
 • Streams → Kinesis Data Streams → Kinesis Data Firehose → S3 (managed fan-out, buffering, Parquet conversion).
 • DynamoDB TTL + Export to S3 (bulk, not streaming).
 • Direct Databricks Autoloader on S3 (this design) vs. pushing into Kafka/MSK if you need multi-consumer fan-out.
 
-----------------------------------------------------------------------
-NEXT STEPS (SPECIFIC TO YOUR RESOURCES)
-----------------------------------------------------------------------
+ 
+### NEXT STEPS  
+``` 
 1) Create/confirm the Lambda role using the JSON above (replace <ACCOUNT_ID>, <YourLambdaRoleName>).
 2) Deploy the Lambda with app.py and set ENV:
    TABLE_NAME=chargeminder-car-telemetry
@@ -580,9 +580,7 @@ NEXT STEPS (SPECIFIC TO YOUR RESOURCES)
    S3_PREFIX=raw/dynamodb/chargeminder-car-telemetry
 3) Create the event source mapping to the table’s LatestStreamArn (starting-position LATEST).
 4) In Databricks, run the Auto Loader cell and confirm the Bronze table starts growing.
-
-If you want, paste your current IAM role names/ARNs and I’ll tailor the policy documents exactly to your account and your Databricks access pattern (serverless vs. classic cluster).
- 
+```  
 
 ## DynamoDB Streams → Lambda → S3 → Databricks Auto Loader → Unity Catalog
 ``` 
@@ -822,10 +820,10 @@ Notes
 ```
 - This writes GZIPed NDJSON. If you prefer Parquet, use pyarrow fastparquet (bundle as Lambda layer or container image) and write .parquet with robust schema mapping.
 - NDJSON works great with Auto Loader; you can later switch to Parquet after schema stabilizes.
+```
 
-──────────────────────────────────────────────────────────────────────────────
 6) Deletions (REMOVE) handling
-
+```
 You have two patterns:
 
 A) Tombstones
@@ -838,12 +836,12 @@ B) Hard deletes
 - This is easy if you split your incoming micro-batch into upserts vs deletes.
 
 The NDJSON above encodes `_eventName`. In Databricks you can branch on it.
+```
 
-──────────────────────────────────────────────────────────────────────────────
 7) Databricks Auto Loader (Structured Streaming)
 
 Spark (Python) sketch consuming NDJSON.gz:
-```
+ 
 ```python
 from pyspark.sql import functions as F
 
@@ -915,40 +913,40 @@ Tips
 ```
 - If you want simpler logic, store upserts and deletes in two separate prefixes from Lambda (e.g., ddb/your_table/upserts/..., ddb/your_table/deletes/...) and have two streams.
 - Use `availableNow` to catch up large backfills without leaving a running cluster.
-
-──────────────────────────────────────────────────────────────────────────────
+```
+ 
 8) Backfills & reprocessing
-
+```
 - Historical export: Use AWS Data Pipeline/DMS/Glue Script or ad-hoc scan to dump the full table to S3 under the SAME partition scheme (`dt=YYYY-MM-dd/HH=HH`).
 - Then run your Auto Loader in `availableNow` mode to ingest history → up to date.
 - Since the sink is MERGE-based and idempotent, replays are safe (latest updated_at wins).
 
-──────────────────────────────────────────────────────────────────────────────
+```
 9) Idempotency & retries
-
+```
 - Lambda may re-deliver a batch on transient errors. You can:
   - Rely on MERGE “latest-wins” (simple; works if updated_at is monotonic per key).
   - Add a dedupe key (DDB stream `eventID`) to an idempotency store (DynamoDB table with TTL). Check before writing to S3 to avoid duplicates. (Usually not necessary if sink MERGE is correct.)
 - When writing to S3, object names are unique (timestamp + count). If you want stronger idempotency, incorporate a deterministic hash of concatenated eventIDs into the filename.
-
-──────────────────────────────────────────────────────────────────────────────
+```
+ 
 10) Operational guardrails
-
+```
 - DLQ: Configure Lambda → SQS on failure with a retention policy; add CloudWatch alarm on DLQ depth.
 - CloudWatch metrics to watch: Lambda errors, throttles, duration; DDB Stream IteratorAgeMilliseconds (should stay low); S3 4xx/5xx.
 - Size: Aim for 5–64 MB gz files per flush. If objects are too tiny, increase batch window and/or MAX_RECORDS.
 - Schema evolution: With NDJSON, Auto Loader’s `schemaLocation` handles adds. For Parquet, maintain a schema version header in S3 path or payload.
 
-──────────────────────────────────────────────────────────────────────────────
+```
 11) (Optional) Parquet instead of NDJSON.gz
-
+```
 - Add a Lambda layer with pyarrow (or ship a container image Lambda).
 - In the handler, batch rows → pandas DataFrame → to_parquet(BytesIO(), compression="snappy") → PutObject.
 - Keep partitioning identical. Databricks will read much faster.
 
-──────────────────────────────────────────────────────────────────────────────
+```
 12) Quick checklist to go live
-
+```
 [ ] Enable Streams (NEW_AND_OLD_IMAGES) on the DDB table  
 [ ] Create S3 bucket/prefix + encryption + lifecycle  
 [ ] Create Lambda (Python 3.11), set env vars, attach IAM role (S3 + Logs + DDB Streams)  
@@ -962,8 +960,9 @@ Short answer: NO, you don’t have to use 2 Lambdas — one Lambda right off the
 
 But… sometimes people deliberately split it into 2. Here’s when.
 
-──────────────────────────────────────────────────────────────────────────────
-Pattern A (most common): 1 Lambda is enough
+
+### Pattern A (most common): 1 Lambda is enough
+```
 DynamoDB Stream → (event source mapping) → Lambda → S3 → Databricks
 
 What Lambda does:
@@ -985,8 +984,9 @@ Use this if:
 
 This is the design I described in the previous message.
 
-──────────────────────────────────────────────────────────────────────────────
-Pattern B (sometimes better): 2 Lambdas
+```
+### Pattern B (sometimes better): 2 Lambdas
+```
 1) DynamoDB Stream → Lambda #1 → S3 (raw-ish, minimal, lossless)
 2) S3 (PutObject event) → Lambda #2 → S3 (curated) or → something else
 
@@ -1007,15 +1007,16 @@ Databricks can then read either:
 - directly from curated/ (Lambda #2 output), or
 - directly from landing/ (if the raw format is already fine)
 
-──────────────────────────────────────────────────────────────────────────────
-Pattern C (no second Lambda, let Databricks do all transforms)
+```
+### Pattern C (no second Lambda, let Databricks do all transforms)
+```
 DynamoDB Stream → Lambda → S3 (raw) → Databricks (all transforms, MERGE)
 
 This is also perfectly fine. In fact, if your Databricks job is already doing business transforms in PySpark, keeping Lambda thin is a good idea. That’s probably the best fit for you, since you already plan to “transform it using PySpark”.
 
-──────────────────────────────────────────────────────────────────────────────
-How to decide
-
+```
+### How to decide
+```
 Use 1 Lambda if:
 - You control the stream schema
 - You only need light normalization
@@ -1028,14 +1029,13 @@ Consider 2 Lambdas if:
 - You need heavier logic than is comfortable in the stream Lambda
 - You need to fan out (write to S3 + send to SNS, etc.)
 
-──────────────────────────────────────────────────────────────────────────────
-What I’d tell your team
+
 “We can start with **one** Lambda (DDB Stream → S3). If later we see we need a stable raw zone or heavier transforms we can add a **second** Lambda that’s triggered by S3. Databricks stays the same.”
 
-If you show me the exact DDB item shape (pk/sk or id + updated_at) I can give you the minimal single-Lambda code that lands exactly what Auto Loader wants.
+```
 
 
-
+### SAM roles
 
 You can absolutely **deploy with SAM without creating any new roles**. Two separate roles are involved—don’t mix them up:
 
