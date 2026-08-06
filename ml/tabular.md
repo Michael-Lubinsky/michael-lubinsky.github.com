@@ -1,6 +1,8 @@
-## Tabular data
+## Tabular Data Models
 
 Applied Machine Learning for Tabular Data <https://aml4td.org/>
+
+<https://www.youtube.com/watch?v=Xym8FGDcl34>
 
 * **TabPFN** is a **foundation model for tabular data** (tables with rows and columns, like CSV files or SQL tables).
 * **TabArena** is a **benchmark** used to compare machine learning models on tabular prediction tasks.
