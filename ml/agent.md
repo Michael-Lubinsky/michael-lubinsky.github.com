@@ -400,6 +400,8 @@ This isn't a zero-sum game or a choice of one over the other. They solve differe
 
 <https://github.com/mattpocock/skills>
 
+<https://habr.com/ru/articles/1065860/>
+
 <https://www.youtube.com/watch?v=M6mYodf0dJM>
 
 <https://www.aihero.dev/5-agent-skills-i-use-every-day>
