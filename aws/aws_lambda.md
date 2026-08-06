@@ -628,7 +628,7 @@ Lambda execution role needs:
 - CloudWatch Logs
 - Read from the stream (granted automatically via event source mapping on the table or explicitly)
 - Write to S3 prefix
-```
+
 Example policy statements to attach to the Lambda role (adjust ARNs):
 ```json
 {
@@ -663,7 +663,7 @@ Example policy statements to attach to the Lambda role (adjust ARNs):
   ]
 }
 ```
-──────────────────────────────────────────────────────────────────────────────
+
 5) Lambda: Python handler (Streams → S3)
 ```
 Two common file formats:
