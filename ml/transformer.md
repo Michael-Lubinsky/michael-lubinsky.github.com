@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/articles/1048462/>
 
+<https://habr.com/ru/companies/bothub/articles/1067658/> KV cache
+
 <https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
 
 <https://madhavpr191221.github.io/transformers_for_perception/posts/self-attention-from-first-principles/index.html>
