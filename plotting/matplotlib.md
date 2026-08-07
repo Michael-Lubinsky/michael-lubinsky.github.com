@@ -1,3 +1,6 @@
+## CNSPlots
+<https://github.com/faridrashidi/cnsplots>
+
 ## Matplotlib
 
 <https://habr.com/ru/companies/ru_mts/articles/1035366/>
