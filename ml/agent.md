@@ -2,6 +2,8 @@
 
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
 
+<https://habr.com/ru/articles/1068024/>
+
 <https://iitog.ru/>
 
 <https://www.facebook.com/theaiempire/>
