@@ -11,6 +11,8 @@ Applied Machine Learning for Tabular Data <https://aml4td.org/>
 
 **[TabPFN](https://github.com/PriorLabs/TabPFN?utm_source=chatgpt.com)** is a transformer-based foundation model developed by **[Prior Labs](https://priorlabs.ai?utm_source=chatgpt.com)** for supervised learning on structured/tabular data. Instead of training a new model from scratch for every dataset, TabPFN is pretrained on millions of synthetic datasets and performs prediction through **in-context learning**, similar in spirit to how LLMs solve new tasks from examples. ([PyPI][1])
 
+<https://www.youtube.com/watch?v=qFnYgM2Yvfs&pp=ugUEEgJlbg%3D%3D>
+
 Unlike traditional machine learning:
 
 | Traditional ML                               | TabPFN                         |
