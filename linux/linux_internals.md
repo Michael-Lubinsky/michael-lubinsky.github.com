@@ -8,6 +8,11 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
+<https://labs.iximiuz.com/tutorials?filter=official>
+
+<https://labs.iximiuz.com/tutorials/linux-processes-threads-concurrency-3302b677>
+
+## Networking and Internet
 <https://fazamhd.com/mental-models/networking/> Networking and the Internet, from First Principles
 
 <https://explained-from-first-principles.com/internet/>
