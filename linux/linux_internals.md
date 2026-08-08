@@ -10,7 +10,11 @@
 
 <https://labs.iximiuz.com/tutorials?filter=official>
 
+<https://labs.iximiuz.com/tutorials/linux-processes-from-program-to-process-c0e3a2e7>
+
 <https://labs.iximiuz.com/tutorials/linux-processes-threads-concurrency-3302b677>
+
+<https://labs.iximiuz.com/tutorials/linux-processes-understanding-signals-cf8d86fb>
 
 ## Networking and Internet
 <https://fazamhd.com/mental-models/networking/> Networking and the Internet, from First Principles
