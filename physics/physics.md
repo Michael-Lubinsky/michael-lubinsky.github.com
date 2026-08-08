@@ -12,6 +12,8 @@
 
 <https://www.youtube.com/@PhysicsExplainedVideos/videos>
 
+<https://old.mccme.ru/free-books/belavin/belavin-theorphys.pdf>
+
 <https://www.youtube.com/watch?v=QeDFbny74v4>  из лекций физиков Эмиля Ахмедова, Сергея Попова и Дмитрия Казакова «Основы фундаментальной физики». 
 
 <https://physicist-ai-production-d292.up.railway.app/landing>
