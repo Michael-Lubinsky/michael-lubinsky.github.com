@@ -6,6 +6,8 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+<https://habr.com/ru/articles/1068172/> Flat deeply nested JSON (allows easy insert in table)
+
 ### HTTP
 <https://github.com/pydantic/httpx2>
 
