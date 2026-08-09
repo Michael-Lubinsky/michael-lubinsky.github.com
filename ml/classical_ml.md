@@ -146,7 +146,7 @@ I also made a dozen of these a couple years ago, my two favorites:
 
 ### ROC
 
-he ROC curve (Receiver Operating Characteristic) shows how well a binary classifier separates classes across different thresholds. It plots True Positive Rate (Recall) on the Y-axis, and False Positive Rate on the X-axis Each point represents a different threshold.
+The ROC curve (Receiver Operating Characteristic) shows how well a binary classifier separates classes across different thresholds. It plots True Positive Rate (Recall) on the Y-axis, and False Positive Rate on the X-axis Each point represents a different threshold.
 
 It helps evaluate the trade-off between sensitivity and specificity, where  
 - Sensitivity = True Positive / (True Positive + False Negative) or how well model detect positive  
