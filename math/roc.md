@@ -1,8 +1,5 @@
 ## ROC
 
-
-### ROC
-
 The ROC curve (Receiver Operating Characteristic) shows how well a binary classifier separates classes across different thresholds. 
 It plots True Positive Rate (Recall) on the Y-axis,   
 and False Positive Rate on the X-axis.
