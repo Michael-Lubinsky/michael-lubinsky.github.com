@@ -3,6 +3,7 @@
 How to study any subject with LLM using Socratic method
 <https://news.ycombinator.com/item?id=49092499>
 
+<https://www.youtube.com/watch?v=BFH9D05UFvM> Unsloth Studio 
 
 <https://github.com/bevibing/socrates-skill>
 
