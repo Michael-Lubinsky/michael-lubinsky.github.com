@@ -132,6 +132,10 @@ I also made a dozen of these a couple years ago, my two favorites:
 
 - <https://www.lumafield.com/scan-of-the-month/health-wearables>
 
+  ### PCA Principal Component Analysis
+
+  <https://habr.com/ru/articles/1068438/>
+
 ### Decision Trees
 
 <https://mlu-explain.github.io/decision-tree/>
