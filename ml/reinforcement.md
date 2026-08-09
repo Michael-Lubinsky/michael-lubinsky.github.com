@@ -66,3 +66,5 @@ https://habr.com/ru/articles/919556/
 https://habr.com/ru/articles/958062/
 
 https://habr.com/ru/companies/otus/articles/951412/ Q-learning
+
+https://habr.com/ru/articles/1068346/
