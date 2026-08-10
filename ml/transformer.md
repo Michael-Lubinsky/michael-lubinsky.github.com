@@ -10,6 +10,10 @@
 
 <https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
 
+<https://jax-ml.github.io/scaling-book/>
+
+<https://habr.com/ru/articles/1067140/> Russian translation of scaling book above
+
 <https://madhavpr191221.github.io/transformers_for_perception/posts/self-attention-from-first-principles/index.html>
 
 <https://www.youtube.com/watch?v=Co0n6DPtx_A>
