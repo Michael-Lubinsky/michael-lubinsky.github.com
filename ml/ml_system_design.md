@@ -1,5 +1,8 @@
 ## ML System Design
 
+
+<https://habr.com/ru/articles/1069368/> MLOps
+
 Data Engineering for Large Models: Architecture, Algorithms & Projects  
 <https://datascale-ai.github.io/data_engineering_book/en/>
 
