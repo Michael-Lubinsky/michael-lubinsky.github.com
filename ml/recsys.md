@@ -2,6 +2,8 @@
 
 <https://testmysearch.com/my-books.html>
 
+<https://thepracticaldatascientist.substack.com/p/introduction-to-recommendation-systems>
+
 Рекомендательные системы и матричные разложения. Корреляционные модели. Латентные модели
 <https://www.youtube.com/watch?v=_ZNm6KQX5c8>
 
