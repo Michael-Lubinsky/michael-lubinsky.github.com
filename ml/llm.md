@@ -1,5 +1,7 @@
 ## LLM 
 
+<https://habr.com/ru/articles/1068944/>
+
 How to study any subject with LLM using Socratic method
 <https://news.ycombinator.com/item?id=49092499>
 
