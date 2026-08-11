@@ -1,4 +1,55 @@
 ## Quantum Explorer. 
+
+
+Hi all,
+I built an open-source project for learning quantum mechanics interactively:
+https://mlubinsky.github.io/quantum-explorer
+It runs entirely in the browser — no backend, no install. Every module uses an exact analytical solution (closed-form eigenvalues, expectation values, and time evolution), not a numerical PDE solver, so there's no discretization error and it loads instantly.
+
+- Stationary states
+  
+Infinite square well and harmonic oscillator, toggle ψ vs |ψ|²
+Energy level diagrams, momentum distributions, matrix representation (H, X, P heatmaps) with animated time evolution
+
+- Time evolution
+ISW superpositions with an 8-coefficient editor, quantum revivals, energy decomposition
+HO coherent states (oscillating Gaussian, no spreading) and squeezed states (breathing wavepacket)
+Live ⟨x(t)⟩, ⟨p(t)⟩, uncertainty products in position and momentum space
+
+- Free particle
+
+Gaussian wavepacket spreading, group/phase velocity readouts
+Click "Measure x̂" or "Measure p̂" to actually collapse the wavepacket via Born-rule sampling and watch it re-spread
+
+- Scattering (six sub-modules)
+Pöschl-Teller (reflectionless potential), delta-function potential, rectangular barrier, step potential, Morse potential (diatomic molecule), and Kronig-Penney (periodic lattice, band structure)
+
+- Spin-½ / Bloch sphere
+Larmor precession, Stern-Gerlach measurement with collapse and histograms
+Bell inequality / CHSH demo
+Interactive single-qubit gate pad (Pauli, Clifford, T-gates, parametric rotations) with SLERP animation
+
+- Hydrogen atom
+Orbitals for n=1–5, l, m, with 2D cross-sections, angular shapes, and a 3D isosurface
+Interactive Grotrian diagram (clickable levels, series filters)
+Normal and anomalous Zeeman effect, linear Stark effect, and emission spectra across all series
+
+- Bosons & fermions
+Two-particle infinite well showing exchange symmetry, Pauli exclusion, and HBT bunching vs. the fermionic exchange hole
+
+Fourier explorer
+
+Live position ↔ momentum pairs (Gaussian, chirped, ISW eigenstates) with real-time uncertainty readout
+
+- Wigner function
+Phase-space quasi-probability for Fock, coherent, squeezed, and cat states, with negativity flagged and time animation
+
+- Ring & Aharonov-Bohm effect
+
+Persistent currents, energy level crossings, and wavepacket dynamics on a flux-threaded ring
+Every module has a built-in ? help panel with the underlying physics formulas (KaTeX), and configuration state is encoded in the URL so any setup can be bookmarked or shared.
+Feedback, bug reports, and feature ideas are all welcome — it's open source, so contributions are welcome too.
+
 ### TODO:
   - README behind of implemented features
   - Top level URL https://mlubinsky.github.io/quantum-explorer/ does not reflect current button
