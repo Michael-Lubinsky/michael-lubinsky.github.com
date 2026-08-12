@@ -1,5 +1,7 @@
 ## Tabular Data Models
 
+<https://habr.com/ru/companies/otus/articles/1067734/>
+
 Applied Machine Learning for Tabular Data <https://aml4td.org/>
 
 <https://www.youtube.com/watch?v=Xym8FGDcl34>
