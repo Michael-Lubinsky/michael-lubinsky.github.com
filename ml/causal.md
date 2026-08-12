@@ -22,7 +22,7 @@ Fast Causal Inference (FCI)
 
 <https://nothing-so-practical.com/post/causal-inference-is-easy/>
 
-
+https://habr.com/ru/companies/avito/articles/1061032/ Uplift
 
 <https://matheusfacure.github.io/python-causality-handbook/landing-page.html>
 
