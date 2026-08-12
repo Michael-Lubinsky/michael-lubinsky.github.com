@@ -8,7 +8,7 @@
 
 <https://modelcontextprotocol.io/>
 
-
+<https://habr.com/ru/articles/1069588/>
 
 <https://www.youtube.com/watch?v=kIjt0Jt94nI&list=PLtPJ9lKvJ4ojl7flbGuiKDm30FPUjHDba> Протокол MCP 
 
