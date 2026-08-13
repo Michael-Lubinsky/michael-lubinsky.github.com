@@ -36,6 +36,8 @@ World models
 
 <https://habr.com/ru/companies/gpugo/articles/1056192/> local LLMs
 
+<https://habr.com/ru/articles/1069422/> local LLMs
+
 <https://habr.com/ru/articles/1055054/>
 
 <https://www.0xkato.xyz/how-llms-actually-work/>
