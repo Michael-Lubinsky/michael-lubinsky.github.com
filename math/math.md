@@ -83,6 +83,7 @@ Shlomo Sternberg's "Dynamical Systems"
 <https://www.youtube.com/watch?v=3EiwgdlXAow&pp=0gcJCT8LAYcqIYzv> Zorich 3
 
 ## Riemann Zeta function
+<https://habr.com/ru/articles/452964/>
 <https://www.youtube.com/watch?v=86ck6wGxJSA&t=866s> Shiz
 <https://www.youtube.com/watch?v=pyEGbhwYOeo>   
 <https://www.youtube.com/watch?v=RMFt-9PzF54&list=PLTcPERDxgHxm7TzJ9W92S-l5pGRuhZz10>  
