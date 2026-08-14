@@ -3,6 +3,8 @@
 <https://habr.com/ru/companies/ringo_mdm/articles/1064572/> Mac console commands not available on Linux
 <https://github.com/open-saas-directory/awesome-native-macosx-apps>
 
+<https://nextpad.org/> NextPad++
+
 caffeinate - prevents your MacBook from sleeping even with the lid closed
 
 <https://news.ycombinator.com/item?id=48701512>
