@@ -19,6 +19,39 @@
 
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
 
+### Apache Spark 4.1.0 
+ It focuses on higher-level data engineering, lower-latency streaming, faster/easier PySpark, and a more capable SQL surface.
+
+
+#### Spark Declarative Pipelines (SDP)
+A new declarative framework where you define datasets and queries, and Spark handles the execution graph, dependency ordering, parallelism, checkpoints, and retries — this is the OSS foundation of what became Databricks' "Lakeflow Declarative Pipelines" (formerly DLT). Worth noting given your Databricks background — this brought that capability into open-source Spark itself.
+
+#### Structured Streaming Real-Time Mode (RTM)**
+First official support for Structured Streaming queries running in real-time mode for continuous, sub-second latency processing — for stateless tasks, latency can even drop to single-digit milliseconds. Currently scoped to Scala stateless workloads.
+
+#### SQL Scripting — now GA, on by default**
+Improved error handling and cleaner variable declarations, plus support for `CONTINUE HANDLER` and multiple variables inside a single `DECLARE`.
+
+#### VARIANT type — now GA**
+Enabled with shredding for faster reads on semi-structured data, plus support for VARIANT in CSV/XML scans and Parquet read/write with proper logical-type annotation.
+
+#### PySpark UDFs/Data Sources**
+New Arrow-native UDF and UDTF decorators for efficient PyArrow execution without Pandas conversion overhead, plus Python Data Source filter pushdown to reduce data movement.
+
+**Spark ML on Connect — GA for the Python client**
+Smarter model caching and memory management, plus general stability improvements for large workloads via zstd-compressed protobuf plans, chunked Arrow result streaming, and enhanced support for large local relations.
+
+**Other notable additions**
+- Recursive CTE support and a JDBC Driver for Spark Connect
+- 77 new built-in SQL functions, including new approximate data sketches: `approx_top_k`, KLL quantile sketches, and Theta sketches
+- Checksum-based shuffle stage full retry to avoid incorrect results — a stability fix for silent data corruption
+- A Stored Procedures API for Catalogs
+- Data Source V2: join pushdown (Oracle, Postgres, MySQL, SQL Server), MERGE INTO schema evolution, table constraints
+- Streaming: stream-stream join support with virtual column families, plus a wave of RocksDB state-store reliability work (lock management revamp, snapshot lag detection, checksum verification)
+- Infrastructure: minimum Python bumped to 3.10, Python 3.14 support added, Scala upgraded to 2.13.17
+
+For a quick mental model: **4.1.0** was the "declarative pipelines + real-time streaming + SQL/VARIANT maturity" release, while **4.2.0** (which you asked about earlier) layered on geospatial types, native CDC, and further PySpark/DSv2 polish on top of that foundation.
+
 ## Declarative Pipeline
 
 <https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
