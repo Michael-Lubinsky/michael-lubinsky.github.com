@@ -27,6 +27,12 @@ where Databricks uses an internal service that processes cloud-provider change n
 None of these have an OSS Spark equivalent — they're all Databricks Workflows/Jobs-service
 
 ## Databricks Auto Loader (`cloudFiles` streaming source)
+
+<https://medium.com/@asindugayangana/databricks-auto-loader-best-practices-for-reliable-and-scalable-data-ingestion-30e65bf4c520>
+
+### Handling Late Arrival
+
+<https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
 ```
  Databricks-only , not in OSS Spark. 
 This is what you'd actually use *inside* a Structured Streaming job to incrementally pick up new files, 
