@@ -12,6 +12,20 @@ It went GA about a year after its February 2023 initial release,
 and for best performance the external location should be enabled for file events, 
 where Databricks uses an internal service that processes cloud-provider change notifications instead of pure directory listing.
 ```
+
+
+## Databricks Lakeflow Jobs offer these trigger types 
+(all Databricks-only, part of the Workflows/Jobs orchestration layer, not Spark itself):
+
+- **Scheduled** — triggers a job run based on a time-based schedule (cron-style)
+- **File arrival** — triggers a job run when new files arrive in a monitored Unity Catalog storage location, as discussed above
+- **Table update** — runs the job automatically as soon as one or more specified Unity Catalog tables are updated, so you don't have to guess a schedule or run a continuous cluster. It works for updates, merges, and deletes, and can fire when one monitored table updates, or only after all monitored tables update. This recently went GA. It shares the same tuning knobs as file arrival — a minimum time between triggers (to avoid firing too often on bursty tables) and a "wait after last change" delay (to let data finish landing before the job starts)
+- **Model update** — appeared in the GCP/Azure docs list alongside Table update as a newer trigger type (run manually, on a time-based schedule, on source-table updates, on file arrival, model update, or continuously) — fires when a registered model is updated
+- **Continuous** — keeps the job always running by starting a new run whenever the previous run completes or fails — this is what you'd use to host an actual Structured Streaming query as a long-running job
+- **None (manual)** — runs are triggered manually via "Run now" or programmatically through external orchestration tools (Airflow, REST API, etc.)
+
+None of these have an OSS Spark equivalent — they're all Databricks Workflows/Jobs-service
+
 ## Databricks Auto Loader (`cloudFiles` streaming source)
 ```
  Databricks-only , not in OSS Spark. 
