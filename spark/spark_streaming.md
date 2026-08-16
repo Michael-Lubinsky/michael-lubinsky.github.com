@@ -1,3 +1,13 @@
+## Streaming
+
+### Autoloader
+
+<https://medium.com/@asindugayangana/databricks-auto-loader-best-practices-for-reliable-and-scalable-data-ingestion-30e65bf4c520>
+
+### Handling Late Arrival
+
+<https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
+
 https://towardsdatascience.com/mastering-data-streaming-in-python-a88d4b3abf8b
 
 https://spark.apache.org/docs/latest/streaming-programming-guide.html
@@ -22,7 +32,7 @@ https://www.youtube.com/playlist?list=PL2IsFZBGM_IEtp2fF5xxZCS9CYBSHV2WW
 So:
 
 * ✅ `df.isEmpty()` → OK for **batch** df
-* ❌ `df_raw.isEmpty()` → NOT allowed for **streaming** df
+* ❌ `df.isEmpty()` → NOT allowed for **streaming** df
 
 ---
 
