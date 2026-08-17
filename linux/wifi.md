@@ -28,7 +28,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 
 ### 📶 Radio Access Network (RAN)
 | KPI                     | Description |
-|-------------------------|-------------|
+| ------------------------- |------------- |
 | **RSRP**                | Reference Signal Received Power (signal strength) |
 | **RSRQ**                | Reference Signal Received Quality |
 | **SINR**                | Signal-to-Interference-plus-Noise Ratio |
@@ -37,7 +37,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 
 ### 📡 Connectivity & Mobility
 | KPI                     | Description |
-|-------------------------|-------------|
+| ------------------------- | ------------- |
 | **Call Setup Success Rate (CSSR)** | % of successful call setup attempts |
 | **Handover Success Rate**          | % of successful handovers between cells |
 | **Drop Call Rate (DCR)**           | % of calls dropped after being connected |
@@ -45,7 +45,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 
 ### 🌐 Data Throughput
 | KPI                     | Description |
-|-------------------------|-------------|
+| ------------------------- | ------------- |
 | **DL/UL Throughput**    | Download/Upload speed per user or cell |
 | **PRB Utilization**     | % of Physical Resource Blocks used |
 | **Latency (RTT)**       | Round-trip time between user and core |
