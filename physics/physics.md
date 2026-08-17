@@ -261,6 +261,8 @@ Vitaly Vanchurin
 
 <https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
+<https://www.youtube.com/watch?v=RjtxMFRGgs8> bosons and fermions
+
 <https://arxiv.org/pdf/2602.04484>  Fermi statistics origin
 
 <https://habr.com/ru/articles/949788/> Pauli Matrix
