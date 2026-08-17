@@ -1,5 +1,7 @@
 ## Transformers
 
+<https://arxiv.org/pdf/2604.00965> Understanding Transformers and Attention
+
 <https://habr.com/ru/articles/1058560/>
 
 <https://habr.com/ru/articles/982268/>
