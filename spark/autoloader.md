@@ -248,3 +248,176 @@ spark-pipelines run --spec pipeline.yml
 ## On Databricks (Lakeflow Declarative Pipelines)
 
 The same code runs on Databricks with only the import changed — `from pyspark import pipelines as dp` (new SDP-native module) or the legacy `import dlt` (which still works). Databricks then wraps this whole file as a pipeline you can either run standalone from the Pipelines UI, or embed as a single **Pipeline task** inside a Databricks Job — tying back to what we discussed: the Job's task DAG treats this entire bronze→silver→gold graph as one node, while SDP handles the fine-grained orchestration inside it.
+
+Without Declarative Pipelines, you're back to writing the orchestration yourself — explicit Structured Streaming jobs, explicit checkpoints, explicit dependency wiring via Databricks Jobs tasks. Here's a full manual implementation.
+
+## Structure: 3 notebooks + a Job wiring them together
+
+```
+/bronze_ingest      (Notebook 1 — Kafka → Delta streaming write)
+/silver_clean       (Notebook 2 — Delta → Delta streaming read/write, dedup + validation)
+/gold_aggregate      (Notebook 3 — batch aggregation into a reporting table)
+```
+
+## Notebook 1: `bronze_ingest`
+
+```python
+from pyspark.sql.functions import col, from_json
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+
+order_schema = StructType([
+    StructField("order_id", StringType(), True),
+    StructField("customer_id", StringType(), True),
+    StructField("amount", DoubleType(), True),
+    StructField("status", StringType(), True),
+    StructField("order_time", TimestampType(), True),
+])
+
+raw_stream = (
+    spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", "orders")
+    .option("startingOffsets", "earliest")
+    .option("failOnDataLoss", "false")
+    .load()
+    .selectExpr("CAST(value AS STRING) AS json_value", "timestamp AS kafka_timestamp")
+    .select(
+        from_json(col("json_value"), order_schema).alias("data"),
+        col("kafka_timestamp")
+    )
+    .select("data.*", "kafka_timestamp")
+)
+
+query = (
+    raw_stream.writeStream
+    .format("delta")
+    .outputMode("append")
+    .option("checkpointLocation", "/mnt/checkpoints/orders_bronze")
+    .trigger(availableNow=True)   # process what's available, then stop — job-friendly
+    .toTable("main.orders.orders_bronze")
+)
+
+query.awaitTermination()
+```
+
+## Notebook 2: `silver_clean`
+
+Everything SDP's `@dp.expect_or_drop` and dependency-inference did for you, you now write by hand:
+
+```python
+from pyspark.sql.functions import col
+
+bronze_stream = spark.readStream.table("main.orders.orders_bronze")
+
+# Manual data-quality filtering — replaces @dp.expect_or_drop
+silver_stream = (
+    bronze_stream
+    .filter(col("amount") > 0)
+    .filter(col("order_id").isNotNull())
+    .withWatermark("order_time", "10 minutes")
+    .dropDuplicates(["order_id"])
+)
+
+query = (
+    silver_stream.writeStream
+    .format("delta")
+    .outputMode("append")
+    .option("checkpointLocation", "/mnt/checkpoints/orders_silver")
+    .trigger(availableNow=True)
+    .toTable("main.orders.orders_silver")
+)
+
+query.awaitTermination()
+```
+
+**Note the manual work here**: no automatic upstream-dependency detection — you have to know that silver reads from `main.orders.orders_bronze` and that bronze must complete first, and you enforce that ordering entirely through Databricks Jobs task dependencies, not through the code itself.
+
+## Notebook 3: `gold_aggregate`
+
+```python
+from pyspark.sql.functions import date_trunc, sum as _sum, count as _count
+
+silver_df = spark.read.table("main.orders.orders_silver")
+
+gold_df = (
+    silver_df
+    .groupBy(
+        date_trunc("day", "order_time").alias("order_date"),
+        "status"
+    )
+    .agg(
+        _sum("amount").alias("total_amount"),
+        _count("*").alias("order_count")
+    )
+)
+
+# Full overwrite each run — SDP's materialized_view auto-handles refresh;
+# here you write it explicitly
+(
+    gold_df.write
+    .format("delta")
+    .mode("overwrite")
+    .saveAsTable("main.orders.daily_order_summary")
+)
+```
+
+## Wiring the three notebooks together as a Databricks Job
+
+This is where the "procedural DAG" from our earlier conversation comes in — you build the dependency graph explicitly instead of Spark inferring it from table references:
+
+```json
+{
+  "name": "orders_bronze_silver_gold",
+  "tasks": [
+    {
+      "task_key": "bronze_ingest",
+      "notebook_task": { "notebook_path": "/Repos/me/bronze_ingest" },
+      "job_cluster_key": "main_cluster"
+    },
+    {
+      "task_key": "silver_clean",
+      "depends_on": [{ "task_key": "bronze_ingest" }],
+      "notebook_task": { "notebook_path": "/Repos/me/silver_clean" },
+      "job_cluster_key": "main_cluster"
+    },
+    {
+      "task_key": "gold_aggregate",
+      "depends_on": [{ "task_key": "silver_clean" }],
+      "notebook_task": { "notebook_path": "/Repos/me/gold_aggregate" },
+      "job_cluster_key": "main_cluster"
+    }
+  ],
+  "job_clusters": [
+    {
+      "job_cluster_key": "main_cluster",
+      "new_cluster": { "spark_version": "16.x", "num_workers": 2 }
+    }
+  ],
+  "trigger": { "table_update": { "table_names": [] } }
+}
+```
+
+Or equivalently in the Jobs UI: three notebook tasks, each with `depends_on` set to the previous one, exactly as we discussed for building DAGs manually.
+
+## Everything you now own that SDP gave you for free
+
+| Concern | SDP handles it | Manual approach — you handle it |
+|---|---|---|
+| Table dependency ordering | Inferred from `dp.read`/`dp.read_stream` calls | You wire `depends_on` in the Job yourself, and must keep it in sync if table references change |
+| Parallelism of independent branches | Automatic | You manually identify independent tasks and either omit `depends_on` between them or use separate parallel task branches |
+| Checkpoint locations | Managed internally per flow | You pick and track `checkpointLocation` per stream yourself — easy to collide or forget one |
+| Data quality rules | Declarative `@dp.expect*` decorators, with pass/fail/drop counts surfaced in pipeline UI | Plain `.filter()` calls — no built-in metrics on how many rows were dropped and why, unless you log it yourself |
+| Retries | Progressive retry from Spark task → flow → pipeline | Job-level task retry only (`max_retries` on the Job task) — coarser granularity, retries the whole notebook |
+| Streaming vs. batch flow types unified in one graph | Yes | You explicitly choose `readStream`/`writeStream` vs. `read`/`write` per notebook, and reason about each one's semantics separately |
+| Incremental refresh of materialized views | Automatic incremental maintenance | You wrote `.mode("overwrite")` — a full recompute every run; incremental logic (MERGE, etc.) is on you if you want it |
+| Lineage/observability | Built into the pipeline UI/event log | You'd need to build this yourself (custom logging, Unity Catalog lineage from table reads/writes, or a metadata table) |
+| Continuous vs. triggered execution | Pipeline mode setting | `trigger(availableNow=True)` per stream, or `trigger(processingTime=...)` if you want it always running — and you must match this to how the Job itself is triggered (see our earlier discussion on continuous jobs) |
+
+## When this manual approach still makes sense
+
+- You need **fine-grained control** over exactly what runs when — e.g., custom Python logic between transformation stages that doesn't fit cleanly into a declarative dataset definition.
+- You're integrating **non-Spark steps** into the same DAG (calling out to an external API, running a dbt task, triggering a downstream ML training job) — Jobs' procedural model handles arbitrary task types naturally, while SDP is scoped to Spark dataset transformations.
+- You have **existing Structured Streaming code** you don't want to rewrite/re-decorate around the `dp.table` model yet.
+
+But for a straightforward layered bronze/silver/gold ETL pipeline like this one, SDP genuinely removes a lot of the boilerplate you see above — the dependency wiring, checkpoint management, and data-quality plumbing are exactly the kind of thing it was built to eliminate.
