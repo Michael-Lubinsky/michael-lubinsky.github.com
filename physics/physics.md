@@ -121,66 +121,6 @@ https://www.youtube.com/watch?v=brfyf4RLwr0 Введение в статисти
 
 <img width="299" height="231" alt="image" src="https://github.com/user-attachments/assets/f1f046a4-8bb4-4517-b2bf-8ad641a74223" />
 
-
-## QFT Naumov
-<https://www.youtube.com/@dmitrynaumov6099>
-
-<https://www.rospexpublishing.com/books/qft-bundle.html> 
-
-<https://shop.rcd.ru/catalog/fizika/20099/> Naumov 2 volumes
-
-Квантовая теория поля. 2 volumes.  Dmitry V. Naumov
-<https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US> 
-
-Том 1:
-<https://play.google.com/store/books/details?id=uLXTEQAAQBAJ&hl=en_US> 
-<https://play.google.com/books/reader?id=uLXTEQAAQBAJ&pg=GBS.PA2&hl=en_US>
-
-Том 2: https://play.google.com/store/books/details?id=KrbTEQAAQBAJ&hl=en_US 
- 
-До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
-Промокод: YXFCQXX7VQHXX
-
-## QFT
-
-<http://web.ihep.su/spitsky/mipt/literature/literature.html>
-
-<https://www.youtube.com/playlist?list=PLRlVmXqzHjURrQfMx6o_Ji0926mPKkzOw>
-
-<https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
-
-<https://arxiv.org/pdf/2005.06355> Lectures: From quantum mechanics to the Standard Model
-
-<https://www.youtube.com/watch?v=4O9XWLaNoZE> Квантовая теория поля, Н. М. Заиграев, лекция 1, 10.09.2022
-
-<https://arxiv.org/pdf/math-ph/0204014> QUANTUM FIELD THEORY Notes taken from a course of R. E. Borcherds
-
-<https://github.com/manjunath5496/13-Best-Quantum-Field-Theory-Books-for-Beginners/tree/master>
-
-Ахмедов Э.Т. - Элементы КТП для математиков - 1.
-<https://www.youtube.com/watch?v=MqhnyTEaNZ8>
-
-<https://teach-in.ru/course/quantum-electrodynamics>  QED
-
-<https://www.youtube.com/playlist?list=PLgaZ6JcYetK60tVC3-J92t9WVen5TmtiM>
- 
-
-<https://zenodo.org/communities/physicsinrussian>
-
-<https://news.ycombinator.com/item?id=48096842>
-
-Quantum Field Theory in Condensed Matter Physics 2ed  
-by Alexei M. Tsvelik 
-<https://www.amazon.com/Quantum-Thry-Cond-Matt-Phys/dp/0521529808/>
-
-
-<https://quantum-matters.com/>
-
-<https://www.scribd.com/document/777989228/B-K-Ridley-Quantum-processes-in-semiconductors-Oxford-University-Press-2013>
-
-<https://www.youtube.com/@AbideByReason>
-
-
 <https://www.youtube.com/playlist?list=PL2IEUF-u3gRfO3jBeLi_rGI7rLL-8LhdZ> Advanced Statistical Physics, LMU Munich, Summer Semester 2026
 
 ## Hall Effect, Quantum anomalous Hall effect
@@ -240,6 +180,10 @@ Vitaly Vanchurin
 ## Quantum Mechanics
 
 <https://www.youtube.com/@valerykiselev6883/playlists> Kiselev
+
+
+<https://quantum-matters.com/>
+
 
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA4PyhnlugbKhdVbJUUeBxj> Квантовая теория - Сущёв Иван
 
