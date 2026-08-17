@@ -8,6 +8,8 @@
 
 <https://github.com/TheAlgorithms>  <https://the-algorithms.com>
 
+<https://habr.com/ru/companies/timeweb/articles/1070742/> Count-Min Sketch
+<https://habr.com/ru/companies/timeweb/articles/1055544/> Bloom Filter
 <https://habr.com/ru/companies/timeweb/articles/1046345/> HyperLogLog: как найти уникальные значения в терабайте данных
 
 <https://ledger.khushal.net/>
