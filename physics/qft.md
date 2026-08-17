@@ -1,8 +1,6 @@
 ## QFT
 
-
-
-## QFT Naumov
+###  Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
 <https://www.rospexpublishing.com/books/qft-bundle.html> 
@@ -21,7 +19,7 @@
 До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
 Промокод: YXFCQXX7VQHXX
 
-## QFT
+ 
 
 <http://web.ihep.su/spitsky/mipt/literature/literature.html>
 
