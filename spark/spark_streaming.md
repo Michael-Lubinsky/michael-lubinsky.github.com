@@ -6,7 +6,116 @@
 
 ### Handling Late Arrival
 
-Late-arriving data in Structured Streaming is handled primarily through **watermarks**, combined with how you structure your stateful operations. Here's the full picture:
+Late-arriving data in Structured Streaming is handled primarily through **watermarks**, combined with how you structure your stateful operations.  
+
+Here's a complete PySpark example: read from Kafka, parse JSON payloads, apply a watermark, and run a windowed aggregation.
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, from_json, window, count, avg
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+
+spark = (
+    SparkSession.builder
+    .appName("KafkaWatermarkExample")
+    .config("spark.sql.shuffle.partitions", "8")  # tune for your cluster
+    .getOrCreate()
+)
+
+# 1. Read raw stream from Kafka
+raw_stream = (
+    spark.readStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("subscribe", "device-events")
+    .option("startingOffsets", "latest")   # or "earliest"
+    .option("failOnDataLoss", "false")     # avoid job failure on missing offsets
+    .load()
+)
+
+# Kafka gives you key/value as bytes, plus metadata (topic, partition, offset, timestamp...)
+# raw_stream.printSchema() would show: key, value, topic, partition, offset, timestamp, timestampType
+
+# 2. Define the schema of the JSON payload inside Kafka's `value` column
+event_schema = StructType([
+    StructField("device_id", StringType(), True),
+    StructField("event_time", TimestampType(), True),  # must be a proper timestamp type
+    StructField("temperature", DoubleType(), True),
+])
+
+# 3. Parse the JSON value column into structured fields
+parsed_stream = (
+    raw_stream
+    .selectExpr("CAST(value AS STRING) AS json_value")
+    .select(from_json(col("json_value"), event_schema).alias("data"))
+    .select("data.*")
+)
+
+# 4. Apply watermark on event_time, then windowed aggregation
+windowed_avg = (
+    parsed_stream
+    .withWatermark("event_time", "10 minutes")   # allow up to 10 min lateness
+    .groupBy(
+        window(col("event_time"), "5 minutes"),  # 5-minute tumbling window
+        col("device_id")
+    )
+    .agg(
+        avg("temperature").alias("avg_temp"),
+        count("*").alias("event_count")
+    )
+    .select(
+        col("device_id"),
+        col("window.start").alias("window_start"),
+        col("window.end").alias("window_end"),
+        col("avg_temp"),
+        col("event_count"),
+    )
+)
+
+# 5. Write results out — console for dev/debugging
+query = (
+    windowed_avg.writeStream
+    .format("console")
+    .outputMode("update")          # "update" shows changed windows as late data arrives
+    .option("truncate", "false")
+    .trigger(processingTime="30 seconds")
+    .start()
+)
+
+query.awaitTermination()
+```
+
+A few things worth calling out:
+
+**Watermark column must be a real timestamp.** If your Kafka payload stores `event_time` as a string or epoch long, cast it before `withWatermark`:
+```python
+from pyspark.sql.functions import to_timestamp
+parsed_stream = parsed_stream.withColumn("event_time", to_timestamp(col("event_time")))
+```
+
+**Output mode matters with watermarks.** `"append"` only emits a window once the watermark has passed its end (i.e., once it's "closed") — nothing is emitted early, but you also won't see updates. `"update"` emits every time a window's aggregate changes, including as late-but-within-watermark records arrive, which is usually more useful during development. `"complete"` re-emits the entire result table every trigger and generally isn't practical for windowed aggregations at scale.
+
+**Writing to Kafka instead of console** — swap the sink:
+```python
+query = (
+    windowed_avg
+    .selectExpr("CAST(device_id AS STRING) AS key", "to_json(struct(*)) AS value")
+    .writeStream
+    .format("kafka")
+    .option("kafka.bootstrap.servers", "localhost:9092")
+    .option("topic", "device-events-agg")
+    .option("checkpointLocation", "/path/to/checkpoint")  # required for Kafka/file sinks
+    .outputMode("update")
+    .start()
+)
+```
+
+**Checkpointing is required** for any sink other than console/memory in production — it's what lets Spark recover offsets and state after a restart:
+```python
+.option("checkpointLocation", "/path/to/checkpoint")
+```
+
+If you want, I can extend this to a **stream-stream join** example (two Kafka topics with watermarks on both sides) or show how to run this as a Databricks job with Auto Loader/Kafka + a `trigger(availableNow=True)` batch-style run instead of continuous — let me know which direction is more useful for what you're building.
 
 ## The core mechanism: watermarks
 
