@@ -1,4 +1,4 @@
-## Streaming
+## Spark Streaming and Autoloader
 
 ### Autoloader
 
@@ -285,11 +285,11 @@ Here you don't check emptiness; you just let Auto Loader make a micro-batch *if 
 * For batch DataFrames only, `if not df.head(1):` is the good pattern.
 
 
-# How **Auto Loader**, **read()**, and **readStream()** relate in Databricks.
+### How **Auto Loader**, **read()**, and **readStream()** relate in Databricks.
 
 
 
-**Auto Loader works only with `readStream()` (structured streaming).**
+###  Auto Loader works only with `readStream()` (structured streaming) 
 Not with plain `read()`.
 
 You enable Auto Loader by using:
@@ -308,7 +308,7 @@ So:
 
 ---
 
-# 🚀 **Auto Loader explained simply**
+### Auto Loader explained simply**
 
 Auto Loader is a **streaming file ingestion** engine built on top of **Structured Streaming**.
 
@@ -326,9 +326,6 @@ All of that is built into:
 spark.readStream.format("cloudFiles")
 ```
 
----
-
-# 🧩 **Relationship to `read()`**
 
 ### ❌ Auto Loader cannot be used with `read()`
 
@@ -343,7 +340,6 @@ No streaming, no checkpoints, no state, no Auto Loader.
 
 ---
 
-# 🧩 **Relationship to `readStream()`**
 
 ### ✔ Auto Loader **is a special format** inside `readStream()`
 
@@ -361,7 +357,7 @@ This is how Auto Loader works.
 
 ---
 
-# 🕘 **Where things fit in the Databricks ingestion architecture**
+### Where things fit in the Databricks ingestion architecture**
 
 | Ingestion Type           | Uses `readStream()` | Uses Auto Loader | Schema evolution | File notifications    |
 | ------------------------ | ------------------- | ---------------- | ---------------- | --------------------- |
@@ -371,7 +367,7 @@ This is how Auto Loader works.
 
 ---
 
-# 🛠️ Example Comparison
+### Example Comparison
 
 ### **1. Normal batch read**
 
@@ -399,7 +395,7 @@ df = (
 
 ---
 
-# 🔥 Key Benefits of Auto Loader (over readStream without it)
+### Key Benefits of Auto Loader (over readStream without it)
 
 Auto Loader adds:
 
@@ -413,7 +409,7 @@ Structured Streaming (`readStream`) **alone** does not provide these.
 
 ---
 
-# 📌 Summary
+### Summary
 
 * `read()` = batch → **Auto Loader cannot be used**
 * `readStream()` = streaming →
