@@ -28,7 +28,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 
 ### 📶 Radio Access Network (RAN)
 | KPI                     | Description |
-| ------------------------- |------------- |
+| ------------------------- | ------------- |
 | **RSRP**                | Reference Signal Received Power (signal strength) |
 | **RSRQ**                | Reference Signal Received Quality |
 | **SINR**                | Signal-to-Interference-plus-Noise Ratio |
