@@ -2,6 +2,8 @@
 
 <https://navigator.tao-rwd.com/>
 
+<https://mixtape.scunning.com/>
+
 <https://causalai-book.net/>
 
 <https://causalpython.io/>
