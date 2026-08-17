@@ -72,3 +72,53 @@ It's built directly in the Jobs UI (or via JSON/Databricks Asset Bundles) using 
 **Cross-job/cross-DAG dependencies** (analogous to Airflow datasets or `ExternalTaskSensor`) aren't natively built in — since jobs/bundles are independently deployable units, you'd implement this via the Workflows API polling job status, an external orchestrator like Airflow, or an event-based trigger (e.g. a webhook or message queue) fired on completion.
 
 **Where it differs from Airflow**: a Databricks job is a DAG of tasks plus a trigger, and repair runs let you rerun only the failed tasks rather than the whole DAG — Workflows tends to be the natural choice when the pipeline lives entirely inside Databricks, while Airflow earns its keep when orchestrating across many external systems. Databricks Workflows doesn't have Airflow's broader ecosystem of provider operators/sensors for arbitrary external systems — it's purpose-built around notebooks, SQL, dbt, DLT/Lakeflow pipelines, and now table-update/model-update triggers, with cross-system orchestration typically left to something like ADF or Airflow sitting one layer above it.
+
+
+
+## Spark Declarative Pipelines (SDP) vs Databricks Jobs
+
+Two different orchestration paradigms, nested inside each other
+
+The relationship is: **Spark Declarative Pipelines (SDP) is a declarative engine for orchestrating dataset dependencies *inside* a pipeline, while a Databricks Job is a procedural engine for orchestrating arbitrary tasks — and one of those task types is "run a pipeline."** They sit at different levels of granularity, and a Job's task DAG can *contain* an SDP pipeline as a single node.
+
+Lakeflow Jobs provides a procedural approach to defining relationships between tasks. Lakeflow pipelines provide a declarative approach to defining relationships between datasets and transformations. That's the key distinction:
+
+## Declarative Pipelines (SDP / Lakeflow Declarative Pipelines, née DLT)
+
+- You **declare datasets** (tables, views, streaming tables) and the queries that produce them — you don't write explicit "step 1, step 2, step 3" control flow.
+- Automatic orchestration: pipelines run processing steps (called "flows") in the correct order with maximum parallelism, and retry transient failures progressively — from the Spark task, to the flow, to the entire pipeline.
+- Spark itself figures out the dependency graph from your table/view references (table B reads from table A → B automatically runs after A) and parallelizes independent branches — for example, if Table A and Table B don't depend on each other, SDP automatically triggers them in parallel to save time, without you writing any parallel code.
+- This is the OSS "Spark Declarative Pipelines" you asked about from Spark 4.1.0 — a declarative framework for building batch and streaming data pipelines in SQL and Python, with common use cases including data ingestion and incremental batch/streaming transformations. Databricks' "Lakeflow Declarative Pipelines" (formerly DLT) extends Apache Spark Declarative Pipelines with Databricks-specific features (AUTO CDC/SCD handling, data-quality expectations, Unity Catalog integration, enhanced autoscaling).
+- Inside one pipeline, you don't build a task DAG by hand — the DAG is *derived* from the SQL/Python dataset definitions.
+
+## Databricks Jobs (Lakeflow Jobs / Workflows)
+
+- You **declare tasks** (a notebook, a SQL query, a dbt project, a Python script — or a whole pipeline) and explicitly wire `depends_on` relationships between them, as we covered earlier.
+- The DAG here is task-level, not dataset-level — you're orchestrating heterogeneous units of work, potentially across completely different technologies, not just SQL/Python transformations against tables.
+
+## How they connect: Pipeline as a Task type
+
+You schedule a pipeline to run as a task in a job, using the Jobs UI, the Lakeflow pipelines UI, or SQL. So a single Job — the thing you build multi-task DAGs in — can have one task that is "Task type: Pipeline," pointing at an entire SDP/Lakeflow pipeline. That pipeline task then behaves as one atomic node in the Job's DAG: it can have upstream dependencies (e.g., "wait for the ingestion notebook to finish first") and downstream dependents (e.g., "after the pipeline update completes, run a dashboard-refresh task"), even though internally the pipeline is running its own separate declarative sub-DAG of flows.
+
+Execution mode is inherited from the Job's trigger, not the pipeline's own setting: in a triggered or scheduled job, the pipeline task starts a single update and stops when it completes; in a continuous job, the pipeline task runs the pipeline continuously — the job's schedule determines execution mode, so the pipeline runs continuously even if its own Pipeline mode setting is "triggered." Databricks actually recommends running continuous pipelines via a continuous job rather than the pipeline's own built-in continuous setting, because the job-wrapped version can use serverless performance modes the pipeline's native continuous mode doesn't support — and to avoid unexpected behavior, you should set the pipeline's own mode to triggered when wrapping it in a continuous job.
+
+## Mental model
+
+Think of it as two nested DAGs at different abstraction levels:
+
+```
+Databricks Job (procedural DAG — you wire depends_on)
+├── Task 1: Ingest raw files (notebook)
+├── Task 2: Run SDP Pipeline  ← this ENTIRE box is one task node
+│     └── (internally: declarative DAG of tables/flows,
+│           auto-derived from SQL/Python dataset definitions,
+│           auto-parallelized, auto-retried)
+├── Task 3: Refresh dashboard (depends on Task 2)
+└── Task 4: Send Slack notification (depends on Task 3)
+```
+
+**When to use which layer for dependencies:**
+- Dependencies *between tables within a transformation pipeline* → let SDP infer them declaratively; don't try to model table-level lineage as Job tasks.
+- Dependencies *between heterogeneous work* (ingest → transform-pipeline → BI refresh → notify, possibly spanning dbt, notebooks, SQL, and DLT/SDP) → model these as a Job task DAG with explicit `depends_on`, with the SDP pipeline as one task in that chain.
+
+That's also why the earlier "trigger types" discussion connects here — the same trigger options (scheduled, file arrival, table update, continuous) apply to the *Job* that wraps a pipeline task, giving you event-driven orchestration one layer above SDP's own dataset-level automatic scheduling.
