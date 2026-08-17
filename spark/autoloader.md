@@ -122,3 +122,129 @@ Databricks Job (procedural DAG — you wire depends_on)
 - Dependencies *between heterogeneous work* (ingest → transform-pipeline → BI refresh → notify, possibly spanning dbt, notebooks, SQL, and DLT/SDP) → model these as a Job task DAG with explicit `depends_on`, with the SDP pipeline as one task in that chain.
 
 That's also why the earlier "trigger types" discussion connects here — the same trigger options (scheduled, file arrival, table update, continuous) apply to the *Job* that wraps a pipeline task, giving you event-driven orchestration one layer above SDP's own dataset-level automatic scheduling.
+
+#  Example of an SDP pipeline 
+— a classic bronze/silver/gold layered pipeline built from Kafka ingestion through to an aggregated table, 
+using the open-source Apache Spark Declarative Pipelines API (Spark 4.1+).
+
+## Project structure
+
+```
+my_pipeline/
+├── pipeline.yml
+└── transformations/
+    └── orders_pipeline.py
+```
+
+## `pipeline.yml` (pipeline spec)
+
+```yaml
+name: orders_pipeline
+definitions:
+  - glob:
+      include: transformations/**/*.py
+```
+
+## `transformations/orders_pipeline.py`
+
+```python
+from pyspark import pipelines as dp
+from pyspark.sql.functions import col, from_json, expr, sum as _sum, count as _count
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
+
+# ---------------------------------------------------------
+# BRONZE: raw ingestion from Kafka — a streaming table
+# ---------------------------------------------------------
+
+order_schema = StructType([
+    StructField("order_id", StringType(), True),
+    StructField("customer_id", StringType(), True),
+    StructField("amount", DoubleType(), True),
+    StructField("status", StringType(), True),
+    StructField("order_time", TimestampType(), True),
+])
+
+@dp.table(
+    name="orders_bronze",
+    comment="Raw order events ingested from Kafka, unmodified"
+)
+def orders_bronze():
+    return (
+        spark.readStream
+        .format("kafka")
+        .option("kafka.bootstrap.servers", "localhost:9092")
+        .option("subscribe", "orders")
+        .option("startingOffsets", "earliest")
+        .load()
+        .selectExpr("CAST(value AS STRING) AS json_value", "timestamp AS kafka_timestamp")
+        .select(
+            from_json(col("json_value"), order_schema).alias("data"),
+            col("kafka_timestamp")
+        )
+        .select("data.*", "kafka_timestamp")
+    )
+
+
+# ---------------------------------------------------------
+# SILVER: cleaned + validated — with data quality expectations
+# ---------------------------------------------------------
+
+@dp.table(
+    name="orders_silver",
+    comment="Validated orders with bad records dropped"
+)
+@dp.expect_or_drop("valid_amount", "amount > 0")
+@dp.expect_or_drop("valid_order_id", "order_id IS NOT NULL")
+@dp.expect("known_status", "status IN ('PLACED', 'SHIPPED', 'DELIVERED', 'CANCELLED')")
+def orders_silver():
+    # dp.read_stream references the upstream table declaratively —
+    # SDP infers this dependency automatically and runs bronze first
+    return (
+        dp.read_stream("orders_bronze")
+        .withWatermark("order_time", "10 minutes")
+        .dropDuplicates(["order_id"])
+    )
+
+
+# ---------------------------------------------------------
+# GOLD: aggregated materialized view for reporting
+# ---------------------------------------------------------
+
+@dp.materialized_view(
+    name="daily_order_summary",
+    comment="Daily totals and counts by status"
+)
+def daily_order_summary():
+    return (
+        dp.read("orders_silver")
+        .groupBy(
+            expr("date_trunc('day', order_time)").alias("order_date"),
+            col("status")
+        )
+        .agg(
+            _sum("amount").alias("total_amount"),
+            _count("*").alias("order_count")
+        )
+    )
+```
+
+## Running it
+
+```bash
+# Validate the pipeline graph without running it
+spark-pipelines dry-run --spec pipeline.yml
+
+# Run it once (triggered mode)
+spark-pipelines run --spec pipeline.yml
+```
+
+## What's happening declaratively here
+
+- **No manual orchestration code.** You never wrote "run bronze, then wait, then run silver, then run gold." SDP parses the `dp.read_stream("orders_bronze")` and `dp.read("orders_silver")` calls, builds the dependency graph itself, and executes bronze → silver → gold in the correct order.
+- **Streaming vs. batch is unified.** `orders_bronze` and `orders_silver` are streaming tables (incremental, using `readStream`/watermarks); `daily_order_summary` is a materialized view (recomputed as a batch aggregate). SDP handles both flow types in the same pipeline graph.
+- **Data quality is declarative too.** The `@dp.expect_or_drop` decorators are inline constraints — rows failing `amount > 0` or a null `order_id` are silently dropped from `orders_silver`, while rows with an unrecognized `status` are flagged (`@dp.expect`, warn-only) without dropping them.
+- **Watermarking still works exactly as we discussed** — `withWatermark("order_time", "10 minutes")` on the silver table bounds state for the `dropDuplicates` operation, same semantics as plain Structured Streaming.
+
+## On Databricks (Lakeflow Declarative Pipelines)
+
+The same code runs on Databricks with only the import changed — `from pyspark import pipelines as dp` (new SDP-native module) or the legacy `import dlt` (which still works). Databricks then wraps this whole file as a pipeline you can either run standalone from the Pipelines UI, or embed as a single **Pipeline task** inside a Databricks Job — tying back to what we discussed: the Job's task DAG treats this entire bronze→silver→gold graph as one node, while SDP handles the fine-grained orchestration inside it.
