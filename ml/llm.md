@@ -1,6 +1,6 @@
 ## LLM 
 
-<https://habr.com/ru/articles/1068944/>
+<https://habr.com/ru/articles/1068944/> Топ вопросов с NLP собеседований
 
 How to study any subject with LLM using Socratic method
 <https://news.ycombinator.com/item?id=49092499>
