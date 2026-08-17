@@ -281,14 +281,17 @@ Unsorted, Massive Data? Use Shuffle Hash Join, but be mindful of its performance
 ### repartition method
 
 #### case 1
+```python
 df.repartition(numPartitions)
+```
 Partitions data randomly into the given number of partitions.  
 Triggers a full shuffle.  
 No column used for partitioning.
 
 #### case 2
+```python
 df.repartition(col1, col2, ..., colN)
-
+```
 Partitions data based on the values of the given column(s) using hash partitioning.  
 The number of partitions is determined by Spark's default parallelism or by cluster settings.
 
