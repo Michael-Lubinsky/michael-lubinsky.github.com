@@ -1,5 +1,7 @@
 ## MLflow 
-is an open-source platform for managing the end-to-end machine learning lifecycle — experiment tracking, model packaging, model registry, and deployment. It was created by Databricks (2018) and donated to the Linux Foundation as an open governance project, though Databricks remains its primary maintainer and commercial backer. Let me get current details on the Databricks-specific integration since this area evolves quickly.## What MLflow is
+is an open-source platform for managing the end-to-end machine learning lifecycle — experiment tracking, model packaging, model registry, and deployment. It was created by Databricks (2018) and donated to the Linux Foundation as an open governance project, though Databricks remains its primary maintainer and commercial backer.  
+
+## What MLflow is
 
 
 - **Tracking** — MLflow tracks training by logging parameters, metrics, and artifacts to evaluate and compare model performance across runs/experiments.
