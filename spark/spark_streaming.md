@@ -6,6 +6,66 @@
 
 ### Handling Late Arrival
 
+Late-arriving data in Structured Streaming is handled primarily through **watermarks**, combined with how you structure your stateful operations. Here's the full picture:
+
+## The core mechanism: watermarks
+
+A watermark tells Spark "how late is too late" — it's a moving threshold on event time, not processing time.
+
+```scala
+val windowedCounts = events
+  .withWatermark("event_time", "10 minutes")
+  .groupBy(
+    window($"event_time", "5 minutes"),
+    $"deviceId"
+  )
+  .count()
+```
+
+**How it works internally:**
+- Spark tracks the maximum event time seen so far across all data.
+- The watermark = `max(event_time seen so far) - threshold` (here, 10 minutes).
+- Any row with `event_time < watermark` is considered "too late" and is dropped from stateful aggregations.
+- The watermark also tells Spark when it's safe to **finalize and evict state** for a window — once the watermark passes a window's end, that window's state can be cleared, which is how Spark bounds state size in an unbounded stream.
+
+So watermarking does two jobs at once: correctness (bounding how late data can still update results) and resource management (letting Spark drop old state instead of keeping it forever).
+
+## Where watermarks matter — and where they don't
+
+- **Stateful aggregations** (`groupBy` + window, streaming `dropDuplicates`, stream-stream joins) — watermark is what makes these tractable; without it, state grows unbounded.
+- **Stateless transformations** (`map`, `filter`, `select`) — watermark is irrelevant; there's no state to bound.
+- **`mapGroupsWithState` / `flatMapGroupsWithState` / `transformWithState`** — you can inspect watermark progress yourself (`GroupState.getCurrentWatermarkMs()` in old API, or timer/expiry APIs in `transformWithState`) and decide what to do with late records or expire state manually.
+
+## Stream-stream joins specifically
+
+Late data handling gets more nuanced with joins — you need watermarks on **both sides** plus time-range join conditions, or Spark can't bound state on either side:
+
+```scala
+val joined = streamA
+  .withWatermark("eventTimeA", "10 minutes")
+  .join(
+    streamB.withWatermark("eventTimeB", "15 minutes"),
+    expr("""
+      key = key2 AND
+      eventTimeB >= eventTimeA - interval 5 minutes AND
+      eventTimeB <= eventTimeA + interval 10 minutes
+    """)
+  )
+```
+
+Without the time-range predicate constraining how far apart the two watermarked columns can drift, Spark will refuse the join or keep unbounded state.
+
+## Practical strategies for late data
+
+1. **Widen the watermark threshold** if you can tolerate more latency in results but need to accept more lateness — this is a direct trade-off between correctness/completeness and result latency + state size/memory.
+2. **Use `outputMode("update")` or `"complete"` instead of `"append"`** if you need windows to keep updating as (slightly) late data trickles in before the watermark passes — `append` mode only emits a window once it's finalized, so late-but-within-watermark data updates it silently before emission, but you won't see the correction if you already emitted.
+3. **Side-channel truly late data.** Data older than the watermark is silently dropped from stateful ops — if you need to know about it (for auditing, backfill, or a separate correction pipeline), you generally have to build that yourself, e.g., by branching the stream before the stateful op and filtering `event_time < someManualCutoff` into a separate sink, since Spark doesn't expose a built-in "dead letter" for watermark-dropped rows.
+4. **Choose watermark delay based on your actual data lateness distribution** — instrument your source (Kafka consumer lag, mobile clients buffering offline, etc.) to understand the real P99 lateness before picking a threshold; too tight drops valid data, too loose bloats state and delays finalization.
+
+## One 4.1.0-relevant note, given our earlier conversation
+
+Real-Time Mode complicates this story a bit: RTM in 4.1.0 is **stateless-only**, so watermark-based stateful late-data handling (windowed aggregations, stream-stream joins) isn't yet available under RTM — that still requires classic micro-batch mode. If your pipeline needs both sub-second latency *and* watermark-based lateness handling, you're not there yet with RTM as of 4.1.0/4.2.0; you'd stay on micro-batch triggers for those stateful stages.
+
 <https://medium.com/@divyanshgoyal8989/handling-late-arriving-data-in-databricks-real-world-strategies-7a7203c75725>
 
 https://towardsdatascience.com/mastering-data-streaming-in-python-a88d4b3abf8b
