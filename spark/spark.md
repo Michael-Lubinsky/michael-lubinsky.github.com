@@ -4,6 +4,53 @@
 
 <https://news.ycombinator.com/item?id=48935510>
 
+A **Spark job** is the unit of work triggered by an **action** in your Spark code — it's the top level of Spark's internal execution hierarchy. Understanding it means understanding the whole hierarchy, since the terms nest inside each other in a specific way that trips people up (especially "Spark job" vs. "Databricks job," which are completely different things despite the shared word).
+
+## The execution hierarchy
+
+```
+Application (SparkSession / SparkContext)
+  └── Job (triggered by one action)
+        └── Stage (bounded by shuffle boundaries)
+              └── Task (one unit of work per partition)
+```
+
+### Application
+One SparkSession/SparkContext — your whole program, from start to `spark.stop()`. Can contain many jobs.
+
+### Job
+A job is created **every time an action is called** — `.collect()`, `.count()`, `.show()`, `.write()`, `.foreach()`, etc. Transformations (`.filter()`, `.select()`, `.groupBy()`, `.join()`) are lazy — they just build up a logical plan (a DAG of RDD/DataFrame operations) without executing anything. Nothing actually runs until an action forces Spark to compute a result.
+
+```python
+df = spark.read.parquet("s3://data/orders")   # lazy — no job yet
+filtered = df.filter(col("amount") > 100)      # lazy — no job yet
+grouped = filtered.groupBy("status").count()   # lazy — no job yet
+
+grouped.show()   # ACTION → triggers Job 0
+grouped.write.parquet("s3://out/result")  # ACTION → triggers Job 1
+```
+
+So in this snippet, one script produces **two separate Spark jobs**, because there are two actions, even though most of the transformation logic is shared/re-planned for each.
+
+### Stage
+Within a job, Spark breaks the work into **stages**, split wherever a **shuffle** is required (a wide dependency — data has to be redistributed across the cluster, e.g. for `groupBy`, `join`, `repartition`, `distinct`). Operations that only need data local to each partition (`filter`, `map`, `select` — narrow dependencies) get pipelined together into the same stage without a shuffle boundary. So the `groupBy("status").count()` above forces at least a stage boundary: one stage reads/filters data, a shuffle redistributes rows by `status`, then a second stage aggregates.
+
+### Task
+The smallest unit — one task per partition, per stage. If a stage's input has 200 partitions, Spark launches 200 tasks (subject to available executor cores), each running the stage's code on one partition of data. Tasks are what actually get scheduled onto executor cores and run in parallel.
+
+## Where to see this
+
+The **Spark UI** ("Jobs" tab) shows exactly this breakdown — every job listed with its stages, and drilling into a stage shows individual tasks, their duration, shuffle read/write size, and any skew. This is the primary tool for debugging performance problems (a job with one enormous task = data skew; a job stuck at 99% = a straggler task).
+
+## Important distinction: Spark job ≠ Databricks Job
+
+This is a real source of confusion given what we've been discussing — a **Databricks Job** (the Workflows/Jobs orchestration concept, with tasks, DAGs, and triggers we covered earlier) is a completely different, higher-level thing. One Databricks Job task running a notebook can itself trigger *many* Spark jobs internally — every `.show()`, `.count()`, or `.write()` call inside that notebook spins up its own Spark job under the hood. So:
+
+- **Spark job** = triggered by one action, Spark's own internal execution unit (job → stage → task)
+- **Databricks Job** = the orchestration/scheduling construct (a DAG of tasks — notebooks, SQL, pipelines — wired with `depends_on` and a trigger)
+
+A single Databricks Job task can contain dozens of Spark jobs; they're at entirely different layers of the stack.
+
 <https://blog.dataengineerthings.org/i-spent-8-hours-understanding-apache-sparks-memory-management-92b9e06d7e19>
 
 <https://luminousmen.substack.com/p/the-apache-spark-optimization-checklist>
