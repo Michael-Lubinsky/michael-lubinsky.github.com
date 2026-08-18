@@ -5,6 +5,8 @@
 
 <https://mmkuznecov.github.io/posts/>
 
+<https://www.mlvisualization.com/>
+
 <https://gyanendrachaubey.github.io/AI-Engineering-Notes/>
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
