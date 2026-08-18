@@ -1,5 +1,6 @@
 ## ML Links
 
+<https://github.com/agwr/learn-jax> JAX
 
 <https://arxiv.org/pdf/2604.00965> Understanding transformers
 
