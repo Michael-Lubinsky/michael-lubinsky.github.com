@@ -1,6 +1,8 @@
 ## Mac
 
 <https://habr.com/ru/companies/ringo_mdm/articles/1064572/> Mac console commands not available on Linux
+
+
 <https://github.com/open-saas-directory/awesome-native-macosx-apps>
 
 <https://nextpad.org/> NextPad++
@@ -13,7 +15,10 @@ caffeinate - prevents your MacBook from sleeping even with the lid closed
 <https://news.ycombinator.com/item?id=48896665>
 
 
-## Notebook
+https://pastfly.github.io/Selective-Remote/
+
+
+## Gemini Notebook
 <https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/>
 <https://news.ycombinator.com/item?id=48936451>
 https://notebooker.ai/
