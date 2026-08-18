@@ -1,3 +1,26 @@
+## Claude Agent SDK 
+ 
+
+1. **Overview** — <https://docs.claude.com/en/agent-sdk/overview> — explains the mental model (agent loop vs. chain-building) and when to use the Agent SDK vs. the plain Client SDK vs. Claude Code CLI vs. Managed Agents.
+2. **Quickstart** — <https://docs.claude.com/en/agent-sdk/quickstart> — walks you through building a bug-finding/fixing agent in ~10 minutes, in either language.
+3. **Language reference** :
+   - Python: <https://docs.claude.com/en/agent-sdk/python>
+   - TypeScript: <https://docs.claude.com/en/agent-sdk/typescript>
+4. **Example agents repo** — https://github.com/anthropics/claude-agent-sdk-demos — real working agents (email assistant, research agent, etc.) worth reading end-to-end once the basics click.
+5. **Docs index** — https://code.claude.com/docs/llms.txt — a flat list of every doc page, useful for finding the pages on hooks, subagents, MCP, permissions, and sessions once you know roughly what you're looking for.
+
+ 
+
+- The package was renamed from **Claude Code SDK** to **Claude Agent SDK**; if you find older blog posts or Stack Overflow answers, treat identifiers and import paths as potentially stale and cross-check against the docs above.
+- Python: `pip install claude-agent-sdk` (needs 3.10+). TypeScript: `npm install @anthropic-ai/claude-agent-sdk`.
+- Given you work in PySpark/Databricks day-to-day, the Python SDK reference is probably your natural entry point.
+- The core primitive is `query()` — an async generator that streams messages while Claude autonomously drives tool calls. Once that clicks, the rest (hooks, subagents, MCP servers, permission modes) are additive concepts layered on top.
+
+One caution on third-party guides: search results are currently full of blog content dated into mid/late 2026 describing rapid, ongoing changes (a June 2026 credit-metering change, a separate "Managed Agents" API, etc.). Some of these third-party summaries may be unreliable or promotional — I'd treat the official docs as ground truth and use blog posts only for supplementary walkthroughs.
+
+## There is  LangChain Expression Language (LCEL) . What is equivalent fot it in Claude Agentic SDK?
+
+
 Short answer: there isn't one. The Claude Agent SDK doesn't have an LCEL-style declarative pipe/composition DSL, and that's a deliberate design difference, not a missing feature.
 
 **Why the comparison doesn't map cleanly**
