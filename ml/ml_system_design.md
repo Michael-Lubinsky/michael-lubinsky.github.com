@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1069368/> MLOps
 
+<https://github.com/gurrakeller/AI-Infrastructure-Solutions-Architecture>
+
 Data Engineering for Large Models: Architecture, Algorithms & Projects  
 <https://datascale-ai.github.io/data_engineering_book/en/>
 
