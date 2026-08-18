@@ -400,6 +400,8 @@ This isn't a zero-sum game or a choice of one over the other. They solve differe
 
 ## Skills
 
+<https://arxiv.org/abs/2608.12610>
+
 <https://habr.com/ru/articles/1062626/>
 
 <https://github.com/mattpocock/skills>
