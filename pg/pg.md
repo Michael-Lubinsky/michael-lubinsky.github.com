@@ -26,13 +26,16 @@ How to Achieve Pruning When Querying by Non-Partitioned Columns
 
 
 ## Just Use Postgres
-<https://youjustneedpostgres.com/>
+<https://youjustneedpostgres.com/>  
+<https://ebellani.github.io/blog/2026/all-you-need-is-postgresql/> 
+<https://www.raphaelbauer.com/posts/postgresql-everything/>
+<https://postgresisenough.dev/> 
 <https://www.tigerdata.com/blog/its-2026-just-use-postgres>  
 <https://gist.github.com/cpursley/c8fb81fe8a7e5df038158bdfe0f06dbb> PG is enough  
-<https://www.manning.com/books/just-use-postgres> Book Just Use Postgres
-<https://www.youtube.com/watch?v=Z2U7UgiKK2o> 
+<https://www.manning.com/books/just-use-postgres> Book Just Use Postgres. 
+<https://www.youtube.com/watch?v=Z2U7UgiKK2o>   
 Очереди и кэш на Postgres — без Redis, RabbitMQ и Kafka  
-<https://www.youtube.com/watch?v=ytCoB20a4BQ> 
+<https://www.youtube.com/watch?v=ytCoB20a4BQ>   
 Postgres вместо Redis, Kafka и Elasticsearch: где предел
 
 <https://habr.com/ru/companies/otus/articles/941456/>  
