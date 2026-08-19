@@ -200,3 +200,146 @@ Use **hooks** to log every generated SQL statement and every BI-tool write befor
 - **Testing**: build a small eval set of paraphrased versions of your target questions ("bar chart of monthly txn counts by product, past quarter" etc.) and check both SQL correctness and chart output — this is the kind of thing worth versioning like code, since a system-prompt tweak can silently break table selection.
 
 Given your Databricks/Unity Catalog background, the schema-discovery layer is probably the piece worth building most carefully first — get `search_tables` solid and grounded in real UC comments/tags before worrying about the Tableau/Looker output layer, since a wrong table choice is a much worse failure mode than a slightly ugly chart.
+
+
+
+
+### LangGraph
+
+Same pipeline, but LangGraph forces you to make the state machine explicit instead of letting Claude's tool loop drive the sequencing implicitly. That's the main tradeoff, and for something like this — regulated data access, SQL execution, dashboard writes — the explicit-state version is often actually the better production shape, since you get deterministic gates you can't guarantee purely from a system prompt.
+
+## Why this task fits LangGraph well
+
+Your pipeline has exactly the shape LangGraph is designed for: distinct stages (discover → generate → validate → execute → visualize) where you want **conditional branching** (bad SQL → retry generation), **a human-in-the-loop checkpoint** before hitting production data or writing a dashboard, and **persistent state** across the whole flow instead of relying on the model to "remember" what it found in step 1 by the time it gets to step 4.
+
+## State schema
+
+```python
+from typing import TypedDict, Literal
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
+
+class AnalyticsState(TypedDict):
+    question: str
+    candidate_tables: list[dict]        # from schema search
+    sql: str
+    sql_validated: bool
+    validation_errors: list[str]
+    query_result: dict                   # rows/columns from execution
+    chart_spec: dict
+    dashboard_url: str | None
+    needs_human_approval: bool
+    retry_count: int
+```
+
+## Nodes
+
+Each stage from the Agent SDK version becomes an explicit node function:
+
+```python
+from langchain_anthropic import ChatAnthropic
+
+llm = ChatAnthropic(model="claude-sonnet-5")
+
+def discover_schema(state: AnalyticsState) -> dict:
+    # Calls your Unity Catalog / vector-index search tool
+    keywords = extract_keywords(state["question"])  # or an LLM call
+    candidates = search_tables_tool.invoke({"keywords": keywords})
+    return {"candidate_tables": candidates}
+
+def generate_sql(state: AnalyticsState) -> dict:
+    prompt = build_sql_prompt(state["question"], state["candidate_tables"])
+    response = llm.invoke(prompt)
+    return {"sql": extract_sql(response), "retry_count": state.get("retry_count", 0)}
+
+def validate_sql(state: AnalyticsState) -> dict:
+    # EXPLAIN against the warehouse, check columns exist, check row-scan cost
+    errors = run_explain_and_checks(state["sql"], state["candidate_tables"])
+    return {"sql_validated": len(errors) == 0, "validation_errors": errors}
+
+def execute_sql(state: AnalyticsState) -> dict:
+    result = readonly_db_tool.invoke({"sql": state["sql"]})
+    return {"query_result": result}
+
+def build_chart_spec(state: AnalyticsState) -> dict:
+    spec = derive_bar_chart_spec(state["query_result"])  # month x product, count + amount
+    return {"chart_spec": spec}
+
+def publish_dashboard(state: AnalyticsState) -> dict:
+    url = tableau_mcp_tool.invoke({"chart_spec": state["chart_spec"]})
+    return {"dashboard_url": url}
+```
+
+## Conditional edges — the part that's clunkier in the Agent SDK
+
+This is the actual value-add over the SDK approach: explicit routing logic instead of hoping the model retries correctly.
+
+```python
+def route_after_validation(state: AnalyticsState) -> Literal["execute_sql", "generate_sql", "human_review"]:
+    if state["sql_validated"]:
+        return "execute_sql"
+    if state["retry_count"] >= 2:
+        return "human_review"   # stop looping, escalate
+    return "generate_sql"       # retry with error feedback
+
+def route_after_discovery(state: AnalyticsState) -> Literal["generate_sql", "human_review"]:
+    if not state["candidate_tables"]:
+        return "human_review"   # no matching tables — don't guess
+    return "generate_sql"
+```
+
+## Human-in-the-loop before execution/publish
+
+This is the strongest argument for LangGraph on this exact use case — you can insert a **hard interrupt** before SQL runs against production or before a dashboard gets written, without relying on the model choosing to ask:
+
+```python
+graph = StateGraph(AnalyticsState)
+graph.add_node("discover_schema", discover_schema)
+graph.add_node("generate_sql", generate_sql)
+graph.add_node("validate_sql", validate_sql)
+graph.add_node("execute_sql", execute_sql)
+graph.add_node("build_chart_spec", build_chart_spec)
+graph.add_node("publish_dashboard", publish_dashboard)
+graph.add_node("human_review", human_review_node)
+
+graph.add_edge(START, "discover_schema")
+graph.add_conditional_edges("discover_schema", route_after_discovery)
+graph.add_edge("generate_sql", "validate_sql")
+graph.add_conditional_edges("validate_sql", route_after_validation)
+graph.add_edge("execute_sql", "build_chart_spec")
+graph.add_edge("build_chart_spec", "publish_dashboard")
+graph.add_edge("publish_dashboard", END)
+
+checkpointer = MemorySaver()
+app = graph.compile(checkpointer=checkpointer, interrupt_before=["execute_sql", "publish_dashboard"])
+```
+
+`interrupt_before` pauses the graph and persists state via the checkpointer — a human (or an approval service) reviews the generated SQL or the chart spec, then resumes with `app.invoke(None, config)`. This is genuinely harder to get right with the Agent SDK's model-driven loop, where "ask before running" is a prompt instruction rather than a structural guarantee.
+
+## Wiring in your tools (MCP + Databricks)
+
+LangGraph doesn't care where tools come from — you can bind the same Tableau/Looker MCP servers via `langchain-mcp-adapters`, or wrap Databricks SQL execution as a plain LangChain `Tool`:
+
+```python
+from langchain_mcp_adapters.client import MultiServerMCPClient
+
+mcp_client = MultiServerMCPClient({
+    "tableau": {"command": "npx", "args": ["-y", "@tableau/mcp-server@latest"],
+                "env": {"SERVER": "...", "SITE_NAME": "...", "PAT_NAME": "...", "PAT_VALUE": "..."}}
+})
+tableau_tools = await mcp_client.get_tools()
+```
+
+Then bind whichever tools a given node needs — schema search only in `discover_schema`, SQL execution only in `execute_sql` — rather than exposing the full toolset to the model at every step, which is itself a security/reliability win over a single flat tool list.
+
+## Net comparison for this specific pipeline
+
+| Concern | Agent SDK | LangGraph |
+|---|---|---|
+| Speed to first working version | Faster — model drives sequencing | More upfront graph/state design |
+| Guaranteed "ask before execute" | Relies on prompt discipline | Structural (`interrupt_before`) |
+| Retry-with-feedback on bad SQL | You'd hand-roll a loop check | Native conditional edge |
+| Multi-model routing (e.g. cheap model for keyword extraction, Claude for SQL) | Not really the model | Native |
+| Audit trail of state at each stage | Via hooks | Native (checkpointed state) |
+
+Given this pipeline touches production data and writes to a shared BI tool, the human-in-the-loop gate before `execute_sql` and `publish_dashboard` is worth the extra setup cost — that's the one piece I'd weight most heavily toward LangGraph here, more than the multi-model flexibility, since you're Claude-committed anyway.
