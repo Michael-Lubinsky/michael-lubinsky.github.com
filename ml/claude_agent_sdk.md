@@ -2,6 +2,8 @@
 
  <https://www.youtube.com/watch?v=58n-n-3oRic>
 
+ <https://codepointer.dev/p/the-architecture-of-multi-agent-systems>
+
 1. **Overview** — <https://docs.claude.com/en/agent-sdk/overview> — explains the mental model (agent loop vs. chain-building) and when to use the Agent SDK vs. the plain Client SDK vs. Claude Code CLI vs. Managed Agents.
 2. **Quickstart** — <https://docs.claude.com/en/agent-sdk/quickstart> — walks you through building a bug-finding/fixing agent in ~10 minutes, in either language.
 3. **Language reference** :
