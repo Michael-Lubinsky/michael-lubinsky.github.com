@@ -347,3 +347,84 @@ Then bind whichever tools a given node needs — schema search only in `discover
 | Audit trail of state at each stage | Via hooks | Native (checkpointed state) |
 
 Given this pipeline touches production data and writes to a shared BI tool, the human-in-the-loop gate before `execute_sql` and `publish_dashboard` is worth the extra setup cost — that's the one piece I'd weight most heavily toward LangGraph here, more than the multi-model flexibility, since you're Claude-committed anyway.
+
+
+Good questions — let's demystify MCP's actual runtime shape, since "server" here is a bit of a misnomer that trips people up.
+
+## What MCP actually is
+
+MCP (Model Context Protocol) is a **client-server protocol over JSON-RPC**, not a specific piece of infrastructure. An "MCP server" is just a process that speaks this protocol and exposes tools/resources; an "MCP client" (your Claude Agent SDK app, Claude Desktop, Claude Code) speaks to it and calls those tools on the model's behalf. Nothing about the protocol dictates where that process runs — that's an implementation choice per server.
+
+## Where does it "live"? Two transport modes
+
+**1. Local/stdio (most common for dev tools and DB access)**
+
+The MCP server is just a subprocess launched by your agent's host process, communicating over stdin/stdout. This is what you saw in the Tableau example:
+
+```json
+{
+  "mcpServers": {
+    "tableau": {
+      "command": "npx",
+      "args": ["-y", "@tableau/mcp-server@latest"],
+      "env": { "SERVER": "...", "PAT_VALUE": "..." }
+    }
+  }
+}
+```
+
+When your agent starts, it literally spawns `npx @tableau/mcp-server` as a child process on the **same machine** running your agent code. No network hop, no separate deployment — it lives and dies with your agent process. This is the default for database-connector-style MCP servers (Unity Catalog, Postgres, etc.) because it's simplest to run wherever your app already has network access to the DB.
+
+**2. Remote/HTTP+SSE (for hosted, multi-tenant services)**
+
+The MCP server runs as its own standalone service — a real deployment, with a URL your agent connects to over HTTPS. This is what Looker's managed MCP server and Google's "MCP Toolbox for Databases" are: Google hosts and operates the server, and your agent just points at an endpoint with OAuth. You don't run this yourself; the Looker-managed MCP server is a built-in integration that Google hosts, removing the need for you to deploy and maintain your own middleware infrastructure.
+
+So the answer to "where does it live" is genuinely **it depends on the server**: a DB-connector MCP server you'll almost always self-host (stdio, local process, or a small container in your own VPC next to the warehouse); a vendor's managed BI server (Looker's) lives on their infrastructure.
+
+## What language is it implemented in?
+
+The protocol is language-agnostic — the SDKs exist in Python, TypeScript, and others, and a server can be written in whatever's convenient since it just needs to implement JSON-RPC over the chosen transport. In practice:
+
+- **Tableau's official MCP server** ships as an npm package (`@tableau/mcp-server`) — TypeScript/Node.
+- Most community/reference MCP servers (Postgres, filesystem, GitHub) are also TypeScript, since Anthropic's reference SDK and most early tooling shipped Node-first — the Tableau-MCP example server referenced earlier is Python-based instead, built on the Python `mcp` SDK, so both ecosystems are common.
+- Anthropic publishes official MCP SDKs for **Python, TypeScript, Java, Kotlin, and C#** — so a server can genuinely be written in any of those with roughly equal support.
+
+For your own DB-connector server, language choice is really just "whatever your team is comfortable maintaining" — Python is the natural pick given your PySpark/Databricks stack, and there's no protocol penalty for that.
+
+## Where do DB credentials and schema info live?
+
+This is the part worth being deliberate about, because it's the actual security boundary of the whole pipeline.
+
+**Credentials**: They live with the **MCP server process**, never with the LLM or the agent's prompt context. Concretely:
+
+- **Local/stdio servers**: credentials are passed as environment variables or config at server-launch time (as in the Tableau JSON above — `PAT_VALUE` in `env`). The server process holds the live DB connection; the LLM only ever sees tool inputs/outputs, never the credential itself.
+- **Remote/managed servers**: credentials are configured server-side (e.g., a Looker service account registered with Google's managed server) or negotiated per-user via OAuth at connection time — again, the model never touches them directly.
+- **Best practice for your case**: use a **read-only service account/role** scoped narrowly (SELECT only, ideally scoped to the specific catalogs/schemas the agent needs), stored in a secrets manager (Databricks secret scopes, AWS Secrets Manager, Azure Key Vault) and injected into the MCP server's environment at deploy time — not hardcoded, not in the agent's system prompt, not in your repo.
+
+**Schema/metadata for table discovery**: This lives wherever you choose to index it — it's not part of the MCP protocol itself, it's just data your `search_tables` tool queries:
+
+- Simplest: query Unity Catalog's `information_schema` live, on each discovery call.
+- Better at scale: pre-build a small vector index (table/column names + descriptions/comments/tags) refreshed periodically, so discovery is a fast embedding search rather than hitting `information_schema` fresh each time. This index can live in whatever you already use for vector search (Databricks Vector Search, pgvector, etc.) — again, entirely separate from where MCP "lives."
+
+## Practical shape for your pipeline
+
+```
+Your VPC/network
+┌──────────────────────────────────────────────┐
+│  Agent host (your app, running Agent SDK)     │
+│    │ spawns (stdio) or calls (HTTP)            │
+│    ▼                                          │
+│  DB MCP server (Python, local process)        │
+│    - holds read-only Databricks/UC credential │
+│      pulled from secret scope at startup      │
+│    - queries information_schema / vector index│
+│    - executes SELECT-only SQL                 │
+└──────────────────────────────────────────────┘
+         │ (separate, outbound HTTPS)
+         ▼
+Tableau MCP server (Node, local or containerized)
+  - holds Tableau PAT from secrets manager
+  - calls Tableau REST API
+```
+
+The key architectural point: **credentials never pass through the LLM's context window.** The model only ever sees tool *names*, *schemas*, and *results* — the actual secret material stays inside the MCP server process boundary, which you control and can audit independently of what the model says or does.
