@@ -53,4 +53,33 @@ Whereas in a LangChain/LCEL world you'd typically hand-compose that same "look s
 
 If you actually want declarative graph-style orchestration on top of Claude (branching, cycles, explicit state), that's closer to what **LangGraph** (LangChain's graph framework) is for — you can point LangGraph at Claude via `langchain-anthropic` and get LCEL/graph-style composition while still using Claude as the model. The Agent SDK itself is intentionally more like "Claude Code as a library" than a chain-building framework.
 
-If you tell me what you're actually trying to build (e.g., a RAG pipeline, a multi-step data pipeline, a supervisor/worker setup), I can sketch how you'd structure it in the Agent SDK's idioms instead of LCEL's.
+Both frameworks solve agent-building, but they sit at different layers — one is an opinionated agent harness, the other is a low-level orchestration runtime. That distinction drives most of the decision.
+
+## Choose the Claude Agent SDK when...
+
+- **You're Claude-centric and want to ship fast.** It's the same tool-use loop, permission system, and context management that powers Claude Code, exposed as a library — you call `query()`, hand it tools, and Claude drives the sequencing itself rather than you wiring a graph. The Claude Agent SDK is the Claude Code engine packaged as a library: an opinionated, batteries-included harness where Anthropic owns the agent loop and you steer it.
+- **Your task is closer to "one capable worker" than a business process.** LangGraph wins when your system is closer to a durable business process with agentic components than to a single powerful worker.
+- **You want hierarchical delegation without building it yourself.** The June 2026 update makes the SDK the simplest way to build agents that spawn other agents — a planning agent that delegates to research, writing, and review subagents, with each subagent just another Agent object used as a tool.
+- **MCP integration and native tool use matter.** The Claude Agent SDK offers hierarchical subagents that spawn on-the-fly for complex sub-tasks, native computer use and vision, and native MCP protocol support built from the ground up.
+- **Simplicity beats maximum control.** Claude Agent SDK is simpler (roughly 50 lines vs. 400 for a comparable agent) but less flexible.
+
+## Choose LangGraph when...
+
+- **You need explicit, durable state and human-in-the-loop control.** LangGraph is a low-level orchestration runtime where you own the loop, the state schema, and every edge in the graph — and it works with any model provider. Use it when your workflow has multiple steps with conditional branching, requires persistent state across a long-running process, needs human-in-the-loop checkpoints, or involves a supervisor coordinating specialized subagents.
+- **You need model flexibility.** LangGraph works with any LLM provider — you can use Claude for reasoning, another model for classification, another for coding, another for multimodal work, routing between them within a single workflow.
+- **Behavior must be deterministic, not "probably."** If a rule needs to be enforced exactly — e.g. "always escalate on a critical finding" — rather than left to the model's judgment, that favors LangGraph's explicit graph control over the SDK's model-driven sequencing.
+- **You're not locked into Anthropic.** LangGraph, CrewAI, AG2, and similar frameworks cover the spectrum from minimal model-driven agents to complex stateful orchestration, backed by open-source ecosystems rather than a single model vendor.
+
+## The common pattern: use both, at different layers
+
+Several sources converge on the same hybrid architecture rather than treating this as either/or:
+
+The standard architecture uses LangGraph to define the graph structure — nodes, edges, state schema, checkpointing — while Claude is called via the Anthropic SDK or langchain-anthropic inside specific nodes where LLM reasoning is required. Many high-performing teams in 2026 use LangGraph as the top-level state orchestrator for business logic and human approval gates, while embedding Claude Agent SDK subagents inside individual graph nodes for specialized reasoning tasks.
+
+## Practical shortcut
+
+If you're committed to Claude: Claude Agent SDK first, and reach for LangGraph only if you need its multi-agent depth. If you're model-agnostic and want the strongest multi-agent orchestration: LangGraph.
+
+**A caveat on this whole space:** it's moving fast and full of SEO-driven comparison posts with specific numbers (star counts, token-cost figures, "50 lines vs 400") that I can't independently verify and that may be stale or promotional by the time you read them. For your actual decision — especially anything involving billing/credits, since Anthropic changed SDK metering mid-2026 — I'd verify current terms directly against docs.claude.com rather than trusting third-party blog figures.
+
+Given what you build day to day (Databricks pipelines, PySpark, data infra), if this were, say, a Claude-driven data-pipeline agent that needs to call your existing tools and doesn't require multi-vendor model routing or heavy human-approval checkpoints, the Agent SDK alone is probably the simpler starting point — you can always front it with LangGraph later if the orchestration needs grow.
