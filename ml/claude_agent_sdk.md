@@ -83,3 +83,120 @@ If you're committed to Claude: Claude Agent SDK first, and reach for LangGraph o
 **A caveat on this whole space:** it's moving fast and full of SEO-driven comparison posts with specific numbers (star counts, token-cost figures, "50 lines vs 400") that I can't independently verify and that may be stale or promotional by the time you read them. For your actual decision — especially anything involving billing/credits, since Anthropic changed SDK metering mid-2026 — I'd verify current terms directly against docs.claude.com rather than trusting third-party blog figures.
 
 Given what you build day to day (Databricks pipelines, PySpark, data infra), if this were, say, a Claude-driven data-pipeline agent that needs to call your existing tools and doesn't require multi-vendor model routing or heavy human-approval checkpoints, the Agent SDK alone is probably the simpler starting point — you can always front it with LangGraph later if the orchestration needs grow.
+
+
+Good news: this maps naturally onto the Agent SDK's tool-use loop, and there are now first-party MCP servers for exactly the pieces you'd otherwise have to build (schema discovery, Tableau, Looker). Here's a concrete design.
+
+## High-level architecture
+
+```
+User question
+     │
+     ▼
+┌─────────────────────────────────────────────┐
+│  Orchestrator agent (Claude Agent SDK)       │
+│  query() + system prompt + tool routing      │
+└─────────────────────────────────────────────┘
+     │           │              │             │
+     ▼           ▼              ▼             ▼
+ Schema/      SQL exec      Chart/dash     Validation
+ catalog      (read-only)   creation       & guardrail
+ lookup       tool          tool (MCP)     tools
+```
+
+Rather than one giant prompt, structure it as a **pipeline of specialized steps**, each with a narrow tool surface — this is the difference between an agent that occasionally hallucinates a table name and one that's reliable in production.
+
+## Step 1 — Schema/table discovery (semantic grounding)
+
+The hardest part of "find the right tables based on column descriptions" is that an LLM can't reliably search unindexed metadata by vibes. Two solid approaches, and you can combine them:
+
+**A. Metadata-as-a-tool (works well with your Unity Catalog stack)**
+Expose a tool like `search_catalog(query: str) -> list[TableCandidate]` backed by:
+- Unity Catalog's `information_schema` (table/column comments, tags)
+- A vector index over table + column descriptions (embed `catalog.schema.table.column: description` rows once, query at runtime) — this scales far better than dumping your whole schema into the prompt once you have hundreds of tables.
+
+**B. MCP-native database tools**
+There are now MCP servers purpose-built for this (e.g. Google's "MCP Toolbox for Databases," used by the Looker MCP integration) that expose schema introspection as first-class tools rather than you writing a custom one. Looker's MCP Toolbox for Databases uses the open MCP standard to connect AI agents, IDEs, and applications directly to enterprise databases. Databricks has an equivalent Unity Catalog MCP server exposing catalog/schema/table search as tools — worth checking Databricks' docs directly since this is evolving fast.
+
+Give the agent a tool contract like:
+
+```python
+@tool
+def search_tables(keywords: list[str]) -> list[dict]:
+    """Returns candidate tables with column names, types, and descriptions
+    matching the keywords, ranked by relevance."""
+```
+
+The agent calls this with terms extracted from the question ("transaction", "amount", "product", "date/month") before ever writing SQL.
+
+## Step 2 — SQL composition with guardrails
+
+Once candidate tables are identified, have the agent draft SQL — but constrain it hard:
+
+- **Read-only DB role.** The SQL execution tool should connect via a credential that can only `SELECT`. Never let the agent's DB connection have write/DDL permission — that's non-negotiable for a natural-language-driven pipeline.
+- **Dry-run/EXPLAIN first.** Run `EXPLAIN` (or a Databricks equivalent) before actual execution, and cap resulting row counts and query cost — protects you from a runaway aggregation on a huge fact table.
+- **Schema-verified generation.** Feed the agent only the *actual* discovered columns from step 1 back into its SQL-writing tool call — not columns it remembers/hallucinates. This is why discovery and SQL generation should be separate tool calls, not one blended step.
+
+Example shape for your specific question:
+
+```sql
+SELECT
+  date_trunc('month', t.transaction_date) AS month,
+  p.product_name,
+  COUNT(*) AS transaction_count,
+  SUM(t.amount) AS total_amount
+FROM catalog.sales.transactions t
+JOIN catalog.sales.products p ON t.product_id = p.product_id
+WHERE t.transaction_date >= add_months(current_date(), -3)
+GROUP BY 1, 2
+ORDER BY 1, 2
+```
+
+The agent should self-verify: check column existence against the discovered schema, check the WHERE clause matches "last 3 months" semantics you actually want (rolling 90 days vs. last 3 calendar months — worth disambiguating with the user or defaulting explicitly and stating the default in the response).
+
+## Step 3 — Chart/dashboard creation
+
+This is where you pick your BI tool's MCP server:
+
+- **Tableau**: Tableau ships an official MCP server ("Tableau's official MCP Server. Helping agents see and understand data"), with documented Claude client integration. It runs locally via `npx @tableau/mcp-server`, config'd with your server URL, site name, and a Personal Access Token.
+- **Looker**: Looker has a built-in, Google-managed MCP server that lets AI agents like Claude securely connect to a Looker instance and interact with business data and LookML models, removing the need to deploy your own middleware. Note it's in preview for Looker (Google Cloud core) and Looker (original) instances, with customer-hosted/on-prem instances not currently supported.
+
+Given your existing SQL result, the agent's job here is: call the BI tool's "create workbook/dashboard from data" tool (or push a query definition it understands, e.g. LookML explore or a Tableau extract), then request a bar chart with month on the x-axis, grouped/colored by product, dual-axis or two chart panels for count vs. total amount (mixing very different scales in one bar chart is usually a mistake worth catching before Claude blindly complies).
+
+If you don't want a live BI tool round-trip for every ad hoc question, a lighter alternative: have the agent render the chart itself as an artifact (e.g., using the Visualizer/chart module here, or a Python/Plotly script in your own pipeline) and only push to Tableau/Looker when the user says "save this as a dashboard." That two-tier design (fast inline chart, optional promote-to-BI-tool) avoids cluttering your Tableau site with one-off exploratory charts.
+
+## Step 4 — Orchestration in the Agent SDK
+
+Concretely, in Python:
+
+```python
+options = ClaudeAgentOptions(
+    system_prompt=(
+        "You are a data analytics agent. Always discover schema via "
+        "search_tables before writing SQL. Always run SQL through "
+        "execute_readonly_sql — never assume results. Confirm ambiguous "
+        "date ranges with the user before running expensive queries."
+    ),
+    mcp_servers={
+        "warehouse": {"command": "...", "args": [...]},   # your Unity Catalog / DB MCP
+        "tableau": {"command": "npx", "args": ["-y", "@tableau/mcp-server@latest"],
+                    "env": {"SERVER": "...", "SITE_NAME": "...", "PAT_NAME": "...", "PAT_VALUE": "..."}},
+    },
+    allowed_tools=["search_tables", "execute_readonly_sql", "tableau_create_view"],
+    permission_mode="acceptEdits",  # or a custom permission callback for the SQL execution step
+)
+
+async for message in query(prompt=user_question, options=options):
+    ...
+```
+
+Use **hooks** to log every generated SQL statement and every BI-tool write before execution — you want an audit trail for "what query did the agent actually run against production" independent of what it narrates back to the user.
+
+## Reliability considerations specific to this use case
+
+- **Ambiguity resolution**: "last 3 months" and "grouped by month and by product" is fairly well-specified, but real users will send vaguer asks. Have the agent state its interpretation (date range, aggregation grain) in its response rather than silently picking one — cheap insurance against wrong-answer-with-high-confidence.
+- **Column-name ambiguity across tables**: if you have multiple `amount` columns (gross vs. net, pre/post refund), schema descriptions need to disambiguate this at the metadata level, not leave it to the LLM to guess — this is really a data governance investment more than an agent-engineering one.
+- **Cost control**: cap query timeout and row scan limits at the DB role/session level, not just via prompt instruction — prompts are not a security boundary.
+- **Testing**: build a small eval set of paraphrased versions of your target questions ("bar chart of monthly txn counts by product, past quarter" etc.) and check both SQL correctness and chart output — this is the kind of thing worth versioning like code, since a system-prompt tweak can silently break table selection.
+
+Given your Databricks/Unity Catalog background, the schema-discovery layer is probably the piece worth building most carefully first — get `search_tables` solid and grounded in real UC comments/tags before worrying about the Tableau/Looker output layer, since a wrong table choice is a much worse failure mode than a slightly ugly chart.
