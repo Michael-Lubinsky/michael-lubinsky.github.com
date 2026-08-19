@@ -1,6 +1,46 @@
 ### AWS
+ 
 
-Athena, Glue, S3
+## Athena
+**Serverless, interactive SQL query engine** for data sitting directly in S3 — no loading, no infrastructure.
+- Runs on Presto/Trino under the hood; queries data in-place using schemas registered in the **Glue Data Catalog**.
+- Pay per TB scanned (or flat-rate with reserved capacity) — no cluster to provision or pay for when idle.
+- Best for: ad-hoc analytics, log analysis, querying data lakes without standing up a warehouse.
+- Cost/perf tip: partition your S3 data and use columnar formats (Parquet/ORC) — dramatically cuts bytes scanned and cost.
+
+## RDS (Relational Database Service)
+**Managed relational database service** — AWS handles provisioning, patching, backups, and failover for standard SQL engines.
+- Supported engines: PostgreSQL, MySQL, MariaDB, Oracle, SQL Server, and **Aurora** (AWS's own MySQL/Postgres-compatible engine with better performance/scaling).
+- Handles automated backups, Multi-AZ failover (synchronous standby in another AZ), read replicas for scaling reads, and automated patching.
+- **RDS vs. Aurora:** Aurora is AWS's proprietary storage engine (compatible with Postgres/MySQL wire protocol) — faster, auto-scaling storage, more expensive baseline, often the default recommendation now for new builds.
+- Given your background with PostgreSQL Flexible Server on Azure — RDS PostgreSQL is the direct AWS equivalent, same idea of managed Postgres with less manual ops.
+
+## Step Functions *(recap — see full comparison above)*
+Serverless orchestrator — coordinates multi-step workflows across AWS services (Lambda, Glue, ECS) using state machines defined in Amazon States Language, with built-in retry/error handling and a visual execution graph.
+
+## EventBridge *(recap)*
+Serverless event bus — routes events by content-based pattern matching to targets (Lambda, Step Functions, SQS, etc.); also handles scheduled/cron triggers (absorbed the old CloudWatch Events functionality).
+
+## CloudWatch *(recap)*
+Core monitoring/observability service — Metrics, Logs (+ Logs Insights for querying), Alarms (threshold or anomaly-based), and Dashboards across your AWS resources and custom app metrics.
+
+## EMR (Elastic MapReduce)
+**Managed big-data cluster service** — runs Spark, Hadoop, Hive, Presto, and other big-data frameworks on a cluster you provision (unlike Glue, which is fully serverless).
+- You choose instance types, cluster size, and can attach it to S3 (EMRFS) as the storage layer.
+- Offers far more configurability/tuning than Glue — custom bootstrap actions, specific Spark configs, long-running or transient clusters.
+- **EMR vs. Glue:** Glue = serverless, less config, pay-per-DPU-hour, good for straightforward ETL. EMR = you manage cluster lifecycle/sizing, more knobs to tune, better for heavy/custom big-data workloads or when you need full Hadoop-ecosystem tooling (Hive, HBase, Presto) beyond Spark alone.
+- **EMR vs. Databricks** (closer to your daily stack): Databricks is a more polished, managed Spark platform with notebooks, Delta Lake, Unity Catalog, and MLOps tooling built in; EMR is more raw/DIY — cheaper at the infra level but more operational overhead and fewer built-in collaboration/governance features.
+
+## ECS / EKS *(recap)*
+Both are container orchestrators. **ECS** is AWS's own simpler, proprietary orchestrator (Fargate for serverless, or EC2-backed) with tight AWS-native integration. **EKS** is managed **Kubernetes** — standard K8s API, more powerful/portable ecosystem, steeper learning curve.
+
+---
+
+**Quick mental map for your stack:** Athena/EMR sit near Glue (data processing/query layer), RDS is your transactional DB layer (parallel to your Postgres/DynamoDB work), Step Functions/EventBridge are the orchestration/event layer, CloudWatch is observability across all of it, and ECS/EKS are for running your own containerized services rather than data pipeline steps.
+
+Want a similar one-pager comparing these to their Azure counterparts (Synapse/Azure SQL/Data Factory/Event Grid/Monitor/AKS), since you work across both clouds?
+
+## Athena, Glue, S3
 <https://www.linkedin.com/posts/mentorsachin_interview-guides-on-athena-glue-and-s3-activity-7442872996987326464-2mgi>
 
 
