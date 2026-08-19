@@ -38,9 +38,121 @@ Both are container orchestrators. **ECS** is AWS's own simpler, proprietary orch
 
 **Quick mental map for your stack:** Athena/EMR sit near Glue (data processing/query layer), RDS is your transactional DB layer (parallel to your Postgres/DynamoDB work), Step Functions/EventBridge are the orchestration/event layer, CloudWatch is observability across all of it, and ECS/EKS are for running your own containerized services rather than data pipeline steps.
 
-Good catch — they overlap but serve different architectural roles. Here's how they relate:
+Here's a realistic pipeline that uses all three together — this is a very common real-world pattern, and a great one to bring up in an interview.
 
-## The Relationship
+## The Scenario
+A CSV file lands in S3 → this should trigger a Glue crawler to catalog it → then a Glue ETL job to clean/transform it → with the whole thing orchestrated and tracked by Step Functions, kicked off by EventBridge.
+
+## How the Three Pieces Connect
+
+```
+S3 upload → EventBridge (detects the event) → triggers Step Functions execution
+                                                          │
+                                    ┌─────────────────────┼─────────────────────┐
+                                    ▼                                           ▼
+                          Glue Crawler (catalog schema)          Glue ETL Job (transform data)
+                                    │                                           │
+                                    └─────────────► sequenced by Step Functions ◄┘
+```
+
+**Role of each service:**
+- **EventBridge** — the trigger/listener. Watches for the S3 "Object Created" event and fires when a new file lands.
+- **Step Functions** — the conductor. Defines the sequence: run crawler → wait for it to finish → run ETL job → handle success/failure.
+- **Glue** — the actual workers. The crawler infers schema and updates the Data Catalog; the ETL job does the real data transformation (Spark under the hood).
+
+## 1. EventBridge Rule (triggers Step Functions on S3 upload)
+
+```json
+{
+  "source": ["aws.s3"],
+  "detail-type": ["Object Created"],
+  "detail": {
+    "bucket": { "name": ["my-raw-data-bucket"] },
+    "object": { "key": [{ "prefix": "incoming/" }] }
+  }
+}
+```
+This rule matches any new object landing under `incoming/` in the bucket, and its target is set to the Step Functions state machine below.
+
+## 2. Step Functions State Machine (orchestrates Glue)
+
+```json
+{
+  "Comment": "Crawl then transform new S3 data",
+  "StartAt": "RunCrawler",
+  "States": {
+    "RunCrawler": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+      "Parameters": { "Name": "raw-data-crawler" },
+      "Next": "WaitForCrawler"
+    },
+    "WaitForCrawler": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "CheckCrawlerStatus"
+    },
+    "CheckCrawlerStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+      "Parameters": { "Name": "raw-data-crawler" },
+      "Next": "IsCrawlerDone",
+      "ResultPath": "$.crawlerStatus"
+    },
+    "IsCrawlerDone": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.crawlerStatus.Crawler.State",
+          "StringEquals": "READY",
+          "Next": "RunETLJob"
+        }
+      ],
+      "Default": "WaitForCrawler"
+    },
+    "RunETLJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::glue:startJobRun.sync",
+      "Parameters": { "JobName": "transform-raw-data" },
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "NotifyFailure"
+        }
+      ]
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-1:123456789012:pipeline-failures",
+        "Message": "Glue ETL job failed"
+      },
+      "End": true
+    },
+    "Success": {
+      "Type": "Succeed"
+    }
+  }
+}
+```
+
+**Notable details worth mentioning in an interview:**
+- `startJobRun.sync` is a **`.sync` service integration** — Step Functions natively waits for the Glue job to actually finish (success or failure) rather than just firing-and-forgetting, no manual polling needed.
+- The crawler doesn't support `.sync`, so the poll loop (`WaitForCrawler` → `CheckCrawlerStatus` → `IsCrawlerDone`) is a common manual pattern for services without native sync support.
+- `Catch` gives you built-in error handling — route failures to an SNS notification without writing custom retry/exception code.
+
+## Why This Combination Is a Good Pattern to Cite
+
+- **Decoupling**: EventBridge means the *producer* (whatever writes to S3) doesn't need to know anything about the pipeline that consumes it — you could add more consumers later without touching the upload process.
+- **No idle infrastructure**: everything here — EventBridge, Step Functions, Glue — is serverless. You only pay when a file actually lands and the pipeline runs.
+- **Visual debuggability**: Step Functions gives you a graph showing exactly which state ran, how long each took, and where it failed — much easier to debug than chained Lambda functions with custom orchestration logic.
+
+Want me to extend this into a version where a Databricks job (rather than Glue) is the transformation step — closer to your actual day-to-day stack?
+ 
+
+## Redshift vs Athena
 
 **Redshift** is a **managed data warehouse** — a persistent cluster with its own columnar storage, built for complex, high-performance analytics on data you've loaded *into* it.
 
