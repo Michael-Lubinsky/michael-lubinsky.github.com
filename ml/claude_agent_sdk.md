@@ -84,6 +84,10 @@ If you're committed to Claude: Claude Agent SDK first, and reach for LangGraph o
 
 Given what you build day to day (Databricks pipelines, PySpark, data infra), if this were, say, a Claude-driven data-pipeline agent that needs to call your existing tools and doesn't require multi-vendor model routing or heavy human-approval checkpoints, the Agent SDK alone is probably the simpler starting point — you can always front it with LangGraph later if the orchestration needs grow.
 
+## A gentic pipeline for analytics:
+human asks question :  create bar chart  with number of transaction and total amount grouped by month and by product  for last 3  months.  
+Agent should be able to connect to database,  find right database tables with relevant data based on columns names description, compose the SQL and create dashboard using some dashboard tool like Tableau or Looker.
+
 
 Good news: this maps naturally onto the Agent SDK's tool-use loop, and there are now first-party MCP servers for exactly the pieces you'd otherwise have to build (schema discovery, Tableau, Looker). Here's a concrete design.
 
