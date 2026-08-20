@@ -16,6 +16,8 @@
 
   <https://habr.com/ru/companies/sberbank/articles/941340/>
 
+  <https://habr.com/ru/companies/amvera/articles/931874/> MCP + LangGraph
+
 ## Agent Frameworks popularity
 
 LangChain itself remains the most starred framework overall, with extensive tooling for chains, agents, and retrieval. 
