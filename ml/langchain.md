@@ -12,7 +12,9 @@
 
 <https://habr.com/ru/search/?q=langGraph&target_type=posts&order=relevance>
 
-  LongSmith Studio: <https://docs.langchain.com/langsmith/studio>
+  LongSmith Studio: <https://docs.langchain.com/langsmith/studio> Studio
+
+  <https://habr.com/ru/companies/sberbank/articles/941340/>
 
 ## Agent Frameworks popularity
 
