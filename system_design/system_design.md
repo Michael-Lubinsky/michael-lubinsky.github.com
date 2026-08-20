@@ -10,6 +10,8 @@
 
 <https://www.youtube.com/watch?v=-gX31P91FIA> ru
 
+<https://dl.acm.org/doi/pdf/10.1145/3713082.3730397> Pub-Subscribe
+
 <https://en.wikipedia.org/wiki/Complex_event_processing> CEP complex event processing
 
 <https://habr.com/ru/articles/1052938/> создаем систему сокращения ссылок
