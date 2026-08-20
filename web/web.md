@@ -9,7 +9,12 @@
 
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
+## HTML 
 <https://habr.com/ru/companies/ruvds/articles/1045072/> HTML
+
+https://chrisburnell.com/html-can-do-that/
+
+<https://lobste.rs/s/5gcd3t/html_can_do>
 
 <https://habr.com/ru/companies/ruvds/articles/1048812/>  HTML instead JS
 
