@@ -6,9 +6,9 @@
 
 <https://habr.com/ru/search/?q=langGraph&target_type=posts&order=relevance>
 
- 
+  LongSmith Studio: <https://docs.langchain.com/langsmith/studio>
 
-## By raw GitHub stars
+## Agent Frameworks popularity
 
 LangChain itself remains the most starred framework overall, with extensive tooling for chains, agents, and retrieval. 
 
@@ -16,7 +16,7 @@ Other high-star names in that same ranking include AutoGen, MetaGPT, LlamaIndex,
 
 Separately, Microsoft AutoGen tops one survey at over 60,000 stars, though notably its development pace has slowed.
 
-## By actual production adoption (probably the more meaningful metric for you)
+## Popularity By actual production adoption (probably the more meaningful metric)
 
 This is where LangGraph pulls ahead of raw-star leaders: LangGraph leads in enterprise adoption with 34.5 million monthly downloads, even though Dify leads in raw GitHub stars at 144k. 
 
