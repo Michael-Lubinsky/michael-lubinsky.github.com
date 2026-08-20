@@ -35,6 +35,9 @@
 
 <https://github.com/manjunath5496/13-Best-Quantum-Field-Theory-Books-for-Beginners/tree/master>
 
+
+<https://www.youtube.com/watch?v=YFiQIZOM2fw> Particle Physics in 17 hours
+
 Ахмедов Э.Т. - Элементы КТП для математиков - 1.
 <https://www.youtube.com/watch?v=MqhnyTEaNZ8>
 
