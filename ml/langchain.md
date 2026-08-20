@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/companies/amvera/articles/933460/> Part 1
 
+<https://habr.com/ru/companies/amvera/articles/948000/> Part 2
+
 <https://habr.com/ru/companies/amvera/articles/949376/> Part 3
 
 <https://habr.com/ru/search/?q=langGraph&target_type=posts&order=relevance>
