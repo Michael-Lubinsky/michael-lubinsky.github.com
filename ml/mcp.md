@@ -10,6 +10,8 @@
 
 <https://habr.com/ru/articles/1069588/>
 
+<https://habr.com/ru/companies/amvera/articles/931874/>
+
 <https://www.youtube.com/watch?v=kIjt0Jt94nI&list=PLtPJ9lKvJ4ojl7flbGuiKDm30FPUjHDba> Протокол MCP 
 
 <https://inventwithpython.com/blog/basic-mcp-python-example.html>
