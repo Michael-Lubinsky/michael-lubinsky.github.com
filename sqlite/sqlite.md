@@ -2,7 +2,9 @@
 <https://sqlitebrowser.org/> <https://sqlitestudio.pl/> <https://menial.co.uk/base/>  
 <https://visualdb.com/sqlite/>   <https://github.com/Maxteabag/sqlit>
 
-###	Prefer strict tables in SQLite
+<https://joecode.com/2026-08-19-sqlite3/> Sqlite for everything
+
+###	Prefer STRICT tables in SQLite
 <https://evanhahn.com/prefer-strict-tables-in-sqlite/>
 <https://news.ycombinator.com/item?id=48873940>
 
