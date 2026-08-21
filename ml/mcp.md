@@ -4,6 +4,8 @@
 
 <https://realpython.com/python-mcp/>
 
+<https://realpython.com/python-news-august-2026/>
+
 <https://realpython.com/courses/connecting-llms-data-python-mcp-servers/>
 
 <https://modelcontextprotocol.io/>
