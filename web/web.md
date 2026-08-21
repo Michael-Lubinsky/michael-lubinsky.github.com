@@ -9,6 +9,9 @@
 
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
+### Bun - Node.js alternative written in Rust
+https://habr.com/ru/articles/1072980/
+
 ## HTML 
 <https://habr.com/ru/companies/ruvds/articles/1045072/> HTML
 
