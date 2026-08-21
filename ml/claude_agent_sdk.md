@@ -30,11 +30,12 @@ As the loop runs, the SDK yields a stream of messages. Each message carries a ty
 4) ResultMessage: marks the end of the agent loop. Contains the final text result, token usage, cost, and session ID. Check the subtype field to determine whether the task succeeded or hit a limit. A small number of trailing system events, such as prompt_suggestion, can arrive after it, so iterate the stream to completion rather than breaking on the result. See Handle the result.
 
 5)  SystemMessage: session lifecycle events. The subtype field distinguishes them:
+```   
 •⁠  ⁠- "init": session metadata for the run. When a SessionStart or Setup hook runs during session startup, its hook lifecycle messages arrive before the init message
 •⁠  ⁠- "compact_boundary": fires after compaction
 •⁠  ⁠- "informational": plain-text status banners from the loop
 •⁠  ⁠- "worker_shutting_down": the loop will end after the current turn because the host is exiting or Remote Control disconnected
-
+```
 How to check message type in Python: 
 check message types with isinstance() against classes imported from claude_agent_sdk 
 (for example,
