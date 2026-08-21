@@ -42,6 +42,33 @@ The smallest unit — one task per partition, per stage. If a stage's input has 
 
 The **Spark UI** ("Jobs" tab) shows exactly this breakdown — every job listed with its stages, and drilling into a stage shows individual tasks, their duration, shuffle read/write size, and any skew. This is the primary tool for debugging performance problems (a job with one enormous task = data skew; a job stuck at 99% = a straggler task).
 
+
+ ## Performance with  Spark UI.
+ 4-step process.
+
+Step 1 — Open the Spark UI, not the code 
+→ Which stage is taking the longest? Click it. 
+→ Is there task skew? One task 10× longer than others = skew. 
+→ Shuffle read/write size — anything over 200GB is a red flag. 
+→ Spill to disk? Spill kills performance silently and shows up nowhere obvious.
+
+Step 2 — Read the query plan 
+→ df.explain(True) — read it bottom to top. 
+→ BroadcastNestedLoopJoin = Cartesian product. Almost always a bug, never intentional. 
+→ Count Exchange nodes — each one is a full shuffle crossing the network. 
+→ Is column pruning working? Are unused columns getting dropped early?
+
+Step 3 — Profile the data 
+→ Partition count and size distribution — 10MB and 10GB partitions in the same job = skew. 
+→ Nulls in the join key? All nulls land in one partition. That one task will never finish. 
+→ Is Dynamic Partition Pruning actually firing? Verify with EXPLAIN — it's often assumed, rarely confirmed.
+
+Step 4 — Check the basics (always) 
+→ Join key data types matching? String joining int = silent shuffle explosion. 
+→ AQE enabled? spark.sql.adaptive.enabled = true fixes skew automatically at runtime. 
+→ shuffle.partitions still at 200? Wrong at any real scale. Tune it. 
+→ On Databricks? Is Photon enabled? 2–3× speedup on SQL and ETL, and it's off by default on older clusters.
+
 ## Important distinction: Spark job ≠ Databricks Job
 
 This is a real source of confusion given what we've been discussing — a **Databricks Job** (the Workflows/Jobs orchestration concept, with tasks, DAGs, and triggers we covered earlier) is a completely different, higher-level thing. One Databricks Job task running a notebook can itself trigger *many* Spark jobs internally — every `.show()`, `.count()`, or `.write()` call inside that notebook spins up its own Spark job under the hood. So:
