@@ -24,6 +24,8 @@ https://habr.com/ru/articles/1060786/ Graph Drawing
 
 <https://habr.com/ru/companies/yandex/articles/1046483/>
 
+<https://github.com/arun1729/cog> Graph DB for Python
+
 ### LadyBugDB
 <https://ladybugdb.com/> Graph DB 
 <https://github.com/LadybugDB/ladybug>
