@@ -12,6 +12,9 @@
 4. **Example agents repo** — https://github.com/anthropics/claude-agent-sdk-demos — real working agents (email assistant, research agent, etc.) worth reading end-to-end once the basics click.
 5. **Docs index** — https://code.claude.com/docs/llms.txt — a flat list of every doc page, useful for finding the pages on hooks, subagents, MCP, permissions, and sessions once you know roughly what you're looking for.
 
+
+<https://platform.claude.com/cookbook/patterns-agents-basic-workflows>
+
  From here:
 <https://code.claude.com/docs/en/agent-sdk/agent-loop>
 
