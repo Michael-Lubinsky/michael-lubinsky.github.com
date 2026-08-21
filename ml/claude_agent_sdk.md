@@ -12,7 +12,33 @@
 4. **Example agents repo** — https://github.com/anthropics/claude-agent-sdk-demos — real working agents (email assistant, research agent, etc.) worth reading end-to-end once the basics click.
 5. **Docs index** — https://code.claude.com/docs/llms.txt — a flat list of every doc page, useful for finding the pages on hooks, subagents, MCP, permissions, and sessions once you know roughly what you're looking for.
 
- 
+ From here:
+<https://code.claude.com/docs/en/agent-sdk/agent-loop>
+
+Claude Agentic SDK: in accepts single query.
+It is different from LangGraph where steps  should be explicitly defined.
+Claude SDK runs the same execution loop that powers Claude Code: Claude evaluates your prompt, calls tools to take action, receives the results, and repeats until the task is complete. 
+
+As the loop runs, the SDK yields a stream of messages. Each message carries a type that tells you what stage of the loop it came from. The five core types are:
+
+1) AssistantMessage: emitted after each Claude response, including the final text-only one. Contains text content blocks and tool call blocks from that turn.
+
+2) UserMessage: emitted after each tool execution with the tool result content sent back to Claude. Also emitted for any user inputs you stream mid-loop.
+
+3) StreamEvent: only emitted when partial messages are enabled. Contains raw API streaming events (text deltas, tool input chunks). See Stream responses.
+
+4) ResultMessage: marks the end of the agent loop. Contains the final text result, token usage, cost, and session ID. Check the subtype field to determine whether the task succeeded or hit a limit. A small number of trailing system events, such as prompt_suggestion, can arrive after it, so iterate the stream to completion rather than breaking on the result. See Handle the result.
+
+5)  SystemMessage: session lifecycle events. The subtype field distinguishes them:
+•⁠  ⁠- "init": session metadata for the run. When a SessionStart or Setup hook runs during session startup, its hook lifecycle messages arrive before the init message
+•⁠  ⁠- "compact_boundary": fires after compaction
+•⁠  ⁠- "informational": plain-text status banners from the loop
+•⁠  ⁠- "worker_shutting_down": the loop will end after the current turn because the host is exiting or Remote Control disconnected
+
+How to check message type in Python: 
+check message types with isinstance() against classes imported from claude_agent_sdk 
+(for example,
+ isinstance(message, ResultMessage)).
 
 - The package was renamed from **Claude Code SDK** to **Claude Agent SDK**; if you find older blog posts or Stack Overflow answers, treat identifiers and import paths as potentially stale and cross-check against the docs above.
 - Python: `pip install claude-agent-sdk` (needs 3.10+). TypeScript: `npm install @anthropic-ai/claude-agent-sdk`.
