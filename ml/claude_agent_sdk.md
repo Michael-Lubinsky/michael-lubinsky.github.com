@@ -51,6 +51,9 @@ check message types with isinstance() against classes imported from claude_agent
 
 One caution on third-party guides: search results are currently full of blog content dated into mid/late 2026 describing rapid, ongoing changes (a June 2026 credit-metering change, a separate "Managed Agents" API, etc.). Some of these third-party summaries may be unreliable or promotional — I'd treat the official docs as ground truth and use blog posts only for supplementary walkthroughs.
 
+CrewAI
+<https://realpython.com/crewai-python/>
+
 ## There is  LangChain Expression Language (LCEL) . What is equivalent fot it in Claude Agentic SDK?
 
 
