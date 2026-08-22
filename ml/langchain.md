@@ -1,5 +1,19 @@
 ## LangChain LangGraph
 
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+llm = ChatOpenAI(model="gpt-4o-mini")
+prompt = ChatPromptTemplate.from_messages([
+("system", "You are concise."),
+("human", "{question}")
+])
+chain = prompt | llm | StrOutputParser() # This is our chain
+print(chain.invoke({"question": "Give me 3 focus tips."})) # making a single
+qs = [{"question": q} for q in ["One tactic for RAG?", "Explain LCEL in 1 line."
+print(chain.batch(qs))
+```
 ### How pipe operator works 
 `|` isn't special syntax Python reserves for pipelines.   
 It's the **bitwise OR operator**, and Python lets any class override what it does via operator overloading.
