@@ -56,4 +56,33 @@ LangChain/LangGraph - the explicit state machine, model-agnostic flexibility, an
 
 **CrewAI** and **AutoGen** are the other Python-native names worth knowing exist, but they solve a different problem (role-based multi-agent crews) than what your dashboard pipeline needs.
 
+Based on current sources, here's how these frameworks map to use cases as of mid-2026:
 
+| Use case | Best fit | Why |
+|---|---|---|
+| **Production system needing durable state, checkpointing, human approval gates** | **LangGraph** | LangGraph wins on production readiness — the combination of durable execution, built-in checkpointing, enterprise-grade observability through LangSmith, and first-class human-in-the-loop support puts it ahead of the other frameworks. |
+| **Fast prototyping, team new to agents, want something working same-day** | **CrewAI** | CrewAI has the best tutorials and getting-started experience — you can follow their quickstart and have something working in 30 minutes. CrewAI typically takes 30–60 lines of code to a first working agent, versus 80–150 for LangGraph. |
+| **Role-based collaboration (researcher/writer/reviewer style teams)** | **CrewAI** | CrewAI's intuitive "roles + tasks" paradigm is ideal for sequential workflows, and it handles sequential and hierarchical flows out of the box, though complex branching needs workarounds. |
+| **Agents that negotiate, critique, or iteratively refine each other's output** | **AG2** (AutoGen successor) | AutoGen/AG2 is best for multi-agent conversation loops — scenarios where agents negotiate, critique, or iteratively refine each other's outputs, like a Coder agent writing and a Reviewer agent pushing back until both agree. Note Microsoft merged original AutoGen with Semantic Kernel into the Microsoft Agent Framework in April 2026 and AutoGen is now in maintenance mode, so **AG2 specifically** (the community fork) is the actively developed line — AG2 introduced event-driven architecture and async message passing as the community-driven successor. |
+| **Widest external tool/interoperability coverage (MCP + cross-vendor agents)** | **CrewAI** | CrewAI added native A2A (Agent-to-Agent) protocol support, plugging into the broadest ecosystem of external tools with the least custom code — LangGraph has only basic A2A support through partner integrations, and OpenAI Agents SDK's A2A integration is limited. |
+| **Single agent, one or two tools, ship fast, already committed to one model vendor** | **OpenAI Agents SDK** *or* **Claude Agent SDK** | For a single agent that calls one or two tools, the OpenAI Agents SDK or Anthropic Claude Agent SDK is often a faster path in 2026 — both trade fine-grained orchestration control for simplicity, similar to AWS's Strands Agents, while OpenAI's SDK splits the difference with its handoff model. |
+| **Deep code-generation/execution loops** | **AutoGen/AG2** | AutoGen excels when agents need to write and execute code. |
+| **Type-safety-first development** | **PydanticAI** | PydanticAI is worth evaluating if you're a type-safety purist who wants Pydantic models governing every agent interaction. |
+| **Already deep in Google Cloud stack** | **Google ADK** | Google ADK makes sense for teams already deep in the Google ecosystem. |
+| **Validate architecture cheaply, then harden for production** | **CrewAI → LangGraph** | A legitimate strategy: start with CrewAI to validate your agent architecture quickly — does the workflow make sense, do the agents produce useful outputs — then migrate production-critical paths to LangGraph for checkpointing, error recovery, and observability. CrewAI's own documentation acknowledges this migration path. |
+
+## A few numbers to treat cautiously
+
+Some sources cite specific benchmark figures — e.g. LangGraph scoring 87% on task success rate benchmarks versus CrewAI's 82% with 1.8s average latency — but these come from a single vendor-adjacent blog rather than an independent, reproducible benchmark, so I'd treat them as directional, not authoritative.
+
+## Version/status notes worth knowing before you commit
+
+- LangGraph never required LangChain, and since v1.0 (October 2025, now at 1.2) the package is fully standalone — you can use any LLM directly without LangChain abstractions.
+- CrewAI passed 1.0 and is now at stable branch 1.15.x, handling persistence, partial streaming, and better error recovery than earlier versions.
+- CrewAI reached v1.14 with A2A protocol support and enterprise features; AG2 emerged as AutoGen's community-driven successor with event-driven architecture.
+- AutoGen's documentation is currently the weakest of the major frameworks because it's in transition from the Microsoft AutoGen branding to the AG2 fork — some docs still point to the old version. If you evaluate AG2, expect some doc friction from that split.
+
+## For your situation specifically
+
+Given the Databricks/analytics-dashboard pipeline we designed earlier — durable state, an explicit human-approval gate before SQL execution and dashboard publish — that's squarely LangGraph's use case per this table, not CrewAI's or AG2's. If you ever build something more exploratory first (e.g., prototyping whether a multi-table-join approach even makes sense before hardening it), CrewAI's fast-iteration model is worth it for that throwaway phase, per the "validate cheap, then migrate" pattern above.
+ 
