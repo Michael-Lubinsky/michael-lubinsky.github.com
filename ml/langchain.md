@@ -42,15 +42,19 @@ Its comparison set is really "Claude-committed teams choosing SDK vs. LangGraph 
 ## The category split (this is the more useful lens than a single ranking)
 
 By 2026 the space has fragmented into distinct lanes rather than one leaderboard:
+```
 - general-purpose orchestration (LangChain/LangGraph, AutoGen),
 - coding agents,
 - browser/voice automation,
-- and visual workflow builders
+- visual workflow builders
+```
+are now separate categories with different leaders.   
+Python remains dominant overall,   
+while TypeScript has captured the visual-workflow and IDE-extension corners:   
+n8n, Flowise, Cline, Vercel AI SDK, Mastra.
 
-are now separate categories with different leaders. P
-ython remains dominant overall,   
-while TypeScript has captured the visual-workflow and IDE-extension corners — n8n, Flowise, Cline, Vercel AI SDK, Mastra.   
 Notably, the **Vercel** AI SDK isn't a traditional agent framework like LangGraph or **CrewAI** but is the most-downloaded TypeScript AI toolkit by a wide margin, at roughly 2.8 million weekly npm downloads.   
+
 And TypeScript-native entrants like **Mastra** have crossed roughly 21,000 GitHub stars with enterprise adopters including Marsh McLennan and SoftBank.
 
 LangChain/LangGraph - the explicit state machine, model-agnostic flexibility, and the human-in-the-loop gates  
