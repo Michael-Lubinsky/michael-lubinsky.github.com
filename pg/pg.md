@@ -9,6 +9,7 @@
 
 <https://habr.com/ru/companies/k2tech/articles/1064474/>
 
+<https://blog.jakesaunders.dev/schemaless-search-in-postgres/>
 
 <https://pgext.cloud/>  PG extenstions catalog
 
