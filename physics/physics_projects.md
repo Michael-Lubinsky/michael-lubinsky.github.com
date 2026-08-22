@@ -1,6 +1,31 @@
 ## Physics projects
 
+Solid-state and quantum mechanics have a strong open-source ecosystem, split roughly into three tiers: quantum dynamics/many-body toolboxes, electronic-structure/DFT codes, and solid-state-specific tight-binding/transport tools. Here's a curated list by area:
 
+## Quantum Mechanics — dynamics & many-body simulation
+- **[QuTiP](https://github.com/qutip/qutip)** — the standard Python toolbox for open quantum systems (master equations, Lindblad dynamics, quantum optics). Very active, well-organized C-extension + Cython + Python codebase, good `good-first-issue` labeling, and a clean contributor pipeline. Given your Python/PySpark background this is probably the most approachable entry point.
+- **[QuantumOptics.jl](https://github.com/qojulia/QuantumOptics.jl)** — same problem space as QuTiP but in Julia, if you want to branch into Julia.
+- **[NetKet](https://github.com/netket/netket)** — neural-network quantum states for many-body problems (JAX-based). Great if you want to combine ML infra experience with physics.
+- **[ITensor](https://github.com/ITensor/ITensor)** — tensor network / DMRG library (C++/Julia), foundational for simulating entangled many-body systems.
+
+## Solid State Physics — electronic structure / DFT
+These are bigger, more established codebases (often Fortran/C++ cores with Python wrappers) — good if you want deep numerical/HPC work:
+- **[Quantum ESPRESSO](https://gitlab.com/QEF/q-e)** — one of the most widely used plane-wave DFT codes, GPL, active GitLab community.
+- **[GPAW](https://gitlab.com/gpaw/gpaw)** — Python-based (with C extensions) DFT using projector-augmented wave method — much more approachable for a Python-first contributor than QE.
+- **[ABINIT](https://github.com/abinit/abinit)** — plane-wave DFT, strong solid-state/materials focus.
+- **[DFTB+](https://github.com/dftbplus/dftbplus)** — fast approximate DFT (tight-binding based), actively developed, good docs for new contributors.
+- **[ASE (Atomic Simulation Environment)](https://gitlab.com/ase/ase)** — pure Python glue library that wraps most of the above; excellent low-friction entry point since it's Python-only and has clear issue triage.
+
+## Solid State — tight-binding & transport (closest to "QM + solid state" intersection)
+- **[Kwant](https://gitlab.kwant-project.org/kwant/kwant)** — Python package for quantum transport simulations (mesoscopic physics, topological insulators). Python + some Cython, well-suited to your stack, and a well-scoped codebase (much smaller than QE/ABINIT) — good balance of "real physics" and "achievable to actually understand and contribute to."
+- **[PythTB](https://www.physics.rutgers.edu/pythtb/)** — tight-binding models in Python, smaller/simpler, good for band-structure and topological-invariant calculations.
+- **[PyBinding](https://github.com/dean0x7d/pybinding)** — tight-binding package for solid-state physics (Python + C++ core), actively used for graphene/2D materials research.
+
+## Where I'd point you specifically
+
+Given you're already building your own educational QM simulator (targeting JOSS) in Python, **QuTiP** and **Kwant** are the best fits: both are Python-centric, both have real solid-state/QM physics content, both have active maintainers who review PRs from newcomers, and contributing to them would also expose you to design patterns and physics-software conventions directly useful for your own project — e.g. QuTiP's approach to documenting quantum-state objects and Kwant's handling of numerical edge cases in the same domain you're already working in.
+
+A practical next step for either: browse their GitHub issue trackers for `good first issue` / `help wanted` labels, and check their `CONTRIBUTING.md` for how they want PRs structured (both have active Gitter/Zulip/discussion channels for new-contributor questions).
 
 ## Part 1 — Solo Project Ideas (High Value)
 
