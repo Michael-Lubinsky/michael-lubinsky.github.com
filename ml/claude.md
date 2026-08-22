@@ -3,6 +3,27 @@
 
 <https://habr.com/ru/articles/1063240/>
 
+<https://habr.com/ru/articles/1073304/>
+
+## claude -p
+
+`-p` (short for `--print`) puts Claude Code into **non-interactive "print" mode**. Instead of opening the normal chat REPL, it:
+
+- Runs a single prompt/query
+- Runs a single query and outputs results directly to the terminal without the interactive chat interface
+- Exits after printing the result (no ongoing session)
+
+So `claude -p "some prompt"` is the pattern used for scripting, CI/CD pipelines, and automation — stdin is read too, so `cat build-error.txt | claude -p 'explain the root cause' > out.txt` works like any Unix pipe tool.
+
+Useful companion flags:
+- `--output-format json` / `stream-json` — structured output instead of plain text, handy for parsing in scripts
+- `--max-turns` — caps how many agentic turns it takes before stopping
+- `--allowedTools` / `--permission-mode` — control what it's allowed to do without prompting interactively
+
+Bare `claude` (no `-p`) drops you into the interactive terminal UI; `claude -p "..."` is the one-shot, script-friendly version.
+
+--dangerously-skip-permissions
+
 <https://www.augusteo.com/blog/claude-code-plugin-stack>
 
 <https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices#use-examples-effectively>
