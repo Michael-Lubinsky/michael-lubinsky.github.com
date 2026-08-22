@@ -6,6 +6,8 @@
 
 <https://github.com/liquidslr/system-design-notes>
 
+<https://github.com/bregman-arie/devops-exercises>
+
 <https://habr.com/ru/articles/1068382/>
 
 <https://www.youtube.com/watch?v=-gX31P91FIA> ru
