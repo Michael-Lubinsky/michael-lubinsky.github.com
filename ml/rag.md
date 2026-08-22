@@ -4,6 +4,7 @@
 
 <https://habr.com/ru/companies/m2tech/articles/1070598/>
 
+<https://habr.com/ru/companies/selectel/articles/1068542/>
 
 
 <https://habr.com/ru/companies/magnus-tech/articles/1046702/>
