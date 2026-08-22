@@ -23,6 +23,7 @@
 LangChain itself remains the most starred framework overall, with extensive tooling for chains, agents, and retrieval. 
 
 Other high-star names in that same ranking include AutoGen, MetaGPT, LlamaIndex, and CrewAI. 
+<https://realpython.com/crewai-python/>
 
 Separately, Microsoft AutoGen tops one survey at over 60,000 stars, though notably its development pace has slowed.
 
