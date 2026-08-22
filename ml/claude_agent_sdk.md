@@ -15,6 +15,8 @@
 
 <https://platform.claude.com/cookbook/patterns-agents-basic-workflows>
 
+<https://realpython.com/claude-api-python/>
+
  From here:
 <https://code.claude.com/docs/en/agent-sdk/agent-loop>
 
