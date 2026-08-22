@@ -1,5 +1,59 @@
 ## LangChain LangGraph
 
+### How pipe operator works 
+`|` isn't special syntax Python reserves for pipelines.   
+It's the **bitwise OR operator**, and Python lets any class override what it does via operator overloading.
+
+**The mechanism: dunder methods**
+
+When Python sees `a | b`, it doesn't hardcode "bitwise or" — it looks for a method:
+
+```python
+a | b  
+# is really sugar for:
+a.__or__(b)
+# or, if that returns NotImplemented, Python tries:
+b.__ror__(a)
+```
+
+Any class can define `__or__` to do whatever it wants. LangChain's `Runnable` base class does exactly this.
+
+**What LangChain actually does**
+
+Every LCEL component (prompts, models, parsers, retrievers, etc.) inherits from `Runnable`, which defines something like:
+
+```python
+class Runnable:
+    def __or__(self, other):
+        return RunnableSequence(self, other)
+
+    def __ror__(self, other):
+        return RunnableSequence(other, self)
+```
+
+So when you write:
+
+```python
+chain = prompt | model | output_parser
+```
+
+Python evaluates it left to right:
+1. `prompt | model` → calls `prompt.__or__(model)` → returns a `RunnableSequence(prompt, model)`
+2. `(that sequence) | output_parser` → calls `__or__` again → returns `RunnableSequence(prompt, model, output_parser)`
+
+The result is a single new `Runnable` object that, when invoked, calls each step in order, passing each step's output as the next step's input — basically composing functions, but wrapped in an object with `.invoke()`, `.stream()`, `.batch()`, etc.
+
+**Why `__ror__` matters too**
+
+It handles cases where the left operand isn't a `Runnable` — e.g. a plain function or dict:
+
+```python
+chain = {"context": retriever, "question": RunnablePassthrough()} | prompt | model
+```
+
+Here the dict doesn't know about `__or__`, so Python falls back to `prompt.__ror__(dict)` (LangChain also auto-wraps dicts/functions into `RunnableParallel`/`RunnableLambda` under the hood).
+
+**In short:** `|` is just Python's OR operator, repurposed by operator overloading. LangChain isn't changing Python syntax — it's exploiting a general Python feature (any object can define how it responds to `+`, `|`, `==`, etc.) to make chain-building read like Unix pipes.
 <https://habr.com/ru/articles/1068168/>
 
 <https://habr.com/ru/articles/956940/>
