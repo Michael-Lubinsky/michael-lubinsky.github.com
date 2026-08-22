@@ -25,6 +25,9 @@ https://chrisburnell.com/html-can-do-that/
 
 <https://habr.com/ru/articles/1027304/> Server site rendering, no JavaScript
 
+<https://htmlcat.net/>
+<https://news.ycombinator.com/item?id=49385860> Small Web Tricks
+
 <https://habr.com/ru/articles/1015134/> Web JS API
 
 <https://habr.com/ru/articles/1040752/>  Работа с большими файлами в браузере. Часть 2
