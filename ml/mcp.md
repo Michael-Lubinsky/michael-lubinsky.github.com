@@ -1,5 +1,21 @@
 ## MCP
 
+#### https://habr.com/ru/articles/1042470/
+FastMCP line: 
+mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
+
+### Подключение в Claude
+В Claude (claude.ai или Claude Desktop): Settings → Connectors → Add custom connector → имя и URL https://mcp.zinin-shturbin.com/mcp. Авторизация тут лишняя (данные публичные, чтение) — подключается одним движением.
+
+#### Test MCP server
+```
+curl -sD - -X POST https://mcp.zinin-shturbin.com/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize",
+       "params":{"protocolVersion":"2024-11-05","capabilities":{},
+                 "clientInfo":{"name":"curl","version":"1"}}}'
+```
 <https://habr.com/ru/companies/amvera/articles/931874/>
 ```python
 from fastmcp import FastMCP
