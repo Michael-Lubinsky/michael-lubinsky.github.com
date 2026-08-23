@@ -1,5 +1,23 @@
 ## MCP
 
+<https://habr.com/ru/articles/1044024/>
+
+.mcp.json — это файл конфигурации в корне проекта. В нём ты описываешь какие серверы запускать и с какими параметрами. Claude Code читает этот файл при старте и поднимает все серверы автоматически.
+Выглядит это примерно так:
+```json
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "python",
+      "args": ["/path/to/telegram-mcp/main.py"],
+      "env": {
+        "SESSION_STRING": "your_session_here"
+      }
+    }
+  }
+}
+```
+
 #### https://habr.com/ru/articles/1042470/
 FastMCP line: 
 mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
