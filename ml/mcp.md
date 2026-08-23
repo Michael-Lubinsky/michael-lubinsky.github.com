@@ -1,5 +1,7 @@
 ## MCP
 
+<https://habr.com/ru/companies/amvera/articles/931874/>
+
 <https://habr.com/ru/companies/avito/articles/1056028/>
 
 <https://realpython.com/python-mcp/>
