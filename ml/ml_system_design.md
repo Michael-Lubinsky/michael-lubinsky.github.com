@@ -101,6 +101,8 @@ https://stasosphere.com/machine-learning/
 
 ## Inference
 
+<https://habr.com/ru/articles/1069746/>
+
 <https://habr.com/ru/companies/raft/articles/1056460/>
 
 <https://news.ycombinator.com/item?id=47355410>  
