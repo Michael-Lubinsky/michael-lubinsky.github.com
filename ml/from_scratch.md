@@ -2,6 +2,8 @@
 
 <https://languagemodelbuilder.com/>
 
+<https://www.youtube.com/playlist?list=PLO45-80-XKkQyROXXpn4PfjF1J2tH46w8> MinoTorch
+
 coding a machine learning library in c from scratch
 <https://www.youtube.com/watch?v=hL_n_GljC0I>
 
