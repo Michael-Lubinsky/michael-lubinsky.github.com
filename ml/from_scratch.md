@@ -1,5 +1,7 @@
 ## Build From Scratch
 
+<https://languagemodelbuilder.com/>
+
 coding a machine learning library in c from scratch
 <https://www.youtube.com/watch?v=hL_n_GljC0I>
 
