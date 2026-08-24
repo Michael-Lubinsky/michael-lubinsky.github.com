@@ -355,7 +355,9 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 ### Spec Driven Development, OpenSpec
 
-https://github.com/github/spec-kit 
+<https://habr.com/ru/companies/haulmont/articles/1073034/>
+
+<https://github.com/github/spec-kit>
 
 <https://news.ycombinator.com/item?id=48398925>
 
