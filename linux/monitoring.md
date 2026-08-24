@@ -106,6 +106,10 @@ Verify the postgres_exporter setup from the browser:
 
 #### Set up the Prometheus and Grafana server
 Install Prometheus
+
+<https://habr.com/ru/articles/1073542/>
+
+
 Create a system group named Prometheus:
 
 sudo groupadd --system prometheus
