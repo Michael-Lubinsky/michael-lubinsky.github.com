@@ -1,5 +1,6 @@
 ## ML System Design
 
+<https://pawankjha.substack.com/p/cracking-principal-staff-ml-system>
 
 <https://habr.com/ru/articles/1069368/> MLOps
 
