@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1069368/> MLOps
 
+<https://omegion.dev/2026/08/ai-and-infrastructure-engineering/>
+
 <https://skphd.medium.com/mlops-interview-questions-and-answers-0e25e2200dfc>
 
 <https://github.com/gurrakeller/AI-Infrastructure-Solutions-Architecture>
