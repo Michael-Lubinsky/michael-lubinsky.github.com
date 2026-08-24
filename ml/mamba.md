@@ -31,6 +31,8 @@ ML interview
 Text to SQL
 <https://cacm.acm.org/blogcacm/if-you-think-you-can-do-real-world-text-to-sql/>
 
+<https://arxiv.org/abs/2608.16663> Test to SQL
+
 <https://arxiv.org/abs/2607.11938> Math of ML
 
 <https://habr.com/ru/articles/1060392/> Матричное дифференцирование в машинном обучении: градиент, якобиан и линейная регрессия
