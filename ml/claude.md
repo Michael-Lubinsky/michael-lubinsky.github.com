@@ -5,6 +5,13 @@
 
 <https://habr.com/ru/articles/1073304/>
 
+You can now set Claude Code's output style to Concise.
+
+Claude leads with the result, keeps responses short, and still gives full detail when you ask.
+
+Turn it on in /config → Output style, or set "outputStyle": "Concise" in settings.json.
+
+
 ## claude -p
 
 `-p` (short for `--print`) puts Claude Code into **non-interactive "print" mode**. Instead of opening the normal chat REPL, it:
