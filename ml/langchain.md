@@ -72,6 +72,572 @@ Here the dict doesn't know about `__or__`, so Python falls back to `prompt.__ror
 
 <https://habr.com/ru/articles/956940/>
 
+
+Как устроен LangChain
+
+Каждый компонент (промпты, модели, парсеры, ретриверы, агенты) в ядре реализует унифицированный интерфейс Runnable, предоставляющий шесть стандартных методов:
+```
+ invoke(input)          # Синхронное выполнение
+ ainvoke(input)         # Асинхронное выполнение
+ batch(inputs)          # Синхронная пакетная обработка
+ abatch(inputs)         # Асинхронная пакетная обработка
+ stream(input)          # Синхронный стриминг
+ astream(input)         # Асинхронный стриминг
+```
+
+Runnable Protocol — основа всего. Единый интерфейс позволяет легко объединять Runnable-компоненты в цепочки вызовов через оператор |.
+
+# Мир без Runnable:
+```python
+docs = retriever.invoke(query)
+formatted = prompt.format(context=docs, question=query)
+response = model.invoke(formatted)
+result = parser.invoke(response)
+```
+# Runnable:
+```python
+result = (retriever | prompt | model | parser).invoke(query)
+```
+Такой синтаксис называется LCEL (LangChain Expression Language) и составляет базовый фундамент LangChain.   
+Собрав LCEL-цепочку, то можем использовать ее сколько угодно раз, вызывая каким угодно способом из 6 представленных выше способов.
+
+Примеры:
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+# Простейшая цепочка
+chain = (
+    ChatPromptTemplate.from_template("{question}") 
+    | ChatOpenAI(model="gpt-4o-mini") 
+    | StrOutputParser()
+)
+
+# Одиночный вызов
+chain.invoke({"question": "Почему мне ставят дизлайки на хабре за рекламу? Кого? С кого спросить что б мне хоть заплатили?"})
+
+# Батч
+chain.batch([
+    {"question": "Придумай необычное имя для кота"}, 
+    {"question": "Объясни квантовую физику на пацанском"}
+])
+
+# Стриминг
+for chunk in chain.stream({"question": "Как заставить робота работать как человек?"}):
+    print(chunk, end="")
+
+# Async варианты
+await chain.ainvoke(...)
+await chain.abatch([...])
+async for chunk in chain.astream(...):
+    ...
+ 
+
+И важные возможности того, что можно делать с цепочками и не только:
+
+# Паралелльно выполнение (в данном случае трех цепочек)
+multi_analysis = RunnableParallel({
+    "summary": summary_chain,      # Генерирует краткое резюме
+    "sentiment": sentiment_chain,  # Анализирует тональность
+    "keywords": keyword_chain      # Извлекает ключевые слова
+})
+
+# Условные переходы — роутинг по типу запроса
+branch_chain = RunnableBranch(
+    (lambda x: "seo" in x.lower(), seo_chain),
+    (lambda x: "content" in x.lower(), content_chain),
+    general_chain  # по умолчанию
+)
+
+# Автоматические retry — повторяет при ошибках (rate limits, timeouts)
+chain_with_retry = (prompt | llm | parser).with_retry(
+    stop_after_attempt=3,           # Максимум 3 попытки
+    wait_exponential_jitter=True    # Экспоненциальная задержка между попытками
+)
+
+# Fallback — если все retry не помогли, переключаемся на другую цепочку
+main_chain = prompt | ChatOpenAI(model="gpt-4o") | parser
+backup_chain = prompt | ChatOpenAI(model="gpt-4o-mini") | parser
+
+safe_chain = main_chain.with_fallbacks([backup_chain])
+```
+Одна из важных вещей для того, чтобы сложные LLM-based системы работали правильно — это structured outputs.   
+Это когда вместо привычный длинной (и не очень полезной целиком) простыни текста LLM возвращает структурированные данные (JSON, таблицы, списки), с которыми уже легко работать программно. 
+Стандартом этого является Pydantic.
+```python
+class TaskPlan(BaseModel):
+    title: str
+    steps: List[str] = Field(..., min_items=3, description="actionable steps")
+
+structured = ChatOpenAI(model="gpt-4o-mini").with_structured_output(TaskPlan)
+plan = structured.invoke("Спланируй мне двадцатиминутную сессию упражнений с собственным весом")
+print(plan.model_dump())
+# Вывод: {'title': '...', 'steps': ['...', '...', '...']}
+```
+
+Под капотом .with_structured_output() то, за что стоит любить фреймворки: 
+LangChain абстрагирует различия между провайдерами и использует нативный запрос, если он поддерживается   
+(OpenAI function calling API или Anthropic tool use),  
+и фолбэк на json-mode или промпт инструкции, если у провайдера такой функциональности нет.
+Вызов инструментов LangChain
+
+Инструменты расширяют возможности LLM: поиск в интернете, вычисления, обращение к API. LangChain предоставляет готовые инструменты (Wikipedia, Calculator и другие) и позволяет создавать свои любой сложности через декоратор @tool.
+Важно грамотно описать Docstring и очень важно уметь написать его максимально конкретно, одноначно, емко и при том коротко, так как все это подается в контекст и напрямую влияет на правильный вызов этих инструментов системой. 
+Где-то уместно описать входящие и выходные параметры, а где-то нет — это уже наука в конкретном случае.
+```python
+from langchain_core.tools import tool
+from langchain_openai import ChatOpenAI
+
+@tool
+def multiply(a: int, b: int) -> int:
+    """Умножает два числа."""  # Docstring супер критически важен
+    return a * b
+
+llm = ChatOpenAI(model="gpt-4o-mini")
+llm_with_tools = llm.bind_tools([multiply])  # Передаем инструменты в модель
+
+resp = llm_with_tools.invoke("Сколько будет 23 * 47?")
+print(resp.tool_calls)  # [{'name': 'multiply', 'args': {'a': 23, 'b': 47}, 'id': '...'}]
+```
+
+Важно: модель не выполняет tool, она только возвращает намерение его вызвать с аргументами. Выполнение — задача уже наша (или агента).
+```
+if resp.tool_calls:
+    tool_call = resp.tool_calls[0]
+    result = multiply.invoke(tool_call["args"])  # Выполняем инструмент
+    print(f"Результат: {result}")  # 1081
+```
+
+И опять же, если у API LLM есть поддержка инструментов, то она будет сделана нативно (но возвращается все равно намерение а не результат инструмента), а если нет, то через промпт.
+```python
+from langchain_core.messages import HumanMessage, ToolMessage
+
+messages = [HumanMessage(content="Предскажи курс бразильского реала в 2030 году")]
+while True:
+    resp = llm_with_tools.invoke(messages)
+    if not resp.tool_calls:
+        break
+    
+    for tool_call in resp.tool_calls:
+        result = tools_dict[tool_call["name"]].invoke(tool_call["args"])
+        messages.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
+    messages.append(resp)
+```
+
+Использование памяти
+
+Память позволяет хранить текущее взаимодействие и сохранять весь прошлый опыт или важные факты для принятия решения.
+
+В LangChain есть два основных типа:
+
+    ### Short-term (session-based in-memory): сообщения в текущей сессии
+
+    Long-term (semantic/persistent): факты и контекст в постоянной хранилке
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "Отвечай кратко"),
+    MessagesPlaceholder(variable_name="history"),
+    ("human", "{input}")
+])
+chain = prompt | ChatOpenAI(model="gpt-4o-mini")
+
+store = {}
+def get_history(session_id: str):
+    if session_id not in store:
+        store[session_id] = InMemoryChatMessageHistory()
+    return store[session_id]
+
+with_history = RunnableWithMessageHistory(
+    chain, 
+    lambda cfg: get_history(cfg["configurable"]["session_id"]),
+    input_messages_key="input",
+    history_messages_key="history"
+)
+
+cfg = {"configurable": {"session_id": "user_123"}}
+with_history.invoke({"input": "Пользователь любит жарить мясо"}, config=cfg)
+with_history.invoke({"input": "Что пользователь любит??"}, config=cfg) 
+Объяснить с
+
+Если нужно что-то постоянно, то можно взять PostgreSQL. Огромный плюс LangChain в развитом коммьюнити, которое написало практически все, что угодно.
+
+def get_history(session_id: str):
+    return PostgresChatMessageHistory(
+        connection_string="postgresql://...",
+        session_id=session_id
+    )
+Объяснить с
+
+Память штука очень классная, но всегда встают вечные сложные вопросы что именно туда сохранять, как это потом валидировать и как часто обращаться. Память для агентов очень большая и интересная тема сама по себе.
+
+Мини-выводы про LangChain:
+
+У LangChain большое количество удобных и продуманных штук, которых достаточно чтобы в него запихать не просто линейную логику, но и многие сложные вещи. Пописать код для чего-то кастомного — ну да, придется, но в целом все достаточно приятно.
+
+Но если нужно из коробки сразу все самое сложное, задача решается графами, есть очень сложный план, которого надо придерживаться или есть мультиагентность, то под это подойдет LangGraph.
+Как устроен LangGraph
+
+Для аналогии можно представить LangGraph как блок-схему нашего приложения. Каждый блок (узел = «node») — это просто маленькая функция на питошке, которая выполняет одну задачу. Стрелки (ребра = «edges») говорят, какой блок запускается следующим. По блок-схеме как бы перемещается «рюкзачок с данными» (состояние = «state») и в этот рюкзачок можно что-то положить и что-то считать. В чат-ботах там лежит, как правило, список сообщений чата.
+
+from typing import TypedDict, Annotated, List
+from langgraph.graph import StateGraph, START, END
+from langgraph.graph.message import add_messages
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
+
+class State(TypedDict):
+    messages: Annotated[List, add_messages]  # add_messages — reducer, добавляет новые сообщения к списку
+
+llm = ChatOpenAI(model="gpt-4o-mini")
+
+def model_node(state: State):
+    reply = llm.invoke(state["messages"])
+    return {"messages": [reply]} # Возвращаем только новое сообщение, LangGraph сам добавит его в state
+
+graph = StateGraph(State)
+graph.add_node("model", model_node)
+graph.add_edge(START, "model")
+graph.add_edge("model", END)
+
+app = graph.compile()  # Превращаем граф в Runnable
+result = app.invoke({"messages": [HumanMessage(content="Поставьте лайков на хабре по братски")]})
+print(result["messages"][-1].content)
+Объяснить с
+
+Граф сначала заполняется (START + nodes+edges + END), а затем его нужно скопилировать. В процессе компиляции происходит все то, что обычно делается при компиляции — валидация, оптимизация и превращение в исполняемую структуру — уже знакомый нам объект Runnable. Дальше все ровно то же самое и оперировать можно уже им.
+
+Одна из главных фич LangGraph — автоматическое сохранение состояния графа после каждого узла (checkpointing).
+
+# восстановление графа из чекпоинта
+checkpointer = SqliteSaver.from_conn_string("conversations.db")
+graph = StateGraph(...).compile(checkpointer=checkpointer)
+Объяснить с
+
+Это дает три важных преимущества:
+
+    Persistence — можно прервать выполнение и продолжить позже
+
+    Time travel — откат к любому предыдущему шагу
+
+    Вмешательство человека (Human-in-the-loop) — пауза на получение чего-то от пользователя
+
+Фактически, чекпоинтинг заменяет память в LangChain: в памяти находится весь state графа (сообщения, промежуточные результаты, метаданные, счетчики), а не только сообщения.
+
+Ну а на этом самые важные отличия, как будто бы, и заканчиваются.
+Итоги LangChain vs LangGraph
+
+LangChain работает с цепочками (chains), LangGraph — с графами состояний (graphs). Неожиданно. Обе сущности (и цепочка и скомпилированный граф) — это Runnable компоненты с единым интерфейсом.
+
+Цепочки хороши для линейных пайплайнов, графы — для сложной мультиагентной оркестрации с циклами и ветвлениями. Почти все сложное, что нативно сделано в коробке LangGraph МОЖНО сделать на LangChain, но это будет неудобно (сложная логика), запутанно (вложенные друг в друга RunnableBranch), а то и совсем на костылях (типа human-in-the-loop или по простому — запроса данных от пользователя).
+Что выбрать LangChain или LangGraph?
+
+Если у вас вообще возникает такой вопрос, то на 90% ответом будет LangChain.
+Таблица принятия решения
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+Быстрые ответы на самые важные вопросы
+
+    LangChain, LangGraph и прочие Lang — это одно и то же? 
+
+У команды LangChain три проекта: LangChain, LangGraph (оба — разные фреймворки) и LangSmith (трейсинг). Все остальное Lang-что-то сделано сторонними командами, но на базе LangChain/LangGraph.
+
+    Можно ли встроить LangChain в LangGraph?
+
+Да, любые LangChain компоненты работают в узлах графа:
+
+# LCEL цепочка
+chain = prompt | llm | parser
+
+# Как узел графа
+def node(state):
+    return {"output": chain.invoke(state["input"])}
+
+graph.add_node("chain_node", node)
+Объяснить с
+
+    Насколько переиспользуется код LangChain в LangGraph?
+
+Огромное количество кода переиспользуется (в процентах выразить сложно, но по грубым оценкам это около 70-90%), так как оба используют langchain-core
+
+Модели, промпты, инструменты, retriever'ы, парсеры — без изменений. Меняется слой оркестрации с цепочек на граф и связанные с ним нюансы памяти.
+
+    Насколько LangGraph медленнее LangChain? 
+
+Оба используют одно ядро, а дальше все упирается в сложность задачи. Основное латенси в LLM-приложениях это ̶M̶C̶P̶ ̶(̶н̶е̶т̶,̶ ̶д̶о̶к̶а̶з̶а̶н̶о̶)̶ вызов самой LLM.
+
+    Одинаково ли работает память?
+
+Нет, при одинаковом ядре у них разные подходы к оркестрации. LangChain: классы ConversationBufferMemory (накопление), ConversationSummaryMemory (суммаризации диалогов) — обертки для простых случаев. LangGraph: нативное управление состоянием через State + Checkpointer.
+
+Критерий
+	
+
+🦜⛓️ LangChain
+	
+
+🕸️ LangGraph
+
+Основной механизм
+	
+
+RunnableWithMessageHistory
+	
+
+Checkpointing
+
+Что сохраняется
+	
+
+Только история сообщений
+	
+
+Весь state графа (messages + любые данные)
+
+Когда сохраняется
+	
+
+При явном вызове
+	
+
+Автоматически после каждого узла
+
+Dev/testing
+	
+
+InMemoryChatMessageHistory
+	
+
+MemorySaver()
+
+Production
+	
+
+PostgresChatMessageHistory, RedisChatMessageHistory
+	
+
+SqliteSaver, PostgresSaver
+
+Persistence
+	
+
+Требует явной настройки
+	
+
+Из коробки через checkpointer
+
+Time travel
+	
+
+❌ Нет
+	
+
+✅ Откат к любому checkpoint
+
+Human-in-the-loop
+	
+
+На костылях
+	
+
+✅ Нативно через interrupt_before/after
+
+Управление
+	
+
+Ручное (callbacks, get_history)
+	
+
+Автоматическое
+
+Применения
+	
+
+Простые чаты/ассистенты с небольшой историей
+	
+
+Сложные stateful workflows
+LangSmith и LangFuse
+
+С фреймворками — разобрались (надеюсь), переходим к экосистеме.
+
+В любом софте всегда может произойти что-то странное и необъяснимое, а в софте с LLM это фактически базово-ожидаемое поведение. И чтобы такого происходило меньше или чтобы уметь объяснять это необъяснимое, нам необходим трейсинг. Конечно, любой трейсинг можно сделать самостоятельно, но это бывает часто не так-то просто и точно всегда приводит к ухудшению читаемости кода. Поэтому трейсинг из коробки на уровне фреймворка — то, что доктор прописал.
+
+LangChain и LangGraph — это семейство фреймворков, выпущенных одной командой. И эта же команда сделала сервис LangSmith, который нативно умеет все делать на уровне ядра. С ним замечательно все, кроме того, что он платный, SaaS-only и под другие фреймворки все уже не так нативно, а через sdk.
+
+В качестве ответа такому безобразию от сторонней команды появился LangFuse — open-source альтернатива для трейсинга LLM-приложений. Его главное преимущество — on-premise, то есть его можно развернуть у себя. LangFuse работает не на уровне ядра и требует подключения через колбеки или декораторы.
+
+	
+
+LangSmith
+	
+
+LangFuse
+
+Подключение
+	
+
+.env
+	
+
+Callbacks/декораторы
+
+Self-hosting
+	
+
+Enterprise
+	
+
+✅ Open-source
+
+Фреймворки
+	
+
+LangChain/LangGraph
+	
+
+Любые
+
+Трейсинг
+	
+
+Автоматический
+	
+
+Ручной
+
+Datasets & Evaluation
+	
+
+✅
+	
+
+✅
+
+И, наконец, последние из семейства — для полноты информации.
+LangFlow и LangServe, LangSmith Deployment и LangSmith Hub
+
+LangFlow — это сторонний проект, построенный на базе LangChain/LangGraph, но разработанный независимой командой. Это визуальный слой над фреймворками, который позволяет собирать пайплайны и агентов в красивом интерфейсе. Примерно как n8n, dify и другие, но с использованием всей мощи ленгчейн-вселенной.
+
+LangServe — официальный инструмент для превращения любого LangChain Runnable в production-ready REST API. Построен на FastAPI, автоматически генерирует OpenAPI документацию и поддерживает streaming, batching и вот это все. По сути, это автоматический мостик между цепочками/простыми агентами и внешним миром через HTTP.
+
+LangSmith Deployment (ранее LangGraph Platform) — управляемый рантайм специально для long-running агентов. В отличие от LangServe (для простых цепочек), это полноценная инфраструктура с checkpointing, горизонтальным масштабированием, тасками и всеми взрослыми штуками.
+
+LangSmith Hub — централизованный репозиторий промптов от большого комьюнити. Можно публиковать свои промпты, искать готовые решения и все нативно интегрировать в код:
+
+from langchain import hub
+prompt = hub.pull("username/my-prompt")
+Объяснить с
+
+
+
 <https://habr.com/ru/companies/amvera/articles/933460/> Part 1
 
 <https://habr.com/ru/companies/amvera/articles/948000/> Part 2
