@@ -70,7 +70,13 @@
 <https://news.ycombinator.com/item?id=48829242>
 
 ### Text to SQL
+
+<https://habr.com/ru/articles/1061746/>
+<https://habr.com/ru/articles/1074038/>
+
 <https://nchammas.com/writing/custom-query-language-design#why-not-use-an-llm>
+
+
 
 <https://news.ycombinator.com/item?id=49013995>
 
