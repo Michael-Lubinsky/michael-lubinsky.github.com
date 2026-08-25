@@ -615,9 +615,7 @@ Based on current sources, here's how these frameworks map to use cases as of mid
 | **Already deep in Google Cloud stack** | **Google ADK** | Google ADK makes sense for teams already deep in the Google ecosystem. |
 | **Validate architecture cheaply, then harden for production** | **CrewAI → LangGraph** | A legitimate strategy: start with CrewAI to validate your agent architecture quickly — does the workflow make sense, do the agents produce useful outputs — then migrate production-critical paths to LangGraph for checkpointing, error recovery, and observability. CrewAI's own documentation acknowledges this migration path. |
 
-## A few numbers to treat cautiously
-
-Some sources cite specific benchmark figures — e.g. LangGraph scoring 87% on task success rate benchmarks versus CrewAI's 82% with 1.8s average latency — but these come from a single vendor-adjacent blog rather than an independent, reproducible benchmark, so I'd treat them as directional, not authoritative.
+ 
 
 ## Version/status notes worth knowing before you commit
 
@@ -629,4 +627,40 @@ Some sources cite specific benchmark figures — e.g. LangGraph scoring 87% on t
 ## For your situation specifically
 
 Given the Databricks/analytics-dashboard pipeline we designed earlier — durable state, an explicit human-approval gate before SQL execution and dashboard publish — that's squarely LangGraph's use case per this table, not CrewAI's or AG2's. If you ever build something more exploratory first (e.g., prototyping whether a multi-table-join approach even makes sense before hardening it), CrewAI's fast-iteration model is worth it for that throwaway phase, per the "validate cheap, then migrate" pattern above.
- 
+
+ These are three genuinely different animals, all launched or gaining traction within the past few months — worth laying out what each one actually is before comparing them, since "agent framework" is doing a lot of work covering very different layers.
+
+## What each one is
+
+**Agno** — a Python framework + production runtime for multi-agent systems. It ships two halves: a lightweight Agent class (agents/teams/workflows, 100+ toolkits, memory, knowledge, reasoning, MCP, model-agnostic across 30+ providers) plus AgentOS, a stateless FastAPI runtime with tracing, scheduling, human approval, and RBAC that you deploy in your own cloud. It's the direct successor to phidata, rebranded in January 2025, and has grown to roughly 40,900 GitHub stars with 424 contributors as of mid-2026.
+
+**Vercel's eve** — a TypeScript-only, opinionated open-source agent framework announced at Vercel Ship 2026 (June 17), described on stage as "Next.js for agents." An agent is literally a directory: markdown instructions, TypeScript tools, with durability, sandboxed compute, human-in-the-loop approvals, subagents, and evals built in, running on Vercel's Workflow SDK (checkpointed execution), Vercel Sandbox (isolated microVM execution), and the Vercel AI SDK for model calls. It's paired with a broader commercial platform push (Vercel Agent, Vercel Services, enterprise controls) — the framework is open source, but it's clearly the on-ramp to Vercel's paid infrastructure.
+
+**LangChain Deep Agents** — not a new orchestration engine, but an opinionated harness built on top of LangGraph and `create_agent`, adding the specific capabilities that make agents handle *long-horizon* tasks well: planning (a forced todo-list tool for coherence), a virtual filesystem for persisting findings/context across steps, subagent spawning with isolated context, and Skills (progressive-disclosure domain instructions). It's explicitly modeled on Claude Code's architecture — LangChain has said Deep Agents were heavily influenced by what Claude Code does internally, generalized into a reusable library.
+
+## Comparison table
+
+| Dimension | Agno | Vercel eve | LangChain Deep Agents |
+|---|---|---|---|
+| **Language** | Python only | TypeScript only | Python (JS/TS via broader LangChain ecosystem) |
+| **Layer** | Full framework + production runtime (AgentOS) | Framework + tightly coupled to Vercel's hosting/sandbox/workflow infra | Harness layered on top of LangGraph — not a new runtime |
+| **Best use case** | Multi-agent systems needing your own infra control (data stays in your DB, no vendor retention) — e.g., a fleet of RAG/support/analytics agents | Full-stack apps where agents are part of a Next.js/Vercel-deployed product — coding agents, agent-triggered deployments | Long-running, complex single-agent tasks needing planning + memory across many steps — research, coding, deep multi-step analysis |
+| **Deployment model** | Self-hosted AgentOS in your own cloud; paid tier only for the hosted control-plane UI | Runs on Vercel's platform (Sandbox, Workflow SDK) — the more you use, the more you're on Vercel's infra | Runs wherever LangGraph runs — self-hosted or LangSmith/LangGraph Platform |
+| **Multi-agent support** | Native — "teams" is a first-class primitive alongside agents/workflows | Native — subagents built in | Native — subagent spawning with context isolation is a core feature |
+| **Human-in-the-loop** | First-class — tool confirmations, approval workflows | First-class — built into the framework | Inherited from LangGraph's checkpointing/interrupt model |
+| **MCP support** | Native, extensive | Not emphasized in announcements (Vercel AI SDK has its own tool-calling model) | Native — full MCP support documented |
+| **Observability** | Native Tracing stored entirely in your own infra — no third-party vendor, no compliance/retention risk | Ties into Vercel's own traces/alerts (Vercel Agent uses these to investigate issues) | LangSmith integration (external, hosted by LangChain unless self-hosted) |
+| **Maturity/momentum** | ~40k stars, 5,300+ commits, actively shipping (9 releases in April 2026 alone) | Brand new (announced June 2026) — credible backing (Vercel's own production agents run on it) but unproven at scale externally | Newer library (early-to-mid 2026) but built on the mature, widely-adopted LangGraph substrate |
+| **Pricing** | Apache-2.0, free; $150/mo Pro for hosted control-plane, custom Enterprise | Open source framework; commercial tier is Vercel's broader platform (Services, Agent, enterprise controls) | Open source; LangSmith/LangGraph Platform hosting is the paid layer |
+
+## How to think about the choice for you specifically
+
+Given your stack (Python, Databricks, PySpark, no TypeScript/Next.js mentioned in what you build), **Vercel's eve is the one that doesn't fit** — it's TypeScript-only and its main value proposition is being deeply wired into Vercel's own hosting/sandbox infrastructure. It's the right tool if you're building a Next.js product where agents are part of the deployed app; it's not a fit for a backend analytics pipeline like the one we designed earlier.
+
+**Agno vs. LangChain Deep Agents** is the more relevant comparison for you:
+- **Agno** is closer to a *replacement* for LangGraph+LangSmith as a full stack — it wants to own orchestration, runtime, and observability together, with a strong "your data never leaves your infra" pitch. For your analytics-dashboard pipeline, Agno's Teams/Workflows primitives plus native MCP could genuinely replace the LangGraph graph we sketched, with less boilerplate — but you'd be picking a less battle-tested (though fast-growing) production dependency over LangGraph's much larger, longer-track-record ecosystem.
+- **Deep Agents** is not a replacement for LangGraph in your pipeline — it's a *specialization* for a different problem shape: long-horizon, exploratory, planning-heavy tasks (think "investigate this data anomaly across many tables and write a report") rather than the fairly linear discover→generate→validate→execute→publish pipeline we designed, which is better served by LangGraph's explicit graph and human-in-the-loop interrupts. If a future piece of your work looks more like "let the agent freely explore the warehouse and write up findings" rather than a fixed pipeline, Deep Agents' planning/filesystem/subagent model is worth revisiting.
+
+## One caveat
+
+Vercel's own announcement numbers (agent-triggered deployments going from under 3% to over 50%, token volume 2T→20T/month) are self-reported marketing figures from a launch event, not independently verified — worth treating as directional company narrative rather than an industry-wide adoption metric. Agno's and Deep Agents' GitHub star/commit counts are more objectively checkable but still just proxies for popularity, not a guarantee of fit for your specific pipeline.
