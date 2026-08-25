@@ -1,4 +1,5 @@
 ## LangChain LangGraph
+https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -73,7 +74,7 @@ Here the dict doesn't know about `__or__`, so Python falls back to `prompt.__ror
 <https://habr.com/ru/articles/956940/>
 
 
-Как устроен LangChain
+###  Как устроен LangChain
 
 Каждый компонент (промпты, модели, парсеры, ретриверы, агенты) в ядре реализует унифицированный интерфейс Runnable, предоставляющий шесть стандартных методов:
 ```
@@ -87,14 +88,14 @@ Here the dict doesn't know about `__or__`, so Python falls back to `prompt.__ror
 
 Runnable Protocol — основа всего. Единый интерфейс позволяет легко объединять Runnable-компоненты в цепочки вызовов через оператор |.
 
-# Мир без Runnable:
+### Мир без Runnable:
 ```python
 docs = retriever.invoke(query)
 formatted = prompt.format(context=docs, question=query)
 response = model.invoke(formatted)
 result = parser.invoke(response)
 ```
-# Runnable:
+### Runnable:
 ```python
 result = (retriever | prompt | model | parser).invoke(query)
 ```
