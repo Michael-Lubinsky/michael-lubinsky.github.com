@@ -2,6 +2,9 @@
 
 <https://pawankjha.substack.com/p/cracking-principal-staff-ml-system>
 
+<https://github.com/apriori3d/ico>
+<https://habr.com/ru/articles/1074228/>
+
 <https://habr.com/ru/articles/1069368/> MLOps
 
 <https://omegion.dev/2026/08/ai-and-infrastructure-engineering/>
