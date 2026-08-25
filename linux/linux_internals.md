@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/755638/> how computer works (Russian translation)
 
+<https://habr.com/ru/companies/timeweb/articles/1073860/> How browser works
+
 <https://labs.iximiuz.com/tutorials?filter=official>
 
 <https://labs.iximiuz.com/tutorials/linux-processes-from-program-to-process-c0e3a2e7>
