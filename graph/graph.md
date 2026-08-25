@@ -8,9 +8,9 @@ Along with this Graph object, one will also find a comprehensive standard librar
 Finally, graphology graphs are able to emit a wide variety of events, which makes them ideal to build interactive renderers for the browser. It is for instance used by sigma.js as its data backend.
 
 
-<https://www.sigmajs.org/> JS graph visualisation
+<https://www.sigmajs.org/> JS graph visualization
 
-<https://github.com/dominikbraun/graph/> Graphjs in GO
+<https://github.com/dominikbraun/graph/> Graph js in GO
 
 https://habr.com/ru/articles/1060786/ Graph Drawing
 
@@ -25,6 +25,23 @@ https://habr.com/ru/articles/1060786/ Graph Drawing
 <https://habr.com/ru/companies/yandex/articles/1046483/>
 
 <https://github.com/arun1729/cog> Graph DB for Python
+
+
+### LatticeDB
+
+<https://github.com/jeffhajewski/latticedb>
+
+Embedded property-graph database with native vector and full-text indexing.
+```
+LatticeDB is a single-file local database for connected, semantic, and textual data. It lets you traverse relationships, run vector similarity search, and do BM25 full-text search over the same dataset in one engine and one query layer. It is designed for relationship-heavy workloads on a single machine, with zero-config operation and an embedded single-writer model.
+
+LatticeDB is an embedded, single-file graph database that lets local applications query the same data by relationship, semantics, and text, then consume durable graph and application events from the same file. Workloads like Graph RAG, agent memory, and local knowledge tools are examples built on those primitives, not the definition of the engine.
+
+    One file. Your entire database is a single portable file. No server, no configuration.
+    One query layer. Graph traversal, HNSW vector similarity, and BM25 full-text — in the same query language.
+    One event log. Durable named streams and a built-in graph changefeed share the same transaction/WAL path as graph writes.
+    Local-first. Designed for one owning process on one machine, with WAL-backed durability.
+```    
 
 ### LadyBugDB
 <https://ladybugdb.com/> Graph DB 
