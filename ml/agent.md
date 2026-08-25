@@ -13,6 +13,8 @@
 ## Harness
 <https://lilianweng.github.io/posts/2026-07-04-harness/>
 
+<https://vercel.com/academy/build-ai-agent-harness>
+
 <https://addyosmani.com/blog/agent-harness-engineering/>
 
 <https://www.youtube.com/watch?v=GrNbuWWJYiI>  Learn AI Agent Harness & Loop Engineering In 19 Min 
