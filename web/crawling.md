@@ -17,6 +17,8 @@ popular open source scrapers (Scrapy, Beautiful Soup, Selenium,
 
 $462
 
+<https://doc.scrapy.org/en/latest/intro/overview.html>
+
 
 <img width="775" height="1191" alt="image" src="https://github.com/user-attachments/assets/44085bd3-a578-4b58-b15c-6825c9c28b20" />
 
