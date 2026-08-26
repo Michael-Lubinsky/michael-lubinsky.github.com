@@ -6,7 +6,7 @@ user agent, содержащий мою контактную информаци�
 
 popular open source scrapers (Scrapy, Beautiful Soup, Selenium, 
 
-<https://habr.com/ru/articles/894406/>
+<https://habr.com/ru/articles/894406/> Top Web Parsers and API Services for Data scraping: A Comparison of Speed, Scalability, and Bypassing Protections
 
 https://habr.com/ru/articles/882544/ CAPTCHA
 
