@@ -1,5 +1,8 @@
 ## MCP
 
+<https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
+<img width="1171" height="1278" alt="image" src="https://github.com/user-attachments/assets/cb38b5c3-b3ad-4360-865a-3aaafe9e6709" />
+
  
 Skills хорошо подходят для локальных, процедурных, основанных на CLI-утилитах сценариев. Например, «возьми ffmpeg, обработай видео, положи результат в этот каталог».
 ```
