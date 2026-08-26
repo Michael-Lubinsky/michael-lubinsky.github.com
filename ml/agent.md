@@ -65,7 +65,7 @@
 <https://belderbos.dev/blog/build-minimal-ai-agent-python/>
 <https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
 
-### Claude/Codex skill for geospatial data 
+### Claude/Codex skill for Geospatial data 
 <https://github.com/dekart-xyz/geosql>  
 <https://news.ycombinator.com/item?id=48829242>
 
@@ -73,6 +73,8 @@
 
 <https://habr.com/ru/articles/1061746/>
 <https://habr.com/ru/articles/1074038/>
+
+<https://github.com/pseudosavant/sql-agent-cli>
 
 <https://nchammas.com/writing/custom-query-language-design#why-not-use-an-llm>
 
