@@ -8,6 +8,8 @@ popular open source scrapers (Scrapy, Beautiful Soup, Selenium,
 
 <https://habr.com/ru/articles/894406/>
 
+https://habr.com/ru/articles/882544/ CAPTCHA
+
 <https://habr.com/ru/companies/ruvds/articles/796885/>
 
 <https://andrewkchan.dev/posts/crawler.html>
