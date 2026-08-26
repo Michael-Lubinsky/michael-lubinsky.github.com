@@ -3,7 +3,16 @@
 <https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
 <img width="1171" height="1278" alt="image" src="https://github.com/user-attachments/assets/cb38b5c3-b3ad-4360-865a-3aaafe9e6709" />
 
- 
+ <img width="1102" height="1057" alt="image" src="https://github.com/user-attachments/assets/6c49d52f-abb2-452d-86d8-f512086dbba8" />
+
+ <img width="1111" height="702" alt="image" src="https://github.com/user-attachments/assets/fb6fecf3-6a2f-4927-b0a4-9f8665d72d68" />
+
+There is a quieter, more elegant half to this that almost nobody mentions: the client has primitives too. The server can ask the client to do things back. It can request sampling (ask the host’s model to think about something, without the server needing its own model), elicitation (ask the human a clarifying question or for confirmation), and logging. So it is genuinely two-way. The server is not just a vending machine; it can tap the model and the user on the shoulder when it needs them. That bidirectionality is one of the prettiest design choices in the whole thing.
+
+<img width="1063" height="313" alt="image" src="https://github.com/user-attachments/assets/fa1450ee-7b60-4f96-adff-927e593c6923" />
+
+
+
 Skills хорошо подходят для локальных, процедурных, основанных на CLI-утилитах сценариев. Например, «возьми ffmpeg, обработай видео, положи результат в этот каталог».
 ```
 MCP лучше подходит там, где нужны:
