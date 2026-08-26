@@ -1,8 +1,8 @@
 ## Web Crawling (scrapping)
-robots.txt,
-user agent, содержащий мою контактную информацию, 
-хранил список исключённых доменов,
-Устойчивость к сбоям. 
+- robots.txt. 
+- user agent содержащий мою контактную информацию, 
+- хранил список исключённых доменов,
+- Устойчивость к сбоям. 
 
 popular open source scrapers (Scrapy, Beautiful Soup, Selenium, 
 
@@ -21,6 +21,77 @@ https://habr.com/ru/articles/882544/ CAPTCHA
 
 $462
 
+**Large-scale web scraping** is the automated extraction of data from many web pages/sites at a volume, speed, or frequency that goes beyond a single script pulling a handful of pages — think millions of pages, hundreds of sites, or continuous/scheduled crawling. It differs from small scraping mainly in the *engineering problems* it introduces:
+
+**Core challenges at scale:**
+- **Concurrency & throughput** — sequential requests are too slow; you need parallel/async fetching
+- **Rate limiting & politeness** — avoiding hammering a single host, respecting `robots.txt` and ToS
+- **Anti-bot defenses** — IP blocking, CAPTCHAs, JS-rendered content, fingerprinting, bot-detection services
+- **Proxy management** — rotating IPs/residential proxies to avoid bans
+- **Data pipeline/storage** — parsing, deduping, validating, and landing data reliably (this is the part closest to your background)
+- **Resilience** — retries, backoff, handling partial failures across thousands of jobs without losing data
+- **Scheduling/orchestration** — recurring crawls, incremental updates, freshness tracking
+
+## How Python is used for it
+
+**1. Fetching**
+- `requests` / `httpx` — simple HTTP calls; `httpx` supports async
+- `aiohttp` — high-concurrency async fetching, common at scale
+- `Scrapy` — the standard framework for large scraping jobs; built-in concurrency, retries, middleware for proxies/headers, item pipelines for output
+- `Playwright` / `Selenium` — for JS-rendered pages where content doesn't exist in raw HTML
+
+**2. Parsing**
+- `BeautifulSoup` / `lxml` — HTML parsing and extraction
+- `parsel` (used internally by Scrapy) — XPath/CSS selector-based extraction
+
+**3. Scale-out infrastructure**
+- **Scrapy + Scrapyd**, or **Scrapy-Redis** — distributes crawl queues across multiple workers/machines
+- **Celery** or **Airflow** — orchestrating scheduled/recurring scrape jobs, retries, dependency chains (this overlaps directly with your Airflow experience)
+- Async batching with `asyncio` + `aiohttp` for thousands of concurrent lightweight requests
+- Proxy rotation libraries (or third-party proxy services) integrated into the fetch layer
+
+**4. Anti-blocking tactics (engineering, not evasion of law)**
+- User-agent rotation, header randomization
+- Rate limiting / randomized delays per domain
+- Proxy pools (datacenter vs residential)
+- Headless browser fallback only when necessary (it's much slower than raw HTTP)
+
+**5. Landing the data (this is where your pipeline background is directly relevant)**
+- Raw HTML/JSON often lands in **S3/ADLS** as a "bronze" layer
+- Parsed/structured data flows through **Spark/PySpark** for cleaning and dedup at volume
+- Loaded into a warehouse (**Redshift/Snowflake/Delta Lake**) for analytics
+- Data quality checks (schema drift, nulls, duplicate detection) — same medallion-architecture pattern you already used at Toyota Research applies well to scraped data, since scraped sources are messier and more failure-prone than internal systems
+
+**Typical stack for a large-scale job:**
+`Scrapy` (or async `aiohttp`) for crawling → proxy pool for IP rotation → raw storage in S3 (bronze) → Spark for parsing/cleaning at scale (silver) → warehouse load with quality checks (gold) → Airflow for orchestration and scheduling.
+
+One practical note: legality and ToS compliance vary a lot by site and jurisdiction (public data vs. authenticated/paywalled content, robots.txt, CFAA-adjacent case law in the US, GDPR if personal data is involved). Worth checking site terms and, for anything involving personal data or paywalled content, getting a read from legal before building at scale.
+
+ 
+
+## Meta's crawler bots
+```
+Meta operates several identified web crawlers, most notably **Meta-ExternalAgent**, which is designed to collect training data for Meta's AI initiatives, including large language models, to improve AI capabilities across Facebook, Instagram, and WhatsApp. This is separate from `facebookexternalhit`, Meta's older crawler used primarily for link-preview ge
+neration when links are shared.
+
+Meta-ExternalAgent launched in mid-2024 and functions similarly to OpenAI's GPTBot — copying publicly displayed web content like news articles and forum discussions to feed AI model training. Mechanically, it identifies itself via a specific User-Agent string, sends HTTP requests to servers, downloads page content, and Meta's systems then tokenize that text for training.
+By one estimate from Cloudflare, this bot accounts for roughly half of all AI-crawler traffic on the web — meaning at Meta's scale this isn't a side project, it's a major share of all AI-training crawling globally.
+
+There's also **Meta-ExternalFetcher**, a second bot with a more contested reputation: unlike Meta-ExternalAgent, it has drawn criticism for reportedly bypassing robots.txt rules in some cases, which is notable because robots.txt compliance is voluntary, not legally enforced — it operates on an honor system rather than a binding requirement.
+```
+## Where the data goes
+```
+Meta's Llama models are among the largest LLMs in production, and while Meta hasn't disclosed exact training data composition for recent Llama versions, earlier versions drew on large public datasets like Common Crawl in addition to Meta's own crawled data.
+```
+## Site-owner control
+```
+Website owners can block the bot: adding a disallow rule for Meta-ExternalAgent in robots.txt prevents it from crawling for AI-training purposes specifically (separate from blocking Meta's other crawlers). Verification of legitimate Meta traffic is done by checking source IPs against Meta's published AS32934 IP ranges.
+```
+## Why this differs from what you'd build
+```
+Meta's crawling operates at a scale (billions of pages) where their systems almost certainly use the same categories of infrastructure we discussed generically — massively distributed fetch workers, dedicated bot-identity management, storage lakes, dedup/parsing pipelines feeding into model training — but the specific orchestration, proxy strategy, and scheduling internals aren't public.
+ If you want, I can dig into the public controversy/legal side (there's active litigation and site-blocking trend
+```
 ### Scrapy
 <https://doc.scrapy.org/en/latest/intro/overview.html>
 
