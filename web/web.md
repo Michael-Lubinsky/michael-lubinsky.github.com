@@ -7,6 +7,8 @@
 
 <https://habr.com/ru/articles/1002550/> Web Server
 
+<https://habr.com/ru/articles/1074550/> How to check if Web Page is available for agents?
+
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
 ### Bun - Node.js alternative written in Rust
