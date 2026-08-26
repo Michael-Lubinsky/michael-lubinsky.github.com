@@ -15,6 +15,8 @@ https://habr.com/ru/articles/882544/ CAPTCHA
 <https://andrewkchan.dev/posts/crawler.html>
 <https://habr.com/ru/articles/1003120/>  (russian translation)
 
+<https://medium.com/@238rodionova/web-scraping-with-python-and-proxies-complete-2026-tutorial-f0f4c7685687>
+
 1,005 миллиарда веб-страниц
 
 25,5 часа
