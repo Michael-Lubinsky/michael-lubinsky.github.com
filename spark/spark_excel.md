@@ -352,3 +352,72 @@ for sheet in xls.sheet_names:
 - **If this becomes a recurring pipeline** (not one-off): writing each sheet straight to a Delta table (`spark_dfs[sheet].write.format("delta").mode("overwrite").saveAsTable(...)`) right after load is usually worth doing immediately, so downstream jobs don't re-parse Excel on every run.
 
 Given you're already Unity-Catalog-centric, Option 1 with spark-excel is almost certainly the cleaner path if it's available on your cluster — it keeps everything in Spark's normal read/write model rather than round-tripping through pandas.
+
+
+Here's the complete statement, filled in with the pieces you'd actually need for a Unity Catalog target:
+
+```python
+spark_dfs[sheet].write \
+    .format("delta") \
+    .mode("overwrite") \
+    .option("overwriteSchema", "true") \
+    .saveAsTable(f"catalog_name.schema_name.{sheet}_table")
+```
+
+## Explanation of each piece
+
+- **`catalog_name.schema_name.{sheet}_table`** — full three-level Unity Catalog name. Replace `catalog_name`/`schema_name` with your actual catalog/schema, and note the table name is derived from the sheet name here — sanitize it first if sheet names contain spaces or special characters (Delta table names must be valid SQL identifiers):
+
+```python
+import re
+
+def sanitize_table_name(sheet_name: str) -> str:
+    # lowercase, replace non-alphanumeric with underscore, strip leading digits issues
+    name = re.sub(r"[^0-9a-zA-Z_]", "_", sheet_name.strip().lower())
+    return name
+
+table_name = sanitize_table_name(sheet)
+```
+
+- **`.option("overwriteSchema", "true")`** — needed alongside `mode("overwrite")` if the sheet's schema might differ from a previous run (e.g., a column was added/removed in the source Excel file). Without this, Delta will throw a schema-mismatch error on overwrite rather than silently letting the schema change.
+
+## Full loop version (all sheets → all tables)
+
+```python
+catalog_name = "your_catalog"
+schema_name = "your_schema"
+
+for sheet, df in spark_dfs.items():
+    table_name = sanitize_table_name(sheet)
+    full_table_name = f"{catalog_name}.{schema_name}.{table_name}"
+
+    (
+        df.write
+        .format("delta")
+        .mode("overwrite")
+        .option("overwriteSchema", "true")
+        .saveAsTable(full_table_name)
+    )
+    print(f"Loaded sheet '{sheet}' -> {full_table_name} ({df.count()} rows)")
+```
+
+## If you want path-based (non-Unity-Catalog) Delta instead
+
+Use `.save(path)` rather than `.saveAsTable(...)` if you're writing to an external location rather than registering in the metastore:
+
+```python
+spark_dfs[sheet].write \
+    .format("delta") \
+    .mode("overwrite") \
+    .option("overwriteSchema", "true") \
+    .save(f"s3://your-bucket/delta/{sanitize_table_name(sheet)}")
+```
+
+You'd then optionally register it separately with `CREATE TABLE ... USING DELTA LOCATION '...'` if you want it queryable by name later.
+
+## Other options worth knowing
+
+- **`.partitionBy("col_name")`** — add before `.saveAsTable(...)` if there's a natural partition column (e.g., a date/month field) and the table will grow large over repeated loads.
+- **`mode("append")`** instead of `"overwrite"` — if you're accumulating data across multiple Excel loads rather than replacing the table each run; in that case drop `overwriteSchema` in favor of `.option("mergeSchema", "true")` so new columns get added rather than erroring.
+
+Given you're loading from Excel (inherently a "reload the whole small reference table" pattern rather than incremental), `overwrite` + `overwriteSchema` is almost certainly the right default unless you specifically need history/append semantics.
