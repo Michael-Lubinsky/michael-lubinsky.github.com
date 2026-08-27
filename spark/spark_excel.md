@@ -2,6 +2,71 @@
 
 If your Databricks Runtime is **17.1 or newer**, Databricks now has **built-in Excel support**, so you do not need `pandas`, `openpyxl`, or the old `com.crealytics.spark.excel` library. It can read `.xlsx` directly from S3, and it can list workbook sheets first. ([Databricks Documentation][1])
 
+You can check the **Databricks Runtime (DBR) version** several ways.
+
+### 1. From a Databricks notebook
+
+Run:
+
+```python
+spark.conf.get("spark.databricks.clusterUsageTags.sparkVersion")
+```
+
+You should get something like:
+
+```text
+17.3.x-scala2.13
+```
+
+meaning you're using **Databricks Runtime 17.3**.
+
+Another useful command is:
+
+```python
+spark.conf.get("spark.databricks.clusterUsageTags.clusterName")
+```
+
+to confirm which cluster the notebook is attached to.
+
+### 2. From the Databricks UI
+
+For a classic compute cluster:
+
+**Compute → select your cluster → Configuration**
+
+Look for **Databricks Runtime Version**, for example:
+
+```text
+17.3 LTS (includes Apache Spark 4.0.0, Scala 2.13)
+```
+
+### 3. Environment variable from a notebook
+
+You can also run:
+
+```python
+import os
+
+print(os.environ.get("DATABRICKS_RUNTIME_VERSION"))
+```
+
+Typical output:
+
+```text
+17.3
+```
+
+### For your Excel question
+
+The simplest check is:
+
+```python
+print(spark.conf.get("spark.databricks.clusterUsageTags.sparkVersion"))
+```
+
+If you paste the result here, I can tell you whether your runtime supports **native `.xlsx` reading from S3**, and give you the appropriate PySpark code.
+
+
 Suppose your file is:
 
 ```python
