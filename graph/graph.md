@@ -49,9 +49,19 @@ LatticeDB is an embedded, single-file graph database that lets local application
 
 <https://theconsensus.dev/p/2026/05/29/ladybug-duckdb-and-postgresql.html>
 
+### SparrowDB
+
+<https://github.com/ryaker/SparrowDB>
+
+
 ### DuckDB Graphs
 
-https://duckpgq.org/
+<https://duckpgq.org/>
+
+### Qbix
+
+<https://community.qbix.com/t/qbix-streams-as-a-graph-database/769>
+
 
 ### Postgres 19 Graph
 
