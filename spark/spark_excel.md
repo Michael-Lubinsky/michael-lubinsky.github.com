@@ -633,3 +633,72 @@ df = (
 
 This avoids Spark scanning the CSV to infer types and, more importantly, prevents an unexpected source-file change from silently changing your DataFrame schema.
 
+
+Since local disk (`file:/...`) only exists on the driver, "efficiently" here has two different meanings depending on your cluster setup — and picking wrong can silently break or bottleneck things. Let me lay out the options.
+
+## The core issue: local file ≠ distributed file
+
+`spark.read.csv("file:/tmp/data.csv")` tells every executor to look for that path on **its own** local disk. On a **single-node cluster**, driver and executor are the same machine, so it works fine and is fast. On a **multi-node cluster**, workers don't have that file — you'll get `FileNotFoundException` on workers, or in some configs Spark silently only reads what the driver can see.
+
+## Option 1: Single-node cluster — just read directly (fastest)
+
+```python
+df = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("file:/tmp/data.csv")
+```
+
+This is fully efficient here — no extra copy, no driver bottleneck, Spark parallelizes reading the local file across driver cores same as any file.
+
+`inferSchema` does a full extra pass over the data to guess types — for large files, supply an explicit schema instead to skip that pass and speed things up:
+
+```python
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
+
+schema = StructType([
+    StructField("col1", StringType(), True),
+    StructField("col2", DoubleType(), True),
+    # ...
+])
+
+df = spark.read.format("csv").schema(schema).option("header", "true").load("file:/tmp/data.csv")
+```
+
+## Option 2: Multi-node cluster — copy to distributed storage first, then read (most reliable + efficient)
+
+Rather than routing through pandas (which serializes everything through the driver as Python objects — slow for large files), copy the raw file to DBFS/S3/Volumes first, then let Spark read it natively and distribute the read itself:
+
+```python
+# Copy local file to a distributed location
+dbutils.fs.cp("file:/tmp/data.csv", "dbfs:/tmp/data.csv")
+# or: dbutils.fs.cp("file:/tmp/data.csv", "s3://your-bucket/tmp/data.csv")
+
+# Now read normally — Spark distributes this read across the cluster
+df = spark.read.format("csv") \
+    .option("header", "true") \
+    .schema(schema) \
+    .load("dbfs:/tmp/data.csv")
+```
+
+This `dbutils.fs.cp` is a fast, non-Python-serialized byte copy (not routed through pandas), so it doesn't take a real efficiency hit — you're just relocating bytes before Spark reads them properly.
+
+## Option 3: pandas → `createDataFrame` — only for small files
+
+```python
+import pandas as pd
+pdf = pd.read_csv("/tmp/data.csv")
+df = spark.createDataFrame(pdf)
+```
+
+Reliable across cluster types, but the whole file gets loaded into driver memory as pandas, then serialized row-by-row into Spark — this is the **slowest and least scalable** of the three for anything beyond a few hundred MB. Use it only when the file is genuinely small or you need pandas-specific parsing quirks handled first.
+
+## Which to pick
+
+| Situation | Best approach |
+|---|---|
+| Single-node cluster | Option 1 — direct `file:` read |
+| Multi-node cluster, file is sizeable | Option 2 — copy to DBFS/S3 first, then native Spark read |
+| File is small (few MB) regardless of cluster | Option 3 is fine, simplicity over speed |
+
+Given your recent zip/xlsx work, are you on a single-node or multi-node cluster? That determines whether Option 1 is safe to use as-is or you need the copy-first step.
