@@ -6,6 +6,7 @@
 
 <https://habr.com/ru/companies/selectel/articles/1068542/>
 
+<https://news.ycombinator.com/item?id=49445727>
 
 <https://habr.com/ru/companies/magnus-tech/articles/1046702/>
 
