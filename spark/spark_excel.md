@@ -421,3 +421,215 @@ You'd then optionally register it separately with `CREATE TABLE ... USING DELTA 
 - **`mode("append")`** instead of `"overwrite"` — if you're accumulating data across multiple Excel loads rather than replacing the table each run; in that case drop `overwriteSchema` in favor of `.option("mergeSchema", "true")` so new columns get added rather than erroring.
 
 Given you're loading from Excel (inherently a "reload the whole small reference table" pattern rather than incremental), `overwrite` + `overwriteSchema` is almost certainly the right default unless you specifically need history/append semantics.
+
+
+## How to read zip file with csv inside
+
+PySpark does **not** natively read a `.zip` archive containing a CSV the same way it reads `.gz`. The usual approach is:
+
+1. copy/download the ZIP from S3 to the Databricks driver,
+2. unzip the single CSV,
+3. read the extracted CSV with Spark.
+
+For Databricks:
+
+```python
+import zipfile
+import os
+
+s3_path = "s3://my-bucket/path/data.zip"
+local_zip = "/tmp/data.zip"
+extract_dir = "/tmp/data_unzipped"
+```
+
+Copy the ZIP from S3:
+
+```python
+dbutils.fs.cp(s3_path, f"file:{local_zip}")
+```
+
+Unzip it:
+
+```python
+os.makedirs(extract_dir, exist_ok=True)
+
+with zipfile.ZipFile(local_zip, "r") as z:
+    z.extractall(extract_dir)
+    print(z.namelist())
+```
+
+If the archive contains one file, for example:
+
+```text
+data.csv
+```
+
+then load it:
+
+```python
+csv_path = f"file:{extract_dir}/data.csv"
+
+df = (
+    spark.read
+         .option("header", True)
+         .option("inferSchema", True)
+         .csv(csv_path)
+)
+```
+
+Then:
+
+```python
+df.show()
+df.printSchema()
+```
+
+One caveat: `file:/tmp/...` is local to the **driver**. For a relatively small CSV this is fine, but for a large file I would extract it into S3 or a Databricks-accessible volume/path first, then let Spark read it distributed.
+
+For example:
+
+```python
+dbutils.fs.cp(
+    "file:/tmp/data_unzipped/data.csv",
+    "s3://my-bucket/tmp/data.csv"
+)
+
+df = (
+    spark.read
+         .option("header", True)
+         .csv("s3://my-bucket/tmp/data.csv")
+)
+```
+
+Yes. Since you know the ZIP should contain exactly one CSV, I would also validate that assumption.
+
+```python
+import zipfile
+import os
+
+s3_path = "s3://my-bucket/path/data.zip"
+local_zip = "/tmp/data.zip"
+extract_dir = "/tmp/data_unzipped"
+
+# Copy ZIP from S3 to Databricks driver
+dbutils.fs.cp(s3_path, f"file:{local_zip}")
+
+# Create extraction directory
+os.makedirs(extract_dir, exist_ok=True)
+
+# Find CSV file inside ZIP
+with zipfile.ZipFile(local_zip, "r") as z:
+    csv_files = [
+        name for name in z.namelist()
+        if name.lower().endswith(".csv") and not name.endswith("/")
+    ]
+
+    if len(csv_files) != 1:
+        raise ValueError(
+            f"Expected exactly one CSV file, found {len(csv_files)}: {csv_files}"
+        )
+
+    csv_name = csv_files[0]
+
+    # Extract it
+    z.extract(csv_name, extract_dir)
+
+print(f"CSV found: {csv_name}")
+```
+
+Then construct the path automatically:
+
+```python
+local_csv = os.path.join(extract_dir, csv_name)
+
+df = (
+    spark.read
+        .option("header", True)
+        .option("inferSchema", True)
+        .csv(f"file:{local_csv}")
+)
+
+df.show()
+df.printSchema()
+```
+
+### A shorter complete version
+
+For a Databricks notebook, you could wrap this into a function:
+
+```python
+import zipfile
+import os
+import uuid
+
+def read_single_csv_zip(s3_path):
+    # Unique temp directory avoids collisions between files/runs
+    temp_dir = f"/tmp/zip_{uuid.uuid4().hex}"
+    local_zip = f"{temp_dir}/input.zip"
+
+    os.makedirs(temp_dir)
+
+    # Download from S3
+    dbutils.fs.cp(s3_path, f"file:{local_zip}")
+
+    # Inspect ZIP
+    with zipfile.ZipFile(local_zip) as z:
+        csv_files = [
+            name for name in z.namelist()
+            if name.lower().endswith(".csv") and not name.endswith("/")
+        ]
+
+        if len(csv_files) != 1:
+            raise ValueError(
+                f"Expected one CSV, found {len(csv_files)}: {csv_files}"
+            )
+
+        csv_name = csv_files[0]
+        z.extract(csv_name, temp_dir)
+
+    csv_path = os.path.join(temp_dir, csv_name)
+
+    # Read into PySpark
+    df = (
+        spark.read
+            .option("header", True)
+            .option("inferSchema", True)
+            .csv(f"file:{csv_path}")
+    )
+
+    return df
+```
+
+Then your application code becomes simply:
+
+```python
+df = read_single_csv_zip(
+    "s3://my-bucket/incoming/customer_data.zip"
+)
+
+display(df)
+```
+
+### One production consideration
+
+For a production ETL pipeline, I would **not normally use `inferSchema=True`**. Define the expected schema explicitly:
+
+```python
+from pyspark.sql.types import *
+
+schema = StructType([
+    StructField("customer_id", StringType(), False),
+    StructField("name", StringType(), True),
+    StructField("amount", DoubleType(), True),
+])
+
+df = (
+    spark.read
+        .option("header", True)
+        .schema(schema)
+        .csv(f"file:{csv_path}")
+)
+```
+
+This avoids Spark scanning the CSV to infer types and, more importantly, prevents an unexpected source-file change from silently changing your DataFrame schema.
+
