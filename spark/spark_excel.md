@@ -1,5 +1,217 @@
 ## How to read MS Excel into PySpark
 
+If your Databricks Runtime is **17.1 or newer**, Databricks now has **built-in Excel support**, so you do not need `pandas`, `openpyxl`, or the old `com.crealytics.spark.excel` library. It can read `.xlsx` directly from S3, and it can list workbook sheets first. ([Databricks Documentation][1])
+
+Suppose your file is:
+
+```python
+path = "s3://my-bucket/input/report.xlsx"
+```
+
+First, get the sheet names:
+
+```python
+sheets_df = (
+    spark.read
+         .format("excel")
+         .option("operation", "listSheets")
+         .load(path)
+)
+
+sheets_df.show()
+```
+
+You may get:
+
+```text
++----------+-------------+
+|sheetIndex|sheetName    |
++----------+-------------+
+|0         |Customers    |
+|1         |Orders       |
+|2         |Products     |
++----------+-------------+
+```
+
+Databricks reads **one sheet at a time**, so then create one PySpark DataFrame per sheet. ([Databricks Documentation][1])
+
+For known sheet names:
+
+```python
+customers_df = (
+    spark.read
+         .option("headerRows", 1)
+         .option("dataAddress", "Customers")
+         .excel(path)
+)
+
+orders_df = (
+    spark.read
+         .option("headerRows", 1)
+         .option("dataAddress", "Orders")
+         .excel(path)
+)
+
+products_df = (
+    spark.read
+         .option("headerRows", 1)
+         .option("dataAddress", "Products")
+         .excel(path)
+)
+```
+
+Here:
+
+```python
+.option("headerRows", 1)
+```
+
+means the first row contains column names.
+
+And:
+
+```python
+.option("dataAddress", "Orders")
+```
+
+means read the whole `Orders` sheet. You can also specify a range such as:
+
+```python
+.option("dataAddress", "Orders!A1:H5000")
+```
+
+Databricks supports either a sheet name or normal Excel-style ranges in `dataAddress`. ([Databricks Documentation][2])
+
+### Dynamically load all sheets
+
+A useful pattern is to put all the DataFrames into a Python dictionary:
+
+```python
+path = "s3://my-bucket/input/report.xlsx"
+
+sheets_df = (
+    spark.read
+         .format("excel")
+         .option("operation", "listSheets")
+         .load(path)
+)
+
+sheet_names = [
+    row.sheetName
+    for row in sheets_df.collect()
+]
+
+dfs = {}
+
+for sheet in sheet_names:
+    dfs[sheet] = (
+        spark.read
+             .option("headerRows", 1)
+             .option("dataAddress", sheet)
+             .excel(path)
+    )
+```
+
+Now:
+
+```python
+dfs.keys()
+```
+
+might return:
+
+```text
+dict_keys(['Customers', 'Orders', 'Products'])
+```
+
+and you access them as:
+
+```python
+dfs["Customers"].show()
+
+dfs["Orders"].show()
+
+dfs["Products"].show()
+```
+
+I prefer this over dynamically creating Python variables such as `df_Customers`, `df_Orders`, etc.
+
+### Full example
+
+```python
+xlsx_path = "s3://my-bucket/data/source.xlsx"
+
+# Get all workbook sheets
+sheet_names = [
+    row.sheetName
+    for row in (
+        spark.read
+             .format("excel")
+             .option("operation", "listSheets")
+             .load(xlsx_path)
+             .collect()
+    )
+]
+
+# Load each sheet as its own PySpark DataFrame
+sheet_dfs = {
+    sheet: (
+        spark.read
+             .option("headerRows", 1)
+             .option("dataAddress", sheet)
+             .excel(xlsx_path)
+    )
+    for sheet in sheet_names
+}
+
+for sheet, df in sheet_dfs.items():
+    print(f"{sheet}: {df.count()} rows")
+    df.printSchema()
+```
+
+For example:
+
+```text
+Customers: 1500 rows
+Orders: 18732 rows
+Products: 428 rows
+```
+
+### If you know the sheets beforehand
+
+I would actually use explicit names in a production pipeline:
+
+```python
+customers_df = spark.read.excel(
+    xlsx_path,
+    dataAddress="Customers",
+    headerRows=1
+)
+
+orders_df = spark.read.excel(
+    xlsx_path,
+    dataAddress="Orders",
+    headerRows=1
+)
+
+products_df = spark.read.excel(
+    xlsx_path,
+    dataAddress="Products",
+    headerRows=1
+)
+```
+
+This is clearer and lets you apply a different schema to every sheet.
+
+For example, your `Customers` and `Orders` sheets probably have completely different schemas, so in production I would avoid relying only on inferred types.
+
+One important requirement: this built-in API requires **Databricks Runtime 17.1+**. ([Databricks Documentation][1]) If you tell me your Databricks Runtime version, I can also show you the correct solution for an older cluster, where the approach is different.
+
+[1]: https://docs.databricks.com/aws/en/query/formats/excel?utm_source=chatgpt.com "Read and stream Excel files | Databricks on AWS"
+[2]: https://docs.databricks.com/gcp/en/spark/api-options?utm_source=chatgpt.com "Spark API options reference | Databricks on Google Cloud"
+
+
+
 ## Option 1 — Databricks: `spark-excel` / native Excel data source (recommended in your environment)
 
 Databricks Runtime has built-in support for Excel via the `com.crealytics.spark.excel` format (or the newer native `excel` reader in recent DBR versions). It reads straight from S3 without pulling the file to driver memory manually — Spark handles the S3 read.
