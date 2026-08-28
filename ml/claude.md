@@ -1,6 +1,8 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://github.com/luongnv89/claude-howto>
+
 <https://habr.com/ru/articles/1063240/>
 
 <https://habr.com/ru/articles/1073304/>
