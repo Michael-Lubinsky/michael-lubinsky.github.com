@@ -1,4 +1,7 @@
 ## Math
+
+<https://russianmathbooks.com/>
+
 <https://www.youtube.com/live/btlQl93qOhc> Symmetry is everywhere
 
 <https://www.youtube.com/@molotov_ilya> Илья Молотов
