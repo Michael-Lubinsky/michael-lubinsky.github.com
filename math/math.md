@@ -112,6 +112,8 @@ New series! Intro to Pure Math
 
 ### Linear Algebra
 
+<https://arxiv.org/abs/2501.14787>
+
 <https://allendowney.github.io/ThinkLinearAlgebra/index.html>
 
 Fact of Linear Algebra: matrices are graphs, and graphs are matrices.
