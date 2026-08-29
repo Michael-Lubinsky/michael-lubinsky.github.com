@@ -78,7 +78,10 @@ and has native bindings written in zig.
 <https://visx.airbnb.tech/> visualization primitives for React
 
 ### Web with Go
-https://packagemain.tech/p/golang-datastar
+
+<https://packagemain.tech/p/golang-datastar>
+
+<https://housecat.com/blog/the-hugs-stack-hypermedia-unix-go-sqlite>
 
 ### DataStar
 
