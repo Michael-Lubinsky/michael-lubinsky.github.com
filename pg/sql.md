@@ -18,7 +18,7 @@ https://azimutt.app/gallery
 
 <https://github.com/eduardofuncao/squix> SQL Client in terminal
 
-
+<https://habr.com/ru/companies/otus/articles/1067758/>
 
 <https://datamethods.substack.com/p/sql-anti-patterns-you-should-avoid>
 
