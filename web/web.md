@@ -77,6 +77,8 @@ and has native bindings written in zig.
 
 <https://visx.airbnb.tech/> visualization primitives for React
 
+<https://alpine-ajax.js.org/> Alpine Ajax
+
 ### Web with Go
 
 <https://packagemain.tech/p/golang-datastar>
