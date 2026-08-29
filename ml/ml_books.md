@@ -6,3 +6,5 @@
 <https://introml.mit.edu/_static/spring24/LectureNotes/6_390_lecture_notes_spring24.pdf>
 
 <https://mmids-textbook.github.io/>
+
+<https://henryndubuaku.github.io/maths-cs-ai-compendium/>
