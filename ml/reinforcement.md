@@ -1,6 +1,8 @@
 ## Reinforcement learning
 <https://habr.com/ru/articles/1075200/>
 
+<https://rl-handbook.com/>
+
 The abbreviation STAR (or S-A-T-R) translates directly to the core elements of a Markov Decision Process (MDP): [1] 
 
 * S: State (The environment's current configuration)
