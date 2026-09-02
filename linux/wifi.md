@@ -4,6 +4,7 @@
 
 <img width="523" height="700" alt="image" src="https://github.com/user-attachments/assets/7a08b7d8-7a50-4310-aa39-604c83bb8ea7" />
 
+<https://habr.com/ru/companies/beget/articles/1076426/>
 
 <https://habr.com/ru/articles/1017728/>
 
