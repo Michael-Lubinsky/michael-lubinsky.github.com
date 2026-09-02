@@ -3,6 +3,8 @@
 
 <https://github.com/luongnv89/claude-howto>
 
+<https://habr.com/ru/articles/1077104/>
+
 <https://habr.com/ru/articles/1063240/>
 
 <https://habr.com/ru/articles/1073304/>
