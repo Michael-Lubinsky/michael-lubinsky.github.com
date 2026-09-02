@@ -4,6 +4,9 @@
 
 <https://news.ycombinator.com/item?id=48935510>
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/60506641-4fc8-4701-9f88-d8a9e57cc5b3" />
+
+
 A **Spark job** is the unit of work triggered by an **action** in your Spark code — it's the top level of Spark's internal execution hierarchy. Understanding it means understanding the whole hierarchy, since the terms nest inside each other in a specific way that trips people up (especially "Spark job" vs. "Databricks job," which are completely different things despite the shared word).
 
 ## The execution hierarchy
