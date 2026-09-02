@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/companies/ruvds/articles/978320/>
 
+<https://habr.com/ru/companies/amvera/articles/1077630/>
+
 ### Fix Git Issues
 <https://habr.com/ru/companies/wildberries/articles/1039630/>  
 <https://habr.com/ru/companies/amvera/articles/1041676/>  
