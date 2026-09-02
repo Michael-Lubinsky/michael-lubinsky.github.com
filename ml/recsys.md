@@ -7,6 +7,8 @@
 Рекомендательные системы и матричные разложения. Корреляционные модели. Латентные модели
 <https://www.youtube.com/watch?v=_ZNm6KQX5c8>
 
+<https://habr.com/ru/articles/1077822/>
+
 <https://habr.com/ru/companies/sberbank/articles/1054286/>
 
 <https://habr.com/ru/articles/1050196/> RAG for recsys
