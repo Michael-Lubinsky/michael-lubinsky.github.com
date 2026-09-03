@@ -1,4 +1,5 @@
 ## RAG
+<img width="800" height="1063" alt="image" src="https://github.com/user-attachments/assets/9e63c501-e872-49d6-a304-770263a99ee5" />
 
 <https://leanpub.com/cracking-the-rag-interview#about>
 
