@@ -271,6 +271,8 @@ Answer: All three should move in the same direction - clockwise or anticlockwise
 
 <https://www.youtube.com/watch?v=7Uij5uN16qg> Math with Ming, 5 hours
 
+<https://www.youtube.com/watch?v=46yWLHdN98I> Math with Ming, 4 hours
+
 Complex Analysis and Physical Applications: 
 <https://www.youtube.com/watch?v=0Won5Vs_65E>
 
