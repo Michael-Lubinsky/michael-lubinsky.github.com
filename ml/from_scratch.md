@@ -29,6 +29,8 @@ coding a machine learning library in c from scratch
 
 <https://github.com/analyticalrohit/llms-from-scratch>
 
+<https://github.com/rasbt/LLMs-from-scratch>
+
 <https://ml-by-hand.readthedocs.io/en/latest/>
 
 <https://www.deep-ml.com/projects>
