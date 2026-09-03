@@ -2,6 +2,8 @@
 
 <https://languagemodelbuilder.com/>
 
+<https://martinuke0.github.io/posts/2026-09-01-build-your-own-inference-engine-from-scratch/>
+
 <https://andrewkchan.dev/posts/yalm.html> Fast LLM Inference From Scratch
 
 <https://www.youtube.com/playlist?list=PLO45-80-XKkQyROXXpn4PfjF1J2tH46w8> MiniTorch
