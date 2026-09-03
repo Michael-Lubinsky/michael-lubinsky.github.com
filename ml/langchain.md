@@ -1,5 +1,8 @@
 ## LangChain LangGraph
-https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b
+
+<https://github.com/RAYEN8811/Langraph_for_beginners->
+
+<https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b>
 
 ```python
 from langchain_openai import ChatOpenAI
