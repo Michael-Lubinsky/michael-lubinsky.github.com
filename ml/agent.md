@@ -73,7 +73,7 @@
 
 <https://habr.com/ru/articles/1061746/>
 <https://habr.com/ru/articles/1074038/>
-
+<https://arxiv.org/abs/2609.02115v1>
 <https://github.com/pseudosavant/sql-agent-cli>
 
 <https://nchammas.com/writing/custom-query-language-design#why-not-use-an-llm>
