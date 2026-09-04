@@ -9,6 +9,8 @@ Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-e
 
 <https://machinelearningmastery.com/the-2026-time-series-toolkit-5-foundation-models-for-autonomous-forecasting/>
 
+<https://habr.com/ru/articles/1078544/> TimesFM-3 (Time Series Foundational Model).
+
 <https://github.com/RussellSB/pytrendy>
 
 
