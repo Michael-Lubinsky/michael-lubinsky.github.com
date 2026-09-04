@@ -2,6 +2,8 @@
 
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
 
+<https://github.com/manaflow-ai/cmux>  macOS terminal with vertical tabs and notifications for AI coding agents
+
 <https://habr.com/ru/articles/1068168/>
 
 <https://habr.com/ru/articles/1068024/>
