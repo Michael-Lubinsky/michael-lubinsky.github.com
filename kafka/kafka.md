@@ -3,6 +3,8 @@
 
 <https://vutr.substack.com/p/if-youre-learning-kafka-this-article>
 
+<https://habr.com/ru/articles/1078340/> Kafka Connect
+
 <https://habr.com/ru/companies/otus/articles/1072150/>
 
 <https://habr.com/ru/articles/1052700/>
