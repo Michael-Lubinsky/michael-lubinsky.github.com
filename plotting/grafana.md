@@ -1,5 +1,7 @@
 ## Grafana
 
+<https://habr.com/ru/articles/1078994/>
+
 ### Panel Links  
 You can add **panel links** or **dashboard links** that pass variables (like `device_name`, `region`, or `error_code`) to simulate drilldown behavior.
 
