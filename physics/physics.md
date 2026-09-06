@@ -2,6 +2,8 @@
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
+<https://www.amazon.com/stores/author/B09FCP8QVP> Konstantin K. Likharev
+
 <https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>
 
 <https://www.susanrigetti.com/physics>
