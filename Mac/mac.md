@@ -17,6 +17,12 @@ caffeinate - prevents your MacBook from sleeping even with the lid closed
 
 https://pastfly.github.io/Selective-Remote/
 
+## Jupyter
+```
+  ~ % python3 -m venv ~/jupyter-env
+  ~ % source ~/jupyter-env/bin/activate
+  ~ % pip install notebook
+```
 
 ## Gemini Notebook
 <https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/>
