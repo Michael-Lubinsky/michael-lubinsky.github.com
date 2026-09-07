@@ -23,8 +23,9 @@ https://pastfly.github.io/Selective-Remote/
   ~ % source ~/jupyter-env/bin/activate
   ~ % pip install notebook
   ~ % jupyter notebook
-
 ```
+http://localhost:8888/
+
 ### JupyterLab
 ```
   python3 -m venv ~/jupyterlab-env
