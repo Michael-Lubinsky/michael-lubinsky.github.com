@@ -33,6 +33,7 @@ http://localhost:8888/
   pip install jupyterlab
   jupyter lab
 ```
+<img width="698" height="311" alt="image" src="https://github.com/user-attachments/assets/483da7fb-9ddb-40c5-b1e8-9ef8c98b885e" />
 
 ## Gemini Notebook
 <https://blog.google/innovation-and-ai/products/gemini-notebook/notebooklm-gemini-notebook/>
