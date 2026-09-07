@@ -22,6 +22,15 @@ https://pastfly.github.io/Selective-Remote/
   ~ % python3 -m venv ~/jupyter-env
   ~ % source ~/jupyter-env/bin/activate
   ~ % pip install notebook
+  ~ % jupyter notebook
+
+```
+### JupyterLab
+```
+  python3 -m venv ~/jupyterlab-env
+  source ~/jupyterlab-env/bin/activate
+  pip install jupyterlab
+  jupyter lab
 ```
 
 ## Gemini Notebook
