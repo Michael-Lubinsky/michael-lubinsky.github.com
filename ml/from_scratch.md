@@ -11,6 +11,7 @@
 coding a machine learning library in c from scratch
 <https://www.youtube.com/watch?v=hL_n_GljC0I>
 
+ <https://www.freecodecamp.org/news/code-an-llm-from-scratch-theory-to-rlhf>
 
 <https://habr.com/ru/articles/1056212/>
 <https://habr.com/ru/articles/1056226/>
