@@ -23,6 +23,9 @@
 
 <https://www.lighthousenewsletter.com/p/rag-is-simpler-than-you-think>
 
+<https://dorianfernandez.dev/writing/hnsw/>   How Do RAG Systems Search? HNSW
+<img width="743" height="852" alt="image" src="https://github.com/user-attachments/assets/ab70fab6-1671-4637-bf23-46b2688826a4" />
+
 
 RAG переводит LLM в режим работы с документами. Исследователи называют эту базовую схему парадигмой Retrieve-Read («Найди и прочитай»). Когда поступает запрос, система сначала обращается к внешней базе, достает релевантные куски текста, и только потом отдает их языковой модели вместе с изначальным промптом. По сути, мы ставим перед моделью задачу: «Вот вопрос, а вот набор сырых фактов — сформулируй итоговый ответ, опираясь на этот контекст».
 
@@ -135,7 +138,7 @@ So the key insight is: **indexing is one-to-many** (1 document → N vectors), b
 
 
 
-### Graph Knowlage Base and RAG:
+### Graph Knowledge Base and RAG:
 <https://habr.com/ru/companies/sberbank/articles/1029580/>  
 
 <https://github.com/microsoft/graphrag>
