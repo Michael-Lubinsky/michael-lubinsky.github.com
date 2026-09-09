@@ -4,6 +4,8 @@
 
 <https://www.amazon.com/stores/author/B09FCP8QVP> Konstantin K. Likharev
 
+<https://arxiv.org/abs/2609.06115>  Quantum Theory of Angular Momentum
+
 <https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>
 
 <https://www.susanrigetti.com/physics>
