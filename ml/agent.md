@@ -1,5 +1,7 @@
 ## Agents
 
+<https://agentic-coding-guide.netlify.app/>
+
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
 
 How to Enable Concise ModeType:
