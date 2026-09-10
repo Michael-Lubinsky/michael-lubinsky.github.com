@@ -2,6 +2,11 @@
 
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
 
+How to Enable Concise ModeType:
+
+/config inside Claude Code, navigate to output style, and select Concise.  
+Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
+
 <https://github.com/manaflow-ai/cmux>  macOS terminal with vertical tabs and notifications for AI coding agents
 
 <https://habr.com/ru/articles/1068168/>
