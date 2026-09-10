@@ -1,11 +1,12 @@
 ## Skills
 
 <https://habr.com/ru/articles/1078034/>  
-https://github.com/davidondrej/skills
+
+<https://github.com/davidondrej/skills>
 
 <https://github.com/sshwarts/skillscript>
 
-## Skills
+
 
 <https://arxiv.org/abs/2608.12610>
 
