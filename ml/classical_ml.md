@@ -5,6 +5,8 @@
 В чём идея алгоритмов снижения размеренности:
 <https://habr.com/ru/companies/bothub/articles/1062924/> UMAP  t-SNE
 
+SVM <https://habr.com/ru/articles/1072750/>
+
 <https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
 
 Precision, Recall, F-score, ROC-AUC
