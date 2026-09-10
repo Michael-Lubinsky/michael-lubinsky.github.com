@@ -109,9 +109,11 @@ New series! Intro to Pure Math
 <https://bodrovis.tech/tags/%D0%B0%D0%B1%D1%81%D1%82%D1%80%D0%B0%D0%BA%D1%82%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BB%D0%B3%D0%B5%D0%B1%D1%80%D0%B0/>
 <https://www.youtube.com/playlist?list=PLWlFXymvoaJ9JsrMvKejB7NIUAAJNuqHf>
 
-### Funcional Analysis
+### Functional Analysis
 
 <https://arxiv.org/pdf/1904.02539>
+
+<https://arxiv.org/pdf/2112.11166>
 
 ### Linear Algebra
 
