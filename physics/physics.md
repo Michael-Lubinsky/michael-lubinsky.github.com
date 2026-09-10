@@ -6,6 +6,8 @@
 
 <https://arxiv.org/abs/2609.06115>  Quantum Theory of Angular Momentum
 
+<https://www.damtp.cam.ac.uk/user/tong/qft.htm>
+
 <https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>
 
 <https://www.susanrigetti.com/physics>
