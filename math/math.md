@@ -26,7 +26,7 @@
 Interactive Linear Algebra <https://immersivemath.com/ila/>  <https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab>
 https://news.ycombinator.com/item?id=48935951
 
-
+<https://habr.com/ru/articles/1080734/> Преобразование Лежандра
 ```
 Scott Cunningham's "Causal Inference: The Mixtape"  
 E.T. Jaynes's "Probability Theory: The Logic of Science"  
