@@ -2,6 +2,8 @@
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
+<https://www.amazon.com/Quantum-Theory-Condensed-Matter-Physics/dp/052182284X>
+
 <https://www.amazon.com/stores/author/B09FCP8QVP> Konstantin K. Likharev
 
 <https://arxiv.org/abs/2609.06115>  Quantum Theory of Angular Momentum
