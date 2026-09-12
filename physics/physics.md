@@ -316,7 +316,7 @@ https://arxiv.org/pdf/quant-ph/0608140 Dyson ADVANCED QUANTUM MECHANICS Second E
 
 <https://phas.ubc.ca/~mcmillan/rqpdfs/5_qm_in_one_dimension.pdf>
 
-
+<https://habr.com/ru/articles/923992/>
 
 
 
