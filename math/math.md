@@ -8,6 +8,8 @@
 
 <https://www.youtube.com/@nochusg5453>
 
+<https://www.youtube.com/@Laplace_s_Demon>
+
 <https://www.youtube.com/@cssndev> https://www.youtube.com/@cssndev
 
 Павел Шестопалов:
