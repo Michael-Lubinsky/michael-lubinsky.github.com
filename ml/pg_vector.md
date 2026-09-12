@@ -1,6 +1,8 @@
-##  `pgvector` to Find Customers with Similar Patterns in PostgreSQL
+##  PGVector  
 
 `pgvector` is a PostgreSQL extension for storing and querying **vector embeddings**. 
+
+<https://habr.com/ru/articles/1081568/>
 
 Let use it for finding customers with similar patterns.
 
