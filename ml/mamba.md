@@ -2,6 +2,8 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+<https://huggingface.co/spaces/nanotron/ultrascale-playbook>
+
 <https://github.com/agwr/learn-jax> JAX
 
 <https://arxiv.org/pdf/2604.00965> Understanding transformers
