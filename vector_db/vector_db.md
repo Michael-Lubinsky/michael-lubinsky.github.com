@@ -2,6 +2,8 @@
 
 <https://vickiboykis.com/what_are_embeddings/>
 
+<https://habr.com/ru/companies/selectel/articles/1081146/>
+
 <https://habr.com/ru/companies/bothub/articles/1048210/>
 
 <https://habr.com/ru/companies/selectel/articles/1044854/>
