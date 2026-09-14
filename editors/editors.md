@@ -1,7 +1,10 @@
-
+## Editors
 https://github.com/MarkEdit-app/MarkEdit
 
 https://www.codeedit.app/
+
+## Zed
+<https://habr.com/ru/articles/1082090/>
 
 ## Helix 
 https://helix-editor.com/
