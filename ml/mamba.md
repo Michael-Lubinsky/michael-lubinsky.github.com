@@ -607,6 +607,72 @@ https://lnkd.in/gq-c7URx
 10. Neural Networks: Zero to Hero (21k ⭐)
 https://lnkd.in/gnusqKFa
 
+
+The best visual AI resources for learning Transformers, LLMs, embeddings, diffusion models, and what actually happens inside neural networks:
+
+1/ Transformer Explainer
+Watch GPT process text through embeddings, attention, MLPs and next-token prediction in real time.
+https://lnkd.in/dBgy3scx
+
+2/ Brendan Bycroft's LLM Visualization
+Explore an LLM from architecture down to tensors and operations. Fully interactive.
+https://bbycroft.net/llm
+
+3/ 3Blue1Brown
+Visual intuition for linear algebra, neural networks, backprop, attention and Transformers. Best place to build foundational understanding.
+https://lnkd.in/dBTmTebb
+
+4/ The Illustrated Transformer
+One of the clearest visual breakdowns of embeddings, Q/K/V and the attention mechanism.
+https://lnkd.in/dnMNBeEm
+
+5/ TensorFlow Playground
+Watch neural networks learn as you change layers, activations, features and learning rate. Great for intuition.
+https://lnkd.in/dy7yGp5D
+
+6/ Google PAIR AI Explorables
+Interactive explainers on LLMs, generalization, interpretability and model behavior.
+https://lnkd.in/dzhQcFui
+
+7/ Distill
+Exceptional visual essays on t-SNE, feature visualization, GNNs and interpretability. Still some of the best work out there.
+https://distill.pub/
+
+8/ Abhik Sarkar's Transformer Visualizations
+RoPE, KV cache, FlashAttention, MQA, GQA and other advanced transformer techniques.
+https://lnkd.in/dXrT8StK
+
+9/ Visual Guide to Attention Variants
+MHA, MQA, GQA and MLA visually compared side by side.
+https://lnkd.in/dNZ6Jxhr
+
+10/ Visual Guide to Mixture of Experts
+Routing, experts, sparse activation and load balancing explained visually.
+https://lnkd.in/djDA7325
+
+11/ Modular LLM Inference Handbook
+Prefill, decode, KV cache, batching, quantization and speculative decoding with clear diagrams.
+https://lnkd.in/dn2Z3cVh
+
+12/ Apple Embedding Atlas
+Explore clusters, neighborhoods and outliers in large embedding spaces. Helps build spatial intuition.
+https://lnkd.in/deF6VFXF
+
+13/ Diffusion Explainer
+Follow Stable Diffusion step by step, from noise to image.
+https://lnkd.in/dXGZfpjB
+
+14/ Neuronpedia
+Explore features, activations, SAE latents and attribution graphs inside real models.
+https://lnkd.in/dEUgJaVa
+
+15/ Seeing Theory
+Probability, Bayes, distributions, regression and inference made interactive. Useful for understanding the math behind AI.
+https://lnkd.in/dcUBvYjK
+
+16/ CNN Explainer
+Visualize convolutions, feature maps, activations and pooling in CNNs.
+https://lnkd.in/dw4Sh4py
 ### Feature store
 https://asrathore08.medium.com/feature-store-architecture-1324eff5a573
 
