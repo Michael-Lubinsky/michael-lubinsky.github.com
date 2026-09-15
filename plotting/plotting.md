@@ -1,6 +1,9 @@
-##  Dashoboard tool: rill 
+##  Dashoboards
 
-<https://github.com/rilldata/rill>
+<https://news.ycombinator.com/item?id=49704246>
+ 
+
+<https://github.com/rilldata/rill> rill
 
 ## 3D with python
 
