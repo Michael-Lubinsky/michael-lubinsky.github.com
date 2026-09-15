@@ -1,7 +1,9 @@
-
 ## Dunder methods and descriptors 
 are two different Python language mechanisms, 
 although both are part of Python’s object model and are often used together internally.
+
+<https://habr.com/ru/articles/1033432/> dunder methods
+<https://habr.com/ru/articles/955772/> descriptors
 
 <https://www.thepythoncodingstack.com/p/do-you-get-it-now-getitem-getattr-getattribute-get>
 
