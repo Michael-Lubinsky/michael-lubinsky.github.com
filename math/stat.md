@@ -54,14 +54,16 @@ https://arxiv.org/abs/2401.00649 Linear Model and Extensions
 
 
 ## **Rejection sampling** 
-we have a function rand7() that generates a uniform random integer in the range [1,7].
+
+### We have a function rand7() that generates a uniform random integer in the range [1,7].
 
 Write a function rand10() that generates a uniform random integer in the range [1,10].
 This is a classic **rejection sampling** problem.
 
 ---
 
-### Solution: Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
+### Solution: 
+  Use `rand7()` to simulate a larger uniform space, then map it to `[1..10]`.
 
 #### Step 1: Build a bigger uniform range
 
