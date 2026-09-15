@@ -21,6 +21,9 @@ Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
 
 <https://www.facebook.com/theaiempire/>
 
+
+https://developers.openai.com/api/docs/guides/agents-api/overview
+
 ## Python script that makes an API call to Anthropic, prints what it gets back and logs how many tokens (the unit a context window is measured in) it used.
 
 <https://heymeraki.substack.com/p/aie_10-building-it>
