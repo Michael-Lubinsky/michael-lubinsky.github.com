@@ -2,6 +2,8 @@
 
 <https://micro-editor.github.io/>
 
+<https://github.com/sinelaw/fresh>
+
 <https://txt.hellman.io/>
 
 <https://github.com/MarkEdit-app/MarkEdit>
