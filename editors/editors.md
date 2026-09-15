@@ -1,5 +1,7 @@
 ## Editors
 
+<https://micro-editor.github.io/>
+
 <https://txt.hellman.io/>
 
 <https://github.com/MarkEdit-app/MarkEdit>
