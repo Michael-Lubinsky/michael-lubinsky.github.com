@@ -12,12 +12,12 @@
 <https://habr.com/ru/companies/otus/articles/994238/> Как фронтенд получает данные с сервера: лучшие практики 2026
 
 ### Bun - Node.js alternative written in Rust
-https://habr.com/ru/articles/1072980/
+<https://habr.com/ru/articles/1072980/>
 
 ## HTML 
-<https://habr.com/ru/companies/ruvds/articles/1045072/> HTML
-
-https://chrisburnell.com/html-can-do-that/
+<https://habr.com/ru/companies/ruvds/articles/1045072/>  
+<https://habr.com/ru/companies/ruvds/articles/1080840/> 
+<https://chrisburnell.com/html-can-do-that/>
 
 <https://lobste.rs/s/5gcd3t/html_can_do>
 
