@@ -21,6 +21,67 @@ Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
 
 <https://www.facebook.com/theaiempire/>
 
+## Python script that makes an API call to Anthropic, prints what it gets back and logs how many tokens (the unit a context window is measured in) it used.
+
+<https://heymeraki.substack.com/p/aie_10-building-it>
+
+Required: Anthropic API key (platform.claude.com, you will need to add a small credit balance as the free tier does not cover API access)
+```
+mkdir ai-engineering
+cd ai-engineering
+python3 -m venv venv
+source venv/bin/activate
+pip install anthropic python-dotenv
+```
+anthropic is the official Python library for talking to Claude.
+
+python-dotenv reads your API key from a file so you never have to hardcode it in your script.
+
+Create a .env file and add your key:
+
+ANTHROPIC_API_KEY=your_key_here
+
+
+```python
+from dotenv import load_dotenv
+import os
+from anthropic import Anthropic
+
+load_dotenv()
+
+client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+response = client.messages.create(
+    model="claude-haiku-4-5",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "What is a large language model? Answer in two sentences."}
+    ]
+)
+
+text = response.content[0].text
+input_tokens = response.usage.input_tokens
+output_tokens = response.usage.output_tokens
+
+print("Response:")
+print(text)
+print()
+print(f"Input tokens: {input_tokens}")
+print(f"Output tokens: {output_tokens}")
+print(f"Total tokens: {input_tokens + output_tokens}")
+```
+Output
+```
+Response:
+A large language model (LLM) is an AI system trained on vast amounts 
+of text data to understand and generate human language. It uses deep 
+learning to predict and produce text by identifying patterns in the 
+data it learned from.
+
+Input tokens: 19
+Output tokens: 51
+Total tokens: 70
+```
 ## Harness
 <https://lilianweng.github.io/posts/2026-07-04-harness/>
 
