@@ -8,6 +8,10 @@
 
 <https://www.youtube.com/playlist?list=PLO45-80-XKkQyROXXpn4PfjF1J2tH46w8> MiniTorch
 
+<https://github.com/anuj0456/OpenArch> PyTorch implementations of modern LLM architectures 
+<https://news.ycombinator.com/item?id=49693384>
+
+
 coding a machine learning library in c from scratch
 <https://www.youtube.com/watch?v=hL_n_GljC0I>
 
