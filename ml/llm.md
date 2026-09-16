@@ -9,6 +9,11 @@ How to study any subject with LLM using Socratic method
 
 <https://github.com/bevibing/socrates-skill>
 
+<https://habr.com/ru/articles/1082936/>
+- RLHF - общий подход к обучению модели с использованием обратной связи.
+- PPO - более ранний и ресурсоёмкий вариант, обычно использующий отдельную value model.
+- GRPO - подход без отдельного critic, где baseline вычисляется по группе ответов.
+- DPO - метод, который обучается непосредственно на парах предпочтительных и не-предпочтительных ответов.
 
 <https://en.wikipedia.org/wiki/List_of_large_language_models>
 
