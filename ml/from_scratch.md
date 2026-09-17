@@ -1,6 +1,8 @@
-## Build From Scratch
+## Build LLM From Scratch
 
 <https://languagemodelbuilder.com/>
+
+<https://cs336.stanford.edu/>
 
 <https://martinuke0.github.io/posts/2026-09-01-build-your-own-inference-engine-from-scratch/>
 
