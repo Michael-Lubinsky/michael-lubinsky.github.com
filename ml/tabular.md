@@ -6,6 +6,23 @@ Applied Machine Learning for Tabular Data <https://aml4td.org/>
 
 <https://www.youtube.com/watch?v=Xym8FGDcl34>
 
+
+
+understand how Tabular Foundation Models (TFMs) work in detail, this is the learning path I am following.
+
+1. Start with Christoph Molnar’s open book, Tabular Foundation Models.
+It gives you a clear idea of how TFMs work beyond just .fit() and .predict(). Great visuals are a bonus.
+https://lnkd.in/gAkUD2dD
+
+2. Go through either nanoTabPFN or nanoTabICL.
+These are educational implementations that help you understand and train smaller versions of TabPFN and TabICL.
+NanoTabICL: https://lnkd.in/gbM4fEAr (David Holzmüller)
+nanoTabPFN: https://lnkd.in/gvv2Zywi
+
+3. Check TabArena.
+Pick a model, go through its documentation, and try it on your own data.
+https://lnkd.in/gwXv8DVb
+
 * **TabPFN** is a **foundation model for tabular data** (tables with rows and columns, like CSV files or SQL tables).
 * **TabArena** is a **benchmark** used to compare machine learning models on tabular prediction tasks.
 
