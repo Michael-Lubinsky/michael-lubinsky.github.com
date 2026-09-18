@@ -6,6 +6,8 @@
 
 <https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b>
 
+<https://habr.com/ru/companies/sberbank/articles/1083832/> better when LangGraph ?
+
 ```python
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
