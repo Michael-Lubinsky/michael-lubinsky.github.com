@@ -22,15 +22,7 @@
 
 <https://www.susanrigetti.com/math>
 
-<https://www.youtube.com/watch?v=1vnJ4gfcmB8> Linear Algebra 3Blue1brown ru
-<https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
 
-<img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
-
-<https://www.youtube.com/watch?v=ie6OKXBgoxc>  Определитель. Илья Молотов
-
-Interactive Linear Algebra <https://immersivemath.com/ila/>  <https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab>
-https://news.ycombinator.com/item?id=48935951
 
 <https://habr.com/ru/articles/1080734/> Преобразование Лежандра
 ```
@@ -62,6 +54,7 @@ Shlomo Sternberg's "Dynamical Systems"
 Летняя школа «Современная математика» имени Виталия Арнольда, 2024
  <https://www.mathnet.ru/conf2462>
 
+Books
  <https://www.klex.ru/razdel/math/> <https://www.klex.ru/razdel/mathematical_physics/>
 
  <https://archive.org/details/mir-titles>
@@ -122,6 +115,18 @@ New series! Intro to Pure Math
 <https://arxiv.org/pdf/2112.11166>
 
 ### Linear Algebra
+<https://www.youtube.com/watch?v=1vnJ4gfcmB8> Linear Algebra 3Blue1brown ru  
+<https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
+
+<img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
+
+<https://www.youtube.com/watch?v=ie6OKXBgoxc>  Определитель. Илья Молотов
+
+Interactive Linear Algebra <https://immersivemath.com/ila/>  
+<https://www.youtube.com/watch?v=fNk_zzaMoSs&list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab>
+
+<https://news.ycombinator.com/item?id=48935951>
+
 
 <https://arxiv.org/abs/2501.14787>
 
