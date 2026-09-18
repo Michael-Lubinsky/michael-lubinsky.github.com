@@ -54,12 +54,7 @@ Shlomo Sternberg's "Dynamical Systems"
 Летняя школа «Современная математика» имени Виталия Арнольда, 2024
  <https://www.mathnet.ru/conf2462>
 
-Books
- <https://www.klex.ru/razdel/math/> <https://www.klex.ru/razdel/mathematical_physics/>
 
- <https://archive.org/details/mir-titles>
-
- <https://pdf.lib.vntu.edu.ua/books/Springer/>
 
 < https://habr.com/ru/articles/1049898/> как доказать неразрешимость уравнений пятой степени
  <https://habr.com/ru/articles/1055326/> Часть II: как доказать неразрешимость уравнений пятой степени
@@ -186,7 +181,6 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 
 <https://www.cs.mcgill.ca/~akroit/math/>
 
-
 <<https://www.cantorsparadise.com>
 
 <https://medium.com/tag/mathematics>
@@ -195,11 +189,7 @@ Green Function <https://www.youtube.com/watch?v=SD_2UGcL8rM>
 <https://www.cis.upenn.edu/~jean/math-deep.pdf>  Algebra, Topology, Differential Calculus, and
 Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
-
-
 <https://courses.csail.mit.edu/6.042/spring18/mcs.pdf>  Math for CS
-
-
 
 <https://eli.thegreenplace.net/2025/hilbert-space-treating-functions-as-vectors/> Hilbert Space 
 
@@ -207,12 +197,6 @@ Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
 <https://www.youtube.com/watch?v=YYfrAk0KZGg> Advanced Mathematical Courses in Virtual Setup
 
-
-
-<https://link.springer.com/book/10.1007/978-3-031-46270-2> Exploring University Mathematics with Python
-
-
- 
 <https://toomanydigits.online/index.html> Вычислительная математика  
 <https://www.kvant.digital/> Kvant
 
@@ -220,6 +204,14 @@ Optimization Theory For Computer Science and Machine Learning (~2,000 pages)
 
 ## Books
 
+ <https://link.springer.com/book/10.1007/978-3-031-46270-2> Exploring University Mathematics with Python
+ 
+ <https://www.klex.ru/razdel/math/>   
+ <https://www.klex.ru/razdel/mathematical_physics/>
+
+ <https://archive.org/details/mir-titles>
+
+ <https://pdf.lib.vntu.edu.ua/books/Springer/>
 <https://www.ega-math.narod.ru/>
 
 <https://github.com/valeman/Awesome_Math_Books>
