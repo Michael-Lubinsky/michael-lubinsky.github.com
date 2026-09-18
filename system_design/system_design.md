@@ -8,6 +8,8 @@
 
 <https://github.com/liquidslr/system-design-notes>
 
+<https://scalequest.io/sources>
+
 <https://habr.com/ru/articles/1082254/> C4 полный гайд по моделированию архитектуры 
 
 <https://github.com/bregman-arie/devops-exercises>
