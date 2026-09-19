@@ -27,9 +27,6 @@ Different category entirely — a minimal, open-source terminal coding agent har
 
 Worth noting the honest caveat several of these comparisons make: if your agent just calls two or three tools in a linear flow, a framework adds friction rather than value — a plain SDK loop with a max_steps cap does the job. Frameworks earn their keep once human-in-the-loop, multi-agent coordination, or durable execution enter the picture.
 
-
-Got it — **omp.sh (Oh My Pi)** is a real one, and worth adding to the mix. Here's the correction:
-
 ## OMP / Oh My Pi (omp.sh)
 
 Built on top of pi.dev but goes considerably further — a Rust-core coding agent harness (~55k lines) rather than pi's minimal 4-tool core. Its architectural bets:
