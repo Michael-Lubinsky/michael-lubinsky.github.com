@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/companies/selectel/articles/1081146/>
 
+<https://machinelearningmastery.com/build-and-understand-a-vector-database-from-scratch-in-10-easy-steps/>
+
 <https://habr.com/ru/companies/bothub/articles/1048210/>
 
 <https://habr.com/ru/companies/selectel/articles/1044854/>
