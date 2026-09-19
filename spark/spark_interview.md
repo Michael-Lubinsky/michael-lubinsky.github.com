@@ -260,4 +260,10 @@ Mention: this is exactly the `DELTA_MULTIPLE_SOURCE_ROW_MATCHING_TARGET_ROW_IN_M
 - **Cost**: cluster autoscaling, cache only the reused DataFrame (registrations, if joined repeatedly), avoid wide shuffles by broadcasting the smaller side (`F.broadcast(registrations)`) if it fits.
 - **Monitoring**: row-count assertions pre/post dedup, alert if unmatched-activity ratio spikes (signals upstream scanner malfunction).
 
- 
+## Flat nested json
+
+ <img width="495" height="515" alt="image" src="https://github.com/user-attachments/assets/274948fb-f24d-4e21-bfe7-98f1679af091" />
+
+<img width="680" height="415" alt="image" src="https://github.com/user-attachments/assets/619ff1ab-c1b7-4fe1-81a3-001a91e668be" />
+
+
