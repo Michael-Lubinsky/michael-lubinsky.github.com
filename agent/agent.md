@@ -1,4 +1,114 @@
-What's in here
+# arXiv Lecture Notes Digest — six framework implementations
+
+Same task, six harnesses/frameworks, so the differences show up in
+**how work is structured**, not in what the task does.
+
+## The task
+
+1. Search arXiv **physics** categories (quant-ph, hep-th, cond-mat) for
+   lecture-notes-style papers from the last 2 weeks on quantum
+   mechanics, QFT, or solid state physics.
+2. Search arXiv **math** categories for lecture-notes-style papers from
+   the last 2 weeks (any subject).
+3. If either search returns fewer than 3 hits, widen the window
+   (double it, cap 60 days) and retry, up to 2 retries.
+4. Merge, dedupe against titles already reported in a previous run
+   (persisted state), and produce one Markdown digest.
+5. Require a human approval step before "publishing" (writing the
+   final `digest.md`).
+
+`shared/arxiv_client.py` and `shared/state_store.py` hold the one piece
+that's identical everywhere — the arXiv Atom API call, the keyword
+filters, and the JSON-backed seen-titles file — so every implementation
+below is orchestration logic only.
+
+## Status of what's included
+
+Every Python-based implementation was verified in this environment to
+**import cleanly and construct its full object graph** (agents, tasks,
+tools, handoffs, the compiled LangGraph state graph, the Claude Agent
+SDK's MCP server/subagents) without errors. The shared `arxiv_client.py`
+parsing/filtering logic was verified against a mocked arXiv feed and
+correctly handled the retry-and-widen path. What could **not** be run
+end-to-end here: this sandbox's network allowlist blocks
+`export.arxiv.org` (only package registries and GitHub are reachable),
+and none of the four LLM-backed frameworks had API keys configured. So:
+correct wiring is confirmed; a live, LLM-driven run is not. Run any of
+these from a normal machine with network access and the relevant API
+key to see it go end to end.
+
+The pi.dev and omp.sh "implementations" are config/prompt/extension
+files, not Python — both harnesses are driven by a CLI + Markdown
+instructions + (for pi) a small TypeScript tool, so there's no Python
+object graph to construct. The TypeScript tool's parsing logic was
+type-checked and verified against a mocked feed in Node directly.
+
+One correction from earlier in this conversation: **ohm.sh** is not a
+framework — it's a personal developer's landing page. The intended
+project is **omp.sh (Oh My Pi)**, which is what's implemented here.
+
+## Side-by-side
+
+| | Orchestration unit | Parallel fan-out | Retry/widen mechanism | Persistence | Human approval | Distinctive primitive |
+|---|---|---|---|---|---|---|
+| **LangGraph** | Graph nodes + edges | Native (two branches from `__start__`) | Explicit conditional edge, re-enters search node | `MemorySaver` checkpointer, keyed by `thread_id` | `interrupt()` + `Command(resume=...)` — graph genuinely suspends | Explicit, drawable state graph |
+| **CrewAI** | Role-based Agents + Tasks | Sequential by default; editor task's `context=[...]` waits on both research tasks | Agent's own tool-calling loop (instructed to retry, not enforced) | A dedupe **tool** the Editor agent calls | `Task(human_input=True)` — blocks on literal input | Role/goal/backstory mental model |
+| **OpenAI Agents SDK** | Small Agents + typed handoffs | Triage agent hands off to both specialists | `output_guardrail` trips when `hit_count < MIN_HITS` | A `function_tool` wrapping the JSON store | A tool call (`request_human_approval`) the orchestrator must invoke | Guardrails as the control primitive |
+| **Claude Agent SDK** | One primary agent + Task-tool subagents | Two subagents launched via `Task` | Subagent's own instructed loop (like CrewAI) | MCP tool wrapping the JSON store; agent has real file I/O too | **`PreToolUse` hook** denies the `publish_digest` tool call until approved — enforced by the harness, not the model | "Give one agent a computer"; hooks intercept tool execution |
+| **pi.dev** | One session, one model, bigger toolbox | None — sequential, inside one transcript | Written as an instruction in `AGENTS.md`; nothing enforces it | Model reads/writes the JSON file directly with its own `read`/`write` tools | Plain conversational question; nothing blocks the file write | Minimal 4-tool core + a single TS extension |
+| **omp.sh** | One orchestrator + native subagent spawn | **Native parallel task spawn** (physics + math subagents at once) | Each subagent's own instructed loop | Persistent Python kernel with tool-loopback does merge/dedupe as one script | Same gap as pi.dev — instruction-only, not harness-enforced | Persistent Python/Bun kernel callable from the agent's own tools |
+
+## What this actually teaches
+
+- **Control enforcement vs. model discretion.** Only LangGraph
+  (`interrupt()`) and the Claude Agent SDK (`PreToolUse` hook) make the
+  approval step something the *harness* blocks on. CrewAI's
+  `human_input=True` is close but simpler (a literal input() pause,
+  not a resumable graph state). OpenAI's guardrail model enforces
+  *validation* (did the specialist meet the minimum?) more naturally
+  than it enforces *human* gates — you'd reach for `needs_approval` on
+  a tool in a fuller build. pi.dev and omp.sh enforce nothing — the
+  model can skip the approval question if it decides to, which is the
+  honest cost of a minimal harness.
+- **Where "state" lives.** LangGraph's checkpointer is the only one
+  that persists the *entire graph state* (not just the seen-titles
+  file) keyed by a thread ID, meaning you could resume a crashed run
+  mid-graph. Everyone else treats persistence as "a tool that reads/
+  writes one JSON file" — functionally equivalent for this task, but
+  LangGraph's version generalizes to much longer-running agents.
+- **Parallelism is a spectrum.** LangGraph and omp.sh have real
+  native fan-out (two things genuinely happen concurrently, wired at
+  the framework level). OpenAI's handoff model is nominally
+  sequential (triage hands off once, one at a time in this
+  implementation, though the SDK supports parallel handoffs).
+  CrewAI's default `Process.sequential` waits on `context=[...]`
+  rather than truly forking. pi.dev has no fan-out primitive at all.
+- **Vendor lock-in is inversely related to structure.** The two most
+  structured tools (LangGraph, CrewAI) are model-agnostic. The two
+  "give the agent a computer" harnesses (Claude Agent SDK, omp.sh) are
+  the most capable at real OS-level work (files, shell, a live Python
+  kernel) but are the least structured about *coordinating multiple
+  agents* — they hand you a single powerful agent plus a way to spawn
+  narrow helpers, not a graph or a role hierarchy.
+
+## Layout
+
+```
+arxiv_digest_agents/
+├── shared/
+│   ├── arxiv_client.py       # identical arXiv search/filter logic, used by every Python impl
+│   └── state_store.py        # identical JSON seen-titles store
+├── langgraph/digest_graph.py
+├── crewai/digest_crew.py
+├── openai_agents_sdk/digest_agents.py
+├── claude_agent_sdk/digest_agent.py
+├── pi_dev/{AGENTS.md, arxiv_tools.ts, prompts/digest.md, README.md}
+├── omp_sh/{omp.config.toml, SYSTEM.md, prompts/*.md, README.md}
+└── requirements.txt
+```
+
+
+### What's in here
 
 shared/ — identical arXiv API client + JSON dedup store, used by every Python implementation, so the differences you see are pure orchestration, not incidental code differences.
 
