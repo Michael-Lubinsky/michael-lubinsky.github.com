@@ -1,5 +1,8 @@
 
+
 ## Vendor-agnostic orchestration frameworks
+
+<https://www.kdnuggets.com/10-agentic-ai-frameworks-you-should-know-in-2026>
 
 **LangGraph** — Models agents as nodes in an explicit state graph with shared state, checkpointing, and human-in-the-loop primitives. It reached 1.0 GA on October 22, 2025, with a no-breaking-changes commitment until 2.0, and documented production users include Klarna, Replit, Uber, LinkedIn, and Elastic. It's model-agnostic via LangChain's integration layer. Steepest learning curve of the group, but it's the strongest production story: durable execution means agents survive server restarts, and LangSmith gives full tracing/observability. Best when you need explicit control over execution paths, retries, and branching logic.
 
