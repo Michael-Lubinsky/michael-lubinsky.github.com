@@ -43,9 +43,6 @@ instructions + (for pi) a small TypeScript tool, so there's no Python
 object graph to construct. The TypeScript tool's parsing logic was
 type-checked and verified against a mocked feed in Node directly.
 
-One correction from earlier in this conversation: **ohm.sh** is not a
-framework — it's a personal developer's landing page. The intended
-project is **omp.sh (Oh My Pi)**, which is what's implemented here.
 
 ## Side-by-side
 
