@@ -1,4 +1,4 @@
-Based specifically on the implementations in your **v3 project**, rather than a generic feature comparison, this table captures the most significant architectural differences.
+Agent SDK  architectural differences.
 
 | SDK / Framework       | Main orchestration model                  | How agents cooperate in your code                                                             | Tool calling                               | Parallel agents                                         | Human approval                           | Workflow/state model                                                     | Main distinguishing feature                                                        |
 | --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
