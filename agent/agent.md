@@ -91,12 +91,12 @@ type-checked and verified against a mocked feed in Node directly.
 ## Layout
 
 ```
-arxiv_digest_agents/
+agent/
 ├── shared/
 │   ├── arxiv_client.py       # identical arXiv search/filter logic, used by every Python impl
 │   └── state_store.py        # identical JSON seen-titles store
 ├── langgraph/digest_graph.py
-├── crewai/digest_crew.py
+├── crew/digest_crew.py
 ├── openai_agents_sdk/digest_agents.py
 ├── claude_agent_sdk/digest_agent.py
 ├── pi_dev/{AGENTS.md, arxiv_tools.ts, prompts/digest.md, README.md}
@@ -111,7 +111,7 @@ shared/ — identical arXiv API client + JSON dedup store, used by every Python 
 
 langgraph/digest_graph.py — explicit StateGraph with real parallel fan-out, a conditional edge for the widen-retry, a MemorySaver checkpointer, and interrupt()/Command(resume=...) for approval. Verified: compiles and I printed its Mermaid graph to confirm the topology is right.
 
-crewai/digest_crew.py — role-based Physics/Math/Editor agents, context=[...] task wiring, Task(human_input=True). Verified: constructs cleanly.
+crew/digest_crew.py — role-based Physics/Math/Editor agents, context=[...] task wiring, Task(human_input=True). Verified: constructs cleanly.
 
 openai_agents_sdk/digest_agents.py — Triage agent with typed handoffs to two specialists, an output_guardrail enforcing the min-hits rule. Verified: constructs cleanly.
 
