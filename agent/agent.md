@@ -74,7 +74,7 @@ physics_result, math_result = await asyncio.gather(
 result = await Runner.run(editor_agent, ...)
 ```
 
-That is an important advantage visible in your project: you don't need to express ordinary programming constructs as framework concepts.
+That is an important advantage visible in project below: you don't need to express ordinary programming constructs as framework concepts.
 
 **Claude Agent SDK asks:** *What should the agent do with these tools, and what controls should surround tool execution?*
 The particularly interesting part of your implementation is the hook:
@@ -93,7 +93,7 @@ Human approval
 
 That is materially different from simply telling an agent, *"ask the human before publishing."* The application can enforce the boundary.
 
-### Which differences your project demonstrates best
+### Which differences project below demonstrates
 
 | If you want to demonstrate...                                  | Framework that illustrates it particularly clearly in your code |
 | -------------------------------------------------------------- | --------------------------------------------------------------- |
@@ -116,7 +116,7 @@ omp.sh          → CLI/prompt/tool orchestration
 ```
 
 
-# arXiv Lecture Notes Digest — six framework implementations
+# Project: arXiv Lecture Notes Digest — six framework implementations
 
 Same task, six harnesses/frameworks, so the differences show up in
 **how work is structured**, not in what the task does.
