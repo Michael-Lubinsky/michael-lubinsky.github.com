@@ -140,7 +140,7 @@ that's identical everywhere — the arXiv Atom API call, the keyword
 filters, and the JSON-backed seen-titles file — so every implementation
 below is orchestration logic only.
 
-[Download agents.zip](arxiv_digest_agents_v3.zip)
+[Download agents.zip](arxiv_digest_agents_v7.zip)
  
 
 ## Status of what's included
