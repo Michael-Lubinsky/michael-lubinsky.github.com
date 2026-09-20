@@ -1,3 +1,121 @@
+Based specifically on the implementations in your **v3 project**, rather than a generic feature comparison, this table captures the most significant architectural differences.
+
+| SDK / Framework       | Main orchestration model                  | How agents cooperate in your code                                                             | Tool calling                               | Parallel agents                                         | Human approval                           | Workflow/state model                                                     | Main distinguishing feature                                                        |
+| --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| **LangGraph**         | **Explicit graph / state machine**        | Nodes connected by edges; results accumulated in shared state                                 | Python functions/tools used by graph nodes | **Yes**, graph branches can fan out and join            | Explicit approval node                   | **Strongest explicit state management** via `State` passed through graph | You design the **workflow graph yourself**                                         |
+| **CrewAI**            | **Crew + agents + tasks**                 | Researcher agents execute assigned tasks; Editor combines results                             | Tools attached directly to agents          | Supported, but task-oriented rather than graph-oriented | `human_input=True` on task               | Mostly managed by Crew/task execution                                    | Highest-level **role/task abstraction**                                            |
+| **OpenAI Agents SDK** | **Agents + Runner + tools**               | Your Python code explicitly runs Physics and Math agents with `asyncio.gather()`, then Editor | Native function tools                      | **Yes**, explicitly through Python async                | Application-level approval/publish logic | Mostly normal Python variables/results                                   | **Minimal agent abstraction integrated with normal Python**                        |
+| **Claude Agent SDK**  | **Agentic tool loop + hooks**             | Claude decides when/how to use supplied tools; application provides lifecycle hooks           | MCP-style/custom tools                     | More agent-directed; not expressed as a workflow graph  | **PreToolUse hook** can block publishing | Conversation/tool-loop oriented                                          | **Hooks around agent/tool execution**, especially useful for enforcing permissions |
+| **pi.dev**            | **Minimal TypeScript agent/tool runtime** | Agent works through tools and instructions with relatively little framework structure         | TypeScript tools                           | Mostly controlled by your application/agent loop        | Implemented around publishing logic      | Application-managed                                                      | **Lightweight TypeScript-first approach**                                          |
+| **omp.sh**            | **CLI / shell-oriented agent execution**  | Workflow largely expressed through prompts, tools and command-line orchestration              | CLI/tool capabilities                      | Depends primarily on external orchestration             | Application/prompt/tool boundary         | Little formal workflow state                                             | **Agentic workflow with minimal application framework/code**                       |
+
+### The biggest conceptual difference
+
+The six approaches can be placed roughly on a spectrum:
+
+```text
+Explicit workflow                                      Agent autonomy
+      │                                                       │
+      ▼                                                       ▼
+
+ LangGraph  ─── CrewAI ─── OpenAI Agents ─── Claude ─── pi.dev / omp.sh
+
+ graph          tasks        Python          tool-loop       lightweight
+ controlled     roles        controlled       + hooks         runtime/CLI
+```
+
+This is simplified—the SDKs overlap considerably—but it captures what your examples demonstrate particularly well.
+
+**LangGraph asks:** *What is the workflow?*
+You explicitly define:
+
+```text
+START
+  ├── Physics Research
+  └── Math Research
+          ↓
+       Merge
+          ↓
+       Editor
+          ↓
+      Approval
+          ↓
+       Publish
+```
+
+The graph itself is the central abstraction.
+
+**CrewAI asks:** *Who performs each job?*
+Your main concepts become:
+
+```text
+Agents:
+    Physics Researcher
+    Math Researcher
+    Editor
+
+Tasks:
+    Research physics
+    Research math
+    Build digest
+```
+
+So it models an organization/team more naturally than a state machine.
+
+**OpenAI Agents SDK asks:** *Which agent should I run, and which tools can it use?*
+Your ordinary Python remains responsible for orchestration:
+
+```python
+physics_result, math_result = await asyncio.gather(
+    Runner.run(physics_agent, ...),
+    Runner.run(math_agent, ...),
+)
+
+result = await Runner.run(editor_agent, ...)
+```
+
+That is an important advantage visible in your project: you don't need to express ordinary programming constructs as framework concepts.
+
+**Claude Agent SDK asks:** *What should the agent do with these tools, and what controls should surround tool execution?*
+The particularly interesting part of your implementation is the hook:
+
+```text
+Claude
+   ↓
+wants publish_digest
+   ↓
+PreToolUse hook
+   ↓
+Human approval
+   ├── No  → DENY
+   └── Yes → tool executes
+```
+
+That is materially different from simply telling an agent, *"ask the human before publishing."* The application can enforce the boundary.
+
+### Which differences your project demonstrates best
+
+| If you want to demonstrate...                                  | Framework that illustrates it particularly clearly in your code |
+| -------------------------------------------------------------- | --------------------------------------------------------------- |
+| Explicit deterministic workflow                                | **LangGraph**                                                   |
+| Agents modeled as people/roles with assigned tasks             | **CrewAI**                                                      |
+| Agentic behavior while retaining ordinary Python orchestration | **OpenAI Agents SDK**                                           |
+| Controlling agent actions through lifecycle/tool hooks         | **Claude Agent SDK**                                            |
+| Lightweight TypeScript agent implementation                    | **pi.dev**                                                      |
+| Minimal CLI-oriented agent orchestration                       | **omp.sh**                                                      |
+
+One especially useful point your repository demonstrates is that **“agentic SDK” does not mean the same programming model**. The business problem is identical—two researchers → dedupe → editor → human approval → publish—but each framework puts the abstraction boundary in a different place:
+
+```text
+LangGraph       → workflow is first-class
+CrewAI          → team/tasks are first-class
+OpenAI Agents   → agents/tools are first-class; Python orchestrates
+Claude SDK      → agent/tool loop + hooks are first-class
+pi.dev          → lightweight agent/tool runtime
+omp.sh          → CLI/prompt/tool orchestration
+```
+
+
 # arXiv Lecture Notes Digest — six framework implementations
 
 Same task, six harnesses/frameworks, so the differences show up in
