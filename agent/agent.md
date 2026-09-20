@@ -298,11 +298,22 @@ full run.
   assumption that's easy to state confidently in a comment and never
   actually exercise with branches of different lengths.
 - **Vendor lock-in is inversely related to structure.** The two most
-  structured tools (LangGraph, CrewAI) are model-agnostic. The two
-  "give the agent a computer" harnesses (Claude Agent SDK, omp.sh) are
-  the most capable at real OS-level work (files, shell, a live Python
+  structured tools (LangGraph, CrewAI) are model-agnostic.
+
+  The two "give the agent a computer" harnesses (Claude Agent SDK, omp.sh) are
+  the most capable at _real OS-level work_ (files, shell, a live Python
   kernel) but hand you a single powerful agent plus a way to spawn
   narrow helpers, not a graph or a role hierarchy.
+
+
+1. **What "real OS-level work" actually means in this repo** — contrasts CrewAI's Editor, which *cannot* call `publish_digest` (the tool object isn't in its `tools=` list, full stop) against Claude Agent SDK/omp.sh agents that hold general-purpose primitives (`read`/`write`/`edit`/`bash`, a persistent Python/Bun kernel) *in addition to* their project-specific tools — e.g. omp.sh's orchestrator runs filter→compose→approve→publish as one script inside a live interpreter, not four separate tool calls.
+
+2. **What's traded away** — no inspectable graph or role hierarchy. LangGraph's and CrewAI's structure is typed Python objects you can enumerate and unit-test without ever invoking the model (which is literally how the v4 fan-in bug got found and fixed). Claude Agent SDK's `ORCHESTRATOR_PROMPT` and omp.sh's `SYSTEM.md` are prose the model interprets at runtime — nothing to point at as "the" delegation edge. I also tied this back to the CrewAI v3 fix: an instruction alone was never a real gate there either, and noted that Claude Agent SDK's `PreToolUse` hook is a genuine exception (enforcement code, not wording) while omp.sh has no equivalent at all.
+
+3. **Where the lock-in specifically bites**   
+    LangGraph/CrewAI's portability is a one-line `llm=` swap;  
+   Claude Agent SDK's `PreToolUse` hook (this project's strongest approval gate) is that SDK's own runtime construct with no fallback off-Claude,  
+   and omp.sh is a distinct product (its own kernel, its own TOML subagent config) you'd rebuild against, independent of which model it's pointed at.
 
 ## Layout
 
