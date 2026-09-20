@@ -1,4 +1,4 @@
-Agent SDK  architectural differences.
+## Agent SDK  architectural differences: LangGraph, CrewAI, OpenAI, Claude, Pi, OMP
 
 | SDK / Framework       | Main orchestration model                  | How agents cooperate in your code                                                             | Tool calling                               | Parallel agents                                         | Human approval                           | Workflow/state model                                                     | Main distinguishing feature                                                        |
 | --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
