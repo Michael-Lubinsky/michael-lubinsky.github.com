@@ -104,7 +104,7 @@ That is materially different from simply telling an agent, *"ask the human befor
 | Lightweight TypeScript agent implementation                    | **pi.dev**                                                      |
 | Minimal CLI-oriented agent orchestration                       | **omp.sh**                                                      |
 
-One especially useful point your repository demonstrates is that **“agentic SDK” does not mean the same programming model**. The business problem is identical—two researchers → dedupe → editor → human approval → publish—but each framework puts the abstraction boundary in a different place:
+One especially useful point attached repository below demonstrates is that **“agentic SDK” does not mean the same programming model**. The business problem is identical—two researchers → dedupe → editor → human approval → publish—but each framework puts the abstraction boundary in a different place:
 
 ```text
 LangGraph       → workflow is first-class
