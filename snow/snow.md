@@ -412,6 +412,441 @@ The key interview rule is:
 
 It is not a general SQL variable prefix. If you see `@something` in Snowflake SQL, your first thought should be **stage/files**.
 
+Yes. Snowflake has standard SQL commands (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `CREATE`, etc.) plus a number of Snowflake-specific or particularly important commands.
+
+For a **Snowflake interview**, I would know the following groups.
+
+### 1. Stage/file commands
+
+These are related to what we just discussed:
+
+| Command         | Purpose                              | Example                              |
+| --------------- | ------------------------------------ | ------------------------------------ |
+| `LIST` / `LS`   | List files in stage                  | `LIST @my_stage;`                    |
+| `PUT`           | Upload local file → internal stage   | `PUT file:///tmp/a.csv @my_stage;`   |
+| `GET`           | Download internal-stage file → local | `GET @my_stage/a.csv file:///tmp/;`  |
+| `REMOVE` / `RM` | Delete staged files                  | `REMOVE @my_stage/old/;`             |
+| `COPY INTO`     | Load or unload data                  | `COPY INTO customer FROM @my_stage;` |
+
+A useful distinction: `PUT` and `GET` are for **internal stages**. For an external S3 stage, files are normally uploaded/downloaded using AWS tooling rather than `PUT`/`GET`.
+
+### 2. Data manipulation
+
+These should be very familiar:
+
+```sql
+SELECT * FROM customer;
+
+INSERT INTO customer VALUES (1, 'John');
+
+UPDATE customer
+SET name = 'Mike'
+WHERE id = 1;
+
+DELETE FROM customer
+WHERE id = 1;
+
+TRUNCATE TABLE customer;
+```
+
+For Data Engineering, `MERGE` is especially important:
+
+```sql
+MERGE INTO customer t
+USING customer_updates s
+ON t.id = s.id
+
+WHEN MATCHED THEN
+    UPDATE SET t.name = s.name
+
+WHEN NOT MATCHED THEN
+    INSERT (id, name)
+    VALUES (s.id, s.name);
+```
+
+Think:
+
+```text
+INSERT       new rows
+UPDATE       modify rows
+DELETE       remove selected rows
+TRUNCATE     remove all rows
+MERGE        insert/update together (upsert)
+```
+
+### 3. Creating Snowflake objects
+
+Snowflake has many `CREATE` commands:
+
+```sql
+CREATE DATABASE analytics;
+
+CREATE SCHEMA analytics.gold;
+
+CREATE TABLE customer (...);
+
+CREATE VIEW customer_view AS
+SELECT ...;
+
+CREATE MATERIALIZED VIEW ...;
+
+CREATE STAGE my_stage ...;
+
+CREATE FILE FORMAT my_csv_format ...;
+
+CREATE WAREHOUSE etl_wh ...;
+
+CREATE STREAM customer_stream
+ON TABLE customer;
+
+CREATE TASK load_customer ...;
+
+CREATE PIPE customer_pipe ...;
+```
+
+For interviews, especially remember:
+
+```text
+DATABASE
+  └── SCHEMA
+       ├── TABLE
+       ├── VIEW
+       ├── STAGE
+       ├── FILE FORMAT
+       ├── STREAM
+       ├── TASK
+       └── PIPE
+
+WAREHOUSE = compute
+```
+
+### 4. `SHOW` commands
+
+`SHOW` is extremely useful for examining Snowflake objects:
+
+```sql
+SHOW DATABASES;
+
+SHOW SCHEMAS;
+
+SHOW TABLES;
+
+SHOW VIEWS;
+
+SHOW WAREHOUSES;
+
+SHOW STAGES;
+
+SHOW FILE FORMATS;
+
+SHOW STREAMS;
+
+SHOW TASKS;
+
+SHOW PIPES;
+```
+
+For example:
+
+```sql
+SHOW TABLES IN SCHEMA analytics.gold;
+```
+
+### 5. `DESCRIBE` / `DESC`
+
+Used to inspect an object:
+
+```sql
+DESCRIBE TABLE customer;
+```
+
+or:
+
+```sql
+DESC TABLE customer;
+```
+
+Also:
+
+```sql
+DESC WAREHOUSE etl_wh;
+
+DESC STAGE my_stage;
+
+DESC FILE FORMAT my_csv_format;
+```
+
+A common interview comparison:
+
+```text
+SHOW TABLES
+```
+
+tells you **what tables exist**, while:
+
+```text
+DESC TABLE customer
+```
+
+tells you **what the particular table looks like**.
+
+### 6. Warehouse commands
+
+Very Snowflake-specific:
+
+```sql
+CREATE WAREHOUSE etl_wh
+WAREHOUSE_SIZE = 'MEDIUM'
+AUTO_SUSPEND = 300
+AUTO_RESUME = TRUE;
+```
+
+Manually suspend:
+
+```sql
+ALTER WAREHOUSE etl_wh SUSPEND;
+```
+
+Resume:
+
+```sql
+ALTER WAREHOUSE etl_wh RESUME;
+```
+
+Resize:
+
+```sql
+ALTER WAREHOUSE etl_wh
+SET WAREHOUSE_SIZE = 'LARGE';
+```
+
+This is important because **warehouse = compute**, and compute consumption is a major component of Snowflake cost.
+
+### 7. Context commands
+
+You will frequently see:
+
+```sql
+USE DATABASE analytics;
+
+USE SCHEMA gold;
+
+USE WAREHOUSE etl_wh;
+
+USE ROLE data_engineer;
+```
+
+Then:
+
+```sql
+SELECT CURRENT_DATABASE();
+SELECT CURRENT_SCHEMA();
+SELECT CURRENT_WAREHOUSE();
+SELECT CURRENT_ROLE();
+```
+
+Very useful when debugging:
+
+> "Why can't I see this table?"
+
+First check your current database, schema and role.
+
+### 8. Security commands
+
+Snowflake uses role-based access control.
+
+```sql
+CREATE ROLE data_engineer;
+
+GRANT USAGE
+ON DATABASE analytics
+TO ROLE data_engineer;
+
+GRANT USAGE
+ON SCHEMA analytics.gold
+TO ROLE data_engineer;
+
+GRANT SELECT
+ON TABLE analytics.gold.customer
+TO ROLE data_engineer;
+```
+
+And:
+
+```sql
+REVOKE SELECT
+ON TABLE analytics.gold.customer
+FROM ROLE data_engineer;
+```
+
+The important commands are therefore:
+
+```text
+CREATE ROLE
+GRANT
+REVOKE
+USE ROLE
+```
+
+### 9. Clone
+
+A particularly useful Snowflake feature:
+
+```sql
+CREATE TABLE customer_test
+CLONE customer;
+```
+
+You can also clone larger structures:
+
+```sql
+CREATE SCHEMA dev
+CLONE prod;
+
+CREATE DATABASE dev_db
+CLONE prod_db;
+```
+
+This is **zero-copy cloning**: Snowflake initially shares the existing underlying storage rather than making a complete physical copy.
+
+### 10. Time Travel / recovery commands
+
+Suppose somebody accidentally executes:
+
+```sql
+DROP TABLE customer;
+```
+
+You may be able to recover it:
+
+```sql
+UNDROP TABLE customer;
+```
+
+Similarly:
+
+```sql
+UNDROP SCHEMA analytics;
+UNDROP DATABASE production;
+```
+
+You can also query historical data:
+
+```sql
+SELECT *
+FROM customer
+AT (
+    TIMESTAMP => '2026-09-20 10:00:00'::TIMESTAMP
+);
+```
+
+or use an offset:
+
+```sql
+SELECT *
+FROM customer
+AT (OFFSET => -3600);
+```
+
+meaning roughly "the table as it existed one hour ago."
+
+### 11. `ALTER`
+
+`ALTER` modifies an existing object.
+
+For example:
+
+```sql
+ALTER TABLE customer
+ADD COLUMN email VARCHAR;
+```
+
+or:
+
+```sql
+ALTER TABLE customer
+RENAME COLUMN name TO customer_name;
+```
+
+And you've already seen:
+
+```sql
+ALTER WAREHOUSE etl_wh SUSPEND;
+```
+
+So the standard pattern is:
+
+```text
+CREATE    create object
+ALTER     modify object
+DROP      delete object
+UNDROP    recover supported dropped object
+```
+
+### What I would memorize for the interview
+
+You don't need to memorize every Snowflake command. For a Data Engineer interview, this set covers a lot:
+
+```text
+Data:
+  SELECT
+  INSERT
+  UPDATE
+  DELETE
+  MERGE
+  TRUNCATE
+
+Objects:
+  CREATE
+  ALTER
+  DROP
+  UNDROP
+
+Inspection:
+  SHOW
+  DESCRIBE / DESC
+
+Files:
+  PUT
+  GET
+  LIST / LS
+  REMOVE / RM
+  COPY INTO
+
+Security:
+  GRANT
+  REVOKE
+  USE ROLE
+
+Context:
+  USE DATABASE
+  USE SCHEMA
+  USE WAREHOUSE
+
+Snowflake features:
+  CREATE ... CLONE
+  CREATE STREAM
+  CREATE TASK
+  CREATE PIPE
+```
+
+One Snowflake-specific point worth remembering: **`COPY INTO` has two meanings depending on what follows `INTO`**:
+
+```sql
+-- S3/stage → Snowflake
+COPY INTO customer
+FROM @my_stage;
+```
+
+versus
+
+```sql
+-- Snowflake → S3/stage
+COPY INTO @my_stage/export/
+FROM customer;
+```
+
+ 
 
 ### Snowflake provides metadata tables and views through several special schemas such as:
 ```
