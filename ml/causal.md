@@ -32,6 +32,8 @@ https://habr.com/ru/companies/avito/articles/1061032/ Uplift
 
 <https://www.dailydoseofds.com/a-crash-course-on-causality-part-1>
 
+<https://whatstheimpact.com/learn-causal-inference/#difference-in-differences>
+
 ### Collider
 
 <https://habr.com/ru/articles/1014586/>
