@@ -1654,6 +1654,250 @@ SQL-first transformation layer
 Version-controlled  
 Supports incremental models, tests, and documentation
 
+
+A **Snowflake Task** is a Snowflake object used to **automatically execute SQL or a stored procedure**, either on a schedule or when triggered by conditions/dependencies.
+
+It is somewhat analogous to a scheduled Databricks Job or an Airflow task, although Snowflake Tasks run inside the Snowflake ecosystem.
+
+### Simple example
+
+Suppose you want to aggregate yesterday's sales every day:
+
+```sql
+CREATE TASK daily_sales_task
+    WAREHOUSE = etl_wh
+    SCHEDULE = 'USING CRON 0 2 * * * UTC'
+AS
+INSERT INTO daily_sales
+SELECT
+    CURRENT_DATE() - 1 AS sales_date,
+    SUM(amount) AS total_sales
+FROM sales
+WHERE sale_date = CURRENT_DATE() - 1;
+```
+
+This runs every day at 2:00 AM UTC.
+
+A task is created **suspended by default**, so you normally start it:
+
+```sql
+ALTER TASK daily_sales_task RESUME;
+```
+
+Stop it:
+
+```sql
+ALTER TASK daily_sales_task SUSPEND;
+```
+
+### Interval schedule
+
+You don't have to use CRON:
+
+```sql
+CREATE TASK process_events
+    WAREHOUSE = etl_wh
+    SCHEDULE = '15 MINUTE'
+AS
+CALL process_new_events();
+```
+
+Conceptually:
+
+```text
+every 15 minutes
+       ↓
+Snowflake Task
+       ↓
+process_new_events()
+       ↓
+tables updated
+```
+
+### Tasks + Streams
+
+This is one of the most important combinations for a Data Engineer interview.
+
+A **Stream** tracks changes. A **Task** processes those changes.
+
+```text
+source_table
+     ↓
+   STREAM
+     ↓
+   TASK
+     ↓
+   MERGE
+     ↓
+target_table
+```
+
+For example:
+
+```sql
+CREATE STREAM customer_stream
+ON TABLE customer_stage;
+```
+
+Then:
+
+```sql
+CREATE TASK process_customer_task
+    WAREHOUSE = etl_wh
+    SCHEDULE = '5 MINUTE'
+    WHEN SYSTEM$STREAM_HAS_DATA('customer_stream')
+AS
+MERGE INTO customer t
+USING customer_stream s
+ON t.customer_id = s.customer_id
+
+WHEN MATCHED THEN
+    UPDATE SET
+        t.name = s.name,
+        t.email = s.email
+
+WHEN NOT MATCHED THEN
+    INSERT (customer_id, name, email)
+    VALUES (s.customer_id, s.name, s.email);
+```
+
+The important part is:
+
+```sql
+WHEN SYSTEM$STREAM_HAS_DATA('customer_stream')
+```
+
+The task is scheduled to check every 5 minutes, but its SQL body runs only when the stream indicates that changes are available.
+
+### Task graphs
+
+Tasks can also depend on other tasks.
+
+For example:
+
+```text
+            load_stage
+                ↓
+           clean_data
+                ↓
+          validate_data
+             /     \
+            ↓       ↓
+     update_sales  update_customer
+            \       /
+             ↓     ↓
+            reporting
+```
+
+A child task can specify:
+
+```sql
+CREATE TASK validate_data
+    WAREHOUSE = etl_wh
+    AFTER clean_data
+AS
+CALL validate_data();
+```
+
+This allows Snowflake to orchestrate multi-step pipelines.
+
+### Serverless Tasks
+
+You can also use Snowflake-managed compute instead of specifying your own warehouse.
+
+Conceptually:
+
+```text
+User-managed task
+
+TASK
+ ↓
+ETL_WH
+
+
+Serverless task
+
+TASK
+ ↓
+Snowflake-managed compute
+```
+
+This can simplify compute management for suitable workloads.
+
+### How it fits your Databricks → Snowflake example
+
+For the architecture we discussed:
+
+```text
+DynamoDB
+   ↓
+DynamoDB Stream
+   ↓
+Lambda
+   ↓
+S3 RAW
+   ↓
+Databricks File Arrival Job
+   ↓
+Bronze → Silver → Gold
+   ↓
+S3 curated Parquet
+   ↓
+Snowpipe
+   ↓
+Snowflake STAGING
+   ↓
+STREAM
+   ↓
+TASK
+   ↓
+Data-quality checks / MERGE
+   ↓
+Snowflake Gold/Analytics
+```
+
+For example, Snowpipe loads new rows into:
+
+```text
+TELEMETRY_STAGE
+```
+
+A Stream identifies newly loaded/changed rows:
+
+```sql
+CREATE STREAM telemetry_stream
+ON TABLE telemetry_stage;
+```
+
+A Task periodically processes those changes:
+
+```sql
+CREATE TASK telemetry_processing_task
+    WAREHOUSE = etl_wh
+    SCHEDULE = '5 MINUTE'
+    WHEN SYSTEM$STREAM_HAS_DATA('telemetry_stream')
+AS
+CALL process_telemetry();
+```
+
+The stored procedure could perform data-quality checks, deduplication and then `MERGE` into the final analytical tables.
+
+### Task vs Snowpipe
+
+This distinction is worth remembering for interviews:
+
+|                | Snowpipe           | Task                             |
+| -------------- | ------------------ | -------------------------------- |
+| Main purpose   | Ingest files       | Execute processing               |
+| Typical source | S3/Azure/GCS files | Snowflake data                   |
+| Typical action | Load into table    | SQL/procedure                    |
+| Example        | S3 → staging       | staging → analytics              |
+| Scheduling     | File/event driven  | Schedule/dependencies/conditions |
+
+So a concise interview answer is:
+
+> **A Snowflake Task is an orchestration/scheduling object that automatically executes SQL or stored procedures. Tasks can run on schedules, conditionally process Streams, and be connected into task graphs. A common ELT pattern is Snowpipe → staging table → Stream → Task → MERGE into final tables.**
+
 #### Tasks + Streams:
 
 Automate incremental logic (e.g., insert/update only changed records)
