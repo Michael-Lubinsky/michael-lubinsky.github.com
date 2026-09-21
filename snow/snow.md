@@ -2942,3 +2942,131 @@ Investigate via `ACCOUNT_USAGE.WAREHOUSE_METERING_HISTORY` and `QUERY_HISTORY`:
 (d) Data growth causing queries to scan more without corresponding pruning (clustering degradation, as in Q21)?
 
 (e) Someone manually resized a warehouse larger and left it there? Once isolated, apply targeted fixes: right-size the specific warehouse, fix the query/dashboard behavior, tighten auto-suspend, or add a resource monitor to cap it going forward and alert before it happens again.
+
+
+There is an important terminology issue in Snowflake:
+
+**Stage** and **staging table** are different things.
+
+A **stage** is a location for files. A **staging table** is usually just a table that your ETL design uses as an intermediate area; Snowflake does not have a special `CREATE STAGING TABLE` command.
+
+### Snowflake stages
+
+Snowflake has **internal** and **external** stages.
+
+Internal stages have three main types:
+
+```text
+Internal Stages
+├── User stage       @~
+├── Table stage      @%table_name
+└── Named stage      @stage_name
+```
+
+For example:
+
+```sql
+-- User stage
+LIST @~;
+
+-- Table stage
+LIST @%customer;
+
+-- Named internal stage
+CREATE STAGE my_stage;
+LIST @my_stage;
+```
+
+An **external stage** points to cloud storage such as S3:
+
+```sql
+CREATE STAGE my_s3_stage
+    URL = 's3://my-bucket/data/'
+    STORAGE_INTEGRATION = aws_integration;
+```
+
+and is referenced as:
+
+```sql
+LIST @my_s3_stage;
+```
+
+### Staging tables
+
+A staging table is an architectural concept. For example:
+
+```sql
+CREATE TABLE customer_stage (
+    customer_id NUMBER,
+    name        VARCHAR,
+    email       VARCHAR,
+    load_time   TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+);
+```
+
+You might load S3 data into it:
+
+```sql
+COPY INTO customer_stage
+FROM @my_s3_stage
+FILE_FORMAT = my_csv_format;
+```
+
+Then validate/deduplicate and move it into the production table:
+
+```sql
+MERGE INTO customer t
+USING customer_stage s
+ON t.customer_id = s.customer_id
+...
+```
+
+The staging table itself can be one of Snowflake's normal table types. Three particularly relevant types are:
+
+| Table type | Persistence                                                    | Typical staging use                 |
+| ---------- | -------------------------------------------------------------- | ----------------------------------- |
+| Permanent  | Persistent                                                     | Important/recoverable staging data  |
+| Transient  | Persistent until dropped, but reduced data-protection overhead | **Very common for ETL staging**     |
+| Temporary  | Current session only                                           | Short-lived intermediate processing |
+
+For example, a transient staging table:
+
+```sql
+CREATE TRANSIENT TABLE customer_stage (
+    customer_id NUMBER,
+    name VARCHAR,
+    email VARCHAR
+);
+```
+
+Or a temporary table:
+
+```sql
+CREATE TEMPORARY TABLE customer_tmp (
+    customer_id NUMBER,
+    name VARCHAR
+);
+```
+
+For your pipeline, I would probably use something like:
+
+```text
+S3 curated
+    ↓
+External Stage
+@telemetry_stage
+    ↓
+Snowpipe / COPY INTO
+    ↓
+Transient staging table
+TELEMETRY_STAGING
+    ↓
+DQ + deduplication
+    ↓
+MERGE
+    ↓
+Permanent analytics table
+TELEMETRY
+```
+
+  Snowflake “stage” stores/references files; a “staging table” is an intermediate table used by your ETL/ELT design.
