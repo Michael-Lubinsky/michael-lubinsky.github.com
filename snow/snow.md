@@ -77,6 +77,8 @@ LIMIT 10;
 | `OBJECTS`            | Lists all objects in your account      |
 | `FILE_FORMATS`, etc. | Lists formats, integrations, etc.      |
 
+<img width="621" height="249" alt="image" src="https://github.com/user-attachments/assets/c24223a4-0282-472d-9b79-f37ce966d6af" />
+
 ### Snowflake Core Concepts & Architecture
 
 Three-layer architecture:
