@@ -10,6 +10,31 @@ SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
 ## Accessing S3 files
  Snowflake normally **does not treat a CSV file on S3 as a regular external table directly** in quite the same way you may expect from Spark. You typically create a **stage + file format**, then either query/load the files. Snowflake external tables are another option.
 
+aws_integration is a Snowflake object for example:
+```sql
+CREATE STORAGE INTEGRATION aws_integration
+    TYPE = EXTERNAL_STAGE
+    STORAGE_PROVIDER = 'S3'
+    ENABLED = TRUE
+    STORAGE_AWS_ROLE_ARN = 'arn:aws:iam::123456789012:role/snowflake-s3-role'
+    STORAGE_ALLOWED_LOCATIONS = (
+        's3://company-data/curated/'
+    );
+    
+ 
+CREATE STAGE telemetry_curated_stage
+    URL = 's3://company-data/curated/'
+    STORAGE_INTEGRATION = aws_integration
+    FILE_FORMAT = (
+        TYPE = PARQUET
+    );
+
+LIST @telemetry_curated_stage;
+
+COPY INTO vehicle_daily_summary
+FROM @telemetry_curated_stage/vehicle_daily_summary/
+MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE;
+```    
 ### 1. CSV files stored on AWS S3
 
 First define the CSV format:
