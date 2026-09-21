@@ -846,7 +846,116 @@ COPY INTO @my_stage/export/
 FROM customer;
 ```
 
- 
+ In Snowflake, `=>` is the **named-argument operator**. It means:
+
+> assign a value to a named parameter of a function or table function.
+
+For example:
+
+```sql
+SELECT *
+FROM @my_stage
+(
+    FILE_FORMAT => my_csv_format
+);
+```
+
+Here:
+
+```text
+FILE_FORMAT  =>  my_csv_format
+parameter        value
+```
+
+### Why not `=`?
+
+Because `=` normally means **comparison** or is used in certain SQL property-assignment syntax:
+
+```sql
+WHERE customer_id = 100
+```
+
+Here `=` asks whether two values are equal.
+
+By contrast:
+
+```sql
+FILE_FORMAT => my_csv_format
+```
+
+is not comparing anything. It is passing `my_csv_format` to the named parameter `FILE_FORMAT`.
+
+You will see `=>` frequently in Snowflake functions. For example:
+
+```sql
+SELECT *
+FROM TABLE(
+    FLATTEN(INPUT => my_json)
+);
+```
+
+Multiple named arguments:
+
+```sql
+SELECT *
+FROM TABLE(
+    GENERATOR(
+        ROWCOUNT => 100,
+        TIMELIMIT => 10
+    )
+);
+```
+
+### But Snowflake also uses `=` for configuration
+
+This can initially be confusing:
+
+```sql
+CREATE FILE FORMAT my_format
+    TYPE = CSV
+    FIELD_DELIMITER = ','
+    SKIP_HEADER = 1;
+```
+
+These are **object properties**, so Snowflake syntax uses `=`.
+
+Compare:
+
+```sql
+-- Object properties
+CREATE FILE FORMAT my_format
+    TYPE = CSV
+    SKIP_HEADER = 1;
+
+-- Named function/stage arguments
+SELECT *
+FROM @my_stage
+    (FILE_FORMAT => my_format);
+
+-- Comparison
+SELECT *
+FROM customer
+WHERE customer_id = 100;
+```
+
+A good rule to remember is:
+
+**`=` → comparison or object/property setting**
+
+**`=>` → passing a named argument to a function-like construct**
+
+If you know Python, `=>` in this Snowflake context is conceptually similar to Python named arguments:
+
+```python
+flatten(input=my_json)
+```
+
+Snowflake:
+
+```sql
+FLATTEN(INPUT => my_json)
+```
+
 
 ### Snowflake provides metadata tables and views through several special schemas such as:
 ```
