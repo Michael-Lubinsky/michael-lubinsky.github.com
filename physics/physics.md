@@ -20,6 +20,8 @@
 
 <https://www.youtube.com/watch?v=YFiQIZOM2fw> Particle Physics in 17 Hours
 
+<https://www.youtube.com/playlist?list=PLMlXZUMJmDbw>
+
 <https://www.youtube.com/@getaclass_physics> GetClass (eng and ru)
 
 <https://www.youtube.com/@PhysicsExplainedVideos/videos>
