@@ -23,6 +23,8 @@ MCP лучше подходит там, где нужны:
 - стабильный контракт между агентом и внешней системой
 ```
 
+<https://news.ycombinator.com/item?id=49779329>
+
 <https://habr.com/ru/companies/otus/articles/1032890/>
 
 <https://habr.com/ru/articles/1082314/>
