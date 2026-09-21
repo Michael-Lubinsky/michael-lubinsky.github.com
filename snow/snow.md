@@ -119,6 +119,299 @@ So for interview purposes, remember the distinction:
 
 One terminology point: in Snowflake interviews, I would usually say **“Snowflake table” or “regular/internal table”** rather than “managed table.” “Managed table” is terminology you'll hear more often in Databricks/Spark.
 
+In Snowflake, `@` means **“stage”**. It tells Snowflake that the object/path refers to staged files rather than a table.
+
+For example:
+
+```sql
+SELECT *
+FROM @my_s3_stage;
+```
+
+means: read files from the stage `my_s3_stage`.
+
+There are several important ways you will see `@`.
+
+### 1. Named external stage
+
+For files in S3, Azure, or GCS:
+
+```sql
+SELECT $1, $2, $3
+FROM @my_s3_stage;
+```
+
+You can also specify a path inside the stage:
+
+```sql
+SELECT $1, $2
+FROM @my_s3_stage/2026/09/;
+```
+
+Think of it as:
+
+```text
+@my_s3_stage
+      │
+      └── s3://my-bucket/data/
+
+@my_s3_stage/2026/09/
+      │
+      └── s3://my-bucket/data/2026/09/
+```
+
+---
+
+### 2. `COPY INTO` table from a stage
+
+This is probably the most common use:
+
+```sql
+COPY INTO customer
+FROM @my_s3_stage
+FILE_FORMAT = my_csv_format;
+```
+
+Or from a particular directory:
+
+```sql
+COPY INTO customer
+FROM @my_s3_stage/customers/2026/
+FILE_FORMAT = my_csv_format;
+```
+
+Meaning:
+
+```text
+S3 files
+   ↓
+@my_s3_stage
+   ↓
+COPY INTO
+   ↓
+customer table
+```
+
+---
+
+### 3. List files in a stage
+
+Very useful for troubleshooting:
+
+```sql
+LIST @my_s3_stage;
+```
+
+Or:
+
+```sql
+LIST @my_s3_stage/2026/09/;
+```
+
+You might get something conceptually like:
+
+```text
+s3://bucket/data/2026/09/file1.csv
+s3://bucket/data/2026/09/file2.csv
+s3://bucket/data/2026/09/file3.csv
+```
+
+You can also use:
+
+```sql
+LS @my_s3_stage;
+```
+
+as shorthand for `LIST`.
+
+---
+
+### 4. Remove files from an internal stage
+
+For Snowflake **internal stages**, you can use:
+
+```sql
+REMOVE @my_stage/old_data/;
+```
+
+or shorthand:
+
+```sql
+RM @my_stage/old_data/;
+```
+
+This removes staged files, not rows from a table.
+
+---
+
+### 5. Table stage: `@%table_name`
+
+Every Snowflake table has an associated internal **table stage**.
+
+The syntax is:
+
+```sql
+@%customer
+```
+
+For example:
+
+```sql
+LIST @%customer;
+```
+
+You can upload files into the table stage using SnowSQL/Snowflake CLI commands such as:
+
+```sql
+PUT file:///tmp/customers.csv @%customer;
+```
+
+and then load:
+
+```sql
+COPY INTO customer
+FROM @%customer;
+```
+
+Notice the two symbols:
+
+```text
+@   = stage
+%   = table stage
+
+@%customer
+```
+
+---
+
+### 6. User stage: `@~`
+
+Every Snowflake user has a personal internal stage.
+
+It is referenced as:
+
+```sql
+@~
+```
+
+For example:
+
+```sql
+LIST @~;
+```
+
+Upload:
+
+```sql
+PUT file:///tmp/customers.csv @~;
+```
+
+Load:
+
+```sql
+COPY INTO customer
+FROM @~;
+```
+
+So remember:
+
+```text
+@my_stage     named stage
+
+@%customer    stage associated with table CUSTOMER
+
+@~            current user's stage
+```
+
+These three forms are good Snowflake interview material.
+
+---
+
+### 7. Unload table data to a stage
+
+`@` isn't only for loading data **into** Snowflake. It is also used for exporting data.
+
+For example:
+
+```sql
+COPY INTO @my_s3_stage/export/customers/
+FROM customer
+FILE_FORMAT = (
+    TYPE = CSV
+    COMPRESSION = GZIP
+);
+```
+
+Direction:
+
+```text
+customer table
+      ↓
+  COPY INTO
+      ↓
+@my_s3_stage
+      ↓
+     S3
+```
+
+Compare that with loading:
+
+```sql
+COPY INTO customer
+FROM @my_s3_stage;
+```
+
+A useful interview trick is remembering that `COPY INTO` can work in **both directions**:
+
+```text
+COPY INTO table
+FROM @stage
+```
+
+means **load**, while
+
+```text
+COPY INTO @stage
+FROM table
+```
+
+means **unload/export**.
+
+### 8. Query a particular file
+
+You can address a specific file:
+
+```sql
+SELECT $1, $2, $3
+FROM @my_s3_stage/customers.csv
+(FILE_FORMAT => my_csv_format);
+```
+
+And `$1`, `$2`, `$3` mean CSV columns by position:
+
+```text
+101,John,California
+ ↑   ↑       ↑
+ $1  $2      $3
+```
+
+So:
+
+```sql
+SELECT
+    $1::NUMBER AS customer_id,
+    $2::STRING AS customer_name,
+    $3::STRING AS state
+FROM @my_s3_stage/customers.csv
+(FILE_FORMAT => my_csv_format);
+```
+
+The key interview rule is:
+
+> **In Snowflake, `@` is the prefix used to reference a stage or staged file location.**
+
+It is not a general SQL variable prefix. If you see `@something` in Snowflake SQL, your first thought should be **stage/files**.
+
 
 ### Snowflake provides metadata tables and views through several special schemas such as:
 ```
