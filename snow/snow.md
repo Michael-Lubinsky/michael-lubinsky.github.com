@@ -7,6 +7,118 @@ SHOW TABLES;
 SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
 ```
 
+## Accessing S3 files
+ Snowflake normally **does not treat a CSV file on S3 as a regular external table directly** in quite the same way you may expect from Spark. You typically create a **stage + file format**, then either query/load the files. Snowflake external tables are another option.
+
+### 1. CSV files stored on AWS S3
+
+First define the CSV format:
+
+```sql
+CREATE OR REPLACE FILE FORMAT my_csv_format
+    TYPE = 'CSV'
+    FIELD_DELIMITER = ','
+    SKIP_HEADER = 1
+    FIELD_OPTIONALLY_ENCLOSED_BY = '"'
+    NULL_IF = ('NULL', '');
+```
+
+Create an external stage:
+
+```sql
+CREATE OR REPLACE STAGE my_s3_stage
+    URL = 's3://my-bucket/customers/'
+    STORAGE_INTEGRATION = my_s3_integration
+    FILE_FORMAT = my_csv_format;
+```
+
+You can inspect/query the staged CSV directly:
+
+```sql
+SELECT
+    $1::NUMBER AS customer_id,
+    $2::STRING AS name,
+    $3::STRING AS city
+FROM @my_s3_stage;
+```
+
+If you specifically want a Snowflake **external table**, you could create one over the S3 data:
+
+```sql
+CREATE OR REPLACE EXTERNAL TABLE customer_external (
+    customer_id NUMBER AS (VALUE:c1::NUMBER),
+    name        STRING AS (VALUE:c2::STRING),
+    city        STRING AS (VALUE:c3::STRING)
+)
+WITH LOCATION = @my_s3_stage
+FILE_FORMAT = my_csv_format;
+```
+
+The actual data remains in **S3**.
+
+Conceptually:
+
+```text
+S3
+└── customers/
+    ├── part-001.csv
+    ├── part-002.csv
+    └── part-003.csv
+          ↑
+          |
+ Snowflake External Table
+```
+
+### 2. Regular table managed by Snowflake
+
+This is much simpler:
+
+```sql
+CREATE OR REPLACE TABLE customer (
+    customer_id NUMBER,
+    name        VARCHAR(100),
+    city        VARCHAR(100),
+    created_at  TIMESTAMP_NTZ
+);
+```
+
+Then:
+
+```sql
+INSERT INTO customer
+VALUES
+    (1, 'John', 'Boston', CURRENT_TIMESTAMP()),
+    (2, 'Mary', 'Chicago', CURRENT_TIMESTAMP());
+```
+
+Snowflake manages the underlying storage.
+
+If your CSV from the first example needs to become a normal Snowflake table, the common pattern is:
+
+```sql
+CREATE OR REPLACE TABLE customer (
+    customer_id NUMBER,
+    name        VARCHAR(100),
+    city        VARCHAR(100)
+);
+
+COPY INTO customer
+FROM @my_s3_stage
+FILE_FORMAT = my_csv_format;
+```
+
+So for interview purposes, remember the distinction:
+
+|                        | External table           | Regular Snowflake table    |
+| ---------------------- | ------------------------ | -------------------------- |
+| Data stored            | S3                       | Snowflake-managed storage  |
+| `CREATE TABLE`         | `CREATE EXTERNAL TABLE`  | `CREATE TABLE`             |
+| Load required          | No                       | Usually `COPY INTO`        |
+| Data physically copied | No                       | Yes                        |
+| Typical purpose        | Query external lake data | Analytics/warehouse tables |
+
+One terminology point: in Snowflake interviews, I would usually say **“Snowflake table” or “regular/internal table”** rather than “managed table.” “Managed table” is terminology you'll hear more often in Databricks/Spark.
+
 
 ### Snowflake provides metadata tables and views through several special schemas such as:
 ```
