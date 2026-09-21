@@ -7,6 +7,27 @@ SHOW TABLES;
 SELECT * FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = 'PUBLIC';
 ```
 
+## COUNT_IF
+
+```sql
+SELECT
+    COUNT(*) AS total_rows,
+
+    COUNT_IF(customer_id IS NULL)
+        AS null_customer_ids,
+
+    COUNT_IF(age < 0 OR age > 120)
+        AS invalid_age,
+
+    COUNT_IF(email IS NULL)
+        AS missing_email,
+
+    COUNT_IF(state NOT IN ('CA', 'NY', 'TX', 'FL'))
+        AS invalid_state
+
+FROM customer;
+```
+
 ## Accessing S3 files
  Snowflake normally **does not treat a CSV file on S3 as a regular external table directly** in quite the same way you may expect from Spark. You typically create a **stage + file format**, then either query/load the files. Snowflake external tables are another option.
 
