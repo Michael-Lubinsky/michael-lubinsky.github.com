@@ -31,7 +31,7 @@ CREATE OR REPLACE STAGE my_s3_stage
     STORAGE_INTEGRATION = my_s3_integration
     FILE_FORMAT = my_csv_format;
 ```
-
+In Snowflake, @ means “stage”.  
 You can inspect/query the staged CSV directly:
 
 ```sql
