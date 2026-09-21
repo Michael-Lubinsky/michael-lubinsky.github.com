@@ -1,5 +1,7 @@
 ## Math
 
+<https://math.stackexchange.com/questions/111440/examples-of-patterns-that-eventually-fail/111461#111461>
+
 <https://www.3blue1brown.com/>
 
 <https://www.numberphile.com/>
