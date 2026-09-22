@@ -537,4 +537,158 @@ And that actually gives you an interesting lesson for your repository: **don't j
 [3]: https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/?featured_on=talkpython&utm_source=chatgpt.com "Interrupts - Docs by LangChain"
 [4]: https://langchain-ai.github.io/langgraph/reference/checkpoints/?h=langgraph+checkpoint+sqlite+import+saver&utm_source=chatgpt.com "checkpoints | langgraph | LangChain Reference"
 
+##  LangGraph vs Claude Agent SDK
+
+The key distinction is **who should control the workflow**.
+
+**LangGraph is generally a better fit when your application should control the execution. Claude Agent SDK is generally a better fit when you want Claude to control how a task gets accomplished.**
+
+Anthropic's own documentation makes a similar distinction: with ordinary Agent SDK subagents, Claude decides what to delegate turn by turn; with deterministic workflows, code holds the plan. ([Claude Platform][1])
+
+### Example 1: Your arXiv digest
+
+Your requirements are quite deterministic:
+
+```text
+Physics search ──┐
+                 ├── Merge → Dedupe → Digest
+Math search ─────┘                 ↓
+                              Human approval
+                               ↙        ↘
+                            reject     approve
+                                         ↓
+                                      publish
+                                         ↓
+                                  mark_published
+```
+
+You probably **don't want an LLM deciding** whether deduplication happens before or after approval, whether to skip a research branch, or whether `mark_published()` should execute.
+
+That's a natural LangGraph-style problem:
+
+```python
+graph.add_edge("physics", "merge")
+graph.add_edge("math", "merge")
+graph.add_edge("merge", "digest")
+graph.add_edge("digest", "approval")
+...
+```
+
+The LLM does the fuzzy work inside selected nodes; application code owns the business process.
+
+For your arXiv application, I'd therefore lean **LangGraph—or even plain Python—over Claude Agent SDK**.
+
+---
+
+### Example 2: Research assistant
+
+Now imagine:
+
+> Investigate whether quantum error correction has had important experimental advances recently. Search papers, inspect promising ones, follow references when useful, compare competing approaches, and write a report.
+
+You don't know beforehand whether the execution should be:
+
+```text
+search → read → write
+```
+
+or:
+
+```text
+search
+  ↓
+read 10 papers
+  ↓
+discover interesting reference
+  ↓
+search again
+  ↓
+delegate superconducting-qubit research
+  ↓
+delegate trapped-ion research
+  ↓
+compare
+  ↓
+notice contradiction
+  ↓
+research contradiction
+  ↓
+write report
+```
+
+Trying to encode every possibility into a LangGraph graph can become counterproductive.
+
+This is where Claude Agent SDK becomes attractive. Its agent can decide which tools to call and can delegate to specialized subagents with separate contexts. Anthropic describes subagents as supporting specialization, context separation, and parallelization. ([Claude Platform][2])
+
+---
+
+### The distinction isn't absolute anymore
+
+Claude Agent SDK has become more workflow-capable. Anthropic now supports **dynamic workflows**, where Claude can create an orchestration script and a runtime executes the explicit logic, including parallel/staged subagents. ([Claude Platform][1])
+
+And Anthropic also has Managed Agents with persistent stateful sessions, event history, long-running execution, interruption and steering. ([Claude Platform][3])
+
+So I wouldn't describe this as “LangGraph has persistence and Claude doesn't.” That distinction is increasingly outdated.
+
+Instead, I'd use this decision rule:
+
+| Requirement                                   | More natural fit     |
+| --------------------------------------------- | -------------------- |
+| Predetermined workflow                        | **LangGraph**        |
+| LLM determines workflow dynamically           | **Claude Agent SDK** |
+| Strict business process                       | **LangGraph**        |
+| Many explicit branches/cycles                 | **LangGraph**        |
+| Need checkpoint/resume of your explicit graph | **LangGraph**        |
+| Open-ended research                           | **Claude Agent SDK** |
+| Coding/filesystem agent                       | **Claude Agent SDK** |
+| Agent decides which tools/subagents it needs  | **Claude Agent SDK** |
+| Highly autonomous task                        | **Claude Agent SDK** |
+| Provider/model flexibility matters            | **LangGraph**        |
+| Primarily using Claude anyway                 | **Claude Agent SDK** |
+
+### A useful mental model
+
+Think of LangGraph as:
+
+> **Your program is the boss; LLMs are workers inside the program.**
+
+```text
+Application
+     │
+     ├── Node ── LLM
+     │
+     ├── Node ── Python
+     │
+     ├── condition
+     │      ├── Node ── LLM
+     │      └── Node ── API
+     │
+     └── approval
+```
+
+Think of Claude Agent SDK as:
+
+> **Claude is the worker/manager; your program gives it capabilities and constraints.**
+
+```text
+          Claude
+             │
+       decides next action
+       ┌─────┼─────┐
+       ↓     ↓     ↓
+     Tool  Agent  Tool
+             │
+             ↓
+           Agent
+             │
+       decides again...
+```
+
+That difference is more fundamental than the syntax of either SDK.
+
+And it explains why your framework-comparison project is useful: **LangGraph and Claude Agent SDK aren't simply two competing implementations of the same abstraction.** They represent two different answers to *where orchestration intelligence should live*: primarily in deterministic application code versus primarily in an autonomous model-driven loop.
+
+[1]: https://platform.claude.com/cookbook/claude-agent-sdk-08-dynamic-workflows?utm_source=chatgpt.com "Orchestrate subagents at scale with dynamic workflows | Claude Cookbook"
+[2]: https://platform.claude.com/cookbook/claude-agent-sdk-01-the-chief-of-staff-agent?utm_source=chatgpt.com "The chief of staff agent | Claude Cookbook"
+[3]: https://platform.claude.com/docs/en/managed-agents/sessions?utm_source=chatgpt.com "Start a session - Claude Platform Docs"
 
