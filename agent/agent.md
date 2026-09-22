@@ -341,4 +341,200 @@ arxiv_digest_agents/
 Every implementation writes its generated digest to its own
 `output/digest.md`
 
+### LangGraph Note
+
+ **The graph itself is not the main value of LangGraph.** You can implement nodes, edges, branches, loops, and parallel execution perfectly well with Python `if`, `while`, functions, `asyncio`, etc.
+
+What LangGraph adds is primarily a **runtime for stateful, long-running graphs**, especially around LLM/agent workflows. Its own documentation describes it as a low-level orchestration framework providing durable execution, persistence, streaming, human-in-the-loop, and memory. ([LangChain AI][1])
+
+Consider your arXiv workflow:
+
+```text
+Physics ──┐
+          ├─> Merge -> Digest -> Human approval -> Publish
+Math ─────┘
+```
+
+Writing that yourself is easy. Where LangGraph starts earning its keep is when execution becomes operationally complicated.
+
+### The biggest benefit: checkpointed state
+
+Suppose the workflow reaches:
+
+```text
+✓ Physics search
+✓ Math search
+✓ Merge
+✓ Generate digest
+→ Waiting for human approval
+```
+
+and you approve it **three hours later**, possibly after the original process has disappeared.
+
+With ordinary Python, you need to design persistence yourself: what state to serialize, where to store it, how to identify the run, and how to restart from the correct point.
+
+LangGraph has the concept of a **checkpointer**. It stores graph-state snapshots associated with a `thread_id`, specifically supporting resumption, human-in-the-loop, fault tolerance, and state history. ([LangChain AI][2])
+
+So the interesting comparison isn't:
+
+```text
+Python                    LangGraph
+
+if result:
+    publish()             graph.add_edge(...)
+```
+
+It's:
+
+```text
+Your implementation       LangGraph
+───────────────────       ─────────────────
+execution graph           built in
+state model               built in
+checkpointing             built in
+resume execution          built in
+human interrupts          built in
+state history             built in
+streaming events/state    built in
+parallel graph nodes      built in
+```
+
+### Human-in-the-loop is a good example
+
+Your arXiv project requires approval before publication.
+
+In plain Python you might write:
+
+```python
+answer = input("Approve? ")
+if answer == "yes":
+    publish()
+```
+
+That's fine for a command-line demo.
+
+But suppose approval comes tomorrow through a web UI. The application must stop now, preserve the workflow state, and later continue the same execution.
+
+LangGraph lets a node do conceptually:
+
+```python
+approved = interrupt({
+    "question": "Publish this digest?",
+    "digest": state["digest"]
+})
+```
+
+At the interrupt, the graph state is checkpointed. Later you resume the same thread with a `Command(resume=...)`. ([LangChain AI][3])
+
+That's substantially harder to implement robustly yourself.
+
+### Failure recovery is another important difference
+
+Imagine:
+
+```text
+Physics search       ✓   $0.05
+Math search          ✓   $0.05
+Summarization        ✓   $0.20
+Human approval       ✓
+Publish to website   ✗   network error
+```
+
+You don't necessarily want to run all those LLM calls again.
+
+LangGraph checkpoints at graph/node boundaries. Its checkpoint model also preserves successful pending writes when other nodes fail, allowing completed work to be reused during recovery. ([LangChain AI][4])
+
+Again, you *can* build this yourself—but you're now writing a workflow runtime rather than business logic.
+
+### State inspection and debugging
+
+A normal Python workflow often leaves you asking:
+
+```text
+What happened on this run?
+What did the state contain before summarization?
+Why did the graph take branch B?
+Can I restart from an earlier state?
+```
+
+LangGraph maintains checkpoint history, making state evolution inspectable. ([LangChain AI][4])
+
+This matters considerably more with agents because control flow is partially nondeterministic.
+
+### But there's an important downside
+
+For something as simple as your current arXiv digest:
+
+```text
+search physics
+search math
+merge
+generate
+approve
+write file
+```
+
+**LangGraph may be overkill.**
+
+I could write this quite naturally:
+
+```python
+physics, math = await asyncio.gather(
+    search_physics(),
+    search_math()
+)
+
+papers = dedupe(physics + math)
+digest = generate_digest(papers)
+
+if await approve(digest):
+    publish(digest)
+    mark_published(papers)
+```
+
+That is easier for almost any Python developer to understand than the equivalent graph definition.
+
+LangGraph becomes compelling when the workflow evolves toward something like:
+
+```text
+                 ┌── retry ──────────┐
+                 ↓                   │
+Physics → Validate ── insufficient ──┘
+   │
+   ├─────────────┐
+                 ↓
+Math → Validate → Merge
+                   ↓
+               Summarize
+                   ↓
+               Fact check
+                ↙      ↘
+             retry     good
+               ↑        ↓
+               └── Digest
+                     ↓
+                  interrupt
+                     ↓
+               Human review
+                 ↙       ↘
+              revise    approve
+                ↑          ↓
+                └────── Publish
+                           ↓
+                      persist state
+```
+
+Now persistence, retries, branching, cycles, parallelism, interrupts and observability start making a workflow engine attractive.
+
+So I'd characterize LangGraph in your framework comparison as:
+
+> **LangGraph is not valuable because it lets you draw an execution graph. Its value is providing a durable stateful runtime around that graph.**
+
+And that actually gives you an interesting lesson for your repository: **don't judge LangGraph primarily by how elegantly it expresses your arXiv graph.** Your example is simple enough that ordinary Python wins on simplicity. The more meaningful test is whether its **checkpoint/resume, failure recovery and human-approval lifecycle** require less infrastructure than implementing those capabilities yourself.
+
+[1]: https://langchain-ai.github.io/langgraph/reference/?utm_source=chatgpt.com "langgraph | LangChain Reference"
+[2]: https://langchain-ai.github.io/langgraphjs/how-tos/cross-thread-persistence-functional/?utm_source=chatgpt.com "Persistence - Docs by LangChain"
+[3]: https://langchain-ai.github.io/langgraph/concepts/human_in_the_loop/?featured_on=talkpython&utm_source=chatgpt.com "Interrupts - Docs by LangChain"
+[4]: https://langchain-ai.github.io/langgraph/reference/checkpoints/?h=langgraph+checkpoint+sqlite+import+saver&utm_source=chatgpt.com "checkpoints | langgraph | LangChain Reference"
+
 
