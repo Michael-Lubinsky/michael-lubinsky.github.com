@@ -6,6 +6,9 @@
 <https://www.youtube.com/watch?v=C_1QKZAcJjk> 
 Claude Certified Developer Foundations (CCDV-F) Certification Course
 
+<https://www.youtube.com/watch?v=reDRM0tqhNs> 
+Claude Certified Architect - Foundations – Prepare for and pass the exam!
+
 <https://www.youtube.com/watch?v=7l6bXLAKyEI> 
 Claude Code Full Course – Autonomous Goals, MCP, and VS Code Setup
 
