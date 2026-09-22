@@ -85,6 +85,9 @@ Shlomo Sternberg's "Dynamical Systems"
 <https://www.youtube.com/watch?v=yWo2Cto5074> Zorich 2
 <https://www.youtube.com/watch?v=3EiwgdlXAow&pp=0gcJCT8LAYcqIYzv> Zorich 3
 
+## Complex Analysis
+<https://www.youtube.com/playlist?list=PLp9ABVh6_x4Hhju9_YIfMUOiNRbxniTDY>  Белошапка
+
 ## Riemann Zeta function
 <https://habr.com/ru/articles/452964/>
 <https://www.youtube.com/watch?v=86ck6wGxJSA&t=866s> Shiz
