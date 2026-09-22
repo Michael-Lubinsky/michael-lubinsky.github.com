@@ -1,6 +1,7 @@
 ## Claude Agent SDK 
 
- <https://www.youtube.com/watch?v=58n-n-3oRic>
+ <https://www.youtube.com/watch?v=58n-n-3oRic> 
+Andrew Ng's 2-hour course covering graph engineering. 1 prompt → 100 agents → loops → graphs
 
  <https://codepointer.dev/p/the-architecture-of-multi-agent-systems>
 
