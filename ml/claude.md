@@ -3,6 +3,12 @@
 
 <https://github.com/luongnv89/claude-howto>
 
+<https://www.youtube.com/watch?v=C_1QKZAcJjk> 
+Claude Certified Developer Foundations (CCDV-F) Certification Course
+
+<https://www.youtube.com/watch?v=7l6bXLAKyEI> 
+Claude Code Full Course – Autonomous Goals, MCP, and VS Code Setup
+
 <https://habr.com/ru/articles/1077104/>
 
 <https://habr.com/ru/articles/1063240/>
