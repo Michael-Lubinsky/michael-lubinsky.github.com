@@ -2,7 +2,11 @@
 
 <https://github.com/RAYEN8811/Langraph_for_beginners->
 
-<https://www.youtube.com/watch?v=Zy7EXDONlTY>
+<https://www.youtube.com/watch?v=Zy7EXDONlTY> 
+Agentic AI – Complete Course for Beginners
+
+<https://www.youtube.com/watch?v=mHxLXzYjQRE>
+Production RAG with LangChain & Vector Databases – Full Course
 
 <https://towardsdatascience.com/shipai/projects/langchain-csv-agent>
 
