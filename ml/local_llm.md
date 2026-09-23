@@ -22,5 +22,5 @@ GGUF is the modern, self-contained file format standard for running quantized la
 
 <https://habr.com/ru/articles/1024880/>   LLM on MacBook Pro 16" M2 Max, 64GB
 
-<https://habr.com/ru/articles/945086/>
+<https://habr.com/ru/articles/945086/> Прагматичное руководство по запуску LLM на своем железе
 
