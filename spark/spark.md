@@ -2,6 +2,8 @@
 
 <https://sinja.io/blog/data-landscape-guide-for-developers>
 
+<https://www.prepnplaced.com/prepnplaced-notes>
+
 <https://news.ycombinator.com/item?id=48935510>
 
 <img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/60506641-4fc8-4701-9f88-d8a9e57cc5b3" />
