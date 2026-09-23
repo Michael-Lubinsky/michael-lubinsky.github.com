@@ -358,6 +358,8 @@ https://news.ycombinator.com/item?id=46946401
 
 ### Special Relativity
 
+<https://arxiv.org/abs/2609.22382>
+
 <https://arxiv.org/abs/2605.21660> Relativity for Retired Engineers  
 
 <https://www.youtube.com/watch?v=SAOXOQZSq-Y>  
