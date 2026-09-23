@@ -4,6 +4,9 @@
 
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
 
+<https://habr.com/ru/articles/1057528/>  llama.cpp
+
+
 <https://habr.com/ru/articles/1081324/>
 
 <https://habr.com/ru/articles/1085032/> what to use instead of Ollama
@@ -13,3 +16,9 @@ GGUF is the modern, self-contained file format standard for running quantized la
 
 
 <https://habr.com/ru/articles/1005054/> LM Studio
+
+
+https://habr.com/ru/articles/1024880/   LLM on MacBook Pro 16" M2 Max, 64GB
+
+https://habr.com/ru/articles/945086/
+
