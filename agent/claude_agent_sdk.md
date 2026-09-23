@@ -1,7 +1,6 @@
 ## Claude Agent SDK 
 
- <https://www.youtube.com/watch?v=58n-n-3oRic> 
-Andrew Ng's 2-hour course covering graph engineering. 1 prompt → 100 agents → loops → graphs
+<https://habr.com/ru/articles/984160/>
 
  <https://codepointer.dev/p/the-architecture-of-multi-agent-systems>
 
@@ -467,3 +466,7 @@ Tableau MCP server (Node, local or containerized)
 ```
 
 The key architectural point: **credentials never pass through the LLM's context window.** The model only ever sees tool *names*, *schemas*, and *results* — the actual secret material stays inside the MCP server process boundary, which you control and can audit independently of what the model says or does.
+
+
+ <https://www.youtube.com/watch?v=58n-n-3oRic> 
+Andrew Ng's 2-hour course covering graph engineering. 1 prompt → 100 agents → loops → graphs
