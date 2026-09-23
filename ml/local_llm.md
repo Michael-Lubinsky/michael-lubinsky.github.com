@@ -9,3 +9,5 @@
 <https://habr.com/ru/articles/1085032/> what to use instead of Ollama
 
 <https://github.com/ggml-org/ggml> GGML
+
+<https://habr.com/ru/articles/1005054/> LM Studio
