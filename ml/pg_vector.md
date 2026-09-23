@@ -1,6 +1,10 @@
 ##  PGVector  
 
+
 `pgvector` is a PostgreSQL extension for storing and querying **vector embeddings**. 
+
+Pipeline which uses Postgres FastAPI pg_vector, FastMCP, dot, docker_composer
+<https://github.com/nnadtoka/agentic-medallion-pipeline>
 
 <https://habr.com/ru/articles/1081568/>
 
