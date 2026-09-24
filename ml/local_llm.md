@@ -4,6 +4,8 @@
 
 <https://bestmodelforyourbudget.terrydjony.com/>
 
+<https://news.ycombinator.com/item?id=49830866>
+
 <https://www.llmfit.org/>
 
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
