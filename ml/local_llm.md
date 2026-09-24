@@ -1,5 +1,7 @@
 ## Local Models
 
+<https://artificialanalysis.ai/>
+
 <https://www.llmfit.org/>
 
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
