@@ -8,13 +8,16 @@ Agentic AI – Complete Course for Beginners
 <https://www.youtube.com/watch?v=mHxLXzYjQRE>
 Production RAG with LangChain & Vector Databases – Full Course
 
-1) Build and agent from Scracth: <https://youtu.be/58n-n-3oRic?si=BwiFYXzrZ0IbFSXs>
+  1) Build and agent from Scracth: <https://youtu.be/58n-n-3oRic?si=BwiFYXzrZ0IbFSXs>
   2) Agents in Langgraph: <https://youtu.be/58n-n-3oRic?si=USco-R_6HCYTdoNr>3
   3) AI Agents in Langgraph: <https://youtu.be/58n-n-3oRic> 
 
 <https://towardsdatascience.com/shipai/projects/langchain-csv-agent>
 
 <https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b>
+
+
+<https://www.youtube.com/watch?v=fPQ-XjVr26E>
 
 <https://habr.com/ru/companies/sberbank/articles/1083832/> better when LangGraph ?
 
