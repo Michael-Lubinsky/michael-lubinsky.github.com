@@ -2,6 +2,8 @@
 
 <https://artificialanalysis.ai/>
 
+<https://bestmodelforyourbudget.terrydjony.com/>
+
 <https://www.llmfit.org/>
 
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
