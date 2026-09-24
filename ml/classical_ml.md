@@ -7,6 +7,8 @@
 
 SVM <https://habr.com/ru/articles/1072750/>
 
+<https://en.wikipedia.org/wiki/Akaike_information_criterion>
+
 <https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
 
 Precision, Recall, F-score, ROC-AUC
