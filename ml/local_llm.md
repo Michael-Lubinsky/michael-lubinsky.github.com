@@ -4,13 +4,15 @@
 
 <https://bestmodelforyourbudget.terrydjony.com/>
 
-<https://news.ycombinator.com/item?id=49830866>
+<https://news.ycombinator.com/item?id=49830866> Локальный агент для кода на Mac: MTPLX + pi + Qwen3.8–27B.
 
 <https://www.llmfit.org/>
 
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
 
 https://habr.com/ru/companies/selectel/articles/1005504/  Собственная облачная LLM на 16 ГБ VRAM — часть 1: базовая сборка, tools и MCP
+
+<https://habr.com/ru/articles/1085928/>
 
 <https://habr.com/ru/articles/1057528/>  llama.cpp
 
