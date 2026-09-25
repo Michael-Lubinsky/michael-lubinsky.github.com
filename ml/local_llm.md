@@ -6,6 +6,8 @@
 
 <https://www.nobodywho.ai/#docs>
 
+<https://github.com/lyogavin/airllm>
+
 <https://news.ycombinator.com/item?id=49830866> Локальный агент для кода на Mac: MTPLX + pi + Qwen3.8–27B.
 
 <https://www.llmfit.org/>
