@@ -1,5 +1,7 @@
 ## Python links
 
+<https://www.reddit.com/r/Python/comments/1wkziub/state_of_the_art_in_python_2026/>
+
 <https://realpython.com/ydata-profiling-eda/>
 
 <https://sgolev.github.io/blog/2026-07-28-celery-recipes/> Celery
