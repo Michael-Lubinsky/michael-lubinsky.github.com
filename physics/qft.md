@@ -19,7 +19,7 @@
 До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
 Промокод: YXFCQXX7VQHXX
 
- 
+ <https://arxiv.org/pdf/2609.28019>
 
 <http://web.ihep.su/spitsky/mipt/literature/literature.html>
 
