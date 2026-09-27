@@ -2,6 +2,8 @@
 
 <https://agentic-coding-guide.netlify.app/>
 
+<https://www.udacity.com/course/agentic-ai--nd900> 
+
 <https://github.com/FareedKhan-dev/production-grade-agentic-system>
 
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
