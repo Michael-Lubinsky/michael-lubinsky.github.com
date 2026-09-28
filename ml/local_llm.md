@@ -1,5 +1,7 @@
 ## Local Models
 
+<https://github.com/magnitudedev/magnitude>
+
 <https://lmstudio.ai/docs/bionic> Bionic is the AI agent for getting real work done with open models, including coding, research, and complex work with documents and files. You can use local models or switch to open-source models in the cloud for heavier tasks, all while staying in control of your privacy and AI spend
 
 <https://artificialanalysis.ai/>
