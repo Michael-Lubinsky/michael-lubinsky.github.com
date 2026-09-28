@@ -36,6 +36,8 @@ GGUF is the modern, self-contained file format standard for running quantized la
 
 <https://habr.com/ru/articles/945086/> Прагматичное руководство по запуску LLM на своем железе
 
+<https://habr.com/ru/articles/1087416/> Ollama + Deepseek
+
 ### Small Language Models - SLM
 <https://habr.com/ru/companies/vtb/articles/1086030/>
 
