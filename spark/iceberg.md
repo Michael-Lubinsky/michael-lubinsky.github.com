@@ -3,6 +3,10 @@
 Iceberg’s documentation: <http://www.apache.iceberg.io>  
 Delta Lake’s documentation: <http://www.delta.io>  
 
+<https://habr.com/ru/articles/1084334/>  
+<https://habr.com/ru/articles/1087262/>
+Спор о формате таблиц для Lakehouse закончился. Iceberg поддерживают Spark, Trino, Flink, StarRocks, ClickHouse, Snowflake, BigQuery — перечислять можно долго. Зато открылся следующий вопрос — каталог. По сути, каталог, это тот сервис, который превращает Iceberg из спецификации в механизм. Именно каталог хранит указатель на актуальный metadata.json, выполняет атомарный commit и решает, кто имеет право читать таблицу, а кто — нет.
+
 <https://habr.com/ru/articles/1065864/>
 
 <https://habr.com/ru/companies/vktech/articles/959398/>
