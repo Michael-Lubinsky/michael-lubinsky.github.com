@@ -106,6 +106,8 @@ https://stasosphere.com/machine-learning/
 
 <https://habr.com/ru/companies/piter/articles/1087530/>
 
+<https://habr.com/ru/companies/otus/articles/1077956/>
+
 <https://habr.com/ru/articles/1069746/>
 
 <https://habr.com/ru/companies/raft/articles/1056460/>
