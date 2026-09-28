@@ -16,6 +16,8 @@
 How to Achieve Pruning When Querying by Non-Partitioned Columns
 <https://hakibenita.com/postgresql-partition-pruning>
 
+<https://news.ycombinator.com/item?id=49865312> timezones
+
 ## Queue in Postgres  SELECT FOR UPDATE SKIP LOCKED
 
 
