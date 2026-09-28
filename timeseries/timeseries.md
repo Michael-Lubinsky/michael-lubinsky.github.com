@@ -1,4 +1,100 @@
 ## Time Series
+
+Time-series forecasting.
+Starting with the statistical foundations.
+
+Before transformers and pretrained models, people already had a lot of algorithms for forecasting.
+
+Start with simple forecasts:
+→ historical average
+→ last observed value
+→ last value from the same season
+
+These are still stroing baselines. A complicated model needs to justify why we need it.
+
+1927–1938: autoregression and innovations.
+
+Yule modelled observations using previous values and a random disturbance.
+
+Wold later provided a theoretical representation of stationary processes using a deterministic component and accumulated innovations.
+
+Not the same contribution. One is a modelling approach, the other is a theoretical foundation.
+
+1950s–1960: exponential smoothing.
+
+Estimate the current level, giving more weight to recent observations.
+
+Then extend what we track:
+→ SES: level
+→ Holt: level + trend
+→ Holt-Winters: level + trend + seasonality
+
+For monthly demand, “what is the current level?” and “what usually happens in December?” are different questions.
+
+1960: Kalman filter.
+
+The underlying state is not directly observed. We estimate it from noisy measurements.
+Predict the state → receive an observation → correct the estimate → repeat.
+
+1970: Box–Jenkins.
+
+ARIMA becomes part of a systematic workflow:
+→ identify a model
+→ estimate it
+→ check residuals
+→ revise when needed
+
+Difference the series if needed, then model dependence through lagged values and innovations.
+
+And MA here does not mean taking a rolling average of the observations.
+
+1980: VAR in macroeconomics.
+
+Instead of modelling one series alone, let several variables depend on their own and each other’s past values.
+
+But predictive dependence does not automatically establish causality.
+
+1982 / 1986: ARCH and GARCH.
+
+A different target: changing conditional variance.
+
+The expected value can stay similar while uncertainty changes a lot. Predicting the level and predicting volatility are not the same task.
+
+1985: damped trend.
+
+A rising trend does not need to continue at the same rate forever.
+
+Reduce its contribution as the forecast horizon grows.
+
+1990: STL.
+
+Separate trend, seasonality and remainder using local smoothing.
+
+But decomposition is not yet a forecast. We still need to decide how to project those components forward.
+
+
+Its to ask what each method assumes:
+```
+→ does the recent past matter more?
+→ is there a changing trend?
+→ does a seasonal pattern repeat?
+→ do other variables help?
+→ is uncertainty itself changing?
+```
+
+Later neural models change how we learn these patterns. They do not make these questions disappear.
+
+### Summary:
+```
+smoothing: update components.
+ARIMA: model temporal dependence.
+state space: estimate hidden states.
+VAR: model several series together.
+ARCH/GARCH: model changing variance.
+STL: separate components before forecasting.
+```
+<img width="800" height="999" alt="image" src="https://github.com/user-attachments/assets/6df27388-eb78-4bf4-8d0d-dac4ba229b03" />
+
 Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-ebook/dp/B0G3VGKWHJ> 
 
 <https://leanpub.com/mastering_modern_time_series_forecasting>
