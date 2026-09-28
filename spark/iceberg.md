@@ -4,7 +4,10 @@ Iceberg’s documentation: <http://www.apache.iceberg.io>
 Delta Lake’s documentation: <http://www.delta.io>  
 
 <https://habr.com/ru/articles/1084334/>  
-<https://habr.com/ru/articles/1087262/>
+Таблица Iceberg — это дерево файлов в объектном хранилище: данные хранятся в Parquet, над ними манифесты, над манифестами metadata.json, ну и актуальной версией таблицы считается та, на которую как раз и указывает каталог. Commit — атомарное движение этого указателя.
+<img width="1560" height="878" alt="image" src="https://github.com/user-attachments/assets/b2cd6994-d8b8-4f24-97f4-3c80b6364fb1" />
+
+<https://habr.com/ru/articles/1087262/>  
 Спор о формате таблиц для Lakehouse закончился. Iceberg поддерживают Spark, Trino, Flink, StarRocks, ClickHouse, Snowflake, BigQuery — перечислять можно долго. Зато открылся следующий вопрос — каталог. По сути, каталог, это тот сервис, который превращает Iceberg из спецификации в механизм. Именно каталог хранит указатель на актуальный metadata.json, выполняет атомарный commit и решает, кто имеет право читать таблицу, а кто — нет.
 
 <https://habr.com/ru/articles/1065864/>
