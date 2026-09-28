@@ -1,5 +1,7 @@
 ## Transformers
 
+<img width="1080" height="1352" alt="image" src="https://github.com/user-attachments/assets/7a6ada6f-3387-495e-951a-63a39a7bd500" />
+
 <https://arxiv.org/pdf/2604.00965> Understanding Transformers and Attention
 
 <https://habr.com/ru/articles/1058560/>
