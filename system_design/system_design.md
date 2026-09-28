@@ -2,6 +2,8 @@
 
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 
+<https://habr.com/ru/companies/haulmont/articles/1085536/>
+
 <https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
 
 <https://www.youtube.com/@nowinterview> System Design Interview ru
