@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/companies/haulmont/articles/1085536/>
 
+<https://habr.com/ru/articles/1087468/>
+
 <https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
 
 <https://www.youtube.com/@nowinterview> System Design Interview ru
