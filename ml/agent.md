@@ -6,6 +6,9 @@
 
 <https://github.com/FareedKhan-dev/production-grade-agentic-system>
 
+Agent coding in Databricks
+<https://medium.com/@sreedeepsinha/genie-code-is-an-agent-harness-using-it-like-a-prompt-box-is-costing-you-64d0de8085a2>
+
 <https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
 
 How to Enable Concise ModeType:
