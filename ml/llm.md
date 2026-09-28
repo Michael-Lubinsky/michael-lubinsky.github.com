@@ -1,6 +1,8 @@
 ## LLM 
 <img width="800" height="895" alt="image" src="https://github.com/user-attachments/assets/8a387c1a-bb05-4cd3-a796-187a25c11955" />
 
+<img width="1080" height="1412" alt="image" src="https://github.com/user-attachments/assets/43f571d9-0a4c-4284-b43d-66e7878db587" />
+
 <https://habr.com/ru/articles/1068944/> Топ вопросов с NLP собеседований
 
 How to study any subject with LLM using Socratic method
