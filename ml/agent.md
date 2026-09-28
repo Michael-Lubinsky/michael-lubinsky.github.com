@@ -443,6 +443,8 @@ The 100 line AI agent that solves GitHub issues or helps you in your command lin
 
 <https://habr.com/ru/companies/haulmont/articles/1073034/>
 
+<https://habr.com/ru/companies/haulmont/articles/1085536/>
+
 <https://github.com/github/spec-kit>
 
 <https://news.ycombinator.com/item?id=48398925>
