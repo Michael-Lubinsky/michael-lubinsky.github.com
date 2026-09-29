@@ -690,3 +690,111 @@ This pattern is the cleanest and most widely adopted.
   Most teams move them to `/processed/` or `/archive/` using either `foreachBatch` + `COPY INTO` or a separate task with `dbutils.fs.mv`.
 
 This gives you speed, cost savings, safety against checkpoint loss, and clean governance.
+```
+
+df.printSchema()
+df.columns
+df.count()
+df.describe('Name').show()
+df.describe('uniform', 'normal').show()
+df.filter((df.Club=='FC Barcelona') &
+(df.Nationality=='Spain')).orderBy('ID', ascending='False').show(5)
+from pyspark.sql.functions import mean, min, max
+df.select([mean('uniform'), min('uniform'), max('uniform')]).show()
+
+df.select("name").distinct().show()
+
+from pyspark.sql.functions import countDistinct
+
+df.select(countDistinct("name")).show()
+df.select(countDistinct("name", "department")).show()
+df.groupBy("department").agg(countDistinct("name").alias("unique_employees")).show()
+```
+
+
+## readStream()
+
+In PySpark, `spark.readStream.format(...)` specifies the **streaming source format**. Which values are supported depends partly on installed connectors.
+
+Common formats include:
+
+| Format         | Example                 | Typical source                 |
+| -------------- | ----------------------- | ------------------------------ |
+| `"kafka"`      | `.format("kafka")`      | Apache Kafka                   |
+| `"json"`       | `.format("json")`       | JSON files arriving in storage |
+| `"csv"`        | `.format("csv")`        | CSV files arriving in storage  |
+| `"parquet"`    | `.format("parquet")`    | Parquet files                  |
+| `"orc"`        | `.format("orc")`        | ORC files                      |
+| `"text"`       | `.format("text")`       | Text files                     |
+| `"delta"`      | `.format("delta")`      | Delta Lake / Databricks        |
+| `"cloudFiles"` | `.format("cloudFiles")` | Databricks Auto Loader         |
+| `"rate"`       | `.format("rate")`       | Generated test stream          |
+| `"socket"`     | `.format("socket")`     | TCP socket, mainly testing     |
+
+For example, **Kafka**:
+
+```python
+df = (
+    spark.readStream
+         .format("kafka")
+         .option("kafka.bootstrap.servers", "host:9092")
+         .option("subscribe", "events")
+         .load()
+)
+```
+
+For **S3 files**, you don't specify `"s3"` as the format. You specify the **file format** and put S3 in `.load()`:
+
+```python
+df = (
+    spark.readStream
+         .format("json")
+         .schema(schema)
+         .load("s3://my-bucket/events/")
+)
+```
+
+In Databricks, you would often use **Auto Loader** instead:
+
+```python
+df = (
+    spark.readStream
+         .format("cloudFiles")
+         .option("cloudFiles.format", "json")
+         .option("cloudFiles.schemaLocation", schema_path)
+         .load("s3://my-bucket/events/")
+)
+```
+
+And for a **Delta table**, you have two equivalent-looking approaches:
+
+```python
+df = (
+    spark.readStream
+         .format("delta")
+         .table("catalog.schema.bronze")
+)
+```
+
+or simply:
+
+```python
+df = spark.readStream.table("catalog.schema.bronze")
+```
+
+### Important distinction
+
+`format()` does **not** mean the physical location of the source. It means the **data source/connector**.
+
+So:
+
+```text
+Kafka                 → format("kafka")
+S3 containing JSON    → format("json")
+S3 containing Parquet → format("parquet")
+Delta table           → format("delta")
+Databricks Auto Loader→ format("cloudFiles")
+```
+
+Additional connectors can add formats such as Kinesis, Event Hubs, Pub/Sub, etc., so there isn't one fixed universal list beyond what your Spark/Databricks environment provides.
+
