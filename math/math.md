@@ -4,6 +4,8 @@
 
 <https://www.3blue1brown.com/>
 
+<https://blablablarden.ru/>
+
 <https://www.numberphile.com/>
 
 <https://russianmathbooks.com/>
