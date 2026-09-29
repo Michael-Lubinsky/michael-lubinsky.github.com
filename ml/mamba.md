@@ -2,6 +2,8 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+<https://github.com/usamahz/make-your-model-fast>
+
 <https://huggingface.co/spaces/nanotron/ultrascale-playbook>
 
 <https://github.com/agwr/learn-jax> JAX
