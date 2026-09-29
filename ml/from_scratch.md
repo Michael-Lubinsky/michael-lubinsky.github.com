@@ -2,6 +2,10 @@
 
 <https://languagemodelbuilder.com/>
 
+<https://github.com/rohitg00/ai-engineering-from-scratch>
+
+<https://aiengineeringfromscratch.com/>
+
 <https://cs336.stanford.edu/>
 
 <https://martinuke0.github.io/posts/2026-09-01-build-your-own-inference-engine-from-scratch/>
