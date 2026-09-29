@@ -2,6 +2,8 @@
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+<https://aiengineeringfromscratch.com/>
+
 <https://github.com/usamahz/make-your-model-fast>
 
 <https://huggingface.co/spaces/nanotron/ultrascale-playbook>
