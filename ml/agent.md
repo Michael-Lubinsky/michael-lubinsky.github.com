@@ -1,5 +1,7 @@
 ## Agents
 
+<https://www.reddit.com/r/Agents/>
+
 <https://agentic-coding-guide.netlify.app/>
 
 <https://www.udacity.com/course/agentic-ai--nd900> 
