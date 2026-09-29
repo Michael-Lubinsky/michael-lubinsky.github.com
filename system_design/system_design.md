@@ -8,6 +8,8 @@
 
 <https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
 
+<https://habr.com/ru/articles/1087678/> Domain Driven Development
+
 <https://www.youtube.com/@nowinterview> System Design Interview ru
 
 <https://github.com/liquidslr/system-design-notes>
