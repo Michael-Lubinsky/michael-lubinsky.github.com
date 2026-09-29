@@ -8,6 +8,8 @@ Agentic AI – Complete Course for Beginners
 <https://www.youtube.com/watch?v=mHxLXzYjQRE>
 Production RAG with LangChain & Vector Databases – Full Course
 
+<https://www.youtube.com/watch?v=jbDkfh7XYFA>
+
   1) Build and agent from Scracth: <https://youtu.be/58n-n-3oRic?si=BwiFYXzrZ0IbFSXs>
   2) Agents in Langgraph: <https://youtu.be/58n-n-3oRic?si=USco-R_6HCYTdoNr>3
   3) AI Agents in Langgraph: <https://youtu.be/58n-n-3oRic> 
