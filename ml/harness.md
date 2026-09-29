@@ -11,3 +11,5 @@
 <https://habr.com/ru/articles/1054412/> AI-база: LLM, языковые модели, агенты, агентные механизмы
 
 <https://mindzkonnected.com/blogs/from-ReAct-to-deep-agent-when-one-routine-is-not-enough/>
+
+<https://mindzkonnected.com/blogs/from-ReAct-to-deep-agent-when-one-routine-is-not-enough/>
