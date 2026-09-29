@@ -34,6 +34,11 @@
 
 <https://habr.com/ru/companies/wunderfund/articles/1022820/>
 
+## word2vec and others
+<https://habr.com/ru/articles/778048/>
+
+https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
+
 <https://habr.com/ru/companies/wunderfund/articles/1031042/> Word2Vec
 
 <https://huggingface.co/spaces/hesamation/primer-llm-embedding>
@@ -76,7 +81,6 @@ https://machinelearningmastery.com/top-5-vector-databases-for-high-performance-l
 
 https://github.com/vectordbz/vectordbz
 
-https://habr.com/ru/companies/ruvds/articles/920174/ поисковик основывается на векторных представлениях (эмбеддингах) слов: word2vec
 
 https://habr.com/ru/companies/tensor/articles/970480/ Векторный поиск: как выбрать систему и не пожалеть
 
