@@ -1,6 +1,6 @@
 ## Agents
 
-<https://www.reddit.com/r/Agents/>
+<https://www.reddit.com/r/AI_Agents/>
 
 <https://agentic-coding-guide.netlify.app/>
 
