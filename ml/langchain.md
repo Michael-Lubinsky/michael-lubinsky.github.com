@@ -18,6 +18,7 @@ Production RAG with LangChain & Vector Databases – Full Course
 
 <https://medium.com/@mganesa-ks/watching-an-ai-agent-think-8a4d3a86c59b>
 
+<https://habr.com/ru/companies/amvera/articles/949376/>
 
 <https://www.youtube.com/watch?v=fPQ-XjVr26E>
 
