@@ -2,6 +2,8 @@
 
 <https://inferencebook.org/>
 
+<https://github.com/usamahz/make-your-model-fast>
+
 <https://www.chapterpal.com/bookstore>
 
 <https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html>
