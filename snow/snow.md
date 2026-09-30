@@ -2526,7 +2526,9 @@ JSON query helpers
 
 ### Semantic Views
 
-https://docs.snowflake.com/en/user-guide/views-semantic/overview
+<https://snowflakewiki.medium.com/ontology-knowledge-graphs-the-semantic-layer-on-snowflake-the-implementation-c1c0d4a4cb09>
+
+<https://docs.snowflake.com/en/user-guide/views-semantic/overview>
 
 ### Pivot SQL
 - You must specify the values in the IN (...) clause (no dynamic pivoting).
