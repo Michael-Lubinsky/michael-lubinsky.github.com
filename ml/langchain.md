@@ -2,6 +2,9 @@
 
 <https://github.com/RAYEN8811/Langraph_for_beginners->
 
+<img width="1080" height="1352" alt="image" src="https://github.com/user-attachments/assets/7893c2c3-a3fb-49e6-a8d9-3848437db21a" />
+
+
 <https://www.youtube.com/watch?v=Zy7EXDONlTY> 
 Agentic AI – Complete Course for Beginners
 
