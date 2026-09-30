@@ -523,7 +523,38 @@ WHERE t2.id IS NULL;
 ```
 The default framing option is RANGE UNBOUNDED PRECEDING, which is the same as RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.
 With ORDER BY, this sets the frame to be all rows from the partition start up through the current row's last ORDER BY peer.
-```
+```sql
+-- this is wrong ?
+select d, amount, sum(amount) over (order by d) as running
+from sales order by d;
+
+    d      amount  running
+2026-01-01    100      300
+2026-01-01    200      300
+2026-01-02     50      350
+2026-01-03     10      410
+2026-01-03     20      410
+2026-01-03     30      410
+
+-- this is fix:
+sum(amount) over (order by d rows between unbounded preceding and current row)
+
+    d      amount  по умолчанию  rows
+2026-01-01    100           300   100
+2026-01-01    200           300   300
+2026-01-02     50           350   350
+2026-01-03     10           410   360
+2026-01-03     20           410   380
+2026-01-03     30           410   410
+
+ ```
+
+  
+  
+  
+
+
+
 <https://habr.com/ru/companies/otus/articles/1036212/>
 <https://habr.com/ru/articles/1009552/>  
 <https://sqltest.online/ru/lesson/window-functions/window-frames>
