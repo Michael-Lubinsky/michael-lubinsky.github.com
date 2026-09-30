@@ -26,6 +26,32 @@ DagBag is a collection of DAGs, typically from a directory on the file system. I
 
 The scheduler is responsible for scheduling jobs, monitoring DAGs, and triggering tasks.
 
+
+<https://habr.com/ru/companies/otus/articles/1085832/>
+
+
+Apache Airflow есть оператор SQLColumnCheckOperator, который позволяет описать проверки для каждой колонки декларативно.
+
+Вот пример из реального пайплайна обработки заказов:
+```python
+column_checks = SQLColumnCheckOperator(
+
+    task_id='column_checks',
+    table='orders',
+    column_mapping={
+        'order_id': {
+            "unique_check": {"equal_to": 0}  # не должно быть дублей
+        },
+        'price': {
+            "min": {"greater_than": 0}  # цена не может быть отрицательной
+        },
+        'quantity': {
+            "max": {"less_than": 1000}  # верхняя граница
+        }
+    },
+    conn_id=MY_CONN_ID,
+)
+```
 ### airflow.cfg
 The airflow.cfg file is used to configure the Airflow environment,  
 including database connections and executor settings.
