@@ -2524,11 +2524,16 @@ JSON query helpers
 
 ```
 
-### Semantic Views
+## Semantic Views
 
 <https://snowflakewiki.medium.com/ontology-knowledge-graphs-the-semantic-layer-on-snowflake-the-implementation-c1c0d4a4cb09>
 
 <https://docs.snowflake.com/en/user-guide/views-semantic/overview>
+
+<https://docs.snowflake.com/en/user-guide/views-semantic/sql#joining-logical-tables-that-contain-ranges-of-values>
+
+<img width="743" height="289" alt="image" src="https://github.com/user-attachments/assets/8261f0c5-4521-4b64-8a8e-34b0201ada25" />
+
 
 ### Pivot SQL
 - You must specify the values in the IN (...) clause (no dynamic pivoting).
@@ -2655,14 +2660,6 @@ Snowflake is not optimized for:
 
 <https://habr.com/ru/companies/otus/articles/843522/>
 
-
-## Semantic view
-
-<https://docs.snowflake.com/en/user-guide/views-semantic/overview>
-
-<https://docs.snowflake.com/en/user-guide/views-semantic/sql#joining-logical-tables-that-contain-ranges-of-values>
-
-<img width="743" height="289" alt="image" src="https://github.com/user-attachments/assets/8261f0c5-4521-4b64-8a8e-34b0201ada25" />
 
 
 # Snowflake Deep Dive
