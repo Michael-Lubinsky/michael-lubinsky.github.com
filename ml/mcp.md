@@ -49,6 +49,8 @@ MCP лучше подходит там, где нужны:
 }
 ```
 
+<https://news.ycombinator.com/item?id=49906637>
+
 #### https://habr.com/ru/articles/1042470/
 FastMCP line: 
 mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
