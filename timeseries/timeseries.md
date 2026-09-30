@@ -110,6 +110,8 @@ Book: <https://www.amazon.com/Advanced-Forecasting-Python-Mastering-Techniques-e
 <https://github.com/RussellSB/pytrendy>
 
 
+<https://habr.com/ru/companies/alfa/articles/1085676/>
+
 <https://habr.com/ru/articles/1066070/> Anomaly in time series - WhyTrend
 
 <https://habr.com/ru/articles/1066000/> Anomaly in time series - WhyTrend
