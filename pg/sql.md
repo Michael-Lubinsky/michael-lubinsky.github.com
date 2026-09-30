@@ -520,7 +520,10 @@ WHERE t2.id IS NULL;
 ## Window functions
 
 <https://habr.com/ru/companies/otus/articles/1087296/>
-
+```
+The default framing option is RANGE UNBOUNDED PRECEDING, which is the same as RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.
+With ORDER BY, this sets the frame to be all rows from the partition start up through the current row's last ORDER BY peer.
+```
 <https://habr.com/ru/companies/otus/articles/1036212/>
 <https://habr.com/ru/articles/1009552/>  
 <https://sqltest.online/ru/lesson/window-functions/window-frames>
