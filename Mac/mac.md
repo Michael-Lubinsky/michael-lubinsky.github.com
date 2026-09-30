@@ -5,7 +5,9 @@
 
 <https://wisprflow.ai/>
 
+<https://habr.com/ru/companies/gigapisar/articles/1088630/>
 
+## _
 
 <https://habr.com/ru/companies/ringo_mdm/articles/1064572/> Mac console commands not available on Linux
 
