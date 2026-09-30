@@ -31,6 +31,9 @@ Data modeling
 
 <https://medium.com/@Rohan_Dutt/10-sql-patterns-for-capturing-variance-that-averages-completely-hide-b8bed145f53c>
 
+
+
+
 ### Filter
 ```sql
 WITH filtered_order_hist AS (
@@ -515,6 +518,9 @@ LEFT JOIN employees t2 ON t1.id + 1 = t2.id
 WHERE t2.id IS NULL;
 ```
 ## Window functions
+
+<https://habr.com/ru/companies/otus/articles/1087296/>
+
 <https://habr.com/ru/companies/otus/articles/1036212/>
 <https://habr.com/ru/articles/1009552/>  
 <https://sqltest.online/ru/lesson/window-functions/window-frames>
