@@ -46,4 +46,5 @@ GGUF is the modern, self-contained file format standard for running quantized la
 ### Small Language Models - SLM
 <https://habr.com/ru/companies/vtb/articles/1086030/>
 
+<https://github.com/incoai/splash> A local inference engine for Apple silicon, Apple M3 or newer
 
