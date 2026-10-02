@@ -273,6 +273,7 @@ Structured outputs <https://platform.claude.com/docs/en/agent-sdk/structured-out
 
 <img width="978" height="1280" alt="image" src="https://github.com/user-attachments/assets/3958a335-bfd5-4556-80bf-4937b2bc054b" />
 
+<img width="1080" height="1080" alt="image" src="https://github.com/user-attachments/assets/a9d07834-9169-44a3-b841-39a328a4b5dc" />
 
 → Всегда используй режим plan, давай Claude способ проверить результат
 → Попроси Claude провести с тобой интервью через инструмент AskUserQuestion
