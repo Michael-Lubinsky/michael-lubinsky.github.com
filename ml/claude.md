@@ -1,6 +1,8 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://www.facebook.com/watch/?v=2204372913452584>
+
 <https://realpython.com/courses/using-claude-api-python/>
 
 <https://habr.com/ru/articles/1081124/>
