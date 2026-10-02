@@ -19,6 +19,7 @@
 
 <https://leanpub.com/cppinterview>
 
+<https://habr.com/ru/articles/1070000/>
 
 <https://habr.com/ru/companies/otus/articles/1049280/>  C++ move semantic
 
