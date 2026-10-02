@@ -20,7 +20,7 @@ Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
 
 <https://github.com/manaflow-ai/cmux>  macOS terminal with vertical tabs and notifications for AI coding agents
 
-<https://paseo.sh/> <https://www.onorca.dev/>
+<https://paseo.sh/> <https://www.onorca.dev/> <https://herdr.dev/>
 
 
 <https://habr.com/ru/articles/1068168/>
