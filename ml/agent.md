@@ -18,6 +18,12 @@ How to Enable Concise ModeType:
 /config inside Claude Code, navigate to output style, and select Concise.  
 Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
 
+
+## Agents Management
+<https://agentmgmt.dev/>. 
+<https://news.ycombinator.com/item?id=49942434> 
+
+
 <https://github.com/manaflow-ai/cmux>  macOS terminal with vertical tabs and notifications for AI coding agents
 
 <https://paseo.sh/> <https://www.onorca.dev/> <https://herdr.dev/>
