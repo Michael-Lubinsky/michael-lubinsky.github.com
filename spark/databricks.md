@@ -16,7 +16,7 @@ Book:
 
 ## Examples to prepare candidates for in-depth discussions during interviews
 
-### Question 17: How do you optimize Spark jobs for performance in Databricks?
+###  How do you optimize Spark jobs for performance in Databricks?
 Optimizing Apache Spark jobs in Databricks requires efficient resource allocation, data processing optimizations, and query tuning. Below are the key best practices:
 
 1. Optimize Data Handling
@@ -26,20 +26,23 @@ Partitioning & Z-Ordering:
 
 Partition data on high-cardinality columns.
 Use Z-ORDER BY for optimizing frequently queried columns.
+
 df.write.format("delta").partitionBy("year").save("/mnt/delta_table") 
 OPTIMIZE delta.`/mnt/delta_table` ZORDER BY (customer_id);
+
 Automatic Cleanup:
 
 VACUUM delta.`/mnt/delta_table` 
 
 RETAIN 168 HOURS;
-2. Computation Tuning
+
+2. Computation Tuning. 
 Use DataFrames Instead of RDDs: DataFrames leverage Catalyst optimizer for better execution plans.
 Optimize Shuffle Operations:
 Reduce shuffle partitions:
 spark.conf.set("spark.sql.shuffle.partitions", "200")
 Avoid Skewed Joins using salting:
-
+```python
 from pyspark.sql.functions 
 import col, lit 
 
@@ -50,6 +53,7 @@ from pyspark.sql.functions
 
 import broadcast 
 df_result = df_large.join(broadcast(df_small), "join_key")
+```
 3. Cluster Configuration
 Enable Auto Scaling: Dynamically adjust resources based on workload.
 
@@ -58,47 +62,56 @@ Use Compute-Optimized Instances (c5d.2xlarge) for transformations and Memory-Opt
 Enable Photon Engine for SQL Processing:
 
 SET spark.databricks.photon.enabled = true;
+
 4. Optimizing Structured Streaming
 Use Watermarking to Handle Late Arriving Data:
-
+```sql
 df.withWatermark("event_time", "10 minutes")
 Trigger-Based Execution:
 
 df.writeStream.trigger(processingTime="1 minute").start()
-Question 18: How does Databricks handle schema evolution in Delta Lake?
+```
+
+### How does Databricks handle schema evolution in Delta Lake?
 Schema evolution in Delta Lake ensures that as data changes, tables adapt without breaking pipelines.
 
 1. Schema Enforcement
 By default, Delta Lake rejects schema mismatches to prevent accidental corruptions.
-
+```
 df.write.format("delta").mode("append").save("/mnt/delta_table")
+```
 If a new column is added without explicitly enabling schema evolution, Spark throws an error.
 
 2. Enabling Schema Evolution (mergeSchema)
 To allow new columns dynamically:
-
+```
 df.write.option("mergeSchema", "true").mode("append").format("delta").save("/mnt/delta_table")
+```
 This adds new columns but does not modify existing columns.
 
 3. Auto Schema Evolution in MERGE
 For updates in MERGE statements, use:
-
+```python
 spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
 
 deltaTable.alias("tgt").merge(
     df_new.alias("src"), "tgt.id = src.id"
 ).whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()
+```
+
 4. Handling Schema Evolution in Streaming
 Use Auto-Merge for Streaming Writes:
 
 spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true") 
 
 df.writeStream.format("delta").option("checkpointLocation", "/mnt/checkpoint").start("/mnt/delta_table")
+
 5. Safe Schema Updates with Deep Cloning
 To preserve old schema while evolving the new one:
 
 CREATE TABLE delta_clone DEEP CLONE delta_table;
-Question 19: Explain the use of Databricks Workflows and their benefits.
+
+### Explain the use of Databricks Workflows and their benefits.
 1. What are Databricks Workflows?
 Databricks Workflows is a fully-managed orchestration service for scheduling and automating tasks within Databricks. It serves as a simplified alternative to Apache Airflow.
 
@@ -110,7 +123,7 @@ Press enter or click to view image in full size
 Define a workflow with two dependent tasks:
 
 from databricks.sdk import WorkspaceClient
-
+```python
 w = WorkspaceClient()
 job = w.jobs.create(
     name="Data Pipeline Workflow",
@@ -127,6 +140,7 @@ job = w.jobs.create(
         }
     ]
 )
+```
 4. Handling Failures and Alerts
 Automatic Retries:
 
@@ -134,17 +148,20 @@ Automatic Retries:
 Email Notifications:
 
 "email_notifications": {"on_failure": ["user@example.com"]}
-Question 20: What are the key differences between Delta Lake and Parquet?
+
+### What are the key differences between Delta Lake and Parquet?
 1. Overview
 Delta Lake builds on top of Parquet but provides ACID transactions, schema enforcement, and time travel.
 
 2. Key Differences
 Press enter or click to view image in full size
 
-3. Querying Delta Lake with Time Travel
+3. Querying Delta Lake with Time Travel. 
 df = spark.read.format("delta").option("versionAsOf", 5).load("/mnt/delta_table")
-4. Converting Parquet to Delta
+
+4. Converting Parquet to Delta. 
 spark.read.parquet("/mnt/parquet_table").write.format("delta").save("/mnt/delta_table")
+
 5. When to Use Parquet Over Delta?
 Cold Storage: If data is archived and infrequently accessed, Parquet is more cost-effective.
 
@@ -153,7 +170,7 @@ Cross-Platform Interoperability: Parquet is widely supported across platforms, w
 This concludes Part 5 of the Databricks Data Engineering Interview Series. 
 <https://medium.com/towards-data-engineering/databricks-declarative-pipelines-how-databricks-dlt-saved-my-day-d95cc72db2b5>
 
-Databricks vs Snowflake
+### Databricks vs Snowflake
 <https://medium.com/@hugolu87/databricks-vs-snowflake-the-final-chapter-long-read-371cf3d7e572>
 
 ## Databricks certification
@@ -166,11 +183,11 @@ https://www.alexcole.net/databricks-data-engineer-associate-certification-guide/
 
 https://medium.com/@gema.correa/how-i-prepared-for-and-passed-the-databricks-certified-machine-learning-professional-exam-c741cfca259e
 
-I passed the Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻!
+### Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻!
 
 Honestly, this was one of the most brain-cracking certifications I've taken — it covers a wider range of concepts like Delta Live Tables (DLT), Unity Catalog, Apache Spark, Delta Lake, MLflow, Databricks CLI, and a lot more. It took me around 4 weeks to prepare.
 
-As per the official Databricks guide, the exam consists of 60 questions, but lucky me — I got 65 questions! 😂 You get 2 hours to complete it. Need to manage time, as the questions are too lengthy. The questions are seriously designed to make you doubt yourself at every step. 😅 
+As per the official Databricks guide, the exam consists of 60 questions,   You get 2 hours to complete it. Need to manage time, as the questions are too lengthy.  
 
 Here’s how the topics are distributed:
 ```
@@ -181,7 +198,7 @@ Here’s how the topics are distributed:
 • Monitoring & Logging (10%)
 • Testing & Deployment (10%)
 ```
-I highly recommend going thoroughly through all the official documentation provided by Databricks (I stuck to their course material and notebooks).
+ 
 
 Since there’s no official practice test from Databricks, it was a bit difficult to test knowledge — but there are a few good ones available on Udemy if you want extra practice.
 
@@ -197,21 +214,12 @@ https://lnkd.in/eZ8bfARx
 
 https://blog.det.life/i-passed-the-databricks-certified-associate-developer-for-apache-spark-exam-heres-how-you-can-too-6c2f9b66fdb5
 
---------
-
-It's official! I'm now a Databricks Certified Data Engineer Associate! 🚀
-After weeks of focused study and hands-on practice, I’m excited to share that I’ve cleared the Databricks Certified Data Engineer Associate exam ✅
-This journey sharpened my skills in:
-Apache Spark ⚡
-Delta Lake
-Data ingestion, transformation, and orchestration
-Lakehouse architecture
-
-Big shoutout and thanks to:
-Derar Alhussein for his well-structured Udemy course 👏  
+ 
+Derar Alhussein for his well-structured Udemy course:
  🔗 Databricks Certification Course
 https://lnkd.in/gr4-YHMH  
-Ansh Lamba for his free and practical YouTube series 🎥  
+
+Ansh Lamba for his free and practical YouTube series :
  🔗 YouTube Course
 https://lnkd.in/gs-JGDNz
 
