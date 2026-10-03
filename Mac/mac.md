@@ -16,7 +16,15 @@
 
 <https://nextpad.org/> NextPad++
 
-caffeinate - prevents your MacBook from sleeping even with the lid closed
+### caffeinate - prevents your MacBook from sleeping even with the lid closed
+
+В macOS для предотвращения перехода дисплея в режим сна используется команда:
+caffeinate -d
+
+Экран не будет засыпать, пока команда работает. Чтобы остановить - Ctrl+C.  
+Если нужно ещё и не давать самому Mac засыпать:  
+caffeinate -di
+
 
 <https://news.ycombinator.com/item?id=48701512>
 
