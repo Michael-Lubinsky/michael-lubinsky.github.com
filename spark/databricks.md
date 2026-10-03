@@ -5,11 +5,14 @@ Book:
 
 <https://login.databricks.com/>
 
+<img width="1280" height="742" alt="telegram-cloud-photo-size-1-4983758855351241630-y" src="https://github.com/user-attachments/assets/d1f1fda4-9442-4f6a-81b8-66bd804049da" />
+
+
 <https://medium.com/towards-data-engineering/databricks-data-engineering-interview-questions-expert-level-part-5-2f4724d3d607>
 
- examples to prepare candidates for in-depth discussions during interviews.
+## Examples to prepare candidates for in-depth discussions during interviews
 
-Question 17: How do you optimize Spark jobs for performance in Databricks?
+### Question 17: How do you optimize Spark jobs for performance in Databricks?
 Optimizing Apache Spark jobs in Databricks requires efficient resource allocation, data processing optimizations, and query tuning. Below are the key best practices:
 
 1. Optimize Data Handling
