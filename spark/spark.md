@@ -2,6 +2,8 @@
 
 <https://sinja.io/blog/data-landscape-guide-for-developers>
 
+Book: <https://github.com/bartosz25/data-engineering-design-patterns-book>
+
 <https://www.prepnplaced.com/prepnplaced-notes>
 
 <https://news.ycombinator.com/item?id=48935510>
