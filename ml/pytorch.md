@@ -10,6 +10,8 @@
 
 <https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
+<https://medium.com/the-coding-handbook/the-most-complete-pytorch-tutorial-youve-seen-10be216bee67>
+
 <https://blog.jetbrains.com/pycharm/2026/05/pytorch-vs-tensorflow-choosing-framework-2026/>
 
 <https://habr.com/ru/companies/otus/articles/975328/>
