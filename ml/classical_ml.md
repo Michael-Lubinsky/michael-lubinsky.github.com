@@ -74,6 +74,19 @@ If your use case involves vehicle telemetry  boosting algorithms could be useful
 
 <https://habr.com/ru/articles/1046942/>
 
+<https://rukshanpramoditha.medium.com/spectral-clustering-explained-how-eigenvectors-reveal-complex-cluster-structures-e57e51391d77> Spectral Clustering 
+```
+Steps to perform spectral clustering
+- Get data
+- Build the similarity matrix
+- Build the degree matrix
+- Build the Laplacian matrix (graph Laplacian)
+- Find eigenvalues and eigenvectors of the Laplacian matrix. Eigenvectors reveal cluster structure (how data points group together), acting as new features, and eigenvalues indicate the strength of cluster separation
+- Select the most important eigenvectors to embed the data in a lower dimension (dimensionality reduction)
+- Apply K-means on the new feature space (clustering)
+Spectral clustering combines dimensionality reduction and K-means clustering. We embed the data in a lower-dimensional space (where clusters are easier to separate) and then perform K-means clustering on the new feature space. In summary, K-means clustering works in the original feature space while spectral clustering works in the new reduced feature space.
+```
+
 ## Gaussian Process 
 
 <https://kelvinpaschal.com/blog/kernel-functions/>  
