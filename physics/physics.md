@@ -94,6 +94,9 @@ https://www.youtube.com/watch?v=brfyf4RLwr0 Введение в статисти
 ### Spinors
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>  Spinors for Beginners
 
+<https://thequantasticjournal.com/what-is-a-spinor-d39c17d51c38>
+
+
 <https://arxiv.org/abs/0904.1501> Origin of the Canonical Ensemble: Thermalization with Decoherence
 
 ### QM Done Right book
