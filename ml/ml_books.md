@@ -4,6 +4,8 @@
 
 <https://smlbook.org/>
 
+<https://github.com/AniruddhaChattopadhyay/Books>
+
 <https://github.com/usamahz/make-your-model-fast>
 
 <https://www.chapterpal.com/bookstore>
