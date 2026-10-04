@@ -2,7 +2,29 @@
 
 <https://mlbook.dataschool.io/>
 
-## t-SNE and UMAP : В чём идея алгоритмов снижения размеренности:
+###  Logistic Regression
+
+Logistic Regression is a supervised machine learning algorithm commonly used for classification.
+<https://medium.com/@bskky001/machine-learning-models-explained-2-logistic-regression-5b890849750a>
+
+The model estimates the probability that an observation belongs to a particular class.
+Similar to Linear Regression, Logistic Regression learns its coefficients from the training data. However, instead of minimizing Mean Squared Error (MSE), it uses a different cost function called Log Loss, also known as Logistic Loss or Cross-Entropy Loss. which is designed for classification problems.
+For binary classification, Log Loss 
+<img width="1097" height="75" alt="image" src="https://github.com/user-attachments/assets/d4505917-0cb3-4d5e-b000-8e36f2373cc5" />
+
+Here:
+
+y = Actual class (0 or 1). 
+p = Predicted probability of Class 1. 
+```python
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X, y)
+probabilities = model.predict_proba(X)[:, 1]
+predictions = model.predict(X)
+
+```
+### t-SNE and UMAP : В чём идея алгоритмов снижения размеренности:
 <https://habr.com/ru/companies/bothub/articles/1062924/> UMAP  t-SNE
 
  <https://medium.com/data-and-beyond/dimensionality-reduction-101-that-umap-plot-is-showing-you-clusters-that-do-not-exist-0653a0cacf72> t-SNE and UMAP
