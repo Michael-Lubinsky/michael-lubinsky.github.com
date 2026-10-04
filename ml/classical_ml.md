@@ -24,6 +24,12 @@ probabilities = model.predict_proba(X)[:, 1]
 predictions = model.predict(X)
 
 ```
+
+### Curse Of Dimensionality 101: Your Nearest Neighbor Is Not Actually Near
+<https://medium.com/data-and-beyond/curse-of-dimensionality-101-your-nearest-neighbor-is-not-actually-near-5dc030385952>
+
+
+
 ### t-SNE and UMAP : В чём идея алгоритмов снижения размеренности:
 <https://habr.com/ru/companies/bothub/articles/1062924/> UMAP  t-SNE
 
