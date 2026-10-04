@@ -66,19 +66,24 @@ delta_table = DeltaTable.forPath(spark, "/mnt/delta/orders")
 delta_table.restoreToVersion(42)
 The limitation nobody mentions: Delta’s time travel is bounded by the retention period. The default is 30 days. VACUUM removes old file versions. If you VACUUM aggressively (which reduces storage costs) you lose the ability to travel back beyond what you’ve kept. The right retention period depends on your recovery requirements — decide it deliberately rather than accepting the default.
 ```
-When NOT to use Delta Lake:
+
+### When NOT to use Delta Lake:
 
 Write-once archive data where ACID guarantees add overhead with no benefit
 Extremely high-frequency micro-writes (thousands/sec) — the transaction log becomes a bottleneck at that frequency; consider Kafka instead
 Teams without a Spark-compatible engine — Delta requires a compatible runtime
-✅ Production Checklist — Delta Lake
 
+✅ Production Checklist — Delta Lake
+```
 [ ] All analytical tables use Delta format
 [ ] MERGE used instead of delete-and-reload for incremental updates
 [ ] Time travel retention configured deliberately (default 30 days)
 [ ] VACUUM scheduled weekly — don’t leave it unrun indefinitely
 [ ] Schema enforcement enabled (overwriteSchema: false)
-2. Auto Loader — Because File Arrival Patterns Break Naive Ingestion
+```
+
+## 2. Auto Loader — Because File Arrival Patterns Break Naive Ingestion
+
 The naive approach to ingesting files from cloud storage is to list the directory, read everything, and deduplicate. At small scale this works. At large scale it becomes the performance bottleneck — listing millions of files in S3 takes minutes, runs serially, and gets slower as the directory grows.
 
 Auto Loader solves this by using cloud-native file notification services (S3 Event Notifications, Azure Event Grid) to detect new files without directory listing. New files trigger the pipeline. Previously processed files are tracked in a checkpoint. The result is incremental ingestion that scales with file volume rather than against it.
@@ -112,18 +117,19 @@ The checkpoint stores which files have been processed and the current stream off
 
 Limitation: Auto Loader’s file notification mode requires cloud-specific setup (S3 event notifications, SQS queues, or Azure Event Grid topics). Directory listing mode works without this but loses the performance advantage at scale. For very high file volumes (millions of files), the setup investment in notification mode pays back quickly.
 
-When NOT to use Auto Loader:
+### When NOT to use Auto Loader:
 
 One-time or ad-hoc file ingestion — the setup overhead isn’t justified
 Static reference datasets loaded manually
 Files arriving from on-premise systems where cloud event notifications aren’t available
 ✅ Production Checklist — Auto Loader
-
+```
 [ ] Checkpoint location set and persistent across runs
 [ ] Schema location configured for inference and evolution tracking
 [ ] schemaEvolutionMode set explicitly — don't accept the default silently
 [ ] maxFilesPerTrigger or maxBytesPerTrigger set to control batch size
 [ ] Notification mode configured for high file volumes (not directory listing)
+```
 
 ## 3. Delta Live Tables — Because Pipeline Reliability Shouldn’t Be Manual Work
 Building a reliable medallion architecture (Bronze → Silver → Gold) traditionally means writing three separate notebooks, managing the execution order manually in Airflow, handling dependency failures with retry logic, and hoping that when Bronze fails, Silver doesn’t run on stale data.
@@ -201,19 +207,20 @@ WHERE event_type = 'flow_progress'
 
 Limitation: DLT abstracts the execution model, which reduces flexibility. Custom Spark configurations, specific partition strategies, and complex incremental logic that doesn’t fit the streaming or batch patterns require workarounds. For pipelines with highly specific performance requirements, DLT’s managed execution model may be constraining.
 
-When NOT to use DLT:
+### When NOT to use DLT:
 
 Highly customized Spark logic that doesn’t fit DLT’s declarative model
 Pipelines that coordinate heavily with external systems (Snowflake, Airflow-managed dependencies)
 Teams needing precise control over partition strategy, cluster config, or execution order
 Simple single-step pipelines — DLT overhead isn’t justified
 ✅ Production Checklist — Delta Live Tables
-
+```
 [ ] @dlt.expect_or_drop applied to all primary key and critical measure columns
 [ ] Data quality metrics queried from the event log after each run
 [ ] Pipeline mode (triggered vs continuous) chosen deliberately for cost implications
 [ ] Separate development and production pipelines — never test in production
 [ ] Failure notifications configured
+```
 
 ## 4. Unity Catalog — Because Governance Becomes Urgent After the Incident
 Nobody implements governance proactively. They implement it after:
@@ -236,7 +243,7 @@ AS (user) -> CASE
     ELSE email IS NULL  -- Analysts see the row but email is null
 END;
 ```
-Data lineage — why it exists:
+### Data lineage — why it exists:
 ```
 # Unity Catalog automatically captures lineage from Spark operations
 # No instrumentation required — lineage is recorded as a side effect of execution
@@ -248,29 +255,33 @@ result.write.saveAsTable("prod_catalog.sales.gold_revenue")
 # Unity Catalog UI now shows: bronze_orders → gold_revenue
 # Including the transformation that produced it
 ```
-The access control model that actually matters:
+### The access control model that actually matters:
 
 Unity Catalog supports table-level, column-level, and row-level security. Column masking (shown above) allows teams to give broad table access while protecting specific columns. Row filters allow different user groups to see different subsets of the same table — useful for regional access restrictions or multi-tenant data.
 
-Limitation: Unity Catalog requires Databricks Runtime 11.3+ and a Unity Catalog-enabled workspace. Migration from legacy Hive metastore is non-trivial for established environments — table ownership, permissions, and external location configurations all need migration. Teams with large existing Databricks deployments should plan the migration carefully rather than treating it as a quick upgrade.
+### Limitation: 
+Unity Catalog requires Databricks Runtime 11.3+ and a Unity Catalog-enabled workspace. Migration from legacy Hive metastore is non-trivial for established environments — table ownership, permissions, and external location configurations all need migration. Teams with large existing Databricks deployments should plan the migration carefully rather than treating it as a quick upgrade.
 
-When NOT to use Unity Catalog:
+### When NOT to use Unity Catalog:
 
 Single-engineer workspaces with no cross-team sharing requirements
 Proof-of-concept environments where migration cost outweighs governance value
 Workspaces on Databricks Runtime below 11.3 — Unity Catalog requires a minimum runtime version
 ✅ Production Checklist — Unity Catalog
-
+```
 [ ] All production tables in Unity Catalog — not legacy Hive metastore
 [ ] Column masking applied to PII columns
 [ ] Row-level security applied where multi-tenant data requires it
 [ ] Audit log retention configured for compliance requirements
 [ ] Service principals used for job access — not personal user credentials
-5. Photon Engine — When SQL Performance Becomes a Cost Problem
+```
+
+## 5. Photon Engine — When SQL Performance Becomes a Cost Problem
 Photon is Databricks’ vectorized query engine — a rewrite of the Spark execution layer in C++ that processes data using SIMD (Single Instruction Multiple Data) CPU instructions rather than row-by-row JVM execution.
 
 The practical consequence: SQL queries and DataFrame operations on Photon-enabled clusters run 2x–8x faster than equivalent operations on standard Spark, depending on the workload type. Aggregations, joins, and filter operations on large datasets see the largest gains.
 
+```
 # Photon is enabled at the cluster level — no code changes required
 # Existing PySpark and SQL code runs faster automatically
 # The operations that benefit most from Photon:
@@ -295,32 +306,35 @@ result = spark.sql("""
     GROUP BY region, product_category, order_month
     ORDER BY order_month DESC, monthly_revenue DESC
 """)
-When Photon matters for cost:
+```
+### When Photon matters for cost:
 
 Faster execution on the same cluster means the cluster runs for less time. For compute-intensive SQL workloads, Photon can reduce total DBU consumption enough to offset the higher per-DBU cost of Photon-enabled clusters. The economics depend on workload type — SQL-heavy workloads see the best returns, Python-heavy workloads less so.
 
-When Photon doesn’t help:
+### When Photon doesn’t help:
 
 Python UDFs don’t run on Photon — they bypass the vectorized execution path and run in the JVM. Complex custom Spark operations that don’t map to Photon’s supported operator set fall back to standard Spark. Workloads that are primarily Python logic rather than SQL/DataFrame operations won’t see meaningful improvement.
 
-When NOT to use Photon:
+### When NOT to use Photon:
 
 Python-heavy ML pipelines — Python UDFs bypass Photon entirely and run in JVM
 UDF-heavy workloads where the UDF logic can’t be replaced with built-in Spark SQL functions
 Small datasets where the Photon cluster premium exceeds the compute savings
 Development and exploration clusters where interactive speed matters less than cost
 ✅ Production Checklist — Photon
+```
 
 [ ] Enabled on all BI-serving and SQL-heavy analytical clusters
 [ ] Python UDFs replaced with built-in Spark SQL functions where possible
 [ ] Benchmarked before and after on representative production queries
 [ ] Photon DBU cost vs runtime savings calculated before committing to cluster type
 [ ] Not enabled on ML training clusters unless SQL operations dominate
-6. Structured Streaming — Real-Time Without the Infrastructure Overhead
+```
+## 6. Structured Streaming — Real-Time Without the Infrastructure Overhead
 Building a streaming pipeline traditionally meant choosing between Kafka Streams (Java-only, limited to Kafka), Flink (powerful but operationally complex), or running custom consumer code that required managing offsets, retries, and exactly-once semantics manually.
 
 Structured Streaming gives data engineers who already know PySpark a path to real-time processing without learning a new execution model. The same DataFrame API, the same transformations, the same Delta Lake writes — the only change is the source and the trigger.
-
+```
 from pyspark.sql.functions import window, col, sum as spark_sum, count
 
 # Read from Kafka - exactly-once semantics managed by Structured Streaming
@@ -364,7 +378,9 @@ query = windowed_revenue.writeStream \
     .option("checkpointLocation", "/mnt/checkpoints/windowed_revenue") \
     .trigger(processingTime="1 minute") \
     .start("/mnt/delta/streaming_revenue")
-Watermarking — the concept that trips people up:
+```
+
+### Watermarking — the concept that trips people up:
 
 Watermarking tells Structured Streaming how late data can arrive before it’s dropped. Without a watermark, the streaming engine holds state for every window indefinitely — memory grows without bound. With a watermark of 15 minutes, events arriving more than 15 minutes late are dropped, and state older than the watermark is cleaned up.
 
