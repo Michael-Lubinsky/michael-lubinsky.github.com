@@ -2,8 +2,10 @@
 
 <https://mlbook.dataschool.io/>
 
-В чём идея алгоритмов снижения размеренности:
+## t-SNE and UMAP : В чём идея алгоритмов снижения размеренности:
 <https://habr.com/ru/companies/bothub/articles/1062924/> UMAP  t-SNE
+
+ <https://medium.com/data-and-beyond/dimensionality-reduction-101-that-umap-plot-is-showing-you-clusters-that-do-not-exist-0653a0cacf72> t-SNE and UMAP
 
 SVM <https://habr.com/ru/articles/1072750/>
 
