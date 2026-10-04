@@ -14,6 +14,10 @@
 
 <https://habr.com/ru/companies/ods/articles/667730/>
 
+
+<https://medium.com/ls-analytics/causal-inference-with-python-a-guide-to-regression-discontinuity-design-c13bad13126f>
+
+
 Causal Discovery Algorithms: FCI and others
 Fast Causal Inference (FCI)  
 <https://www.shadecoder.com/topics/fci-algorithm-a-comprehensive-guide-for-2025>
