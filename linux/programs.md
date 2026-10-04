@@ -90,9 +90,13 @@ brew install kaushiksrini/parqeye/parqeye
 
 <https://monodraw.helftone.com/> diagram tool
 
-### PDF to text
+### PDF to text 
 brew install poppler  
 pdftotext -layout your_file.pdf output.txt
+
+### PDF to Markdown
+
+<https://news.ycombinator.com/item?id=49923638>
 
 ### MELD for diff
 <https://meldmerge.org/>
