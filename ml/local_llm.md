@@ -16,6 +16,8 @@
 
 <https://www.llmfit.org/>
 
+<https://medium.com/data-science-collective/your-mac-is-running-local-llms-on-the-wrong-engine-443b2539247a>
+
 <https://www.youtube.com/watch?v=edIHPoWgIKU>
 
 https://habr.com/ru/companies/selectel/articles/1005504/  Собственная облачная LLM на 16 ГБ VRAM — часть 1: базовая сборка, tools и MCP
