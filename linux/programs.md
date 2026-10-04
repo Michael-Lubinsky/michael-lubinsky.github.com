@@ -2,10 +2,13 @@
 
 <https://onboard-cli.vercel.app/> code visualizer for big codebase
 
-<https://pdfmergely.com/>
+<https://pdfmergely.com/> PDF merge
 
 Extract plain text from any image
 <https://github.com/kouhxp/textsnap>
+
+
+<https://github.com/mikefarah/yq>  easily read, filter, update, merge, and convert structured data such as YAML, JSON, XML, CSV, and TOML
 
 <https://apps.apple.com/us/app/windows-app/id1295203466?mt=12> Remote Desktop from Mac To Windows
 
