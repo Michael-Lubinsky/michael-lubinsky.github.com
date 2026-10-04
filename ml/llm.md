@@ -1,5 +1,9 @@
 ## LLM 
 
+
+
+
+### Instructor
 Built on top of Pydantic, Instructor provides type-safe data extraction with automatic validation, retries, and streaming support.
 ```
 Key Features for LLM Data Extraction¶
@@ -18,6 +22,18 @@ Type Safety: Full IDE support with proper type inference and autocompletion
 Open Source Support: Run any open source model locally with Ollama, llama-cpp-python, or vLLM
 ```
 <https://python.useinstructor.com/>
+
+
+
+### Langfuse
+An open-source, self-hostable observability platform that tracks every step of an LLM application as a nested execution trace. It records raw inputs, context chunks, templated prompts, tool calls, latencies, and token costs per step. Beyond debugging, it offers prompt version management, user/feature cost attribution, and dataset tracking. Self-hosting ensures full control over user prompts and retrieved documents without sending sensitive data to external vendors.
+
+### Ragas
+An open-source evaluation framework that uses specialized metrics (faithfulness, answer relevancy, context precision, context recall) to pinpoint failures in RAG systems. It cleanly separates retrieval errors (missing facts in context) from generation errors (LLM ignoring retrieved facts). Because evaluations are driven by an LLM-as-a-judge, it provides a quantitative scoreboard to track relative performance across iterations without requiring manual human annotations.
+
+### DeepEval
+An open-source LLM testing framework that integrates evaluation directly into standard developer workflows via Pytest. Instead of manual checks or notebook-bound evaluations, it lets you express behavioral requirements as unit tests, asserting quality thresholds across metrics like hallucination, answer relevancy, or custom G-Eval criteria written in plain English. Running this suite inside CI/CD pipelines turns prompt changes from risky acts of faith into verifiable pull requests, catching silent edge-case regressions before code reaches production.
+
 
 <https://www.reddit.com/r/LLMDevs/>
 
