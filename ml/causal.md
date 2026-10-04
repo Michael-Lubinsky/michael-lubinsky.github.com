@@ -18,6 +18,8 @@
 
 <https://pub.towardsai.net/demystifying-statistical-paradoxes-using-causal-inference-4b3cfb4267db>
 
+<https://sciencespectrumu.com/causal-machine-learning-moving-beyond-prediction-to-real-decisions-1fe192b8dcda>
+
 ### Regression Discontinuity Design (RDD) in Python
 <https://ls-analytics.com/regression-discontinuity-design/>
 <https://medium.com/ls-analytics/causal-inference-with-python-a-guide-to-regression-discontinuity-design-c13bad13126f>
