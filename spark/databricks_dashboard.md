@@ -1,5 +1,10 @@
 ## Databricks dashboards 
 
+
+### Custom visualisations
+ Any chart is now possible thanks to https://vega.github.io Vega Spec.
+
+
 ### **Dashboard parameters**.
 
 Change SQL to:
