@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/companies/amvera/articles/1077630/>
 
+<https://github.com/max-sixty/worktrunk> Git worktree management
+
 ### Fix Git Issues
 <https://habr.com/ru/companies/wildberries/articles/1039630/>  
 <https://habr.com/ru/companies/amvera/articles/1041676/>  
