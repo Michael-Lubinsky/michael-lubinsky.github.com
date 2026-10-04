@@ -180,9 +180,11 @@ https://www.amazon.com/dp/1804612987
 
 Causal Inference in Python: Applying Causal Inference in the Tech Industry 
 by Matheus Facure 
-https://www.amazon.com/dp/1098140257/
+<https://www.amazon.com/dp/1098140257/>
 
-https://github.com/py-why/dowhy
+<https://github.com/py-why/dowhy>
+
+<https://ls-analytics.com/causal-inference-made-practical-unlocking-business-insights-with-the-dowhy-library/>
 
 https://www.reddit.com/r/AskStatistics/comments/wm4uyg/rubin_causal_model_vs_pearl_causal_model/ 
 
