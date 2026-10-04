@@ -16,6 +16,8 @@
 
 <https://ls-analytics.com/causalimpact-python-guide/>
 
+<https://pub.towardsai.net/demystifying-statistical-paradoxes-using-causal-inference-4b3cfb4267db>
+
 ### Regression Discontinuity Design (RDD) in Python
 <https://ls-analytics.com/regression-discontinuity-design/>
 <https://medium.com/ls-analytics/causal-inference-with-python-a-guide-to-regression-discontinuity-design-c13bad13126f>
