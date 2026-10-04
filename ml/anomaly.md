@@ -8,6 +8,8 @@
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
+<https://aiadvances.org/how-to-use-a-time-series-foundation-model-for-anomaly-detection-718ba7090614>
+
 <https://www.youtube.com/watch?v=BqdSIxSy7BE>
 
 алгоритмы HBOS и ECOD,  и их реализации в библиотеке PyOD: 
