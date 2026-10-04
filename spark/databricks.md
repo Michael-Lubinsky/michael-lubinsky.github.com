@@ -5,6 +5,11 @@ Book:
 
 <https://login.databricks.com/>
 
+## Deploing Databricks
+
+<https://medium.com/databrickscommunity/what-makes-up-a-databricks-project-36a695f393ee>
+
+
 <img width="1280" height="645" alt="telegram-cloud-photo-size-1-4983758855351241628-y" src="https://github.com/user-attachments/assets/ffb894de-7d2d-4c65-9f64-f3b573c5977f" />
 
 
