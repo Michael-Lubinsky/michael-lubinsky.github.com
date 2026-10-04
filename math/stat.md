@@ -17,6 +17,8 @@ Statistical Modeling: The Two Cultures. Leo Breiman
 
 <https://colah.github.io/posts/2015-09-Visual-Information/>
 
+<https://python.plainenglish.io/from-bell-curves-to-rare-events-mastering-probability-distributions-like-a-pro-33b25ce8cc4b>
+
 Hypotesis testing
 <https://www.youtube.com/watch?v=AvUtMSI_4pM>
 
