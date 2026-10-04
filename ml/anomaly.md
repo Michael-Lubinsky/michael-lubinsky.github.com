@@ -8,6 +8,8 @@
 
 https://talkpython.fm/episodes/show/497/outlier-detection-with-python
 
+<https://medium.com/@ai4medical/outformer-teaching-a-zero-shot-anomaly-detector-what-to-learn-first-117f82658f48>
+
 <https://aiadvances.org/how-to-use-a-time-series-foundation-model-for-anomaly-detection-718ba7090614>
 
 <https://www.youtube.com/watch?v=BqdSIxSy7BE>
