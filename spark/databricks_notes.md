@@ -115,13 +115,15 @@ The checkpoint — what makes it resumable:
 
 The checkpoint stores which files have been processed and the current stream offset. If the pipeline fails mid-run, it resumes from where it stopped rather than reprocessing everything or skipping data. Without a checkpoint, every pipeline restart is a full reprocessing.
 
-Limitation: Auto Loader’s file notification mode requires cloud-specific setup (S3 event notifications, SQS queues, or Azure Event Grid topics). Directory listing mode works without this but loses the performance advantage at scale. For very high file volumes (millions of files), the setup investment in notification mode pays back quickly.
+### Limitation: 
+Auto Loader’s file notification mode requires cloud-specific setup (S3 event notifications, SQS queues, or Azure Event Grid topics). Directory listing mode works without this but loses the performance advantage at scale. For very high file volumes (millions of files), the setup investment in notification mode pays back quickly.
 
 ### When NOT to use Auto Loader:
 
 One-time or ad-hoc file ingestion — the setup overhead isn’t justified
 Static reference datasets loaded manually
 Files arriving from on-premise systems where cloud event notifications aren’t available
+
 ✅ Production Checklist — Auto Loader
 ```
 [ ] Checkpoint location set and persistent across runs
@@ -190,7 +192,7 @@ def gold_revenue_by_region():
 
 ### Data quality enforcement — the part that changes the reliability equation:
 
-@dlt.expect_or_drop drops rows that violate the constraint and logs the violation count. @dlt.expect_or_fail stops the pipeline when a constraint is violated. @dlt.expect records violations without dropping or failing — useful for monitoring without blocking.
+@dlt.expect_or_drop drops rows that violate the constraint and logs the violation count.   @dlt.expect_or_fail stops the pipeline when a constraint is violated. @dlt.expect records violations without dropping or failing — useful for monitoring without blocking.
 
 The violations are queryable:
 ```
@@ -205,7 +207,8 @@ FROM event_log("/mnt/pipelines/orders_pipeline/system/events")
 WHERE event_type = 'flow_progress'
 ```
 
-Limitation: DLT abstracts the execution model, which reduces flexibility. Custom Spark configurations, specific partition strategies, and complex incremental logic that doesn’t fit the streaming or batch patterns require workarounds. For pipelines with highly specific performance requirements, DLT’s managed execution model may be constraining.
+### Limitation: 
+DLT abstracts the execution model, which reduces flexibility. Custom Spark configurations, specific partition strategies, and complex incremental logic that doesn’t fit the streaming or batch patterns require workarounds. For pipelines with highly specific performance requirements, DLT’s managed execution model may be constraining.
 
 ### When NOT to use DLT:
 
@@ -213,6 +216,7 @@ Highly customized Spark logic that doesn’t fit DLT’s declarative model
 Pipelines that coordinate heavily with external systems (Snowflake, Airflow-managed dependencies)
 Teams needing precise control over partition strategy, cluster config, or execution order
 Simple single-step pipelines — DLT overhead isn’t justified
+
 ✅ Production Checklist — Delta Live Tables
 ```
 [ ] @dlt.expect_or_drop applied to all primary key and critical measure columns
@@ -267,6 +271,7 @@ Unity Catalog requires Databricks Runtime 11.3+ and a Unity Catalog-enabled work
 Single-engineer workspaces with no cross-team sharing requirements
 Proof-of-concept environments where migration cost outweighs governance value
 Workspaces on Databricks Runtime below 11.3 — Unity Catalog requires a minimum runtime version
+
 ✅ Production Checklist — Unity Catalog
 ```
 [ ] All production tables in Unity Catalog — not legacy Hive metastore
@@ -281,7 +286,7 @@ Photon is Databricks’ vectorized query engine — a rewrite of the Spark execu
 
 The practical consequence: SQL queries and DataFrame operations on Photon-enabled clusters run 2x–8x faster than equivalent operations on standard Spark, depending on the workload type. Aggregations, joins, and filter operations on large datasets see the largest gains.
 
-```
+```sql
 # Photon is enabled at the cluster level — no code changes required
 # Existing PySpark and SQL code runs faster automatically
 # The operations that benefit most from Photon:
@@ -321,6 +326,7 @@ Python-heavy ML pipelines — Python UDFs bypass Photon entirely and run in JVM
 UDF-heavy workloads where the UDF logic can’t be replaced with built-in Spark SQL functions
 Small datasets where the Photon cluster premium exceeds the compute savings
 Development and exploration clusters where interactive speed matters less than cost
+
 ✅ Production Checklist — Photon
 ```
 
@@ -386,26 +392,29 @@ Watermarking tells Structured Streaming how late data can arrive before it’s d
 
 Getting the watermark wrong is the most common streaming mistake: too short and you drop legitimate late-arriving events; too long and state accumulates until the job runs out of memory.
 
-Limitation: Structured Streaming is not a replacement for Apache Flink or Kafka Streams for complex event processing (CEP), stateful joins across long time windows, or workloads requiring millisecond-level latency. It’s the right choice when you want near-real-time processing with a familiar API and Delta Lake as the output — not when you need sub-second latency or complex event pattern matching.
+#### Limitation: 
+Structured Streaming is not a replacement for Apache Flink or Kafka Streams for complex event processing (CEP), stateful joins across long time windows, or workloads requiring millisecond-level latency. It’s the right choice when you want near-real-time processing with a familiar API and Delta Lake as the output — not when you need sub-second latency or complex event pattern matching.
 
-When NOT to use Structured Streaming:
+### When NOT to use Structured Streaming:
 
 Sub-second latency requirements — Flink or Kafka Streams handle millisecond-level processing better
 Complex event pattern matching (CEP) across long time windows — Flink is better suited
 Batch workloads where micro-batch adds complexity with no freshness benefit
 Teams without operational experience monitoring long-running Spark jobs
-✅ Production Checklist — Structured Streaming
 
+✅ Production Checklist — Structured Streaming
+```
 [ ] Watermark set on all stateful aggregations
 [ ] Checkpoint location persistent and backed up
 [ ] maxOffsetsPerTrigger set to control batch size and prevent memory spikes
 [ ] Late-arriving data tested explicitly before production deployment
 [ ] Stream monitoring configured — lag, throughput, and processing time alerted
-7. Databricks Workflows — Orchestration That Understands Databricks
+```
+## 7. Databricks Workflows — Orchestration That Understands Databricks
 Airflow is the right choice for complex, multi-system orchestration — coordinating Databricks jobs with Snowflake queries, dbt runs, API calls, and external systems. But running Airflow requires infrastructure management, DAG deployment pipelines, and a team member who understands Airflow’s operational model.
 
 For orchestrating workloads that live entirely within Databricks, Workflows provides a native alternative — job clusters that spin up on demand, multi-task jobs with dependency management, built-in retry logic, and notification configuration — without external infrastructure.
-
+```python
 # Databricks SDK — programmatic job creation
 from databricks.sdk import WorkspaceClient
 from databricks.sdk.service.jobs import Task, NotebookTask, JobCluster
@@ -460,33 +469,38 @@ job = w.jobs.create(
         "on_failure": ["data-alerts@company.com"]
     }
 )
-Job clusters vs all-purpose clusters — the cost difference that matters:
+```
+### Job clusters vs all-purpose clusters — the cost difference that matters:
 
 Job clusters spin up for a specific run and terminate when it completes. All-purpose clusters run continuously. For scheduled pipelines, job clusters are dramatically cheaper — a pipeline that runs for 30 minutes on a job cluster costs far less than a job that runs on a cluster that’s been idle for 23.5 hours.
 
 The engineering habit that reduces Databricks costs most consistently: use job clusters for scheduled pipelines, all-purpose clusters for interactive development only.
 
-Limitation: Databricks Workflows lacks the cross-system integration that Airflow provides. If your pipeline needs to trigger a Snowflake stored procedure, wait for an external API response, or coordinate with AWS Glue, you’ll need either a REST API call from a notebook task or a proper Airflow integration. Workflows orchestrates Databricks — not everything else.
+### Limitation: 
+Databricks Workflows lacks the cross-system integration that Airflow provides. If your pipeline needs to trigger a Snowflake stored procedure, wait for an external API response, or coordinate with AWS Glue, you’ll need either a REST API call from a notebook task or a proper Airflow integration. Workflows orchestrates Databricks — not everything else.
 
-When NOT to use Databricks Workflows:
+### When NOT to use Databricks Workflows:
 
 Pipelines that coordinate across multiple external systems (Snowflake, dbt Cloud, AWS Glue) — Airflow handles cross-system orchestration better
 Teams with mature Airflow infrastructure already in place — the migration cost rarely justifies switching
 Complex branching logic with conditional paths based on runtime data — Airflow’s sensor and branching operators are more flexible
-✅ Production Checklist — Databricks Workflows
 
+✅ Production Checklist — Databricks Workflows
+```
 [ ] Job clusters used for scheduled runs — never all-purpose clusters
 [ ] Retry logic configured on every task with appropriate max retry count
 [ ] Email/Slack notifications configured for failures
 [ ] Pipeline parameters passed via base_parameters — no hardcoded dates in notebooks
 [ ] Job defined as code (SDK or Terraform) — not configured manually in UI
-8. Cluster Policies and Instance Pools — Because Unconstrained Clusters Are a Budget Problem
+```
+
+## 8. Cluster Policies and Instance Pools — Because Unconstrained Clusters Are a Budget Problem
 Left unconstrained, Databricks clusters become expensive in predictable ways: engineers spin up large clusters for small jobs, forget to terminate clusters after interactive sessions, choose expensive instance types by habit rather than by workload requirements, and enable features (GPU instances, high-memory nodes) that the job doesn’t actually need.
 
 Cluster Policies and Instance Pools are the operational controls that prevent these patterns at scale.
 
 Cluster Policies — enforcing configuration standards:
-
+```json
 {
   "cluster_type": {
     "type": "fixed",
@@ -518,10 +532,11 @@ Cluster Policies — enforcing configuration standards:
     "value": 60
   }
 }
+```
 This policy prevents engineers from spinning up a 32-node cluster for a job that needs 4, ensures auto-termination is always set, and restricts instance types to ones the team has evaluated and budgeted for.
 
-Instance Pools — eliminating cold start latency:
-
+### Instance Pools — eliminating cold start latency:
+```
 # Instance pools keep a set of pre-provisioned VMs ready
 # Cluster startup time drops from 5-8 minutes to 30-60 seconds
 # Create a pool via SDK
@@ -537,24 +552,29 @@ cluster_config = {
     "instance_pool_id": pool.instance_pool_id,
     "num_workers": 4
 }
+```
 For teams running frequent short jobs, the 5-minute cluster startup overhead adds meaningful latency to every run. Instance pools eliminate this by keeping a small set of provisioned instances warm, ready to be assigned to new clusters without cloud provisioning delays.
 
-When NOT to use Cluster Policies (or when to be careful):
+### When NOT to use Cluster Policies (or when to be careful):
 
 Policies that are too restrictive block legitimate large-scale work — leave headroom for data engineers to request policy exceptions
 Instance allowlists that exclude GPU instances will block ML workloads that need them — maintain separate policies per workload type
 Over-constraining instance pools can cause queuing delays at peak load
-✅ Production Checklist — Cluster Policies & Instance Pools
 
+✅ Production Checklist — Cluster Policies & Instance Pools
+```
 [ ] Auto-termination enforced on all all-purpose clusters (60 minutes max idle)
 [ ] Max worker count capped per policy tier (analyst / engineer / pipeline)
 [ ] Instance type allowlist reviewed quarterly against cost and performance data
 [ ] Instance pool configured for high-frequency job workloads
 [ ] Tag enforcement enabled for cost attribution per team or project
-9. The Execution Plan — The Most Underused Diagnostic Tool
+```
+## 9. The Execution Plan — The Most Underused Diagnostic Tool
 The incident from the introduction — the job that went from 40 minutes to six hours — was diagnosed in twenty minutes once someone looked at the execution plan. Without the plan, the same diagnosis took three days of guesswork.
 
+```
 # Three levels of plan detail
+
 df.explain()              # Physical plan only
 df.explain(True)          # Logical, optimized, and physical plans
 df.explain("formatted")   # Structured output — easier to read in Databricks
@@ -565,8 +585,9 @@ df.explain("formatted")   # Structured output — easier to read in Databricks
 # Exchange             → shuffle boundary, count these
 # Filter before Scan   → predicate pushdown working
 # Filter after Scan    → data is being read before filtering, check why
+```
 The Monday morning incident revealed a SortMergeJoin where there had previously been a BroadcastHashJoin. The dimension table that used to be broadcast-eligible had grown past the broadcast threshold after the backfill. Spark quietly switched join strategies without warning. The fix was an explicit broadcast hint:
-
+```
 from pyspark.sql.functions import broadcast
 
 # Before: Spark chose SortMergeJoin when dimension table exceeded broadcast threshold
@@ -574,7 +595,9 @@ result = fact_table.join(dim_table, "product_id")
 # After: explicit hint preserves BroadcastHashJoin regardless of table size
 # (ensure dim_table actually fits in executor memory before doing this)
 result = fact_table.join(broadcast(dim_table), "product_id")
-Reading the Spark UI alongside the plan:
+```
+
+### Reading the Spark UI alongside the plan:
 
 The execution plan tells you what Spark will do. The Spark UI tells you what it actually did and how long each stage took. The combination is the complete diagnostic picture.
 
@@ -584,23 +607,26 @@ Stage duration distribution (one stage dramatically longer than others signals s
 Shuffle read/write bytes (high shuffle = avoidable stage boundaries)
 Task duration variance within a stage (high variance = data skew)
 Spill to disk (tasks spilling means memory configuration needs adjustment)
-When reading execution plans doesn’t help:
+
+### When reading execution plans doesn’t help:
 
 The bottleneck is I/O rather than computation — excessive file listing, small files, or network throttling won’t be obvious in the plan
 The issue is data skew within a stage — the plan shows stage structure but not partition distribution; the Spark UI’s task detail view is better for diagnosing skew
 External system latency (slow Kafka consumer, S3 throttling) — these appear as slow stages with low CPU, not as plan inefficiencies
-✅ Production Checklist — Execution Plan Review
 
+✅ Production Checklist — Execution Plan Review
+```
 [ ] explain("formatted") reviewed for every non-trivial query before production deployment
 [ ] Exchange (shuffle) node count minimized — each is a stage boundary
 [ ] BroadcastHashJoin confirmed for all small table joins
 [ ] Filter nodes appearing before Scan nodes (predicate pushdown working)
 [ ] Spark UI task detail checked for skew (high task duration variance within a stage)
-10. OPTIMIZE and Z-Ordering — The Delta Table Maintenance That Directly Affects Query Performance
+```
+## 10. OPTIMIZE and Z-Ordering — The Delta Table Maintenance That Directly Affects Query Performance
 Delta tables that are written frequently develop a small files problem. Each streaming micro-batch write, each incremental append, each merge operation produces small files. Over time a table that holds 100GB of data may be spread across 50,000 files averaging 2MB each — and reading that table requires opening, reading, and closing 50,000 files instead of the 100 larger files it should have.
 
 Query performance degrades. File listing overhead grows. Object storage API costs increase.
-
+```sql
 # OPTIMIZE compacts small files into larger ones (default target: 1GB per file)
 spark.sql("OPTIMIZE delta.`/mnt/delta/orders`")
 
@@ -614,12 +640,13 @@ spark.sql("""
 spark.sql("DESCRIBE DETAIL delta.`/mnt/delta/orders`") \
      .select("numFiles", "sizeInBytes") \
      .show()
-Why Z-Ordering changes query performance:
+```
+#### Why Z-Ordering changes query performance:
 
 Without Z-Ordering, a query filtering on order_date = '2024-01-15' may need to read files spread across the entire table, because rows with that date are randomly distributed across all files. With Z-Ordering on order_date, rows with the same date are physically co-located in the same files — Delta's data skipping statistics allow the query engine to skip files that provably contain no matching rows.
 
 The data skipping benefit compounds: if you Z-Order on (order_date, region), queries filtering on either column or both benefit from skipping.
-
+```python
 # Scheduled maintenance job — run daily or weekly depending on write frequency
 def maintain_delta_table(table_path: str, zorder_cols: list = None, retention_hours: int = 168):
     """
@@ -659,21 +686,19 @@ spark.sql("""
 
 # OPTIMIZE still runs compaction, but clustering happens automatically
 spark.sql("OPTIMIZE prod_catalog.sales.orders")
-When NOT to run OPTIMIZE aggressively:
+```
+
+#### When NOT to run OPTIMIZE aggressively:
 
 Tables with high write frequency during business hours — OPTIMIZE takes write locks and can block concurrent writes
 Tables where Z-Order columns change frequently — rerunning OPTIMIZE with a new Z-Order column rewrites all files, which is expensive
-Very large tables (10TB+) where OPTIMIZE runtime itself becomes a cost and latency concern — run on filtered partitions rather than the full table
-✅ Production Checklist — OPTIMIZE & Z-Order
+Very large tables (10TB+) where OPTIMIZE runtimeitself becomes a cost and latency concern — run on filtered partitions rather than the full table
 
+✅ Production Checklist — OPTIMIZE & Z-Order
+```
 [ ] OPTIMIZE scheduled on all high-write tables (daily minimum)
 [ ] Z-Order columns chosen based on actual query filter patterns — not guessed
 [ ] VACUUM run after OPTIMIZE with retention period matching recovery requirements
 [ ] File count and average file size monitored before and after OPTIMIZE
 [ ] Liquid Clustering evaluated for tables with evolving query patterns
-The Engineering Lesson
-Most engineers think learning Databricks means learning new APIs.
-
-It doesn’t.
-
-The APIs are the easy part. You can read the documentation in an afternoon.
+```
