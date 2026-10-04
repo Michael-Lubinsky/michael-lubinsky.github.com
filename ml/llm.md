@@ -1,5 +1,24 @@
 ## LLM 
 
+Built on top of Pydantic, Instructor provides type-safe data extraction with automatic validation, retries, and streaming support.
+```
+Key Features for LLM Data Extraction¶
+Structured Outputs: Define Pydantic models to specify exactly what data you want from your LLM
+
+Automatic Retries: Built-in retry logic when validation fails - no more manual error handling
+
+Data Validation: Leverage Pydantic's powerful validation to ensure response quality
+
+Streaming Support: Real-time processing of partial responses and lists
+
+Multi-Provider: Works with OpenAI, Anthropic, Google, Mistral, Cohere, Ollama, DeepSeek, and 15+ LLM providers
+
+Type Safety: Full IDE support with proper type inference and autocompletion
+
+Open Source Support: Run any open source model locally with Ollama, llama-cpp-python, or vLLM
+```
+<https://python.useinstructor.com/>
+
 <https://www.reddit.com/r/LLMDevs/>
 
 <img width="800" height="895" alt="image" src="https://github.com/user-attachments/assets/8a387c1a-bb05-4cd3-a796-187a25c11955" />
