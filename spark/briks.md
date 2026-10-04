@@ -39,6 +39,10 @@ Databricks Masterclass
 
 <https://buf.build/resources/data-engineering-design-patterns>
 
+
+CDC
+<https://medium.com/@syedjunaidiqbal/change-data-capture-on-databricks-from-transaction-log-to-a-correct-delta-table-a817ae5703e3>
+
 <https://static.googleusercontent.com/media/research.google.com/en//archive/mapreduce-osdi04.pdf>
 
 <https://sympathetic.ink/2025/12/11/Column-Storage-for-the-AI-era.html>
