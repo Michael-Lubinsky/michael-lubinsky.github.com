@@ -1,5 +1,7 @@
 ## ML System Design
 
+<https://medium.com/@ateebkhan1/what-happens-after-a-model-goes-live-building-a-small-ml-monitoring-system-8e84338a2e44>
+
 <https://pawankjha.substack.com/p/cracking-principal-staff-ml-system>
 
 <https://github.com/apriori3d/ico>
