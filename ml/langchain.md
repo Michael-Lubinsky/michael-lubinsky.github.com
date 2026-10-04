@@ -1,5 +1,10 @@
 ## LangChain LangGraph
 
+<https://mayursurani.medium.com/foundations-of-function-calling-and-chaining-in-langchain-8c7c1ee355c3>
+
+<img width="1400" height="933" alt="image" src="https://github.com/user-attachments/assets/5673dbed-e4c9-46b1-bcfd-8c0c0a474f0b" />
+
+
 <https://github.com/RAYEN8811/Langraph_for_beginners->
 
 <img width="1080" height="1352" alt="image" src="https://github.com/user-attachments/assets/7893c2c3-a3fb-49e6-a8d9-3848437db21a" />
