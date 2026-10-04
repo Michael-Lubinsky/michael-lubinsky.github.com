@@ -46,7 +46,10 @@ Inference Engineering
 ML interview
 <https://www.youtube.com/@mark_mirgaleev_mentori>
 
-Text to SQL
+## Text to SQL
+
+<https://medium.com/@daudzai656/building-a-text-to-sql-transformer-from-scratch-737f5d3873fb>
+
 <https://cacm.acm.org/blogcacm/if-you-think-you-can-do-real-world-text-to-sql/>
 
 <https://arxiv.org/abs/2608.16663> Test to SQL
