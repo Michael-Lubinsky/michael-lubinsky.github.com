@@ -1,5 +1,7 @@
 ## Physics
 
+<https://curtjaimungal.substack.com/>
+
 <https://mgivanov.ru/>
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
