@@ -95,8 +95,9 @@ df.write.option("mergeSchema", "true").mode("append").format("delta").save("/mnt
 ```
 This adds new columns but does not modify existing columns.
 
-3. Auto Schema Evolution in MERGE
+3. Auto Schema Evolution in MERGE. 
 For updates in MERGE statements, use:
+
 ```python
 spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true")
 
