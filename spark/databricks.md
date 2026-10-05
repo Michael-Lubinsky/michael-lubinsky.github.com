@@ -19,65 +19,66 @@ Book:
 
 <https://medium.com/towards-data-engineering/databricks-data-engineering-interview-questions-expert-level-part-5-2f4724d3d607>
 
-## Examples to prepare candidates for in-depth discussions during interviews
 
-###  How do you optimize Spark jobs for performance in Databricks?
+##   How to optimize Spark jobs for performance in Databricks?
 Optimizing Apache Spark jobs in Databricks requires efficient resource allocation, data processing optimizations, and query tuning. Below are the key best practices:
 
-1. Optimize Data Handling
+### 1. Optimize Data Handling
 Use Delta Lake instead of Parquet for transactional consistency and faster query performance.
 
 Partitioning & Z-Ordering:
 
 Partition data on high-cardinality columns.
 Use Z-ORDER BY for optimizing frequently queried columns.
-
+```
 df.write.format("delta").partitionBy("year").save("/mnt/delta_table") 
 OPTIMIZE delta.`/mnt/delta_table` ZORDER BY (customer_id);
-
+```
 Automatic Cleanup:
+```
+VACUUM delta.`/mnt/delta_table`  RETAIN 168 HOURS;
+```
+### 2. Computation Tuning
 
-VACUUM delta.`/mnt/delta_table` 
-
-RETAIN 168 HOURS;
-
-2. Computation Tuning. 
 Use DataFrames Instead of RDDs: DataFrames leverage Catalyst optimizer for better execution plans.
 Optimize Shuffle Operations:
 Reduce shuffle partitions:
+```
 spark.conf.set("spark.sql.shuffle.partitions", "200")
+```
 Avoid Skewed Joins using salting:
 ```python
 from pyspark.sql.functions 
 import col, lit 
 
 df = df.withColumn("salt", (col("id") % 10))
+```
 Broadcast Small Tables:
-
+```
 from pyspark.sql.functions 
 
 import broadcast 
 df_result = df_large.join(broadcast(df_small), "join_key")
 ```
-3. Cluster Configuration
+### 3. Cluster Configuration
 Enable Auto Scaling: Dynamically adjust resources based on workload.
 
 Use Compute-Optimized Instances (c5d.2xlarge) for transformations and Memory-Optimized Instances (r5d.2xlarge) for joins.
 
 Enable Photon Engine for SQL Processing:
-
+```
 SET spark.databricks.photon.enabled = true;
-
-4. Optimizing Structured Streaming
+```
+### 4. Optimizing Structured Streaming
 Use Watermarking to Handle Late Arriving Data:
-```sql
+```python
 df.withWatermark("event_time", "10 minutes")
 Trigger-Based Execution:
 
 df.writeStream.trigger(processingTime="1 minute").start()
 ```
 
-### How does Databricks handle schema evolution in Delta Lake?
+##  How does Databricks handle schema evolution in Delta Lake?
 Schema evolution in Delta Lake ensures that as data changes, tables adapt without breaking pipelines.
 
 1. Schema Enforcement
@@ -106,17 +107,18 @@ deltaTable.alias("tgt").merge(
 
 4. Handling Schema Evolution in Streaming
 Use Auto-Merge for Streaming Writes:
-
+```
 spark.conf.set("spark.databricks.delta.schema.autoMerge.enabled", "true") 
 
 df.writeStream.format("delta").option("checkpointLocation", "/mnt/checkpoint").start("/mnt/delta_table")
-
+```
 5. Safe Schema Updates with Deep Cloning
 To preserve old schema while evolving the new one:
-
+```
 CREATE TABLE delta_clone DEEP CLONE delta_table;
+```
+### Use of Databricks Workflows and their benefits
 
-### Explain the use of Databricks Workflows and their benefits.
 1. What are Databricks Workflows?
 Databricks Workflows is a fully-managed orchestration service for scheduling and automating tasks within Databricks. It serves as a simplified alternative to Apache Airflow.
 
@@ -126,9 +128,9 @@ Press enter or click to view image in full size
 3. Creating a Workflow
 
 Define a workflow with two dependent tasks:
-
-from databricks.sdk import WorkspaceClient
 ```python
+from databricks.sdk import WorkspaceClient
+
 w = WorkspaceClient()
 job = w.jobs.create(
     name="Data Pipeline Workflow",
@@ -148,12 +150,12 @@ job = w.jobs.create(
 ```
 4. Handling Failures and Alerts
 Automatic Retries:
-
+```
 "max_retries": 3
 Email Notifications:
 
 "email_notifications": {"on_failure": ["user@example.com"]}
-
+```
 ### What are the key differences between Delta Lake and Parquet?
 1. Overview
 Delta Lake builds on top of Parquet but provides ACID transactions, schema enforcement, and time travel.
@@ -188,9 +190,9 @@ https://www.alexcole.net/databricks-data-engineer-associate-certification-guide/
 
 https://medium.com/@gema.correa/how-i-prepared-for-and-passed-the-databricks-certified-machine-learning-professional-exam-c741cfca259e
 
-### Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻!
+### Databricks 𝗗𝗮𝘁𝗮 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿𝗶𝗻𝗴 𝗣𝗿𝗼𝗳𝗲𝘀𝘀𝗶𝗼𝗻𝗮𝗹 𝗰𝗲𝗿𝘁𝗶𝗳𝗶𝗰𝗮𝘁𝗶𝗼𝗻
 
-Honestly, this was one of the most brain-cracking certifications I've taken — it covers a wider range of concepts like Delta Live Tables (DLT), Unity Catalog, Apache Spark, Delta Lake, MLflow, Databricks CLI, and a lot more. It took me around 4 weeks to prepare.
+it covers a wider range of concepts like Delta Live Tables (DLT), Unity Catalog, Apache Spark, Delta Lake, MLflow, Databricks CLI, and a lot more. It took me around 4 weeks to prepare.
 
 As per the official Databricks guide, the exam consists of 60 questions,   You get 2 hours to complete it. Need to manage time, as the questions are too lengthy.  
 
@@ -207,7 +209,7 @@ Here’s how the topics are distributed:
 
 Since there’s no official practice test from Databricks, it was a bit difficult to test knowledge — but there are a few good ones available on Udemy if you want extra practice.
 
-𝗥𝗲𝘀𝗼𝘂𝗿𝗰𝗲𝘀 𝗜 𝗳𝗼𝗹𝗹𝗼𝘄𝗲𝗱:
+𝗥𝗲𝘀𝗼𝘂𝗿𝗰𝗲𝘀:
 
 1) Databricks Learning Academy (Self-paced learning course)
 
@@ -234,15 +236,9 @@ https://lnkd.in/gs-JGDNz
 ▸ Microsoft DP-600: Fabric Analytics Solution Expert
 ▸ Databricks Data Engineer Associate
 
-Over the past few months, I set a clear goal to deepen my skills across Databricks, Microsoft Azure, and Microsoft Fabric —with a core focus on data engineering: building scalable pipelines, lakehouse architecture, and robust data solutions.
-To complement this, I pursued DP-600 to enhance my understanding of analytics, reporting, and data modeling — bridging engineering with business insights across the full data lifecycle.
+ 
 
-This journey taught me that success is not just about certifications — it’s about learning with purpose, staying consistent, and having the right guidance along the way.
-
-🔴 A special thank you to Ansh Lamba — your well-structured videos, from beginner to advanced, made every concept crystal clear. Your content has been my go-to resource throughout this journey.  
-🔴 Grateful to Siddhesh Hindalekar — your timely guidance, encouragement, and support kept me on track and made this achievement possible.  
-🔴 Appreciation to the Microsoft Fabric team — the hands-on learning paths and training resources truly made a difference.  
-🔴  Thanks to the Databricks team for the robust documentation and learning support that simplified even the most complex topics.
+ 
 
 
 ### virtual-learning-festival-9-april-30-apri
