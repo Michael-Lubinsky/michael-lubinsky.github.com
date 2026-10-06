@@ -3,6 +3,9 @@
 Time-series forecasting.
 Starting with the statistical foundations.
 
+<https://www.reddit.com/r/MachineLearning/comments/1w1wt1s/you_can_beat_sota_time_series_anomaly_detection/>
+
+
 Before transformers and pretrained models, people already had a lot of algorithms for forecasting.
 
 Start with simple forecasts:
