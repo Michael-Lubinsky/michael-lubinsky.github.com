@@ -185,11 +185,20 @@ https://levelup.gitconnected.com/anomaly-detection-in-time-series-data-with-pyth
 https://medium.com/chat-gpt-now-writes-all-my-articles/anomaly-detection-on-time-series-with-mset-sprt-in-python-30a8ae039ce9
 
 ### Matrix profile
+
+<https://medium.com/data-science/introduction-to-matrix-profiles-5568f3375d90>
+
+<https://www.cs.ucr.edu/~eamonn/MatrixProfile.html>
+
+
 <https://github.com/TDAmeritrade/stumpy>  Matrix profile
+
+<https://arxiv.org/abs/2409.09298>
+
 
 <https://aneksteind.github.io/posts/2025-03-26.html> Matrix profile
 
-Time Series Aggregation with pandas
+### Time Series Aggregation with pandas
 
 <https://kapilg.hashnode.dev/time-series-aggregation-in-pandas>
 
