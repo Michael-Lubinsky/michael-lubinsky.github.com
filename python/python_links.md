@@ -85,6 +85,8 @@
 
 <https://habr.com/ru/articles/501920/>
 
+<https://tech.daniellbastos.com.br/posts/python-memory-management/>
+
 ## List and dict internals
 <https://habr.com/ru/articles/989942/> Python list internals
 
