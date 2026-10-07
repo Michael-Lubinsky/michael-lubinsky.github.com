@@ -28,6 +28,7 @@ predictions = model.predict(X)
 ### Curse Of Dimensionality 101: Your Nearest Neighbor Is Not Actually Near
 <https://medium.com/data-and-beyond/curse-of-dimensionality-101-your-nearest-neighbor-is-not-actually-near-5dc030385952>
 
+<img width="1080" height="1352" alt="image" src="https://github.com/user-attachments/assets/7315f6da-fa4b-4e56-847a-1684fbf61c4e" />
 
 
 ### t-SNE and UMAP : В чём идея алгоритмов снижения размеренности:
