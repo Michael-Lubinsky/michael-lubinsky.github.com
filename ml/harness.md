@@ -17,3 +17,5 @@
 <https://mindzkonnected.com/blogs/from-ReAct-to-deep-agent-when-one-routine-is-not-enough/>
 
 <https://levelup.gitconnected.com/agent-harness-a-no-bs-guide-8f69e3c0a3da>
+
+https://www.docetl.org/
