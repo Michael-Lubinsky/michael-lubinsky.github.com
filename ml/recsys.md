@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/companies/sberbank/articles/1076666/>
 
+<https://habr.com/ru/companies/avito/articles/1090584/>
+
 Рекомендательные системы и матричные разложения. Корреляционные модели. Латентные модели
 <https://www.youtube.com/watch?v=_ZNm6KQX5c8>
 
