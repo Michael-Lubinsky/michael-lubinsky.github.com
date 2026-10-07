@@ -1,5 +1,7 @@
 ## Harness
 
+<https://habr.com/ru/articles/1091582/>
+
 <https://habr.com/ru/articles/1068168/> От болтливых LLM-агентов к управляемым системам
 
 <https://habr.com/ru/companies/ostrovok/articles/1084568/> Строим продвинутый каркас для ИИ-агента
