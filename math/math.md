@@ -15,6 +15,7 @@
 <https://www.youtube.com/watch?v=1bR6ieQGZpQ> Cool patterns in higher math
 
 <https://www.youtube.com/@molotov_ilya> Илья Молотов
+<https://molotovilya.space/about/> Илья Молотов
 
 <https://www.youtube.com/@nochusg5453>
 
