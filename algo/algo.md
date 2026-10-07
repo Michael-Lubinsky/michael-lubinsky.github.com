@@ -1,4 +1,4 @@
-### Algorithms
+## Algorithms
 
 <https://ru.algorithmica.org/>
 
@@ -6,24 +6,35 @@
 
 <https://computablesecrets.com/videos>
 
-<https://github.com/TheAlgorithms>  <https://the-algorithms.com>
+### Python
+<https://github.com/TheAlgorithms>  <https://the-algorithms.com> <https://thealgorithms.github.io/Python/>
 
-<https://habr.com/ru/companies/timeweb/articles/1070742/> Count-Min Sketch
-<https://habr.com/ru/companies/timeweb/articles/1055544/> Bloom Filter
+### Count-Min Sketch
+<https://habr.com/ru/companies/timeweb/articles/1070742/> Count-Min Sketch  
+<https://www.instantdb.com/essays/count_min_sketch>  COUNT MIN SKETCH
+
+
+
 <https://habr.com/ru/companies/timeweb/articles/1046345/> HyperLogLog: как найти уникальные значения в терабайте данных
+
+## Skip List
+<https://pradyumnachippigiri.substack.com/p/skip-lists-data-structure>
+
 
 <https://ledger.khushal.net/>
 
-https://ledger.khushal.net/chapters/lsm-tree/
+<https://ledger.khushal.net/chapters/lsm-tree/>
 
 Advanced Algos by Jelani Nelson
 <https://www.youtube.com/playlist?list=PL2SOU6wwxB0uP4rJgf5ayhHWgw7akUWSf>
 
+## Bloom Filter
 
+<https://habr.com/ru/companies/timeweb/articles/1055544/> Bloom Filter  
 <https://habr.com/ru/articles/1034790/> Bloom Filter  
 <https://habr.com/ru/companies/timeweb/articles/1055544/> Bloom Filter implemented in C
 
-<https://habr.com/ru/articles/1016636/>
+
 
 <https://www.youtube.com/watch?v=8GieMMkLzMQ>
 
@@ -33,11 +44,14 @@ Advanced Algos by Jelani Nelson
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbV381iK1q2d73h7FuIX8Rk> MPTI
 
-<https://habr.com/ru/articles/985292/>  <https://habr.com/ru/articles/1024570/>
+
+<https://habr.com/ru/articles/985292/> Структуры данных на практике. Глава 2: Иерархия памяти 
+<https://habr.com/ru/articles/1016636/> Структуры данных на практике. Глава 12: Кучи и очереди с приоритетом  
+<https://habr.com/ru/articles/1024570/> Структуры данных на практике. Глава 14: Обработка строк и эффективность использования кэша
 
 <https://cleveralgorithms.com/>
 
-<https://thealgorithms.github.io/Python/>
+
 
 <https://nestedsoftware.com/2018/04/04/exponential-moving-average-on-streaming-data-4hhl.24876.html>
 
@@ -93,16 +107,16 @@ struct P {
 struct P is simply the Cartesian product of the two types,
 That's why structs are called product types
 
-#### union type   
-is not composed of one field AND another, but instead one field OR another.
-
-#### sum type 
+#### Union type   
+is not composed of one field AND another, but instead one field OR another. 
+<https://viralinstruction.com/posts/uniontypes/>
+#### Sum type 
 Suppose you want to make a union type that contains either the year of the Gregorian calendar (stored in a u16), or the year according to the Hijri calendar (also stored in a u16). You can't express this as a union type 
-``` 
+
 T=u16∪u16=u16, because in your case, these two u16 are different things, that just happen to have the same representation, but shouldn't be conflated.
 
 The solution is pretty straightforward: You create two new types that wrap the u16s, and serve as a "type tag" so the program knows how to interpret the data. Something like:
-
+```c
 struct Year_Gregorian {
     val: u16
 }
@@ -115,8 +129,10 @@ union type Year {
     Year_Gregorian,
     Year_Hijri
 }
-This kind of type - a union type with each member tagged - is called a tagged union. It's also called a sum type. By now you can guess why it's called a sum type: The number of values of type Year is exactly the sum of its members: 
-
+```
+This kind of type - a union type with each member tagged - is called a tagged union. It's also called a sum type.  
+By now you can guess why it's called a sum type: The number of values of type Year is exactly the sum of its members: 
+```
 ∣Year∣=∣Year 
 Gregorian
 ​
@@ -127,7 +143,7 @@ Hijri
 
 Sum types are really useful when you want to be 100% sure you can distinguish all members of your union.
 ```
-<https://viralinstruction.com/posts/uniontypes/>
+
 
 <https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
 
@@ -149,7 +165,7 @@ https://github.com/tayllan/awesome-algorithms
 
 <https://news.ycombinator.com/item?id=45065705>
 
-<https://www.instantdb.com/essays/count_min_sketch>  COUNT MIN SKETCH
+
 
 
 ### Hashing
