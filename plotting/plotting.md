@@ -5,6 +5,9 @@
 
 <https://github.com/rilldata/rill> rill
 
+<https://flexviz.tech/> FlexViz is the open-source exploration engine for large tabular data. Zoom, brush and cross-filter a billion rows from Parquet in under 400 MB of memory. Your coding agent builds the dashboard 
+
+
 ## 3D with python
 
 <https://github.com/Robertleoj/slamd>
