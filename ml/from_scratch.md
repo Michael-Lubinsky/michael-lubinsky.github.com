@@ -6,6 +6,10 @@
 
 <https://aiengineeringfromscratch.com/>
 
+<https://www.linkedin.com/pulse/build-llm-from-zero-one-single-gpu-tokenizer-pretraining-tiger-xu-v6qac/>
+
+<https://github.com/LLMBaize/baize>
+
 <https://cs336.stanford.edu/>
 
 <https://martinuke0.github.io/posts/2026-09-01-build-your-own-inference-engine-from-scratch/>
