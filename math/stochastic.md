@@ -8,6 +8,7 @@
 
 https://hpaulkeeler.com/wp-content/uploads/2018/08/PoissonPointProcess.pdf
 
+https://gregorygundersen.com/blog/2026/04/22/brownian-motion/
 
 ## Wiener process  - also known as Brownian motion
 <https://en.wikipedia.org/wiki/Wiener_process>
@@ -64,3 +65,7 @@ https://www.youtube.com/watch?v=3FovlxLVI88
 https://www.youtube.com/watch?v=ZXsqxRRcH6g
 
 https://www.youtube.com/watch?v=y4VFtCStgFI
+
+
+https://gregorygundersen.com/blog/2019/11/02/metropolis-hastings/#bishop2006pattern
+
