@@ -25,9 +25,16 @@
 
 <img width="838" height="430" alt="image" src="https://github.com/user-attachments/assets/f1d77287-080d-4244-bcea-153bef64354f" />
 
+<img width="880" height="431" alt="image" src="https://github.com/user-attachments/assets/693936d9-ae3c-483c-b122-bdc16cb52f8b" />
+
+
 <img width="904" height="371" alt="image" src="https://github.com/user-attachments/assets/a1cc20d8-930b-4eed-8c91-d614e1bc902e" />
 
 <img width="899" height="427" alt="image" src="https://github.com/user-attachments/assets/0af46595-9bdf-4739-9ad6-ba1ed7e858d2" />
+
+<img width="912" height="543" alt="image" src="https://github.com/user-attachments/assets/8ed9287c-f6c2-4b58-8f5b-b786e74fba65" />
+
+<img width="904" height="557" alt="image" src="https://github.com/user-attachments/assets/c779c88b-1aca-478d-8d5a-109069c97eb3" />
 
 
 ### Regression Discontinuity Design (RDD) in Python
