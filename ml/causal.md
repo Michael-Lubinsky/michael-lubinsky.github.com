@@ -27,6 +27,9 @@
 
 <img width="904" height="371" alt="image" src="https://github.com/user-attachments/assets/a1cc20d8-930b-4eed-8c91-d614e1bc902e" />
 
+<img width="899" height="427" alt="image" src="https://github.com/user-attachments/assets/0af46595-9bdf-4739-9ad6-ba1ed7e858d2" />
+
+
 ### Regression Discontinuity Design (RDD) in Python
 <https://ls-analytics.com/regression-discontinuity-design/>
 <https://medium.com/ls-analytics/causal-inference-with-python-a-guide-to-regression-discontinuity-design-c13bad13126f>
