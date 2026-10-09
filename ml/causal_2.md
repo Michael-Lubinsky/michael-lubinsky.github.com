@@ -34,6 +34,105 @@ This graph tells you what to control for. Calendar is a confounder, so it goes i
 ## 2. Prepare the series
 
 - **Logs.** Use log(purchases) and log(price). In a log-log model, the coefficients are elasticities directly.
+
+## What an elasticity is
+
+Price elasticity of demand is the percentage change in quantity divided by the percentage change in price:
+
+ε = (ΔQ / Q) / (ΔP / P)
+
+If ε = −1.5, a 1% price increase reduces purchases by about 1.5%. Elasticities are unit-free, so you can compare them across products with very different prices and volumes. A $1 change means something very different for a $3 item than for a $300 item. A 1% change means the same thing for both.
+
+## Why log-log gives elasticities directly
+
+Take the model:
+
+log(Q) = α + β · log(P) + …
+
+Differentiate both sides. Since d log(x) = dx / x:
+
+dQ / Q = β · dP / P
+
+So β = (dQ/Q) / (dP/P), which is exactly the definition of elasticity. The coefficient is the elasticity without any conversion. Any small change in log(x) is approximately a percentage change in x, and the log-log model expresses everything in those terms.
+
+Compare the other common specifications:
+
+| Model | Coefficient means | Elasticity |
+|---|---|---|
+| Q = α + βP (linear) | units of Q per $1 of price | β · P/Q, which differs at every point |
+| log Q = α + βP (log-linear) | % change in Q per $1 | β · P, which grows with price |
+| log Q = α + β log P (log-log) | % change in Q per 1% change in P | β, constant everywhere |
+
+## Applied to your data
+
+```
+log(purch_1) = α + β11·log(p1) + β12·log(p2) + β13·log(p3)
+             + γ·log(visitors) + day-of-week + holidays + lags + ε
+```
+
+How to read each coefficient:
+
+- **β11 (own-price elasticity).** You'd expect it to be negative. If |β11| > 1, demand is elastic: raising the price lowers revenue, because sales fall proportionally more than price rises. If |β11| < 1, demand is inelastic and a price increase raises revenue.
+- **β12, β13 (cross-price elasticities).** A positive value means the products are substitutes: when p2 goes up, people switch to product 1. A negative value means they're complements, bought together. A value near 0 means the products are unrelated.
+- **γ (traffic elasticity).** γ ≈ 1 means purchases scale proportionally with visitors, so the conversion rate is stable. γ < 1 means extra traffic converts at a lower rate, which is typical when added visitors are less intent on buying.
+
+A useful equivalence: if you fix γ = 1, the model becomes log(purch_1 / visitors), which is log of the conversion rate. You can test whether γ = 1 instead of assuming it.
+
+Fit one equation per product. Together the three equations give you a 3×3 elasticity matrix.
+
+## A worked example
+
+Suppose β11 = −1.8 and β12 = +0.6.
+
+- A 10% price cut on product 1 raises its sales by about 18%.
+- A 10% price increase on product 2 raises product 1's sales by about 6%, as some buyers switch.
+
+**For large changes, use the exact form.** The "β × %change" reading is a linear approximation that holds for small changes. The exact effect of a price change by a factor k is k^β − 1:
+
+- Cutting the price by 10%: 0.9^(−1.8) − 1 ≈ +20.9%, not +18%.
+- Cutting it by 30%: 0.7^(−1.8) − 1 ≈ +90%, not +54%.
+
+So for promotion-sized changes, compute the exact effect rather than multiplying.
+
+## Practical issues
+
+1. **Zero purchases.** log(0) is undefined. Options, from simplest to best:
+   - Aggregate to a level with no zeros, such as weekly.
+   - Use log(Q + 1). It's common, but it distorts elasticities when counts are small.
+   - Use Poisson regression with a log link, also called PPML (Poisson pseudo-maximum likelihood). It models log E[Q] directly, so the coefficients on log(price) are still elasticities, and it handles zeros naturally. For count data like purchases, this is often the best choice:
+     ```python
+     smf.glm("purch_1 ~ np.log(p1) + np.log(p2) + np.log(p3) + np.log(visitors) + C(dow)",
+             data=df, family=sm.families.Poisson()).fit(cov_type="HAC", cov_kwds={"maxlags": 7})
+     ```
+
+2. **Constant-elasticity assumption.** Log-log assumes the same elasticity at every price, which is often a reasonable approximation over the range of prices you actually observed. Don't extrapolate far outside that range. To check the assumption, add a log(p1)² term, or estimate separately on low-price and high-price periods.
+
+3. **Converting predictions back to units.** exp(predicted log Q) underestimates the expected Q, because E[exp(x)] > exp(E[x]). If you need unit forecasts and not just elasticities, apply a smearing correction (Duan's estimator), or use the Poisson model, which predicts E[Q] directly.
+
+4. **Prices that barely move.** If log(p1) has little variation, β11 will be noisy no matter how you transform the data. The log transform doesn't create information. Check the standard deviation of log(p1) and count how many distinct price changes there were.
+
+5. **Endogeneity still applies.** Logs don't fix the problem that prices may respond to demand. The causal reading of β depends on the identification strategy discussed earlier (controls, instruments, or event designs). The log-log form only makes the estimate interpretable.
+
+## Minimal code
+
+```python
+import numpy as np, pandas as pd
+import statsmodels.formula.api as smf
+
+df = pd.read_csv("data.csv", parse_dates=["date"])
+df["dow"] = df["date"].dt.dayofweek
+
+m = smf.ols(
+    "np.log(purch_1) ~ np.log(p1) + np.log(p2) + np.log(p3) + np.log(visitors) + C(dow)",
+    data=df,
+).fit(cov_type="HAC", cov_kwds={"maxlags": 7})   # Newey-West for autocorrelation
+
+print(m.params.filter(like="np.log"))   # own, cross, and traffic elasticities
+print(m.t_test("np.log(visitors) = 1")) # is conversion rate stable w.r.t. traffic?
+```
+
+If you share the CSV, I can fit both the OLS and Poisson versions for all three products and give you the full elasticity matrix with confidence intervals.
+
 - **Derived series.** Conversion rate (purchases_i / visitors) separates "fewer people came" from "people came but didn't buy."
 - **Stationarity.** Run ADF and KPSS tests on each series. Difference the series or detrend them if needed. Most of the methods below assume stationarity, and two trending series will look causally linked even when they aren't.
 - **Seasonality.** Daily retail data almost always has a 7-day cycle. Add day-of-week dummies or deseasonalize, and add holiday flags.
