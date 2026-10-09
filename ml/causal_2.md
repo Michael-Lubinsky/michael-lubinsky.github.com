@@ -322,8 +322,75 @@ date,visitors,q1,q2,q3,p1,p2,p3
 
 Here is a first practical model for product_1.
 
-```
-        raise ValueError("Prices must be positive")    df[f"log_p{i}"] = np.log(df[f"p{i}"])# Price lagslags = [0, 1, 3, 7]for i in (1, 2, 3):    for lag in lags:        df[f"p{i}_lag{lag}"] = (            df[f"log_p{i}"].shift(lag)        )# Visitors as an offset:# models purchases per visitorif (df["visitors"] <= 0).any():    raise ValueError("Visitors must be positive")df["log_visitors"] = np.log(df["visitors"])price_terms = [    f"p{i}_lag{lag}"    for i in (1, 2, 3)    for lag in lags]formula = (    "q1 ~ " +    " + ".join(price_terms) +    " + C(dow) + C(month) + trend")data = df.dropna(    subset=["q1", "log_visitors"] + price_terms)model = smf.glm(    formula=formula,    data=data,    family=sm.families.Poisson(),    offset=data["log_visitors"]).fit(cov_type="HAC", cov_kwds={"maxlags": 7})print(model.summary())# Cumulative elasticity for P1elasticity = sum(    model.params[f"p1_lag{lag}"]    for lag in lags)print("P1 cumulative elasticity:", elasticity)
+```python
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+df = pd.read_csv("store.csv", parse_dates=["date"])
+df = df.sort_values("date").reset_index(drop=True)
+
+# Calendar controls
+df["dow"] = df["date"].dt.dayofweek
+df["month"] = df["date"].dt.month
+df["trend"] = np.arange(len(df))
+
+# Log prices
+for i in (1, 2, 3):
+    if (df[f"p{i}"] <= 0).any():
+        raise ValueError("Prices must be positive")
+    df[f"log_p{i}"] = np.log(df[f"p{i}"])
+
+# Price lags
+lags = [0, 1, 3, 7]
+
+for i in (1, 2, 3):
+    for lag in lags:
+        df[f"p{i}_lag{lag}"] = (
+            df[f"log_p{i}"].shift(lag)
+        )
+
+# Visitors as an offset:
+# models purchases per visitor
+if (df["visitors"] <= 0).any():
+    raise ValueError("Visitors must be positive")
+
+df["log_visitors"] = np.log(df["visitors"])
+
+price_terms = [
+    f"p{i}_lag{lag}"
+    for i in (1, 2, 3)
+    for lag in lags
+]
+
+formula = (
+    "q1 ~ " +
+    " + ".join(price_terms) +
+    " + C(dow) + C(month) + trend"
+)
+
+data = df.dropna(
+    subset=["q1", "log_visitors"] + price_terms
+)
+
+model = smf.glm(
+    formula=formula,
+    data=data,
+    family=sm.families.Poisson(),
+    offset=data["log_visitors"]
+).fit(cov_type="HAC", cov_kwds={"maxlags": 7})
+
+print(model.summary())
+
+# Cumulative elasticity for P1
+elasticity = sum(
+    model.params[f"p1_lag{lag}"]
+    for lag in lags
+)
+
+print("P1 cumulative elasticity:", elasticity)
+
 ```
 
 This implementation models purchases per visitor. The offset fixes the coefficient on log visitors to 1, so it is a conversion-rate model rather than a model of total demand.
