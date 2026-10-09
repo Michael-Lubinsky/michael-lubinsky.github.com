@@ -900,3 +900,157 @@ df = pd.DataFrame({
 ```
 
 The output has the same shape as your CSV, but with a known elasticity matrix `E`. The `endog` knob controls how much pricing chases demand, and the cost columns can serve as instruments. Run OLS, Poisson, IV, DoubleML, and tigramite on it and see which recover `E`. Then increase `endog`, shorten `T`, or reduce the price variation, and watch where each method breaks. That tells you how far to trust the same methods on your real data.
+
+
+
+Yes. There are several open-source tools for generating synthetic causal datasets with known ground-truth causal effects.
+
+For your store dataset (daily visitors, purchases of three products, and their prices), I would distinguish two types of generators:
+
+1. General-purpose causal simulators — generate data from causal graphs, structural equations, and time-dependent relationships.
+2. Custom economic simulators — model price elasticity, product substitution, seasonality, promotions, and customer demand.
+
+The second category is particularly useful for your project because you want to test whether a causal model can recover the true effect of changing prices.
+
+## What a useful generator should produce
+
+A synthetic dataset should include your original eight columns, but also provide ground-truth parameters that are normally unknown in real data.
+
+For example:
+
+| Parameter                       | Ground truth                    |
+| ------------------------------- | ------------------------------- |
+| P1 own-price elasticity         | -1.5                            |
+| P2 own-price elasticity         | -1.2                            |
+| P3 own-price elasticity         | -0.8                            |
+| P1 price effect on P2 purchases | +0.4                            |
+| P1 price effect on P3 purchases | +0.1                            |
+| Weekend visitor effect          | +25%                            |
+| Price-setting policy            | Prices reduced after weak sales |
+
+The challenge for your causal model is to recover these parameters from the generated observations.
+
+Crucially, a good generator should support confounding. Otherwise, even simple regression may recover the causal effects accurately, giving you an unrealistically easy test.
+
+## 1. Open-source generators worth considering
+
+| Library                                                       | Time series               | Known causal structure | Best use                                          |
+| ------------------------------------------------------------- | ------------------------- | ---------------------- | ------------------------------------------------- |
+| [Tigramite](https://github.com/jakobrunge/tigramite)          | Excellent                 | Yes                    | Temporal causal graphs and lagged effects         |
+| [DoWhy](https://github.com/py-why/dowhy)                      | Limited native generation | Yes                    | Synthetic confounding and known treatment effects |
+| [causal-learn](https://github.com/py-why/causal-learn)        | Some support              | Yes                    | Structural causal models and causal discovery     |
+| [Salesforce CausalAI](https://github.com/salesforce/causalai) | Yes                       | Yes                    | Time-series causal discovery and benchmarking     |
+| [CausalPy](https://github.com/blei-lab/causalpy)              | Intervention-focused      | Depends on example     | Interrupted time series and synthetic controls    |
+
+These are not all turnkey retail generators. They provide causal simulation or analysis infrastructure that can be adapted to your store scenario.
+
+### My first choice: Tigramite
+
+Tigramite is especially relevant because it supports structural causal processes with temporal dependencies.
+
+You can specify relationships such as:
+
+\\[ P\_{1,t-1}\rightarrow Q\_{1,t} \\]
+
+\\[ P\_{1,t}\rightarrow Q\_{2,t} \\]
+
+\\[ Q\_{1,t-1}\rightarrow P\_{1,t} \\]
+
+The last relationship is especially interesting: yesterday's sales influence today's pricing, creating potential endogeneity.
+
+Tigramite provides `toymodels.structural_causal_processes` for generating data with specified causal links and lag structures.
+
+### My second choice: DoWhy
+
+DoWhy includes `dowhy.datasets.linear_dataset`, which generates datasets with known treatment effects, common causes, instruments, and effect modifiers.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://github.com\&sz=32)
+
+GitHub
+
++1
+
+
+
+Example:
+
+```
+import dowhy.datasetsdata = dowhy.datasets.linear_dataset(    beta=-1.5,    num_common_causes=2,    num_samples=5000,    treatment_is_binary=False)df = data["df"]
+```
+
+This is a good starting point for testing whether an estimator recovers a known treatment effect. However, this example is not a realistic retail time-series simulator.
+
+## 2. Salesforce CausalAI: a particularly good alternative
+
+After checking the documentation, I would put Salesforce CausalAI alongside Tigramite as a top choice.
+
+It provides dedicated functions:
+
+- `GenerateRandomTimeseriesSEM`
+- `GenerateSparseTimeSeriesSEM`
+- `DataGenerator`
+
+The `DataGenerator` supports user-defined structural equations, lagged dependencies, noise, and interventions.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://opensource.salesforce.com\&sz=32)
+
+Salesforce CausalAI Library 1.0 documentation
+
++1
+
+
+
+For example:
+
+```
+from causalai.data.data_generator import DataGeneratoridentity = lambda x: xsem = {    "price": [        (("price", -1), 0.8, identity)    ],    "purchases": [        (("price", -1), -0.5, identity),        (("purchases", -1), 0.3, identity)    ]}data, var_names, graph = DataGenerator(    sem,    T=730,    seed=42)
+```
+
+This generates a simplified linear time-series process with known lagged relationships. It does not yet produce realistic retail prices or purchase counts; that would require additional modeling.
+
+Documentation: [Salesforce CausalAI Data Generator tutorial](https://opensource.salesforce.com/causalai/latest/tutorials/Data%20Generator.html).
+
+## 3. For your project, I would build a small custom simulator
+
+The advantage is that you can generate exactly your eight columns, with known price elasticities.
+
+Here is a minimal example using only NumPy and Pandas.
+
+```
+import numpy as npimport pandas as pddef generate_store_data(n_days=730, seed=42):    rng = np.random.default_rng(seed)    dates = pd.date_range(        "2024-01-01", periods=n_days, freq="D"    )    # Ground-truth elasticity matrix:    # rows = purchases, columns = prices    elasticity = np.array([        [-1.5,  0.4,  0.1],        [ 0.6, -1.2,  0.0],        [ 0.1,  0.2, -0.8]    ])    base_prices = np.array([10., 15., 20.])    base_rates = np.array([0.10, 0.08, 0.05])    rows = []    for t, date in enumerate(dates):        weekend = date.dayofweek >= 5        visitors = rng.poisson(            1000 * (1.25 if weekend else 1.0)        )        # Exogenous, randomized price changes        price_factors = rng.choice(            [0.9, 1.0, 1.1],            size=3        )        prices = base_prices * price_factors
+```
+
+This generator produces randomized daily prices, Poisson purchases, weekend visitor variation, and known own-price and cross-price elasticities. It is deliberately a simple baseline: it has no delayed price effects, unobserved confounding, or inventory constraints. It also treats product purchases as separate counts, not mutually exclusive customer choices.
+
+## 4. How I would test your causal model
+
+Run the estimator on many independently generated datasets and compare estimated effects with ground truth.
+
+For example:
+
+Example: True vs. estimated price elasticities
+
+Hypothetical benchmark results, not executed estimates
+
+True elasticity
+
+Estimated elasticity
+
+-1.6-1.2-0.8-0.40P1P2P3
+
+I would progressively increase the simulation difficulty:
+
+| Test | Scenario                                      | What it tests               |
+| ---- | --------------------------------------------- | --------------------------- |
+| 1    | Randomized prices, no confounding             | Basic estimator correctness |
+| 2    | Add weekday and annual seasonality            | Seasonal adjustment         |
+| 3    | Add lagged price effects                      | Dynamic causal estimation   |
+| 4    | Prices respond to yesterday's sales           | Reverse causality           |
+| 5    | Hidden promotions affect prices and purchases | Unobserved confounding      |
+| 6    | Add simultaneous product substitution         | Cross-price identification  |
+
+For each scenario, measure estimation bias, RMSE, and confidence-interval coverage over repeated simulations.
+
+One especially useful test is to generate both observational data and intervention data from the same structural model. Then you can compare estimated causal effects against actual simulated interventions such as `do(P1 = 9)` versus `do(P1 = 10)`.
+
+My recommendation: Start with the custom retail simulator to test price elasticity, then use Tigramite or Salesforce CausalAI to benchmark more complex temporal causal structures. This combination gives you realistic business variables and known causal ground truth.
