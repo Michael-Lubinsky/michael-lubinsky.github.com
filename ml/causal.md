@@ -20,6 +20,9 @@
 
 <https://sciencespectrumu.com/causal-machine-learning-moving-beyond-prediction-to-real-decisions-1fe192b8dcda>
 
+<img width="899" height="461" alt="image" src="https://github.com/user-attachments/assets/f2ca240f-3586-407b-9170-a0b442a578a2" />
+
+
 <img width="838" height="430" alt="image" src="https://github.com/user-attachments/assets/f1d77287-080d-4244-bcea-153bef64354f" />
 
 
