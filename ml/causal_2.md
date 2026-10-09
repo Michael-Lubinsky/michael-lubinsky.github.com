@@ -823,3 +823,80 @@ Sources:
 - [BCF & ACIC 2022 — arXiv](https://arxiv.org/pdf/2211.02020)
 - [ACIC 2017 DGP note — arXiv](https://arxiv.org/pdf/1905.09515)
 - [ACIC 2019 Data Challenge — McGill](https://mcgill.ca/epi-biostat-occh/news-events/atlantic-causal-inference-conference-2019/data-challenge)
+
+
+## Data Generators for Causal Modeling
+
+Yes. Several causal libraries include their own data generators, and a few projects exist only to generate benchmark data. Here they are grouped by the kind of data they produce, with the parts most relevant to your retail series called out.
+
+## Time series with a known causal graph (closest to your data)
+
+- **tigramite** (`tigramite.toymodels.structural_causal_processes`). You specify lagged and same-day links, coefficients, and functional forms, and it simulates a multivariate time series with that exact graph. You can also generate random time-series graphs. This is the most direct fit for your case.
+  https://github.com/jakobrunge/tigramite
+- **CausalTime**. Fits neural models to *real* time series and generates realistic synthetic versions with a derived ground-truth graph. You could feed it your own CSV.
+  https://www.causaltime.cc
+- **gCastle** (`castle.datasets`). Covers i.i.d. DAG simulation plus a topological Hawkes process simulator for event or alarm sequences.
+  https://github.com/huawei-noah/trustworthyAI
+- **Lawrence et al., "Data Generating Process to Evaluate Causal Discovery Techniques for Time Series Data."** A framework for generating many time-series datasets with controllable properties (number of variables, length, nonlinearity, confounding) to avoid overfitting to one static benchmark.
+  https://arxiv.org/abs/2104.08043
+
+## Treatment-effect estimation (known true effects)
+
+- **DoubleML** (`doubleml.datasets`). Generators from the methods papers: a partially linear model, an interactive (binary treatment) model, a partially linear IV model, and difference-in-differences data. The IV generator is useful for testing endogeneity fixes.
+  https://docs.doubleml.org/stable/api/datasets.html
+- **DoWhy** (`dowhy.datasets`). `linear_dataset` and related functions generate data with a known effect, common causes, instruments, and effect modifiers, and they return the matching graph. `dowhy.gcm` can also fit a causal model to your data and then sample new data from it.
+  https://github.com/py-why/dowhy
+- **CausalML** (`causalml.dataset`). Synthetic uplift and heterogeneous-effect generators (the Nie & Wager setups and others).
+  https://github.com/uber/causalml
+- **RealCause**. Fits generative models to real datasets so simulated outcomes have realistic marginals while the true effect stays known.
+  https://github.com/bradyneal/realcause
+
+## Static causal discovery (random DAGs to data)
+
+- **Causal Discovery Toolbox** (`cdt.data.AcyclicGraphGenerator`). Random DAGs with linear, polynomial, sigmoid, or neural-network mechanisms. It's older and less maintained, but still used.
+  https://github.com/FenTechSolutions/CausalDiscoveryToolbox
+- **pgmpy**. Samples from Bayesian networks, including the classic example networks.
+  https://github.com/pgmpy/pgmpy
+- **causalAssembly** (Bosch Research). Semi-synthetic manufacturing-line data with a ground-truth graph, built to be more realistic than random DAGs.
+  https://github.com/boschresearch/causalAssembly
+
+## What I'd use for your problem
+
+No off-the-shelf generator knows about retail pricing. A small custom simulator built on the tigramite approach, or plain NumPy, is usually best, because you control exactly the properties that make your problem hard:
+
+```python
+import numpy as np, pandas as pd
+
+rng = np.random.default_rng(42)
+T = 730
+t = np.arange(T)
+dow = t % 7
+season = 0.15*np.sin(2*np.pi*t/365) + 0.10*(dow >= 5)   # yearly + weekend effect
+demand = np.zeros(T)                                   # unobserved, autocorrelated demand shock
+for i in range(1, T):
+    demand[i] = 0.7*demand[i-1] + rng.normal(0, 0.08)
+
+cost = rng.normal(0, 0.05, (T, 3))                     # observable instrument
+endog = 0.4                                            # how strongly pricing reacts to demand
+log_p = np.log([4.0, 6.0, 9.0]) + cost + endog*demand[:, None] + rng.normal(0, 0.03, (T, 3))
+
+log_visitors = 6.0 + season + 0.8*demand + rng.normal(0, 0.05, T)
+
+E = np.array([[-1.8,  0.5,  0.1],                      # TRUE elasticity matrix (ground truth)
+              [ 0.4, -1.2,  0.0],
+              [ 0.1,  0.0, -0.9]])
+base = np.log([0.05, 0.03, 0.02])                      # baseline conversion rates
+
+rate = np.exp(base + log_p @ E.T + 0.5*demand[:, None])
+purch = rng.poisson(np.exp(log_visitors)[:, None] * rate)
+
+df = pd.DataFrame({
+    "date": pd.date_range("2024-01-01", periods=T),
+    "visitors": np.round(np.exp(log_visitors)).astype(int),
+    **{f"purch_{k+1}": purch[:, k] for k in range(3)},
+    **{f"price_{k+1}": np.exp(log_p[:, k]).round(2) for k in range(3)},
+    **{f"cost_{k+1}": cost[:, k] for k in range(3)},
+})
+```
+
+The output has the same shape as your CSV, but with a known elasticity matrix `E`. The `endog` knob controls how much pricing chases demand, and the cost columns can serve as instruments. Run OLS, Poisson, IV, DoubleML, and tigramite on it and see which recover `E`. Then increase `endog`, shorten `T`, or reduce the price variation, and watch where each method breaks. That tells you how far to trust the same methods on your real data.
