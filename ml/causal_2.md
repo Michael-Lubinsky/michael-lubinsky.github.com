@@ -975,7 +975,15 @@ GitHub
 Example:
 
 ```
-import dowhy.datasetsdata = dowhy.datasets.linear_dataset(    beta=-1.5,    num_common_causes=2,    num_samples=5000,    treatment_is_binary=False)df = data["df"]
+import dowhy.datasets
+data = dowhy.datasets.linear_dataset(
+  beta=-1.5,
+  num_common_causes=2,
+  num_samples=5000,
+  treatment_is_binary=False
+)
+
+df = data["df"]
 ```
 
 This is a good starting point for testing whether an estimator recovers a known treatment effect. However, this example is not a realistic retail time-series simulator.
@@ -1003,7 +1011,20 @@ Salesforce CausalAI Library 1.0 documentation
 For example:
 
 ```
-from causalai.data.data_generator import DataGeneratoridentity = lambda x: xsem = {    "price": [        (("price", -1), 0.8, identity)    ],    "purchases": [        (("price", -1), -0.5, identity),        (("purchases", -1), 0.3, identity)    ]}data, var_names, graph = DataGenerator(    sem,    T=730,    seed=42)
+from causalai.data.data_generator import DataGenerator
+identity = lambda x:x
+sem = {    "price": [
+        (("price", -1), 0.8, identity)
+    ],
+    "purchases": [
+        (("price", -1), -0.5, identity),
+        (("purchases", -1), 0.3, identity)    ]}
+
+data, var_names, graph = DataGenerator(
+  sem,
+  T=730,
+  seed=42
+)
 ```
 
 This generates a simplified linear time-series process with known lagged relationships. It does not yet produce realistic retail prices or purchase counts; that would require additional modeling.
@@ -1016,8 +1037,35 @@ The advantage is that you can generate exactly your eight columns, with known pr
 
 Here is a minimal example using only NumPy and Pandas.
 
-```
-import numpy as npimport pandas as pddef generate_store_data(n_days=730, seed=42):    rng = np.random.default_rng(seed)    dates = pd.date_range(        "2024-01-01", periods=n_days, freq="D"    )    # Ground-truth elasticity matrix:    # rows = purchases, columns = prices    elasticity = np.array([        [-1.5,  0.4,  0.1],        [ 0.6, -1.2,  0.0],        [ 0.1,  0.2, -0.8]    ])    base_prices = np.array([10., 15., 20.])    base_rates = np.array([0.10, 0.08, 0.05])    rows = []    for t, date in enumerate(dates):        weekend = date.dayofweek >= 5        visitors = rng.poisson(            1000 * (1.25 if weekend else 1.0)        )        # Exogenous, randomized price changes        price_factors = rng.choice(            [0.9, 1.0, 1.1],            size=3        )        prices = base_prices * price_factors
+```python
+import numpy as npimport pandas as pd
+def generate_store_data(n_days=730, seed=42):
+  rng = np.random.default_rng(seed)
+  dates = pd.date_range(        "2024-01-01", periods=n_days, freq="D"    )
+
+  # Ground-truth elasticity matrix:
+  # rows = purchases, columns = prices
+  elasticity = np.array(
+    [
+      [-1.5,  0.4,  0.1],
+      [ 0.6, -1.2,  0.0],
+      [ 0.1,  0.2, -0.8]
+    ]
+   )
+
+base_prices = np.array([10., 15., 20.])
+base_rates = np.array([0.10, 0.08, 0.05])
+rows = []
+for t, date in enumerate(dates):
+  weekend = date.dayofweek >= 5
+  visitors = rng.poisson(
+            1000 * (1.25 if weekend else 1.0)
+)
+# Exogenous, randomized price changes
+price_factors = rng.choice(
+            [0.9, 1.0, 1.1],
+            size=3        )
+prices = base_prices * price_factors
 ```
 
 This generator produces randomized daily prices, Poisson purchases, weekend visitor variation, and known own-price and cross-price elasticities. It is deliberately a simple baseline: it has no delayed price effects, unobserved confounding, or inventory constraints. It also treats product purchases as separate counts, not mutually exclusive customer choices.
