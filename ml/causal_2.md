@@ -108,6 +108,9 @@ A simple model is:
 
 \\[ \log(Q\_{1,t})=\alpha+\beta\log(P\_{1,t})+ \gamma\log(V_t)+\epsilon_t \\]
 
+$$\log(Q\_{1,t})=\alpha+\beta\log(P\_{1,t})+ \gamma\log(V_t)+\epsilon_t$$
+
+
 Where:
 
 - \\(Q\_{1,t}\\): product_1 purchases on day \\(t\\)
