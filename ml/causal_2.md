@@ -17,7 +17,12 @@ price of product_3
 There is discipline:  causal analysis in time series.
 How to apply it to this  data?
 ```
-Causal analysis on this data comes down to a few concrete questions. How much does the price of a product move its own sales (own-price elasticity)? Does raising the price of product 1 push buyers to product 2 (substitution) or pull product 2 down with it (complementarity)? And how much of the movement in purchases is just traffic, meaning more visitors bringing more of everything? The methods below answer those questions with different levels of rigor and different assumptions.
+Causal analysis on this data comes down to a few concrete questions. 
+- How much does the price of a product move its own sales (own-price elasticity)?
+- Does raising the price of product 1 push buyers to product 2 (substitution) or pull product 2 down with it (complementarity)?
+- And how much of the movement in purchases is just traffic, meaning more visitors bringing more of everything? 
+
+The methods below answer those questions with different levels of rigor and different assumptions.
 
 ## 1. Draw the causal graph before touching a model
 
@@ -27,9 +32,111 @@ Write down what you believe causes what. A reasonable starting graph for this da
 - price_i → purchases_i (own effect), and price_j → purchases_i (cross effects)
 - Price → visitors, possibly, if price cuts are advertised
 - Calendar (day of week, holidays, season) → visitors, purchases, and often prices
-- **Unobserved demand shocks → prices.** This is the big one. If the store raises prices when it expects high demand, or cuts them when sales are slow, prices are *endogenous*. A naive regression can then show higher prices associated with *higher* sales. Every method below either assumes this away or works around it.
+- **Unobserved demand shocks → prices.** This is the big one. If the store raises prices when it expects high demand, or cuts them when sales are slow, prices are **endogenous**. A naive regression can then show higher prices associated with *higher* sales. Every method below either assumes this away or works around it.
+--
+## The definition
 
-This graph tells you what to control for. Calendar is a confounder, so it goes in the model. Visitors is partly a mediator if price drives traffic, so including it changes what you're estimating. With visitors in the model you get the effect of price per visitor. Without it you get the total effect.
+In a regression like
+
+log(Q) = α + β·log(P) + u
+
+the error term u collects everything that affects purchases but isn't in the model: weather, a local event, a competitor's sale, a viral post, a shift in tastes. OLS gives an unbiased estimate of β only if price is uncorrelated with u. Price is **exogenous** when it varies for reasons unrelated to those unmodeled demand factors. It's **endogenous** when it's correlated with them.
+
+When price is endogenous, OLS mixes two things: the causal effect of price on purchases, and the fact that price tends to be set high or low in situations where demand was already going to be high or low. The coefficient no longer measures the first thing alone.
+
+In DAG terms, there's a back-door path. Something unobserved (call it D, a demand shock) affects both price and purchases:
+
+```
+        D (unobserved demand shock)
+       ↙ ↘
+     P  →  Q
+```
+
+The regression sees the correlation along both paths, P → Q and P ← D → Q, and can't separate them.
+
+## How it plays out in your store
+
+**Scenario 1: pricing anticipates demand.** Management knows the weekend before a holiday will be busy and raises prices. Sales are high anyway because of the holiday. In the data, high prices coincide with high sales. OLS sees a positive association, which pulls β toward zero or even makes it positive. You'd conclude demand is insensitive to price, or that customers like higher prices. Neither is true.
+
+**Scenario 2: pricing reacts to weak sales.** Sales slump, so the store cuts prices to clear inventory. Sales recover partly, but stay below normal because the slump is still there. Now low prices coincide with mediocre sales. Again the true negative effect is masked, and OLS understates elasticity.
+
+**Scenario 3: the opposite direction.** If the store runs discounts specifically during periods when demand is naturally rising (back-to-school, say), low prices coincide with high sales for reasons that have nothing to do with the discount. OLS then overstates how much the price cut drove sales.
+
+The direction of the bias depends on how prices are actually set, which is why you need to understand the pricing process. The data alone can't tell you.
+
+## The three classic sources of endogeneity
+
+1. **Simultaneity or reverse causality.** Price affects demand, and demand (or expected demand) affects price. This is the scenario above and the most important one for pricing data.
+2. **Omitted variables.** Something you didn't measure drives both price and purchases. Examples: a promotion that bundles a price cut with advertising (the ad lifts sales and gets credited to the price), a competitor's actions, or a supplier shortage that raises prices and also reduces stock available to sell.
+3. **Measurement error in price.** If the recorded price isn't what customers actually paid (coupons, loyalty discounts, a daily average across intraday changes), the coefficient is biased toward zero.
+
+## Why logs, more data, or better ML don't fix it
+
+- **More data** gives you a more precise estimate of the wrong number. The bias doesn't shrink with sample size.
+- **Flexible ML** (random forests, gradient boosting, neural nets) still learns the association between price and sales. It's a better predictor of sales given price as the store sets it. It is not a better estimate of what happens if you *change* the price.
+- **Double ML** removes confounding only from variables you observed and fed it. It does nothing about unobserved demand shocks.
+
+The underlying distinction is between prediction and intervention. A model that forecasts sales well can be useless for answering "what if we raise the price 10%?"
+
+## How to deal with it
+
+Each approach finds price variation that isn't driven by demand.
+
+1. **Control for the demand drivers that set prices.** If prices are set based on things you can observe (day of week, holidays, season, recent sales trend), include those in the model. What's left of price variation after conditioning on them may be as good as random. This works only if you know and measure everything the pricing decision used.
+
+2. **Instrumental variables.** Find a variable that moves price but affects purchases *only through* price. In retail, typical instruments are:
+   - Wholesale or supplier cost changes. Costs push retail prices up, and customers don't see or care about costs directly.
+   - Commodity input prices (coffee beans, wheat, fuel).
+   - Prices of the same product in other markets, when those reflect shared cost shocks and not local demand (the Hausman instrument, which comes with its own caveats).
+
+   Two-stage least squares then uses only the part of price variation explained by the instrument.
+
+3. **Exploit price changes made for reasons unrelated to demand.** Examples: a chain-wide repricing decided centrally, a vendor-mandated price change, a policy change, a pricing-system migration. Event-study or interrupted-time-series designs around such changes are often the most credible evidence you can get.
+
+4. **Run an experiment.** Randomized price tests across stores, days, or customer segments make price exogenous by construction. If the business can tolerate it, nothing beats it.
+
+5. **Sensitivity analysis.** If you can't fix the problem, quantify how strong an unobserved confounder would need to be to overturn your conclusion. DoWhy's `add_unobserved_common_cause` refuter and the E-value approach both do this.
+
+## A quick demonstration
+
+This simulation generates data where the true elasticity is −2, but the store raises prices on days with high demand:
+
+```python
+import numpy as np, pandas as pd
+import statsmodels.formula.api as smf
+from linearmodels.iv import IV2SLS
+
+rng = np.random.default_rng(0)
+n = 1000
+demand_shock = rng.normal(0, 0.3, n)           # unobserved by analyst
+cost = rng.normal(0, 0.1, n)                   # observed supplier cost shock
+log_p = 1.0 + 0.8*cost + 0.5*demand_shock + rng.normal(0, 0.05, n)   # pricing reacts to demand
+log_q = 5.0 - 2.0*log_p + demand_shock + rng.normal(0, 0.1, n)       # true elasticity = -2
+
+df = pd.DataFrame(dict(log_p=log_p, log_q=log_q, cost=cost))
+print("OLS:", smf.ols("log_q ~ log_p", df).fit().params["log_p"])
+print("IV: ", IV2SLS.from_formula("log_q ~ 1 + [log_p ~ cost]", df).fit().params["log_p"])
+```
+
+OLS returns roughly −0.2: nearly no price sensitivity, which badly understates the truth. IV, using the cost shock as an instrument, recovers a value close to the true −2. That gap is the endogeneity bias. On real data you'd see only the OLS number, with nothing to warn you it's wrong.
+
+## For your dataset
+
+The first practical step isn't statistical. Find out **how prices are set**. Ask whoever owns pricing:
+
+- Are prices set centrally, or adjusted locally in response to sales?
+- Do they change on a fixed schedule, or in reaction to inventory and demand?
+- Are price changes bundled with promotions or advertising?
+- Is there cost or supplier data that could serve as an instrument?
+
+The answers tell you which of the five approaches is feasible, and how much to trust a plain regression on your CSV.
+--
+
+This graph tells you what to control for. 
+Calendar is a **confounder**, so it goes in the model.   
+Visitors is partly a **mediator** if price drives traffic, so including it changes what you're estimating.   
+With visitors in the model you get the effect of price per visitor. 
+Without it you get the total effect.
 
 ## 2. Prepare the series
 
