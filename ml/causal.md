@@ -20,6 +20,9 @@
 
 <https://sciencespectrumu.com/causal-machine-learning-moving-beyond-prediction-to-real-decisions-1fe192b8dcda>
 
+<img width="838" height="430" alt="image" src="https://github.com/user-attachments/assets/f1d77287-080d-4244-bcea-153bef64354f" />
+
+
 ### Regression Discontinuity Design (RDD) in Python
 <https://ls-analytics.com/regression-discontinuity-design/>
 <https://medium.com/ls-analytics/causal-inference-with-python-a-guide-to-regression-discontinuity-design-c13bad13126f>
