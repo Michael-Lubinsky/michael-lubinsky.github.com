@@ -91,9 +91,10 @@ Use these methods to generate or check hypotheses, not as final answers.
 6. If prices change in discrete steps, run CausalImpact or interrupted time series around the changes as the stronger causal check.
 7. Run placebo and sensitivity tests.
 
+## PyWhy and others libs
 Beyond the PyWhy ecosystem, these are the libraries I'd recommend, grouped by what they do.
 
-PyWhy already covers more than DoWhy. It includes EconML (heterogeneous effects, double ML, instrumental-variable estimators) and causal-learn (causal discovery: PC, FCI, GES, and Granger tests).
+PyWhy  includes EconML (heterogeneous effects, double ML, instrumental-variable estimators) and causal-learn (causal discovery: PC, FCI, GES, and Granger tests).
 
 ## Time-series-specific Python libraries
 
