@@ -151,7 +151,60 @@ DoWhy's distinguishing feature is its end-to-end workflow: model the causal grap
 - **tfp-causalimpact** does Bayesian structural time series counterfactuals.
 - **tigramite** does time-series causal discovery. DoWhy has no native support for lagged or autocorrelated structure, so for your data tigramite and CausalPy are arguably more relevant than DoWhy itself.
 
-**Outside Python**
-In R, **dagitty** (graph analysis and adjustment sets) together with **grf** (causal forests) is the classic combination people compare against DoWhy.
+ 
 
 For your price/purchase time series, a practical stack would be tigramite for structure, CausalPy around price changes, and DoubleML for elasticities. DoWhy is optional, mainly useful for its refuters or if you want an explicit DAG-based identification step.
+
+
+## Benchmarks
+
+Here's the same list with links. I re-checked the time-series and ACIC links just now; the others are the standard homes for each dataset as far as I know.
+
+## Effect estimation
+
+- **IHDP** and **Twins**. The commonly used preprocessed versions ship with the CEVAE repo: https://github.com/AMLab-Amsterdam/CEVAE
+- **LaLonde / NSW Jobs**. Rajeev Dehejia's data page: https://users.nber.org/~rdehejia/nswdata2.html
+- **ACIC Data Challenges**
+  - 2016: data via the `aciccomp2016` R package: https://github.com/vdorie/aciccomp
+  - 2017: write-up of the data-generating processes: https://arxiv.org/abs/1905.09515
+  - 2019: https://mcgill.ca/epi-biostat-occh/news-events/atlantic-causal-inference-conference-2019/data-challenge
+  - 2022: overview from Mathematica: https://www.mathematica.org/news/mathematica-organizes-the-american-causal-inference-conferences-2022-data-challenge (data site: https://acic2022.mathematica.org). The data contain repeated observations of patients over time, with patients grouped into primary care practices. It comprised 3,400 synthetic datasets: 200 independent realizations of each of 17 data-generating processes.
+- **RealCause**: https://github.com/bradyneal/realcause
+- **Criteo Uplift**: https://ailab.criteo.com/criteo-uplift-prediction-dataset/
+- **Hillstrom email**: https://blog.minethatdata.com/2008/03/minethatdata-e-mail-analytics-and-data.html
+
+## Causal discovery
+
+- **Tübingen cause-effect pairs**: https://webdav.tuebingen.mpg.de/cause-effect/
+- **Sachs protein signaling** and the other classic networks (Asia, Alarm, etc.): https://www.bnlearn.com/bnrepository/
+- **Benchpress**: https://github.com/felixleopoldo/benchpress
+- **Causal Chambers**: https://github.com/juangamella/causal-chamber
+
+## Time-series causal discovery
+
+- **CauseMe**: https://causeme.uv.es/. It offers ground-truth benchmark datasets that are either synthetic models mimicking real-world challenges or real data whose causal structure is known with high confidence. Method developers upload predicted matrices of causal connections, and the platform scores and ranks them on several performance metrics.
+- **CausalTime** (ICLR 2024)
+  - Paper: https://arxiv.org/abs/2310.01753
+  - Site: https://www.causaltime.cc
+  - The pipeline starts from real observations in a given scenario and generates a matching benchmark dataset.
+- **CausalRivers** (ICLR 2025)
+  - Site: https://causalrivers.github.io
+  - Code: https://github.com/CausalRivers/causalrivers
+  - Paper: https://arxiv.org/abs/2503.17452
+  - River-discharge data from 1,160 stations in eastern Germany and Bavaria, covering 2019–2023 at 15-minute resolution.
+- **gCastle** (bundled datasets): https://github.com/huawei-noah/trustworthyAI
+
+## Related tools
+
+- **tigramite**: https://github.com/jakobrunge/tigramite
+
+Sources:
+- [CauseMe](https://causeme.uv.es/)
+- [CausalTime — ICLR 2024](https://proceedings.iclr.cc/paper_files/paper/2024/hash/0c79d6ed1788653643a1ac67b6ea32a7-Abstract-Conference.html)
+- [CausalRivers — arXiv](https://arxiv.org/pdf/2503.17452)
+- [CausalRivers — Jena talk abstract](https://indico.rz.uni-jena.de/event/206/contributions/1214/)
+- [CausalRivers code — alphaXiv](https://alphaxiv.org/resources/2503.17452v1)
+- [Mathematica — ACIC 2022 Data Challenge](https://www.mathematica.org/news/mathematica-organizes-the-american-causal-inference-conferences-2022-data-challenge)
+- [BCF & ACIC 2022 — arXiv](https://arxiv.org/pdf/2211.02020)
+- [ACIC 2017 DGP note — arXiv](https://arxiv.org/pdf/1905.09515)
+- [ACIC 2019 Data Challenge — McGill](https://mcgill.ca/epi-biostat-occh/news-events/atlantic-causal-inference-conference-2019/data-challenge)
