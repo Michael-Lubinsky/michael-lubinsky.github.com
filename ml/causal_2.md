@@ -128,4 +128,27 @@ PyWhy  includes EconML (heterogeneous effects, double ML, instrumental-variable 
 4. CausalPy or tfp-causalimpact around discrete price changes as the strongest causal check.
 5. DoWhy's refuters for placebo and sensitivity tests.
 
-Maintenance status changes over time. CausalNex, for example, has gone quiet. Check recent commit activity before adopting any of these libraries for production work.
+DoWhy's distinguishing feature is its end-to-end workflow: model the causal graph, identify the estimand, estimate the effect, then refute it. Few libraries cover all four steps, so most "competitors" overlap with DoWhy on one or two of them.
+
+**Closest full-workflow alternatives**
+- **CausalML** (from Uber) is probably the most common alternative people pick instead of DoWhy. It's estimation-centric (meta-learners, uplift trees, some refutation and sensitivity tools), but it has no graph-based identification.
+- **CausalNex** (from QuantumBlack/McKinsey) combined structure learning, Bayesian networks, and do-interventions in one package. It no longer appears to be maintained, so I wouldn't start new work with it.
+
+**Competitors on graph modeling and identification (DoWhy's core strength)**
+- **Ananke** (from Johns Hopkins) handles identification with graphs that include hidden variables (ADMGs), plus semiparametric efficient estimators. It's more rigorous than DoWhy on identification when there's unobserved confounding.
+- **y0** does do-calculus identification and ID algorithms. It's strong on theory and narrow in scope.
+- **pgmpy** is a Bayesian network library that also includes a causal-inference module (backdoor adjustment sets, do-queries).
+
+**Competitors on estimation**
+- **DoubleML** is a cleaner and arguably more rigorous double-ML implementation than calling EconML through DoWhy.
+- **EconML** technically sits in the same PyWhy family, but it's often used on its own without DoWhy.
+
+**Competitors for quasi-experimental and time-series work (your use case)**
+- **CausalPy** handles interrupted time series, synthetic control, difference-in-differences, and regression discontinuity, with Bayesian uncertainty.
+- **tfp-causalimpact** does Bayesian structural time series counterfactuals.
+- **tigramite** does time-series causal discovery. DoWhy has no native support for lagged or autocorrelated structure, so for your data tigramite and CausalPy are arguably more relevant than DoWhy itself.
+
+**Outside Python**
+In R, **dagitty** (graph analysis and adjustment sets) together with **grf** (causal forests) is the classic combination people compare against DoWhy.
+
+For your price/purchase time series, a practical stack would be tigramite for structure, CausalPy around price changes, and DoubleML for elasticities. DoWhy is optional, mainly useful for its refuters or if you want an explicit DAG-based identification step.
