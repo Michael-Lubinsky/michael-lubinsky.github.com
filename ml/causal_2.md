@@ -125,8 +125,23 @@ If the model's causal assumptions are satisfied, we can interpret this as a caus
 
 ### Python implementation
 
-```
-import pandas as pdimport numpy as npimport statsmodels.formula.api as smfdf = pd.read_csv("store.csv", parse_dates=["date"])df = df.sort_values("date")df["log_q1"] = np.log(df["product_1_purchases"])df["log_p1"] = np.log(df["product_1_price"])df["log_visitors"] = np.log(df["visitors"])df["day_of_week"] = df["date"].dt.dayofweekmodel = smf.ols(    "log_q1 ~ log_p1 + log_visitors + C(day_of_week)",    data=df).fit(cov_type="HAC", cov_kwds={"maxlags": 7})print(model.summary())
+```python
+import pandas as pd
+import numpy as np
+import statsmodels.formula.api as smf
+df = pd.read_csv("store.csv", parse_dates=["date"])
+df = df.sort_values("date")
+df["log_q1"] = np.log(df["product_1_purchases"])
+df["log_p1"] = np.log(df["product_1_price"])
+df["log_visitors"] = np.log(df["visitors"])
+df["day_of_week"] = df["date"].dt.dayofweek
+
+model = smf.ols(
+    "log_q1 ~ log_p1 + log_visitors + C(day_of_week)",
+     data=df
+).fit(cov_type="HAC", cov_kwds={"maxlags": 7})
+
+print(model.summary())
 ```
 
 The `HAC` standard errors account for some autocorrelation and heteroskedasticity. They do not eliminate confounding.
