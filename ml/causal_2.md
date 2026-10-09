@@ -91,4 +91,40 @@ Use these methods to generate or check hypotheses, not as final answers.
 6. If prices change in discrete steps, run CausalImpact or interrupted time series around the changes as the stronger causal check.
 7. Run placebo and sensitivity tests.
 
-If you attach the CSV, I can run this pipeline on it and report the elasticities, the cross effects, and how much the results can be trusted given the price variation in your data.
+Beyond the PyWhy ecosystem, these are the libraries I'd recommend, grouped by what they do.
+
+PyWhy already covers more than DoWhy. It includes EconML (heterogeneous effects, double ML, instrumental-variable estimators) and causal-learn (causal discovery: PC, FCI, GES, and Granger tests).
+
+## Time-series-specific Python libraries
+
+- **tigramite** is the reference implementation of PCMCI and related algorithms. It does causal discovery on autocorrelated time series and finds both lagged and same-day links. It's the strongest dedicated tool for "which of my 7 series drives which."
+- **lingam** includes VARLiNGAM, which can orient contemporaneous edges. That matters for daily data, where a price change and the sales response often land on the same day.
+- **CausalPy** (from PyMC Labs) does Bayesian quasi-experiments: interrupted time series, synthetic control, difference-in-differences, and regression discontinuity. It's a very good fit if your prices change in discrete steps.
+- **tfp-causalimpact** is Google's official Python port of CausalImpact (Bayesian structural time series). **tfcausalimpact** is a community alternative. Avoid the older `pycausalimpact`, which is no longer maintained.
+- **pysyncon** implements synthetic control methods. Use it if you have several stores and only some of them changed prices.
+- **statsmodels** handles the basics: VAR, Granger tests, impulse response functions, ADF/KPSS stationarity tests, and HAC standard errors.
+
+## Effect estimation and econometrics
+
+- **DoubleML** is a clean implementation of double/debiased machine learning, with good documentation on identification assumptions.
+- **CausalML** (from Uber) focuses on uplift modeling and meta-learners (S, T, X, and R learners). It's oriented toward treatment-effect heterogeneity, so it's less directly useful for time series.
+- **linearmodels** provides 2SLS, IV-GMM, and panel models. You'd use it if you find an instrument for price, such as supplier cost.
+
+## Causal discovery and graphical models
+
+- **gCastle** (from Huawei) is a large collection of discovery algorithms, some of them for time series.
+- **pgmpy** covers Bayesian networks: DAG specification, d-separation checks, and do-calculus inference.
+
+## Marketing and demand modeling (adjacent, but relevant here)
+
+- **PyMC-Marketing** and **Meridian** (from Google) are media mix modeling frameworks. With visitors, purchases, and prices in your data, their adstock and saturation ideas transfer well. You'd treat price as a driver with lagged effects.
+
+## What I'd use for your dataset
+
+1. statsmodels for preprocessing and a VAR/Granger first look.
+2. tigramite (PCMCI) to discover the link structure among visitors, prices, and purchases.
+3. DoubleML or EconML for elasticity estimates with flexible controls.
+4. CausalPy or tfp-causalimpact around discrete price changes as the strongest causal check.
+5. DoWhy's refuters for placebo and sensitivity tests.
+
+Maintenance status changes over time. CausalNex, for example, has gone quiet. Check recent commit activity before adopting any of these libraries for production work.
