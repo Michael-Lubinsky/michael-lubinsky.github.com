@@ -1,5 +1,7 @@
 ## MCP
 
+<https://www.kdnuggets.com/build-your-first-mcp-server-in-python-stateless-spec-edition>
+
 <https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
 <img width="1171" height="1278" alt="image" src="https://github.com/user-attachments/assets/cb38b5c3-b3ad-4360-865a-3aaafe9e6709" />
 
