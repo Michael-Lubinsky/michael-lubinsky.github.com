@@ -13,6 +13,8 @@
 
 <https://www.amazon.com/stores/author/B09FCP8QVP> Konstantin K. Likharev
 
+<https://davidtong.org/teaching/>
+
 <https://arxiv.org/abs/2609.06115>  Quantum Theory of Angular Momentum
 
 <https://www.damtp.cam.ac.uk/user/tong/qft.htm>
