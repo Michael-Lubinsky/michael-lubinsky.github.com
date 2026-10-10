@@ -5,6 +5,8 @@ Book:
 
 <https://login.databricks.com/>
 
+<https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
+
 ## Deploing Databricks
 
 <https://medium.com/databrickscommunity/what-makes-up-a-databricks-project-36a695f393ee>
