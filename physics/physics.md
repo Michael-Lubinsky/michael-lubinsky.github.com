@@ -11,6 +11,7 @@
 
 <https://www.amazon.com/Quantum-Theory-Condensed-Matter-Physics/dp/052182284X>
 
+<https://commons.library.stonybrook.edu/egp/>  Konstantin K. Likharev  
 <https://www.amazon.com/stores/author/B09FCP8QVP> Konstantin K. Likharev
 
 <https://davidtong.org/teaching/>
