@@ -1,4 +1,13 @@
 ## Causal Python
+
+Causal Inference for the Brave and True (Matheus Facure). Free, Python-based, and practitioner-oriented. The best companion for this approach.
+
+Causal Inference: The Mixtape (Scott Cunningham). Econometrics-flavored, strong on IV, DiD, and synthetic control. Free online.
+
+Brady Neal’s Introduction to Causal Inference. A free course with lectures; strong on DAGs and identification.
+
+Causal Inference: What If (Hernán & Robins). More rigorous and epidemiology-oriented. Free online.
+
 https://www.pywhy.org/learn/developer-resources.html
 
 ## There is  file in csv format with time series data
