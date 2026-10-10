@@ -5,6 +5,9 @@ Book:
 
 <https://login.databricks.com/>
 
+### Genie one
+<https://medium.com/tag/genie-one>
+
 <https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
 
 ## Deploing Databricks
