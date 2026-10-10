@@ -1,5 +1,7 @@
 # Machine Learning Tools in Databricks
 
+<https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
+
 ## Core ML Capabilities
 
 - **MLflow (integrated)**: For experiment tracking, model packaging, model registry, and deployment.
