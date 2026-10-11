@@ -12,6 +12,8 @@
 
 <https://arxiv.org/pdf/2604.00965> Understanding transformers
 
+<https://habr.com/ru/articles/1092776/>
+
 <https://mmkuznecov.github.io/posts/>
 
 <https://www.mlvisualization.com/>
