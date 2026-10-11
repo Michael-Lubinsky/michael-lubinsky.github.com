@@ -6,6 +6,8 @@
 
 <https://www.3blue1brown.com/>
 
+<https://www.youtube.com/@mathwithming>
+
 <https://blablablarden.ru/>
 
 <https://www.numberphile.com/>
