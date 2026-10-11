@@ -93,6 +93,10 @@ Shlomo Sternberg's "Dynamical Systems"
 ## Complex Analysis
 <https://www.youtube.com/playlist?list=PLp9ABVh6_x4Hhju9_YIfMUOiNRbxniTDY>  Белошапка
 
+https://www.youtube.com/watch?v=tZF9Uwu62l8 Шиз поясняет
+<https://www.youtube.com/watch?v=ntcC2Ou7xGw> Шиз поясняет. ТФКП 2.02. Особые точки и вычеты
+<https://www.youtube.com/watch?v=O2Lt3DqAC5E> Шиз поясняет
+
 ## Riemann Zeta function
 <https://habr.com/ru/articles/452964/>
 <https://www.youtube.com/watch?v=86ck6wGxJSA&t=866s> Shiz
