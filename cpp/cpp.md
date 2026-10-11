@@ -86,6 +86,8 @@ https://habr.com/ru/articles/996452/ new , new[]. delete and delete[]
 <https://habr.com/ru/articles/270009/> Управление памятью: Взгляд изнутри  
 
 
+<https://eliasebner.com/blog/guides/arena-allocators-in-c/>
+
 <https://www.reddit.com/r/programming/comments/1lb5zzb/cc_headeronly_fast_arena_allocator_works_with_stl/>  Arena Allocator
 
 ## Static Analysis
