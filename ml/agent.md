@@ -1,5 +1,7 @@
 ## Agents
 
+<https://www.youtube.com/watch?v=H5o1P8RMiMw>
+
 <https://www.reddit.com/r/AI_Agents/>
 
 <https://agentic-coding-guide.netlify.app/>
