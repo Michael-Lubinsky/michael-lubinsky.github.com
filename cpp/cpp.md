@@ -2,6 +2,8 @@
  
 <https://habr.com/ru/companies/otus/articles/1049298/>  Пять ошибок начинающих C++ разработчиков при работе с памятью
 
+<https://habr.com/ru/articles/1070000/> C++ Object lifetime
+
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
 <https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
