@@ -3,6 +3,8 @@
 ### Voice assistant
 <https://opensuperwhisper.com/>
 
+<https://betterwispr.com/>
+
 <https://wisprflow.ai/>
 
 <https://habr.com/ru/companies/gigapisar/articles/1088630/>
