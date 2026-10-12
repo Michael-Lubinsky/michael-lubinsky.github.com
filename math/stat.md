@@ -12,6 +12,10 @@ High-Dimensional Probability. Roman Vershinin
 
 <https://stat.cmu.edu/~cshalizi/ADAfaEPoV/ADAfaEPoV.pdf> Advanced Data Analysis Book
 
+<https://habr.com/ru/articles/1093010/> Extreme Events
+
+
+
 Statistical Modeling: The Two Cultures. Leo Breiman
 <https://projecteuclid.org/journalArticle/Download?urlId=10.1214%2Fss%2F1009213726>
 
