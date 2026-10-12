@@ -7,6 +7,8 @@
 
 <https://www.reddit.com/r/AI_Agents/>
 
+<https://habr.com/ru/articles/1093078/>
+
 <https://agentic-coding-guide.netlify.app/>
 
 <https://www.udacity.com/course/agentic-ai--nd900> 
