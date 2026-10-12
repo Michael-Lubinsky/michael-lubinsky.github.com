@@ -55,6 +55,9 @@ Precision, Recall, F-score, ROC-AUC
 
 <https://habr.com/ru/articles/1045016/>  ML без воды: от базы до Attention. Часть 10: Бэггинг и случайный лес
 
+<img width="1065" height="1699" alt="image" src="https://github.com/user-attachments/assets/0c86b1de-0453-4162-8bde-8b4d6933227a" />
+
+
 <https://habr.com/ru/articles/1061392/> cross - entropy
 
 scikit-learn
