@@ -14,6 +14,8 @@
 
 <https://news.ycombinator.com/item?id=49830866> Локальный агент для кода на Mac: MTPLX + pi + Qwen3.8–27B.
 
+<https://habr.com/ru/articles/1093074/>
+
 <https://www.llmfit.org/>
 
 <https://medium.com/data-science-collective/your-mac-is-running-local-llms-on-the-wrong-engine-443b2539247a>
