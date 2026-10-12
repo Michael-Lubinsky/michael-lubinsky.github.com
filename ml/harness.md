@@ -1,5 +1,7 @@
 ## Harness
 
+<https://habr.com/ru/articles/1093462/>
+
 <https://habr.com/ru/articles/1091582/>
 
 <https://habr.com/ru/articles/1068168/> От болтливых LLM-агентов к управляемым системам
