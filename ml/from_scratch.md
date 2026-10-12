@@ -6,6 +6,9 @@
 
 <https://aiengineeringfromscratch.com/>
 
+<https://www.youtube.com/watch?v=-gfgQfw2g_E> 
+Build & Train a GLM-5.3-Flash Model From Scratch with Python
+
 <https://www.linkedin.com/pulse/build-llm-from-zero-one-single-gpu-tokenizer-pretraining-tiger-xu-v6qac/>
 
 <https://github.com/LLMBaize/baize>
