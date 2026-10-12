@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/1070000/> C++ Object lifetime
 
+<https://habr.com/ru/articles/1080266/> Array of Arrays
+
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
 <https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
