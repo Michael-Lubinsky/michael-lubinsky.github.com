@@ -131,6 +131,10 @@ Therefore, we can only notice uniquely spinorial behavior through the fact of th
 <https://www.youtube.com/playlist?list=PLxyBMSdBhYxP1QiBmfRXcDorphxjQT_ye>   
 <https://www.amazon.com/Quantum-Mechanics-Done-Right-Researcher/dp/3031878442>
 
+<https://www.youtube.com/playlist?list=PL9fMuYh2Tstk6TgCiA9XY7-8pmEh4pOA2> Квантовая механика
+by Вышка Онлайн
+
+
 <https://scholar.google.com/>
 
 <https://link.springer.com/article/10.1007/s10773-023-05368-y> Tutorial: Topology, Waves, and the Refractive Index
