@@ -1,6 +1,8 @@
 ### Causality
 <img width="712" height="929" alt="image" src="https://github.com/user-attachments/assets/dcd32a8c-9622-4242-bc89-c63d3ac13f36" />
 
+<https://plato.stanford.edu/entries/causation-counterfactual/>
+
 <https://egovoru.livejournal.com/247058.html>
 Единственное мнѣ извѣстное внятное опредѣленiе причинности - на основѣ каузальной статистики. На эту тему есть фундаментальная книга Judea Pearl - Causality.
 
