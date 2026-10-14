@@ -3,6 +3,8 @@
 
 <https://plato.stanford.edu/entries/causation-counterfactual/>
 
+<https://blog.rudnyi.site/ru/2019/10/pearl-mackenzie-the-book-of-why.html>
+
 <https://egovoru.livejournal.com/247058.html>
 Единственное мнѣ извѣстное внятное опредѣленiе причинности - на основѣ каузальной статистики. На эту тему есть фундаментальная книга Judea Pearl - Causality.
 
