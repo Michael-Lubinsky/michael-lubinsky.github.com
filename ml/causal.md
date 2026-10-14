@@ -1,4 +1,5 @@
 ### Causality
+<img width="712" height="929" alt="image" src="https://github.com/user-attachments/assets/dcd32a8c-9622-4242-bc89-c63d3ac13f36" />
 
 <https://medium.com/the-forecaster/introduction-to-causal-analysis-in-time-series-abaf7c70dc22>
 
