@@ -1,5 +1,7 @@
 ## System Design
 
+<https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/>
+
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 
 <https://habr.com/ru/companies/haulmont/articles/1085536/>
