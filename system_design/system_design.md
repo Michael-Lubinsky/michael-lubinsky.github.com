@@ -1,6 +1,6 @@
 ## System Design
 
-<https://github.com/Michael-Lubinsky/michael-lubinsky.github.com/>
+<https://www.ssp.sh/brain/data-engineering>
 
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 
