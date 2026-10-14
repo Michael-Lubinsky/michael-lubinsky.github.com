@@ -7,6 +7,9 @@
 Extract plain text from any image
 <https://github.com/kouhxp/textsnap>
 
+OCR
+<https://github.com/baidu/Unlimited-OCR>
+
 
 <https://github.com/mikefarah/yq>  easily read, filter, update, merge, and convert structured data such as YAML, JSON, XML, CSV, and TOML
 
