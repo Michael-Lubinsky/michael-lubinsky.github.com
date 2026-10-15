@@ -25,6 +25,11 @@
 
 <https://www.youtube.com/@Laplace_s_Demon>
 
+<https://www.youtube.com/@Bub.Explains/videos>
+
+<https://www.youtube.com/channel/UC-wui2-sCNLCTLU1bIYTdQQ>
+
+
 <https://www.youtube.com/watch?v=VtQ6FLL2gu8> Прохождение алгебры Кострикина 
 
 <https://www.youtube.com/@cssndev> https://www.youtube.com/@cssndev
