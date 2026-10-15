@@ -1,8 +1,10 @@
 ## ML books
 
-<https://inferencebook.org/>
+<https://inferencebook.org/> companion website for the book "Inference in Statistical Modelling and Machine Learning" by James Burridge and Nick Tosh
 
-<https://smlbook.org/>
+<https://leanpub.com/>
+
+<https://smlbook.org/>  Statistical Machine Learning  
 
 <https://github.com/AniruddhaChattopadhyay/Books>
 
