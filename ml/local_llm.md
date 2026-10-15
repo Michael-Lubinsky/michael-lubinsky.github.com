@@ -26,7 +26,10 @@ https://habr.com/ru/companies/selectel/articles/1005504/  Собственная
 
 <https://habr.com/ru/articles/1085928/>
 
+### llama.cpp
 <https://habr.com/ru/articles/1057528/>  llama.cpp
+
+<https://habr.com/ru/articles/1094534/>
 
 <https://habr.com/ru/companies/selectel/articles/1088372/> llama vs Ollama
 
