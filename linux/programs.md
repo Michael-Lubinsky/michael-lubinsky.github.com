@@ -4,15 +4,25 @@
 
 <https://pdfmergely.com/> PDF merge
 
+## OCR image to markdown 
 Extract plain text from any image
 <https://github.com/kouhxp/textsnap>
 
-## OCR
+<https://into.md/>
+
+<https://github.com/amitxm/AIDocPrep>
+
+ 
+<https://github.com/datalab-to/marker>
+
+https://www.datalab.to/blog/marker-2   pip install marker-pdf
+
 <https://github.com/baidu/Unlimited-OCR>
 
 <https://github.com/PADDLEPADDLE/PADDLEOCR>
 
-
+https://sygal.app/
+###
 <https://github.com/mikefarah/yq>  easily read, filter, update, merge, and convert structured data such as YAML, JSON, XML, CSV, and TOML
 
 <https://apps.apple.com/us/app/windows-app/id1295203466?mt=12> Remote Desktop from Mac To Windows
