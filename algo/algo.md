@@ -72,14 +72,17 @@ Advanced Algos by Jelani Nelson
 ## Idioms
 <https://programming-idioms.org/all-idioms>
 
+<https://habr.com/ru/companies/timeweb/articles/1090404/> Func programming vocabulary
+
 <https://www.cambridge.org/core/books/pearls-of-algorithm-engineering/95061352D7263CCCBD4F243018236EB2>
 
 <https://jeffe.cs.illinois.edu/teaching/algorithms/book/Algorithms-JeffE.pdf>
 
-Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
+
+### Book “Information Theory” by Yury Polyanskiy and Yihong Wu.
 <https://people.lids.mit.edu/yp/homepage/data/itbook-export.pdf>
 
-<https://www.youtube.com/watch?v=qO-HpEgmd6U>
+<https://www.youtube.com/watch?v=qO-HpEgmd6U> Fast Fourier Transform
 
 ### Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
 
