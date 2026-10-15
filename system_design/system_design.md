@@ -1,5 +1,7 @@
 ## System Design
 
+<https://www.youtube.com/watch?v=soTfFFIQQ8U>
+
 <https://www.ssp.sh/brain/data-engineering>
 
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
