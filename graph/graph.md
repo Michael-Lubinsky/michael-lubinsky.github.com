@@ -14,7 +14,51 @@ Finally, graphology graphs are able to emit a wide variety of events, which make
 
 <https://github.com/dominikbraun/graph/> Graph js in GO
 
-https://habr.com/ru/articles/1060786/ Graph Drawing
+<https://habr.com/ru/articles/1060786/> Graph Drawing
+
+
+ 𝐋𝐞𝐚𝐫𝐧 𝐧𝐞𝐭𝐰𝐨𝐫𝐤𝐬 𝐢𝐧 𝐏𝐲𝐭𝐡𝐨𝐧:   https://www.thenewscienceofmaps.com/courses/network-py 
+𝐏𝐨𝐢𝐧𝐭-𝐚𝐧𝐝-𝐜𝐥𝐢𝐜𝐤 𝐬𝐨𝐟𝐭𝐰𝐚𝐫𝐞:
+- Cytoscape -    https://cytoscape.org
+- Gephi - https://gephi.org
+- Graphia - https://graphia.app
+- GraphInsight - https://lnkd.in/d5XnkWJr
+- NodeXL - https://nodexl.com
+- Orange - https://lnkd.in/dZU8Zx3D
+- SemSpect - https://www.semspect.de
+- SocNetV - https://socnetv.org
+- Tulip - https://lnkd.in/dtc_BD33
+- Ucinet - https://lnkd.in/dE8k34v7
+- VOSviewer - https://www.vosviewer.com
+𝐎𝐧𝐥𝐢𝐧𝐞 𝐭𝐨𝐨𝐥𝐬:
+- Gephisto - https://lnkd.in/diSp3BWN
+- Gephi Lite - https://lnkd.in/dHJ3F-r6
+- Kumu - https://kumu.io
+- Graphistry - https://www.graphistry.com
+- Cosmograph - https://lnkd.in/dUBJS4w3
+𝐏𝐲𝐭𝐡𝐨𝐧 𝐥𝐢𝐛𝐫𝐚𝐫𝐢𝐞𝐬:
+- networkx - https://lnkd.in/dKCCXjif
+- graph-tool - https://lnkd.in/dvytUzdu
+- graphviz - https://lnkd.in/d3GqtmQn
+- ipycytoscape - https://lnkd.in/dvTwmySk
+- ipydagred3 - https://lnkd.in/diXgFWMD
+- ipysigma - https://lnkd.in/dP55J5et
+- ipyvolume - https://lnkd.in/dq52_wdr
+- netwulf - https://lnkd.in/dsgKDHPh
+- nxviz - https://lnkd.in/duHbKGPN
+- Py3Plex - https://lnkd.in/dhwe7f_g
+- py4cytoscape - https://lnkd.in/d7NwU8_Y
+- pydot - https://lnkd.in/d8w6VfyP
+- pyGraphistry - https://lnkd.in/dz-NfFf7
+- pygsp - https://lnkd.in/dS7s-A_v
+- python-igraph - https://lnkd.in/dCGsRXh2
+- PyTorch Geometric - https://lnkd.in/duT3y8-U
+- pyvis - https://lnkd.in/duJ5kWAd
+- scikit-network - https://lnkd.in/dKPXenCk
+- SNAP - https://lnkd.in/duM5uHnr
+- visjs.org - https://visjs.org
+- visNetwork - https://zurl.co/zY3O
+- 3D Force-Directed Graph - https://zurl.co/AYks See less
 
 ### Boost Graph Library
 
