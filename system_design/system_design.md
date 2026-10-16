@@ -18,6 +18,8 @@
 
 <https://github.com/liquidslr/system-design-notes>
 
+<https://habr.com/ru/articles/931866/>
+
 <https://scalequest.io/sources>
 
 <https://habr.com/ru/articles/1082254/> C4 полный гайд по моделированию архитектуры 
