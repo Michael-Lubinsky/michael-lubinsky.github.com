@@ -28,6 +28,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 ## 📊 Common Wireless KPI Metrics
 
 ### 📶 Radio Access Network (RAN)
+
 | KPI                     | Description |
 | ------------------------- | ------------- |
 | **RSRP**                | Reference Signal Received Power (signal strength) |
@@ -37,6 +38,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 | **RSSI**                | Received Signal Strength Indicator |
 
 ### 📡 Connectivity & Mobility
+
 | KPI                     | Description |
 | ------------------------- | ------------- |
 | **Call Setup Success Rate (CSSR)** | % of successful call setup attempts |
@@ -45,6 +47,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 | **TA (Timing Advance)**            | Indicates UE distance from base station |
 
 ### 🌐 Data Throughput
+
 | KPI                     | Description |
 | ------------------------- | ------------- |
 | **DL/UL Throughput**    | Download/Upload speed per user or cell |
@@ -52,6 +55,7 @@ Wireless networks (e.g., cellular, Wi-Fi) are monitored using **Key Performance 
 | **Latency (RTT)**       | Round-trip time between user and core |
 
 ### 📱 User Experience
+
 | KPI                     | Description |
 |-------------------------|-------------|
 | **Packet Loss Rate**    | % of lost packets during transmission |
