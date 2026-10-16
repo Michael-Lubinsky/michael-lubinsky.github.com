@@ -103,7 +103,7 @@ Advanced Algos by Jelani Nelson
 
 
 
-### Algebraic data types: Union types, sum types and product types
+### Algebraic Data Types: Union types, Sum types and Product types
 
 ```
 struct P {
@@ -146,12 +146,13 @@ Gregorian
  ∣+∣Year 
 Hijri
 ​
- ∣.
 
-Sum types are really useful when you want to be 100% sure you can distinguish all members of your union.
 ```
+Sum types are really useful when you want to be 100% sure you can distinguish all members of your union.
 
+<https://godobject.dev/blog/needed-one-plus-one/>
 
+### 
 <https://interjectedfuture.com/what-is-algebraic-about-algebraic-effects/>
 
 https://blog.aiono.dev/posts/algebraic-types-are-not-scary,-actually.html
