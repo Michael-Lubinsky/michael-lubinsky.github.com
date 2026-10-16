@@ -134,6 +134,8 @@ Therefore, we can only notice uniquely spinorial behavior through the fact of th
 <https://www.youtube.com/playlist?list=PL9fMuYh2Tstk6TgCiA9XY7-8pmEh4pOA2> Квантовая механика
 by Вышка Онлайн
 
+<https://www.youtube.com/watch?v=hyctIDPRSqY> QM in 11 hours
+
 
 <https://scholar.google.com/>
 
