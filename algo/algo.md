@@ -11,6 +11,8 @@
 ### Python
 <https://github.com/TheAlgorithms>  <https://the-algorithms.com> <https://thealgorithms.github.io/Python/>
 
+<https://github.com/tayllan/awesome-algorithms>
+
 ### Count-Min Sketch
 <https://habr.com/ru/companies/timeweb/articles/1070742/> Count-Min Sketch  
 <https://www.instantdb.com/essays/count_min_sketch>  COUNT MIN SKETCH
@@ -158,13 +160,13 @@ https://news.ycombinator.com/item?id=45248043
 
 <https://iacgm.com/articles/adts/>
 
-https://habr.com/ru/articles/957848/ Monads
+<https://habr.com/ru/articles/957848/> Monads
 
 
 
-https://cartesian.app/
+<https://cartesian.app/>
 
-https://github.com/tayllan/awesome-algorithms
+
 
 <https://habr.com/ru/articles/924828/>
 
@@ -174,6 +176,9 @@ https://github.com/tayllan/awesome-algorithms
 
 
 ### Hashing
+
+<https://benhoyt.com/writings/hash-table-in-c/>
+
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
 https://www.corsix.org/content/my-favourite-small-hash-table
