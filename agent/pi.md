@@ -6,6 +6,8 @@
 <https://lucumr.pocoo.org/2026/1/31/pi/>  
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
 
+<https://habr.com/ru/articles/1095500/>  
+
 <https://earendil.com/posts/pi-autoresearch-and-databricks/>
 
 <https://news.ycombinator.com/item?id=49176038>
