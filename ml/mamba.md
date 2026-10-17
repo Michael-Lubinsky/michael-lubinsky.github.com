@@ -50,6 +50,8 @@ ML interview
 
 ## Text to SQL
 
+<https://habr.com/ru/companies/otus/articles/1088874/>
+
 <https://medium.com/@daudzai656/building-a-text-to-sql-transformer-from-scratch-737f5d3873fb>
 
 <https://cacm.acm.org/blogcacm/if-you-think-you-can-do-real-world-text-to-sql/>
