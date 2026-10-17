@@ -6,6 +6,8 @@
 
 <https://ethanlake.github.io/>
 
+<https://habr.com/ru/articles/965372/>
+
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
