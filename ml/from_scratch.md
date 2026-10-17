@@ -1,7 +1,8 @@
 ## Build LLM From Scratch
 
-<https://www.youtube.com/watch?v=Kh9mqTzjuEQ&list=PLfrHAQCRxtUs&index=2> Build A Reasoning Model (From Scratch)
-Sebastian Raschka
+<https://www.youtube.com/watch?v=yAcWnfsZhzo&list=PLTKMiZHVd_2IIEsoJrWACkIxLRdfMlw11&index=1>
+ Build  LLM  (From Scratch) Sebastian Raschka. 
+<https://www.youtube.com/watch?v=Kh9mqTzjuEQ&list=PLfrHAQCRxtUs&index=2> Build   Reasoning Model (From Scratch) Sebastian Raschka
 
 
 <https://languagemodelbuilder.com/>
