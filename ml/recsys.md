@@ -13,6 +13,8 @@
 
 <https://habr.com/ru/articles/1077822/>
 
+<https://habr.com/ru/articles/1095556/>
+
 <https://habr.com/ru/companies/sberbank/articles/1054286/>
 
 <https://habr.com/ru/articles/1050196/> RAG for recsys
