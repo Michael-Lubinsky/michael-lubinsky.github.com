@@ -4,6 +4,7 @@
 
 <img width="1400" height="933" alt="image" src="https://github.com/user-attachments/assets/5673dbed-e4c9-46b1-bcfd-8c0c0a474f0b" />
 
+<https://www.youtube.com/watch?v=gYlagiDEWEU>
 
 <https://github.com/RAYEN8811/Langraph_for_beginners->
 
