@@ -26,7 +26,6 @@ ROC is a threshold-independent way to assess classification performance
 
 <img width="726" height="576" alt="image" src="https://github.com/user-attachments/assets/171c55f1-ad58-4d2f-95ee-487c5a546d94" />
 
-<img width="1080" height="1424" alt="image" src="https://github.com/user-attachments/assets/26e0fb3c-23ed-4f01-b825-919caa5fb44d" />
 
 
 <img width="1080" height="1385" alt="image" src="https://github.com/user-attachments/assets/77dc4728-71e8-47e9-b0aa-f1c279d46b8c" />
