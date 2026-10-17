@@ -10,6 +10,11 @@ https://hpaulkeeler.com/wp-content/uploads/2018/08/PoissonPointProcess.pdf
 
 https://gregorygundersen.com/blog/2026/04/22/brownian-motion/
 
+
+<https://kelvinpaschal.com/blog/kernel-functions/>  
+<https://distill.pub/2019/visual-exploration-gaussian-processes/>
+<https://www.youtube.com/watch?v=zquAOOjG2iI>
+
 ## Wiener process  - also known as Brownian motion
 <https://en.wikipedia.org/wiki/Wiener_process>
 
