@@ -82,6 +82,8 @@ ML interview
 
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/8c2c29f6-8347-4293-a636-463702307afc" />
 
+<img width="1080" height="1424" alt="image" src="https://github.com/user-attachments/assets/2ef64ee8-7edc-44cd-b3e5-5782343e888d" />
+
 ## ML Links
 
 <https://ainewshub.live/concepts>
