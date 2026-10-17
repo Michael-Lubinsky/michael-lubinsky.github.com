@@ -42,8 +42,12 @@ SVM <https://habr.com/ru/articles/1072750/>
 
 <https://habr.com/ru/articles/1037110/> ML без воды: от базы до Attention. Часть 2: Линейная регрессия
 
-Precision, Recall, F-score, ROC-AUC
+## Precision, Recall, F-score, ROC-AUC
 <https://habr.com/ru/articles/1038730/> ML без воды: от базы до Attention. Часть 5: Метрики качества
+
+<https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall>
+
+
 
 <https://habr.com/ru/articles/1040682/> ML без воды: от базы до Attention. Часть 6: Логистическая регрессия
 
