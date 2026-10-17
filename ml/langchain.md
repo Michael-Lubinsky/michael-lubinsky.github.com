@@ -3,6 +3,7 @@
 <https://mayursurani.medium.com/foundations-of-function-calling-and-chaining-in-langchain-8c7c1ee355c3>
 
 <img width="1400" height="933" alt="image" src="https://github.com/user-attachments/assets/5673dbed-e4c9-46b1-bcfd-8c0c0a474f0b" />
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/e731edef-9a1d-4509-8550-3725b47bd025" />
 
 <https://www.youtube.com/watch?v=gYlagiDEWEU>
 
