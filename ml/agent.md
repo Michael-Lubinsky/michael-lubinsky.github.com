@@ -1,5 +1,7 @@
 ## Agents
 
+<https://github.com/aliyun/ai-agent-handbook/blob/main/README_EN.md>
+
 <https://machinelearningmastery.com/ai-agent-benchmarks-explained-swe-bench-gaia-webarena-and-more/>
 
 
