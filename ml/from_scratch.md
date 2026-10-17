@@ -1,5 +1,9 @@
 ## Build LLM From Scratch
 
+<https://www.youtube.com/watch?v=Kh9mqTzjuEQ&list=PLfrHAQCRxtUs&index=2> Build A Reasoning Model (From Scratch)
+Sebastian Raschka
+
+
 <https://languagemodelbuilder.com/>
 
 <https://github.com/rohitg00/ai-engineering-from-scratch>
