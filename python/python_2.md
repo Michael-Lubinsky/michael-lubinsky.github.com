@@ -7,6 +7,7 @@
 
 <https://habr.com/ru/articles/1000378/>
 
+<img width="420" height="302" alt="image" src="https://github.com/user-attachments/assets/c6548958-b7f4-4c45-a44d-14a445745e80" />
 
 #### SET
 ```
