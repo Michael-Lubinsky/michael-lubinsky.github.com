@@ -1,5 +1,6 @@
 ## ML Links
 
+<https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents>
 
 <https://ml-visualized.com/>
 ```bash
