@@ -3,6 +3,8 @@
 
 <https://www.youtube.com/watch?v=CBgB_VJcutw> LLM Internals
 
+<https://github.com/Shubhamsaboo/awesome-llm-apps>
+
 ### Instructor
 Built on top of Pydantic, Instructor provides type-safe data extraction with automatic validation, retries, and streaming support.
 ```
