@@ -1,5 +1,7 @@
 ## Build LLM From Scratch
 
+<https://github.com/rasbt/LLMs-from-scratch/tree/main>
+
 <https://github.com/FareedKhan-dev/train-llm-from-scratch>
 
 <https://www.youtube.com/watch?v=yAcWnfsZhzo&list=PLTKMiZHVd_2IIEsoJrWACkIxLRdfMlw11&index=1>
