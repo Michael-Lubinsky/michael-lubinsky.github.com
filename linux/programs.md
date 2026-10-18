@@ -108,6 +108,9 @@ brew install kaushiksrini/parqeye/parqeye
 
 <https://monodraw.helftone.com/> diagram tool
 
+### PDF parser
+https://github.com/opendataloader-project/opendataloader-pdf
+
 ### PDF to text 
 brew install poppler  
 pdftotext -layout your_file.pdf output.txt
