@@ -1,5 +1,8 @@
 ## Math
 
+<https://book.huihoo.com/pdf/>
+
+
 <https://www.ams.org/open-math-notes>
 
 <https://math.stackexchange.com/questions/111440/examples-of-patterns-that-eventually-fail/111461#111461>
