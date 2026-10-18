@@ -5,6 +5,8 @@
 
 <https://github.com/Shubhamsaboo/awesome-llm-apps>
 
+<https://github.com/kvfrans/lmpo> Language Model Policy Optimization
+
 ### Instructor
 Built on top of Pydantic, Instructor provides type-safe data extraction with automatic validation, retries, and streaming support.
 ```
