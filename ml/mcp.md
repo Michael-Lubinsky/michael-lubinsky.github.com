@@ -9,6 +9,64 @@
 
  <img width="1111" height="702" alt="image" src="https://github.com/user-attachments/assets/fb6fecf3-6a2f-4927-b0a4-9f8665d72d68" />
 
+https://github.com/f/mcptools
+
+13 полезных MCP-серверов, которые стоит попробовать
+
+MCP (Model Context Protocol) меняет то, как ИИ-модели и агенты взаимодействуют с инструментами.  
+
+1. Agentset MCP  
+🔗 https://github.com/agentset-ai/mcp-server  
+Быстрое создание интеллектуальных приложений на основе документов (RAG) с open-source платформой Agentset.
+
+2. GitHub MCP Server  
+🔗 https://github.com/github/github-mcp-server  
+Интеграция с API GitHub — можно строить ИИ-инструменты, работающие с экосистемой GitHub.
+
+3. arXiv MCP  
+🔗 https://github.com/andybrandt/mcp-simple-arxiv  
+Работа с научными статьями arXiv: поиск, метаданные, аннотации, ссылки — всё через MCP.
+
+4. MCP Run Python  
+🔗 https://github.com/pydantic/pydantic-ai/tree/main/mcp-run-python  
+Запуск Python-кода в песочнице через Pyodide (Deno). Полная изоляция от ОС.
+
+5. Safe Local Python Executor  
+🔗 https://github.com/maxim-saplin/mcp_safe_local_python_executor  
+Безопасный локальный запуск Python-кода, сгенерированного LLM, через LocalPythonExecutor (от smolagents).
+
+6. Cursor MCP Installer  
+🔗 https://github.com/matthewdcage/cursor-mcp-installer  
+Автоматическое добавление MCP-серверов в редактор Cursor — удобно для разработчиков.
+
+7. Basic Memory  
+🔗 https://memory.basicmachines.co/docs/introduction  
+Система управления знаниями: создаёт устойчивый семантический граф из диалогов ИИ-агентов.
+
+8. Filesystem MCP Server  
+🔗 https://github.com/modelcontextprotocol/servers/tree/HEAD/src/filesystem  
+Чтение, запись, поиск файлов, создание, удаление и перемещение директорий — всё через MCP.
+
+9. Notion MCP Server  
+🔗 https://github.com/makenotion/notion-mcp-server  
+Позволяет моделям управлять вашим рабочим пространством в Notion: поиск, чтение, создание и обновление страниц и баз.
+
+10. Markdownify MCP Server  
+🔗 https://github.com/zcaceres/markdownify-mcp  
+Конвертирует PDF, изображения, аудио и веб-страницы в Markdown.
+
+11. Fetch MCP Server  
+🔗 https://github.com/modelcontextprotocol/servers/tree/main/src/fetch  
+Позволяет LLM извлекать данные с веб-страниц и автоматически преобразовывать HTML в Markdown.
+
+12. Mobile Next MCP Server  
+🔗 https://github.com/mobile-next/mobile-mcp  
+Взаимодействие с iOS/Android-приложениями: распознавание UI по скриншотам, автоматизация кликов.
+
+13. MCP Installer  
+🔗 https://github.com/anaisbetts/mcp-installer  
+Шутливо, но по делу: «MCP для установки MCP». Модель сама ставит MCP-серверы из npm и PyPi по вашему запросу.
+
 There is a quieter, more elegant half to this that almost nobody mentions: the client has primitives too. The server can ask the client to do things back. It can request sampling (ask the host’s model to think about something, without the server needing its own model), elicitation (ask the human a clarifying question or for confirmation), and logging. So it is genuinely two-way. The server is not just a vending machine; it can tap the model and the user on the shoulder when it needs them. That bidirectionality is one of the prettiest design choices in the whole thing.
 
 <img width="1063" height="313" alt="image" src="https://github.com/user-attachments/assets/fa1450ee-7b60-4f96-adff-927e593c6923" />
@@ -70,6 +128,7 @@ curl -sD - -X POST https://mcp.zinin-shturbin.com/mcp \
                  "clientInfo":{"name":"curl","version":"1"}}}'
 ```
 <https://habr.com/ru/companies/amvera/articles/931874/>
+
 ```python
 from fastmcp import FastMCP
 import json
