@@ -4,6 +4,8 @@
 
 <https://fergusfinn.com/blog/what-happens-when-you-run-a-gpu-kernel/>
 
+<https://jax-ml.github.io/scaling-book/>
+
 <https://habr.com/ru/companies/runity/articles/1078044/>
 
 <https://www.jepeake.com/ai-chip-architectures>
