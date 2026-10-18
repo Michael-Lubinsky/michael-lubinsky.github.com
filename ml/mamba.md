@@ -1,5 +1,13 @@
 ## ML Links
 
+
+<https://ml-visualized.com/>
+```bash
+git clone https://github.com/gavinkhung/machine-learning-visualized
+cd machine-learning-visualized
+./download_notebooks.sh
+jupyter-book build .
+```
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
 <https://aiengineeringfromscratch.com/>
