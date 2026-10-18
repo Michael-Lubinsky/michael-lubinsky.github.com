@@ -1,5 +1,7 @@
 ## Build LLM From Scratch
 
+<https://github.com/FareedKhan-dev/train-llm-from-scratch>
+
 <https://www.youtube.com/watch?v=yAcWnfsZhzo&list=PLTKMiZHVd_2IIEsoJrWACkIxLRdfMlw11&index=1>
  Build  LLM  (From Scratch) Sebastian Raschka. 
 <https://www.youtube.com/watch?v=Kh9mqTzjuEQ&list=PLfrHAQCRxtUs&index=2> Build   Reasoning Model (From Scratch) Sebastian Raschka
