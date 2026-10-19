@@ -1314,21 +1314,15 @@ GeoJSON is a JSON-based format for representing geographic objects.
 
 It supports three fundamental geometry types:
 
-Point
+Point - Utility pole
 
-Utility pole
+LineString - Power line
 
-LineString
-
-Power line
-
-Polygon
-
-Vegetation area
+Polygon - Vegetation area
 
 ### Example: A power line stored in GeoJSON
 
-```
+```json
 {
   "type": "Feature",
   "geometry": {
@@ -1357,7 +1351,10 @@ GeoJSON uses longitude, latitude coordinate order, normally in WGS84 (EPSG:4326)
 ### Python example
 
 ```
-import geopandas as gpdgdf = gpd.read_file("power_lines.geojson")print(gdf.head())print(gdf.crs)
+import geopandas as gpd
+gdf = gpd.read_file("power_lines.geojson")
+print(gdf.head())
+print(gdf.crs)
 ```
 
 GeoPandas creates a DataFrame containing regular columns plus a special `geometry` column.
@@ -1404,8 +1401,18 @@ The actual geometry is stored in binary form rather than JSON text.
 
 ### Python example
 
-```
-import geopandas as gpdgdf = gpd.read_file("power_lines.shp")print(gdf.head())# Convert Shapefile to GeoJSONgdf.to_file(    "power_lines.geojson",    driver="GeoJSON")
+```python
+import geopandas as gpd
+
+gdf = gpd.read_file("power_lines.shp")
+
+print(gdf.head())
+
+# Convert Shapefile to GeoJSON
+gdf.to_file(
+    "power_lines.geojson",
+    driver="GeoJSON"
+)
 ```
 
 Shapefiles are still common in government GIS datasets, but they have limitations such as short attribute field names, restricted attribute types, and legacy file-size constraints.
@@ -1456,8 +1463,18 @@ pip install h3
 
 Convert GPS coordinates into an H3 cell:
 
-```
-import h3lat = 37.30lon = -121.85cell = h3.latlng_to_cell(lat, lon, 9)print(cell)# Get the hexagon boundaryboundary = h3.cell_to_boundary(cell)
+```python
+import h3
+
+lat = 37.30
+lon = -121.85
+
+cell = h3.latlng_to_cell(lat, lon, 9)
+
+print(cell)
+
+# Get the hexagon boundary
+boundary = h3.cell_to_boundary(cell)
 ```
 
 Notice that the H3 function accepts latitude first, longitude second, unlike GeoJSON coordinate arrays.
@@ -1484,8 +1501,12 @@ For example:
 
 Then Spark can perform ordinary equality joins on the H3 cell ID.
 
-```
-joined = (    vegetation_h3    .join(weather_h3, on="h3_cell")    .join(powerlines_h3, on="h3_cell"))
+```python
+joined = (
+    vegetation_h3
+    .join(weather_h3, on="h3_cell")
+    .join(powerlines_h3, on="h3_cell")
+)
 ```
 
 This is much cheaper than performing millions of exact geometric comparisons in many cases.
