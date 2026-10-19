@@ -1,6 +1,12 @@
-## Geo
+## Geospatial Data
 There are two main types of geospatial data: raster and vector.
 <https://www.palantir.com/docs/foundry/geospatial/types-of-geospatial-and-geotemporal-data#raster-data>
+
+### Vector data 
+is used for storing data that has discrete boundaries and represents these data as points, lines, and polygons. Examples of vector data include points representing cities on a map of the United States, lines representing roads in a state, and polygons representing electoral district boundaries.
+
+### Raster data 
+consists of a matrix of cells organized into rows and columns, in which each cell represents specific information. Examples of raster data include satellite imagery sources, scanned maps, and digital elevation models (DEMs).
 
 Geospatial data with a temporal component is known as geotemporal data.
 
