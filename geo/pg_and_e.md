@@ -10,6 +10,11 @@ consists of a matrix of cells organized into rows and columns, in which each cel
 
 Geospatial data with a temporal component is known as geotemporal data.
 
+#### Geometry comparisons
+Intersection. 
+Difference  
+Symmetric difference   
+Union (column-wise and aggregate)  
 
 ## Electric utility, asset, vegetation, and meteorological data
 are four categories of data commonly used by electric power companies to manage electricity networks, predict outages, prevent wildfires, and optimize maintenance.
