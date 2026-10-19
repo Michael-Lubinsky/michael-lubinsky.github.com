@@ -45,7 +45,7 @@ You do not need to install Apache Sedona or Databricks Mosaic.
 
 Open a Databricks SQL Editor or a notebook and execute:
 
-```
+```sql
 SELECT
     ST_AsText(
         ST_Point(-121.8863, 37.3382)
@@ -92,7 +92,7 @@ The important distinction is that a registered `ST_*` function is not necessaril
 In a Python notebook, execute:
 
 ```
-print(spark.conf.get(    "spark.databricks.clusterUsageTags.sparkVersion"))
+print(spark.conf.get("spark.databricks.clusterUsageTags.sparkVersion"))
 ```
 
 For native Spatial SQL, Databricks documents these requirements:
@@ -106,17 +106,14 @@ For native Spatial SQL, Databricks documents these requirements:
 | Native `GEOMETRY`        | Generally available |
 | Native `GEOGRAPHY`       | Public Preview      |
 
-[image](https://www.google.com/s2/favicons?domain=https://docs.databricks.com\&sz=32)
-
-Databricks on Google Cloud
-
-+1
+ 
+ 
 
 ## 4. Test native geometry types
 
 This query checks both the spatial function and native `GEOMETRY` type:
 
-```
+```sql
 SELECT
     typeof(ST_Point(-121.8863, 37.3382, 4326))
         AS geometry_type,
@@ -136,14 +133,25 @@ This is a stronger check than simply listing registered functions.
 
 You can execute the same SQL from Python:
 
-```
-df = spark.sql("""    SELECT        ST_AsText(            ST_Point(-121.8863, 37.3382, 4326)        ) AS location""")display(df)
+```python
+df = spark.sql("""
+SELECT ST_AsText(ST_Point(-121.8863, 37.3382, 4326)) AS location""")
+
+display(df)
 ```
 
 Or use the native PySpark API:
 
-```
-from pyspark.databricks.sql import functions as dbffrom pyspark.sql import functions as Fdf = spark.range(1).select(    dbf.st_astext(        dbf.st_point(            F.lit(-121.8863),            F.lit(37.3382),            F.lit(4326)        )    ).alias("location"))display(df)
+```python
+from pyspark.databricks.sql import functions as dbf
+from pyspark.sql import functions as F
+df = spark.range(1).select(
+      dbf.st_astext(
+         dbf.st_point(
+          F.lit(-121.8863),
+          F.lit(37.3382),
+          F.lit(4326))).alias("location"))
+display(df)
 ```
 
 The native Python API is documented by Databricks.&#x20;
@@ -151,8 +159,6 @@ The native Python API is documented by Databricks.&#x20;
 [image](https://www.google.com/s2/favicons?domain=https://docs.databricks.com\&sz=32)
 
 Databricks on AWS
-
-
 
 For your Databricks AWS environment, I recommend starting with the SQL test in section 1. If it fails, check the runtime version and compute type before attempting to install Sedona or Mosaic.
 
