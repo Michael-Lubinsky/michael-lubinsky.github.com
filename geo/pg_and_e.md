@@ -1141,3 +1141,158 @@ For raster processing, common approaches include:
 For the PG&E wildfire project, I would generally process large raster files into geographic features using Rasterio/Xarray and distributed processing where necessary, then store the extracted features in Delta tables for PySpark analytics.
 
 Key idea: Raster data describes conditions across geographic space, while vector data describes the locations and shapes of objects. Combining them lets you answer questions such as: "What are the vegetation and weather conditions within 30 meters of this power line?"
+
+
+Wind direction in meteorological datasets is usually stored in one of two ways:
+
+1. As an angle in degrees (0–360°).
+2. As two vector components: U (east–west) and V (north–south).
+
+For wildfire modeling, the second representation is especially useful.
+
+## 1. Wind direction as an angle
+
+Meteorological wind direction indicates where the wind comes FROM, not where it is going.
+
+A 45° wind comes from the northeast and blows toward the southwest.
+
+| Direction | Degrees | Wind blows toward |
+| --------- | ------- | ----------------- |
+| North     | 0°      | South             |
+| East      | 90°     | West              |
+| South     | 180°    | North             |
+| West      | 270°    | East              |
+| Northeast | 45°     | Southwest         |
+
+For example, a weather record might be:
+
+```
+{
+  "timestamp": "2026-10-18T12:00:00Z",
+  "latitude": 37.3,
+  "longitude": -121.85,
+  "wind_speed_mps": 12.5,
+  "wind_direction_deg": 270
+}
+```
+
+This means wind is blowing from the west toward the east at 12.5 m/s.
+
+## 2. Wind direction as U and V components
+
+Numerical weather models commonly store wind as two components:
+
+- `u`: East–west component. Positive means toward east.
+- `v`: North–south component. Positive means toward north.
+
+For example:
+
+```
+u = 10.0   # m/s toward eastv = -5.0   # m/s toward south
+```
+
+The wind is blowing toward the southeast.
+
+The speed is:
+
+\\[ \text{speed}=\sqrt{u^2+v^2} \\]
+
+And the meteorological direction is:
+
+\\[ \theta = \left( \operatorname{atan2}(-u,-v)\frac{180}{\pi}+360 \right)\bmod 360 \\]
+
+### Python example
+
+```
+import numpy as npu = 10.0v = -5.0speed = np.hypot(u, v)direction = (    np.degrees(np.arctan2(-u, -v)) + 360) % 360print(f"Speed: {speed:.2f} m/s")print(f"Direction: {direction:.1f}°")
+```
+
+Output:
+
+```
+Speed: 11.18 m/s
+Direction: 296.6°
+```
+
+That is a wind from west-northwest, blowing toward east-southeast.
+
+For calm wind (`u = v = 0`), direction is undefined and should normally be stored as null rather than 0°.
+
+## 3. How wind is stored in raster datasets
+
+In a weather forecast such as NOAA HRRR, wind components can be stored as two separate raster grids:
+
+U-component raster (m/s)
+
+5
+
+8
+
+10
+
+6
+
+9
+
+12
+
+4
+
+7
+
+11
+
+V-component raster (m/s)
+
+-2
+
+-4
+
+-5
+
+-3
+
+-5
+
+-6
+
+-1
+
+-3
+
+-4
+
+Each geographic cell has both U and V values. Together they describe the wind vector at that location and forecast time.
+
+Some GRIB2 products store grid-relative rather than earth-relative wind components, so check the metadata and rotate components when necessary.
+
+## 4. Why wind direction matters for PG&E wildfire modeling
+
+Wind direction can be important in two ways.
+
+A. Vegetation contact with power lines
+
+If a tree is located west of a power line and strong winds blow toward the east, the tree may be pushed toward the line.
+
+B. Wildfire spread
+
+Wind direction influences the direction and speed of fire spread after ignition, along with fuel, terrain, and atmospheric conditions.
+
+For predictive modeling, I would preserve the original `u` and `v` components instead of using only the wind direction angle.
+
+This avoids the discontinuity between 359° and 0°, which are almost identical directions but numerically very different.
+
+A useful feature table might contain:
+
+| segment_id | wind_u | wind_v | wind_speed | wind_direction |
+| ---------- | ------ | ------ | ---------- | -------------- |
+| A101       | 10.0   | -5.0   | 11.18      | 296.6°         |
+| A102       | -4.0   | 3.0    | 5.00       | 126.9°         |
+
+An even more useful feature for PG&E would be the wind component perpendicular to a power line. This measures how strongly the wind blows across the line rather than along it.
+
+If a line has unit tangent vector \\((t_x,t_y)\\), the signed cross-line wind component is:
+
+\\[ w\_{\perp}=u(-t_y)+v t_x \\]
+
+Its absolute value, \\(|w\_{\perp}|\\), measures the cross-line wind speed. Combined with tree locations, conductor geometry, and vegetation characteristics, it can help model the risk of vegetation contacting electrical infrastructure.
