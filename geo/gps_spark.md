@@ -6,6 +6,8 @@
 
 <https://engineering.kablamo.com.au/posts/falsehoods-about-map-coordinates/index.html>
 
+<https://www.databricks.com/blog/introducing-spatial-sql-databricks-80-functions-high-performance-geospatial-analytics>
+
 | Type          | Range            | Description                            |
 | ------------- | ---------------- | -------------------------------------- |
 | **Latitude**  | `-90` to `+90`   | Measures north/south from Equator      |
