@@ -36,9 +36,7 @@ Databricks announced native Spatial SQL in September 2025 and has since moved it
 
 [image](https://www.google.com/s2/favicons?domain=https://www.databricks.com\&sz=32)
 
-Databricks Blog
-
-+1
+ 
 
 
 
@@ -53,7 +51,7 @@ We want to find trees located within 30 meters of a power line.
 
 With native Databricks Spatial SQL, a conceptual query is:
 
-```
+```sql
 SELECT
     t.tree_id,
     p.line_id,
@@ -67,7 +65,7 @@ This assumes both geometries use a suitable projected coordinate system with met
 
 Apache Sedona can express essentially the same operation:
 
-```
+```sql
 SELECT
     t.tree_id,
     p.line_id
@@ -92,9 +90,7 @@ One technical consideration: Sedona's documentation warns about compatibility co
 
 [image](https://www.google.com/s2/favicons?domain=https://sedona.apache.org\&sz=32)
 
-Apache Sedona
-
-+1
+ 
 
 
 
@@ -125,7 +121,6 @@ For proximity analysis, use precise geometries rather than relying exclusively o
 Apache Sedona
 
 
-
 My recommendation: If the project already uses Databricks, start with native Spatial SQL. Introduce Apache Sedona only if benchmarking or a specific missing capability justifies it.
 
 One interesting technical question for your PG&E interview would be:
@@ -141,11 +136,37 @@ That is where the two technologies differ most meaningfully.
  
  is an **open-source geospatial analytics library** built specifically for **Apache Spark** (and deeply integrated with Databricks).
 
+It helps you do **spatial joins, geometry operations, and tiling** directly inside Spark SQL / PySpark, so you can run **large-scale geospatial processing** on billions of points (e.g. lat/long from IoT, GPS, telecom, etc.).
 
 ### Mosaic reached end of support in August 2026, and Databricks Labs recommends a successor called GeoBrix.
 
-It helps you do **spatial joins, geometry operations, and tiling** directly inside Spark SQL / PySpark, so you can run **large-scale geospatial processing** on billions of points (e.g. lat/long from IoT, GPS, telecom, etc.).
 
+
+
+What replaced Mosaic?
+The current architecture is to combine native Databricks Spatial SQL with GeoBrix when additional functionality is needed.
+
+Native Spatial SQL — vector geometry operations
+
+Point-in-polygon, distance, buffers, intersections, H3 functions and spatial joins.
+
+### GeoBrix RasterX — raster data processing
+<https://databrickslabs.github.io/geobrix/>
+
+
+
+Satellite images, GeoTIFF files, vegetation indices (NDVI), terrain and elevation analysis.
+
+
+
+
+GeoBrix GridX and VectorX — specialized processing
+
+Additional spatial grids, vector tile generation and geospatial file handling.
+
+
+
+GeoBrix is explicitly designed to complement native Databricks ST and H3 functions rather than replace them.
 ---
 
 ## 🔹 Key Features of Databricks Mosaic
