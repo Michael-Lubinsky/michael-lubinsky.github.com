@@ -84,6 +84,8 @@ RAG переводит LLM в режим работы с документами.
 
 <img width="800" height="1111" alt="image" src="https://github.com/user-attachments/assets/f8442173-ecfa-476d-82ea-cdc20ff9d88d" />
 
+<https://habr.com/ru/companies/skbkontur/articles/1095364/>
+
 <https://habr.com/ru/articles/1029740/>
 
 <https://habr.com/ru/articles/1029616/>
