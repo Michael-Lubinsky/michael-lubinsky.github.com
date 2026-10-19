@@ -13,10 +13,37 @@ For example, a raster dataset can represent temperature, elevation, vegetation d
 Geospatial data with a temporal component is known as geotemporal data.
 
 #### Geometry comparisons
+```
 Intersection. 
 Difference  
 Symmetric difference   
 Union (column-wise and aggregate)  
+```
+Apache Sedona Example
+```python
+from sedona.spark import SedonaContext
+
+# Assumes SparkSession has compatible Sedona
+# dependencies configured.
+sedona = SedonaContext.create(spark)
+
+result = spark.sql("""
+    SELECT ST_Contains(
+        ST_GeomFromWKT(
+            'POLYGON((
+                0 0,
+                10 0,
+                10 10,
+                0 10,
+                0 0
+            ))'
+        ),
+        ST_Point(5.0, 5.0)
+    ) AS is_inside
+""")
+
+result.show()
+```
 
 ## Electric utility, asset, vegetation, and meteorological data
 are four categories of data commonly used by electric power companies to manage electricity networks, predict outages, prevent wildfires, and optimize maintenance.
