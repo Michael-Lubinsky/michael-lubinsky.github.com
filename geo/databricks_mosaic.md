@@ -1,3 +1,140 @@
+## Databricks Spatial SQL and Apache Sedona 
+
+are closely related in functionality, but they are different technologies.
+
+
+Both allow you to perform geospatial operations using SQL, such as calculating distances, detecting whether a point is inside a polygon, or finding objects near a geographic location.
+
+The main distinction is:
+
+- Databricks Spatial SQL provides native geospatial functions integrated into the Databricks SQL and Spark environment.
+- Apache Sedona is an open-source geospatial processing framework built on Apache Spark, with its own SQL functions, spatial indexing, and spatial join optimizations.
+
+Sedona was particularly useful when Spark did not provide comprehensive native geospatial SQL capabilities.
+
+Now that Databricks supports native spatial SQL, some use cases that previously required Sedona can be implemented directly in Databricks.
+
+## 1. Databricks Spatial SQL vs Apache Sedona
+
+Assuming you are referring to the Databricks article [Introducing Spatial SQL in Databricks: 80+ Functions](https://www.databricks.com/blog/introducing-spatial-sql-databricks-80-functions-high-performance-geospatial-analytics?utm_source=chatgpt.com).
+
+| Feature               | Databricks Spatial SQL         | Apache Sedona                                   |
+| --------------------- | ------------------------------ | ----------------------------------------------- |
+| Integration           | Native to Databricks           | Additional Spark framework                      |
+| SQL functions         | 80+ spatial functions          | Extensive spatial SQL library                   |
+| `ST_Contains`         | Yes                            | Yes                                             |
+| `ST_Intersects`       | Yes                            | Yes                                             |
+| `ST_Distance`         | Yes                            | Yes                                             |
+| Spatial joins         | Native optimized joins         | Sedona spatial join optimizer                   |
+| Spatial indexing      | Automatic optimizations        | Spatial partitioning and indexing               |
+| H3 support            | Built-in                       | Available, with version considerations          |
+| Geometry types        | Native `GEOMETRY`, `GEOGRAPHY` | Sedona geometry types                           |
+| Other Spark platforms | Databricks-specific            | Works with compatible Apache Spark environments |
+| Installation          | No additional library          | Requires Sedona installation                    |
+
+Databricks announced native Spatial SQL in September 2025 and has since moved it to general availability.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.databricks.com\&sz=32)
+
+Databricks Blog
+
++1
+
+
+
+## 2. Example: PG&E vegetation proximity
+
+Suppose we have two datasets:
+
+- `power_lines`: electrical transmission lines represented by `LINESTRING` geometries.
+- `trees`: vegetation locations represented by `POINT` geometries.
+
+We want to find trees located within 30 meters of a power line.
+
+With native Databricks Spatial SQL, a conceptual query is:
+
+```
+SELECT
+    t.tree_id,
+    p.line_id,
+    ST_Distance(t.geom, p.geom) AS distance_m
+FROM trees t
+JOIN power_lines p
+    ON ST_DWithin(t.geom, p.geom, 30);
+```
+
+This assumes both geometries use a suitable projected coordinate system with meter units and that `ST_DWithin` is supported by the selected runtime. For California-wide data, the coordinate system needs particular attention.
+
+Apache Sedona can express essentially the same operation:
+
+```
+SELECT
+    t.tree_id,
+    p.line_id
+FROM trees t
+JOIN power_lines p
+    ON ST_DWithin(t.geom, p.geom, 30);
+```
+
+The SQL looks almost identical because both systems implement functions based on common spatial SQL conventions.
+
+The important difference is how the query is executed and optimized, not necessarily its SQL syntax.
+
+## 3. Does Databricks Spatial SQL replace Apache Sedona?
+
+For many Databricks workloads, yes.
+
+Previously, you might install Sedona to support spatial predicates and optimized spatial joins. With native Databricks Spatial SQL, you can perform these operations without introducing another framework.
+
+However, Sedona remains useful when you need specialized capabilities, its additional data readers or functions, or portability across Apache Spark deployments.
+
+One technical consideration: Sedona's documentation warns about compatibility conflicts between its H3 Java dependency and the H3 version bundled with Databricks.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://sedona.apache.org\&sz=32)
+
+Apache Sedona
+
++1
+
+
+
+## 4. What I would recommend for your California wildfire-risk project
+
+I would start with:
+
+Databricks + Delta Lake
+
+Power lines, vegetation, weather, wildfire history
+
+Native Spatial SQL
+
+ST_Intersects · ST_Distance · ST_Contains
+
+H3 indexing (optional)
+
+Spatial aggregation, partitioning, candidate filtering
+
+Wildfire risk analytics
+
+Vegetation proximity, exposure, risk scoring
+
+For proximity analysis, use precise geometries rather than relying exclusively on H3 cells. H3 approximations can produce false positives around boundaries, depending on resolution and how cells are selected.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://sedona.apache.org\&sz=32)
+
+Apache Sedona
+
+
+
+My recommendation: If the project already uses Databricks, start with native Spatial SQL. Introduce Apache Sedona only if benchmarking or a specific missing capability justifies it.
+
+One interesting technical question for your PG&E interview would be:
+
+How does Databricks implement distributed spatial joins internally, and how does its optimization strategy compare with Apache Sedona's spatial partitioning and indexing?
+
+That is where the two technologies differ most meaningfully.
+ 
+ 
  **Databricks Mosaic**  <https://databrickslabs.github.io/mosaic/>
  
  is an **open-source geospatial analytics library** built specifically for **Apache Spark** (and deeply integrated with Databricks).
