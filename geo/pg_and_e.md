@@ -1014,3 +1014,130 @@ If the organization already uses Palantir Foundry, use Pipeline Builder and Onto
 - [LANDFIRE — Vegetation and fuel datasets](https://www.landfire.gov/?utm_source=chatgpt.com)
 
 For a practical first project, I would implement power-line proximity to vegetation, weather-grid spatial joins, and a segment-day risk feature table. These three components provide a solid foundation for both wildfire prediction and later causal analysis of vegetation management.
+
+
+
+# What is raster data?
+
+Raster data is a geospatial data format that represents geographic information as a grid of cells (pixels). Each cell contains a value describing a property of the corresponding geographic area.
+
+For example, a raster dataset can represent temperature, elevation, vegetation density, soil moisture, or wind speed across California.
+
+## 1. Example of raster data
+
+[Digital Elevation Models - February 2, 2026](https://images.openai.com/static-rsc-4/upaNQ-TrG8So171tk3wXDe_6ZDGLS7ZDYlI9_VJtcgqytlqpBzbyNhl3f2QfChkW5LCIsLKfRy68HmcoGRFfykOZa29fdAXhoSpsXFBp6i_vT_BQAvNFvkDeI_7hrvS_FDUiNA5nJ8a1I2mopmrdgQA6rMMCnKBXLg7jfFbQpks?purpose=inline)
+
+[Lesson 5: Raster data analysis – Geospatial Analysis with Python and R](https://images.openai.com/static-rsc-4/1OoPr7HS9rA4c6OwbtrxcosYk2yyAqTID3rwKZNw3TL2nFrPrJ9cFbpdBH0kOYP0vDDk3n074M_4watJvPstaAua2d7bIgM_L_UcrEdKclRTiRpxHAkZCG28EPWEfgr-iXOoUzGXejmp57q41ML-U08ZC-gBtpdm9a7YuFMmJVg?purpose=inline)
+
+[Fintech's Wildfire Fighter: This Reinsurer Is Using A.I. To Make California Insurance Affordable](https://images.openai.com/static-rsc-4/Gz_y1aBBVJraqzr2VbAXrH2m5mYLWlRARfi2KKwd4Qk8MGQkjQBtEG8GQltUq3-52wI6I7E-oFu0fzk3ffJi6gNCv7qjedNzCvN94TMeZuRlZ7Sdm56eXdyLhAZTCNG8xF182YzKrARL-02x6KNDXR633xxZ3DltyaU5xoQGPlA?purpose=inline)
+
+7
+
+Each image represents a geographic area divided into many cells, with values associated with those cells.
+
+
+
+A real raster file also contains geographic metadata describing where the grid is located.
+
+## 2. Raster vs vector data
+
+These are the two major geospatial data representations.
+
+| Feature            | Raster                               | Vector                            |
+| ------------------ | ------------------------------------ | --------------------------------- |
+| Structure          | Grid of pixels                       | Points, lines, polygons           |
+| Typical use        | Temperature, elevation, vegetation   | Power lines, poles, roads         |
+| Resolution         | Cell size, e.g. 10 × 10 meters       | Geometry coordinates              |
+| Data formats       | GeoTIFF, NetCDF, GRIB2               | GeoJSON, Shapefile, GeoParquet    |
+| Typical processing | Pixel calculations, zonal statistics | Spatial joins, buffers, distances |
+
+For a PG&E wildfire project, power lines are usually vector data, while vegetation density and weather fields are often raster data.
+
+## 3. Raster resolution
+
+Suppose a vegetation raster has a resolution of 30 meters.
+
+Each pixel represents a geographic area approximately:
+
+\\[ 30 \times 30 = 900\ \text{m}^2 \\]
+
+A 1,000 × 1,000 pixel raster therefore covers approximately 30 × 30 kilometers, assuming square cells in a suitable projected coordinate system.
+
+Smaller pixels provide finer spatial detail but increase storage and processing costs.
+
+## 4. How to read raster data in Python
+
+A popular Python library is `rasterio`.
+
+```
+import rasteriowith rasterio.open("vegetation.tif") as src:    data = src.read(1)    print("Width:", src.width)    print("Height:", src.height)    print("CRS:", src.crs)    print("Resolution:", src.res)    print("Shape:", data.shape)
+```
+
+The raster is loaded as a NumPy array:
+
+```
+print(data[100, 200])
+```
+
+This returns the value of a particular pixel (row 100, column 200).
+
+To retrieve the value at a geographic coordinate:
+
+```
+with rasterio.open("vegetation.tif") as src:    longitude = -121.85    latitude = 37.30    # Assumes raster CRS is EPSG:4326    value = next(        src.sample([(longitude, latitude)])    )[0]    print(value)
+```
+
+If the raster uses another coordinate reference system, transform the longitude and latitude before sampling.
+
+## 5. How raster data is used for PG&E wildfire prediction
+
+Imagine we have:
+
+- A power-line segment represented by a vector `LineString`.
+- A vegetation-density raster.
+- A wind-speed raster.
+- A soil-moisture raster.
+
+We want to calculate the environmental conditions surrounding each power line.
+
+Vegetation density cells
+
+Power line
+
+Analysis corridor
+
+Illustrative raster grid with a power-line corridor crossing multiple cells.
+
+A typical algorithm is:
+
+1. Create a 30-meter buffer around each power-line segment.
+2. Find all raster pixels intersecting that buffer.
+3. Calculate average vegetation density, maximum wind speed, and minimum soil moisture.
+4. Store the results as features for a machine learning model.
+
+For example:
+
+| Segment | Avg. vegetation density | Max wind (mph) | Soil moisture (%) |
+| ------- | ----------------------- | -------------- | ----------------- |
+| A101    | 0.85                    | 65             | 8                 |
+| A102    | 0.30                    | 25             | 35                |
+| A103    | 0.72                    | 55             | 12                |
+
+These are illustrative values.
+
+The process of computing raster statistics inside vector geometries is called zonal statistics.
+
+## 6. Can PySpark process raster data?
+
+Yes, but standard PySpark DataFrames are primarily designed for tabular data.
+
+For raster processing, common approaches include:
+
+- Rasterio + NumPy: Useful for small or medium datasets and individual raster tiles.
+- Xarray + Dask: Useful for large multidimensional weather and climate datasets.
+- Apache Sedona: Distributed geospatial processing, including raster functionality where supported by the installed version.
+- PySpark: Distributed joins and aggregation after converting raster information into segment-level features.
+
+For the PG&E wildfire project, I would generally process large raster files into geographic features using Rasterio/Xarray and distributed processing where necessary, then store the extracted features in Delta tables for PySpark analytics.
+
+Key idea: Raster data describes conditions across geographic space, while vector data describes the locations and shapes of objects. Combining them lets you answer questions such as: "What are the vegetation and weather conditions within 30 meters of this power line?"
