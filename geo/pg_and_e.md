@@ -129,8 +129,24 @@ Palantir
 
 For a PySpark transform using Foundry's legacy geospatial library:
 
-```
-from transforms.api import transform_df, Input, Outputfrom geospatial_tools import geospatialfrom geospatial_tools.functions import contains@geospatial()@transform_df(    Output("/my/output/poles_in_zones"),    df=Input("/my/input/pole_zone_candidates"))def compute(df):    return (        df.withColumn(            "is_inside",            contains("zone_geometry", "pole_geometry")        )        .filter("is_inside")    )
+```python
+from transforms.api import transform_df, Input, Output
+from geospatial_tools import geospatial
+from geospatial_tools.functions import contains
+
+@geospatial()
+@transform_df(
+    Output("/my/output/poles_in_zones"),
+    df=Input("/my/input/pole_zone_candidates")
+)
+def compute(df):
+    return (
+        df.withColumn(
+            "is_inside",
+            contains("zone_geometry", "pole_geometry")
+        )
+        .filter("is_inside")
+    )
 ```
 
 Here, the input is a dataset of candidate pole-zone pairs with GeoJSON geometry columns. This API is documented under Foundry's legacy geospatial transforms.&#x20;
