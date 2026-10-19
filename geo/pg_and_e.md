@@ -185,18 +185,45 @@ All numbers below are synthetic.
 In a real dataset, ignition events would be extremely rare. These five rows are just illustrative; they are not representative of real ignition frequencies.
 
 ### Python implementation with XGBoost
+```python
+from xgboost import XGBClassifier
 
-```
-from xgboost import XGBClassifierfeatures = [    "pole_age",    "tree_clearance",    "wind_speed",    "humidity",    "temperature",    "faults_last_30d",    "vegetation_density",    "fuel_moisture"]X_train = train_df[features]y_train = train_df["ignition"]model = XGBClassifier(    n_estimators=300,    max_depth=4,    learning_rate=0.03,    eval_metric="logloss",    random_state=42)model.fit(X_train, y_train)risk = model.predict_proba(    test_df[features])[:, 1]
-```
+features = [
+    "pole_age",
+    "tree_clearance",
+    "wind_speed",
+    "humidity",
+    "temperature",
+    "faults_last_30d",
+    "vegetation_density",
+    "fuel_moisture"
+]
 
+X_train = train_df[features]
+y_train = train_df["ignition"]
+
+model = XGBClassifier(
+    n_estimators=300,
+    max_depth=4,
+    learning_rate=0.03,
+    eval_metric="logloss",
+    random_state=42
+)
+
+model.fit(X_train, y_train)
+
+risk = model.predict_proba(
+    test_df[features]
+)[:, 1]
+```
+ 
 This assumes `train_df` and `test_df` have already been prepared with a time-based split and historical feature values.
 
 ### Example prediction results
 
 Illustrative predicted ignition probabilities
 
-0%0.65%1.3%1.95%2.6%A101A103A105A104A102
+<img width="653" height="401" alt="image" src="https://github.com/user-attachments/assets/3b9560df-8221-46c2-a3c3-5d0869d23573" />
 
 Synthetic probabilities per segment-day, not actual PG&E estimates
 
@@ -278,8 +305,24 @@ This is a synthetic example, not an observed PG&E effect.
 
 For the simple two-period design:
 
-```
-import statsmodels.formula.api as smf# One row per segment-period# ignition: binary indicator# treated: segment belongs to treatment group# post: observation after treatment dateresult = smf.ols(    "ignition ~ treated * post",    data=df).fit(    cov_type="cluster",    cov_kwds={"groups": df["segment_id"]})print(result.params["treated:post"])print(result.conf_int().loc["treated:post"])
+```python
+import statsmodels.formula.api as smf
+
+# One row per segment-period
+# ignition: binary indicator
+# treated: segment belongs to treatment group
+# post: observation after treatment date
+
+result = smf.ols(
+    "ignition ~ treated * post",
+    data=df
+).fit(
+    cov_type="cluster",
+    cov_kwds={"groups": df["segment_id"]}
+)
+
+print(result.params["treated:post"])
+print(result.conf_int().loc["treated:post"])
 ```
 
 The interaction coefficient estimates a change in ignition probability, not a percentage reduction. Multiplying it by 10,000 expresses the effect per 10,000 segment-period observations, assuming equal exposure.
@@ -332,40 +375,38 @@ This information is more actionable than an ordinary prediction score because it
 ## 6. Data engineering architecture for PG&E
 
 Given a Databricks/Spark environment, I would design the pipeline as follows:
-
+Input:
+```
 SCADA / outage events
-
 GIS / asset registry
-
 LiDAR / vegetation
-
 Weather stations / NOAA
-
-Bronze — Raw data
+```
+#### Bronze — Raw data
 
 S3 / Delta Lake: original events, files, spatial datasets
 
-Silver — Clean and integrate
+#### Silver — Clean and integrate
 
 Deduplication, timestamps, geospatial joins, historical asset states
 
-Gold — Segment-day feature table
+#### Gold — Segment-day feature table
 
 segment_id, date, weather, asset condition, vegetation, treatments, ignition
 
-Predictive ML
+#### Predictive ML
 
 XGBoost / LightGBM
 
 Ignition risk scores
 
-Causal inference
+### Causal inference
 
 DiD / Causal Forest
 
 Estimated intervention effects
 
-Decision-support dashboard
+#### Decision-support dashboard
 
 Prioritize maintenance and vegetation work, with engineering and safety review
 
