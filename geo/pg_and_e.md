@@ -1709,3 +1709,148 @@ Shapefile / GeoJSON / GeoTIFF → GeoParquet / Delta → H3 candidate joins + Se
 The key distinction is that GeoJSON and Shapefiles represent the actual geometry of objects, whereas H3 provides a geographic indexing system that makes it easier to group and join large spatial datasets.
 
 For wildfire risk management, they are complementary rather than competing technologies.
+
+
+To calculate the distance between two geographic points defined by latitude and longitude, the most common method is the Haversine formula.
+
+It calculates the shortest distance along the surface of a spherical Earth (great-circle distance).
+
+## 1. Haversine formula
+
+Given two geographic points:
+
+\\[ P_1=(\phi_1,\lambda_1),\quad P_2=(\phi_2,\lambda_2) \\]
+
+where:
+
+- \\(\phi\\) = latitude in radians
+- \\(\lambda\\) = longitude in radians
+- \\(R\\) = Earth's mean radius, approximately 6,371 km
+
+Calculate:
+
+\\[ \Delta\phi=\phi_2-\phi_1 \\]
+
+\\[ \Delta\lambda=\lambda_2-\lambda_1 \\]
+
+\\[ a=\sin^2\left(\frac{\Delta\phi}{2}\right)+ \cos(\phi_1)\cos(\phi_2) \sin^2\left(\frac{\Delta\lambda}{2}\right) \\]
+
+\\[ \boxed{d=2R\arcsin(\sqrt{a})} \\]
+
+## 2. Python implementation
+
+```python
+import math
+
+def haversine(lat1, lon1, lat2, lon2):
+    R = 6371.0  # Earth radius in kilometers
+
+    lat1, lon1, lat2, lon2 = map(
+        math.radians,
+        [lat1, lon1, lat2, lon2]
+    )
+
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1) * math.cos(lat2)
+        * math.sin(dlon / 2) ** 2
+    )
+
+    a = min(1.0, max(0.0, a))
+
+    return 2 * R * math.asin(math.sqrt(a))
+```
+
+Example:
+
+```python
+# San Francisco to San Jose
+distance = haversine(
+    37.7749, -122.4194,
+    37.3382, -121.8863
+)
+
+print(f"{distance:.2f} km")
+```
+
+Output:
+
+```
+67.58 km
+```
+
+This is the approximate straight-line surface distance, not driving distance.
+
+## 3. PySpark implementation
+
+For large GPS telemetry datasets, you can calculate distances using native Spark SQL functions without a Python UDF.
+
+```python
+from pyspark.sql import functions as F
+
+df = (
+    df.withColumn(
+        "a",
+        F.pow(
+            F.sin(
+                F.radians(F.col("lat2") - F.col("lat1")) / 2
+            ), 2
+        )
+        + F.cos(F.radians("lat1"))
+        * F.cos(F.radians("lat2"))
+        * F.pow(
+            F.sin(
+                F.radians(F.col("lon2") - F.col("lon1")) / 2
+            ), 2
+        )
+    )
+    .withColumn(
+        "distance_km",
+        2 * F.lit(6371.0)
+        * F.asin(
+            F.sqrt(
+                F.least(
+                    F.lit(1.0),
+                    F.greatest(F.lit(0.0), F.col("a"))
+                )
+            )
+        )
+    )
+)
+```
+
+For vehicle telemetry, use `lag()` with a window partitioned by `vehicle_id` and ordered by timestamp to obtain each vehicle's previous GPS position.
+
+## 4. Using Apache Sedona
+
+Sedona provides a simpler geospatial function for calculating approximate spherical distance:
+
+```sql
+SELECT
+    vehicle_id,
+    ST_DistanceSphere(
+        ST_Point(lon1, lat1),
+        ST_Point(lon2, lat2)
+    ) AS distance_m
+FROM vehicle_locations
+```
+
+`ST_DistanceSphere` returns the spherical distance in meters.
+
+For more accurate geodesic distance calculations on Earth's ellipsoidal surface, use `ST_DistanceSpheroid` where supported by your Sedona version.
+
+## 5. Which method should you use?
+
+| Method                        | Best for                              | Distance                     |
+| ----------------------------- | ------------------------------------- | ---------------------------- |
+| Haversine                     | GPS telemetry, vehicle tracking       | Spherical surface distance   |
+| Sedona `ST_DistanceSphere`    | Large geospatial Spark datasets       | Spherical surface distance   |
+| Sedona `ST_DistanceSpheroid`  | More precise geodesic calculations    | Ellipsoidal surface distance |
+| Projected CRS + `ST_Distance` | Local geometry and proximity analysis | Planar distance in CRS units |
+
+For your Toyota and Samsung telemetry work, Haversine or `ST_DistanceSphere` is suitable for calculating distances between consecutive vehicle GPS points.
+
+For PG&E wildfire risk management, when measuring tree clearance from a power line, you should instead calculate the shortest distance from a point or tree geometry to the entire power-line `LineString`, using a suitable projected CRS. This is a different problem from measuring the distance between two GPS points.
