@@ -1296,3 +1296,248 @@ If a line has unit tangent vector \\((t_x,t_y)\\), the signed cross-line wind co
 \\[ w\_{\perp}=u(-t_y)+v t_x \\]
 
 Its absolute value, \\(|w\_{\perp}|\\), measures the cross-line wind speed. Combined with tree locations, conductor geometry, and vegetation characteristics, it can help model the risk of vegetation contacting electrical infrastructure.
+
+
+# GeoJSON, Shapefiles, and H3 Spatial Index
+
+All three are used in geospatial data engineering, but they serve different purposes:
+
+- GeoJSON — stores geographic objects in JSON format.
+- Shapefile — a traditional GIS file format for storing geographic objects and their attributes.
+- H3 — a hierarchical spatial indexing system that divides the Earth's surface into hexagonal cells.
+
+For a PG&E wildfire risk project, you might use GeoJSON or Shapefiles to store power-line geometry and vegetation boundaries, and H3 to efficiently combine those datasets with weather and wildfire information.
+
+## 1. GeoJSON
+
+GeoJSON is a JSON-based format for representing geographic objects.
+
+It supports three fundamental geometry types:
+
+Point
+
+Utility pole
+
+LineString
+
+Power line
+
+Polygon
+
+Vegetation area
+
+### Example: A power line stored in GeoJSON
+
+```
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [-121.85, 37.30],
+      [-121.84, 37.31]
+    ]
+  },
+  "properties": {
+    "segment_id": "PG001",
+    "voltage_kv": 12,
+    "conductor": "overhead",
+    "installation_year": 1995
+  }
+}
+```
+
+Notice the separation between:
+
+- `geometry`: The geographic shape.
+- `properties`: Attributes describing that shape.
+
+GeoJSON uses longitude, latitude coordinate order, normally in WGS84 (EPSG:4326).
+
+### Python example
+
+```
+import geopandas as gpdgdf = gpd.read_file("power_lines.geojson")print(gdf.head())print(gdf.crs)
+```
+
+GeoPandas creates a DataFrame containing regular columns plus a special `geometry` column.
+
+Advantages: Human-readable, easy to exchange through APIs, and well supported by Python and GIS software.
+
+Disadvantages: Verbose, relatively large, and not particularly efficient for processing millions of geographic features.
+
+## 2. Shapefile
+
+A Shapefile is a widely used GIS format developed by Esri.
+
+Despite its name, a Shapefile is actually a collection of files.
+
+For example:
+
+```
+power_lines.shp
+power_lines.shx
+power_lines.dbf
+power_lines.prj
+```
+
+| File   | Purpose                                |
+| ------ | -------------------------------------- |
+| `.shp` | Stores geometry                        |
+| `.shx` | Index of geometry records              |
+| `.dbf` | Attribute table                        |
+| `.prj` | Coordinate reference system definition |
+
+The `.prj` file is important for interpreting coordinates correctly, although it is not mandatory in every Shapefile dataset.
+
+### Example data
+
+A Shapefile representing power lines might contain:
+
+| segment_id | voltage | geometry   |
+| ---------- | ------- | ---------- |
+| PG001      | 12      | LineString |
+| PG002      | 21      | LineString |
+| PG003      | 12      | LineString |
+
+The actual geometry is stored in binary form rather than JSON text.
+
+### Python example
+
+```
+import geopandas as gpdgdf = gpd.read_file("power_lines.shp")print(gdf.head())# Convert Shapefile to GeoJSONgdf.to_file(    "power_lines.geojson",    driver="GeoJSON")
+```
+
+Shapefiles are still common in government GIS datasets, but they have limitations such as short attribute field names, restricted attribute types, and legacy file-size constraints.
+
+For a new large-scale PySpark project, I would generally convert Shapefiles into GeoParquet, which is more suitable for analytical pipelines.
+
+## 3. H3 spatial index
+
+H3 was originally developed by Uber.
+
+Unlike GeoJSON or Shapefiles, H3 is not primarily a geometry storage format.
+
+It is a hierarchical spatial indexing system.
+
+H3 divides the Earth into cells at different resolutions. Most cells are hexagons, although a small number are pentagons.
+
+Conceptual illustration of H3 cells covering a geographic region. Actual H3 cell shapes and alignment vary across the Earth.
+
+Each H3 cell has a unique identifier, such as:
+
+```
+8928308280fffff
+```
+
+An H3 index encodes the cell's location and resolution.
+
+### H3 resolutions
+
+H3 supports resolutions from 0 (coarsest) to 15 (finest).
+
+| Resolution | Average cell area (approx.) | Example use                                   |
+| ---------- | --------------------------- | --------------------------------------------- |
+| 5          | 253 km²                     | Regional analysis                             |
+| 7          | 5.16 km²                    | Broad wildfire risk mapping                   |
+| 9          | 0.105 km²                   | Local vegetation and weather analysis         |
+| 11         | 2,150 m²                    | Detailed infrastructure neighborhood analysis |
+| 13         | 43.9 m²                     | Very fine spatial aggregation                 |
+
+These are average areas, not exact sizes for every cell.
+
+### Python example
+
+Install the H3 library:
+
+```
+pip install h3
+```
+
+Convert GPS coordinates into an H3 cell:
+
+```
+import h3lat = 37.30lon = -121.85cell = h3.latlng_to_cell(lat, lon, 9)print(cell)# Get the hexagon boundaryboundary = h3.cell_to_boundary(cell)
+```
+
+Notice that the H3 function accepts latitude first, longitude second, unlike GeoJSON coordinate arrays.
+
+## 4. Why H3 is useful for PySpark
+
+Suppose we have:
+
+- 10 million vegetation observations.
+- 1 million power-line segment records.
+- Hourly weather observations across California.
+
+A direct spatial join may require expensive geometry calculations.
+
+One optimization is to assign geographic objects to H3 cells.
+
+For example:
+
+| H3 cell | Tree count | Wind speed | Power-line length |
+| ------- | ---------- | ---------- | ----------------- |
+| Cell A  | 125        | 45 mph     | 1,200 m           |
+| Cell B  | 38         | 25 mph     | 800 m             |
+| Cell C  | 210        | 65 mph     | 1,500 m           |
+
+Then Spark can perform ordinary equality joins on the H3 cell ID.
+
+```
+joined = (    vegetation_h3    .join(weather_h3, on="h3_cell")    .join(powerlines_h3, on="h3_cell"))
+```
+
+This is much cheaper than performing millions of exact geometric comparisons in many cases.
+
+However, there is an important limitation: H3 cell membership is an approximation of geographic relationships.
+
+Two objects can be very close but belong to adjacent cells. A long power line can also cross many cells.
+
+For exact distance or intersection analysis, use H3 to identify candidate objects, then apply a precise spatial predicate such as `ST_DWithin` or `ST_Intersects`.
+
+## 5. H3 and power lines: An important detail
+
+For points, assigning an H3 index is straightforward.
+
+For a LineString, using only its midpoint is often incorrect.
+
+A power line might cross many H3 cells.
+
+The correct approach is to find all cells intersected by the line, or by a buffer around it, using an appropriate geometry-to-cell covering method. Then explode the cell IDs into multiple rows.
+
+Conceptually:
+
+```
+segment_id    h3_cell
+----------    -------
+PG001         Cell_A
+PG001         Cell_B
+PG001         Cell_C
+PG002         Cell_C
+PG002         Cell_D
+```
+
+This creates a many-to-many relationship between power lines and H3 cells.
+
+When using polygon-based H3 covering functions, check whether they use cell-center containment or geometric intersection; these have different boundary behavior.
+
+## 6. Which format should you use for PG&E wildfire risk modeling?
+
+| Requirement                                  | Recommended technology |
+| -------------------------------------------- | ---------------------- |
+| Exchange geospatial data with APIs           | GeoJSON                |
+| Read legacy GIS datasets                     | Shapefile              |
+| Store millions of spatial features           | GeoParquet             |
+| Fast geographic grouping and candidate joins | H3                     |
+| Exact proximity between trees and lines      | Apache Sedona          |
+| Process satellite and weather grids          | Rasterio / Xarray      |
+| Distributed feature engineering              | PySpark + Sedona + H3  |
+
+For a production-style architecture, I would use:
+
+Shapefile / GeoJSON / GeoTIFF → GeoParquet / Delta → H3 candidate joins + Sedona exact geometry → Segment-level ML features.
+
+The key distinction is that GeoJSON and Shapefiles represent the actual geometry of objects, whereas H3 provides a geographic indexing system that makes it easier to group and join large spatial datasets.
+
+For wildfire risk management, they are complementary rather than competing technologies.
