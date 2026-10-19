@@ -5,6 +5,10 @@
 
 <https://github.com/Shubhamsaboo/awesome-llm-apps>
 
+<https://leanpub.com/transformers-large-language-models/> E-Book
+
+<https://www.amazon.com/dp/B0DC4NYLTN> Paper Book
+
 <https://github.com/kvfrans/lmpo> Language Model Policy Optimization
 
 ### Instructor
