@@ -1,6 +1,11 @@
 ## Claude
 <https://code.claude.com/docs>  
 
+<https://habr.com/ru/articles/1096346/>
+
+<img width="555" height="406" alt="image" src="https://github.com/user-attachments/assets/68086501-89ee-41bc-b38e-4304b12a660c" />
+
+
 <https://www.facebook.com/watch/?v=2204372913452584>
 
 <https://realpython.com/courses/using-claude-api-python/>
