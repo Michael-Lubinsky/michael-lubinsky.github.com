@@ -8,6 +8,8 @@ is used for storing data that has discrete boundaries and represents these data 
 ### Raster data 
 consists of a matrix of cells organized into rows and columns, in which each cell represents specific information. Examples of raster data include satellite imagery sources, scanned maps, and digital elevation models (DEMs).
 
+For example, a raster dataset can represent temperature, elevation, vegetation density, soil moisture, or wind speed across California.
+
 Geospatial data with a temporal component is known as geotemporal data.
 
 #### Geometry comparisons
