@@ -135,9 +135,14 @@ How does Databricks implement distributed spatial joins internally, and how does
 That is where the two technologies differ most meaningfully.
  
  
- **Databricks Mosaic**  <https://databrickslabs.github.io/mosaic/>
+ **Databricks Mosaic**  
+ 
+ <https://databrickslabs.github.io/mosaic/>
  
  is an **open-source geospatial analytics library** built specifically for **Apache Spark** (and deeply integrated with Databricks).
+
+
+### Mosaic reached end of support in August 2026, and Databricks Labs recommends a successor called GeoBrix.
 
 It helps you do **spatial joins, geometry operations, and tiling** directly inside Spark SQL / PySpark, so you can run **large-scale geospatial processing** on billions of points (e.g. lat/long from IoT, GPS, telecom, etc.).
 
