@@ -1854,3 +1854,230 @@ For more accurate geodesic distance calculations on Earth's ellipsoidal surface,
 For your Toyota and Samsung telemetry work, Haversine or `ST_DistanceSphere` is suitable for calculating distances between consecutive vehicle GPS points.
 
 For PG&E wildfire risk management, when measuring tree clearance from a power line, you should instead calculate the shortest distance from a point or tree geometry to the entire power-line `LineString`, using a suitable projected CRS. This is a different problem from measuring the distance between two GPS points.
+
+
+For a PG&E wildfire risk management project, `ST_DWithin` is one of the most important geospatial functions. It allows us to identify vegetation located within a specified distance of electrical infrastructure.
+
+The key issue is that GPS coordinates are measured in degrees, while vegetation clearance is measured in meters or feet.
+
+## 1. What is `ST_DWithin`?
+
+`ST_DWithin` checks whether two geometries are within a specified distance.
+
+```
+ST_DWithin(geometry1, geometry2, distance)
+```
+
+It returns:
+
+- `true` if the shortest distance between the geometries is less than or equal to the specified distance.
+- `false` otherwise.
+
+For example:
+
+```
+ST_DWithin(tree.geometry, powerline.geometry, 10)
+```
+
+This means: Is the tree within 10 coordinate-system units of the power line?
+
+Important: In the usual planar Sedona operation, the distance uses the units of the geometries' coordinate reference system (CRS).
+
+If the geometries use latitude and longitude (EPSG:4326), those units are degrees, not meters.
+
+## 2. Visual example: Trees near a power line
+
+Schematic only: the blue shaded area is a 10-meter corridor around the line. Tree C is outside that corridor.
+
+The function checks the minimum distance between the tree point and any location along the power-line geometry, not just the endpoints.
+
+For example:
+
+| Tree | Minimum distance | `ST_DWithin(..., 10)` |
+| ---- | ---------------- | --------------------- |
+| A    | 3 m              | true                  |
+| B    | 7 m              | true                  |
+| C    | 25 m             | false                 |
+| D    | 2 m              | true                  |
+
+These distances are illustrative.
+
+## 3. Why coordinate reference systems matter
+
+Consider a tree at:
+
+```
+Longitude: -121.8500
+Latitude:    37.3000
+```
+
+This is EPSG:4326, commonly used by GPS and GeoJSON.
+
+Coordinates are angular measurements.
+
+At approximately 37° latitude:
+
+- 1 degree of latitude is about 111 km.
+- 1 degree of longitude is about 89 km.
+
+Therefore, this query is incorrect for a 10-meter search:
+
+```
+SELECT
+    t.tree_id,
+    p.segment_id
+FROM trees t
+JOIN power_lines p
+  ON ST_DWithin(
+      t.geometry,
+      p.geometry,
+      10
+  )
+```
+
+If both geometries use EPSG:4326, the value `10` means 10 degrees, which can represent hundreds of kilometers.
+
+### The solution: Transform to a projected CRS
+
+A projected coordinate reference system converts geographic positions into planar coordinates, often expressed in meters.
+
+For California, one possible CRS is EPSG:3310 (California Albers).
+
+```
+ST_Transform(
+    geometry,
+    'EPSG:4326',
+    'EPSG:3310'
+)
+```
+
+After transformation, the coordinate values are expressed in meters.
+
+For a regional engineering project, choose a projection appropriate to the service area and required accuracy. California Albers is convenient for statewide analysis, but a local State Plane or UTM system may be more accurate for short-distance measurements.
+
+## 4. Complete Apache Sedona PySpark SQL example
+
+Assume we have two datasets.
+
+Trees:
+
+| tree_id | longitude | latitude |
+| ------- | --------- | -------- |
+| T001    | -121.8500 | 37.3000  |
+| T002    | -121.8502 | 37.3001  |
+
+Power lines:
+
+| segment_id | geometry_wkt                                   |
+| ---------- | ---------------------------------------------- |
+| P001       | `LINESTRING(-121.851 37.300, -121.849 37.300)` |
+
+First create geometry columns:
+
+```
+from pyspark.sql import functions as Ftrees = trees.withColumn(    "geometry",    F.expr("ST_Point(longitude, latitude)"))power_lines = power_lines.withColumn(    "geometry",    F.expr("ST_GeomFromWKT(geometry_wkt)"))trees.createOrReplaceTempView("trees")power_lines.createOrReplaceTempView("power_lines")
+```
+
+Now transform the geometries and calculate distances.
+
+```
+WITH trees_projected AS (
+    SELECT
+        tree_id,
+        ST_Transform(
+            geometry,
+            'EPSG:4326',
+            'EPSG:3310'
+        ) AS geom_m
+    FROM trees
+),
+lines_projected AS (
+    SELECT
+        segment_id,
+        ST_Transform(
+            geometry,
+            'EPSG:4326',
+            'EPSG:3310'
+        ) AS geom_m
+    FROM power_lines
+)
+SELECT
+    t.tree_id,
+    p.segment_id,
+    ST_Distance(
+        t.geom_m,
+        p.geom_m
+    ) AS distance_m
+FROM trees_projected t
+JOIN lines_projected p
+    ON ST_DWithin(
+        t.geom_m,
+        p.geom_m,
+        10.0
+    )
+```
+
+This returns trees within approximately 10 meters of a power-line segment, measured in the projected coordinate system.
+
+A performance improvement is to transform and store geometries once in a Silver table rather than transforming them repeatedly during every spatial join.
+
+## 5. `ST_DWithin` vs `ST_Buffer` vs `ST_Distance`
+
+These three functions are closely related.
+
+| Function             | Purpose                                   | Returns |
+| -------------------- | ----------------------------------------- | ------- |
+| `ST_Distance(a,b)`   | Calculate minimum distance                | Number  |
+| `ST_DWithin(a,b,10)` | Test whether distance ≤ 10                | Boolean |
+| `ST_Buffer(a,10)`    | Create a 10-unit corridor around geometry | Polygon |
+
+For example:
+
+```
+-- Return actual distance
+SELECT ST_Distance(tree_geom, line_geom);
+
+-- Check if within 10 meters
+SELECT ST_DWithin(tree_geom, line_geom, 10);
+
+-- Create a corridor around the line
+SELECT ST_Buffer(line_geom, 10);
+```
+
+All three examples assume geometries use a suitable meter-based projected CRS.
+
+In many large-scale spatial joins, `ST_DWithin` is preferable to calculating `ST_Distance` for every possible pair and then filtering, because spatial query optimizers can use bounding-box and spatial-index techniques to reduce candidate comparisons.
+
+## 6. Important PG&E-specific limitation: 2D vs 3D clearance
+
+There is an important distinction between horizontal vegetation proximity and actual electrical clearance.
+
+A tree may be 3 meters horizontally from a power line, but its branches could be above or below the conductor.
+
+For wildfire risk management, actual clearance may require:
+
+- Tree height and canopy geometry
+- Conductor height and sag
+- Terrain elevation
+- Wind-driven tree movement
+- LiDAR-derived 3D point clouds
+
+`ST_DWithin` applied to ordinary 2D geometries is useful for screening and identifying candidate vegetation hazards, but it is not sufficient to establish regulatory or engineering clearance.
+
+For actual conductor-to-vegetation clearance, use 3D geometry and appropriate utility engineering methods.
+
+## 7. How to explain this in your PG&E interview
+
+At Toyota and Samsung, I worked with GPS coordinates and performed geospatial operations like calculating distances, geofencing, and reconstructing vehicle routes.
+
+For PG&E, I would use similar concepts to analyze vegetation near power lines.
+
+For example, using Apache Sedona, I can apply ST_DWithin to identify trees located within 10 meters of a power-line segment.
+
+One important detail is the coordinate reference system. GPS coordinates are normally stored in latitude and longitude, so the units are degrees. Before calculating distances in meters, I would transform the geometries into an appropriate projected coordinate system.
+
+For large datasets, I would do this transformation during ETL and store the normalized geometry in Delta tables, so spatial joins can run more efficiently.
+
+This would allow us to create features such as the number of trees near each power line and the minimum distance to vegetation, which can then be used for wildfire risk prediction.
+
+The main takeaway: `ST_DWithin` solves the spatial proximity problem, but the CRS determines what the distance value means. For PG&E, this is especially important because the difference between 3 meters and 30 meters can substantially change how vegetation risk is assessed.
