@@ -464,3 +464,122 @@ I would start with a focused research question:
 Build two models on the same dataset: XGBoost for risk prediction and a staggered Difference-in-Differences estimator for causal analysis. Later, add causal forests to investigate which locations benefit most from trimming.
 
 This gives you a concrete project combining PySpark data engineering, geospatial joins, time-series modeling, machine learning, and causal inference, while keeping the important distinction between predicting risk and estimating the impact of an intervention.
+
+
+# Palantir Foundry
+
+Palantir Foundry is an enterprise data platform developed by Palantir Technologies. It combines data engineering, data integration, analytics, machine learning, and operational applications in one environment.
+
+It is used by organizations that need to integrate data from many systems and turn it into operational decisions.
+
+## 1. What does Foundry do?
+
+Foundry provides capabilities across the data lifecycle:
+
+| Capability               | Description                                            | Similar technology            |
+| ------------------------ | ------------------------------------------------------ | ----------------------------- |
+| Data ingestion           | Connect to databases, APIs, files, streaming sources   | Fivetran, Kafka               |
+| Data transformation      | Clean, join, and process data using SQL, Python, Spark | Databricks, dbt               |
+| Data storage             | Manage datasets and their versions                     | Delta Lake, data warehouses   |
+| Data pipelines           | Schedule and monitor transformations                   | Airflow, Databricks Workflows |
+| Data modeling            | Represent business objects and relationships           | Semantic layers, graph models |
+| Analytics                | Explore data and build dashboards                      | Power BI, Tableau             |
+| Machine learning         | Develop and operationalize models                      | Databricks ML, SageMaker      |
+| Operational applications | Build applications for business decisions              | Custom web applications       |
+
+## 2. Foundry architecture
+
+A simplified architecture looks like this:
+
+Data Sources
+
+Databases
+
+APIs / Kafka
+
+S3 / Files
+
+Foundry Data Integration
+
+Ingestion, transformations, pipelines, lineage
+
+Foundry Ontology
+
+Business objects, relationships, actions
+
+Analytics
+
+Dashboards
+
+AI / ML
+
+Predictions
+
+Applications
+
+Decisions
+
+## 3. What makes Foundry different?
+
+One of Foundry's most distinctive features is the Ontology.
+
+An Ontology represents real business entities, their relationships, and the operations users can perform on them.
+
+For example, in an electric utility company:
+
+- Objects: PowerLine, Transformer, UtilityPole, Tree, WeatherStation
+- Relationships: PowerLine connects to Transformer; Tree is near PowerLine
+- Properties: Age, location, voltage, vegetation clearance
+- Actions: Schedule inspection, request tree trimming, update maintenance status
+
+Rather than simply querying tables, an application can work with business objects and trigger governed operational workflows.
+
+## 4. Example: Foundry for PG&E wildfire risk
+
+Suppose PG&E wants to predict wildfire ignition risk.
+
+Foundry could integrate electric utility, asset, vegetation, and meteorological data into one operational environment.
+
+A workflow might be:
+
+1. Ingest SCADA events, equipment records, vegetation surveys, and weather forecasts.
+2. Build transformations joining these datasets by location and time.
+3. Train or integrate a wildfire risk prediction model.
+4. Expose risk scores as properties of `PowerLine` objects in the Ontology.
+5. Display high-risk segments in a geospatial application.
+6. Allow authorized personnel to create inspection or vegetation-management work orders.
+
+This is a hypothetical implementation, not a claim about PG&E's actual Foundry deployment.
+
+## 5. Palantir Foundry vs Databricks vs Snowflake
+
+| Feature                  | Palantir Foundry            | Databricks                          | Snowflake                           |
+| ------------------------ | --------------------------- | ----------------------------------- | ----------------------------------- |
+| Primary focus            | Data-to-operations platform | Data engineering, analytics, AI/ML  | Cloud data platform and analytics   |
+| Spark support            | Yes                         | Native/core                         | Available through integrations      |
+| Python and SQL           | Yes                         | Yes                                 | Yes                                 |
+| ML capabilities          | Yes                         | Extensive                           | Yes                                 |
+| Business object model    | Strong Ontology             | Typically custom or external        | Typically custom or external        |
+| Operational applications | Major strength              | Possible with apps and integrations | Possible with apps and integrations |
+| Data governance          | Integrated                  | Unity Catalog                       | Native governance features          |
+
+The biggest difference is that Foundry focuses on connecting data and analytics to operational decisions, while Databricks traditionally focuses more on engineering and AI workloads, and Snowflake on managed data and analytics.
+
+These platforms increasingly overlap, so the boundaries are not absolute.
+
+## 6. Is Foundry relevant for a Data Engineer?
+
+Yes. If you already know PySpark, SQL, Databricks, ETL pipelines, and data modeling, many concepts will be familiar.
+
+Important Foundry concepts to learn include:
+
+- Pipeline Builder: Visual data transformations.
+- Code Repositories: Code-based transformations using Python, SQL, and Spark.
+- Datasets and lineage: Versioned data and transformation dependencies.
+- Ontology: Business objects, links, and actions.
+- Workshop: Building operational user interfaces.
+- AIP: Palantir's Artificial Intelligence Platform, which integrates AI capabilities with enterprise data and workflows.
+
+Official documentation: [Palantir Foundry documentation](https://www.palantir.com/docs/foundry/?utm_source=chatgpt.com).
+
+For your data engineering background, the most important new concept is the Ontology. Most ETL and Spark concepts transfer naturally from Databricks, but Foundry's approach to modeling business objects and connecting them to operational applications is worth studying in detail.
