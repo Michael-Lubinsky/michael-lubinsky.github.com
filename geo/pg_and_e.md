@@ -1,3 +1,10 @@
+## Geo
+There are two main types of geospatial data: raster and vector.
+<https://www.palantir.com/docs/foundry/geospatial/types-of-geospatial-and-geotemporal-data#raster-data>
+
+Geospatial data with a temporal component is known as geotemporal data.
+
+
 ## Electric utility, asset, vegetation, and meteorological data
 are four categories of data commonly used by electric power companies to manage electricity networks, predict outages, prevent wildfires, and optimize maintenance.
 
