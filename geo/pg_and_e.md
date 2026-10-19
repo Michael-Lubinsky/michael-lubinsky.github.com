@@ -44,6 +44,110 @@ result = spark.sql("""
 
 result.show()
 ```
+In Palantir Foundry, the equivalent of Apache Sedona's `ST_Contains(polygon, point)` depends on whether you use a SQL transform or a PySpark Code Repository.
+
+For the same PG&E example—finding utility poles inside wildfire risk polygons—the SQL logic is:
+
+```sql
+SELECT
+    p.pole_id,
+    z.zone_id
+FROM poles p
+JOIN zones z
+    ON ST_Contains(
+        z.geometry,
+        p.geometry
+    )
+```
+
+However, this is Sedona SQL syntax, and you should not assume `ST_Contains` is available directly in every Foundry SQL environment.
+
+## 1. Foundry SQL Studio — direct equivalent
+
+Palantir's current Furnace SQL engine supports `st_contains()`, so you can write the following query directly in SQL Studio.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
+
+
+```sql
+SELECT
+    p.pole_id,
+    z.zone_id
+FROM poles p
+JOIN wildfire_zones z
+    ON st_contains(
+        st_geomfromgeojson(z.geometry),
+        st_point(p.longitude, p.latitude)
+    )
+```
+
+This assumes `z.geometry` contains a GeoJSON polygon string and `poles` has numeric longitude and latitude columns.
+
+If both columns are already geometry-typed, use:
+
+```sql
+SELECT
+    p.pole_id,
+    z.zone_id
+FROM poles p
+JOIN wildfire_zones z
+    ON st_contains(z.geometry, p.geometry)
+```
+
+These queries target Furnace SQL, not Ontology SQL or the older Spark SQL transform engine. The function is documented for Furnace, but not Ontology SQL.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
+
+
+## 2. Foundry Pipeline Builder
+
+You can also implement the operation without SQL:
+
+1. Load the `poles` and `wildfire_zones` datasets.
+2. Convert coordinates and polygon data into Foundry Geometry types.
+3. Use a Geometry intersection join to find candidate pole-zone pairs.
+4. Apply the Geometry contains expression, with the polygon as Geometry A and the point as Geometry B.
+5. Filter where the expression returns `true`.
+
+The containment expression excludes points on polygon boundaries, matching Sedona's `ST_Contains` behavior.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
++1
+
+
+
+## 3. Foundry Python Code Repository
+
+For a PySpark transform using Foundry's legacy geospatial library:
+
+```
+from transforms.api import transform_df, Input, Outputfrom geospatial_tools import geospatialfrom geospatial_tools.functions import contains@geospatial()@transform_df(    Output("/my/output/poles_in_zones"),    df=Input("/my/input/pole_zone_candidates"))def compute(df):    return (        df.withColumn(            "is_inside",            contains("zone_geometry", "pole_geometry")        )        .filter("is_inside")    )
+```
+
+Here, the input is a dataset of candidate pole-zone pairs with GeoJSON geometry columns. This API is documented under Foundry's legacy geospatial transforms.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
+
+
+Recommendation: For your PG&E wildfire project, I would use Furnace SQL for straightforward point-in-polygon queries, and Pipeline Builder for a managed geospatial ETL workflow. For more complex spatial processing, including large proximity joins and custom geometry algorithms, a PySpark Code Repository with appropriate geospatial libraries provides more flexibility.
+
+Documentation: [Palantir Foundry SQL geospatial functions](https://www.palantir.com/docs/foundry/sql-warehousing/sql-dialect?utm_source=chatgpt.com).
+
+
+
+
 
 ## Electric utility, asset, vegetation, and meteorological data
 are four categories of data commonly used by electric power companies to manage electricity networks, predict outages, prevent wildfires, and optimize maintenance.
