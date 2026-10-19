@@ -583,3 +583,414 @@ Important Foundry concepts to learn include:
 Official documentation: [Palantir Foundry documentation](https://www.palantir.com/docs/foundry/?utm_source=chatgpt.com).
 
 For your data engineering background, the most important new concept is the Ontology. Most ETL and Spark concepts transfer naturally from Databricks, but Foundry's approach to modeling business objects and connecting them to operational applications is worth studying in detail.
+
+## GeoSpatial Data Processing
+
+# Geospatial data engineering for PG&E wildfire risk management
+
+For a PG&E wildfire risk management project, I would use PySpark + Apache Sedona for large-scale geospatial processing, or Palantir Foundry for integrating geospatial analytics with operational workflows.
+
+The central challenge is combining four different types of data:
+
+- Electric utility: Power lines, circuits, faults, outages, and electrical loads.
+- Assets: Utility poles, transformers, conductor types, equipment age, and maintenance.
+- Vegetation: Trees, canopy coverage, LiDAR point clouds, and distance to power lines.
+- Meteorological: Wind, humidity, temperature, precipitation, and fire weather conditions.
+
+The most important operations are spatial joins, proximity calculations, raster processing, and spatiotemporal joins.
+
+I'll show a practical implementation, including PySpark code, data sources, Foundry integration, and how to build features for wildfire prediction and causal inference.
+
+## 1. Understanding the geospatial datasets
+
+Geospatial data is different from ordinary tabular data because each record has a location or geometry.
+
+[Access, Awareness, and Analysis—All in One Location Platform](https://images.openai.com/static-rsc-4/e8-mrL1xFGEbtAnQ_Sltqz4ubmWqOm9SYkjeEspD24a10PmQ0rGR8n-cwTdAolBy8U4mIGwLVEb4bMQU9AFqn8R7A_SlppLC4gnOZ_9bYUVHNH4mZB-gZFHbqCB_FGQACsqdeWGhgaVAXhuWZbXZHEnmC_09yhpxgQxou4UKWSY?purpose=inline)
+
+Vector data
+
+Points, lines, polygons representing physical infrastructure
+
+[Ladder fuels rather than canopy volumes consistently predict wildfire severity even in extreme topographic-weather conditions | Communications Earth & Environment](https://images.openai.com/static-rsc-4/HOI0zI-Y23x0Hu5TO7B5WQTKfziKudVbPb_-DwC8aTdKYR0B10CKpQb7y0cfEZC9oYE-5784PVzmJz_pFG3Es8iAbm304WOTRENYX3BOvb0hG0wxPZo_TtdrCBh8by4-YYqhvT4eFIGlXWWgMnw8oUg_XTcXE_zSo9LtOLJ3XaM?purpose=inline)
+
+Raster data
+
+Grid cells representing vegetation, elevation, temperature, and fuel conditions
+
+| Dataset           | Geometry        | Typical format         |
+| ----------------- | --------------- | ---------------------- |
+| Utility poles     | Point           | GeoJSON, GeoParquet    |
+| Power lines       | LineString      | Shapefile, GeoParquet  |
+| Vegetation areas  | Polygon         | GeoJSON, GeoParquet    |
+| Individual trees  | Point / Polygon | LiDAR-derived features |
+| Fire perimeters   | Polygon         | GeoJSON, Shapefile     |
+| Weather stations  | Point           | CSV, Parquet           |
+| Weather forecasts | Raster grid     | NetCDF, GRIB2          |
+| Elevation / slope | Raster grid     | GeoTIFF                |
+
+A power-line segment might look like:
+
+```
+{
+  "segment_id": "PG&E_12345",
+  "voltage_kv": 12,
+  "conductor_type": "overhead",
+  "geometry": {
+    "type": "LineString",
+    "coordinates": [
+      [-121.850, 37.300],
+      [-121.845, 37.305]
+    ]
+  }
+}
+```
+
+GeoJSON coordinates use longitude, latitude ordering. The geometry above is in WGS84 (EPSG:4326).
+
+For measuring distances in meters, we should transform geometries into an appropriate projected coordinate reference system rather than calculate Euclidean distances directly from longitude and latitude.
+
+## 2. Suggested architecture
+
+Geospatial data sources
+
+PG&E GIS / SCADA / Assets
+
+LiDAR / Satellite / Vegetation
+
+NOAA / Weather forecasts
+
+CAL FIRE / Ignition history
+
+Bronze: S3 / Delta Lake
+
+Original files, imagery, sensor records and geometry
+
+Silver: PySpark + Apache Sedona
+
+CRS conversion, spatial joins, buffering, geometry validation, temporal alignment
+
+Gold: Segment-day features
+
+One row per power-line segment per day
+
+Predictive modeling
+
+XGBoost, risk scoring, ignition probability
+
+Causal inference
+
+Vegetation treatment effects, DiD, causal forests
+
+Map dashboard / Palantir Ontology
+
+Prioritize inspections and evaluate mitigations
+
+## 3. PySpark: Load geospatial data
+
+For distributed spatial processing, I recommend Apache Sedona.
+
+Sedona extends Spark SQL with functions such as:
+
+| Function         | Purpose                                  |
+| ---------------- | ---------------------------------------- |
+| `ST_Point`       | Create a geographic point                |
+| `ST_GeomFromWKT` | Convert WKT text into geometry           |
+| `ST_Transform`   | Change coordinate reference systems      |
+| `ST_Distance`    | Calculate distance between geometries    |
+| `ST_DWithin`     | Find geometries within a distance        |
+| `ST_Intersects`  | Find intersecting geometries             |
+| `ST_Buffer`      | Create an area around a geometry         |
+| `ST_Contains`    | Test whether a geometry contains another |
+
+Sedona supports distributed spatial joins and GeoParquet.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://github.com\&sz=32)
+
+GitHub
+
++1
+
+
+
+### Step A: Load power-line geometry
+
+Assume you have a CSV with `segment_id`, `voltage_kv`, and `geometry_wkt`.
+
+```
+from sedona.spark import SedonaContextfrom pyspark.sql import functions as F# SparkSession must be configured with# compatible Sedona dependencies first.sedona = SedonaContext.create(spark)lines = spark.read.csv(    "s3://wildfire/bronze/power_lines/",    header=True,    inferSchema=True)lines = lines.withColumn(    "geometry",    F.expr("ST_GeomFromWKT(geometry_wkt)"))lines.createOrReplaceTempView("power_lines")
+```
+
+Example WKT geometry:
+
+```
+LINESTRING (
+  -121.850 37.300,
+  -121.845 37.305
+)
+```
+
+Alternatively, read GeoParquet directly using Sedona's `geoparquet` data source.
+
+### Step B: Load tree locations
+
+Assume each tree has GPS coordinates and a measured height.
+
+```
+trees = spark.read.parquet(    "s3://wildfire/bronze/trees/")trees = trees.withColumn(    "geometry",    F.expr("ST_Point(longitude, latitude)"))trees.createOrReplaceTempView("trees")
+```
+
+## 4. Spatial join: Find trees near power lines
+
+This is one of the most useful geospatial operations for wildfire risk management.
+
+Question: Which trees are within 10 meters of a power-line segment?
+
+Schematic illustration, not a real PG&E location or clearance requirement.
+
+### PySpark SQL implementation
+
+```
+result = spark.sql("""    WITH lines_m AS (        SELECT            segment_id,            ST_Transform(                geometry, 'EPSG:4326', 'EPSG:3310'            ) AS geom_m        FROM power_lines    ),    trees_m AS (        SELECT            tree_id,            tree_height,            ST_Transform(                geometry, 'EPSG:4326', 'EPSG:3310'            ) AS geom_m        FROM trees    )    SELECT        l.segment_id,        t.tree_id,        t.tree_height,        ST_Distance(            l.geom_m, t.geom_m        ) AS distance_m    FROM lines_m l    JOIN trees_m t      ON ST_DWithin(          l.geom_m, t.geom_m, 10.0      )""")
+```
+
+Here, EPSG:3310 is California Albers, a projected CRS with meter units. For precise engineering clearances, choose an appropriate local projection and use 3D conductor and vegetation geometry rather than a 2D approximation.
+
+We can aggregate the results into features:
+
+```
+vegetation_features = (    result.groupBy("segment_id")    .agg(        F.count("*").alias("trees_within_10m"),        F.min("distance_m").alias("nearest_tree_m"),        F.max("tree_height").alias("max_tree_height")    ))
+```
+
+These features can feed directly into an ignition-risk model.
+
+## 5. Meteorological data: Join weather to power lines
+
+Weather data is often provided as a grid rather than as observations at every utility pole.
+
+For example, a forecast grid might have wind speed, humidity, and temperature at each grid cell.
+
+[California weather: Inside-slider system to bring strong winds](https://images.openai.com/static-rsc-4/ZXf_hxl19XRopK1u3r48XsaEMGsWDW-0-a5TuPsAPYRMCkEhdOR-zNdM8F0K05CWUZf7GRtaX2cCadmON8FoWda38w5iQSSm8x3U2Ir5t4WFJNt1_ZPfZEGkk1aLp3cQWwTqfEstaBJXrjTz8nouV2ICpQD_xFZB_624rjioug8?purpose=inline)
+
+[sfchronicle.com](https://www.sfchronicle.com/weather-forecast/article/california-winds-18450012.php?utm_source=chatgpt.com)
+
+Illustrative weather-grid visualization. Each power-line segment may intersect multiple forecast cells.
+
+A scalable method is:
+
+1. Ingest forecast data from GRIB2 or NetCDF.
+2. Extract the relevant forecast variables using tools such as `xarray` and `cfgrib`.
+3. Convert grid cells into spatial features with geometry and timestamps.
+4. Join grid cells to power-line segments using spatial intersection.
+5. Aggregate values such as maximum wind gust or minimum humidity per segment.
+
+For example, after weather grid cells have been converted to polygons:
+
+```
+SELECT
+    l.segment_id,
+    w.forecast_time,
+    MAX(w.wind_gust_mph) AS max_wind_gust,
+    MIN(w.humidity_pct) AS min_humidity
+FROM power_lines l
+JOIN weather_cells w
+  ON ST_Intersects(
+       l.geometry,
+       w.geometry
+     )
+GROUP BY
+    l.segment_id,
+    w.forecast_time
+```
+
+Both geometry columns must use the same CRS.
+
+For large grids, optimize by filtering to PG&E's service territory first, partitioning by forecast time and region, and using Sedona's spatial join optimization.
+
+For long power lines, a segment can intersect several grid cells. That is why `MAX` wind gust may be more useful than simply taking the nearest weather station.
+
+## 6. Raster data: Vegetation and fuel conditions
+
+Raster processing needs a slightly different approach.
+
+For example, LANDFIRE provides vegetation and fuel characteristics as gridded datasets.
+
+A practical workflow:
+
+```
+import rasteriofrom rasterio.mask import mask
+```
+
+For each geographic tile:
+
+- Read the relevant raster bands.
+- Clip to a corridor around the utility network.
+- Compute statistics such as mean vegetation density, dominant fuel type, and maximum slope.
+- Write the resulting features to Parquet or Delta.
+
+Avoid loading an entire statewide raster into the Spark driver. Process raster tiles in parallel, using appropriately sized partitions or distributed geospatial tools.
+
+For large-scale production workloads, I would often use dedicated raster processing to create segment-level features, then use Spark to join those features with utility and weather records.
+
+## 7. How to implement the same project in Palantir Foundry
+
+Foundry supports native geospatial transformations through Pipeline Builder, including geometry processing and integration with Ontology objects.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
++1
+
+
+
+The main difference is that Foundry can connect the resulting data directly to operational applications.
+
+### Step A: Ingest geospatial datasets
+
+Create datasets in Foundry for:
+
+| Foundry dataset         | Source                       |
+| ----------------------- | ---------------------------- |
+| `power_lines`           | Utility GIS / asset registry |
+| `utility_poles`         | Asset management system      |
+| `vegetation`            | LiDAR / tree inspection data |
+| `weather_hourly`        | Weather forecasts            |
+| `ignition_events`       | Incident management system   |
+| `vegetation_treatments` | Maintenance work orders      |
+
+### Step B: Perform spatial transformations
+
+In Pipeline Builder, you can:
+
+1. Parse GeoJSON or shapefiles.
+2. Normalize geometry and coordinate systems.
+3. Apply geospatial transformations and spatial joins.
+4. Calculate proximity and intersection features.
+5. Aggregate results into one row per segment and date.
+
+Foundry also supports H3 indexing, which can help organize geographic data into spatial cells.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
+
+
+### Step C: Create an Ontology
+
+I would define these objects:
+
+| Object type           | Key properties                            |
+| --------------------- | ----------------------------------------- |
+| `PowerLineSegment`    | Segment ID, geometry, voltage, risk score |
+| `UtilityPole`         | Pole ID, location, age, condition         |
+| `VegetationArea`      | Geometry, density, clearance              |
+| `WeatherObservation`  | Location, time, wind, humidity            |
+| `Inspection`          | Date, condition, findings                 |
+| `MitigationWorkOrder` | Segment, action, status, cost             |
+
+Then establish links such as:
+
+`PowerLineSegment → hasPole → UtilityPole`
+
+`PowerLineSegment → nearVegetation → VegetationArea`
+
+`PowerLineSegment → hasWorkOrder → MitigationWorkOrder`
+
+Foundry's Ontology supports `geopoint` for point locations and `geoshape` for lines and polygons. The geoshape value is a valid GeoJSON geometry string in WGS84.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
+
+
+### Step D: Build a map application
+
+[Palantir Utility Solutions](https://images.openai.com/static-rsc-4/iDhAngHswSfYoa9XBtbBRTSTv57kzXl7to8FjYlf8xr4POibwN2ujhnp_a9Gu1wl3RDyBiHW-P80y_ZUpkbOODJRaxUyK4o3MGuSkW2LOsbUphVMVSFqeqb_dCgXDbP-0lkL888SKfPd-3AiC7Xi1X1Szb8ItAw2DRsLO0uxSz8?purpose=inline)
+
+[palantir.com](https://www.palantir.com/offerings/utilities/?utm_source=chatgpt.com)
+
+Foundry Map can visualize spatial objects, time-series overlays, and linked network entities. Workshop can be used to build an operational application around these objects.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.palantir.com\&sz=32)
+
+Palantir
+
++1
+
+
+
+An analyst could select a high-risk segment and see its equipment condition, nearby vegetation, forecast winds, recent faults, and pending maintenance.
+
+## 8. Build a unified ML feature table
+
+Whether you use PySpark or Foundry, the final dataset should look similar to this:
+
+| Column               | Type    |
+| -------------------- | ------- |
+| `segment_id`         | STRING  |
+| `date`               | DATE    |
+| `pole_age_years`     | INT     |
+| `conductor_type`     | STRING  |
+| `trees_within_10m`   | INT     |
+| `nearest_tree_m`     | DOUBLE  |
+| `vegetation_density` | DOUBLE  |
+| `max_wind_gust_mph`  | DOUBLE  |
+| `min_humidity_pct`   | DOUBLE  |
+| `fuel_moisture_pct`  | DOUBLE  |
+| `faults_last_30d`    | INT     |
+| `trimmed_last_90d`   | BOOLEAN |
+| `energized_hours`    | DOUBLE  |
+| `ignition_next_24h`  | INT     |
+
+One row represents one power-line segment at one prediction date.
+
+For predictive modeling, features must reflect only information available at prediction time. For causal inference, preserve the full history of interventions and pre-treatment conditions.
+
+## 9. How geospatial data supports causal inference
+
+Spatial information is particularly valuable for causal analysis because nearby segments may share weather, terrain, vegetation, and fire exposure.
+
+Suppose we want to measure the effect of tree trimming.
+
+We can construct comparison groups of segments with similar pre-treatment characteristics:
+
+- Similar vegetation density
+- Similar wind exposure
+- Similar equipment age
+- Similar terrain and elevation
+- Similar historical ignition risk
+
+Then estimate the effect of trimming using Difference-in-Differences or another suitable quasi-experimental design.
+
+One important complication is spatial interference: trimming one segment may also reduce risk on a nearby segment. A credible causal study should account for neighboring treatments and spatially correlated outcomes.
+
+Another complication is that extreme-weather shutdowns (PSPS) affect energized exposure. Whether to adjust for them depends on the causal estimand and whether they occurred before or after the treatment decision.
+
+## 10. PySpark vs Foundry: Which would I choose?
+
+| Requirement                  | PySpark + Sedona                   | Palantir Foundry                      |
+| ---------------------------- | ---------------------------------- | ------------------------------------- |
+| Large-scale spatial joins    | Excellent                          | Supported                             |
+| Custom geospatial algorithms | Very flexible                      | Possible, with platform constraints   |
+| Raster and LiDAR processing  | Strong ecosystem of external tools | May require specialized preprocessing |
+| ML training                  | Flexible                           | Integrated                            |
+| Causal inference             | Python libraries                   | Python-based implementation           |
+| Data lineage                 | Requires platform integration      | Built in                              |
+| Business object modeling     | Custom implementation              | Native Ontology                       |
+| Operational applications     | Requires additional development    | Strong integrated tooling             |
+| Portability                  | Relatively high                    | More platform-dependent               |
+
+My recommendation: For learning or building a prototype, start with PySpark, Apache Sedona, and Delta Lake. It gives you control over the spatial algorithms and the ability to inspect each transformation.
+
+If the organization already uses Palantir Foundry, use Pipeline Builder and Ontology to integrate the data, then build operational applications around the resulting risk models.
+
+### Useful documentation
+
+- [Apache Sedona — Spatial SQL and GeoParquet](https://sedona.apache.org/latest/tutorial/sql/?utm_source=chatgpt.com)
+- [Palantir — Geospatial transformations](https://www.palantir.com/docs/foundry/pipeline-builder/transforms-geospatial?utm_source=chatgpt.com)
+- [Palantir — Geospatial Ontology](https://www.palantir.com/docs/foundry/geospatial/ontology?utm_source=chatgpt.com)
+- [LANDFIRE — Vegetation and fuel datasets](https://www.landfire.gov/?utm_source=chatgpt.com)
+
+For a practical first project, I would implement power-line proximity to vegetation, weather-grid spatial joins, and a segment-day risk feature table. These three components provide a solid foundation for both wildfire prediction and later causal analysis of vegetation management.
