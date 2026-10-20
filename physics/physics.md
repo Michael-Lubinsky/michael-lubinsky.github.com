@@ -10,6 +10,8 @@
 
 <https://arxiv.org/abs/1210.5067>
 
+<https://www.youtube.com/@viascience>
+
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
