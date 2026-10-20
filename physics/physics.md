@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/965372/>
 
+<https://arxiv.org/abs/1210.5067>
+
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
