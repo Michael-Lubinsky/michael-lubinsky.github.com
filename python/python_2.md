@@ -143,6 +143,22 @@ print(next(gen))  # 1
 print(next(gen))  # 2
 # Сходили за чаем, вернулись
 print(next(gen))  # 3 - помнит где остановился
+
+
+def fibonacci():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+fib = fibonacci()
+print(next(fib))  # 0
+print(next(fib))  # 1
+print(next(fib))  # 1
+print(next(fib))  # 2
+# 2_days_later.jpg
+print(next(fib))  # 3 - обе переменные a и b сохранились
+print(next(fib))  # 5
 ```
 https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
