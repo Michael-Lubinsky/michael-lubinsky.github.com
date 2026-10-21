@@ -748,8 +748,10 @@ https://imai.fas.harvard.edu/talk/files/AAAI19.pdf
 
 
 
-### Diff in-diff
+### Diff-in-diff
 <https://whatstheimpact.com/learn-causal-inference/#difference-in-differences>
+
+https://credible-answers.github.io/Which-Difference-in-Differences-estimator-should-I-use/
 
 https://angelic-articles.com/wtf/wholestagecodegen-the-plan-was-already-written/ 
 
