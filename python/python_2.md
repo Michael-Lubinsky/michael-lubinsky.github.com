@@ -1,6 +1,9 @@
 
 ## Python notes continued
-
+```
+/ в Python 3 всегда возвращает float, даже когда оба операнда целые и делятся нацело.
+Целочисленный результат – это //.
+```
 <https://realpython.com/python-serialize-data/> Data Serialization Formats
 
 <https://www.crumpledpaper.tech/2026-06-21-python-struct-profiling/>
