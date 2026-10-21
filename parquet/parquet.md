@@ -2,6 +2,8 @@
 
 <https://vutr.substack.com/p/the-overview-of-parquet-file-format>
 
+<https://oedokumaci.com/blog/posts/apache-parquet/>
+
 <https://lasha-dolenjashvili.medium.com/how-columnar-storage-actually-works-17a4c5a0a3d3>
 
 <https://habr.com/ru/articles/1013604/>
