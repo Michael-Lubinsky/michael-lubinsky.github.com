@@ -1,3 +1,6 @@
+
+<https://www.linkedin.com/pulse/navigating-modern-data-platform-landscape-databricks-vs-tony-nguyen-oevic/>
+
 <https://github.com/Htunn/Data-Engineering>
 
 ### Databricks Versions 
