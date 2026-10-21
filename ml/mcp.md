@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/986798/>
 
+<https://habr.com/ru/articles/995574/>
+
 <https://www.kdnuggets.com/build-your-first-mcp-server-in-python-stateless-spec-edition>
 
 <https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
