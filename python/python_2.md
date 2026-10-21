@@ -160,9 +160,65 @@ print(next(fib))  # 2
 print(next(fib))  # 3 - обе переменные a и b сохранились
 print(next(fib))  # 5
 ```
-https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888
 
-https://habr.com/ru/articles/967152/  9 самых частых задач на Python live-coding
+### copy.copy() не копирует вложенные объекты
+```
+Копируете список со вложенными списками через copy.copy(), меняете элемент внутреннего списка в копии – а он меняется и в оригинале. 
+
+Дело в том, что copy.copy() делает shallow copy – копирует только верхний уровень структуры, а вложенные изменяемые объекты остаются общими между оригиналом и копией.
+
+Простой пример с мутацией вложенного списка:
+```
+
+```python
+import copy
+
+original = [[1, 2, 3], [4, 5, 6]]
+shallow = copy.copy(original)
+
+# Изменяем содержимое вложенного списка
+shallow[0][0] = 999
+
+print(original)  # [[999, 2, 3], [4, 5, 6]]
+print(shallow)   # [[999, 2, 3], [4, 5, 6]]
+# Оба изменились: внутренние списки – один объект
+Проверим через id():
+import copy
+
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)
+
+print("Внешний список:", id(original), "vs", id(shallow))
+# Разные объекты
+
+print("Внутренний [1,2]:", id(original[0]), "vs", id(shallow[0]))
+# Один и тот же объект
+Важный нюанс: перезапись не равно изменение. Если заменить весь вложенный список, а не его элемент – оригинал не пострадает:
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)
+
+shallow[0] = [9, 9]  # Перезаписываем элемент, а не меняем содержимое
+print(original)  # [[1, 2], [3, 4]] – без изменений
+print(shallow)   # [[9, 9], [3, 4]]
+Для полного копирования всех уровней нужен deepcopy:
+import copy
+
+original = [[1, 2, 3], [4, 5, 6]]
+deep = copy.deepcopy(original)
+
+deep[0][0] = 999
+print(original)  # [[1, 2, 3], [4, 5, 6]]
+print(deep)      # [[999, 2, 3], [4, 5, 6]]
+```
+
+copy.copy() создает новый контейнер, но делится вложенными изменяемыми объектами. 
+С неизменяемыми вложенными объектами (числа, строки, кортежи) shallow copy работает безопасно. 
+Для полного независимого копирования используйте copy.deepcopy().
+
+
+<https://python.plainenglish.io/10-tiny-python-wins-that-changed-my-workflow-forever-5b2ecd3cc888>
+
+<https://habr.com/ru/articles/967152/>  9 самых частых задач на Python live-coding
 
 https://habr.com/ru/articles/982768/ Python Collections
 
