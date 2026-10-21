@@ -3,9 +3,14 @@
 Book:
 <https://github.com/bartosz25/data-engineering-design-patterns-book>
 
+<https://www.linkedin.com/pulse/navigating-modern-data-platform-landscape-databricks-vs-tony-nguyen-oevic/>
+
 <https://login.databricks.com/>
 
 ### Genie one
+
+<https://learn.microsoft.com/en-us/azure/databricks/genie-agents/concepts>
+
 <https://medium.com/tag/genie-one>
 
 <https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
