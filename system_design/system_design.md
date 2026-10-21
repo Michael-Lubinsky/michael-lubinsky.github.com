@@ -24,6 +24,8 @@
 
 <https://habr.com/ru/articles/1082254/> C4 полный гайд по моделированию архитектуры 
 
+<https://habr.com/ru/companies/piter/articles/1097238/> C4
+
 <https://github.com/bregman-arie/devops-exercises>
 
 <https://habr.com/ru/articles/1068382/>
