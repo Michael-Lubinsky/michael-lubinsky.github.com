@@ -1,5 +1,7 @@
 ## Agents
 
+<https://habr.com/ru/articles/1096976/>
+
 <https://github.com/ashishpatel26/500-AI-Agents-Projects>
 
 <https://github.com/aliyun/ai-agent-handbook/blob/main/README_EN.md>
