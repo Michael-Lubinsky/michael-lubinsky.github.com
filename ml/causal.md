@@ -100,10 +100,6 @@ https://habr.com/ru/companies/avito/articles/1061032/ Uplift
 
 <https://www.dailydoseofds.com/a-crash-course-on-causality-part-1>
 
-### Diff-in-diff
-<https://whatstheimpact.com/learn-causal-inference/#difference-in-differences>
-
-https://angelic-articles.com/wtf/wholestagecodegen-the-plan-was-already-written/
 
 ### Collider
 
@@ -750,7 +746,15 @@ https://openreview.net/pdf?id=pAoqRlTBtY
 https://dl.acm.org/doi/fullHtml/10.1145/3397269  
 https://imai.fas.harvard.edu/talk/files/AAAI19.pdf  
 
- 
+
+
+### Diff in-diff
+<https://whatstheimpact.com/learn-causal-inference/#difference-in-differences>
+
+https://angelic-articles.com/wtf/wholestagecodegen-the-plan-was-already-written/ 
+
+https://press.princeton.edu/books/paperback/9780691264189/causal-inference-with-differences-in-differences
+
 ### diff-diff, the best library for Difference-in-Differences 
 
 https://habr.com/ru/articles/986182/
