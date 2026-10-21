@@ -106,6 +106,8 @@ https://stasosphere.com/machine-learning/
 
 ## Inference
 
+<https://habr.com/ru/companies/ru_mts/articles/1096130/>
+
 <https://habr.com/ru/companies/piter/articles/1087530/>
 
 <https://habr.com/ru/companies/otus/articles/1077956/>
