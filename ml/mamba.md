@@ -11,6 +11,9 @@ jupyter-book build .
 ```
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+#### Python ML cheat sheets 
+<https://huggingface.co/spaces/Kavi-274/python-ml-cheatsheets>
+
 <https://github.com/Kavi274/python-ml-cheatsheets>
 
 <https://aiengineeringfromscratch.com/>
