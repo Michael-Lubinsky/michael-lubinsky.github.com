@@ -10,6 +10,30 @@ Causal Inference: What If (Hernán & Robins). More rigorous and epidemiology-ori
 
 https://www.pywhy.org/learn/developer-resources.html
 
+## Causal Analysis in Time series
+
+For five time series, a useful starting point is **multivariate Granger causality**. It asks whether the past of one series helps predict another, after accounting for the past of all five.
+
+**That provides evidence of predictive direction; it does not, by itself, prove causation.** A hidden variable could drive both series.
+
+A practical workflow:
+
+1. **Prepare the data.** Align timestamps and sampling frequency, inspect missing values, trends, seasonality, and sudden changes. Shared trends can create misleading relationships.
+2. **Choose a plausible lag range.** For daily data, for example, could an effect take 1–7 days or several weeks? Let domain knowledge guide this.
+3. **Fit all five series together.** A vector autoregression (VAR) is a common linear starting point. Check stationarity; if the series have long-term equilibrium relationships, a vector error-correction model (VECM) may be more appropriate.
+4. **Test each direction, conditional on the other series.** There are \(5 \times 4 = 20\) possible directed relationships. Adjust for multiple testing and check whether findings persist across reasonable lag choices and time periods.
+5. **Validate the interpretation.** Check residuals, predictive performance on later data, and whether the proposed direction makes sense physically or operationally.
+
+For example, testing \(A \rightarrow B\) means asking:
+
+> Does including past values of A improve prediction of B, beyond using past values of B, C, D, and E?
+
+Granger tests evaluate whether the relevant lagged coefficients are jointly zero. [statsmodels 0.15.0](https://www.statsmodels.org/stable/generated/statsmodels.tsa.stattools.grangercausalitytests.html?utm_source=chatgpt.com)
+
+If you expect **nonlinear relationships**, consider **PCMCI** with a suitable conditional-independence test. **PCMCI+** also considers relationships within the same sampling interval. Their causal interpretation depends on assumptions, including the absence of relevant unmeasured common causes. [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC6881151/?utm_source=chatgpt.com)
+
+ 
+
 ## There is  file in csv format with time series data
 ```
 First column is time stamp in format YYYY-MM-DD
