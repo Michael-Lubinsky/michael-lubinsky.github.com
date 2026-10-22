@@ -10,6 +10,10 @@
 
 <https://www.kdnuggets.com/build-your-first-mcp-server-in-python-stateless-spec-edition>
 
+#### Postgres MCP
+<https://github.com/crystaldba/postgres-mcp>
+crystaldba/postgres-mcp и поднял его в режиме --access-mode=restricted: ассистент может смотреть данные и собирать SELECT-запросы (list_schemas, list_objects, execute_sql, explain_query), но физически не может выполнить INSERT/UPDATE/DELETE или DDL-команды.
+
 <https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
 <img width="1171" height="1278" alt="image" src="https://github.com/user-attachments/assets/cb38b5c3-b3ad-4360-865a-3aaafe9e6709" />
 
