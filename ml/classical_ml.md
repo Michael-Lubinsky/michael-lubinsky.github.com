@@ -2,6 +2,8 @@
 
 <https://mlbook.dataschool.io/>
 
+<https://danieljordanviray.github.io/applied-data-science-lab/machine-learning/regression-guide/regression-guide.html>
+
 ###  Logistic Regression
 
 Logistic Regression is a supervised machine learning algorithm commonly used for classification.
