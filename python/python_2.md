@@ -61,6 +61,46 @@
 ```
 Since tuples are immutable, these are the only specific methods available directly to them
 
+
+### re.Match
+Since Python 3.6, `re.Match` objects implement `__getitem__`, so `m[x]` is shorthand for `m.group(x)`. It's purely syntactic sugar, and the behavior is the same.
+
+```python
+import re
+
+m = re.search(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})", "Date: 2026-10-21")
+
+# Numbered groups
+m.group(0)   # '2026-10-21'  (whole match)
+m[0]         # '2026-10-21'
+m.group(1)   # '2026'
+m[1]         # '2026'
+
+# Named groups
+m.group("month")   # '10'
+m["month"]         # '10'
+```
+
+It's handy for compactness, especially with the walrus operator:
+
+```python
+if m := re.match(r"(\w+)@(\w+)\.com", text):
+    user, domain = m[1], m[2]
+```
+
+**Where it behaves the same as `.group()`**
+- `m[0]` is the whole match, just like `m.group(0)` or `m.group()`.
+- A group that didn't participate in the match returns `None`.
+- A nonexistent group (`m[5]` or `m["nope"]`) raises `IndexError: no such group`.
+
+**Where it differs from `.group()`**
+- **One argument only.** `m.group(1, 2)` returns a tuple `('2026', '10')`, but `m[1, 2]` doesn't work. For several groups, use `.group(1, 2)`, `.groups()`, or index them separately.
+- **No slicing or negative indexes.** `m[1:3]` and `m[-1]` raise `IndexError`, because the match isn't a sequence. It only maps group identifiers to strings.
+- **It doesn't replace `.groups()` or `.groupdict()`.** To get all groups at once, `m.groups()` returns a tuple and `m.groupdict()` returns a dict. Matches also have `.start()`, `.end()`, and `.span()`, which have no indexing equivalent.
+
+This only applies to `re.Match` objects, so it works on the result of `re.match()`, `re.search()`, `re.fullmatch()`, and items from `re.finditer()`. It does not work on the list returned by `re.findall()`.
+
+
 ### Знаете ли вы, что * для списков размножает ссылки, а не копии?
 
 Умножение строки создает новую строку,   
