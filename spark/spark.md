@@ -1,7 +1,10 @@
 ## Spark
 
 <https://sinja.io/blog/data-landscape-guide-for-developers>
-[
+
+<https://angelic-articles.com/wtf/wholestagecodegen-the-plan-was-already-written/>
+
+
 <https://www.ssp.sh/brain/data-engineering>
 
 Book: <https://github.com/bartosz25/data-engineering-design-patterns-book>
