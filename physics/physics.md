@@ -12,6 +12,16 @@
 
 <https://www.youtube.com/@viascience>
 
+### Hilbert Space
+
+https://www.quantamagazine.org/in-hilbert-space-all-things-are-quantumly-possible-20260826/
+
+https://youtu.be/DNhmYkTW_jI?t=4220
+
+https://preposterousuniverse.com/podcast/
+
+https://www.youtube.com/watch?v=oLKER6zFZ0A
+
 ### Books
 <https://www.amazon.com/s?k=Sachdev> Sachdev
 
