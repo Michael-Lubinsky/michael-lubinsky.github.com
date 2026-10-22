@@ -11,6 +11,8 @@ jupyter-book build .
 ```
 <https://github.com/rohitg00/ai-engineering-from-scratch>
 
+<https://github.com/Kavi274/python-ml-cheatsheets>
+
 <https://aiengineeringfromscratch.com/>
 
 <https://github.com/usamahz/make-your-model-fast>
