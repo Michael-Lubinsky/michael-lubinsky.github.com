@@ -61,6 +61,35 @@
 ```
 Since tuples are immutable, these are the only specific methods available directly to them
 
+### str.removeprefix() / str.removesuffix()
+
+Both were added in Python 3.9 (PEP 616). They return a new string with the given prefix or suffix removed if it’s present, and otherwise return the string unchanged.
+
+```python
+"test_foo.py".removeprefix("test_")      # 'foo.py'
+"test_foo.py".removesuffix(".py")        # 'test_foo'
+
+"foo.py".removeprefix("test_")           # 'foo.py'  (no match, unchanged)
+"foo.txt".removesuffix(".py")            # 'foo.txt' (no match, unchanged)
+```
+Common mistake: confusing them with lstrip() / rstrip(). Those treat their argument as a set of characters, not a literal prefix or suffix:
+
+```python
+"test_foo".lstrip("test_")        # 'foo'  (strips any of t, e, s, _ from the left)
+"setup_test".lstrip("test_")      # 'up_test'  (surprise: ate the 's', 'e', 't')
+"setup_test".removeprefix("test_")  # 'setup_test'  (correct: no such prefix)
+```
+Other behaviors
+
+They’re case-sensitive.
+They remove at most one occurrence: "aaab".removeprefix("a") gives 'aab'.
+An empty prefix or suffix is a no-op, which matters for the slicing pitfall below.
+They accept only a single string, not a tuple like startswith() does. For several candidates, loop:
+
+```python
+for p in ("http://", "https://"):
+    url = url.removeprefix(p)   # fine for independent prefixes
+```
 
 ### re.Match
 Since Python 3.6, `re.Match` objects implement `__getitem__`, so `m[x]` is shorthand for `m.group(x)`. It's purely syntactic sugar, and the behavior is the same.
