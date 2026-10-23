@@ -18,6 +18,8 @@ https://www.quantamagazine.org/in-hilbert-space-all-things-are-quantumly-possibl
 
 https://youtu.be/DNhmYkTW_jI?t=4220
 
+
+<https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>   Spinors
 https://preposterousuniverse.com/podcast/
 
 https://www.youtube.com/watch?v=oLKER6zFZ0A
