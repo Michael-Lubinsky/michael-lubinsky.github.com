@@ -36,11 +36,12 @@ print(f"{a=}")   # a=1
 https://habr.com/ru/articles/911196/
 -->
 
-### glom jmespath pydash
+### Processing large JSON files with json
+
+<https://www.kdnuggets.com/how-to-process-large-json-files-in-python-with-ijson>
 
 #### Comparison: glom vs jmespath vs pydash
 
-#### 🔍 High-Level Comparison
 
 | Feature / Library       | `glom`                                | `jmespath`                          | `pydash`                              |
 |-------------------------|----------------------------------------|-------------------------------------|----------------------------------------|
