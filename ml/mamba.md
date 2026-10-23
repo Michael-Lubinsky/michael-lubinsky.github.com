@@ -59,6 +59,9 @@ Applied Machine Learning for Tabular Data <https://aml4td.org/>
 Inference Engineering
 <https://www.youtube.com/playlist?list=PLqO45Dg1pMhlDBZTMqVL2GU-14xYip2y2>
 
+PyTorch MPS против Apple MLX: как дообучать LLM на Mac с 16 ГБ и что выбрать
+https://habr.com/ru/companies/otus/articles/1090656/
+
 ML interview
 <https://www.youtube.com/@mark_mirgaleev_mentori>
 
