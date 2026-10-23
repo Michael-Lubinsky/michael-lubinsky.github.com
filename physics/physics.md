@@ -12,6 +12,8 @@
 
 <https://www.youtube.com/@viascience>
 
+<https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC>
+
 ### Hilbert Space
 
 https://www.quantamagazine.org/in-hilbert-space-all-things-are-quantumly-possible-20260826/
