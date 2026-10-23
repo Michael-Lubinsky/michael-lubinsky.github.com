@@ -6,6 +6,11 @@ Starting with the statistical foundations.
 <https://www.reddit.com/r/MachineLearning/comments/1w1wt1s/you_can_beat_sota_time_series_anomaly_detection/>
 
 
+<https://towardsdatascience.com/time-series-from-scratch-autoregression-theory-and-implementation-f8c614f738f2/>
+
+<https://machinelearningmastery.com/autoregression-models-time-series-forecasting-python/>
+
+
 <https://habr.com/ru/articles/1095884/> <https://github.com/feyra-labs/tempcast>
 
 Before transformers and pretrained models, people already had a lot of algorithms for forecasting.
