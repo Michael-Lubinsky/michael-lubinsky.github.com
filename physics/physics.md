@@ -16,9 +16,11 @@
 
 ### Hilbert Space
 
-https://www.quantamagazine.org/in-hilbert-space-all-things-are-quantumly-possible-20260826/
+<https://www.quantamagazine.org/in-hilbert-space-all-things-are-quantumly-possible-20260826/>
 
-https://youtu.be/DNhmYkTW_jI?t=4220
+<https://www.youtube.com/watch?v=-zi_l7-bf0U>
+
+<https://youtu.be/DNhmYkTW_jI> 
 
 
 <https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>   Spinors
