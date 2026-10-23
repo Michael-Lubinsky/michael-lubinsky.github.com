@@ -6,7 +6,7 @@ Applied Machine Learning for Tabular Data <https://aml4td.org/>
 
 <https://www.youtube.com/watch?v=Xym8FGDcl34>
 
-
+<https://habr.com/ru/articles/1098382/> TabPFN 3.5 — модель работы с табличными данными, умеющая в Фурье-препроцессинг, тестируем по SDD 
 
 understand how Tabular Foundation Models (TFMs) work in detail, this is the learning path I am following.
 
