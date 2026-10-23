@@ -12,6 +12,8 @@ For example, a raster dataset can represent temperature, elevation, vegetation d
 
 Geospatial data with a temporal component is known as geotemporal data.
 
+<https://github.com/williamhobbs/hefty>  short-term Energy Forecasting Tools for solar, wind, and load.
+
 #### Geometry comparisons
 ```
 Intersection. 
