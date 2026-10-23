@@ -1,5 +1,8 @@
 ## ML Links
 
+
+<https://huggingface.co/learn>
+
 <https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents>
 
 <https://ml-visualized.com/>
