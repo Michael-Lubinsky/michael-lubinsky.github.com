@@ -1,3 +1,10 @@
+## Python Symbolic Regression
+
+## pge-jax
+JAX implementation of the Prioritized Grammar Enumeration (PGE) algorithm for symbolic regression.
+<https://github.com/verdverm/pge-jax>
+
+
 ## PySR (Python Symbolic Regression) 
 
 is an open-source machine learning library that automatically discovers mathematical equations from data.
