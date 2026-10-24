@@ -48,7 +48,6 @@ The true causal effect is:
 
 $$\frac{\partial E[Q\mid do(P=p)]}{\partial p}=-5$$
 
-$$frac{\partial E[Q\mid do(P=p)]}{\partial p}=-5$$
 
 Increasing the price by $1 causes five fewer expected purchases, assuming this structural equation describes the intervention.
 
