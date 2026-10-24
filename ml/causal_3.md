@@ -57,8 +57,21 @@ This creates confounding because \\(U\\) affects both price and purchases.
 
 ### Implement the experiment
 
-```
-import numpy as nprng = np.random.default_rng(42)n = 10000# Unobserved demandU = rng.normal(0, 5, n)# Price depends on demandP = 10 + 0.5 * U + rng.normal(0, 1, n)# True causal effect of price = -5Q = 100 - 5 * P + 3 * U + rng.normal(0, 2, n)# Implement OLS manuallyX = np.column_stack([np.ones(n), P])beta = np.linalg.lstsq(X, Q, rcond=None)[0]print("True causal effect:", -5)print("OLS estimate:", beta[1])
+```python
+import numpy as np
+rng = np.random.default_rng(42)
+n = 10000
+# Unobserved demand
+U = rng.normal(0, 5, n)
+# Price depends on demand
+P = 10 + 0.5 * U + rng.normal(0, 1, n)
+# True causal effect of price = -5Q = 100 - 5 * P + 3 * U + rng.normal(0, 2, n)
+
+# Implement OLS manually
+X = np.column_stack([np.ones(n), P])
+beta = np.linalg.lstsq(X, Q, rcond=None)[0]
+print("True causal effect:", -5)
+print("OLS estimate:", beta[1])
 ```
 
 The OLS coefficient will be biased because the unobserved demand factor influences both variables.
