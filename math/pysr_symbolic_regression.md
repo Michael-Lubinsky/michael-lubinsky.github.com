@@ -42,7 +42,7 @@ PySR is particularly valuable when you care about understanding the relationship
 
 Unlike ordinary linear regression, where you choose a model such as
 
-\\[ y=a+bx \\]
+$$ y=a+bx $$
 
 PySR searches through many possible mathematical expressions.
 
@@ -66,11 +66,7 @@ Trade off prediction error against equation complexity
 
 The underlying engine is written in Julia, with a Python interface. It uses evolutionary search and numerical optimization to discover expressions, rather than requiring you to specify the equation structure in advance.&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://julia.pysr.ai\&sz=32)
-
-SymbolicRegression.jl
-
-+1
+ 
 
 
 
@@ -78,28 +74,53 @@ SymbolicRegression.jl
 
 Suppose we generate data from:
 
-\\[ y=3x^2+2\sin(x)+5 \\]
+$$ y=3x^2+2\sin(x)+5 $$
 
 We then ask PySR to rediscover the equation without providing its structure.
 
-```
-import numpy as npfrom pysr import PySRRegressorrng = np.random.default_rng(42)# Generate synthetic dataX = rng.uniform(-5, 5, size=(1000, 1))x = X[:, 0]y = 3*x**2 + 2*np.sin(x) + 5# Add measurement noisey += rng.normal(0, 0.1, len(y))# Configure symbolic regressionmodel = PySRRegressor(    niterations=100,    binary_operators=["+", "-", "*", "/"],    unary_operators=["sin", "cos"],    maxsize=20,)model.fit(X, y)# Show discovered equationsprint(model.equations_)# Best equation in symbolic formprint(model.sympy())
+```python
+
+import numpy as np
+from pysr import PySRRegressor
+
+rng = np.random.default_rng(42)
+
+# Generate synthetic data
+X = rng.uniform(-5, 5, size=(1000, 1))
+x = X[:, 0]
+
+y = 3*x**2 + 2*np.sin(x) + 5
+
+# Add measurement noise
+y += rng.normal(0, 0.1, len(y))
+
+# Configure symbolic regression
+model = PySRRegressor(
+    niterations=100,
+    binary_operators=["+", "-", "*", "/"],
+    unary_operators=["sin", "cos"],
+    maxsize=20,
+)
+
+model.fit(X, y)
+
+# Show discovered equations
+print(model.equations_)
+
+# Best equation in symbolic form
+print(model.sympy())
+
 ```
 
 PySR may discover something close to:
 
-\\[ \boxed{y\approx3x^2+2\sin(x)+5} \\]
+$$ \boxed{y\approx3x^2+2\sin(x)+5} $$
 
 The exact expression is not guaranteed. It depends on the data, noise, search configuration, and computation time.
 
 PySR can also export discovered expressions to SymPy, making them useful for subsequent mathematical analysis.&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://pysr.ai\&sz=32)
-
-PySR
-
-+1
-
+ 
 
 
 ## 4. Interesting application: Your price–demand analysis
@@ -108,7 +129,7 @@ Consider your store dataset with daily prices, visitor counts, and product purch
 
 Suppose the true data-generating process is:
 
-\\[ Q=100-5P+0.02V+0.1P^2 \\]
+$$ Q=100-5P+0.02V+0.1P^2 $$
 
 where \\(P\\) is price, \\(V\\) is visitor count, and \\(Q\\) is sales.
 
@@ -116,8 +137,11 @@ You could use PySR to discover a nonlinear relationship without specifying a qua
 
 For example:
 
-```
-X = df[["price", "visitors"]]y = df["sales"]model.fit(X, y)print(model.sympy())
+```python
+X = df[["price", "visitors"]]
+y = df["sales"]
+model.fit(X, y)
+print(model.sympy())
 ```
 
 PySR might find a formula similar to the generating equation.
@@ -154,12 +178,10 @@ For time-series data, you must explicitly construct lagged features such as \\(P
 
 One especially interesting advanced capability is that PySR supports constrained expression structures, physical units, and even discovering differential equations from sampled data.&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://pysr.ai\&sz=32)
-
-PySR
 
 
 
 You can explore the official [PySR documentation](https://pysr.ai/?utm_source=chatgpt.com) and [GitHub repository](https://github.com/MilesCranmer/PySR?utm_source=chatgpt.com).
 
-My recommendation for your causal-analysis experiments: Use PySR as a complementary tool. First generate synthetic data with known equations, then compare ordinary regression, PySR, and causal estimation methods. That will reveal when symbolic regression successfully reconstructs a mathematical relationship—and when a correct-looking equation still gives the wrong causal interpretation.
+My recommendation for your causal-analysis experiments: Use PySR as a complementary tool. First generate synthetic data with known equations, then compare ordinary regression, PySR, and causal estimation methods. 
+That will reveal when symbolic regression successfully reconstructs a mathematical relationship—and when a correct-looking equation still gives the wrong causal interpretation.
