@@ -3,6 +3,12 @@
 
 <https://plato.stanford.edu/entries/causation-counterfactual/>
 
+<https://causalbook.com/patterns/iv/Confounding+by+intention>
+
+<https://theeffectbook.net/index.html>
+
+<https://matheusfacure.github.io/python-causality-handbook/08-Instrumental-Variables.html>
+
 <https://blog.rudnyi.site/ru/2019/10/pearl-mackenzie-the-book-of-why.html>
 
 <https://egovoru.livejournal.com/247058.html>
