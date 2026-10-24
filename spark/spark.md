@@ -4,6 +4,7 @@
 
 <https://angelic-articles.com/wtf/wholestagecodegen-the-plan-was-already-written/>
 
+<https://habr.com/ru/articles/1098390/> Delta Lake - кластеризацию,
 
 <https://www.ssp.sh/brain/data-engineering>
 
