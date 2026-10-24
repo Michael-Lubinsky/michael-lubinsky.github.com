@@ -15,6 +15,8 @@ Book:
 
 <https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
 
+<https://medium.com/@abhishek.iyer327/how-do-you-connect-claude-to-enterprise-data-so-it-gets-the-numbers-right-4f7e26575ea5>
+
 ## Deploing Databricks
 
 <https://medium.com/databrickscommunity/what-makes-up-a-databricks-project-36a695f393ee>
