@@ -131,6 +131,9 @@ We might observe:
 
 \\[ P\_{t-1}\longrightarrow Q_t \\]
 
+$$P\_{t-1}\longrightarrow Q_t$$
+
+
 Past prices help predict future sales.
 
 But the actual mechanism could be:
