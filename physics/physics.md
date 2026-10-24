@@ -2,6 +2,11 @@
 
 <https://curtjaimungal.substack.com/>
 
+<https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
+
+Quantum Field Theory for the Gifted Amateur by
+Tom Lancaster, Stephen J. Blundell
+
 <https://mgivanov.ru/>
 
 <https://ethanlake.github.io/>
