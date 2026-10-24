@@ -1,10 +1,10 @@
 ## Time Series
 
-Time-series forecasting.
-Starting with the statistical foundations.
+Time-series forecasting. Starting with the statistical foundations.
 
 <https://www.reddit.com/r/MachineLearning/comments/1w1wt1s/you_can_beat_sota_time_series_anomaly_detection/>
 
+<https://www.youtube.com/watch?v=REzWTRKRwzk>
 
 <https://towardsdatascience.com/time-series-from-scratch-autoregression-theory-and-implementation-f8c614f738f2/>
 
