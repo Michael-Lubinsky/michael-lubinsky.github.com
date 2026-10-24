@@ -180,6 +180,8 @@ https://news.ycombinator.com/item?id=45248043
 
 <https://benhoyt.com/writings/hash-table-in-c/>
 
+<https://habr.com/ru/articles/1098660/>
+
 https://habr.com/ru/articles/849654/  B-tree vs Hash tables
 
 https://www.corsix.org/content/my-favourite-small-hash-table
