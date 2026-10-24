@@ -18,7 +18,7 @@ For example, suppose you have experimental data:
 
 PySR might discover:
 
-\\[ \boxed{y=x^2+2x} \\]
+$$ \boxed{y=x^2+2x} $$
 
 without being told that the relationship is quadratic.
 
