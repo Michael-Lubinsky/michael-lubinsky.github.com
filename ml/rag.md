@@ -5,6 +5,8 @@
 
 <https://leanpub.com/cracking-the-rag-interview#about>
 
+<https://habr.com/ru/articles/1091058/>
+
 <https://habr.com/ru/companies/ruvds/articles/1074156/>
 
 <https://habr.com/ru/companies/otus/articles/1075188/>
