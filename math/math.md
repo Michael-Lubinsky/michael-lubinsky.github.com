@@ -4,6 +4,7 @@
 
 <https://book.huihoo.com/pdf/>
 
+<https://www.cis.upenn.edu/~jean/gbooks/geomath.html>
 
 <https://www.ams.org/open-math-notes>
 
