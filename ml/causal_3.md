@@ -44,12 +44,14 @@ Where:
 The true causal effect is:
 
 \\[ \frac{\partial E[Q\mid do(P=p)]}{\partial p}=-5 \\]
+
+
 $$\frac{\partial E[Q\mid do(P=p)]}{\partial p}=-5$$
 Increasing the price by $1 causes five fewer expected purchases, assuming this structural equation describes the intervention.
 
 Now suppose the store changes prices depending on demand:
 
-\\[ P=10+0.5U+\eta \\]
+$$P=10+0.5U+\eta$$
 
 This creates confounding because \\(U\\) affects both price and purchases.
 
@@ -89,9 +91,9 @@ Once you understand the basic case, introduce time-dependent variables.
 
 For example:
 
-\\[ Q_t=100-5P_t+0.4Q\_{t-1}+3U_t+\epsilon_t \\]
+$$Q_t=100-5P_t+0.4Q\_{t-1}+3U_t+\epsilon_t$$
 
-\\[ P_t=10+0.02Q\_{t-1}+0.5U_t+\eta_t \\]
+$$P_t=10+0.02Q\_{t-1}+0.5U_t+\eta_t$$
 
 Now we have:
 
