@@ -43,6 +43,8 @@
 
 <https://www.susanrigetti.com/math>
 
+<https://www.youtube.com/@LorenzMath>
+
 <img width="598" height="301" alt="image" src="https://github.com/user-attachments/assets/101e358c-9db9-4e11-b815-b9c4d49c0017" />
 
 <https://habr.com/ru/articles/1089980/> Почему нельзя собрать Пятнашки, поменяв 14 и 15. 
