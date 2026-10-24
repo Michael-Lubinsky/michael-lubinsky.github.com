@@ -55,6 +55,13 @@ $$P=10+0.5U+\eta$$
 
 This creates confounding because \\(U\\) affects both price and purchases.
 
+This Python code below demonstrates a fundamental problem in causal inference: confounding bias.
+
+It generates synthetic data representing a store where:
+- Product prices depend on customer demand.
+- Product sales depend on both price and demand.
+- The true causal effect of price on sales is −5.
+- Ordinary Least Squares (OLS) regression produces a biased estimate because it ignores demand.
 ### Implement the experiment
 
 ```python
@@ -65,7 +72,8 @@ n = 10000
 U = rng.normal(0, 5, n)
 # Price depends on demand
 P = 10 + 0.5 * U + rng.normal(0, 1, n)
-# True causal effect of price = -5Q = 100 - 5 * P + 3 * U + rng.normal(0, 2, n)
+# True causal effect of price = -5
+Q = 100 - 5 * P + 3 * U + rng.normal(0, 2, n)
 
 # Implement OLS manually
 X = np.column_stack([np.ones(n), P])
