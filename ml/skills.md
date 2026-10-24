@@ -21,6 +21,8 @@ my-skill/
 └── assets/
     └── template.html
 ```
+<https://github.com/evgenyigumnov/blueprint4llm>
+
 <https://www.skills.sh>
 
 <https://habr.com/ru/articles/1078034/>  
