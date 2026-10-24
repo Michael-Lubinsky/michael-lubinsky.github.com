@@ -4,6 +4,8 @@
 
 <https://www.ssp.sh/brain/data-engineering>
 
+<https://habr.com/ru/companies/hexlet/articles/1098714/>
+
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 
 <https://habr.com/ru/companies/haulmont/articles/1085536/>
