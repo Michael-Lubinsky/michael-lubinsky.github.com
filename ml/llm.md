@@ -1,5 +1,6 @@
 ## LLM 
 
+<https://habr.com/ru/articles/1098612/>
 
 <https://www.youtube.com/watch?v=CBgB_VJcutw> LLM Internals
 
