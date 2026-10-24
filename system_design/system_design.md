@@ -27,6 +27,8 @@
 
 <https://habr.com/ru/companies/piter/articles/1097238/> C4
 
+<https://habr.com/ru/articles/1097224/>
+
 <https://zerowithdot.com/blog/text-to-diagram-for-ai-systems/>
 
 <https://github.com/bregman-arie/devops-exercises>
