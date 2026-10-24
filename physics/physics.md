@@ -2,6 +2,8 @@
 
 <https://curtjaimungal.substack.com/>
 
+<https://www.southampton.ac.uk/~doug/quantum_physics/index.html>
+
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
 
 Quantum Field Theory for the Gifted Amateur by
