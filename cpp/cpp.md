@@ -8,6 +8,8 @@
 
 <https://github.com/federico-busato/Modern-CPP-Programming>
 
+<https://habr.com/ru/articles/1091290/> Управление памятью в контейнерах STL
+
 <https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
 
 <https://github.com/justxor/cpproadmap2026>
