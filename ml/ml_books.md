@@ -7,6 +7,8 @@
 
 <https://arxiv.org/abs/2409.02668>
 
+<https://mlmetrics.org/>
+
 <https://inferencebook.org/> companion website for the book "Inference in Statistical Modelling and Machine Learning" by James Burridge and Nick Tosh
 
 <https://leanpub.com/>
