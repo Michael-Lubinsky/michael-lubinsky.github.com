@@ -28,7 +28,153 @@ For example, testing \(A \rightarrow B\) means asking:
 
 > Does including past values of A improve prediction of B, beyond using past values of B, C, D, and E?
 
+## Granger causality 
+
 Granger tests evaluate whether the relevant lagged coefficients are jointly zero. [statsmodels 0.15.0](https://www.statsmodels.org/stable/generated/statsmodels.tsa.stattools.grangercausalitytests.html?utm_source=chatgpt.com)
+
+
+Granger causality is a statistical method for testing whether the past values of one time series help predict another time series, beyond what can already be predicted from its own past.
+
+Despite its name, Granger causality does not necessarily imply true cause and effect.
+
+## 1. Basic idea
+
+Suppose we have two time series:
+
+- \\(P_t\\): product price on day \\(t\\)
+- \\(Q_t\\): number of products sold on day \\(t\\)
+
+We want to answer:
+
+Do historical prices help predict future sales?
+
+We compare two regression models.
+
+### Model A: Predict sales using previous sales only
+
+\\[ Q_t = \alpha + \sum\_{i=1}^{k} a_i Q\_{t-i}+\epsilon_t \\]
+
+For example, with two lags:
+
+\\[ Q_t = \alpha+a_1Q\_{t-1}+a_2Q\_{t-2}+\epsilon_t \\]
+
+### Model B: Predict sales using previous sales AND previous prices
+
+\\[ Q_t = \alpha+\sum\_{i=1}^{k}a_iQ\_{t-i} +\sum\_{i=1}^{k}b_iP\_{t-i}+\epsilon_t \\]
+
+If Model B predicts sales significantly better than Model A, we say:
+
+\\[ \boxed{P \text{ Granger-causes } Q} \\]
+
+More precisely, we test the null hypothesis:
+
+\\[ H_0:b_1=b_2=\cdots=b_k=0 \\]
+
+Rejecting this hypothesis provides evidence of Granger causality.
+
+## 2. Visual explanation
+
+Predicting today's sales using historical information
+
+<img width="527" height="243" alt="image" src="https://github.com/user-attachments/assets/bcce84fb-70b1-436f-98e0-18e05c03cd11" />
+
+
+Granger causality asks whether adding the orange historical price information improves prediction.
+
+## 3. Python implementation
+
+Python's `statsmodels` library implements the Granger causality test.
+
+```python
+import pandas as pd
+from statsmodels.tsa.stattools import grangercausalitytests
+
+# df contains columns: sales, price
+data = df[["sales", "price"]].dropna()
+
+results = grangercausalitytests(
+    data,
+    maxlag=7,
+    verbose=False
+)
+
+for lag, result in results.items():
+    p_value = result[0]["ssr_ftest"][1]
+    print(f"Lag {lag}: p-value = {p_value:.4f}")
+```
+
+Important: The column order is `[sales, price]`. This tests whether past prices help predict sales, not the reverse.
+
+A possible output:
+
+| Lag (days) | p-value | Interpretation at 5%    |
+| ---------- | ------- | ----------------------- |
+| 1          | 0.230   | No significant evidence |
+| 2          | 0.041   | Significant             |
+| 3          | 0.003   | Significant             |
+| 7          | 0.001   | Significant             |
+
+These numbers are illustrative, not results from your dataset.
+
+Typically, a p-value below 0.05 suggests rejecting the null hypothesis at that lag. However, testing many lags independently increases the chance of false positives.
+
+## 4. Granger causality vs. actual causality
+
+Consider this example:
+
+A store increases ice cream prices during hot weather. On hot days, ice cream sales also increase.
+
+We might observe:
+
+<img width="533" height="245" alt="image" src="https://github.com/user-attachments/assets/48fba9a1-b69f-4c63-867a-49ba6f1425f9" />
+
+
+\\[ P\_{t-1}\longrightarrow Q_t \\]
+
+Past prices help predict future sales.
+
+But the actual mechanism could be:
+
+Price and sales move together because both are influenced by weather.
+
+Therefore, even if price Granger-causes sales, that does not establish that increasing prices will increase sales.
+
+## 5. Comparison with other causal inference methods
+
+| Method                    | Main question                                      | Establishes causality?                    |
+| ------------------------- | -------------------------------------------------- | ----------------------------------------- |
+| OLS regression            | Are price and sales statistically associated?      | Not by itself                             |
+| Granger causality         | Do past prices improve prediction of sales?        | Not by itself                             |
+| Randomized experiment     | What happens when we randomly change prices?       | Yes, under appropriate design             |
+| Instrumental variables    | Can exogenous variation identify the price effect? | Under valid assumptions                   |
+| Difference-in-differences | What was the effect of a pricing intervention?     | Under assumptions such as parallel trends |
+
+## 6. Important limitations
+
+Granger causality is most useful when the time series has meaningful temporal dependencies. There are several requirements:
+
+- Stationarity: Standard Granger tests generally require stationary series or an appropriate treatment of trends, unit roots, and cointegration.
+- Lag selection: Choosing 1, 7, or 30 days can produce different results. AIC or BIC can help select the lag length.
+- Confounding: Omitted variables can create misleading Granger relationships.
+- Timing: If price affects sales immediately on the same day, a lag-only Granger test may fail to detect that effect.
+- Reverse relationships: Sales may Granger-cause prices if retailers adjust prices based on recent sales.
+
+## 7. How this applies to your store dataset
+
+You previously described a dataset containing daily visitors, product purchases, and product prices over one year.
+
+Granger causality could help investigate whether changes in prices tend to precede changes in purchases, and whether recent sales help predict pricing decisions.
+
+However, with your main goal of estimating the causal effect of price on sales, I would use Granger causality primarily as an exploratory and diagnostic tool, not the main identification method.
+
+For example, if past sales predict future prices, this suggests the retailer may be adjusting prices in response to demand. That would be important when designing a causal model.
+
+One particularly interesting experiment: Generate synthetic time-series data with a known causal effect of price, introduce a hidden demand variable, and compare Granger causality results with the true effect. This would demonstrate why predictive causality and intervention-based causality are fundamentally different concepts.
+
+
+
+
+
 
 If you expect **nonlinear relationships**, consider **PCMCI** with a suitable conditional-independence test. **PCMCI+** also considers relationships within the same sampling interval. Their causal interpretation depends on assumptions, including the absence of relevant unmeasured common causes. [PMC](https://pmc.ncbi.nlm.nih.gov/articles/PMC6881151/?utm_source=chatgpt.com)
 
