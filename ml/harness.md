@@ -10,6 +10,8 @@
 
 <https://data4sci.com/blog/evaluating-your-agentic-harnesses>
 
+<https://habr.com/ru/articles/1098620/>
+
 <https://habr.com/ru/articles/1088108/> Comparing LLM providers
 
 <https://habr.com/ru/articles/1054412/> AI-база: LLM, языковые модели, агенты, агентные механизмы
