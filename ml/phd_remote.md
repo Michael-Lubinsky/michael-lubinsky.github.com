@@ -37,7 +37,7 @@ A public research university with a fully online doctoral program. The universit
 
 [Official program details](https://und.edu/programs/computer-science-phd/index.html?utm_source=chatgpt.com)&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://und.edu\&sz=32)
+ 
 
 University of North Dakota
 
@@ -51,7 +51,6 @@ A 72-credit research program covering machine learning, deep learning, computer 
 
 [Official program details](https://dsu.edu/programs/phdai/?utm_source=chatgpt.com)&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://dsu.edu\&sz=32)
 
 Dakota State University
 
@@ -65,7 +64,6 @@ Designed for working professionals, with AI, machine learning, and data analytic
 
 [Official program details](https://www.fau.edu/engineering/eecs/graduate/professional-programs/professional-phd/?utm_source=chatgpt.com)&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://www.fau.edu\&sz=32)
 
 Florida Atlantic University
 
@@ -87,9 +85,6 @@ This is a particularly interesting option for mathematical research. Confirm whe
 
 University of York
 
-
-
-[Africa has the potential to surpass Asia as the continent with the brightest young people, says Unisa](https://images.openai.com/static-rsc-4/3ZABtgmnDBUeov9EeurcDxsRGeoF2lK93RW9eIsnVi7Lg_soHSq9qPcwhS_BWVsgHjxg-zzf3IHqVr9SMUyiUQ2OSibkcjH8hoevgB2-2w2dE3pIGPMRgghQeh6UoTElnQIvFp_popPwufeSyvJ7cWkAWwioGlSrrH8AqlbvIdE?purpose=inline)
 
 University of South Africa (UNISA) — PhD Mathematics / Physics
 
@@ -115,10 +110,3 @@ A PhD in Physics Education or Mathematics Education is different from a PhD in P
 | Applied AI while working full-time      | FAU, Capitol Technology                   |
 
 For a serious research PhD, I would evaluate the potential dissertation supervisor before the university's online convenience. A qualified, actively publishing supervisor whose research matches your interests is crucial.
-
-I would also ask each university whether remote doctoral students can publish with faculty, participate in research seminars, access computational resources, and defend their dissertation remotely.
- 
-
-Find programs matching my goals&#x20;
-
-These answers will help distinguish a research-focused doctorate from a professional doctorate and identify programs that are genuinely suitable for your interests and budget.
