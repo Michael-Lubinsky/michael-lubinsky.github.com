@@ -2,6 +2,8 @@
 
 <https://machinelearningmastery.com/choosing-the-right-agentic-ai-framework-for-2026-a-decision-tree-approach>
 
+<https://habr.com/ru/articles/1098980/> oh-my-pi
+
 | SDK / Framework       | Main orchestration model                  | How agents cooperate in your code                                                             | Tool calling                               | Parallel agents                                         | Human approval                           | Workflow/state model                                                     | Main distinguishing feature                                                        |
 | --------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
 | **LangGraph**         | **Explicit graph / state machine**        | Nodes connected by edges; results accumulated in shared state                                 | Python functions/tools used by graph nodes | **Yes**, graph branches can fan out and join            | Explicit approval node                   | **Strongest explicit state management** via `State` passed through graph | You design the **workflow graph yourself**                                         |
