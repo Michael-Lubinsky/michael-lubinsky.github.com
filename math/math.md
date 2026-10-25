@@ -4,7 +4,9 @@
 
 <https://book.huihoo.com/pdf/>
 
-<https://www.cis.upenn.edu/~jean/gbooks/geomath.html>
+<https://www.cis.upenn.edu/~jean/gbooks/geomath.html> Huge book
+
+<https://www.youtube.com/watch?v=W1p1wpH1ry8> Green Function
 
 <https://www.ams.org/open-math-notes>
 
