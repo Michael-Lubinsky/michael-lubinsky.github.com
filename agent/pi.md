@@ -14,7 +14,10 @@
 
 <https://github.com/badlogic/pi-mono>
 
+### oh-my-pi
 <https://github.com/can1357/oh-my-pi>
+
+<https://habr.com/ru/articles/1098980/>
 
 <https://omp.sh/docs>
 
