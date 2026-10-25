@@ -6,6 +6,8 @@
 
 <https://www.cis.upenn.edu/~jean/gbooks/geomath.html> Huge book
 
+<https://www.cis.upenn.edu/~jean/gbooks/home.html> math books
+
 <https://www.youtube.com/watch?v=W1p1wpH1ry8> Green Function
 
 <https://www.ams.org/open-math-notes>
