@@ -4,6 +4,7 @@
 
 <https://habr.com/ru/articles/1010240/>  HTTP protocol
 
+<https://habr.com/ru/companies/faracrm/articles/1099060/> How to download file via HTTP
 
 <https://habr.com/ru/articles/1002550/> Web Server
 
