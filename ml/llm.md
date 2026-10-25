@@ -10,6 +10,8 @@
 
 <https://www.amazon.com/dp/B0DC4NYLTN> Paper Book
 
+How LLM  serving works: <https://www.youtube.com/watch?v=vM3kzJIPvvw>  vLLM and SGLang
+
 <https://github.com/kvfrans/lmpo> Language Model Policy Optimization
 
 ### Instructor
