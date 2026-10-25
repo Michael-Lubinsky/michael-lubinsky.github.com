@@ -10,6 +10,8 @@
 
 <https://data4sci.com/blog/evaluating-your-agentic-harnesses>
 
+<https://github.com/amosblomqvist/learnharness> Learn Harness
+
 <https://habr.com/ru/articles/1098620/>
 
 <https://habr.com/ru/articles/1088108/> Comparing LLM providers
