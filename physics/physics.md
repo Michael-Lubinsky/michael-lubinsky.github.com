@@ -2,6 +2,8 @@
 
 <https://curtjaimungal.substack.com/>
 
+<https://www.youtube.com/@acephysics123/courses>
+
 <https://www.southampton.ac.uk/~doug/quantum_physics/index.html>
 
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
