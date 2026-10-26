@@ -2,6 +2,8 @@
 
 <https://github.com/rasbt/LLMs-from-scratch/tree/main>
 
+<https://www.freecodecamp.org/news/build-a-local-ai/> 
+
 <https://github.com/FareedKhan-dev/train-llm-from-scratch>
 
 <https://github.com/akuchlous/llm-inference-lab>
