@@ -10,8 +10,11 @@
 
 <https://data4sci.com/blog/evaluating-your-agentic-harnesses>
 
-<https://github.com/amosblomqvist/learnharness> Learn Harness
+## Learn Harness
+<https://github.com/amosblomqvist/learnharness> Learn Harness.  
 <https://learnharness.ai/> Learn Harness
+<https://www.youtube.com/watch?v=nfTDljFG2g0>
+
 <https://github.com/HKUDS/DeepTutor>
 <https://notebooklm.google.com>
 <https://github.com/zijinz456/OpenTutor>
