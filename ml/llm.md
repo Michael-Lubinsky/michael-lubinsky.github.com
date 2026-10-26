@@ -14,6 +14,11 @@ How LLM  serving works: <https://www.youtube.com/watch?v=vM3kzJIPvvw>  vLLM and 
 
 <https://github.com/kvfrans/lmpo> Language Model Policy Optimization
 
+### Pydantic AI 
+Описываете pydantic-модель, передаёте в конструктор — и дальше агент обязан вернуть данные по конкретной схеме. Невалидный ответ не пройдёт валидацию и уйдёт модели на переделку, кривой JSON больше не доедет до бизнес-логики, а result.output в вашем коде окажется уже готовым типизированным объектом 
+
+<https://habr.com/ru/companies/bothub/articles/1099642/>
+
 ### Instructor
 Built on top of Pydantic, Instructor provides type-safe data extraction with automatic validation, retries, and streaming support.
 ```
