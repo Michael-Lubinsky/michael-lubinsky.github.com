@@ -10,6 +10,8 @@
 
 <https://www.youtube.com/watch?v=W1p1wpH1ry8> Green Function
 
+<https://www.youtube.com/watch?v=SD_2UGcL8rM> Green Function
+
 <https://www.ams.org/open-math-notes>
 
 <https://math.stackexchange.com/questions/111440/examples-of-patterns-that-eventually-fail/111461#111461>
