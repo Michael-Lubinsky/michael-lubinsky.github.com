@@ -10,11 +10,20 @@
 
 <https://www.kdnuggets.com/build-your-first-mcp-server-in-python-stateless-spec-edition>
 
+<https://media.licdn.com/dms/document/media/v2/D561FAQHHHR0CKV6B_w/feedshare-document-url-metadata-scrapper-pdf/B56aFhY9GMGkA4-/0/1792635297636?e=1793300400&v=beta&t=gQOLhRPa8-4-uAc5KVwUPZsmBMdfc0i-xnm9aK4DoV8>
+
 #### Postgres MCP
 <https://github.com/crystaldba/postgres-mcp>
-crystaldba/postgres-mcp и поднял его в режиме --access-mode=restricted: ассистент может смотреть данные и собирать SELECT-запросы (list_schemas, list_objects, execute_sql, explain_query), но физически не может выполнить INSERT/UPDATE/DELETE или DDL-команды.
+```
+crystaldba/postgres-mcp  поднял его в режиме
+--access-mode=restricted: 
+ассистент может смотреть данные и собирать SELECT-запросы
+(list_schemas, list_objects, execute_sql, explain_query),
+но физически не может выполнить INSERT/UPDATE/DELETE или DDL-команды.
+```
 
 <https://sreenathmenon.com/blog/2026-06-30-mcp-the-port-that-let-ai-touch-the-world/>
+
 <img width="1171" height="1278" alt="image" src="https://github.com/user-attachments/assets/cb38b5c3-b3ad-4360-865a-3aaafe9e6709" />
 
  <img width="1102" height="1057" alt="image" src="https://github.com/user-attachments/assets/6c49d52f-abb2-452d-86d8-f512086dbba8" />
