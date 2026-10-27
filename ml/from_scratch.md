@@ -4,6 +4,8 @@
 
 <https://github.com/ghimiresunil/building-llms-from-scratch>
 
+<https://github.com/Rishikesh-2006/NNs/blob/main/Pytorch%2FTransformer.ipynb>
+
 <https://www.freecodecamp.org/news/build-a-local-ai/> 
 
 <https://github.com/FareedKhan-dev/train-llm-from-scratch>
