@@ -88,15 +88,23 @@ MCP (Model Context Protocol) меняет то, как ИИ-модели и аг
 🔗 https://github.com/anaisbetts/mcp-installer  
 Шутливо, но по делу: «MCP для установки MCP». Модель сама ставит MCP-серверы из npm и PyPi по вашему запросу.
 
-There is a quieter, more elegant half to this that almost nobody mentions: the client has primitives too. The server can ask the client to do things back. It can request sampling (ask the host’s model to think about something, without the server needing its own model), elicitation (ask the human a clarifying question or for confirmation), and logging. So it is genuinely two-way. The server is not just a vending machine; it can tap the model and the user on the shoulder when it needs them. That bidirectionality is one of the prettiest design choices in the whole thing.
+There is a quieter, more elegant half to this that almost nobody mentions: the client has primitives too.   
+The server can ask the client to do things back.  
+It can request sampling (ask the host’s model to think about something, without the server needing its own model), elicitation (ask the human a clarifying question or for confirmation), and logging.   
+So it is genuinely two-way. 
+The server is not just a vending machine; it can tap the model and the user on the shoulder when it needs them.   
+That bidirectionality is one of the prettiest design choices in the whole thing.
 
 <img width="1063" height="313" alt="image" src="https://github.com/user-attachments/assets/fa1450ee-7b60-4f96-adff-927e593c6923" />
 
 
 
-Skills хорошо подходят для локальных, процедурных, основанных на CLI-утилитах сценариев. Например, «возьми ffmpeg, обработай видео, положи результат в этот каталог».
-```
+Skills хорошо подходят для локальных, процедурных, основанных на CLI-утилитах сценариев.   
+Например, «возьми ffmpeg, обработай видео, положи результат в этот каталог».
+
 MCP лучше подходит там, где нужны:
+```
+
 - авторизация
 - RBAC
 - аудит действий и observability
@@ -137,7 +145,9 @@ FastMCP line:
 mcp.run(transport="streamable-http", host="0.0.0.0", port=8000)
 
 ### Подключение в Claude
-В Claude (claude.ai или Claude Desktop): Settings → Connectors → Add custom connector → имя и URL https://mcp.zinin-shturbin.com/mcp. Авторизация тут лишняя (данные публичные, чтение) — подключается одним движением.
+В Claude (claude.ai или Claude Desktop):   
+Settings → Connectors → Add custom connector → имя и URL https://mcp.zinin-shturbin.com/mcp.   
+Авторизация тут лишняя (данные публичные, чтение) — подключается одним движением.
 
 #### Test MCP server
 ```
@@ -343,6 +353,7 @@ MCP стандартизирует весь цикл: объявление, вы
 Мы же хотим, чтобы ассистент помнил важные вещи между сессиями? MCP предлагает решение через так называемые серверы памяти.
 
 Это могут быть сервисы, хранящие заметки, факты или векторные представления данных для семантического поиска по ним. На гитхабе уже есть примеры таких серверов от Anthropic и не только (всякие Memory Bank, Memory Box и тд).   
+
 Модель знает, что может использовать инструменты этих серверов, чтобы запомнить что-то важное (вызвав метод save_memory) или "вспомнить" (вызвав метод search_memory).   
 Так LLM обретает долговременную память: разные пользовательские предпочтения, какие-то детали прошлых проектов, важные факты - не теряются. Сами данные хранятся на стороне сервера, что важно для конфиденциальности.
 
@@ -378,7 +389,9 @@ MCP позволяет явно объявлять такие последова
 
 
 ## The Model Context Protocol changed in an important way this summer. 
-With the 2026-07-28 MCP specification, the protocol core is now stateless: modern clients no longer need to establish a protocol session before making requests, and servers no longer rely on Mcp-Session-Id for ordinary requests. That makes MCP servers much easier to scale behind normal HTTP infrastructure.
+With the 2026-07-28 MCP specification, the protocol core is now stateless: modern clients no longer need to establish a protocol session before making requests, and servers no longer rely on Mcp-Session-Id for ordinary requests.
+
+That makes MCP servers much easier to scale behind normal HTTP infrastructure.
 
  
 
@@ -444,7 +457,7 @@ No framework boilerplate is required.
 
 ### Step 2: Creating Your First MCP Server
 Create server.py:
-```
+```python
 from mcp.server import MCPServer
 
 mcp = MCPServer(
@@ -564,7 +577,7 @@ Tools are actions the model can call.
 Resources are different. They expose information that the host application can load into context.
 
 Add:
-```
+```python
 @mcp.resource("kb://articles")
 def list_articles() -> str:
     """Return the available knowledge-base articles."""
@@ -721,13 +734,13 @@ search_kb
 under Tools.
 
 Try calling it with:
-```
+```json
 {
   "query": "rate limit"
 }
 ```
 The result should contain:
-```
+```json
 [
   {
     "id": "api-rate-limit",
@@ -861,7 +874,7 @@ Protocol: 2026-07-28
 
 Available tools:
 - search_kb
-```  
+```json  
   {'result': [{
                'id':'api-rate-limit',
               'title': 'Understanding API rate limits',
@@ -879,7 +892,7 @@ Suppose you were building a shopping server. Instead of relying on:
 
 MCP session 42 owns this basket
 you could expose:
-```
+```python
 @mcp.tool()
 def create_basket() -> dict[str, str]:
     basket_id = create_new_basket()
@@ -889,7 +902,7 @@ def create_basket() -> dict[str, str]:
     }
 ```
 Then later:
-```
+```python
 @mcp.tool()
 def add_item(
     basket_id: str,
@@ -935,8 +948,9 @@ Client --> LB +--> Worker 2
 There are additional considerations for advanced features such as multi-round-trip interactions, shared subscription events, authorization, and distributed state, but those are application architecture concerns rather than a requirement of basic MCP tool execution.
 
 
-Wrapping Up
+#### Wrapping Up
 The practical shift here is smaller than the spec diff makes it look: you still decorate functions with @mcp.tool(), you still return dicts and let the framework build the result, and you still run mcp.run() to serve it. 
 
-What's different is what happens underneath. You don't need any handshake to negotiate, no session to keep warm, no sticky routing to configure. Get comfortable with MCPServer, keep stdout clean, and the rest of the stateless spec mostly stays out of your way.
+What's different is what happens underneath. You don't need any handshake to negotiate, no session to keep warm, no sticky routing to configure.   
+Get comfortable with MCPServer, keep stdout clean, and the rest of the stateless spec mostly stays out of your way.
  
