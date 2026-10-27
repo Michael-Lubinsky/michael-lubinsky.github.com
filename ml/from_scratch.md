@@ -2,6 +2,8 @@
 
 <https://github.com/rasbt/LLMs-from-scratch/tree/main>
 
+<https://github.com/joeynmt/joeynmt>
+
 <https://github.com/ghimiresunil/building-llms-from-scratch>
 
 <https://github.com/Rishikesh-2006/NNs/blob/main/Pytorch%2FTransformer.ipynb>
