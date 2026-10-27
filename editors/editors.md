@@ -10,6 +10,22 @@
 
 <https://www.codeedit.app/>
 
+### Flow Control
+
+A programmer's text editor written in Zig, available in two versions:
+- flow — terminal-based editor (TUI)
+- flow-gui — graphical desktop version
+```curl -fsSL https://flow-control.dev/install | sh ```
+The installer includes both flow and flow-gui
+
+ Flow Control is closer to a modern terminal editor such as Helix or Vim, with an optional GUI.
+
+### https://gram-editor.com
+
+brew install --cask gram
+
+Gram is closer to Zed
+
 ## Zed
 <https://habr.com/ru/articles/1082090/>
 
