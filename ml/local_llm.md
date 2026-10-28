@@ -1,5 +1,7 @@
 ## Local Models
 
+<https://www.manning.com/books/build-applications-with-local-ai-models-on-a-mac>
+ 
 <https://www.youtube.com/watch?v=qJTVfcGEsW0>
 
 <https://habr.com/ru/articles/1099472/>
