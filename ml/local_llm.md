@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/1099472/>
 
+<https://www.kdnuggets.com/which-local-lms-are-best-for-which-tasks>
+
 <https://github.com/magnitudedev/magnitude> Open source inference engine for agents that optimizes itself for your exact hardware. Compiles and tunes its kernels on your device, so open models run up to 2x faster than llama.cpp. Works on Apple Silicon, NVIDIA, AMD, or just a CPU.
 
 <https://lmstudio.ai/docs/bionic> Bionic is the AI agent for getting real work done with open models, including coding, research, and complex work with documents and files. You can use local models or switch to open-source models in the cloud for heavier tasks, all while staying in control of your privacy and AI spend
