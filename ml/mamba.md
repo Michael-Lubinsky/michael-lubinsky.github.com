@@ -9,6 +9,8 @@
 
 <https://jeffyclassify.com/>  
 
+<https://learning.nextia-ai.com/>
+
  Jeffy can run completely locally, free of charge, without OpenAI, Anthropic, or any other paid API provider.
 
 <https://github.com/nicobrenner/jeffy>
