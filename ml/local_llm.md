@@ -30,6 +30,8 @@ https://habr.com/ru/companies/selectel/articles/1005504/  Собственная
 
 <https://habr.com/ru/articles/1085928/>
 
+<https://habr.com/ru/articles/1100230/>
+
 <https://habr.com/ru/companies/bothub/news/1066710/> Liquid AI представила LFM2.5–2.6B 
 
 ### llama.cpp
