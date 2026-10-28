@@ -3,6 +3,8 @@
 
 <https://huggingface.co/learn>
 
+<https://huggingface.co/spaces/nanotron/ultrascale-playbook>
+
 <https://github.com/chiphuyen/aie-book> 
 
 <https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents>
