@@ -69,7 +69,7 @@ SVM <https://habr.com/ru/articles/1072750/>
 scikit-learn
 <https://habr.com/ru/articles/1031044/>
 
-### XGBoost Lightgbm CatBoost Градиентный бустинг
+### XGBoost LightGBM CatBoost Градиентный бустинг
 
 <img width="1080" height="1386" alt="image" src="https://github.com/user-attachments/assets/e7f4b274-f4aa-469b-a908-8489ca3376e3" />
 
@@ -198,6 +198,8 @@ I also made a dozen of these a couple years ago, my two favorites:
 ### Decision Trees
 
 <https://mlu-explain.github.io/decision-tree/>
+
+<https://zerowithdot.com/blog/decision-tree/>
 
 <https://github.com/mljar/supertree>
 
