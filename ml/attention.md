@@ -15,6 +15,7 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 <img width="1080" height="1415" alt="image" src="https://github.com/user-attachments/assets/a7e89300-b88c-40c7-b79c-0134a616230b" />
 
 
+<https://habr.com/ru/articles/1101178/>
 
 <https://ishamf.dev/p/llm-attention-visualizer/>
 
