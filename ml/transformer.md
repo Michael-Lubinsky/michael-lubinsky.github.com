@@ -4,6 +4,7 @@
 
 <img width="1080" height="1352" alt="image" src="https://github.com/user-attachments/assets/10ef34a3-ee5e-4822-8f4f-a47fd2203b10" />
 
+<https://habr.com/ru/companies/ruvds/articles/1099884/>
 
 <https://arxiv.org/pdf/2604.00965> Understanding Transformers and Attention
 
