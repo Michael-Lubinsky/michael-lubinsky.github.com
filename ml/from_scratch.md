@@ -4,6 +4,8 @@
 
 <https://habr.com/ru/articles/1100314/> Why softmax is loosing gradient
 
+<https://github.com/ifiaposto/transformer_custom_autograd/tree/main>
+
 <https://github.com/rasbt/LLMs-from-scratch/tree/main>
 
 <https://github.com/joeynmt/joeynmt>
