@@ -6,6 +6,8 @@
 
 <https://github.com/ifiaposto/transformer_custom_autograd/tree/main>
 
+<https://colab.research.google.com/drive/1Lt7JDYG44p7YHJ76eRH_8QFOPkkoIwhn>
+
 <https://github.com/rasbt/LLMs-from-scratch/tree/main>
 
 <https://github.com/joeynmt/joeynmt>
