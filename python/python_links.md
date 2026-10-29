@@ -31,8 +31,9 @@
 <https://habr.com/ru/articles/1029354/>
 
 
-## Useful libs
+## Useful  
 
+<https://habr.com/ru/articles/1101090/> Calling C from Python; Numba and others; pybind11  
 
 <https://habr.com/ru/articles/1027354/> Nuitka (convertor to C)
 
