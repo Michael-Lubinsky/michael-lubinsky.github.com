@@ -1,6 +1,8 @@
-## Local Models
+## Local LLM Models
 
 <https://www.manning.com/books/build-applications-with-local-ai-models-on-a-mac>
+
+<https://habr.com/ru/articles/1100900/>
  
 <https://www.youtube.com/watch?v=qJTVfcGEsW0>
 
