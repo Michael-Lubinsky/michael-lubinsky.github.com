@@ -1,4 +1,5 @@
 ## Postgres
+<https://postgrespro.ru/education/books/qptbook> PG 18 book
 <https://hatchet.run/blog/postgres-survival-guide>
 <https://news.ycombinator.com/item?id=49005787>
 <https://habr.com/ru/companies/netologyru/articles/1051792/>
