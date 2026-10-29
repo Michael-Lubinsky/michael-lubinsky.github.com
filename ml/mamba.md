@@ -1,5 +1,7 @@
 ## ML Links
-
+Open Source implementation of Notebook LM with more flexibility and features
+<https://www.open-notebook.ai>
+<https://github.com/lfnovo/open-notebook>
 
 <https://huggingface.co/learn>
 
