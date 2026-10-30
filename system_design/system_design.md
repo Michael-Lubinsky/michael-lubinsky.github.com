@@ -24,7 +24,7 @@
 
 <https://scalequest.io/sources>
 
-<https://stately.ai/docs/visualizer>
+<https://stately.ai/docs/studio>
 
 ### C4
 <https://habr.com/ru/articles/1082254/> C4 полный гайд по моделированию архитектуры 
