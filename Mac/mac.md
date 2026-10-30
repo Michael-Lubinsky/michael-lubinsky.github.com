@@ -9,6 +9,14 @@
 
 <https://habr.com/ru/companies/gigapisar/articles/1088630/>
 
+
+### Configure a shortcut to pronounce selected text.
+```
+1. Open System Settings → Accessibility → Read & Speak (called Spoken Content on some macOS versions).
+2. Enable Speak selection.
+3. Set a keyboard shortcut. The usual default is Option + Esc.
+4. select a word, and press the shortcut.
+```
 ## _
 
 <https://habr.com/ru/companies/ringo_mdm/articles/1064572/> Mac console commands not available on Linux
