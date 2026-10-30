@@ -14,6 +14,7 @@ Time-series forecasting. Starting with the statistical foundations.
 
 <https://machinelearningmastery.com/autoregression-models-time-series-forecasting-python/>
 
+<https://arxiv.org/pdf/2610.37585> Timestral, a family of four time series foundation models for probabilistic forecasting
 
 <https://habr.com/ru/articles/1095884/> <https://github.com/feyra-labs/tempcast>
 
