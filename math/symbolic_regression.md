@@ -1,4 +1,8 @@
-## Python Symbolic Regression
+## Symbolic Regression
+
+<https://github.com/owls-on-wires/keplearn>
+
+<https://physo.readthedocs.io/en/latest/> -  symbolic regression module uses deep reinforcement learning to infer analytical physical laws that fit data points, searching in the space of functional forms.
 
 ## pge-jax
 JAX implementation of the Prioritized Grammar Enumeration (PGE) algorithm for symbolic regression.
