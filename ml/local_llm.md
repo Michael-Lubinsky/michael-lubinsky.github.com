@@ -1,5 +1,20 @@
 ## Local LLM Models
 
+
+### GGUF 
+GGUF is the modern, self-contained file format standard for running quantized large language models, directly replacing its predecessor, GGML
+
+GGUF (GPT-Generated Unified Format) — это формат файла, в котором лежат квантованные веса модели плюс метаданные: конфигурация, словарь токенизатора и всё остальное, что нужно для запуска.  
+Раньше веса хранили в pytorch_model.bin или safetensors, но для локального инференса на CPU или слабой видеокарте нужен был формат, который умеет быстро читать сжатые тензоры.  
+GGUF — это «single-file format», один файл, внутри которого и архитектура, и веса, и настройки. Его понимают llama.cpp, Ollama, LM Studio и ещё десяток обёрток.
+
+
+
+<https://huggingface.co/docs/transformers/main/en/quantization/gguf>
+
+
+<https://habr.com/ru/companies/bothub/articles/1101764/>
+
 <https://www.manning.com/books/build-applications-with-local-ai-models-on-a-mac>
 
 <https://habr.com/ru/articles/1100900/>
@@ -57,7 +72,6 @@ https://habr.com/ru/companies/selectel/articles/1005504/  Собственная
 <https://habr.com/ru/articles/1085032/> what to use instead of Ollama
 
 
-GGUF is the modern, self-contained file format standard for running quantized large language models, directly replacing its predecessor, GGML
 
 
 <https://habr.com/ru/articles/1005054/> LM Studio
