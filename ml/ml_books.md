@@ -56,7 +56,7 @@ Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and Fas
 7. Building an Agent from Scratch: http://lnkd.in/da3ANw3w
 8. Philo Agents: http://lnkd.in/dq-BfZE5
 
- https://github.com/mohamedrxo/simplegrad
+ <https://github.com/mohamedrxo/simplegrad>
     
 
 <https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
@@ -150,49 +150,49 @@ GitHub:
 
 
 1. Foundations of Machine Learning
-https://cs.nyu.edu/~mohri/mlbook/
+<https://cs.nyu.edu/~mohri/mlbook/>
 
 2. Understanding Deep Learning
-https://udlbook.github.io/udlbook/
+<https://udlbook.github.io/udlbook/>
 
 3. Introduction to Machine Learning Systems
 
-https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf
+<https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf>
  
 
 4. Algorithms for ML
-https://algorithmsbook.com
+<https://algorithmsbook.com>
 
 5. Deep Learning
-http://deeplearningbook.org
+<http://deeplearningbook.org>
 
 6. Reinforcement Learning
-https://andrew.cmu.edu/course/10-703/textbook/BartoSutton.pdf
+<https://andrew.cmu.edu/course/10-703/textbook/BartoSutton.pdf>
 
 7. Distributional Reinforcement Learning
-https://direct.mit.edu/books/oa-monograph-pdf/2111075/book_9780262374026.pdf
+<https://direct.mit.edu/books/oa-monograph-pdf/2111075/book_9780262374026.pdf>
 
 8. Multi Agent Reinforcement Learning
-https://marl-book.com
+<https://marl-book.com>
 
 9. Agents in the Long Game of AI
-https://direct.mit.edu/books/oa-monograph-pdf/2471103/book_9780262380355.pdf
+<https://direct.mit.edu/books/oa-monograph-pdf/2471103/book_9780262380355.pdf>
 
 10. Fairness and Machine Learning
-https://fairmlbook.org
+<https://fairmlbook.org>
 
 11. Probabilistic Machine Learning
 
-  Part 1 : https://probml.github.io/pml-book/book1.html
-  Part 2 : https://probml.github.io/pml-book/book2.html
+  Part 1 : <https://probml.github.io/pml-book/book1.html>
+  Part 2 : <https://probml.github.io/pml-book/book2.html>
 
  
 #### Chris Bishop (all 3 books)
-https://www.bishopbook.com
+<https://www.bishopbook.com>
 
 
 Free book:
-https://www.manning.com/books/grokking-ai-algorithms-second-edition
+<https://www.manning.com/books/grokking-ai-algorithms-second-edition>
 
 
 
