@@ -7,9 +7,6 @@ Open Source implementation of Notebook LM with more flexibility and features
 
 <https://huggingface.co/spaces/nanotron/ultrascale-playbook>
 
-<https://github.com/chiphuyen/aie-book> 
-
-<https://sebastianraschka.com/books/ml-q-and-ai/#table-of-contents>
 
 <https://jeffyclassify.com/>  
 
@@ -238,14 +235,11 @@ ML interview
 
 <https://www.youtube.com/watch?v=M-GWvdyOkIo> GPU и акселераторы для нейросетей / Тензорные компиляторы / Инференс LLM
 
-<https://udlbook.github.io/udlbook/>
 
-<https://elonlit.com/scrivings/a-theory-of-deep-learning/>
 
 Stepik course
 <https://stepik.org/course/240191/promo>
 
-<https://arxiv.org/abs/2604.21691> There Will Be a Scientific Theory of Deep Learning
 
 <https://www.youtube.com/watch?v=R8h_gpSpEVU> 
 Deploying AI Models with Hugging Face – Hands-On Course
@@ -257,25 +251,16 @@ Deploying AI Models with Hugging Face – Hands-On Course
 
 <https://www.youtube.com/playlist?list=PL4_hYwCyhAvbilBzNF9oxW8VVMXTFyjsn>
 
-<https://arxiv.org/pdf/2403.04807> Math of NN
 
-<https://udlbook.github.io/udlbook/>
-
-<https://fleuret.org/francois/lbdl.html> Small book of ML
-
-<https://mml-book.github.io/book/mml-book.pdf>  Math for ML book
 
 <https://github.com/girafe-ai/ml-course>
 
 <https://ml-visualized.com/>
 
-<https://github.com/dreddnafious/thereisnospoon/blob/main/ml-primer.md>
+
 
 <https://mlbenchmarks.org/>
 
-<https://www.manning.com/books/grokking-ai-algorithms-second-edition>
-
-<https://www.packtpub.com/en-us/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803245423>
 
 <https://medium.com/advanced-deep-learning>
 
@@ -309,13 +294,7 @@ NVIDIA-Certified Associate AI Infrastructure and Operations (NCA AIIO) Free Stud
 
 <https://mlcontests.com/state-of-machine-learning-competitions-2025/?ref=mlcr25>
 
-<https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf>
 
-<https://www.amazon.com/Production-Ready-Deep-Learning-Practical-Deploying-ebook/dp/B0FXT9WW4K>
-Practical Deep Learning Deployment: A Hands-On Guide with PyTorch, ONNX, and FastAPI. Adrian Devlin
-
-
-<https://www.amazon.com/dp/1836200072> LLM Engineer's Handbook: Master the art of engineering large language models from concept to production
 
 
 <https://www.youtube.com/watch?v=IBJUt9JPKHk>    Building resilient ML Engineering skills
@@ -338,26 +317,14 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 ## ML Books
 
 
-<https://mlbook.dataschool.io/>
 
-<https://github.com/AniruddhaChattopadhyay/Books>
-
-<https://artint.info/3e/html/ArtInt3e.html>
-
-<https://www.amazon.com/dp/1778042724/> The Hundred-Page Language Models Book: hands-on with PyTorch (The Hundred-Page Books)
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/>  Linear Models
 
 https://news.ycombinator.com/item?id=47204964
 
 <https://maxhalford.github.io/blog/online-active-learning-river-databutton/>  Online Active Learning
- 
- <https://github.com/roboticcam/machine-learning-notes> ML Learning Notes
 
-
-<https://deeplearningwithpython.io/chapters/>
-
-<https://github.com/Dyakonov/MLDM_BOOK>   ML book
 
 
 
@@ -367,47 +334,6 @@ https://news.ycombinator.com/item?id=47204964
 
 <https://physo.readthedocs.io/en/latest/> -SO’s symbolic regression module uses deep reinforcement learning to infer analytical physical laws that fit data points, searching in the space of functional forms.
 
-
-1. Foundations of Machine Learning
-https://cs.nyu.edu/~mohri/mlbook/
-
-2. Understanding Deep Learning
-https://udlbook.github.io/udlbook/
-
-3. Introduction to Machine Learning Systems
-
-https://mlsysbook.ai/book/assets/downloads/Machine-Learning-Systems.pdf
- 
-
-4. Algorithms for ML
-https://algorithmsbook.com
-
-5. Deep Learning
-http://deeplearningbook.org
-
-6. Reinforcement Learning
-https://andrew.cmu.edu/course/10-703/textbook/BartoSutton.pdf
-
-7. Distributional Reinforcement Learning
-https://direct.mit.edu/books/oa-monograph-pdf/2111075/book_9780262374026.pdf
-
-8. Multi Agent Reinforcement Learning
-https://marl-book.com
-
-9. Agents in the Long Game of AI
-https://direct.mit.edu/books/oa-monograph-pdf/2471103/book_9780262380355.pdf
-
-10. Fairness and Machine Learning
-https://fairmlbook.org
-
-11. Probabilistic Machine Learning
-
-  Part 1 : https://probml.github.io/pml-book/book1.html
-  Part 2 : https://probml.github.io/pml-book/book2.html
-
- 
-#### Chris Bishop (all 3 books)
-https://www.bishopbook.com
 
 https://habr.com/ru/companies/yandex_praktikum/articles/986742/ Машинное обучение для работы с текстами: подборка бесплатных курсов и материалов
 
@@ -424,7 +350,7 @@ https://habr.com/ru/articles/983768/ Self-supervising learning
 
 https://habr.com/ru/companies/selectel/articles/978482/ ML resources
 
-https://leanpub.com/TOBoML2 The Orange Book of Machine Learning - Green edition
+
  
 
 <https://arpitbhayani.me/blogs/qkv-matrices/>
@@ -453,15 +379,7 @@ https://blog.dailydoseofds.com/p/7-categorical-data-encoding-techniques-cd2
 
 https://habr.com/ru/companies/kryptonite/articles/961128/
 
-https://arxiv.org/abs/2511.18538
 
-https://github.com/harvard-edge/cs249r_book
-
-https://www.mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf
-
-https://github.com/chiphuyen/aie-book
-
-https://www.mlsysbook.ai/
 
 https://github.com/rasbt/LLMs-from-scratch  Sebastian Rashka. Build LLM From Scratch
 
@@ -481,16 +399,6 @@ https://habr.com/ru/articles/964438/ Linear regression and ML
 https://www.skills.google/paths/183  Free cource from Google
 
 
-1. LLM Introduction: http://lnkd.in/dMqbaZdK
-2. LLMs from Scratch: http://lnkd.in/dYYwEhYy
-3. Agentic AI Overview (Stanford): http://lnkd.in/dArmMt2i
-4. Building and Evaluating Agents: http://lnkd.in/dBWd2W8u
-5. Building Effective Agents: http://lnkd.in/dHfdebqw
-6. Building Agents with MCP: http://lnkd.in/dXuNHrRJ
-7. Building an Agent from Scratch: http://lnkd.in/da3ANw3w
-8. Philo Agents: http://lnkd.in/dq-BfZE5
-9. 
-https://github.com/mohamedrxo/simplegrad
 
 https://www.gilesthomas.com/2025/10/llm-from-scratch-20-starting-training-cross-entropy-loss
 
@@ -508,51 +416,6 @@ https://ma-lab-berkeley.github.io/deep-representation-learning-book/
 
 
 https://arxiv.org/pdf/1905.03375  Embarrassingly Shallow Autoencoders for Sparse Data
-
-Free book:
-https://www.manning.com/books/grokking-ai-algorithms-second-edition
-
-
-
-
-### Book
-https://www.manning.com/books/deep-learning-with-python-third-edition 
-
- 
-
-### Book with code: Understanding Deep Learning 
-https://udlbook.github.io/udlbook/
-
-Book:
-https://www.dataschool.io/master-machine-learning-book-preview/
-
-###  Sebastian Rashka
-
-https://sebastianraschka.com/
-
-https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch01/#table-of-contents
-
-https://sebastianraschka.com/books/ml-q-and-ai-chapters/ch02/
-
-https://habr.com/ru/articles/926160/  Russian translation of sebastianraschka.com
-
-https://habr.com/ru/articles/964658/
-
-https://habr.com/ru/articles/958880/
-
-https://sebastianraschka.com/notebooks/ml-notebooks/
-
-###  Book: Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow: Concepts, Tools, and Techniques to Build Intelligent Systems 3rd Edition
-
-https://www.amazon.com/Hands-Machine-Learning-Scikit-Learn-TensorFlow/dp/1098125975/ 
-
-### Book: https://www.cs.huji.ac.il/~shais/UnderstandingMachineLearning/copy.html
-
-### Book: Forecasting: Principles and Practice, the Pythonic Way
-https://otexts.com/fpppy
-
-### Book: Information Theory, Inference, and Learning Algorithms. David J.C. MacKay
-https://www.inference.org.uk/itprnn/book.pdf
 
 
 От промтов к агентам: как мы дошли до трансформеров, что LLM умеют уже сейчас и что нас ждёт в 2027 году
@@ -596,7 +459,7 @@ https://habr.com/ru/articles/926160/
  
 https://datasecrets.ru/articles
 
-### https://franknielsen.github.io/Books/CuratedBookLists.html
+
 
 https://habr.com/ru/articles/917664/ основополагающих статей мира ML
 
@@ -684,56 +547,6 @@ https://news.ycombinator.com/item?id=42156126
 https://num.pyro.ai/en/stable/   
 https://github.com/pyro-ppl/numpyro    
 
-
-1 → Understanding Machine Learning
-Theory meets algorithms.
-Foundations explained clearly.
-https://lnkd.in/dBME-P8q
-
-2 → Mathematics for ML
-Linear algebra to calculus.
-Build mathematical intuition.
-https://lnkd.in/diK8E9N4
-
-3 → Mathematical Analysis
-ML algorithms dissected.
-Theory behind the code.
-https://lnkd.in/dUBcRTUT
-
-4 → Deep Learning Principles
-Neural networks demystified.
-Physics meets AI.
-https://lnkd.in/dkrCCqBM
-
-5 → ML with Networks
-Neurons to backpropagation.
-Practical neural network guide.
-https://lnkd.in/dxujdJTM
-
-6 → Deep Learning Graphs
-Graph neural networks explained.
-Modern architectures covered.
-https://lnkd.in/d3-_cZVy
-
-7 → Algorithmic ML Aspects
-Complexity and optimization.
-Advanced algorithm theory.
-https://lnkd.in/drs_5znT
-
-8 → Probability Theory
-Statistical foundations covered.
-Examples and applications.
-https://lnkd.in/dbDN7kyi
-
-9 → Elementary Probability
-Beginner friendly approach.
-Real world applications.
-https://lnkd.in/dTMg54Ez
-
-10 → Advanced Data Analysis
-Statistical learning methods.
-Production level insights.
-https://lnkd.in/dvSmYrtc
 
 
 1. All algorithms implemented in Python (219k ⭐)
@@ -935,9 +748,7 @@ https://lnkd.in/gf_TAZkK
 
 🔸 Bonus: 
 Master the basics here: https://lnkd.in/gTQyc_fi
-
-
-s? ✅ • The new MCP standard? ✅
+s? 
 
 ➡️ LLM Course
 🔗https://lnkd.in/gZuAHUSj
@@ -965,126 +776,4 @@ s? ✅ • The new MCP standard? ✅
 
 ➡️ Open-source AI Cookbook
 🔗https://lnkd.in/ghT8c_cD
-
-
-Books and Papers
-Current
-
-* Large Language Models: A Deep Dive: Bridging Theory and Practice
-    * Uday Kamath, Kevin Keenan, Garrett Somers, and Sarah Sorenson
-    * August 20, 2024
-    * https://link.springer.com/book/10.1007/978-3-031-65647-7
-
-Future
-
-* Books
-    * How Large Language Models Work
-        * Edward Raff, Drew Farris, and Stella Biderman for Booz Allen Hamilton
-        * June 2025
-        * https://www.manning.com/books/how-large-language-models-work
-    * Large Vision-Language Models: Pre-training, Prompting, and Applications
-        * Kaiyang Zhou, Ziwei Liu, and Peng Gao
-        * August 31, 2025
-        * https://link.springer.com/book/10.1007/978-3-031-94969-2 
-    * Domain-Specific Small Language Models
-        * Guglielmo Iozzia
-        * December, 2025
-        * https://www.manning.com/books/domain-specific-small-language-models
-    * Build a Text-to-Image Generator (from Scratch)
-        * Mark Liu
-        * Early 2026
-        * https://www.manning.com/books/build-a-text-to-image-generator-from-scratch
-    * Image Generation Models: GANs, diffusion models, and transformers
-        * Vladimir Bok
-        * Early 2026
-        * https://www.manning.com/books/image-generation-models
-    * Foundations of Large Language Models
-        * Tong Xiao and Jingbo Zhu
-        * June 15, 2025
-        * https://arxiv.org/abs/2501.09223
-    * Deep Learning with Python, Third Edition
-        * François Chollet and Matthew Watson
-        * September 2025
-        * https://www.manning.com/books/deep-learning-with-python-third-edition 
-    * Agentic Design Patterns: A Hands-On Guide to Building Intelligent Systems
-        * Antonio Gullí
-        * November 2025
-        * https://link.springer.com/book/9783032014016 
-    * Build a Reasoning Model (From Scratch)
-        * Sebastian Raschka
-        * Summer 2026
-        * https://www.manning.com/books/build-a-reasoning-model-from-scratch
-    * The Hundred-Page Language Models Book: hands-on with PyTorch
-        * Andriy Burkov
-        * January 15, 2025
-        * https://thelmbook.com/
-    * Mastering Transformers: The Journey from BERT to Large Language Models and Stable Diffusion , Second Edition
-        * Savaş Yıldırım and Meysam Asgari-Chenaghlu
-        * June 2024
-        * https://www.packtpub.com/en-us/product/mastering-transformers-9781837631506?srsltid=AfmBOorRfZJyejDNVM1gcrnKWjsD9HdcetmT_mbFmtffQinMIpHd5sml
-    * AI Engineering: Building Applications with Foundation Models
-        * Chip Huyen
-        * December 2024
-        * https://www.oreilly.com/library/view/ai-engineering/9781098166298/
-    * Programming Generative AI: Large Multimodal Models with PyTorch and Hugging Face
-        * Jonathan Dinu
-        * July 27, 2026
-        * https://a.co/d/1ihSKhg
-    * Vector Databases
-        * Nitin Borwankar
-        * March 2026
-        * https://www.oreilly.com/library/view/vector-databases/9781098177584/
-    * AI Systems Performance Engineering
-        * Chris Fregly
-        * November 2025
-        * https://www.oreilly.com/library/view/ai-systems-performance/9798341627772/
-* Papers
-    * Attention Is All You Need
-        * Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
-        * August 2, 2023
-        * https://arxiv.org/abs/1706.03762
-    * Learning without training: The implicit dynamics of in-context learning
-        * Benoit Dherin, Michael Munn, Hanna Mazzawi, Michael Wunder, Javier Gonzalvo
-        * July 21, 2025
-        * https://arxiv.org/abs/2507.16003
-    * RLAD: Training LLMs to Discover Abstractions for Solving Reasoning Problems
-        * Yuxiao Qu, Anikait Singh, Yoonho Lee, Amrith Setlur, Ruslan Salakhutdinov, Chelsea Finn, Aviral Kumar
-        * October 2, 2025
-        * https://arxiv.org/abs/2510.02263
-    * Less is More: Recursive Reasoning with Tiny Networks
-        * Alexia Jolicoeur-Martineau
-        * October 6, 2025
-        * https://arxiv.org/abs/2510.04871v1
-    * Readability ≠ Learnability: Rethinking the Role of Simplicity in Training Small Language Models
-        * Ivan Lee, Taylor Berg-Kirkpatrick
-        * August 25, 2025
-        * https://openreview.net/forum?id=AFMGbq39bQ#discussion
-    * Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models
-        * Qizheng Zhang, Changran Hu, Shubhangi Upasani, Boyuan Ma, Fenglu Hong, Vamsidhar Kamanuru, Jay Rainton, Chen Wu, Mengmeng Ji, Hanchen Li, Urmish Thakker, James Zou, Kunle Olukotun
-        * October 6, 2025
-        * https://arxiv.org/abs/2510.04618
-
- 
-
-* 
-
-Strategy
-
-* Publishers
-    * Springer 
-        * https://link.springer.com/search?query=&content-type=Book&date=custom&dateFrom=2025&dateTo=2026&language=En&taxonomy=%22Artificial+Intelligence%22&facet-discipline=%22Computer+Science%22&sortBy=newestFirst
-    * O'Reilly 
-        * https://www.oreilly.com/search/skills/generative-ai/?type=book&rows=100&publication_date=early-release&language=en
-    * Manning 
-        * https://www.manning.com/catalog/data-science/machine-learning/large-language-models 
-        * https://www.manning.com/catalog/data-science/deep-learning/generative-ai
-    * MIT Press 
-        * https://mitpress.mit.edu/textbooks/computer-science/
-    * Cambridge University Press 
-        * https://www.cambridge.org/us/universitypress/subjects/computer-science?options%5B%5D=New+and+forthcoming
-    * Elsevier 
-        * https://shop.elsevier.com/search?query=ai&type=Book&sortBy=pubDateDesc&subjectArea=physical-sciences-and-engineering/computer-science/artificial-intelligence/artificial-intelligence-general
-* BookAuthority 
-    * https://bookauthority.org/books/new-generative-models-books
-
 
