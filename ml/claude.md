@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1096346/>
 
+<https://luongnv.com/claude-howto/>
+
 <img width="555" height="406" alt="image" src="https://github.com/user-attachments/assets/68086501-89ee-41bc-b38e-4304b12a660c" />
 
 
