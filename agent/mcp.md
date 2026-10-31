@@ -122,8 +122,40 @@ mcp-tutorial/
 
 Create `server.py`:
 
-```
-from mcp.server import MCPServermcp = MCPServer("MyPythonServer")@mcp.tool()def add(a: int, b: int) -> int:    """Add two integers."""    return a + b@mcp.tool()def multiply(a: int, b: int) -> int:    """Multiply two integers."""    return a * b@mcp.resource("info://server")def server_info() -> str:    """Return information about this server."""    return "Python MCP tutorial server"@mcp.prompt()def explain_math(operation: str) -> str:    """Create a prompt explaining a math operation."""    return f"Explain the {operation} operation with examples."if __name__ == "__main__":    mcp.run()
+```python
+
+from mcp.server import MCPServer
+
+mcp = MCPServer("MyPythonServer")
+
+
+@mcp.tool()
+def add(a: int, b: int) -> int:
+    """Add two integers."""
+    return a + b
+
+
+@mcp.tool()
+def multiply(a: int, b: int) -> int:
+    """Multiply two integers."""
+    return a * b
+
+
+@mcp.resource("info://server")
+def server_info() -> str:
+    """Return information about this server."""
+    return "Python MCP tutorial server"
+
+
+@mcp.prompt()
+def explain_math(operation: str) -> str:
+    """Create a prompt explaining a math operation."""
+    return f"Explain the {operation} operation with examples."
+
+
+if __name__ == "__main__":
+    mcp.run()
+
 ```
 
 Notice that the code looks like ordinary Python.
@@ -132,9 +164,7 @@ The decorators register the three MCP capabilities, while the SDK automatically 
 
 The current v2 SDK uses `MCPServer`. Older tutorials may use `FastMCP` from `mcp.server.fastmcp`, which belongs to the v1 API.&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://py.sdk.modelcontextprotocol.io\&sz=32)
-
-MCP Python SDK+1
+ 
 
 
 
@@ -197,8 +227,35 @@ Now let's call the server from another Python program, without Inspector.
 
 Create `client.py`:
 
-```
-import asynciofrom mcp import Clientasync def main():    # Connect directly to the server in memory.    from server import mcp    async with Client(mcp) as client:        # Discover tools        tools = await client.list_tools()        for tool in tools:            print("Tool:", tool.name)        # Execute tool        result = await client.call_tool(            "add",            {"a": 10, "b": 20}        )        print("Result:", result.structured_content)if __name__ == "__main__":    asyncio.run(main())
+```python
+
+import asyncio
+from mcp import Client
+
+
+async def main():
+    # Connect directly to the server in memory.
+    from server import mcp
+
+    async with Client(mcp) as client:
+
+        # Discover tools
+        tools = await client.list_tools()
+        for tool in tools:
+            print("Tool:", tool.name)
+
+        # Execute tool
+        result = await client.call_tool(
+            "add",
+            {"a": 10, "b": 20}
+        )
+
+        print("Result:", result.structured_content)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
 ```
 
 Run:
@@ -229,8 +286,41 @@ For full protocol testing, use Inspector or connect a client to a subprocess or 
 
 Create `test_server.py`:
 
-```
-import pytestfrom mcp import Clientfrom server import mcp@pytest.mark.anyioasync def test_add():    async with Client(mcp) as client:        result = await client.call_tool(            "add",            {"a": 10, "b": 20}        )        assert result.structured_content == {            "result": 30        }@pytest.mark.anyioasync def test_multiply():    async with Client(mcp) as client:        result = await client.call_tool(            "multiply",            {"a": 6, "b": 7}        )        assert result.structured_content == {            "result": 42        }@pytest.fixturedef anyio_backend():    return "asyncio"
+```python
+
+import pytest
+from mcp import Client
+from server import mcp
+
+
+@pytest.mark.anyio
+async def test_add():
+    async with Client(mcp) as client:
+        result = await client.call_tool(
+            "add",
+            {"a": 10, "b": 20}
+        )
+        assert result.structured_content == {
+            "result": 30
+        }
+
+
+@pytest.mark.anyio
+async def test_multiply():
+    async with Client(mcp) as client:
+        result = await client.call_tool(
+            "multiply",
+            {"a": 6, "b": 7}
+        )
+        assert result.structured_content == {
+            "result": 42
+        }
+
+
+@pytest.fixture
+def anyio_backend():
+    return "asyncio"
+
 ```
 
 Execute:
@@ -253,6 +343,7 @@ This verifies the server's tool registration, request dispatch, and result handl
 ## 8. Understand the actual MCP protocol lifecycle
 
 When a real MCP client connects to a server, the communication follows this sequence:
+<img width="446" height="403" alt="image" src="https://github.com/user-attachments/assets/7c5fe2b1-6ff0-4587-ad04-ae719cb98f74" />
 
 Simplified MCP initialization, discovery, and tool execution
 
@@ -273,8 +364,13 @@ The protocol handles capability negotiation, request IDs, errors, notifications,
 
 After understanding local communication, modify the last two lines of `server.py`:
 
-```
-if __name__ == "__main__":    mcp.run(        transport="streamable-http",        host="127.0.0.1",        port=8000    )
+```python
+if __name__ == "__main__":
+    mcp.run(
+        transport="streamable-http",
+        host="127.0.0.1",
+        port=8000
+    )
 ```
 
 Start the server:
@@ -291,8 +387,23 @@ http://127.0.0.1:8000/mcp
 
 You can now use an HTTP MCP client:
 
-```
-import asynciofrom mcp import Clientasync def main():    async with Client(        "http://127.0.0.1:8000/mcp"    ) as client:        result = await client.call_tool(            "add",            {"a": 5, "b": 7}        )        print(result.structured_content)asyncio.run(main())
+```python
+import asyncio
+from mcp import Client
+
+
+async def main():
+    async with Client(
+        "http://127.0.0.1:8000/mcp"
+    ) as client:
+        result = await client.call_tool(
+            "add",
+            {"a": 5, "b": 7}
+        )
+        print(result.structured_content)
+
+
+asyncio.run(main())
 ```
 
 The result should be `{'result': 12}`.
