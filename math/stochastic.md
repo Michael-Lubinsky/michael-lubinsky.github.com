@@ -1,4 +1,7 @@
+## Stochastic Process
 <https://hpaulkeeler.com/wp-content/uploads/2018/08/StochasticProcess.pdf>
+
+<https://people.math.harvard.edu/~knill/teaching/math144_1994/probability.pdf>
 
 ## Gaussian Process
 
