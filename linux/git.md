@@ -56,3 +56,14 @@ git switch -c имя_ветки
 
 ## pre commit
 https://pre-commit.com/
+
+
+## diff utils
+
+<https://github.com/ivankovic/omnidiff>
+
+<https://github.com/dandavison/delta> 
+
+<https://github.com/wilfred/difftastic>
+
+https://news.ycombinator.com/item?id=50325253
