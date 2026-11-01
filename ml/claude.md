@@ -33,12 +33,26 @@ Claude Code Full Course – Autonomous Goals, MCP, and VS Code Setup
 
 <https://habr.com/ru/articles/1073304/>
 
-You can now set Claude Code's output style to Concise.
+## You can now set Claude Code's output style to Concise.
 
 Claude leads with the result, keeps responses short, and still gives full detail when you ask.
 
 Turn it on in /config → Output style, or set "outputStyle": "Concise" in settings.json.
 
+<https://habr.com/ru/articles/1101876/>
+
+Skill s
+
+---
+name: s
+description: Shorten the last response.
+disable-model-invocation: true
+---
+
+Your last response is too long. The user won't read it. Shorten it. Keep only essential information.
+
+
+disable-model-invocation не даёт агенту вызывать скилл самому.
 
 ## claude -p
 
