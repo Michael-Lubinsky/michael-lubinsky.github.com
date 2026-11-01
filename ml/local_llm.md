@@ -1,5 +1,6 @@
 ## Local LLM Models
 
+<https://anubhavgoyal10.substack.com/p/what-is-the-best-local-llm-for-mac>
 
 ### GGUF 
 GGUF is the modern, self-contained file format standard for running quantized large language models, directly replacing its predecessor, GGML
