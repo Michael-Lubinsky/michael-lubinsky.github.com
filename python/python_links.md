@@ -10,6 +10,7 @@
 
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
+<https://anytree.readthedocs.io/en/latest/> AnyTree
 
 <https://www.reddit.com/r/Python/comments/1x3vy20/what_are_some_features_in_python_that_you/>
 
