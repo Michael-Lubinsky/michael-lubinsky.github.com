@@ -1,5 +1,7 @@
 ## Harness
 
+<https://github.com/walkinglabs/learn-harness-engineering>
+
 <https://habr.com/ru/articles/1093462/>
 
 <https://habr.com/ru/articles/1091582/>
