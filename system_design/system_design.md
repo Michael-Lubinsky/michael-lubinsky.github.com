@@ -24,6 +24,11 @@
 
 <https://scalequest.io/sources>
 
+
+## Plot Mermaid
+
+<https://pele.run/>
+
 <https://stately.ai/docs/studio>
 
 ### C4
