@@ -12,6 +12,8 @@
 
 <https://anytree.readthedocs.io/en/latest/> AnyTree
 
+<https://python-statemachine.readthedocs.io/en/latest/> State Machine
+
 <https://www.reddit.com/r/Python/comments/1x3vy20/what_are_some_features_in_python_that_you/>
 
 <https://habr.com/ru/articles/1068172/> Flat deeply nested JSON (allows easy insert in table)
