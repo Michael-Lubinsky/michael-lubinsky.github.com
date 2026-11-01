@@ -4,9 +4,10 @@
 
 <https://pdfmergely.com/> PDF merge
 
-## OCR image to markdown 
+## OCR image to text or markdown 
 Extract plain text from any image
-<https://github.com/kouhxp/textsnap>
+<https://github.com/kouhxp/textsnap>. 
+<https://github.com/byrizki/rusto-rs>
 
 <https://into.md/>
 
