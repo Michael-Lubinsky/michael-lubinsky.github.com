@@ -42,7 +42,7 @@ Turn it on in /config → Output style, or set "outputStyle": "Concise" in setti
 <https://habr.com/ru/articles/1101876/>
 
 Skill s
-
+```
 ---
 name: s
 description: Shorten the last response.
@@ -50,7 +50,7 @@ disable-model-invocation: true
 ---
 
 Your last response is too long. The user won't read it. Shorten it. Keep only essential information.
-
+```
 
 disable-model-invocation не даёт агенту вызывать скилл самому.
 
