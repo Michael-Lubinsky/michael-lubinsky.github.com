@@ -5,6 +5,8 @@
 
 <https://luongnv.com/claude-howto/>
 
+<https://habr.com/ru/companies/bothub/articles/1102356/>
+
 <img width="555" height="406" alt="image" src="https://github.com/user-attachments/assets/68086501-89ee-41bc-b38e-4304b12a660c" />
 
 
