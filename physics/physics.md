@@ -6,6 +6,8 @@
 
 <https://www.southampton.ac.uk/~doug/quantum_physics/index.html>
 
+<https://blackh0le.ru/>
+
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
 
 <https://archive.org/details/mir-titles>
