@@ -2,6 +2,13 @@
 are both methods for inference in probabilistic models, but they solve fundamentally different problems.
 
 
+### Viterbi
+
+https://en.wikipedia.org/wiki/Viterbi_algorithm
+Goal: найти наиболее правдоподобный путь в скрытой марковской цепи
+
+Viterbi Beam Search
+
 - Metropolis–Hastings (MH) is a stochastic sampling algorithm. It generates samples from a probability distribution.
 - Viterbi is a dynamic programming algorithm. It finds the single most probable sequence of hidden states in a Hidden Markov Model (HMM).
 
