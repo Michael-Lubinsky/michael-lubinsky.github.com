@@ -81,7 +81,7 @@ scikit-learn
 
 <https://habr.com/ru/companies/vtb/articles/1082608/> CatBoost
 
-XGBoost, LightGBM, and CatBoost are **gradient boosting algorithms**, used primarily for **supervised learning** (classification and regression), not clustering.
+XGBoost, LightGBM, and CatBoost are **gradient boosting algorithms**, used primarily for **supervised learning** (classification and regression), **not clustering**.
 
 | Algorithm | Type | Typical use |
 |---|---|---|
@@ -116,6 +116,8 @@ If your use case involves vehicle telemetry  boosting algorithms could be useful
 <https://habr.com/ru/articles/1046974/>
 
 <https://habr.com/ru/articles/1046942/>
+
+<https://github.com/Dima806/clustering_arena>
 
 <https://rukshanpramoditha.medium.com/spectral-clustering-explained-how-eigenvectors-reveal-complex-cluster-structures-e57e51391d77> Spectral Clustering 
 ```
