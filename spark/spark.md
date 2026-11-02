@@ -666,11 +666,57 @@ Tuning Strategy: Monitor GC activity in the Spark UI. If you see long GC pauses,
 ## 7. Adaptive Query Execution (AQE)
 
 <https://habr.com/ru/companies/gnivc/articles/967656/>
+https://medium.com/towards-data-engineering/adaptive-query-execution-aqe-how-spark-re-optimizes-queries-at-runtime-dd99a4bc767f
+
+In the previous articles, we explored Catalyst Optimizer and Cost-Based Optimization (CBO).
+
+Together they answer two important questions:
+
+- Catalyst → How can I rewrite this query?
+- CBO → Which execution plan looks cheapest?
+
+But Spark still has a problem.
+
+Cost-Based Optimization relies on estimates. And estimates are sometimes wrong.
+
+That’s why Spark introduced one of its most impactful architectural improvements:
+
+Adaptive Query Execution (AQE)
+
+AQE allows Spark to observe what’s actually happening during execution and modify parts of the plan when better options become available.
+
+Think of it like this:
+
+- Catalyst → Rewrite
+- CBO      → Predict
+- AQE      → Correct
 
 - spark.sql.adaptive.enabled: Enables Adaptive Query Execution, which allows Spark to re-optimize query plans during runtime based on statistics.
 - spark.sql.adaptive.coalescePartitions.enabled: Enables coalescing of shuffle output partitions to reduce the number of downstream tasks.
 - spark.sql.adaptive.skewJoin.enabled: Enables handling of skew joins by splitting larger partitions into smaller ones.
-spark.sql.adaptive.autoBroadcastJoinThreshold: Configures the threshold below which Spark will automatically broadcast a join side.
+- spark.sql.adaptive.autoBroadcastJoinThreshold: Configures the threshold below which Spark will automatically broadcast a join side.
+
+  <img width="1100" height="733" alt="image" src="https://github.com/user-attachments/assets/f5384928-5739-4b37-b54f-f997c9304423" />
+
+Instead of blindly following the original plan, Spark now pauses at **shuffle boundaries** and collects runtime statistics.
+
+The key idea is simple:
+
+Runtime statistics are often more accurate than pre-execution estimates.
+
+After a shuffle completes, Spark knows:
+
+Actual row counts
+Actual partition sizes
+Actual data distribution
+Actual shuffle volume
+Using that information, Spark may decide to modify the remaining execution plan.
+
+Importantly: AQE does NOT re-optimize the entire query.
+
+It only adjusts portions of the plan where better decisions can now be made.
+
+
 
 Tuning Strategy: Enabling AQE is generally recommended as it can automatically improve query performance. Tune the related parameters based on your data characteristics.
 
