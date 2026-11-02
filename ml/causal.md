@@ -14,6 +14,9 @@
 <https://egovoru.livejournal.com/247058.html>
 Единственное мнѣ извѣстное внятное опредѣленiе причинности - на основѣ каузальной статистики. На эту тему есть фундаментальная книга Judea Pearl - Causality.
 
+<https://medium.com/data-and-beyond/causal-machine-learning-what-it-is-and-where-not-to-use-it-c5b3914d6ee0>
+<https://github.com/Dima806/causal_ml_101/tree/main>
+
 ## Основной вывод - причинность является свойствомъ апрiорно выбранной физической модели мiра.
 Вотъ примѣръ, какъ работаетъ статистическая причинность.
 
