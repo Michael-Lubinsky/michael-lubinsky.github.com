@@ -2,6 +2,10 @@
 
 <https://vickiboykis.com/what_are_embeddings/>
 
+<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/bf95e9be-4515-445b-a8f0-457060acbd48" />
+
+
+
 <https://habr.com/ru/companies/selectel/articles/1081146/>
 
 <https://machinelearningmastery.com/build-and-understand-a-vector-database-from-scratch-in-10-easy-steps/>
