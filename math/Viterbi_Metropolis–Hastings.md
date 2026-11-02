@@ -15,13 +15,13 @@ $$Z=(z_1,z_2,\ldots,z_T)$$
 
 and observations
 
-$$X=(x_1,x_2,\ldots,x_T).$$
+$$X=(x_1,x_2,\ldots,x_T)$$
 
 We want to infer the hidden states given the observations.
 
 The posterior distribution is
 
-$$P(Z\mid X)\propto P(X\mid Z)P(Z).$$
+$$P(Z\mid X)\propto P(X\mid Z)P(Z)$$
 
 Both algorithms can use this distribution.
 
@@ -29,7 +29,7 @@ Both algorithms can use this distribution.
 
 Viterbi computes
 
-\\[ \boxed{Z^\*=\arg\max_Z P(Z\mid X)} \\]
+$$\boxed{Z^\*=\arg\max_Z P(Z\mid X)}$$
 
 This is called maximum a posteriori (MAP) sequence estimation.
 
@@ -39,11 +39,11 @@ The result is one optimal sequence.
 
 MH instead constructs a Markov chain whose stationary distribution is
 
-\\[ \boxed{\pi(Z)=P(Z\mid X)}. \\]
+$$\boxed{\pi(Z)=P(Z\mid X)}.$$
 
 It repeatedly proposes changes to the current sequence and accepts or rejects them according to
 
-\\[ \alpha(Z,Z') = \min\left( 1, \frac{P(Z'\mid X)q(Z\mid Z')} {P(Z\mid X)q(Z'\mid Z)} \right). \\]
+$$\alpha(Z,Z') = \min\left( 1, \frac{P(Z'\mid X)q(Z\mid Z')} {P(Z\mid X)q(Z'\mid Z)} \right)$$
 
 After convergence, the generated sequences approximate samples from the posterior.
 
@@ -78,13 +78,11 @@ This provides information about uncertainty that Viterbi does not provide.
 
 ## 3. How the algorithms work internally
 
-Viterbi
+Viterbi: Computes the optimal path using dynamic programming.
 
-Computes the optimal path using dynamic programming.
+Metropolis–Hastings: Explores possible states through random proposals.
 
-Metropolis–Hastings
-
-Explores possible states through random proposals.
+<img width="669" height="442" alt="image" src="https://github.com/user-attachments/assets/765784a4-6a7b-480e-a5b2-e54dd69bf7e0" />
 
 ### Viterbi recurrence
 
@@ -97,7 +95,7 @@ Define \\(\delta_t(j)\\) as the highest joint probability of any path ending at 
 
 Then
 
-\\[ \delta_t(j)=b_j(x_t)\max_i\left[\delta\_{t-1}(i)a\_{ij}\right]. \\]
+$$\delta_t(j)=b_j(x_t)\max_i\left[\delta\_{t-1}(i)a\_{ij}\right]$$
 
 By storing which previous state achieves each maximum and backtracking, Viterbi recovers the optimal path.
 
