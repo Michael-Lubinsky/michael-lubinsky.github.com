@@ -1,5 +1,7 @@
 ## ML System Design
 
+<https://boramorka.github.io/LLM-Book/>
+
 <https://medium.com/@ateebkhan1/what-happens-after-a-model-goes-live-building-a-small-ml-monitoring-system-8e84338a2e44>
 
 <https://amanxai.com/2026/10/23/10-mlops-projects-for-ai-engineers/>
