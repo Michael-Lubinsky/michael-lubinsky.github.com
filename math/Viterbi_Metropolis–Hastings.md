@@ -62,7 +62,8 @@ Suppose the posterior assigns the following probabilities to some of them:
 
 Illustrative posterior probabilities
 
-0%15%30%45%H H W WH W W WH H H WH W H W
+<img width="662" height="395" alt="image" src="https://github.com/user-attachments/assets/e51d0a78-3f7f-41a8-a12d-ddb5b0307a06" />
+
 
 The other 12 sequences have a combined probability of 0.20.
 
