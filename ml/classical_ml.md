@@ -38,6 +38,9 @@ predictions = model.predict(X)
 
  <https://medium.com/data-and-beyond/dimensionality-reduction-101-that-umap-plot-is-showing-you-clusters-that-do-not-exist-0653a0cacf72> t-SNE and UMAP
 
+ <https://github.com/Dima806/dim_reduction_arena>
+ 
+
 SVM <https://habr.com/ru/articles/1072750/>
 
 <https://en.wikipedia.org/wiki/Akaike_information_criterion>
