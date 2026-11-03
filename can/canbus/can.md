@@ -2,6 +2,53 @@
 
 <https://en.wikipedia.org/wiki/CAN_bus>
 
+
+CAN bus data is collected inside the vehicle, uploaded in raw form, and decoded into readable signals later. Here's the chain in the order the data moves.
+
+**1. What is on the bus**
+
+The CAN bus is the network that connects a car's electronic control units (ECUs): engine, battery management, brakes, charger, and others. Each ECU broadcasts short messages called *frames*. A frame has:
+- an **arbitration ID** (for example `0x3A2`), which identifies the message type;
+- up to **8 bytes of payload** (64 bytes with CAN FD);
+- a **timestamp**, which the logger adds when it receives the frame.
+
+The payload is raw bits. One frame may pack several signals, such as state of charge in bits 0–9 and battery temperature in bits 16–23, each with its own scale and offset. Messages repeat at fixed rates, typically every 10–100 ms. A single car can produce thousands of frames per second.
+
+**2. How it is collected**
+
+- **Data loggers** such as Vector, CSS Electronics CANedge, or Kvaser plug into the OBD-II port or tap the bus directly. They record every frame to an SD card or SSD. Research and test fleets use these.
+- **Telematics control unit (TCU)**: the car's built-in modem. It reads selected signals, usually downsampled or event-triggered, and sends them over cellular to the manufacturer's cloud. This is what connected-vehicle APIs expose, which is why cloud data is sparse compared to the raw bus.
+- **OBD-II dongles** query standard diagnostic values on request (PIDs) instead of passively listening. They are cheaper but give fewer signals.
+
+**3. Decoding**
+
+Raw frames are meaningless without a **DBC file**, the decoding dictionary. For each message ID it lists every signal's start bit, length, byte order, scale, offset, and unit. For example: physical value = raw × 0.1 + 0, unit %. Manufacturers keep their DBCs proprietary. Research teams either get them under agreement or reverse-engineer signals. In Python, the usual tools are `cantools` or `python-can`.
+
+**4. How it is stored**
+
+| Stage | Format | Why |
+| --- | --- | --- |
+| On the logger | MF4 (ASAM MDF4), BLF (Vector), ASC, or candump `.log` | Compact binary, keeps exact timestamps |
+| Raw landing in the cloud | The same files in S3 or ADLS, partitioned by vehicle and date | Immutable source you can always replay |
+| Robotics equivalent | ROS bags or MCAP | Same idea: timestamped multi-channel messages |
+| Decoded (silver) | Parquet or Delta, long format: `vehicle_id, ts, signal_name, value` | Handles hundreds of signals and new signals without schema changes |
+| Analytics (gold) | Wide, resampled tables (for example 1 Hz or 1-minute), plus derived trips and charge sessions | Easy SQL and dashboards |
+
+Partition decoded data by date and vehicle, and cluster or Z-order by signal name. Most queries ask for a few signals over a time range.
+
+**5. Data-quality issues worth mentioning in an interview**
+
+- Clock drift between the logger and GPS time.
+- Dropped frames and gaps when the vehicle sleeps.
+- A wrong DBC version, which produces garbage values.
+- Counter rollover.
+- Duplicate uploads after a retry.
+
+Keep the raw files plus the DBC version used to decode them. Then a corrected DBC simply triggers a backfill from raw.
+
+**Interview angle:** this maps directly to MRS. Robot teleoperation data in MCAP or ROS bags is the same problem: high-frequency raw logs in object storage, a decoding layer, and a metadata layer on top that answers "how much data, from which station, and at what quality."
+
+I can add a short version of this to the prep doc if you'd like.
 <https://cardog.app/blog/autonomous-driving-stack-technical-guide>
 
 <https://github.com/ajouatom/canbus-tools>
