@@ -119,6 +119,8 @@ If your use case involves vehicle telemetry  boosting algorithms could be useful
 
 <https://github.com/Dima806/clustering_arena>
 
+<https://medium.com/data-and-beyond/you-are-probably-using-the-wrong-clustering-algorithm-338512ee2cc6>
+
 <https://rukshanpramoditha.medium.com/spectral-clustering-explained-how-eigenvectors-reveal-complex-cluster-structures-e57e51391d77> Spectral Clustering 
 ```
 Steps to perform spectral clustering
