@@ -48,7 +48,7 @@ Keep the raw files plus the DBC version used to decode them. Then a corrected DB
 
 **Interview angle:** this maps directly to MRS. Robot teleoperation data in MCAP or ROS bags is the same problem: high-frequency raw logs in object storage, a decoding layer, and a metadata layer on top that answers "how much data, from which station, and at what quality."
 
-I can add a short version of this to the prep doc if you'd like.
+ 
 <https://cardog.app/blog/autonomous-driving-stack-technical-guide>
 
 <https://github.com/ajouatom/canbus-tools>
@@ -86,15 +86,14 @@ https://ruptela.com/decode-can-bus-messages-guide/
 
 <https://www.csselectronics.com/pages/chatgpt-can-bus-data-time-series-code-interpreter>
 
-Driving Behavior Analysis through CAN Bus
-Data
+Driving Behavior Analysis through CAN Bus Data
 
 <https://senseable.mit.edu/papers/pdf/20181105_Fugiglando-etal_DrivingBehavior_IEEE-TITS.pdf>
 
 Traffic anomaly detection algorithm for CAN bus using similarity analysis
 (PDF)
 
-https://www.sciencedirect.com/science/article/pii/S2667295224000102
+<https://www.sciencedirect.com/science/article/pii/S2667295224000102>
 
 
 ## 1. **Descriptive Analytics**
