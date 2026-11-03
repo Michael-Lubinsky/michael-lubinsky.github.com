@@ -2,6 +2,8 @@
 
 <https://medium.com/data-and-beyond/anomaly-detection-101-methods-comparison-b71d28318f01>
 
+<https://medium.com/data-and-beyond/anomaly-detection-in-python-best-practices-and-techniques-9b93d37244dc>
+
 <https://leftjoin.ru/blog/data-analysis/outliers-detection-in-python/>
 
 <https://habr.com/ru/articles/1048196/>
