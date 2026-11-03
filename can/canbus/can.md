@@ -1055,31 +1055,31 @@ Meta's job description repeatedly emphasizes correctness, data validation, anoma
 
 I would explain GPS/IMU data quality in terms of five concrete problems.
 
-Problem 1: Different sampling frequencies and timestamp synchronization
+#### Problem 1: Different sampling frequencies and timestamp synchronization
 
 GPS might produce one measurement per second, while an IMU may produce 50–200 measurements per second.
 
 Never join them using exact timestamp equality. Use event-time alignment, nearest-neighbor matching with a tolerance, or windowed aggregation. Preserve original timestamps and track clock offsets when devices use different clock domains.
 
-Problem 2: Missing sensor readings and collection gaps
+#### Problem 2: Missing sensor readings and collection gaps
 
 Phones may stop collecting due to application background restrictions, power management, permission changes, or signal loss.
 
 Detect gaps using differences between consecutive event timestamps, with thresholds specific to each sensor. Report completeness against the expected sampling schedule, and distinguish genuine missing data from intentional changes in sampling rate.
 
-Problem 3: Invalid GPS coordinates and noisy locations
+#### Problem 3: Invalid GPS coordinates and noisy locations
 
 GPS can jump unexpectedly, especially indoors or in urban environments.
 
 Validate latitude and longitude ranges, GPS accuracy, and implied movement speed. Use Haversine distance between consecutive points to detect implausible jumps, taking reported location accuracy into account.
 
-Problem 4: Duplicate and out-of-order events
+#### Problem 4: Duplicate and out-of-order events
 
 Mobile clients may retry uploads, causing duplicate records. Network interruptions can cause events to arrive out of order.
 
 Define stable event identities, deduplicate deterministically, preserve both event time and ingestion time, and use event-time processing with explicit late-data policies.
 
-Problem 5: IMU calibration, orientation, and outliers
+#### Problem 5: IMU calibration, orientation, and outliers
 
 IMU readings can contain sensor bias, noise, saturation, and changes in device orientation.
 
