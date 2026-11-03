@@ -16,6 +16,8 @@ GGUF — это «single-file format», один файл, внутри кото
 <https://huggingface.co/docs/transformers/main/en/quantization/gguf>
 
 
+<https://habr.com/ru/articles/1102764/>
+
 <https://habr.com/ru/companies/bothub/articles/1101764/>
 
 <https://www.manning.com/books/build-applications-with-local-ai-models-on-a-mac>
