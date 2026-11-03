@@ -5,7 +5,8 @@
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/bf95e9be-4515-445b-a8f0-457060acbd48" />
 
 
-
+ <https://medium.com/data-and-beyond/your-vector-database-is-losing-to-an-algorithm-from-1994-e8fe79868c45>
+ 
 <https://habr.com/ru/companies/selectel/articles/1081146/>
 
 <https://machinelearningmastery.com/build-and-understand-a-vector-database-from-scratch-in-10-easy-steps/>
