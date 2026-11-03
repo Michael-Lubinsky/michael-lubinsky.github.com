@@ -2,6 +2,8 @@
 
 <https://zerowithdot.com/blog/multi-time-series-data-generator/>
 
+<https://www.plotjuggler.io/>
+
 Time-series forecasting. Starting with the statistical foundations.
 
 <https://machinelearningmastery.com/time-series-forecasting-methods-in-python-cheat-sheet/>
