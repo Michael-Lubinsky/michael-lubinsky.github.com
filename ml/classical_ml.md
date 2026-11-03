@@ -113,6 +113,8 @@ If your use case involves vehicle telemetry  boosting algorithms could be useful
 
 <https://medium.com/data-and-beyond/you-are-probably-reading-xgboost-feature-importance-wrong-e509c0df17b9>
 
+<https://medium.com/data-and-beyond/how-to-forecast-time-series-with-xgboost-59c57a30cb5a>
+
 ## Clustering
 
 <https://habr.com/ru/articles/1046974/>
