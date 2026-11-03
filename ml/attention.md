@@ -11,6 +11,7 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 
 ##  Attention 
 <https://medium.com/data-science/attn-illustrated-attention-5ec4ad276ee3>
+<img width="1080" height="1149" alt="image" src="https://github.com/user-attachments/assets/0d33ddfc-b52b-409b-8f01-d6c3f36acd6e" />
 
 <img width="1080" height="1415" alt="image" src="https://github.com/user-attachments/assets/a7e89300-b88c-40c7-b79c-0134a616230b" />
 
