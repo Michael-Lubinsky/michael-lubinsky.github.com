@@ -909,4 +909,372 @@ HAVING DATEDIFF('second', MIN(event_ts), MAX(event_ts)) >= 120;
 
 ---
 
-If you share what exact signals you have (names/units), I can plug them into the templates above and hand you a drop-in notebook (bronze→silver transforms + charging detector + gold event table).
+# How to Present Your Samsung GPS and IMU Data Project in the Meta Robotics Interview
+
+Your Samsung project collecting GPS and IMU (Inertial Measurement Unit) data from mobile phones could be one of your strongest examples for the Meta Robotics Studio interview.
+
+It is particularly relevant because mobile phones and robots share important data-engineering challenges:
+
+- Multiple sensors producing timestamped measurements at different frequencies.
+- Large volumes of time-series data.
+- Missing, delayed, duplicated, and out-of-order records.
+- Sensor synchronization and data quality validation.
+- Raw data storage, structured analytics, and reporting.
+- Historical reprocessing when processing logic changes.
+
+The key is to present your Samsung work as a sensor data collection and operational analytics platform, rather than simply another ETL project.
+
+I would structure your explanation into six parts: business objective, architecture, file formats, data quality, backfills, and reporting.
+
+One important qualification: your resume confirms Samsung data engineering experience, but does not specify the implementation details of this particular GPS/IMU project. I'll distinguish recommended technical explanations from details you should only claim if they match your actual implementation.
+
+## 1. Start with a two-minute project explanation
+
+At Samsung, I worked on a data engineering project involving GPS and IMU sensor data collected from mobile phones.
+
+The main technical challenge was transforming raw sensor measurements into reliable, structured time-series datasets that could support analysis and reporting.
+
+GPS provided location, speed, and movement information, while IMU sensors, such as accelerometers and gyroscopes, captured device acceleration and angular velocity.
+
+These sensors produce data at different sampling rates, and their measurements may contain missing records, irregular timestamps, noisy values, and gaps caused by device or application behavior.
+
+My data engineering focus was on processing this data at scale, validating its quality, organizing it into efficient analytical tables, and making the results available for downstream analytics.
+
+The project is especially relevant to Meta Robotics because robot data collection involves similar challenges: managing heterogeneous sensor streams, ensuring data completeness and synchronization, tracking collection quality, and building reliable reporting on top of raw sensor data.
+
+If you were also responsible for ingestion, infrastructure, dashboards, or the complete architecture, state that explicitly. The interviewer will want to understand which components you personally designed and owned.
+
+## 2. Data flow: Explain the end-to-end architecture
+
+Here is an illustrative architecture using technologies from your Samsung experience.
+
+Samsung mobile phones
+
+GPS, accelerometer, gyroscope, device/session metadata
+
+Mobile data collection and upload
+
+Timestamped sensor events, local buffering, batch upload
+
+Raw object storage — AWS S3
+
+Original files preserved for replay and auditing
+
+Airflow orchestration
+
+Spark / PySpark processing
+
+Parsing, schema validation, timestamp normalization, deduplication
+
+Curated time-series tables
+
+Parquet / analytical warehouse tables
+
+Daily aggregates and quality metrics
+
+Collection duration, gaps, sensor availability, device health
+
+Tableau / Grafana dashboards
+
+Collection monitoring, data quality, historical trends
+
+Reference architecture for discussing the project. Confirm which components and storage systems were actually used at Samsung.
+
+### How to explain this architecture
+
+I would emphasize three engineering decisions.
+
+First, preserve the raw sensor data. GPS and IMU processing algorithms may change, and raw files allow historical reprocessing without collecting data again.
+
+Second, separate ingestion from analytical processing. The system that receives mobile uploads should not depend on downstream Spark transformations completing successfully.
+
+Third, maintain a structured metadata layer. Every recording should be traceable to a device, collection session, sensor type, time interval, processing version, and quality status.
+
+This third point is particularly relevant to Meta because the organization needs to understand not just how much sensor data was collected, but how much of it is usable for training.
+
+## 3. File formats: What was stored and why?
+
+An interviewer may ask why you used a particular storage format, especially when GPS and IMU have different data characteristics.
+
+### Raw GPS record
+
+An illustrative JSON event might look like this:
+
+```
+{
+  "device_id": "phone_1024",
+  "session_id": "session_501",
+  "timestamp_ms": 1793714400000,
+  "sensor_type": "gps",
+  "latitude": 37.3875,
+  "longitude": -121.9636,
+  "accuracy_m": 4.2,
+  "speed_mps": 8.5
+}
+```
+
+### Raw IMU record
+
+```
+{
+  "device_id": "phone_1024",
+  "session_id": "session_501",
+  "timestamp_ms": 1793714400010,
+  "sensor_type": "gyroscope",
+  "x": 0.012,
+  "y": -0.034,
+  "z": 0.005,
+  "unit": "rad/s"
+}
+```
+
+The gyroscope measures angular velocity. Accelerometer events would contain acceleration components, normally measured in m/s².
+
+These are illustrative schemas, not confirmed Samsung file layouts.
+
+### How to compare file formats
+
+| Format       | Strengths                                            | Typical role                     |
+| ------------ | ---------------------------------------------------- | -------------------------------- |
+| JSON / JSONL | Flexible, readable, easy to ingest                   | Raw events and metadata          |
+| Avro         | Compact, schema-aware, supports schema evolution     | Event transport and ingestion    |
+| Parquet      | Columnar, compressed, efficient for analytical scans | Curated sensor tables            |
+| Delta Lake   | ACID transactions, MERGE, versioning, Parquet-based  | Incremental tables and backfills |
+| MCAP         | Timestamped heterogeneous sensor messages            | Raw robotics recordings          |
+
+I would emphasize that Parquet or Delta tables are excellent for analytical queries, whereas raw event formats preserve source fidelity.
+
+For example, an analyst calculating average GPS accuracy over 30 days should not need to read every raw JSON file.
+
+A partitioned analytical table can be much more efficient.
+
+## 4. Data quality: The most important technical discussion
+
+This is where you can demonstrate significant engineering depth.
+
+Meta's job description repeatedly emphasizes correctness, data validation, anomaly detection, and reliable metrics.
+
+I would explain GPS/IMU data quality in terms of five concrete problems.
+
+Problem 1: Different sampling frequencies and timestamp synchronization
+
+GPS might produce one measurement per second, while an IMU may produce 50–200 measurements per second.
+
+Never join them using exact timestamp equality. Use event-time alignment, nearest-neighbor matching with a tolerance, or windowed aggregation. Preserve original timestamps and track clock offsets when devices use different clock domains.
+
+Problem 2: Missing sensor readings and collection gaps
+
+Phones may stop collecting due to application background restrictions, power management, permission changes, or signal loss.
+
+Detect gaps using differences between consecutive event timestamps, with thresholds specific to each sensor. Report completeness against the expected sampling schedule, and distinguish genuine missing data from intentional changes in sampling rate.
+
+Problem 3: Invalid GPS coordinates and noisy locations
+
+GPS can jump unexpectedly, especially indoors or in urban environments.
+
+Validate latitude and longitude ranges, GPS accuracy, and implied movement speed. Use Haversine distance between consecutive points to detect implausible jumps, taking reported location accuracy into account.
+
+Problem 4: Duplicate and out-of-order events
+
+Mobile clients may retry uploads, causing duplicate records. Network interruptions can cause events to arrive out of order.
+
+Define stable event identities, deduplicate deterministically, preserve both event time and ingestion time, and use event-time processing with explicit late-data policies.
+
+Problem 5: IMU calibration, orientation, and outliers
+
+IMU readings can contain sensor bias, noise, saturation, and changes in device orientation.
+
+Validate units and physical ranges, monitor device-specific distributions, distinguish raw acceleration from gravity-compensated acceleration, and preserve calibration and coordinate-frame metadata.
+
+### Show that you understand sampling-rate differences
+
+Illustrative GPS versus IMU samples over one second
+
+GPS: 1 Hz
+
+IMU: 25 Hz (illustrative)
+
+An excellent technical point is that resampling is not simply dropping IMU measurements.
+
+For example, you might calculate mean acceleration, variance, peak angular velocity, and sample completeness within a one-second window. Those features can be aligned with GPS observations while retaining the original high-frequency IMU data for detailed analysis.
+
+### Data quality metrics for dashboards
+
+You can suggest metrics such as:
+
+| Metric                  | Example calculation                                     |
+| ----------------------- | ------------------------------------------------------- |
+| GPS completeness        | Observed valid samples / expected samples               |
+| IMU completeness        | Observed samples / expected samples                     |
+| GPS accuracy            | Median reported horizontal accuracy                     |
+| Gap rate                | Number of excessive timestamp gaps per collection hour  |
+| Duplicate rate          | Duplicate events / received events                      |
+| Processing freshness    | Current time − latest successfully processed event time |
+| Session acceptance rate | Accepted sessions / evaluated sessions                  |
+
+For completeness metrics, expected counts must account for device configuration and periods when collection was intentionally paused.
+
+I would explicitly mention that invalid records should not necessarily be deleted. Often they should be retained with a quality flag, because they may be useful for debugging sensor or collection problems.
+
+## 5. Backfill: How to explain historical reprocessing
+
+Meta explicitly requires someone who can own backfills and metric restatements. This is a critical interview topic.
+
+I recommend explaining backfill through a realistic sensor-data incident.
+
+### Example scenario
+
+Suppose you discover that GPS coordinates were processed incorrectly for certain mobile devices because a source application changed its timestamp format.
+
+Three weeks of historical data may be affected.
+
+You need to correct the data without losing new incoming measurements.
+
+### Recommended backfill process
+
+1\. Identify affected devices, sessions, and dates
+
+2\. Retrieve original sensor files from raw storage
+
+3\. Reprocess with corrected, version-controlled PySpark logic
+
+4\. Validate corrected data against raw sources and expectations
+
+5\. Atomically replace affected data or MERGE corrected records
+
+6\. Recompute daily metrics and refresh dashboards
+
+### Technical points to emphasize
+
+Idempotency: Running the same backfill twice must not double-count sensor measurements.
+
+Partition-aware processing: Reprocess only affected dates, devices, or sessions when practical. But account for neighboring intervals if calculations depend on preceding or following samples.
+
+Concurrent ingestion: Prevent live ingestion and backfill from overwriting each other's results.
+
+Reconciliation: Compare source record counts, unique events, session coverage, and aggregate metrics before and after correction.
+
+Lineage: Track source files, processing version, execution ID, and the date of the correction.
+
+For example, with Delta Lake you could use a `MERGE` operation keyed by a stable event identifier or perform controlled partition replacement. With Snowflake, a similar approach can use staging tables and `MERGE`.
+
+### How to present it verbally
+
+For sensor data pipelines, I consider backfill an essential part of the architecture, not an exceptional maintenance operation.
+
+My preferred approach is to preserve immutable raw data so that if a parsing rule, timestamp conversion, or data quality definition changes, we can reprocess the affected historical period.
+
+I design transformations to be deterministic and idempotent, so rerunning the same input does not introduce duplicate records.
+
+After a backfill, I validate record counts, sensor coverage, and aggregated metrics. I also identify which reporting tables and dashboards need to be recomputed.
+
+An important part of the process is communicating changes to stakeholders, especially when historical metrics have been restated.
+
+This is a strong description of your engineering approach. For an actual Samsung project story, replace the hypothetical scenario with a correction you personally handled.
+
+## 6. Reporting and dashboards: Your Grafana experience is especially valuable
+
+Your Samsung experience includes GPS time-series pipelines and Grafana dashboards using Azure Data Explorer, PostgreSQL, and Prometheus.
+
+This is particularly useful for Meta because it demonstrates reporting across different types of data systems.
+
+Organize your dashboard discussion around three audiences:
+
+### A. Operational dashboard
+
+## Mobile Sensor Collection Operations
+
+
+Operational users would want to know whether collection is running, how much data is arriving, and which devices are experiencing problems.
+
+### B. Data engineering dashboard
+
+This dashboard monitors pipeline reliability rather than sensor behavior.
+
+Useful metrics include ingestion lag, Spark job failures, rejected record counts, schema changes, missing partitions, and freshness SLA violations.
+
+Your experience with Grafana and Prometheus is particularly relevant here.
+
+### C. Data quality dashboard
+
+This dashboard helps engineers and scientists identify data that may be unsuitable for downstream analysis.
+
+Examples include GPS accuracy distributions, IMU sampling gaps, devices with excessive missing measurements, and sensor outlier rates.
+
+###   Grafana experience
+
+ 
+
+One important aspect was integrating information from different backends, including Azure Data Explorer, PostgreSQL, and Prometheus.
+
+The dashboards supported time-range filtering, drill-down analysis, and operational monitoring. I also worked on SQL and time-series query optimization to make reporting more efficient.
+
+For Meta Robotics, I see a similar need: a dashboard should not only display collection volume, but also help operators and engineers understand why collection is below target — whether because of equipment availability, missing sensor data, processing delays, or data quality problems.
+
+The final sentence is particularly valuable because it connects your previous work directly to Meta's operational needs.
+
+## 7. The architectural decisions that demonstrate senior-level experience
+
+ 
+
+| Design decision            | What to explain                                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Batch versus streaming     | How quickly do operators need data? Is hourly reporting sufficient, or is near-real-time monitoring required? |
+| Raw versus curated storage | Preserve original measurements while providing efficient analytical datasets                                  |
+| Partitioning strategy      | Partition by date, with device/session filtering and suitable clustering or file layout                       |
+| Sensor synchronization     | Use event timestamps, clock metadata, and bounded alignment windows                                           |
+| Data validation            | Separate malformed, suspicious, and acceptable records                                                        |
+| Backfill                   | Support deterministic reprocessing without duplicate counting                                                 |
+| Reporting                  | Separate operational metrics from data pipeline health metrics                                                |
+
+  do not partition high-volume sensor tables by device ID and date automatically. If thousands of devices produce small files, this can cause severe partition fragmentation.
+
+Often, partitioning by collection date and using clustering or optimized file layout for device/session queries is preferable.
+
+## 8. How to connect Samsung directly to Meta Robotics
+
+ 
+
+| Samsung mobile sensors         | Meta robotics equivalent         |
+| ------------------------------ | -------------------------------- |
+| Mobile device                  | Robot or wearable device         |
+| GPS / IMU recording session    | Robot teleoperation session      |
+| Sensor sample count            | Collected sensor samples         |
+| Sensor completeness            | Training data completeness       |
+| Mobile device availability     | Robot equipment uptime           |
+| Collection interruption        | Robot session interruption       |
+| Sensor quality flags           | Training data quality evaluation |
+| Daily collection statistics    | Daily robot collection targets   |
+| Grafana operational monitoring | Robot fleet-status dashboards    |
+
+I would use the following statement near the end of your Samsung project explanation:
+
+> "The main similarity between my Samsung project and Meta Robotics is that both involve large-scale sensor data collection from physical devices. The challenge is not simply storing the data. It is ensuring that the data is complete, correctly timestamped, traceable to the original collection session, and reliable enough to support operational decisions."
+
+## 9. Prepare to answer these technical follow-up questions
+
+1\. How did you synchronize GPS and IMU data?
+
+Explain the actual timestamp sources and clock domains. Describe event-time alignment, sampling-frequency differences, and the tolerance used for matching or aggregation.
+
+2\. How did you detect GPS outliers?
+
+3\. What happened when mobile phones lost connectivity?
+
+4\. How did you backfill a failed day?
+
+5\. How did you guarantee data quality?
+
+6\. How did you optimize reporting queries?
+
+## 10. The real production incident.
+
+ 
+For example, a sensor collection gap, an unexpected GPS anomaly, an ingestion failure, a historical correction, or a discrepancy in a Grafana dashboard.
+
+Describe what happened, how you diagnosed it, the Python/SQL/Spark changes you made, and how you verified the result.
+
+That will be more convincing than describing an ideal architecture alone.
+
+ 
+ 
