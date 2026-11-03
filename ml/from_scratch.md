@@ -1,5 +1,7 @@
 ## Build LLM From Scratch
 
+<https://github.com/HandsOnLLM/Hands-On-Large-Language-Models> 
+
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/5e1b97e7-d871-491e-a40b-0588be25bf17" />
 
 <https://habr.com/ru/articles/1100314/> Why softmax is loosing gradient
