@@ -71,5 +71,6 @@ Find the area of the square.
 ```
 <img width="278" height="290" alt="image" src="https://github.com/user-attachments/assets/a75d1481-0e46-4dc1-bdcd-7dd253b5c804" />
 
+<img width="396" height="411" alt="image" src="https://github.com/user-attachments/assets/226795e4-95a0-4f39-9c46-c1ffccda3dde" />
 
 
