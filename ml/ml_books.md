@@ -4,10 +4,11 @@
 <https://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf>
 <https://github.com/harvard-edge/cs249r_book>
 
-<https://arxiv.org/abs/2409.02668>
+<https://arxiv.org/abs/2409.02668> Introduction to Machine Learning
 
-<https://arxiv.org/abs/2511.18538>
+<https://arxiv.org/abs/2511.18538> From Code Foundation Models to Agents and Applications: A Comprehensive Survey and Practical Guide to Code Intelligence
 
+<https://arxiv.org/abs/2605.29713> The Little Book of Generative AI Foundations: An Intuitive Mathematical Primer
 
 <https://github.com/chiphuyen/aie-book>
 
