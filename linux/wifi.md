@@ -16,8 +16,10 @@ book   by Paul Nahin, 'The Science of Radio'.
 
 <https://habr.com/ru/companies/bastion/articles/1019404/>
 
+## 5G
 
 <https://habr.com/ru/companies/ru_mts/articles/1057122/> 5G
+<https://habr.com/ru/companies/ruvds/articles/1102154/>
 
 ## 📡 Wireless KPI Metrics and Events
 
