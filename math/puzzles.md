@@ -19,6 +19,11 @@ Find the area of triangle.
 <img width="778" height="196" alt="image" src="https://github.com/user-attachments/assets/79f213d1-f6fc-4090-97de-8a27e671421b" />
 
 
+
+<img width="676" height="710" alt="image" src="https://github.com/user-attachments/assets/13420731-1efe-4182-8bae-f803da2174a2" />
+
+
+
 <img width="630" height="428" alt="image" src="https://github.com/user-attachments/assets/ba542655-8a02-47f4-acd8-8e820f2861d6" />
 
 
