@@ -7,7 +7,8 @@ How many boys and girls are in the family?
 ```
 ## The Chickens and Rabbits
 ```
-A farmer has 35 animals consisting of chickens and rabbits. Together they have 94 legs.
+A farmer has 35 animals consisting of chickens and rabbits.
+Together they have 94 legs.
 How many chickens and rabbits are there?
 ```
 
@@ -29,16 +30,13 @@ Give your answer in minutes and seconds.
 ## The Chocolate Bar
 ```
 A chocolate bar originally costs $10.
-
 Its price increases by x percent, then decreases by the same x percent.
-
 The final price is $9.60.
-
 What is x?
 ```
 
 There are 2 colored areas inside square on picture below.
-Which area is bigger : pink or blue?
+Which area is bigger : pink or purple?
 
 <img width="386" height="383" alt="image" src="https://github.com/user-attachments/assets/2f817edc-a0da-40b3-8a47-9a58ca6c44e0" />
 
