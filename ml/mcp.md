@@ -12,7 +12,11 @@
 
 <https://media.licdn.com/dms/document/media/v2/D561FAQHHHR0CKV6B_w/feedshare-document-url-metadata-scrapper-pdf/B56aFhY9GMGkA4-/0/1792635297636?e=1793300400&v=beta&t=gQOLhRPa8-4-uAc5KVwUPZsmBMdfc0i-xnm9aK4DoV8>
 
-#### Postgres MCP
+### Math MCP
+<https://github.com/amichae2/Math_MCP>
+
+
+### Postgres MCP
 <https://github.com/crystaldba/postgres-mcp>
 ```
 crystaldba/postgres-mcp  поднял его в режиме
