@@ -8,6 +8,8 @@
 
 <https://news.ycombinator.com/item?id=48770477>
 
+<https://modelviz.tsilva.eu>
+
  ONNX book
 <https://www.amazon.com/Ultimate-ONNX-Deep-Learning-Optimization/dp/9349887207/>
 
