@@ -18,7 +18,10 @@
 
 <https://habr.com/ru/articles/1068172/> Flat deeply nested JSON (allows easy insert in table)
 
+### PDF Tools
 <https://github.com/borb-pdf/borb> PDF manipulation
+
+<https://github.com/tsilva/pdfpress>
 
 ### HTTP
 <https://github.com/pydantic/httpx2>
