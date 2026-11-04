@@ -35,6 +35,5 @@ Find the area of the square.
 ```
 <img width="278" height="290" alt="image" src="https://github.com/user-attachments/assets/a75d1481-0e46-4dc1-bdcd-7dd253b5c804" />
 
-<img width="676" height="710" alt="image" src="https://github.com/user-attachments/assets/13420731-1efe-4182-8bae-f803da2174a2" />
 
 
