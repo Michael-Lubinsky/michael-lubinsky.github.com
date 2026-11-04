@@ -20,7 +20,7 @@ Find the area of triangle.
 
 
 
-<img width="676" height="710" alt="image" src="https://github.com/user-attachments/assets/13420731-1efe-4182-8bae-f803da2174a2" />
+
 
 
 
@@ -28,5 +28,12 @@ Find the area of triangle.
 
 
 
+
+A circle passes through two vertices of a square and is tangent to one of its sides.
+
+The height of the circular segment on picture is 1.
+
+Find the area of the square.
+<img width="676" height="710" alt="image" src="https://github.com/user-attachments/assets/13420731-1efe-4182-8bae-f803da2174a2" />
 
 
