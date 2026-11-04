@@ -11,6 +11,8 @@
 
 <https://medium.com/data-and-beyond/building-a-production-style-recommender-system-from-scratch-and-actually-testing-it-4745bf30257f>
 
+<https://www.youtube.com/playlist?list=PL-_cKNuVAYAUD9KkvOTEuPi5-AnXwLnb1>
+
 Рекомендательные системы и матричные разложения. Корреляционные модели. Латентные модели
 <https://www.youtube.com/watch?v=_ZNm6KQX5c8>
 
