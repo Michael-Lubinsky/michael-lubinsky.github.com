@@ -16,3 +16,12 @@ Find the area of triangle.
 
 
 
+<img width="778" height="196" alt="image" src="https://github.com/user-attachments/assets/79f213d1-f6fc-4090-97de-8a27e671421b" />
+
+
+<img width="630" height="428" alt="image" src="https://github.com/user-attachments/assets/ba542655-8a02-47f4-acd8-8e820f2861d6" />
+
+
+
+
+
