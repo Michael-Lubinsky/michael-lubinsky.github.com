@@ -201,3 +201,7 @@ https://habr.com/ru/companies/ruvds/articles/845652/  поиск собстве�
 
 https://habr.com/ru/articles/904130/
 
+### Jank programming language (native Closure)
+<https://www.youtube.com/watch?v=tHgApFhevrQ>
+
+
