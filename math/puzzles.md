@@ -77,7 +77,7 @@ Find the area of the square.
 <img width="433" height="298" alt="image" src="https://github.com/user-attachments/assets/9dffe77e-8b2c-4ac2-8b55-4b872c82bd0f" />
 
 
-## The areas S1, S2 and S3 are known. Find area of ? 
+#### The areas S1, S2 and S3 are known on picture below. Find area of triangle ? 
 
 
 <img width="291" height="192" alt="image" src="https://github.com/user-attachments/assets/dcc5cfe2-64c5-4100-ba86-64d300406537" />
