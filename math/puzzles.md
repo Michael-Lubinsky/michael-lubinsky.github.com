@@ -91,7 +91,7 @@ We want to find $S\_{AEF}=X$
 
 The key observation is that the area of the rectangle is determined by these three areas, even though its side lengths are unknown.
 
-Let the rectangle have width \\(w\\) and height \\(h\\). Define
+Let the rectangle have width $w$ and height $h$. Define
 
 $$ t=\frac{DE}{DC},\qquad u=\frac{BF}{BC}. $$
 
@@ -115,11 +115,11 @@ Thus
 
 $$ K^2-(P+Q+R)K+PR=0. $$
 
-Because \\(K\geq P\\) and \\(K\geq R\\), the geometrically valid root is
+Because $K\geq P$ and $K\geq R$, the geometrically valid root is
 
 $$ K=\frac{P+Q+R+\sqrt{(P+Q+R)^2-4PR}}{2}. $$
 
-The rectangle has area \\(2K\\), and the three outer triangles have total area \\(P+Q+R\\). Therefore
+The rectangle has area $2K$, and the three outer triangles have total area $P+Q+R$. Therefore
 
 $$ X=2K-(P+Q+R). $$
 
