@@ -92,8 +92,6 @@ Let the three known areas be
 
 $$ S\_{ADE}=P,\qquad S\_{ECF}=Q,\qquad S\_{AFB}=R. $$
 
-We want to find \\(S\_{AEF}=X\\).
-
 We want to find $S\_{AEF}=X$
 
 The key observation is that the area of the rectangle is determined by these three areas, even though its side lengths are unknown.
