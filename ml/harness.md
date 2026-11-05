@@ -33,4 +33,7 @@
 
 <https://levelup.gitconnected.com/agent-harness-a-no-bs-guide-8f69e3c0a3da>
 
-https://www.docetl.org/
+<https://www.docetl.org/>
+
+
+<https://kadhar.dev/blog/multi-agent-systems-from-scratch>
