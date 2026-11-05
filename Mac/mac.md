@@ -1,5 +1,8 @@
 ## Mac
 
+### Memory /CPU /Network  monitor
+<https://github.com/Ahmadjondev/MacMonitor>
+
 ### Voice assistant
 <https://opensuperwhisper.com/>
 
