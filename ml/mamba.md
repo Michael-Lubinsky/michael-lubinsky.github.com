@@ -5,6 +5,8 @@
 <https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
 
 
+<https://www.sergeynikolenko.ru/courses/mlspsu2025-3>
+
 Open Source implementation of Notebook LM with more flexibility and features
 <https://www.open-notebook.ai>
 <https://github.com/lfnovo/open-notebook>
