@@ -119,6 +119,14 @@ Shlomo Sternberg's "Dynamical Systems"
 ## Complex Analysis
 <https://www.youtube.com/playlist?list=PLp9ABVh6_x4Hhju9_YIfMUOiNRbxniTDY>  Белошапка
 
+
+<https://www.youtube.com/watch?v=7Uij5uN16qg> Math with Ming, 5 hours
+
+<https://www.youtube.com/watch?v=46yWLHdN98I> Math with Ming, 4 hours
+
+Complex Analysis and Physical Applications: 
+<https://www.youtube.com/watch?v=0Won5Vs_65E>
+
 https://www.youtube.com/watch?v=tZF9Uwu62l8 Шиз поясняет
 <https://www.youtube.com/watch?v=ntcC2Ou7xGw> Шиз поясняет. ТФКП 2.02. Особые точки и вычеты
 <https://www.youtube.com/watch?v=O2Lt3DqAC5E> Шиз поясняет
@@ -318,12 +326,5 @@ Answer: All three should move in the same direction - clockwise or anticlockwise
 
 
 
-### Complex Analysis
 
-<https://www.youtube.com/watch?v=7Uij5uN16qg> Math with Ming, 5 hours
-
-<https://www.youtube.com/watch?v=46yWLHdN98I> Math with Ming, 4 hours
-
-Complex Analysis and Physical Applications: 
-<https://www.youtube.com/watch?v=0Won5Vs_65E>
 
