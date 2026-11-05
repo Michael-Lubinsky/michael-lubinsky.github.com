@@ -24,7 +24,7 @@ Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundel
 
 <https://www.youtube.com/@viascience>
 
-<https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC>
+<https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC> Maths of Quantum Mechanics
 
 ### Hilbert Space
 
@@ -35,7 +35,8 @@ Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundel
 <https://youtu.be/DNhmYkTW_jI> 
 
 
-<https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>   Spinors
+<https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs>   Spinors For Beginners
+
 https://preposterousuniverse.com/podcast/
 
 https://www.youtube.com/watch?v=oLKER6zFZ0A
@@ -266,8 +267,11 @@ Vitaly Vanchurin
 
 ## Quantum Mechanics
 
+<https://www.youtube.com/playlist?list=PL9fMuYh2Tstk6TgCiA9XY7-8pmEh4pOA2> Вышка Онлайн
+
 <https://www.youtube.com/@valerykiselev6883/playlists> Kiselev
 
+<https://www.youtube.com/playlist?list=PLcsjsqLLSfNBOh-DQMDCUG3j0ZdgDm1uI> Квантовая механика - Казаков Кирилл Александрович
 
 <https://quantum-matters.com/>
 
