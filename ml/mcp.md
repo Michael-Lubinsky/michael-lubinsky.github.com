@@ -2,6 +2,8 @@
 
 <https://github.com/microsoft/mcp-for-beginners/>
 
+<https://mcp-explained.com/>
+
 <https://habr.com/ru/companies/mws/articles/1042792/>
 
 <https://habr.com/ru/articles/986798/>
