@@ -76,6 +76,12 @@ Find the area of the square.
 ## 
 <img width="433" height="298" alt="image" src="https://github.com/user-attachments/assets/9dffe77e-8b2c-4ac2-8b55-4b872c82bd0f" />
 
+
+##
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/f2417a53-5568-4e06-aa2c-6fa1b1a758b4" />
+
+
+
 ##
 The areas of triangles ADE, ECF and AFB are known.
 What is area of triangle AEF?
