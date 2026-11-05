@@ -73,4 +73,5 @@ Find the area of the square.
 
 <img width="396" height="411" alt="image" src="https://github.com/user-attachments/assets/226795e4-95a0-4f39-9c46-c1ffccda3dde" />
 
+<img width="1412" height="1028" alt="image" src="https://github.com/user-attachments/assets/61802205-c8b0-429a-9d2d-0fd86a0e3220" />
 
