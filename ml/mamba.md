@@ -2,6 +2,8 @@
 
 <https://github.com/jyotipmahes/ML-Interview-Prep/tree/main>
 
+<https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
+
 
 Open Source implementation of Notebook LM with more flexibility and features
 <https://www.open-notebook.ai>
