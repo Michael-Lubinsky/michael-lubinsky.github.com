@@ -73,10 +73,10 @@ Find the area of the square.
 
 <img width="396" height="411" alt="image" src="https://github.com/user-attachments/assets/226795e4-95a0-4f39-9c46-c1ffccda3dde" />
 
-
+## 
 <img width="433" height="298" alt="image" src="https://github.com/user-attachments/assets/9dffe77e-8b2c-4ac2-8b55-4b872c82bd0f" />
 
-
+##
 The areas of triangles ADE, ECF and AFB are known.
 What is area of triangle AEF?
 <img width="487" height="339" alt="image" src="https://github.com/user-attachments/assets/3373c065-6460-4d30-bb00-2fffec4fa9c3" />
@@ -86,6 +86,8 @@ Let the three known areas be
 $$ S\_{ADE}=P,\qquad S\_{ECF}=Q,\qquad S\_{AFB}=R. $$
 
 We want to find \\(S\_{AEF}=X\\).
+
+We want to find $S\_{AEF}=X$
 
 The key observation is that the area of the rectangle is determined by these three areas, even though its side lengths are unknown.
 
