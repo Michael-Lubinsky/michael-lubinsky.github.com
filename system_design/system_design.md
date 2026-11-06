@@ -1,18 +1,21 @@
 ## System Design
 
-<https://www.youtube.com/watch?v=soTfFFIQQ8U>
+<https://www.youtube.com/watch?v=soTfFFIQQ8U> Design Software Systems (3 hours)
 
 <https://www.ssp.sh/brain/data-engineering>
 
 <https://habr.com/ru/companies/hexlet/articles/1098714/>
 
+### Design Doc
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
+<https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
+<https://sharedphysics.com/lippitt-knoster-in-practice-field-notes-for-managing-complex-projects/>
 
 <https://habr.com/ru/companies/haulmont/articles/1085536/>
 
 <https://habr.com/ru/articles/1087468/>
 
-<https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
+
 
 <https://habr.com/ru/articles/1087678/> Domain Driven Development
 
