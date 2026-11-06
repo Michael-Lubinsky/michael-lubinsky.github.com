@@ -1056,6 +1056,7 @@ Set via properties:
 
 
 ### Core Hadoop Configuration (core-site.xml)
+
 | Parameter             | Description            | Recommended Setting            |
 | --------------------- | ---------------------- | ------------------------------ |
 | `fs.defaultFS`        | Default filesystem URI | `hdfs://<cluster-name>-m:8020` |
