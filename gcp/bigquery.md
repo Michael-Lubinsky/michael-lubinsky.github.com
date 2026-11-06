@@ -180,3 +180,158 @@ Sources:
 - [Revefi: Definitive Guide to BigQuery Pricing](https://www.revefi.com/blog/google-bigquery-pricing-guide)
 - [Yuki: BigQuery Costs guide](https://yukidata.com/google-bigquery-costs/)
 - [nOps: BigQuery editions pricing](https://www.nops.io/?p=33316)
+
+
+## 1. Does BigQuery have its own storage?
+
+Yes. BigQuery is both a storage system and a query engine. By default it keeps data in Google's own managed columnar storage (Capacitor files on Colossus). You never see those files, can't list them, and can't read them with another engine, except through the BigQuery Storage Read API.
+
+It can also act as a plain SQL engine over data stored somewhere else. That's where its version of managed vs. external tables comes in.
+
+## 2. Managed vs. external tables
+
+The idea maps closely to Databricks:
+
+| BigQuery | What it is | Databricks analogue |
+|---|---|---|
+| **Native (managed) table** | Data in BigQuery's internal storage. Full DML, time travel, clustering, streaming. `DROP TABLE` deletes the data. | Managed Delta table |
+| **External table** | Only metadata in BigQuery. Files stay in GCS (or Google Drive or Bigtable). Read-only, slower, and no caching or clustering benefits. `DROP` leaves the files alone. | External table (`LOCATION 's3://...'`) |
+| **BigLake table** | An external table plus a *connection*. Users don't need GCS permissions, and you get BigQuery's row- and column-level security, metadata caching, and Iceberg/Delta/Hudi support. Can also point at S3 or ADLS (BigQuery Omni). | Unity Catalog external table with a storage credential |
+| **BigLake Iceberg tables in BigQuery** | BigQuery *writes* Iceberg/Parquet into **your** GCS bucket. You get full DML, and other engines (Spark, Trino) can read the same files. | Managed table with an open format, or Delta + UniForm |
+| **Federated queries** | `EXTERNAL_QUERY()` against Cloud SQL, AlloyDB, or Spanner. The query is pushed down live. | Lakehouse Federation |
+
+Examples:
+
+```sql
+-- External table over Parquet in GCS
+CREATE EXTERNAL TABLE raw.events_ext
+OPTIONS (format = 'PARQUET', uris = ['gs://my-bucket/events/*.parquet']);
+
+-- With Hive-style partitions (dt=2026-11-01/)
+CREATE EXTERNAL TABLE raw.events_ext
+WITH PARTITION COLUMNS
+OPTIONS (format='PARQUET',
+         uris=['gs://my-bucket/events/*'],
+         hive_partition_uri_prefix='gs://my-bucket/events');
+
+-- BigLake (governed) table: add a connection
+CREATE EXTERNAL TABLE raw.events_lake
+WITH CONNECTION `my-project.us.my_gcs_conn`
+OPTIONS (format='PARQUET', uris=['gs://my-bucket/events/*']);
+
+-- Federated query to Cloud SQL Postgres
+SELECT * FROM EXTERNAL_QUERY('my-project.us.pg_conn',
+  'SELECT id, status FROM orders WHERE updated_at > now() - interval ''1 day''');
+```
+
+**Rule of thumb:**
+- Use native tables for anything that's queried often. They're faster, and storage that hasn't been modified for 90 days gets a lower price automatically.
+- Use external or BigLake tables for raw landing zones, or for data other engines also need to own.
+- If you want an open format that Spark can also write to, use Iceberg.
+
+## 3. BigQuery with Airflow
+
+You'd usually run Airflow either as **Cloud Composer** (Google's managed Airflow) or self-hosted, with the `apache-airflow-providers-google` package. Authentication uses the `google_cloud_default` connection, backed by a service account or Workload Identity.
+
+The main building blocks:
+
+| Task | Operator / sensor |
+|---|---|
+| Run any SQL (query, DML, DDL) | `BigQueryInsertJobOperator`, the modern catch-all |
+| Load GCS files into a table | `GCSToBigQueryOperator` |
+| Export a table to GCS | `BigQueryToGCSOperator` |
+| Wait for files to land | `GCSObjectExistenceSensor` / `GCSObjectsWithPrefixExistenceSensor` |
+| Wait for a table or partition | `BigQueryTableExistenceSensor`, `BigQueryTablePartitionExistenceSensor` |
+| Data-quality gates | `BigQueryCheckOperator`, `BigQueryValueCheckOperator`, `BigQueryColumnCheckOperator` |
+| Create or drop datasets and tables | `BigQueryCreateEmptyDatasetOperator`, etc. (or just DDL through InsertJob) |
+
+Older guides use `BigQueryExecuteQueryOperator`. It's deprecated, so use `BigQueryInsertJobOperator` instead.
+
+A typical daily ELT DAG: wait for files, load them to staging, MERGE into the target, then check quality.
+
+```python
+from datetime import datetime
+from airflow import DAG
+from airflow.providers.google.cloud.sensors.gcs import GCSObjectsWithPrefixExistenceSensor
+from airflow.providers.google.cloud.transfers.gcs_to_bigquery import GCSToBigQueryOperator
+from airflow.providers.google.cloud.operators.bigquery import (
+    BigQueryInsertJobOperator, BigQueryCheckOperator,
+)
+
+PROJECT = "my-project"
+BUCKET = "my-landing-bucket"
+
+with DAG(
+    dag_id="events_daily",
+    start_date=datetime(2026, 11, 1),
+    schedule="@daily",
+    catchup=True,
+    max_active_runs=1,
+    default_args={"retries": 2},
+) as dag:
+
+    wait_for_files = GCSObjectsWithPrefixExistenceSensor(
+        task_id="wait_for_files",
+        bucket=BUCKET,
+        prefix="events/dt={{ ds }}/",
+        mode="reschedule",            # frees the worker slot while waiting
+        poke_interval=300,
+        timeout=6 * 3600,
+    )
+
+    load_staging = GCSToBigQueryOperator(
+        task_id="load_staging",
+        bucket=BUCKET,
+        source_objects=["events/dt={{ ds }}/*.parquet"],
+        source_format="PARQUET",
+        # $YYYYMMDD decorator = write only that partition → idempotent reruns
+        destination_project_dataset_table=f"{PROJECT}.staging.events${{{{ ds_nodash }}}}",
+        write_disposition="WRITE_TRUNCATE",
+        time_partitioning={"type": "DAY", "field": "event_ts"},
+    )
+
+    merge_into_target = BigQueryInsertJobOperator(
+        task_id="merge_into_target",
+        configuration={
+            "query": {
+                "query": """
+                    MERGE analytics.events T
+                    USING (
+                      SELECT * FROM staging.events
+                      WHERE DATE(event_ts) = '{{ ds }}'
+                      QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY event_ts DESC) = 1
+                    ) S
+                    ON T.event_id = S.event_id AND DATE(T.event_ts) = '{{ ds }}'
+                    WHEN MATCHED THEN UPDATE SET payload = S.payload
+                    WHEN NOT MATCHED THEN INSERT ROW
+                """,
+                "useLegacySql": False,
+                "maximumBytesBilled": str(500 * 1024**3),   # cost guardrail
+            },
+            "labels": {"dag": "events_daily"},              # shows up in INFORMATION_SCHEMA.JOBS
+        },
+        location="US",
+    )
+
+    quality_check = BigQueryCheckOperator(
+        task_id="quality_check",
+        sql="""
+            SELECT COUNT(*) > 0 AND COUNTIF(device_id IS NULL) = 0
+            FROM analytics.events WHERE DATE(event_ts) = '{{ ds }}'
+        """,
+        use_legacy_sql=False,
+        location="US",
+    )
+
+    wait_for_files >> load_staging >> merge_into_target >> quality_check
+```
+
+**Patterns that matter in practice:**
+- **Make tasks idempotent per partition.** Write with `WRITE_TRUNCATE` to `table$YYYYMMDD`, or MERGE on a key restricted to `{{ ds }}`. That way retries and backfills are safe. It's the same discipline as `replaceWhere` in Delta.
+- **Keep SQL in `.sql` files.** Set `template_searchpath` on the DAG and pass `"query": "{% include 'sql/merge_events.sql' %}"`.
+- **Let BigQuery do the work.** Airflow should only orchestrate. Don't pull data into the worker with `BigQueryHook().get_pandas_df()` unless it's small.
+- **Use `deferrable=True`** on InsertJob and the sensors. Long BigQuery jobs then wait in the triggerer instead of occupying a worker.
+- **Add job labels and `maximumBytesBilled`.** They let you attribute cost per DAG and stop a bad query before it becomes expensive.
+- **Consider Dataform or dbt for the transformation layer.** Many teams have Airflow trigger a Dataform or dbt run for the SQL models, and keep Airflow for ingestion, sensors, and cross-system dependencies.
+
+If you'd like, I can sketch how the same pipeline would look as a Databricks Workflow next to this Airflow version. That kind of comparison tends to come up in interviews.
