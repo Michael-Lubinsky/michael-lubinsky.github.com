@@ -1,3 +1,5 @@
+{% raw %}
+
 ## BigQuery
  
 
@@ -666,3 +668,5 @@ This would allow you to discuss the same engineering problems across BigQuery, S
  First expand query troubleshooting, CDC/MERGE, incremental processing, and cost optimization. 
  Then implement the telemetry example.   
 
+ 
+{% endraw %}
