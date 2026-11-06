@@ -328,7 +328,10 @@ with DAG(
 
 **Patterns that matter in practice:**
 - **Make tasks idempotent per partition.** Write with `WRITE_TRUNCATE` to `table$YYYYMMDD`, or MERGE on a key restricted to `{{ ds }}`. That way retries and backfills are safe. It's the same discipline as `replaceWhere` in Delta.
-- **Keep SQL in `.sql` files.** Set `template_searchpath` on the DAG and pass `"query": "{% include 'sql/merge_events.sql' %}"`.
+- **Keep SQL in `.sql` files.** Set `template_searchpath` on the DAG and pass
+```
+  "query": "{% include 'sql/merge_events.sql' %}"
+```
 - **Let BigQuery do the work.** Airflow should only orchestrate. Don't pull data into the worker with `BigQueryHook().get_pandas_df()` unless it's small.
 - **Use `deferrable=True`** on InsertJob and the sensors. Long BigQuery jobs then wait in the triggerer instead of occupying a worker.
 - **Add job labels and `maximumBytesBilled`.** They let you attribute cost per DAG and stop a bad query before it becomes expensive.
