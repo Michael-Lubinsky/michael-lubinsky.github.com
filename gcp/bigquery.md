@@ -497,6 +497,7 @@ Add an example that investigates:
 - Shuffle spill and insufficient shuffle capacity
 - Slot contention and query concurrency
 For example, add a diagnostic SQL query:
+```sql
 SELECT
   job_id,
   ROUND(total_bytes_processed / POW(1024, 3), 2)
@@ -515,7 +516,7 @@ WHERE creation_time >= TIMESTAMP_SUB(
   AND error_result IS NULL
 ORDER BY total_slot_ms DESC
 LIMIT 20;
-
+```
 
 Interview question: A query previously completed in 20 seconds. Today it takes 3 minutes, although the table size has not changed. How do you investigate?
 
@@ -542,6 +543,7 @@ Analytics-ready tables
 
 
 Include the following SQL:
+```sql
 MERGE analytics.users AS target
 USING (
   SELECT * EXCEPT(rn)
@@ -567,7 +569,7 @@ WHEN NOT MATCHED THEN
   INSERT (user_id, name, updated_at)
   VALUES (source.user_id, source.name,
           source.updated_at);
-
+```
 
 Explain the assumptions: sequence_num provides deterministic ordering, the staging data has been validated, and the update policy must handle equal timestamps correctly.
 
@@ -614,7 +616,9 @@ Google Cloud Docs
 I would finish the document with 15–20 questions, each answered in approximately 1–3 minutes.
 
 Here are ten especially useful ones:
-1.Why can SELECT * LIMIT 10 still scan a large amount of data?LIMIT restricts returned rows, not necessarily the storage scanned. Column projection and partition pruning are more useful.
+1.Why can SELECT * LIMIT 10 still scan a large amount of data?  
+LIMIT restricts returned rows, not necessarily the storage scanned. 
+Column projection and partition pruning are more useful.  
 
 
 
@@ -637,6 +641,7 @@ Here are ten especially useful ones:
 10.When would you choose BigQuery over Databricks?
 
 4. Corrections worth making in the existing document
+   
 After reading your actual Markdown, I also noticed several points worth refining before an interview.
 - Slots versus Spark executor cores: Your analogy is useful, but a slot is not literally one Spark executor core. Describe it as BigQuery's unit of compute capacity.
 - Shuffle and memory failures: The statement that BigQuery's shuffle architecture prevents out-of-memory failures is too strong. BigQuery queries can still encounter resource limits, skew, and shuffle quota problems.
@@ -655,4 +660,6 @@ Include event-time handling, partitioning, clustering, backfills, data quality t
 
 This would allow you to discuss the same engineering problems across BigQuery, Snowflake, and Databricks, while demonstrating platform-specific knowledge.
 
- First expand query troubleshooting, CDC/MERGE, incremental processing, and cost optimization. Then implement the telemetry example. Those additions will make your document much more useful for a senior Data Engineer interview than adding more introductory BigQuery features.
+ First expand query troubleshooting, CDC/MERGE, incremental processing, and cost optimization. 
+ Then implement the telemetry example.   
+
