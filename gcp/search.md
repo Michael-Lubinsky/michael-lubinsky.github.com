@@ -128,4 +128,3 @@ This is common in enterprises that run both platforms:
 - **Handle deletes.** When a source doc is removed or its permissions change, the chunk must disappear from the index. Delta Sync handles this automatically if you delete from the source table. On BigQuery, deletes in the table propagate to the index.
 - **Build an evaluation set** of real queries with known good documents, and track recall@k and MRR before tuning anything.
 
-If it's useful for your Meta interview prep, I can turn this into a system-design walkthrough with scale numbers, failure modes, and trade-offs, in the format a design round expects.
