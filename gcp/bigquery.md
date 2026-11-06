@@ -456,3 +456,203 @@ A common pattern is to put production ETL on an Enterprise reservation and leave
 Sources:
 - [DoiT: BigQuery cost optimization 2026](https://www.doit.com/blog/bigquery-cost-optimization)
 - [BigQuery pricing (Google Cloud)](https://cloud.google.com/bigquery/pricing.html)
+
+
+For a BigQuery Data Engineer interview, I recommend expanding your bigquery.md beyond explaining BigQuery architecture and SQL syntax.
+
+Your existing topics provide a good foundation. The most valuable additions would focus on practical engineering decisions, troubleshooting, performance optimization, and production data pipelines.
+
+An interviewer is likely to ask not only how BigQuery works, but also:
+- Why did you choose a particular table design?
+- Why is a query slow or expensive?
+- How do you implement incremental ingestion and deduplication?
+- How do you handle late-arriving events and backfills?
+- How do you build reliable pipelines and control costs?
+- How does BigQuery differ from Snowflake and Databricks in real-world workloads?
+I would organize the additions into the following priorities.
+1. Recommended new sections
+Priority	Topic	What you should be able to explain
+High	Query execution and troubleshooting	Slots, stages, shuffle, skew, execution plans
+High	Partitioning and clustering	Partition pruning, clustering tradeoffs, reclustering
+High	Incremental ELT and CDC	MERGE, deduplication, late events, idempotency
+High	Cost optimization	Bytes scanned, slot consumption, reservations
+High	Production data pipelines	Pub/Sub, Dataflow, GCS, BigQuery, Airflow
+High	Data quality and testing	Assertions, reconciliation, schema evolution
+Medium	Security and governance	IAM, row access policies, column masking
+Medium	BigQuery internals	Dremel execution, shuffle, Capacitor
+Medium	Monitoring and observability	INFORMATION_SCHEMA, job metrics, alerts
+Medium	Dimensional modeling	Facts, dimensions, SCD Type 2
+Medium	Semi-structured data	JSON, nested and repeated fields
+Medium	BigQuery vs. Snowflake vs. Databricks	Architecture, optimization, workload selection
+
+Some of these topics already appear in your document. I would deepen those sections with SQL examples, failure scenarios, and interview questions rather than repeat introductory explanations.
+2. Five additions I would write first
+A. How to debug a slow BigQuery query
+This is one of the most valuable interview topics.
+
+Add an example that investigates:
+- High slot consumption versus high bytes scanned
+- Broadcast joins versus hash/shuffle joins
+- Data skew and high-cardinality joins
+- Shuffle spill and insufficient shuffle capacity
+- Slot contention and query concurrency
+For example, add a diagnostic SQL query:
+SELECT
+  job_id,
+  ROUND(total_bytes_processed / POW(1024, 3), 2)
+    AS gb_processed,
+  ROUND(total_slot_ms / 1000, 2)
+    AS slot_seconds,
+  TIMESTAMP_DIFF(
+    end_time, start_time, SECOND
+  ) AS duration_seconds
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE creation_time >= TIMESTAMP_SUB(
+    CURRENT_TIMESTAMP(), INTERVAL 1 DAY
+  )
+  AND job_type = 'QUERY'
+  AND state = 'DONE'
+  AND error_result IS NULL
+ORDER BY total_slot_ms DESC
+LIMIT 20;
+
+
+Interview question: A query previously completed in 20 seconds. Today it takes 3 minutes, although the table size has not changed. How do you investigate?
+
+A strong answer would compare execution plans, slot contention, shuffle volume, skew, and changes in query inputs or competing workloads. Google's execution graph and performance insights expose several of these diagnostics. 
+
+Google Cloud Docs+1
+
+B. CDC, deduplication, and idempotent MERGE
+Your document already introduces MERGE, but production scenarios deserve more attention.
+
+Consider a pipeline:
+PostgreSQL
+
+Datastream
+
+BigQuery raw
+
+
+
+Deduplicate + MERGE
+Incremental transformation
+BigQuery curated
+Analytics-ready tables
+
+
+Include the following SQL:
+MERGE analytics.users AS target
+USING (
+  SELECT * EXCEPT(rn)
+  FROM (
+    SELECT *,
+      ROW_NUMBER() OVER (
+        PARTITION BY user_id
+        ORDER BY updated_at DESC, sequence_num DESC
+      ) AS rn
+    FROM staging.users
+  )
+  WHERE rn = 1
+) AS source
+ON target.user_id = source.user_id
+
+WHEN MATCHED
+  AND source.updated_at > target.updated_at
+THEN UPDATE SET
+  name = source.name,
+  updated_at = source.updated_at
+
+WHEN NOT MATCHED THEN
+  INSERT (user_id, name, updated_at)
+  VALUES (source.user_id, source.name,
+          source.updated_at);
+
+
+Explain the assumptions: sequence_num provides deterministic ordering, the staging data has been validated, and the update policy must handle equal timestamps correctly.
+
+Interview question: What happens if two source rows match the same target row in a BigQuery MERGE?
+
+Explain why source deduplication is essential for an updating MERGE, and how to make repeated pipeline runs safe.
+C. Incremental processing and backfills
+Add a comparison of three strategies:
+Strategy	Best use case	Risk
+Watermark using updated_at	Incremental batch	Late-arriving records
+Partition overwrite	Rebuild specific dates	Accidentally replacing incomplete partitions
+MERGE by business key	CDC and upserts	Expensive target scans
+
+A particularly good interview scenario:
+
+You ingest 500 million telemetry events daily. Yesterday, you discovered that 10 days of data were processed incorrectly. How do you backfill without rebuilding the entire table?
+
+Explain partition-scoped reprocessing, staging, validation, atomic replacement where applicable, and idempotency.
+D. BigQuery data modeling: nested versus star schema
+Your document recommends nested STRUCT and ARRAY fields. Add a more nuanced explanation of when not to denormalize.
+
+For example, compare:
+- A star schema with fact_orders, dim_customer, and dim_product.
+- A denormalized orders table with repeated line items.
+- Slowly changing dimensions requiring historical attributes.
+Interview question: Should every BigQuery analytical model use nested data instead of a star schema?
+
+Answer: No. Nested repeated data can avoid expensive joins for hierarchical records, but dimensional models remain valuable for shared dimensions, historical tracking, and consistent reporting.
+E. BigQuery monitoring and cost governance
+Add operational SQL examples covering:
+- Identifying expensive users and queries
+- Detecting queries scanning unexpected volumes
+- Measuring slot utilization
+- Monitoring failed jobs
+- Detecting pipeline SLA violations
+- Budget controls and maximum bytes billed
+Also explain the distinction between reducing query runtime and reducing query cost. They are not necessarily the same optimization problem, especially across on-demand and capacity-based pricing.
+
+Google's query optimization documentation is a useful reference. 
+
+Google Cloud Docs
+
+3. Add a dedicated interview questions section
+I would finish the document with 15–20 questions, each answered in approximately 1–3 minutes.
+
+Here are ten especially useful ones:
+1.Why can SELECT * LIMIT 10 still scan a large amount of data?LIMIT restricts returned rows, not necessarily the storage scanned. Column projection and partition pruning are more useful.
+
+
+
+2.What is a BigQuery slot?
+
+3.How does BigQuery execute a large JOIN?
+
+4.What is the difference between partitioning and clustering?
+
+5.Why might a MERGE be expensive?
+
+6.How do you process late-arriving events?
+
+7.How do you implement SCD Type 2?
+
+8.How do you optimize a query with high shuffle volume?
+
+9.How do you monitor BigQuery costs?
+
+10.When would you choose BigQuery over Databricks?
+
+4. Corrections worth making in the existing document
+After reading your actual Markdown, I also noticed several points worth refining before an interview.
+- Slots versus Spark executor cores: Your analogy is useful, but a slot is not literally one Spark executor core. Describe it as BigQuery's unit of compute capacity.
+- Shuffle and memory failures: The statement that BigQuery's shuffle architecture prevents out-of-memory failures is too strong. BigQuery queries can still encounter resource limits, skew, and shuffle quota problems.
+- Exactly-once streaming: Clarify that the Storage Write API's exactly-once guarantees depend on the stream type and use of offsets.
+- Primary and foreign keys: BigQuery constraints are not enforced, and incorrect declarations can produce incorrect optimizer assumptions.
+- Time travel: Explain configurable time-travel windows and their relationship to recovery and fail-safe retention.
+- SQL examples: In your nested orders example, ts is referenced but is not declared in the table definition. Fix that before using it in interview preparation.
+5. The best hands-on project to add
+Given your experience building telemetry pipelines with Databricks and AWS, I would create a small equivalent implementation on GCP:
+
+Vehicle Telemetry Analytics with BigQuery
+
+Use simulated GPS and vehicle telemetry, with a pipeline that ingests raw events, deduplicates records, builds daily summaries, and exposes dashboard metrics.
+
+Include event-time handling, partitioning, clustering, backfills, data quality tests, and a comparison of query costs before and after optimization.
+
+This would allow you to discuss the same engineering problems across BigQuery, Snowflake, and Databricks, while demonstrating platform-specific knowledge.
+
+ First expand query troubleshooting, CDC/MERGE, incremental processing, and cost optimization. Then implement the telemetry example. Those additions will make your document much more useful for a senior Data Engineer interview than adding more introductory BigQuery features.
