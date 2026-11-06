@@ -109,8 +109,12 @@ brew install kaushiksrini/parqeye/parqeye
 
 <https://monodraw.helftone.com/> diagram tool
 
+### PDF Tools
+
+<https://habr.com/ru/articles/1104458/>
+
 ### PDF parser
-https://github.com/opendataloader-project/opendataloader-pdf
+<https://github.com/opendataloader-project/opendataloader-pdf>
 
 ### PDF to text 
 brew install poppler  
@@ -125,21 +129,21 @@ pdftotext -layout your_file.pdf output.txt
 
 ### Folders navigation / file manager
 
-https://github.com/jarun/nnn
+<https://github.com/jarun/nnn>
 
-https://github.com/gokcehan/lf
+<https://github.com/gokcehan/lf>
 
-https://github.com/sxyazi/yazi
+https://github.com/sxyazi/yazi. <https://yazi-rs.github.io/>
 
-https://crates.io/crates/lstr
+<https://crates.io/crates/lstr>
 
-https://github.com/solidiquis/erdtree
+<https://github.com/solidiquis/erdtree>
 
-https://github.com/Canop/broot
+<https://github.com/Canop/broot>
 
-https://github.com/juftin/browsr
+<https://github.com/juftin/browsr>
 
-https://github.com/houqp/kiorg
+<https://github.com/houqp/kiorg>
 
 ### Others
 <https://www.linuxlinks.com/100-awesome-must-have-tui-linux-apps/>
