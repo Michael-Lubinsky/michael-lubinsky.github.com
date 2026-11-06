@@ -35,6 +35,11 @@ Longitude: anywhere from -180 to +180
 It lies in the Gulf of Guinea, off the coast of West Africa, where the Equator meets the Prime Meridian.  
 There’s no actual island — it’s an imaginary point in the Atlantic Ocean.  
 
+### GeoLibre
+<https://geolibre.app/>
+
+<https://apps.metaebene.me/en/kugelblitz> Mac only
+
 ### GeoPy , Folium, etc
 
 <https://realpython.com/geopandas/>
