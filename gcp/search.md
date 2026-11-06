@@ -128,3 +128,78 @@ This is common in enterprises that run both platforms:
 - **Handle deletes.** When a source doc is removed or its permissions change, the chunk must disappear from the index. Delta Sync handles this automatically if you delete from the source table. On BigQuery, deletes in the table propagate to the index.
 - **Build an evaluation set** of real queries with known good documents, and track recall@k and MRR before tuning anything.
 
+I'm reading "rar" as **RAG** (retrieval-augmented generation). The enterprise-search answer covered the end-to-end pipeline, so this one focuses on the vector store itself and on the RAG tooling each platform gives you.
+
+## Short answer
+
+Neither platform is a standalone vector database like Pinecone or Milvus. Each takes a different approach:
+- **Databricks** runs a **separate managed vector service** (Mosaic AI Vector Search) that stays synced to Delta tables.
+- **BigQuery** puts **vector indexes inside the warehouse**, on ordinary table columns, and you query them with SQL.
+
+## Vector storage and search
+
+| | Databricks: Mosaic AI Vector Search | BigQuery |
+|---|---|---|
+| Where vectors live | A managed index served from a Vector Search **endpoint**, synced from a Delta table | An `ARRAY<FLOAT64>` column in a normal table, plus a `VECTOR INDEX` on it |
+| Index types | **Delta Sync, managed embeddings**: you give it a text column and an embedding endpoint, and it embeds and syncs for you<br>**Delta Sync, self-managed**: you supply the vector column<br>**Direct Vector Access**: write and upsert vectors through the API, no Delta source | `IVF` or `TREE_AH` (ScaNN-based), created with `CREATE VECTOR INDEX`. Below a size threshold BigQuery just brute-forces |
+| ANN algorithm | HNSW (standard endpoints); a storage-optimized endpoint type covers very large (billion-scale) indexes at lower cost | IVF / ScaNN tree-AH |
+| Sync / freshness | Change Data Feed on the source table, `TRIGGERED` or `CONTINUOUS`. Deletes propagate | The index refreshes automatically as the table changes. **Autonomous embeddings** (2026) keep an embedding column up to date from a source column |
+| Embedding models | Foundation Model APIs (e.g. GTE, BGE), external models (OpenAI, Vertex, etc.) via Model Serving | `AI.GENERATE_EMBEDDING` / `AI.EMBED` with Gemini embedding models, open models, or your own BQML model |
+| Hybrid (vector + keyword) | Built in: `query_type="HYBRID"` | Two features you combine: `VECTOR_SEARCH()` + `SEARCH()` (full-text search index), fused with RRF in SQL |
+| Filtering | Metadata filters at query time | Pre-filter with a subquery or WHERE, and **stored columns** in the index so filtering doesn't hurt recall |
+| Reranking | Built-in reranker option | DIY: `AI.SCORE` / `AI.GENERATE`, or the Vertex ranking API |
+| Query interface | Python/REST SDK, plus the `vector_search()` SQL function | SQL: `VECTOR_SEARCH(TABLE ..., 'embedding', query, top_k => 10)` |
+| Latency profile | Online serving, tens of ms | Query job, typically sub-second to seconds. Good for batch or internal, less so for high-QPS apps |
+| Security | Index is a Unity Catalog securable; ACL via filters | IAM, row-level security, column policies apply directly to the vectors table |
+
+**Other vector options in each ecosystem.** Databricks has **Lakebase**, a managed Postgres with `pgvector`, for app-style OLTP plus vectors. On Google Cloud, **AlloyDB** and **Spanner** both support vector search, and **Vertex AI Vector Search** (part of the Gemini Enterprise Agent Platform) is Google's dedicated low-latency ANN service. If you need millisecond-latency serving on GCP, the usual pattern is to build embeddings in BigQuery and serve them from Vertex Vector Search or AlloyDB.
+
+## RAG tooling on top
+
+| Stage | Databricks | BigQuery / Google Cloud |
+|---|---|---|
+| Parse docs | `ai_parse_document()` over UC Volumes | Object Tables + `AI.GENERATE` / Document AI |
+| Chunk | Your code (Spark/LangChain), or handled inside Agent Bricks | `AI.CHUNK_DOCUMENT` (new, Oct 2026) |
+| Retrieve + generate in SQL | `vector_search()` + `ai_query()` | `VECTOR_SEARCH()` + `AI.GENERATE` |
+| Build an agent / app | **Mosaic AI Agent Framework** (LangGraph, OpenAI SDK, etc.), deployed to Model Serving; **Agent Bricks Knowledge Assistant** gives you a no-code RAG bot over your docs | **Agent Development Kit (ADK)** / Agent Engine, **Vertex AI RAG Engine**; or Gemini Enterprise for a packaged experience |
+| LLM access / governance | **AI Gateway**: rate limits, guardrails, usage logging across providers | Model Garden endpoints, Model Armor for guardrails |
+| Evaluation & tracing | **MLflow** 3 tracing + LLM judges (groundedness, relevance, safety), review app for SME feedback | Gen AI evaluation service, Cloud Trace / observability for agents |
+
+A minimal RAG query in pure SQL looks like this on each platform:
+
+```sql
+-- Databricks SQL
+WITH ctx AS (
+  SELECT string_agg(text, '\n---\n') AS context
+  FROM vector_search(index => 'kb.search.chunks_idx',
+                     query_text => 'how to rotate the charger API key',
+                     num_results => 5)
+)
+SELECT ai_query('databricks-claude-sonnet-4',
+  concat('Answer using only this context:\n', context, '\n\nQ: how to rotate the charger API key')) AS answer
+FROM ctx;
+```
+
+```sql
+-- BigQuery
+WITH hits AS (
+  SELECT base.text FROM VECTOR_SEARCH(
+    TABLE kb.chunks, 'embedding',
+    (SELECT embedding FROM AI.GENERATE_EMBEDDING(MODEL kb.embed_model,
+       (SELECT 'how to rotate the charger API key' AS content))),
+    top_k => 5)
+)
+SELECT AI.GENERATE(
+  CONCAT('Answer using only this context:\n', STRING_AGG(text, '\n---\n'),
+         '\n\nQ: how to rotate the charger API key'),
+  connection_id => 'us.vertex_conn', endpoint => 'gemini-2.5-flash').result AS answer
+FROM hits;
+```
+
+The model names in these two examples are placeholders, so substitute whichever endpoints are available in your workspace or project.
+
+## When to use which
+
+- **Databricks** fits when you need an interactive RAG app or agent with low-latency retrieval, built-in hybrid search and reranking, and a mature evaluation loop through MLflow. It also suits teams on several clouds or ones that already do their data work in Spark.
+- **BigQuery** fits when you want RAG with no extra infrastructure, for batch enrichment, analytics over embeddings (clustering, dedup, "find similar tickets"), or very large corpora with SQL governance. Pair it with Vertex Vector Search or AlloyDB if you need online latency.
+- **Either one** is preferable to a separate vector database when your source data already lives there. You avoid a second copy, a second security model, and a sync pipeline that can drift out of date.
