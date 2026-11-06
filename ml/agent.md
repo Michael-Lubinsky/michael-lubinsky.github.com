@@ -1,5 +1,77 @@
 ## Agents
 
+```python
+    messages = [user_message(task)]    
+         
+    while budget_available():    
+        response = LLM(messages, tools)    
+        messages.append(response)     
+        if not response.tool_calls:    
+            break    
+        outputs = tool_executor.apply(response.tool_calls)    
+        messages.extend(outputs)
+```
+This is the core loop of a **ReAct** agent ("Reason + Act").  
+The LLM thinks, picks tools to call, sees their results, and repeats until it can answer without calling any more tools.
+
+### Line by line
+
+```python
+messages = [user_message(task)]
+```
+The conversation history starts with just the user's request. This list is the agent's whole memory. The LLM is stateless, so everything it knows comes from what you send back to it each turn.
+
+```python
+while budget_available():
+```
+This is a safety limit, such as a maximum number of iterations, tokens, dollars or seconds. Without it, a model that keeps calling tools would loop forever and run up costs.
+
+```python
+    response = LLM(messages, tools)
+```
+Each turn sends the full history plus the **tool schemas** (each tool's name, description and JSON parameters). The model returns either:
+- **a final answer** (just text), or
+- **tool calls**, such as `search(query="BigQuery pricing")`, usually with some reasoning text alongside.
+
+```python
+    messages.append(response)
+```
+The model's reply is added to the history. This matters even when the reply is a tool call: on the next turn, the model needs to see what it asked for so it can match each result to its request (by `tool_call_id` in most APIs).
+
+```python
+    if not response.tool_calls:
+        break
+```
+**This is the stop condition.** If the model didn't ask for any tools, it has decided it's done, and `response` holds the final answer.
+
+```python
+    outputs = tool_executor.apply(response.tool_calls)
+    messages.extend(outputs)
+```
+Your own code runs the requested tools (an API call, SQL query, file read and so on) and adds each result to the history as a `tool` message. It's `extend` rather than `append` because the model can request several tools in one turn, and each produces its own result message. Then the loop goes back to the top and the LLM sees the results.
+
+### Example trace
+
+| Turn | `messages` gains | Meaning |
+|---|---|---|
+| 0 | user: "What's the weather in San Jose in °F?" | the task |
+| 1 | assistant: call `get_weather("San Jose")` | Reason → Act |
+| 1 | tool: `{"temp_c": 18}` | Observation |
+| 2 | assistant: call `convert(18, "C", "F")` | Reason → Act |
+| 2 | tool: `64.4` | Observation |
+| 3 | assistant: "It's about 64°F." (no tool calls) | `break` |
+
+### What a production version adds
+
+- **Error handling:** if a tool raises an exception, send the error text back as the tool result instead of crashing. Models are good at recovering from that ("file not found, let me try another path").
+- **Hitting the budget:** right now, running out of budget exits silently with no final answer. You usually want to detect that and either force one last call with no tools, or report that the agent didn't finish.
+- **Context growth:** `messages` grows every turn, and large tool outputs fill the context window quickly. Common fixes are truncating outputs, summarizing older turns, or keeping only the last N tool results.
+- **Parallel tools:** `apply` can run independent tool calls at the same time.
+- **Approval:** for dangerous tools (deleting data, sending email), add a human confirmation step before `apply` runs them.
+
+Most agent frameworks (LangGraph, the OpenAI and Anthropic agent SDKs, smolagents) are built around this same loop.
+
+
 <https://habr.com/ru/companies/otus/articles/1095784/>
 
 <https://habr.com/ru/articles/1096976/>
