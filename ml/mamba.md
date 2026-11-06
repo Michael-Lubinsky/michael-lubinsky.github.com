@@ -11,10 +11,11 @@ Open Source implementation of Notebook LM with more flexibility and features
 <https://www.open-notebook.ai>
 <https://github.com/lfnovo/open-notebook>
 
+## HuggingFace
 <https://huggingface.co/learn>
 
-<https://huggingface.co/spaces/nanotron/ultrascale-playbook>
-
+<https://huggingface.co/spaces/nanotron/ultrascale-playbook>bb
+<https://huggingface.co/spaces/huggingface/moe-blogpost#s-1>
 
 <https://jeffyclassify.com/>  
 
