@@ -334,4 +334,125 @@ with DAG(
 - **Add job labels and `maximumBytesBilled`.** They let you attribute cost per DAG and stop a bad query before it becomes expensive.
 - **Consider Dataform or dbt for the transformation layer.** Many teams have Airflow trigger a Dataform or dbt run for the SQL models, and keep Airflow for ingestion, sensors, and cross-system dependencies.
 
-If you'd like, I can sketch how the same pipeline would look as a Databricks Workflow next to this Airflow version. That kind of comparison tends to come up in interviews.
+
+BigQuery doesn't have version numbers. It's a fully managed service that Google updates continuously, so there's no "BigQuery 3.x" to upgrade to. BigQuery automatically updates to the latest release and cannot be downgraded to a previous version. Two things do carry versions: the client pieces (the Python/Java SDKs, the `bq` CLI, the JDBC/ODBC drivers) and the Airflow provider package. The **release notes page** works as the changelog, and each feature moves from Preview to GA.
+
+This is different from Databricks, where the Runtime (DBR 16.x, 17.x) and the Spark version are things you choose per cluster.
+
+## Notable changes in 2026
+
+The highlights below come from the official release notes, grouped by theme.  
+
+**Engine and SQL**
+- The BigQuery advanced runtime became the default runtime for all projects as of March 12, 2026. It's the performance engine upgrade, with things like enhanced vectorization.
+- Legacy SQL is being phased out. From June 1, 2026, projects that didn't use legacy SQL between November 1, 2025 and June 1, 2026 can no longer use it. Projects that did use it keep existing workloads running, but new ones might not.
+- **Global queries** (February 2026) let a single SQL statement explore data distributed across regions. This loosens the "datasets must be in the same location" rule I mentioned in the first lesson.
+- October 2026: you can copy tables across regions (GA), and GoogleSQL now supports reusable column aliases.
+- Query results can now be retrieved directly in Apache Arrow format for faster retrieval and better serialization efficiency (Preview, Oct 30).
+- A new REGEXP_EXTRACT_GROUPS function returns substrings that match multiple capturing groups in a regex (Preview).
+- Parameterized queries can now be run from the query editor in the console (GA, Feb 2026).
+
+**Graph**
+- BigQuery Graph is GA, with support for the CALL graph query statement and path-inspection GQL functions such as IS_ACYCLIC, IS_SIMPLE and IS_TRAIL. This lets you run property-graph queries (GQL) directly over BigQuery tables. One caveat for planning: starting April 26, 2027, core graph processing will be restricted to the Enterprise and Enterprise Plus editions.
+
+**Lakehouse, Iceberg and cross-cloud**
+- Federation from SAP BDC lets you create Delta Sharing catalogs in Lakehouse that automatically sync shares, schemas and tables.
+- October 2026 added guides for migrating Delta Lake and Apache Iceberg CDC data into Lakehouse using Dataflow. That's relevant if you're bridging from Databricks.
+- In August, new connections arrived for data in AWS, Azure, and Salesforce Data 360 from all BigQuery regions, which support more BigQuery features and are more cost-efficient than standard BigQuery Omni connections.
+
+**AI in SQL (most of the release volume)**
+- New generative SQL functions: AI.IF, AI.SCORE, and AI.CLASSIFY, which can analyze unstructured data stored in Object Tables.
+- AI.CHUNK_DOCUMENT is a table-valued function that splits unstructured documents into semantically coherent chunks for embeddings and RAG. In the same month, AI.AGG gained an output_schema argument (GA).
+- **Autonomous embeddings** (June): when enabled on a table via CREATE TABLE or ALTER TABLE, BigQuery maintains a column of embeddings based on a source column.
+- Vector indexes can be rebuilt without downtime (GA).
+- Time series: the TimesFM 3.0 model is in Preview, and AI.CAUSAL_EFFECT quantifies the impact of interventions on time series data.
+- BQML: models can now be trained with XGBoost 2.1 using the XGBOOST_VERSION option.
+
+**Agents and conversational analytics**
+- Conversational analytics in BigQuery is now GA. It lets you ask questions in natural language over datasets.
+- The Data Engineering Agent was introduced for pipeline maintenance, alongside a Data Science Agent for feature suggestions and notebook generation.
+- The run_bq_command tool exposes the bq CLI through the Cloud CLI remote MCP server, so AI agents can drive BigQuery.
+
+**Governance, ops and ingestion**
+- The BigQuery Security center is now available in the console (September 30).
+- Data governance tags are Resource Manager tags you attach to sensitive columns and use in data policies for conditional access (Preview). They're similar to Unity Catalog's tag-based ABAC.
+- In the console, Capacity management was renamed Workload management.
+- Real-time logs for Python UDFs are now viewable in Cloud Logging (GA).
+- Data Transfer Service: PostgreSQL to BigQuery transfers became GA, and incremental transfers for PostgreSQL and ServiceNow became GA in October.
+
+
+
+Most of the AI and agent items are product marketing. For a data engineering conversation, these are the ones worth being able to discuss:
+
+- Editions vs. on-demand pricing
+- The advanced runtime being the default
+- The legacy SQL sunset
+- Global queries and cross-region copy
+- Iceberg/Lakehouse interop and Delta CDC migration
+- Graph going GA
+- Governance tags
+
+You can skim the full feed at the release notes link below. It's also exposed as a BigQuery public dataset, so you can query it with SQL.
+
+Sources:
+- [BigQuery release notes](https://docs.cloud.google.com/bigquery/docs/release-notes)
+- [BigQuery global queries (Google Cloud blog)](https://cloud.google.com/blog/products/data-analytics/new-global-queries-in-bigquery-span-data-from-multiple-regions)
+- [What's new in BigQuery AI (Google Cloud blog)](https://cloud.google.com/blog/topics/developers-practitioners/bigquery-ai-hackathon-celebrating-innovation-and-a-look-at-whats-new)
+- [GCP Technology Nuggets, June 16–30, 2026](https://gcptechnuggets.substack.com/p/google-cloud-platform-technology-da9)
+
+ 
+##   Object Tables
+
+An **Object Table** is a read-only external table over **unstructured files** in Cloud Storage, such as images, PDFs, audio, and video. Each row is one file. The rows hold metadata and a reference to the file, not the file's contents:
+
+```sql
+CREATE EXTERNAL TABLE docs.invoices
+WITH CONNECTION `my-project.us.gcs_conn`
+OPTIONS (object_metadata = 'SIMPLE', uris = ['gs://my-bucket/invoices/*.pdf']);
+
+SELECT uri, size, content_type, updated FROM docs.invoices;
+```
+
+Columns include `uri`, `size`, `content_type`, `updated`, `md5_hash`, and similar fields. Object Tables are useful because they bring unstructured data under the same SQL, IAM, and row-level security as your tables, and you can run AI functions or BQML models over the files:
+
+```sql
+-- Ask Gemini to extract fields from each PDF
+SELECT uri, AI.GENERATE(('Extract invoice total and vendor from this file', ref)) AS extracted
+FROM docs.invoices;
+
+-- Or classify images
+SELECT uri, AI.CLASSIFY(ref, categories => ['damaged', 'ok']) FROM photos.parts;
+```
+
+In Databricks terms, it's closest to a **Unity Catalog Volume** combined with `ai_query()` / `ai_extract()`. The difference is that BigQuery shows the files as a queryable table. Google is also adding `ObjectRef` (a `STRUCT` that points to a GCS object), so a row in a normal table can reference a file. For example, a `products` table can include an `image` column.
+
+##   Editions vs. on-demand pricing
+
+Both are ways to pay for **compute**. Storage is billed separately either way.
+
+**On-demand** (the default):
+- You pay for **bytes scanned**. The rate is $6.25 per TiB, with the first 1 TiB per month free per project. You don't buy slots; Google allocates up to 2,000 shared slots per project in the background.
+- A query that scans 10 TiB costs about $62.50, whether it takes 5 seconds or 5 minutes.
+- What you optimize is **bytes**: partitioning, clustering, selecting fewer columns.
+
+**Editions** (capacity pricing):
+- You pay for **slot-hours**, which is CPU time, no matter how many bytes are scanned.
+- You create a **reservation** with a baseline (always-on slots) and a max (autoscale ceiling), then **assign** projects or folders to it. Autoscaling adds slots in small increments when needed and scales back down to the baseline.
+- There are three tiers: **Standard**, **Enterprise**, and **Enterprise Plus**. Higher tiers cost more per slot-hour and add features. Enterprise adds things like BQML, BI Engine, row/column security, and longer commitments. Enterprise Plus adds things like CMEK and managed disaster recovery. For scale, at $0.06 per slot-hour, 100 Enterprise Edition slots running continuously for a month cost about $4,380, which is equivalent to scanning about 700 TiB on-demand at $6.25 per TiB.
+- You can buy 1- or 3-year commitments for a discount on the baseline.
+- What you optimize is **slot time**: avoiding heavy shuffles, skewed joins, and huge sorts. Bytes scanned don't matter directly.
+
+**How to choose:**
+
+| | On-demand | Editions |
+|---|---|---|
+| Bill driven by | Data scanned | Compute time |
+| Best for | Spiky or ad-hoc workloads, small teams, exploration | Steady, heavy ETL and BI; predictable budgets |
+| Risk | One bad `SELECT *` on a PB table is expensive | Idle baseline slots cost money; slots can cap throughput |
+| Analogy | Snowflake/Databricks serverless "per query" | Snowflake warehouse / Databricks SQL warehouse billed by DBU-hour |
+
+A common pattern is to put production ETL on an Enterprise reservation and leave analysts' sandbox projects on on-demand with `maximum_bytes_billed` caps. To decide with data, run your workload for a month and pull `total_bytes_billed` and `total_slot_ms` from `INFORMATION_SCHEMA.JOBS`. That gives you the on-demand cost and the slot-hours, so you can compare the two directly. Google's console also has a slot estimator that runs this calculation for you.
+
+Sources:
+- [DoiT: BigQuery cost optimization 2026](https://www.doit.com/blog/bigquery-cost-optimization)
+- [BigQuery pricing (Google Cloud)](https://cloud.google.com/bigquery/pricing.html)
