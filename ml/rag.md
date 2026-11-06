@@ -29,6 +29,8 @@
 
 <https://www.lighthousenewsletter.com/p/rag-is-simpler-than-you-think>
 
+<https://www.youtube.com/watch?v=aenpTk8blIs>
+
 <https://dorianfernandez.dev/writing/hnsw/>   How Do RAG Systems Search? HNSW
 <img width="743" height="852" alt="image" src="https://github.com/user-attachments/assets/ab70fab6-1671-4637-bf23-46b2688826a4" />
 
