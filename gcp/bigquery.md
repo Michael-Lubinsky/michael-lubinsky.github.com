@@ -1,5 +1,5 @@
 ## BigQuery
-Since you already know Databricks and Snowflake well, I'll teach BigQuery by comparing it to those and focus on what's actually different.
+ 
 
 ## 1. The mental model
 
