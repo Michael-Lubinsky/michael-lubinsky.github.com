@@ -35,7 +35,27 @@ The final price is $9.60.
 What is x?
 ```
 
-There are 2 colored areas inside square on picture below.
+### The 100 doors
+
+There are 100 closed doors, numbered 1 through 100.
+- Student 1 toggles every door.
+- Student 2 toggles every second door.
+- Student 3 toggles every third door.
+- This continues until student 100 toggles door 100.
+
+Which doors remain open? Why?
+
+### The 25 points
+
+Place 25 points anywhere inside a square of side length 4.
+
+Prove that at least two of these points. 
+must be at a distance of at most $sqrt2$ from each other.
+
+
+No coordinate calculations are necessary.
+
+### There are 2 colored areas inside square on picture below.
 Which area is bigger : pink or purple?
 
 <img width="386" height="383" alt="image" src="https://github.com/user-attachments/assets/2f817edc-a0da-40b3-8a47-9a58ca6c44e0" />
