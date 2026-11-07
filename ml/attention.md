@@ -421,21 +421,17 @@ Compute:
 Compute the Query vector for the token "The":
 
 $$
-q_1 = x_1 W^Q
-=
-\begin{bmatrix}
-0.1 & 0.2 & 0.3 & 0.4
-\end{bmatrix}
+\begin{aligned}
+q_1 &= x_1 W^Q \\
+&= \begin{bmatrix} 0.1 & 0.2 & 0.3 & 0.4 \end{bmatrix}
 \begin{bmatrix}
 0.1 & 0.2 \\
 0.3 & 0.4 \\
 0.5 & 0.6 \\
 0.7 & 0.8
-\end{bmatrix}
-=
-\begin{bmatrix}
-0.50 & 0.60
-\end{bmatrix}
+\end{bmatrix} \\
+&= \begin{bmatrix} 0.50 & 0.60 \end{bmatrix}
+\end{aligned}
 $$
 
 Similarly compute 
