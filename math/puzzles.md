@@ -50,7 +50,7 @@ Which doors remain open? Why?
 Place 25 points anywhere inside a square of side length 4.
 
 Prove that at least two of these points. 
-must be at a distance of at most $sqrt2$ from each other.
+must be at a distance of at most $\sqrt{2}$ from each other.
 
 
 No coordinate calculations are necessary.
@@ -128,7 +128,8 @@ and
 
 $$ Q=\frac{wh}{2}(1-t)(1-u). $$
 
-Set \\(K=wh/2\\). Since \\(t=P/K\\) and \\(u=R/K\\),
+Set \\(K=wh/2\\). Since \\(t=P/K\\) and \\(u=R/K\\),  
+Set $K=wh/2$. Since $t=P/K$ and $u=R/K$,
 
 $$ Q=K\left(1-\frac PK\right) \left(1-\frac RK\right). $$
 
