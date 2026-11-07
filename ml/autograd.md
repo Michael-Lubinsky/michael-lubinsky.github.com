@@ -393,6 +393,7 @@ $$
 Тогда при backprop считаем:
 
 $$ \frac{\partial L}{\partial W} $$ — для обновления весов
+
 $$ \frac{\partial L}{\partial x} $$ — чтобы передать дальше назад
 
 ---
