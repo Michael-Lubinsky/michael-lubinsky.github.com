@@ -271,13 +271,11 @@ Below, I explain how this process works for each word in the input string, assum
 
 ### Tokenize and Embed the Input String:
 
-Input String: Suppose your input string is "The cat sleeps".
-Tokenization: Split the string into tokens (e.g., words or subwords). For simplicity, assume one token per word: ["The", "cat", "sleeps"].
-Embedding: Convert each token into a dense vector (embedding) using an embedding layer.
+- Input String: Suppose your input string is "The cat sleeps".
+- Tokenization: Split the string into tokens (e.g., words or subwords). For simplicity, assume one token per word: ["The", "cat", "sleeps"].
+- Embedding: Convert each token into a dense vector (embedding) using an embedding layer.
 
-For a vocabulary and embedding dimension 
-
-$$  d_{model}  $$
+For a vocabulary and embedding dimension $d_{model}$
 
 (e.g., 512), each word is represented as a vector of length <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_{model} </annotation></semantics></math>.
 
