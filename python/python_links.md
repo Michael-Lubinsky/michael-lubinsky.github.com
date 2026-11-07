@@ -8,6 +8,8 @@
 
 <https://sgolev.github.io/blog/2026-07-28-celery-recipes/> Celery
 
+<https://warint.github.io/pystatlas/> PyStats
+
 <https://github.com/chdb-io/chdb> ClickHouse in Python
 
 <https://anytree.readthedocs.io/en/latest/> AnyTree
