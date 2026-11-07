@@ -24,7 +24,7 @@
 
 
 #### Spark Declarative Pipelines (SDP)
-A new declarative framework where you define datasets and queries, and Spark handles the execution graph, dependency ordering, parallelism, checkpoints, and retries — this is the OSS foundation of what became Databricks' "Lakeflow Declarative Pipelines" (formerly DLT). Worth noting given your Databricks background — this brought that capability into open-source Spark itself.
+A new declarative framework where you define datasets and queries, and Spark handles the execution graph, dependency ordering, parallelism, checkpoints, and retries — this is the OSS foundation of what became Databricks' "Lakeflow Declarative Pipelines" (formerly DLT). 
 
 #### Structured Streaming Real-Time Mode (RTM)**
 First official support for Structured Streaming queries running in real-time mode for continuous, sub-second latency processing — for stateless tasks, latency can even drop to single-digit milliseconds. Currently scoped to Scala stateless workloads.
