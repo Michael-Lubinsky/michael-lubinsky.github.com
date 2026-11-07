@@ -41,3 +41,5 @@ Key Features:
 5. Ideal for streaming + batch (unified) data workflows.
 
 Use With: Apache Spark, Databricks, Azure Synapse, Delta-RS (for Presto/Trino support).
+
+<https://vitruves.github.io/carquet/>
