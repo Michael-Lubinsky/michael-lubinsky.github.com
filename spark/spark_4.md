@@ -50,29 +50,41 @@ Smarter model caching and memory management, plus general stability improvements
 - Streaming: stream-stream join support with virtual column families, plus a wave of RocksDB state-store reliability work (lock management revamp, snapshot lag detection, checksum verification)
 - Infrastructure: minimum Python bumped to 3.10, Python 3.14 support added, Scala upgraded to 2.13.17
 
-Spark version:
+## Check Spark Version:
 ```
 print(spark.version)
 print(spark.sparkContext.version)
+
 Note that spark.sparkContext may not be available on serverless compute or Spark Connect.
+
  -- Using SQL
 Run this in a Databricks SQL notebook or SQL Warehouse:
 SELECT version();
+
+Databricks may backport selected Spark features or implement its own equivalents.
+Therefore, even if your environment reports Spark 4.0.0,
+some functionality introduced in upstream Spark 4.1–4.3 might already be available through Databricks-specific features.
+
+print(
+    "Databricks Runtime:",
+    spark.conf.get(
+        "spark.databricks.clusterUsageTags.sparkVersion",
+        "Unknown"
+    )
+)
 ```
 
 For a quick mental model: 
 - **4.1.0** was the "declarative pipelines + real-time streaming + SQL/VARIANT maturity" release, while
 -  **4.2.0** (which you asked about earlier) layered on geospatial types, native CDC, and further PySpark/DSv2 polish on top of that foundation.
 
-# Apache Spark 4.3.0 — What's New?
+## Apache Spark 4.3.0 — What's New?
 
 According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
 
 The release includes more than 1,100 resolved JIRA tickets and contributions from over 210 developers.&#x20;
 
 [image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
-
-Apache Spark
 
 
 
@@ -88,37 +100,32 @@ My characterization of Spark 4.3.0 would be:
 
 > Spark 4.3 makes real-time streaming more capable, CDC pipelines more useful for historical analytics, and SQL more expressive for complex and time-dependent data.
 
-## 2. Most important new features
+## 2. Most important 4.3.0 new features
 
-Stateful Real-Time Streaming
+#### Stateful Real-Time Streaming
 
 Streaming aggregations, `dropDuplicates`, and `transformWithState` can now operate in Real-Time Mode, targeting end-to-end latency on the order of 100 milliseconds. This is particularly relevant to GPS and IoT telemetry processing.
 
-SCD Type 2 Auto CDC
+#### SCD Type 2 Auto CDC
 
 Declarative pipelines can preserve historical versions of changed records, instead of maintaining only the latest state. Supported through Python, SQL, and Spark Connect.
 
-SQL ASOF JOIN
+#### SQL ASOF JOIN
 
 Match an event with the most appropriate earlier or contemporaneous record. Useful for time-series joins, financial market data, and telemetry enrichment. The SQL feature is disabled by default.
 
-JSON_TABLE and VARIANT manipulation
+#### JSON_TABLE and VARIANT manipulation
 
 Convert nested JSON into relational structures and modify semi-structured data using functions such as `variant_set`, `variant_insert`, and `variant_delete`.
 
-Faster execution on small datasets
+#### Faster execution on small datasets
 
 Opt-in shuffle-free single-task execution and Arrow-native caching reduce overhead for eligible queries, particularly useful for development and local Spark workloads.
 
-These are all documented in the official 4.3.0 release notes.&#x20;
+These are all documented in the official 4.3.0 release notes. 
 
-[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
-
-Apache Spark
-
-
-
-## 3. Additional improvements worth knowing
+ 
+## 3. Additional Spark 4.3  improvements worth knowing
 
 Several less-publicized changes are particularly useful for data engineering.
 
@@ -132,11 +139,10 @@ Several less-publicized changes are particularly useful for data engineering.
 | Parquet performance     | Faster vectorized decoding and type conversions                                                   |
 | Spark Connect           | REST endpoints for sessions and operations, improved JDBC support                                 |
 
-[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
+ 
 
-Apache Spark
-
-One important compatibility change: Spark 4.3 drops Python 3.10 support. Plan to use Python 3.11 or newer when upgrading.
+One important compatibility change: Spark 4.3 drops Python 3.10 support.  
+Plan to use Python 3.11 or newer when upgrading.
 
 ## 4. Practical example: ASOF JOIN for vehicle telemetry
 
@@ -176,7 +182,6 @@ Enable the feature:
 spark.conf.set(    "spark.sql.join.asofJoin.enabled",    "true")
 ```
 
-This is especially useful for telemetry datasets where GPS, battery, odometer, and other sensors report asynchronously.
 
 ## 5. What I would prioritize learning
 
@@ -188,11 +193,12 @@ For your Spark and Databricks data engineering work, I would prioritize:
 4. `counter_diff` — useful for cumulative mileage and energy readings.
 5. Python UDF transpilation and optimizer improvements — potentially helpful for performance tuning, though some capabilities are experimental.
 
-One important distinction: these are features of upstream Apache Spark 4.3.0. Their availability in a managed Databricks runtime depends on that runtime's Spark version and Databricks-specific implementation.
+One important distinction: these are features of upstream Apache Spark 4.3.0.  
+Their availability in a managed Databricks runtime depends on that runtime's Spark version and Databricks-specific implementation.
 
-Overall, Spark 4.3.0 is more than an incremental API release. Its most significant architectural advance is bringing stateful processing into low-latency Real-Time Mode, while its most immediately useful data engineering additions are SCD Type 2 Auto CDC and SQL ASOF JOIN.
-
-Source: [Official Apache Spark 4.3.0 release notes — October 30, 2026](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com).
+Overall, Spark 4.3.0 is more than an incremental API release.   
+Its most significant architectural advance is bringing stateful processing into low-latency Real-Time Mode,   
+while its most immediately useful data engineering additions are SCD Type 2 Auto CDC and SQL ASOF JOIN.
 
 <https://spark.apache.org/releases/spark-release-4-3-0.html>
 
@@ -210,7 +216,7 @@ Source: [Official Apache Spark 4.3.0 release notes — October 30, 2026](https:/
 
 ## DataSource API
 
-https://github.com/allisonwang-db/awesome-python-datasources
+<https://github.com/allisonwang-db/awesome-python-datasources>
 
 ## max_by
 
