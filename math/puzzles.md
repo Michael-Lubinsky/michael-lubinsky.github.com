@@ -128,7 +128,6 @@ and
 
 $$ Q=\frac{wh}{2}(1-t)(1-u). $$
 
-Set \\(K=wh/2\\). Since \\(t=P/K\\) and \\(u=R/K\\),  
 Set $K=wh/2$. Since $t=P/K$ and $u=R/K$,
 
 $$ Q=K\left(1-\frac PK\right) \left(1-\frac RK\right). $$
