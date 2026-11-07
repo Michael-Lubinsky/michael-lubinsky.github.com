@@ -48,14 +48,12 @@ It is not allowed to trace back.
 <img width="400" height="354" alt="image" src="https://github.com/user-attachments/assets/62243859-0d94-4219-bf06-a96e3c7f0ccb" />
 
 
-### There is a right triangle with hypotenuse 10 and heigh 6.  Find the area of triangle.
+### There is a right triangle with hypotenuse 10 and heigh 6.  
+Find the area of triangle.
 
 
 
 <img width="778" height="196" alt="image" src="https://github.com/user-attachments/assets/79f213d1-f6fc-4090-97de-8a27e671421b" />
-
-
-
 
 
 
@@ -73,7 +71,7 @@ Find the area of the square.
 
 <img width="396" height="411" alt="image" src="https://github.com/user-attachments/assets/226795e4-95a0-4f39-9c46-c1ffccda3dde" />
 
-## 
+
 <img width="433" height="298" alt="image" src="https://github.com/user-attachments/assets/9dffe77e-8b2c-4ac2-8b55-4b872c82bd0f" />
 
 
@@ -83,9 +81,9 @@ Find the area of the square.
 <img width="291" height="192" alt="image" src="https://github.com/user-attachments/assets/dcc5cfe2-64c5-4100-ba86-64d300406537" />
 
 
-##
-The areas of triangles ADE, ECF and AFB are known.
+## The areas of triangles ADE, ECF and AFB are known.
 What is area of triangle AEF?
+
 <img width="487" height="339" alt="image" src="https://github.com/user-attachments/assets/3373c065-6460-4d30-bb00-2fffec4fa9c3" />
 
 Let the three known areas be
