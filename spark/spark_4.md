@@ -82,13 +82,8 @@ For a quick mental model:
 
 According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
 
-The release includes more than 1,100 resolved JIRA tickets and contributions from over 210 developers.&#x20;
 
-[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
-
-
-
-## 1. Spark 4.1 vs. 4.2 vs. 4.3
+### 1. Spark 4.1 vs. 4.2 vs. 4.3
 
 | Version | Main focus                         | Key capabilities                                                                                 |
 | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -96,9 +91,9 @@ The release includes more than 1,100 resolved JIRA tickets and contributions fro
 | 4.2.0   | Data engineering                   | Geospatial types, native CDC, PySpark and Data Source V2 improvements                            |
 | 4.3.0   | Stateful streaming and performance | Stateful Real-Time Mode, SCD Type 2 Auto CDC, ASOF JOIN, JSON_TABLE, faster small-data execution |
 
-My characterization of Spark 4.3.0 would be:
+Characterization of Spark 4.3.0 :
 
-> Spark 4.3 makes real-time streaming more capable, CDC pipelines more useful for historical analytics, and SQL more expressive for complex and time-dependent data.
+Spark 4.3 makes real-time streaming more capable, CDC pipelines more useful for historical analytics, and SQL more expressive for complex and time-dependent data.
 
 ## 2. Most important 4.3.0 new features
 
