@@ -50,6 +50,16 @@ Smarter model caching and memory management, plus general stability improvements
 - Streaming: stream-stream join support with virtual column families, plus a wave of RocksDB state-store reliability work (lock management revamp, snapshot lag detection, checksum verification)
 - Infrastructure: minimum Python bumped to 3.10, Python 3.14 support added, Scala upgraded to 2.13.17
 
+Spark version:
+```
+print(spark.version)
+print(spark.sparkContext.version)
+Note that spark.sparkContext may not be available on serverless compute or Spark Connect.
+ -- Using SQL
+Run this in a Databricks SQL notebook or SQL Warehouse:
+SELECT version();
+```
+
 For a quick mental model: 
 - **4.1.0** was the "declarative pipelines + real-time streaming + SQL/VARIANT maturity" release, while
 -  **4.2.0** (which you asked about earlier) layered on geospatial types, native CDC, and further PySpark/DSv2 polish on top of that foundation.
