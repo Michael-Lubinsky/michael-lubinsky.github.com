@@ -275,42 +275,35 @@ Below, I explain how this process works for each word in the input string, assum
 - Tokenization: Split the string into tokens (e.g., words or subwords). For simplicity, assume one token per word: ["The", "cat", "sleeps"].
 - Embedding: Convert each token into a dense vector (embedding) using an embedding layer.
 
-For a vocabulary and embedding dimension $d_{model}$
+For a vocabulary and embedding dimension $d_{model}$  
+(e.g., 512), each word is represented as a vector of length $d_{model}$
 
-(e.g., 512), each word is represented as a vector of length <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_{model} </annotation></semantics></math>.
+Example: For "The", the embedding might be a 512-dimensional vector $x_1$
 
-Example: For "The", the embedding might be a 512-dimensional vector <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex"> x_1 </annotation></semantics></math>, 
-
-for "cat" <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex"> x_2 </annotation></semantics></math>, and for "sleeps" <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex"> x_3 </annotation></semantics></math>.
-
+for "cat" $x_2$
 Result: An input matrix
+$X \in \mathbb{R}^{n \times d_{model}}$
 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><mi>n</mi><mo>×</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> X \in \mathbb{R}^{n \times d_{model}} </annotation></semantics></math>, 
-
-where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex"> n </annotation></semantics></math> is the number of tokens (here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex"> n = 3 </annotation></semantics></math>).
-
-
-
+where n = 3
 
 ### Define Learnable Weight Matrices:
 
 For self-attention, three weight matrices are defined to project the input embeddings into Query, Key, and Value vectors:
 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>Q</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^Q \in \mathbb{R}^{d_{model} \times d_k} </annotation></semantics></math>: Weight matrix for Queries.
+$W^Q \in \mathbb{R}^{d_{model} \times d_k}$ : Weight matrix for Queries.
 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>K</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>k</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^K \in \mathbb{R}^{d_{model} \times d_k} </annotation></semantics></math>: Weight matrix for Keys.
+$W^K \in \mathbb{R}^{d_{model} \times d_k}$ : Weight matrix for Keys.
 
-
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>V</mi></msup><mo>∈</mo><msup><mi mathvariant="double-struck">R</mi><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mo>×</mo><msub><mi>d</mi><mi>v</mi></msub></mrow></msup></mrow><annotation encoding="application/x-tex"> W^V \in \mathbb{R}^{d_{model} \times d_v} </annotation></semantics></math>: Weight matrix for Values.
+$W^V \in \mathbb{R}^{d_{model} \times d_v}$ Weight matrix for Values.
 
 
 Here, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub></mrow><annotation encoding="application/x-tex"> d_k </annotation></semantics></math> and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>v</mi></msub></mrow><annotation encoding="application/x-tex"> d_v </annotation></semantics></math>
 
-are the dimensions of the Query/Key and Value vectors, respectively (often <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mi mathvariant="normal">/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model}/h </annotation></semantics></math> in multi-head attention, where 
+are the dimensions of the Query/Key and Value vectors, respectively 
+often $d_k = d_v = d_{model}/h$ in multi-head attention,
+where $h$ is the number of heads, but for simplicity, assume  
 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>h</mi></mrow><annotation encoding="application/x-tex"> h </annotation></semantics></math> is the number of heads, but for simplicity, assume  
-
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model} </annotation></semantics></math>).
+$d_k = d_v = d_{model}$
 
 These matrices are learned during training and are part of the model's parameters.
 
