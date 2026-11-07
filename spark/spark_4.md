@@ -80,7 +80,9 @@ For a quick mental model:
 
 ## Apache Spark 4.3.0 — What's New?
 
-According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
+According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), 
+
+Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
 
 
 ### 1. Spark 4.1 vs. 4.2 vs. 4.3
@@ -99,11 +101,13 @@ Spark 4.3 makes real-time streaming more capable, CDC pipelines more useful for 
 
 #### Stateful Real-Time Streaming
 
-Streaming aggregations, `dropDuplicates`, and `transformWithState` can now operate in Real-Time Mode, targeting end-to-end latency on the order of 100 milliseconds. This is particularly relevant to GPS and IoT telemetry processing.
+Streaming aggregations, `dropDuplicates`, and `transformWithState` can now operate in Real-Time Mode, targeting end-to-end latency on the order of 100 milliseconds.  
+This is particularly relevant to GPS and IoT telemetry processing.
 
 #### SCD Type 2 Auto CDC
 
-Declarative pipelines can preserve historical versions of changed records, instead of maintaining only the latest state. Supported through Python, SQL, and Spark Connect.
+Declarative pipelines can preserve historical versions of changed records,  
+instead of maintaining only the latest state. Supported through Python, SQL, and Spark Connect.
 
 #### SQL ASOF JOIN
 
@@ -135,7 +139,6 @@ Several less-publicized changes are particularly useful for data engineering.
 | Spark Connect           | REST endpoints for sessions and operations, improved JDBC support                                 |
 
  
-
 One important compatibility change: Spark 4.3 drops Python 3.10 support.  
 Plan to use Python 3.11 or newer when upgrading.
 
@@ -169,7 +172,8 @@ The result should be:
 | 10:00:12   | 42    | 79          |
 | 10:00:20   | 38    | 78          |
 
-Previously, you could implement this using window functions or more complicated joins. Spark 4.3 introduces SQL `ASOF JOIN` for this pattern, with a dedicated sort-merge execution operator.
+Previously, you could implement this using window functions or more complicated joins.  
+Spark 4.3 introduces SQL `ASOF JOIN` for this pattern, with a dedicated sort-merge execution operator.
 
 Enable the feature:
 
@@ -237,13 +241,14 @@ SELECT * EXCEPT (rank)
 FROM ranked 
 WHERE rank = 1
 ```
-This is a simple query. The goal of the above query is to find the top record for each combination of col1, col2, col3, col4. In Spark terms it will do
-
-Split the into partitions based on partition keys
-Sort each partition by the ORDER BY clause
-Assign row numbers to every single row
-Filter out everything except rank = 1
-
+This is a simple query. The goal of the above query is to find the top record for each combination of col1, col2, col3, col4.   
+In Spark terms it will do
+```
+- Split the into partitions based on partition keys
+- Sort each partition by the ORDER BY clause
+- Assign row numbers to every single row
+- Filter out everything except rank = 1
+```
 
 <https://blog.devgenius.io/improving-spark-jobs-runtime-b128f0c29d44>
 
