@@ -392,7 +392,7 @@ This produces matrices $Q, K, V$  where each row corresponds to the Q, K, V vect
 
 Example (Simplified):
 
-Suppose $d_{model} = 4$ and the embedding for "The" is $x_1 = [0.1, 0.2, 0.3, 0.4]  
+Suppose $d_{model} = 4$ and the embedding for "The" is $x_1 = [0.1, 0.2, 0.3, 0.4]$  
 Assume weight matrices (random for illustration):
 
 $$
@@ -434,7 +434,8 @@ In practice, $d_{model}$ is larger (e.g., 512), and weight matrices are learned 
 
 ### Multi-Head Attention:
 
-In Transformers, the above process is often done in multiple "heads," where <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>Q</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>K</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> W^Q, W^K, W^V </annotation></semantics></math> are split into smaller matrices for each head, and <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>k</mi></msub><mo>=</mo><msub><mi>d</mi><mi>v</mi></msub><mo>=</mo><msub><mi>d</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mi>e</mi><mi>l</mi></mrow></msub><mi mathvariant="normal">/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex"> d_k = d_v = d_{model}/h </annotation></semantics></math>. 
+In Transformers, the above process is often done in multiple "heads," where
+$W^Q, W^K, W^V$ are split into smaller matrices for each head, and $d_k = d_v = d_{model}/h$.
 
 Each head computes its own Q, K, V, allowing the model to capture different types of relationships.
 
@@ -446,13 +447,17 @@ However, the core projection process remains the same: linear transformations vi
 To project an input string into Query, Key, and Value vectors for each word:
 
 Tokenize the string into words (e.g., ["The", "cat", "sleeps"]).
-Convert each word into an embedding vector, forming matrix <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex"> X </annotation></semantics></math>.
-Use three learnable weight matrices <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>W</mi><mi>Q</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>K</mi></msup><mo separator="true">,</mo><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> W^Q, W^K, W^V </annotation></semantics></math> to project each embedding:
+Convert each word into an embedding vector, forming matrix
 
-<math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>q</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>Q</mi></msup></mrow><annotation encoding="application/x-tex"> q_i = x_i W^Q </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>k</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>K</mi></msup></mrow><annotation encoding="application/x-tex"> k_i = x_i W^K </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mi>i</mi></msub><mo>=</mo><msub><mi>x</mi><mi>i</mi></msub><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> v_i = x_i W^V </annotation></semantics></math>.
+$X$.
+Use three learnable weight matrices $W^Q, W^K, W^V$.
+to project each embedding:
 
+$q_i = x_i W^Q$, $k_i = x_i W^K$, $v_i = x_i W^V$.
 
-Compute all Q, K, V vectors efficiently via matrix multiplications: <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>Q</mi></msup></mrow><annotation encoding="application/x-tex"> Q = X W^Q </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>K</mi></msup></mrow><annotation encoding="application/x-tex"> K = X W^K </annotation></semantics></math>, <math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi><mo>=</mo><mi>X</mi><msup><mi>W</mi><mi>V</mi></msup></mrow><annotation encoding="application/x-tex"> V = X W^V </annotation></semantics></math>.
+Compute all Q, K, V vectors efficiently via matrix multiplications:
+
+$Q = X W^Q$, $K = X W^K$, $V = X W^V$.
 
 These Q, K, V vectors are then used in the self-attention mechanism to compute attention scores and produce context-aware representations.  
 
