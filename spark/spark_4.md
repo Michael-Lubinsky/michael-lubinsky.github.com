@@ -54,6 +54,135 @@ For a quick mental model:
 - **4.1.0** was the "declarative pipelines + real-time streaming + SQL/VARIANT maturity" release, while
 -  **4.2.0** (which you asked about earlier) layered on geospatial types, native CDC, and further PySpark/DSv2 polish on top of that foundation.
 
+# Apache Spark 4.3.0 — What's New?
+
+According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
+
+The release includes more than 1,100 resolved JIRA tickets and contributions from over 210 developers.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
+
+Apache Spark
+
+
+
+## 1. Spark 4.1 vs. 4.2 vs. 4.3
+
+| Version | Main focus                         | Key capabilities                                                                                 |
+| ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 4.1.0   | Foundation                         | Declarative pipelines, real-time streaming, SQL/VARIANT improvements                             |
+| 4.2.0   | Data engineering                   | Geospatial types, native CDC, PySpark and Data Source V2 improvements                            |
+| 4.3.0   | Stateful streaming and performance | Stateful Real-Time Mode, SCD Type 2 Auto CDC, ASOF JOIN, JSON_TABLE, faster small-data execution |
+
+My characterization of Spark 4.3.0 would be:
+
+> Spark 4.3 makes real-time streaming more capable, CDC pipelines more useful for historical analytics, and SQL more expressive for complex and time-dependent data.
+
+## 2. Most important new features
+
+Stateful Real-Time Streaming
+
+Streaming aggregations, `dropDuplicates`, and `transformWithState` can now operate in Real-Time Mode, targeting end-to-end latency on the order of 100 milliseconds. This is particularly relevant to GPS and IoT telemetry processing.
+
+SCD Type 2 Auto CDC
+
+Declarative pipelines can preserve historical versions of changed records, instead of maintaining only the latest state. Supported through Python, SQL, and Spark Connect.
+
+SQL ASOF JOIN
+
+Match an event with the most appropriate earlier or contemporaneous record. Useful for time-series joins, financial market data, and telemetry enrichment. The SQL feature is disabled by default.
+
+JSON_TABLE and VARIANT manipulation
+
+Convert nested JSON into relational structures and modify semi-structured data using functions such as `variant_set`, `variant_insert`, and `variant_delete`.
+
+Faster execution on small datasets
+
+Opt-in shuffle-free single-task execution and Arrow-native caching reduce overhead for eligible queries, particularly useful for development and local Spark workloads.
+
+These are all documented in the official 4.3.0 release notes.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
+
+Apache Spark
+
+
+
+## 3. Additional improvements worth knowing
+
+Several less-publicized changes are particularly useful for data engineering.
+
+| Feature                 | Why it matters                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| `counter_diff`          | Converts cumulative counters into deltas, useful for odometer and energy consumption measurements |
+| Nanosecond timestamps   | Precision up to 9 fractional digits; currently a preview feature                                  |
+| Archive readers         | Opt-in reading of CSV, JSON, Parquet and other files inside TAR, ZIP and 7z archives              |
+| Data Source V2          | Generated columns, runtime filtering, and additional predicate pushdown                           |
+| Python UDF optimization | Experimental conversion of simple Python UDFs into Catalyst expressions                           |
+| Parquet performance     | Faster vectorized decoding and type conversions                                                   |
+| Spark Connect           | REST endpoints for sessions and operations, improved JDBC support                                 |
+
+[image](https://www.google.com/s2/favicons?domain=https://spark.apache.org\&sz=32)
+
+Apache Spark
+
+One important compatibility change: Spark 4.3 drops Python 3.10 support. Plan to use Python 3.11 or newer when upgrading.
+
+## 4. Practical example: ASOF JOIN for vehicle telemetry
+
+Suppose you have two datasets.
+
+GPS telemetry
+
+| car_id | event_time | speed |
+| ------ | ---------- | ----- |
+| A      | 10:00:05   | 35    |
+| A      | 10:00:12   | 42    |
+| A      | 10:00:20   | 38    |
+
+Battery measurements
+
+| car_id | measurement_time | battery_pct |
+| ------ | ---------------- | ----------- |
+| A      | 10:00:00         | 80          |
+| A      | 10:00:10         | 79          |
+| A      | 10:00:18         | 78          |
+
+You want each GPS event enriched with the most recent battery measurement at or before its timestamp.
+
+The result should be:
+
+| event_time | speed | battery_pct |
+| ---------- | ----- | ----------- |
+| 10:00:05   | 35    | 80          |
+| 10:00:12   | 42    | 79          |
+| 10:00:20   | 38    | 78          |
+
+Previously, you could implement this using window functions or more complicated joins. Spark 4.3 introduces SQL `ASOF JOIN` for this pattern, with a dedicated sort-merge execution operator.
+
+Enable the feature:
+
+```
+spark.conf.set(    "spark.sql.join.asofJoin.enabled",    "true")
+```
+
+This is especially useful for telemetry datasets where GPS, battery, odometer, and other sensors report asynchronously.
+
+## 5. What I would prioritize learning
+
+For your Spark and Databricks data engineering work, I would prioritize:
+
+1. ASOF JOIN — extremely relevant to time-series and vehicle telemetry.
+2. SCD Type 2 Auto CDC — useful for maintaining historical user and vehicle attributes. Note that the target catalog must support Data Source V2 row-level operations, such as Apache Iceberg.
+3. Stateful Real-Time Mode — important for low-latency IoT and streaming applications.
+4. `counter_diff` — useful for cumulative mileage and energy readings.
+5. Python UDF transpilation and optimizer improvements — potentially helpful for performance tuning, though some capabilities are experimental.
+
+One important distinction: these are features of upstream Apache Spark 4.3.0. Their availability in a managed Databricks runtime depends on that runtime's Spark version and Databricks-specific implementation.
+
+Overall, Spark 4.3.0 is more than an incremental API release. Its most significant architectural advance is bringing stateful processing into low-latency Real-Time Mode, while its most immediately useful data engineering additions are SCD Type 2 Auto CDC and SQL ASOF JOIN.
+
+Source: [Official Apache Spark 4.3.0 release notes — October 30, 2026](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com).
 
 <https://spark.apache.org/releases/spark-release-4-3-0.html>
 
