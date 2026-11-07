@@ -52,6 +52,9 @@ Smarter model caching and memory management, plus general stability improvements
 
 For a quick mental model: **4.1.0** was the "declarative pipelines + real-time streaming + SQL/VARIANT maturity" release, while **4.2.0** (which you asked about earlier) layered on geospatial types, native CDC, and further PySpark/DSv2 polish on top of that foundation.
 
+
+<https://spark.apache.org/releases/spark-release-4-3-0.html>
+
 ## Declarative Pipeline
 
 <https://github.com/bartoszgajda55/spark_declarative_pipelines_cheat_sheets>
