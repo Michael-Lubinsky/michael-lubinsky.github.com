@@ -74,6 +74,8 @@ Find the area of the square.
 
 <img width="433" height="298" alt="image" src="https://github.com/user-attachments/assets/9dffe77e-8b2c-4ac2-8b55-4b872c82bd0f" />
 
+<img width="342" height="248" alt="image" src="https://github.com/user-attachments/assets/74a349db-a96e-4288-8804-ec235693ebb7" />
+
 
 #### The areas S1, S2 and S3 are known on picture below. Find area of triangle ? 
 
