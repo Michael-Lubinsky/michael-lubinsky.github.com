@@ -116,13 +116,6 @@ ML interview
 ## Loss Functions in Deep Learning - Overview
 <https://arxiv.org/pdf/2504.04242v1>
 
-## Activation Functions
-
-<img width="824" height="990" alt="image" src="https://github.com/user-attachments/assets/86ff5e7c-6524-4e9f-a9a0-8bfe149aba02" />
-
-<img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/8c2c29f6-8347-4293-a636-463702307afc" />
-
-<img width="1080" height="1424" alt="image" src="https://github.com/user-attachments/assets/2ef64ee8-7edc-44cd-b3e5-5782343e888d" />
 
 ## ML Links
 
@@ -213,11 +206,7 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 <https://philipkiely.com/>  Inference Engineering book  
 <https://www.youtube.com/watch?v=l0BdmevNhuc> Inference for ML
 
-## Activation Functions GLU, SwiGLU, ReLU, softmax, cross-entropy
 
-<https://www.byhand.ai/p/swiglu-the-activation-function-behind>
-
-<https://imaddabbura.github.io/posts/dl/why-not-softmax.html>
 
 ## ML Books
 
@@ -226,7 +215,7 @@ https://github.com/stas00/  Stat Beckman 2 books: ml-engineering and the-art-of-
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/1001402/>  Linear Models
 
-https://news.ycombinator.com/item?id=47204964
+<https://news.ycombinator.com/item?id=47204964>
 
 <https://maxhalford.github.io/blog/online-active-learning-river-databutton/>  Online Active Learning
 
