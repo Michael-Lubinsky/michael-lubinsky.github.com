@@ -19,11 +19,14 @@
 До 31 мая продолжается промо-акция: скидка 30% на каждый том. 
 Промокод: YXFCQXX7VQHXX
 
- <https://arxiv.org/pdf/2609.28019>
+ <https://arxiv.org/pdf/2609.28019> Analytic Methods for Perturbative
+Quantum Chromodynamics
+
+<https://arxiv.org/abs/physics/0608108> Self Energy of Electron
 
 <http://web.ihep.su/spitsky/mipt/literature/literature.html>
 
-<https://www.youtube.com/playlist?list=PLRlVmXqzHjURrQfMx6o_Ji0926mPKkzOw>
+<https://www.youtube.com/playlist?list=PLRlVmXqzHjURrQfMx6o_Ji0926mPKkzOw> QED- Prerequisite Topics
 
 <https://arxiv.org/pdf/2207.02243> Lectures on Introduction to Quantum Field Theory. Ghanashyam Date
 
