@@ -132,9 +132,9 @@ This is a fully connected layer.
 
 It computes:
 
-[
+$$
 y = xW^T + b
-]
+$$
 
 So it learns 512 combinations of the 784 input pixels.
 
@@ -148,9 +148,9 @@ nn.ReLU()
 
 ReLU means:
 
-[
+$$
 ReLU(x) = \max(0, x)
-]
+$$
 
 It replaces negative values with 0 and keeps positive values.
 
@@ -389,7 +389,7 @@ Because the image is flattened immediately, the model does **not** explicitly un
 
 A CNN usually performs better on images for this reason.
 
-## 1. What “batch size” means
+#### 1. What “batch size” means
 
 **Batch size** is the number of training examples processed **together in one forward/backward pass** of the neural network.
 
@@ -405,7 +405,7 @@ means the model processes **64 images simultaneously**.
 
 ---
 
-## 2. Why batches are used
+#### 2. Why batches are used
 
 Processing data one-by-one would be very inefficient.
 
@@ -440,7 +440,7 @@ Also:
 
 ---
 
-## 3. Shape of tensors with batch size
+#### 3. Shape of tensors with batch size
 
 In PyTorch, the **first dimension of most tensors is the batch dimension**.
 
@@ -472,7 +472,7 @@ Meaning:
 
 ---
 
-## 4. How batch flows through your network
+#### 4. How batch flows through your network
 
 Your network:
 
@@ -551,7 +551,7 @@ Example:
 
 ---
 
-## 5. Why batching works mathematically
+#### 5. Why batching works mathematically
 
 Instead of computing
 
@@ -586,7 +586,7 @@ This is extremely efficient.
 
 ---
 
-## 6. How training uses batches
+#### 6. How training uses batches
 
 During training:
 
@@ -622,7 +622,7 @@ for epoch in range(10):
 
 ---
 
-## 7. Example with DataLoader
+#### 7. Example with DataLoader
 
 Typical PyTorch code:
 
@@ -645,7 +645,7 @@ labels = [64]
 
 ---
 
-## 8. Effect of batch size on training
+#### 8. Effect of batch size on training
 
 ### Small batch
 
@@ -687,7 +687,7 @@ Cons:
 
 ---
 
-## 9. Typical batch sizes
+#### 9. Typical batch sizes
 
 Common values:
 
@@ -706,7 +706,7 @@ thousands or millions of tokens per batch
 
 ---
 
-## 10. Batch vs single inference
+#### 10. Batch vs single inference
 
 During inference you may use:
 
@@ -728,7 +728,7 @@ But for faster processing you might send multiple inputs:
 
 ---
 
-## 11. Visual intuition
+#### 11. Visual intuition
 
 Think of batch as **a stack of images**:
 
@@ -751,7 +751,7 @@ The network processes all four **simultaneously**.
 
 ---
 
-## 12. Summary
+#### 12. Summary
 
 Batch size = **number of samples processed together**
 
