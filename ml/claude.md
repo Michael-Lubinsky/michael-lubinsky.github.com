@@ -7,6 +7,10 @@
 
 <https://habr.com/ru/companies/bothub/articles/1102356/>
 
+<https://habr.com/ru/articles/1105196/>
+
+<https://habr.com/ru/companies/bothub/articles/1105102/>
+
 <img width="555" height="406" alt="image" src="https://github.com/user-attachments/assets/68086501-89ee-41bc-b38e-4304b12a660c" />
 
 
