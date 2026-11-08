@@ -355,9 +355,7 @@ The model:
 5. the highest score is the predicted class
 
 
-## Small note
-
-Usually the model is used like this:
+#### Small note: Usually the model is used like this:
 
 ```python
 model = NeuralNetwork()
@@ -365,20 +363,13 @@ pred = model(images)
 loss = loss_fn(pred, labels)
 ```
 
-where `loss_fn` is often:
-
-```python
-nn.CrossEntropyLoss()
-```
+where `loss_fn` is often: nn.CrossEntropyLoss()
 
 Important note: logits are raw scores, not probabilities.  
-If you use:
-
-```nn.CrossEntropyLoss()```
-
+If you use: nn.CrossEntropyLoss() 
 you should pass logits directly, because that loss function internally applies the needed softmax logic.
 
-## One important caveat
+#### One important caveat
 
 Because the image is flattened immediately, the model does **not** explicitly understand:
 
