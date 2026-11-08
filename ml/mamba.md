@@ -6,7 +6,9 @@
 
 <https://learn.365datascience.com/courses/> Free Till Nov 20
 
-<https://www.sergeynikolenko.ru/courses/mlspsu2025-3>
+<https://www.sergeynikolenko.ru/courses/mlspsu2025-3> Sergey Nikolenko
+
+<https://github.com/neuml/txtai>
 
 Open Source implementation of Notebook LM with more flexibility and features
 <https://www.open-notebook.ai>
