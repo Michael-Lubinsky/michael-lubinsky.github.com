@@ -355,7 +355,7 @@ $V = X W^V \in \mathbb{R}^{n \times d_v}$
 Example: For the input string with   
 $n = 3$:
 
-$Q = [q_1, q_2, q_3]$ is the Query vector for "The", etc.
+$Q = [q_1; q_2; q_3]$ is the Query vector for "The", etc.
 
 Similarly, $K = [k_1, k_2, k_3]  V = [v_1, v_2, v_3]$
 
@@ -384,7 +384,7 @@ Input embeddings:
 $X = [x_1; x_2; x_3] \in \mathbb{R}^{3 \times d_{model}}$
 
 Compute: 
-$Q = X W^Q  K = X W^K V = X W^V$
+$Q = X W^Q  ,\quad K = X W^K ,\quad V = X W^V$
 
 
 This produces matrices $Q, K, V$  where each row corresponds to the Q, K, V vectors for one token.
@@ -1445,10 +1445,10 @@ print("Gradient for token 8:", embedding.weight.grad[8])
 ## What is happening mathematically
 
 Embedding lookup is basically:
-$[x_i = E[t_i]]$
+$x_i = E[t_i]$
 where:
 
-* (E) is the embedding matrix
+* $E$ is the embedding matrix
 * (t_i) is token index
 * (x_i) is selected row
 
@@ -1486,8 +1486,8 @@ A simple SGD update is:
 $E \leftarrow E - \eta \frac{\partial L}{\partial E}$
 where:
 
-* (E) = embedding matrix
-* (\eta) = learning rate
+* $E$ = embedding matrix
+* $\eta$ = learning rate
 
 So token vectors gradually move to reduce prediction error.
 
@@ -1573,11 +1573,11 @@ With scaling:
 ## Tiny numeric illustration
 
 Suppose:
-$[q \cdot k = 40]$
+$q \cdot k = 40$
 Softmax on scores like `[40, 39, 10]` is almost one-hot.
 
 But dividing by $\sqrt{64} = 8$:
-$[40 / 8 = 5]$  
+$40 / 8 = 5$  
 Now scores like `[5, 4.875, 1.25]` are less extreme, so gradients remain useful.
 
 ---
@@ -1640,7 +1640,7 @@ $q \in \mathbb{R}^d$
 Compare query embedding to document chunk embeddings.
 
 Often cosine similarity:
-$\cos(q, c_i) = \frac{q \cdot c_i}{|q| |c_i|}$
+$\cos(q, c_i) = \frac{q \cdot c_i}{\|q|\ |c_i|}$
 
 Retrieve top-k most similar chunks.
 
@@ -1869,7 +1869,7 @@ Interpretation:
 * token 2 vector = ([0,1])
 
 Shape:  
-$[X \in \mathbb{R}^{2 \times 2}]$
+$X\in \mathbb{R}^{2 \times 2}$
 
 Here:
 
@@ -1933,9 +1933,7 @@ Q=
 \begin{bmatrix}
 1 & 0 \\
 0 & 1
-\end{bmatrix}
- 
-
+\end{bmatrix}=
 \begin{bmatrix}
 1 & 0 \\
 0 & 1
@@ -1960,9 +1958,7 @@ K=
 \begin{bmatrix}
 1 & 1 \\
 0 & 1
-\end{bmatrix}
-
-
+\end{bmatrix}=
 \begin{bmatrix}
 1 & 1 \\
 0 & 1
@@ -1986,9 +1982,7 @@ V=
 \begin{bmatrix}
 1 & 2 \\
 3 & 4
-\end{bmatrix}
-
-
+\end{bmatrix}=
 \begin{bmatrix}
 1 & 2 \\
 3 & 4
@@ -2027,8 +2021,7 @@ S=
 \begin{bmatrix}
 1 & 0 \\
 1 & 1
-\end{bmatrix}
- 
+\end{bmatrix}=
 \begin{bmatrix}
 1 & 0 \\
 1 & 1
@@ -2060,7 +2053,7 @@ More explicitly:
 # Step 5. Scale by (\sqrt{d_k})
 
 Here (d_k = 2), so:
-$\sqrt{d_k}=\sqrt{2}\approx 1.414]$
+$\sqrt{d_k}=\sqrt{2}\approx 1.414$
 
 Scaled scores:
 
@@ -2169,7 +2162,7 @@ O=
 0.500 & 0.500
 \end{bmatrix}
 \begin{bmatrix}
-1 & 2 \
+1 & 2 \\
 3 & 4
 \end{bmatrix}
 $$
