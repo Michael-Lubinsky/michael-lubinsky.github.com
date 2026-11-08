@@ -15,7 +15,7 @@
 
 <https://habr.com/ru/articles/1087468/>
 
-
+<https://habr.com/ru/articles/1105056/>
 
 <https://habr.com/ru/articles/1087678/> Domain Driven Development
 
