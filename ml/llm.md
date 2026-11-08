@@ -334,3 +334,26 @@ Comprehensive resource for LLM inference optimization techniques including quant
 
 16. LLM Course: The best hands-on course to learn Large Language Models with roadmaps and Colab notebooks!
 👉 Check this out: https://github.com/mlabonne/llm-course
+
+
+
+Filter by level (L1 Screen to L4 Staff) or by role: LLM Product, Agent Systems, Inference, Evaluation, AI Data and more.
+
+📁 Interview Questions
+1. Transformers: https://lnkd.in/d8UYS9SB
+2. RAG: https://lnkd.in/dsQs23jq
+3. Agents: https://lnkd.in/df9VPN5p
+4. Inference and Serving: https://lnkd.in/dGfBZ4fF
+5. MCP, A2A and Skills: https://lnkd.in/d_jqkjii
+And 14 more topics...
+
+ 
+1. System Design: https://lnkd.in/ddhGCkMN
+2. Incidents and Scenarios (read the evidence, find the root cause): https://lnkd.in/d7bKDTHr
+3. Coding: https://lnkd.in/dgi4P26w
+4. Behavioral: https://lnkd.in/dTEXhvcp
+
+Full bank: https://lnkd.in/dvczgP8g
+
+  GitHub repo 
+https://lnkd.in/dNg5VnEF
