@@ -18,7 +18,7 @@ SQLMesh is an open-source **DataOps framework** for building, testing, and deplo
 
 ---
 
-### Is it a dbt competitor? Yes, directly.
+### Is SQLMesh a dbt competitor? Yes, directly.
 
 | Feature | dbt | SQLMesh |
 |---|---|---|
@@ -51,6 +51,8 @@ https://habr.com/ru/articles/1046427/
 ### DBT **data build tool**
 
 It is a tool for transforming data inside a data warehouse using SQL.
+
+<https://github.com/VIVEK-JADHAV/dbt-ecommerce-warehouse>
 
 Below is a simple **dbt pipeline** .
 
