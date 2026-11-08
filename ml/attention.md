@@ -357,7 +357,7 @@ $n = 3$:
 
 $Q = [q_1; q_2; q_3]$ is the Query vector for "The", etc.
 
-Similarly, $K = [k_1, k_2, k_3]  V = [v_1, v_2, v_3]$
+Similarly, $K = [k_1; k_2; k_3]$ and  $V = [v_1; v_2; v_3]$
 
 
 
