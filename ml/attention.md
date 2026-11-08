@@ -130,7 +130,7 @@ Step 3: Softmax over scores:
    Normalize attention for each word
 
 Step 4: Weighted sum of V using scores:  
-   Output_i = sum(attention_scores * V_j)
+   Output_i = sum(attention_scores * V_j).  Output_i = Σ_j softmax(q_i·k_j/√d_k) · V_j.
    
 In matrix form:
 
@@ -355,7 +355,7 @@ $V = X W^V \in \mathbb{R}^{n \times d_v}$
 Example: For the input string with   
 $n = 3$:
 
-$Q = [q_1; q_2; q_3]$ is the Query vector for "The", etc.
+$Q = [q_1; q_2; q_3]$ where q₁ is the Query vector for ‘The
 
 Similarly, $K = [k_1; k_2; k_3]$ and  $V = [v_1; v_2; v_3]$
 
@@ -525,7 +525,7 @@ Instead of one attention mechanism, use **h** parallel heads:
 ```
 MultiHead(Q, K, V) = Concat(head_1, ..., head_h)W_O
 
-where head_i = Attention(QW_Q^i, KW_K^i, VW_V^i)
+where head_i =  Attention(XW_Q^i, XW_K^i, XW_V^i)
 ```
 
 This allows the model to attend to different aspects simultaneously (e.g., one head might focus on syntax, another on semantics).
@@ -1640,7 +1640,7 @@ $q \in \mathbb{R}^d$
 Compare query embedding to document chunk embeddings.
 
 Often cosine similarity:
-$\cos(q, c_i) = \frac{q \cdot c_i}{\|q|\ |c_i|}$
+ $\cos(q, c_i) = \frac{q \cdot c_i}{\lVert q \rVert \, \lVert c_i \rVert}$
 
 Retrieve top-k most similar chunks.
 
@@ -2058,8 +2058,7 @@ $\sqrt{d_k}=\sqrt{2}\approx 1.414$
 Scaled scores:
 
 $$
-\hat S = \frac{S}{\sqrt{2}}
-
+\hat S = \frac{S}{\sqrt{2}}=
 \begin{bmatrix}
 1/1.414 & 0/1.414 \\
 1/1.414 & 1/1.414
@@ -2139,8 +2138,7 @@ So token 2 attends equally to both tokens.
 ## Full attention-weight matrix
 
 $$
-A=\text{softmax}(\hat S)
- 
+A=\text{softmax}(\hat S)=
 \begin{bmatrix}
 0.670 & 0.330 \\
 0.500 & 0.500
@@ -2381,7 +2379,7 @@ Self-attention does **not** just copy vectors.
 
 It builds each output token as:
 $$
-\text{new token representation}
+\text{new token representation}=
 \sum_j \text{attention weight}_{ij} \cdot V_j
 $$
 
