@@ -8,4 +8,6 @@
 
 <https://www.quantamagazine.org/a-strange-quantum-theorem-has-killed-einsteins-reality-20261106/>
 
+<https://www.quantamagazine.org/how-bells-theorem-proved-spooky-action-at-a-distance-is-real-20210720/>
+
 <https://habr.com/ru/articles/1104976/>
