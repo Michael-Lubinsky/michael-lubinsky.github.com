@@ -71,6 +71,7 @@ Your own code runs the requested tools (an API call, SQL query, file read and so
 
 Most agent frameworks (LangGraph, the OpenAI and Anthropic agent SDKs, smolagents) are built around this same loop.
 
+<https://habr.com/ru/companies/bothub/articles/1105102/>
 
 <https://habr.com/ru/companies/otus/articles/1095784/>
 
