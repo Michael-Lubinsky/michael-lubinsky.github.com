@@ -1,3 +1,4 @@
+# Puzzles
 
 ## Brothers and Sisters
 ```
@@ -39,8 +40,8 @@ What is x?
 
 There are 100 closed doors, numbered 1 through 100.
 - Student 1 toggles every door.
-- Student 2 toggles every second door.
-- Student 3 toggles every third door.
+- Then Student 2 toggles every second door.
+- Then Student 3 toggles every third door.
 - This continues until student 100 toggles door 100.
 
 Which doors remain open? Why?
@@ -71,10 +72,7 @@ It is not allowed to trace back.
 ### There is a right triangle with hypotenuse 10 and heigh 6.  
 Find the area of triangle.
 
-
-
-<img width="778" height="196" alt="image" src="https://github.com/user-attachments/assets/79f213d1-f6fc-4090-97de-8a27e671421b" />
-
+The numbers in the regions of the given figure  below each indicate the perimeter of that region in cm (the illustration is not to scale). How long is the outer boundary of the figure?
 
 
 
@@ -84,7 +82,7 @@ Find the area of triangle.
 
 ```
 A circle passes through two vertices of a square and is tangent to one of its sides.
-The height of the circular segment on picture is 1.
+The height of the circular green segment on picture below is 1.
 Find the area of the square.
 ```
 
