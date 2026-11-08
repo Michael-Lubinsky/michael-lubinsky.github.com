@@ -355,7 +355,13 @@ $V = X W^V \in \mathbb{R}^{n \times d_v}$
 Example: For the input string with   
 $n = 3$:
 
-$Q = [q_1; q_2; q_3]$ where q₁ is the Query vector for ‘The
+$$
+Q = \begin{bmatrix}
+q_1 \\ q_2 \\ q_3
+\end{bmatrix}
+$$
+
+where q₁ is the Query vector for ‘The
 
 Similarly, $K = [k_1; k_2; k_3]$ and  $V = [v_1; v_2; v_3]$
 
@@ -520,11 +526,14 @@ Attention(Q, K, V) = softmax(QK^T / √d_k)V
 **Multi-Head Attention:**
 Instead of one attention mechanism, use **h** parallel heads:
 
-```
-MultiHead(Q, K, V) = Concat(head_1, ..., head_h)W_O
-
-where head_i =  Attention(XW_Q^i, XW_K^i, XW_V^i)
-```
+$$
+\begin{aligned}
+\operatorname{head}_i
+&= \operatorname{Attention}(XW_i^Q, XW_i^K, XW_i^V) \\
+\operatorname{MultiHead}(X)
+&= \operatorname{Concat}(\operatorname{head}_1,\ldots,\operatorname{head}_h)W^O
+\end{aligned}
+$$
 
 This allows the model to attend to different aspects simultaneously (e.g., one head might focus on syntax, another on semantics).
 
@@ -2056,10 +2065,11 @@ $\sqrt{d_k}=\sqrt{2}\approx 1.414$
 Scaled scores:
 
 $$
-\hat S = \frac{S}{\sqrt{2}}=
+\hat S = \frac{S}{\sqrt{2}}
+=
 \begin{bmatrix}
-1/1.414 & 0/1.414 \\
-1/1.414 & 1/1.414
+1/\sqrt{2} & 0 \\
+1/\sqrt{2} & 1/\sqrt{2}
 \end{bmatrix}
 \approx
 \begin{bmatrix}
@@ -2067,7 +2077,6 @@ $$
 0.707 & 0.707
 \end{bmatrix}
 $$
-
 
 # Step 6. Apply softmax row by row
 
@@ -2146,9 +2155,21 @@ $$
 # Step 7. Multiply attention weights by V
 
 Now compute the output:
-$
-O = AV
-$
+$$
+O =
+\begin{bmatrix}
+0.670 & 0.330 \\
+0.500 & 0.500
+\end{bmatrix}
+\begin{bmatrix}
+1 & 2 \\
+3 & 4
+\end{bmatrix}=
+\begin{bmatrix}
+1.660 & 2.660 \\
+2.000 & 3.000
+\end{bmatrix}
+$$
 
 That is:
 $$
