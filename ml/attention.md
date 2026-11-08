@@ -130,7 +130,7 @@ Step 3: Softmax over scores:
    Normalize attention for each word
 
 Step 4: Weighted sum of V using scores:  
-   Output_i = sum(attention_scores * V_j).  Output_i = Σ_j softmax(q_i·k_j/√d_k) · V_j.
+     Output_i = Σ_j softmax(q_i·k_j/√d_k) · V_j.
    
 In matrix form:
 
@@ -361,7 +361,7 @@ q_1 \\ q_2 \\ q_3
 \end{bmatrix}
 $$
 
-where q₁ is the Query vector for ‘The
+where $q_1$ is the Query vector for "The", etc.
 
 Similarly, $K = [k_1; k_2; k_3]$ and  $V = [v_1; v_2; v_3]$
 
