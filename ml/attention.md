@@ -421,17 +421,15 @@ Compute:
 Compute the Query vector for the token "The":
 
 $$
-\begin{aligned}
-q_1 &= x_1 W^Q \\
-&= \begin{bmatrix} 0.1 & 0.2 & 0.3 & 0.4 \end{bmatrix}
+q_1 = x_1 W^Q =
+\begin{bmatrix}0.1 & 0.2 & 0.3 & 0.4\end{bmatrix}
 \begin{bmatrix}
 0.1 & 0.2 \\
 0.3 & 0.4 \\
 0.5 & 0.6 \\
 0.7 & 0.8
-\end{bmatrix} \\
-&= \begin{bmatrix} 0.50 & 0.60 \end{bmatrix}
-\end{aligned}
+\end{bmatrix}=
+\begin{bmatrix}0.50 & 0.60\end{bmatrix}
 $$
 
 Similarly compute 
@@ -1880,7 +1878,7 @@ Here:
 
 # Step 2. Choose projection matrices
 
-Let’s choose simple matrices for (W_Q), (W_K), (W_V).
+Let’s choose simple matrices for $W_Q$, $W_K$, and $W_V$.
 
 ## Query matrix
 
@@ -2080,28 +2078,28 @@ Softmax is applied to each row separately.
 ## Row 1 softmax
 
 Row 1 is:
-$
+$$
 [0.707,\ 0]
-$
+$$
 
 Exponentials:
-$
+$$
 e^{0.707}\approx 2.028,\qquad e^0=1
-$
+$$
 
 Sum:
-$
+$$
 2.028+1=3.028
-$
+$$
 
 So softmax row 1:
-$
+$$
 \left[
 \frac{2.028}{3.028},\ \frac{1}{3.028}
 \right]
 \approx
 [0.670,\ 0.330]
-$
+$$
 
 So token 1 attends:
 
@@ -2163,6 +2161,11 @@ O=
 1 & 2 \\
 3 & 4
 \end{bmatrix}
+\approx
+\begin{bmatrix}
+1.660 & 2.660 \\
+2.000 & 3.000
+\end{bmatrix}
 $$
 
 Let’s do it row by row.
@@ -2172,45 +2175,50 @@ Let’s do it row by row.
 ## Output for token 1
 
 First row:
-$
+
+$$
 [0.670,\ 0.330]
-$
+$$
 
 Multiply by (V):
 
 ### First component
-$
+
+$$
 0.670\cdot 1 + 0.330\cdot 3
 = 0.670 + 0.990
 = 1.660
-$
+$$
 
 ### Second component
-$
+
+$$
 0.670\cdot 2 + 0.330\cdot 4
 = 1.340 + 1.320
 = 2.660
-$
+$$
 
 So output for token 1 is:
 
-$
+$$
 [1.660,\ 2.660]
-$
+$$
 
 
 
 ## Output for token 2
 
 Second row:
-$
+
+$$
 [0.500,\ 0.500]
-$
+$$
 
 ### First component
-$
+
+$$
 0.5\cdot 1 + 0.5\cdot 3 = 2
-$
+$$
 
 ### Second component
 $
@@ -2218,9 +2226,10 @@ $
 $
 
 So output for token 2 is:
-$
+
+$$
 [2,\ 3]
-$
+$$
  
 ## Final output matrix
 
@@ -2253,23 +2262,26 @@ These are now **context-aware** because each token output is a weighted combinat
 ## Token 1
 
 Attention weights:
-$
+
+$$
 [0.670,\ 0.330]
-$
+$$
 
 So token 1 mostly looked at itself, but also partly at token 2.
 
 Its new vector became:
-$
+
+$$
 0.670\cdot [1,2] + 0.330\cdot [3,4]
-$
+$$
  
 ## Token 2
 
 Attention weights:
-$
+
+$$
 [0.5,\ 0.5]
-$
+$$
 
 So token 2 equally mixed information from both tokens.
 
@@ -2378,6 +2390,7 @@ $$
 Self-attention does **not** just copy vectors.
 
 It builds each output token as:
+
 $$
 \text{new token representation}=
 \sum_j \text{attention weight}_{ij} \cdot V_j
