@@ -45,8 +45,9 @@ SQLMesh is an open-source **DataOps framework** for building, testing, and deplo
 
 ---
 
-**Bottom line:** SQLMesh is a serious dbt competitor targeting teams that have hit dbt's scaling or workflow limitations. For your Databricks/Delta Lake work on ChargeMinder, it'd be a relevant alternative — it has first-class Databricks support and handles incremental models more intelligently than dbt.
-https://habr.com/ru/articles/1046427/
+**Bottom line:** SQLMesh is a serious dbt competitor targeting teams that have hit dbt's scaling or workflow limitations   — it has first-class Databricks support and handles incremental models more intelligently than dbt.
+
+<https://habr.com/ru/articles/1046427/>
 
 ### DBT **data build tool**
 
