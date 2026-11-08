@@ -1980,6 +1980,7 @@ So:
 ---
 
 ## Compute (V)
+
 $$
 V=
 \begin{bmatrix}
@@ -2008,7 +2009,8 @@ So:
 We calculate:
 $S = QK^T$
 
-First compute (K^T):
+First compute $K^T$:
+
 $$
 K^T=
 \begin{bmatrix}
@@ -2057,16 +2059,14 @@ More explicitly:
 
 ---
 
-# Step 5. Scale by (\sqrt{d_k})
+# Step 5. Scale by $\sqrt{d_k}$
 
-Here (d_k = 2), so:
-$\sqrt{d_k}=\sqrt{2}\approx 1.414$
+Here $d_k = 2$, so: $\sqrt{d_k}=\sqrt{2}\approx 1.414$
 
 Scaled scores:
 
 $$
-\hat S = \frac{S}{\sqrt{2}}
-=
+\hat S = \frac{S}{\sqrt{2}}=
 \begin{bmatrix}
 1/\sqrt{2} & 0 \\
 1/\sqrt{2} & 1/\sqrt{2}
@@ -2120,24 +2120,28 @@ So token 1 attends:
 ## Row 2 softmax
 
 Row 2 is:
-$
+
+$$
 [0.707,\ 0.707]
-$
+$$
 
 Exponentials:
-$
+
+$$
 e^{0.707}=2.028,\qquad e^{0.707}=2.028
-$
+$$
 
 Sum:
-$
+
+$$
 2.028+2.028=4.056
-$
+$$
 
 Softmax row 2:
-$
+
+$$
 [0.5,\ 0.5]
-$
+$$
 
 So token 2 attends equally to both tokens.
 
@@ -2155,6 +2159,7 @@ $$
 # Step 7. Multiply attention weights by V
 
 Now compute the output:
+
 $$
 O =
 \begin{bmatrix}
@@ -2172,6 +2177,7 @@ O =
 $$
 
 That is:
+
 $$
 O=
 \begin{bmatrix}
