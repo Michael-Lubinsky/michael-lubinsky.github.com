@@ -115,7 +115,7 @@ ML interview
 
 ## Loss Functions in Deep Learning - Overview
 <https://arxiv.org/pdf/2504.04242v1>
-
+<img width="1080" height="1424" alt="image" src="https://github.com/user-attachments/assets/2ef64ee8-7edc-44cd-b3e5-5782343e888d" />
 
 ## ML Links
 
