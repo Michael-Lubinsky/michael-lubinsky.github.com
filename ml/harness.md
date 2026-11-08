@@ -1,8 +1,12 @@
 ## Harness
 
+Агент = LLM + Harness
+
 <https://github.com/walkinglabs/learn-harness-engineering>
 
 <https://klaviyo.tech/inside-the-harness-deterministic-systems-476413ae913b>
+
+<https://habr.com/ru/articles/1105078/>
 
 <https://habr.com/ru/articles/1093462/>
 
