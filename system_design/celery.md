@@ -258,8 +258,20 @@ Celery Beat supports several scheduling methods.
 
 For example:
 
-```
-from datetime import timedeltafrom celery.schedules import crontabapp.conf.beat_schedule = {    "job-a": {        "task": "tasks.check_pending_imports",        "schedule": timedelta(minutes=5),    },    "job-b": {        "task": "tasks.nightly_validation",        "schedule": crontab(hour=2, minute=0),    },}
+```python
+from datetime import timedelta
+from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+    "job-a": {
+        "task": "tasks.check_pending_imports",
+        "schedule": timedelta(minutes=5),
+    },
+    "job-b": {
+        "task": "tasks.nightly_validation",
+        "schedule": crontab(hour=2, minute=0),
+    },
+}
 ```
 
 Cron schedules use the configured Celery timezone.
@@ -279,15 +291,14 @@ Every 5 minutes
 Every day at 2 AM UTC
 
 Generated Python configuration
-
-&#x20;Copy
-
-app.conf.beat_schedule = {\
-&#x20;   "scheduled-job": {\
-&#x20;       "task": "tasks.check_pending_imports",\
-&#x20;       "schedule": 10.0,\
-&#x20;   },\
+```
+app.conf.beat_schedule = {
+    "scheduled-job": {
+        "task": "tasks.check_pending_imports",
+        "schedule": 10.0,
+    },
 }
+```
 
 # Part 3 — Celery in production
 
