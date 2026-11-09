@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=soTfFFIQQ8U> Design Software Systems (3 hours)
 
+<https://github.com/liquidslr/system-design-notes>
+
 <https://www.ssp.sh/brain/data-engineering>
 
 <https://habr.com/ru/companies/hexlet/articles/1098714/>
