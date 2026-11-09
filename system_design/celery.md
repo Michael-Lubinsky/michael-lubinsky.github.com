@@ -142,7 +142,8 @@ A crucial distinction:
 add(10, 20)         # Execute locally, synchronously
 add.delay(10, 20)   # Submit to broker for worker execution
 add.apply_async(args=(10, 20), countdown=5)
-                    # Submit with a delay of ~5 seconds```
+                    # Submit with a delay of ~5 seconds
+```
 
 `countdown` is for one-off delayed execution. For recurring tasks, use Celery Beat.
 
