@@ -5,6 +5,7 @@
 <https://www.youtube.com/watch?v=SxuQs9GGYbk>  
 <https://lucumr.pocoo.org/2026/1/31/pi/>  
 
+<https://caleb.software/posts/claude-to-pi.html>
 <https://news.ycombinator.com/item?id=50410107>
 
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
