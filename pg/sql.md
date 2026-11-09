@@ -1,11 +1,14 @@
 ## SQL
 
+### Tools
 <https://sqltoerdiagram.com/>  ER Diagram  
 <https://github.com/royalbhati/sqltoerdiagram/blob/main/src/main.js>
 
 <https://dbml.dbdiagram.io/home/> DB Diagram
 
 <https://www.dbpro.app/>
+
+<https://dbxio.com/en>
 
 https://github.com/ondras/wwwsqldesigner
 
@@ -17,6 +20,9 @@ https://azimutt.app/gallery
 
 
 <https://github.com/eduardofuncao/squix> SQL Client in terminal
+
+
+## ----
 
 <https://habr.com/ru/companies/otus/articles/1067758/>
 
