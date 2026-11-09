@@ -51,7 +51,7 @@ Smarter model caching and memory management, plus general stability improvements
 - Infrastructure: minimum Python bumped to 3.10, Python 3.14 support added, Scala upgraded to 2.13.17
 
 ## Check Spark Version:
-```
+```python
 print(spark.version)
 print(spark.sparkContext.version)
 
@@ -81,6 +81,8 @@ For a quick mental model:
 ## Apache Spark 4.3.0 — What's New?
 
 According to the official [Apache Spark 4.3.0 release notes](https://spark.apache.org/releases/spark-release-4-3-0.html?utm_source=chatgpt.com), 
+
+<https://systemsnull.net/posts/data-engineering-ai/ultimate-guide-spark-43>
 
 Spark 4.3.0 introduces several important improvements, particularly for real-time streaming, Change Data Capture (CDC), SQL, and query performance.
 
