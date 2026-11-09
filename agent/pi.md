@@ -4,6 +4,9 @@
 <https://pi.dev/> <https://github.com/earendil-works/pi>  
 <https://www.youtube.com/watch?v=SxuQs9GGYbk>  
 <https://lucumr.pocoo.org/2026/1/31/pi/>  
+
+<https://news.ycombinator.com/item?id=50410107>
+
 <https://shivamagarwal7.medium.com/agentic-ai-pi-anatomy-of-a-minimal-coding-agent-powering-openclaw-5ecd4dd6b440>
 
 <https://news.ycombinator.com/item?id=47143754>
