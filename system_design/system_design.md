@@ -69,6 +69,8 @@
 ## Message Queue
 <https://habr.com/ru/companies/otus/articles/1022192/>
 
+<https://blog.alexewerlof.com/p/message-queues>
+
 <https://concerningquality.com/queue-simulations/>
 
 
