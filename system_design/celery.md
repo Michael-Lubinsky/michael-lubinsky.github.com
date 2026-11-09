@@ -1,10 +1,4 @@
-## Celery
-
-# Celery and Celery Beat — Practical Python Tutorial
-
-Since you're preparing for a Compensia interview, I'll focus on how Celery works internally, how to implement it in Python, how Celery Beat schedules tasks, and how to troubleshoot production problems.
-
-We'll build a small ETL system that processes data and runs scheduled jobs, using Redis as the message broker.
+## Celery and Celery Beat  
 
 ## 1. What are Celery and Celery Beat?
 
