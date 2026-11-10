@@ -2,6 +2,8 @@
 
 <https://www.youtube.com/watch?v=8bhpDYELmQc> How GPU works ru
 
+<https://www.youtube.com/playlist?list=PL-_cKNuVAYAVcBzEl66UZgCmqec_u7kcV> ru
+
 <https://thelastone07.github.io/blog/making_cuda_less_overwhelming/>
 
 <https://leetgpu.com/>
