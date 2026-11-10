@@ -41,7 +41,7 @@ WHEN NOT MATCHED THEN
 - `WHEN NOT MATCHED BY SOURCE`, for rows in the target that aren't in the source. Typically you delete them or mark them inactive, which gives you a full sync in one statement.
 - `MERGE` on updatable views.
 
-
+### ON CONFLICT
 `EXCLUDED` is a special table name that stands for **the row you tried to insert**, the one rejected because of the conflict. Here, `EXCLUDED.name` is `'Alice'` and `EXCLUDED.customer_id` is `101`.
 
 Inside `DO UPDATE` you can refer to two rows:
