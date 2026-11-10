@@ -102,7 +102,7 @@ ON CONFLICT (customer_id) DO NOTHING;
 | Handles target rows missing from the source | No | Yes (`NOT MATCHED BY SOURCE`, PG 17+) |
 | Standard SQL / portable | No, Postgres-specific | Yes; Oracle, SQL Server, Snowflake and Databricks have it too |
 
-## When to use which (a good interview answer)
+## When to use which 
 
 - **`ON CONFLICT`** fits single-row or small-batch upserts that could run at the same time: API writes, Celery tasks that might retry or overlap. It's the concurrency-safe, idempotent choice.
 - **`MERGE`** fits batch syncs from a staging table to a core table, where you need inserts, updates and deletes in one statement and only one loader runs at a time. That's the typical ETL "staging → core" step, such as loading a consultant's Excel file into Data Hub.
