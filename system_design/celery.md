@@ -472,6 +472,45 @@ A practical distinction:
 - Use Airflow for a multi-stage ETL workflow with dependencies, backfills, and execution history.
 
 
+## Canvas
+
+**Canvas** is Celery's name for its toolkit for **combining tasks into workflows**.   
+The name suggests "drawing" a workflow out of tasks.   
+It's the `celery.canvas` module, and it's built on one idea:   
+you **describe** a task call as an object,   
+then **combine and run** those objects later.
+
+## What's in it
+
+| Primitive | What it is |
+| --- | --- |
+| **Signature** (`.s()` / `.si()`) | One task call packaged with its arguments and options, ready to send later. Everything else is built from these. |
+| **Chain** | Signatures run one after another; each result becomes the next task's first argument. |
+| **Group** | Signatures run in parallel. |
+| **Chord** | A group plus a callback that receives all the results. |
+| **map / starmap** | One task applied to a list of arguments, run **as a single task**. |
+| **chunks** | A large list of arguments split into N tasks, each handling a batch. |
+| **Callbacks** (`link`, `link_error`) | A task to run when another task succeeds or fails. |
+
+## The key idea: signatures are data
+
+```python
+sig = load.s(batch_id=7).set(queue="ingest", countdown=30)
+sig             # nothing has run; it's a description
+sig.delay()     # now it's sent to the broker
+```
+
+A signature is just a serializable description: the task name, its arguments, and options such as queue, countdown and retries. That means you can:
+- pass it to another task as an argument,
+- store it, or build it dynamically in a loop,
+- partially fill in arguments now and let a previous task supply the rest (`load.s()` waits for the chain to pass in the result),
+- combine it with `|` (chain) or put it in `group(...)` and `chord(...)`.
+
+## Why it exists
+
+Without canvas, the obvious way to coordinate tasks is for one task to call another and wait with `.get()`. That ties up a worker and can **deadlock** the pool. With canvas you hand the whole workflow to Celery up front, and the workers and broker handle the ordering, parallelism and collecting of results.
+
+**One-liner for the interview:** "Canvas is Celery's workflow layer. You build signatures, which are serializable task calls, and combine them with chain, group and chord, so Celery runs the dependencies and fan-out/fan-in for you and no task has to block waiting on another."
 
 These are Celery's **canvas** primitives. They let you combine tasks into workflows without one task waiting on another inside a worker. All of them are built from **signatures**.
 
