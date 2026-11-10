@@ -763,6 +763,219 @@ They run Celery today, and you're joining someone else's system, so **don't pitc
 
 > "Celery fits your stack. The places it usually hurts are early acks, prefetch with long tasks, Beat being a single point of failure, and the gap between committing to Postgres and enqueuing to Redis. I'd check those first: acks_late plus idempotent tasks, alerts when a job is overdue, a lock against overlapping runs, and on_commit for enqueues. If the queue ever became a real pain point, a Postgres-backed queue would be worth evaluating, since Postgres is already your core system and it would remove the Redis dependency. But I wouldn't change it without a concrete reason."
 
-That answer shows depth, respect for the existing design, and judgment, which are the three things Christina is looking for.
 
-Want me to add the Celery lesson and this comparison to your prep doc as a new section?
+ Celery is a mature and widely used Python task queue, but it has several architectural limitations that motivate teams to migrate to alternatives such as Dramatiq, RQ, Taskiq, Temporal, or cloud-managed queues.
+
+The main issue is not that Celery is unreliable. It's that building a reliable distributed task-processing system with Celery requires more engineering work than many teams initially expect.
+
+For your Compensia interview, understanding these limitations is particularly useful because Celery is part of their Python/PostgreSQL infrastructure.
+
+## 1. The biggest problems with Celery
+
+| Problem                  | Why it matters                                                            | Severity |
+| ------------------------ | ------------------------------------------------------------------------- | -------- |
+| Task duplication         | Tasks may execute more than once after retries or failures                | High     |
+| Workflow complexity      | Complex dependencies and long-running workflows are difficult to manage   | High     |
+| Monitoring               | Limited built-in operational visibility                                   | High     |
+| Broker dependency        | Requires Redis, RabbitMQ, or another supported broker in normal operation | Medium   |
+| Scheduling limitations   | Celery Beat does not prevent overlapping executions                       | Medium   |
+| Configuration complexity | Acknowledgments, prefetching, retries, and timeouts need careful tuning   | Medium   |
+| Task versioning          | Deployments can break queued tasks when signatures or code change         | Medium   |
+| Long-running tasks       | Worker capacity, memory usage, and recovery become challenging            | Medium   |
+
+These are engineering tradeoffs, not universal failures. Some are inherent to distributed task queues and also affect Celery's competitors.
+
+## 2. Task duplication and exactly-once execution
+
+Consider a Celery task:
+
+```python
+@app.task(bind=True, acks_late=True)
+def charge_customer(self, customer_id, amount):
+    payment_api.charge(customer_id, amount)
+```
+
+Imagine this sequence:
+
+1. Worker receives the task.
+2. Worker successfully charges the customer.
+3. Worker crashes before acknowledging the message.
+4. The broker redelivers the task, depending on the failure and acknowledgment configuration.
+5. Another worker charges the customer again.
+
+The customer may be charged twice.
+
+This illustrates a fundamental distributed-systems problem: the system cannot always determine whether a side effect completed before a worker failed.
+
+Celery does not provide automatic exactly-once business execution.
+
+Solutions: Idempotency keys, database uniqueness constraints, transactional outbox patterns, and application-level deduplication.
+
+Migrating to another task queue does not automatically eliminate this problem.
+
+## 3. Celery is not a durable workflow engine
+
+Suppose you need to process an SEC filing:
+
+Download SEC filing
+
+Parse XBRL data
+
+Extract missing values with AI
+
+Validate compensation data
+
+Save results to PostgreSQL
+
+Notify consultant
+
+Celery supports chains, groups, and chords for workflow composition.
+
+However, imagine the extraction succeeds but validation fails. You want to resume from validation without repeating an expensive AI extraction.
+
+Celery does not automatically persist every workflow step's business state in a durable, replayable execution history. You generally need to implement checkpoints, persistent state, recovery logic, and operational tooling yourself.
+
+This is one reason teams adopt Temporal for complex, long-running workflows.
+
+Temporal is designed around durable workflow execution, recovery, retries, and persisted workflow history. It still requires care around idempotent external side effects.
+
+## 4. Monitoring and debugging can be difficult
+
+Celery offers task events, worker inspection commands, logging, and monitoring tools such as Flower.
+
+But consider a production incident:
+
+> An Excel import started yesterday at 11:30 PM, partially loaded 50,000 records, and never finished.
+
+You may need to correlate information from several systems:
+
+- Celery worker logs
+- Redis or RabbitMQ state
+- Celery result backend
+- PostgreSQL import records
+- Application logs and task identifiers
+
+Celery's result backend is not a comprehensive audit log or workflow history system.
+
+For production ETL, teams frequently build their own job-status tables, tracing, metrics, and dashboards.
+
+This is a major distinction from workflow platforms that provide execution history and recovery as core features.
+
+## 5. Celery Beat scheduling limitations
+
+Celery Beat is convenient for periodic tasks, but it is relatively simple.
+
+For example:
+
+```
+app.conf.beat_schedule = {
+    "refresh-data": {
+        "task": "tasks.refresh_data",
+        "schedule": 300.0,
+    },
+}
+```
+
+If the task takes eight minutes, Beat can submit another instance after five minutes.
+
+Celery Beat does not automatically enforce mutual exclusion.
+
+You may need PostgreSQL advisory locks, Redis locks, or a separate scheduler with stronger coordination.
+
+Other concerns include missed schedules during downtime, duplicate dispatch if multiple uncoordinated Beat instances run, and limited built-in backfill support.
+
+For complicated data workflows with dependencies and historical reruns, Apache Airflow may be a better fit.
+
+## 6. Long-running and delayed tasks
+
+Celery workers can execute long-running tasks, but they require careful resource management.
+
+For example, imagine 10 workers processing tasks that each take 45 minutes. If all workers are occupied, short tasks may wait even when they require only a few milliseconds.
+
+Celery supports separate queues, worker pools, time limits, and prefetch tuning. However, these must be configured correctly.
+
+Delayed tasks have another subtle issue: with traditional Celery ETA/countdown handling, workers can reserve tasks before their execution time. Large numbers of distant-future tasks can therefore consume worker memory and complicate queue-based autoscaling. Dramatiq's design addresses this differently.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://dramatiq.io\&sz=32)
+
+Dramatiq 2.2.0 documentation+1
+
+
+
+## 7. Why teams migrate — and where they go
+
+[Awesome Background Task Processing in Python with Dramatiq | by Benjamin Tan Wei Hao | DKatalis | Medium](https://images.openai.com/static-rsc-4/SbPtEZmaXGSnlPOgvps_CA_OYU74eUSxzUEbJXFWvIJKmo9DnGOaSoCfC9QUPVJjAuZiAIK9BEC_cCtiLVHtsRYrI4jyHJsn8_P0_jwQZpl-wzNnQxEWOQWtPfy2HytCYmY5kN_HJnTvfHU3-zo2m-voCDO2ui5lmHKe2__P-Fs?purpose=inline)
+
+Dramatiq
+
+A common choice for teams seeking a smaller, more opinionated Python task-processing framework. It provides automatic retries with exponential backoff and Redis/RabbitMQ support. Its simpler design is attractive, although advanced scheduling and workflow capabilities may require additional components.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://dramatiq.io\&sz=32)
+
+Dramatiq 2.2.0 documentation+1
+
+
+
+[GitHub - rq/rq: Simple job queues for Python](https://images.openai.com/static-rsc-4/2jtsPzoyq-mToAC-bPANKbRbEla34T-4xfqgLdmaek53yPVV044uKWT2FizZJxLOxJQvrk-lqcDq9uHL7HaVdokg4-kCISTlmcE2Kf7NGIgz8jJo-LUfM4RCniWAwSnVST5RNm8Lv25393aVkI-DBmNiUnr_PAWMe0Hy4T4tNOE?purpose=inline)
+
+RQ
+
+Useful when you already have Redis and need straightforward Python background jobs without Celery's broader configuration surface. The tradeoff is a more limited ecosystem of orchestration features.
+
+[Brand | Temporal](https://images.openai.com/static-rsc-4/Fqt2Irxq-kWE1k-v9FydEy3AbVdqQhRwCtIuYAlxlowBdpWAQ9ce2Z6HJE06Su6vgcK-xI7inbL9irURsjm-1mCuUoChvnHB51DIG3eIzvh-7SRlWaGQd0TRKoih9uLQJMPwwwb6phOY0sb_RAxO-dXHyLvXy0rxOSyhfmV8Gl4?purpose=inline)
+
+Temporal
+
+A stronger fit for long-running business processes, durable execution, multi-step workflows, and recovery after failures. It requires adopting a different programming and operational model, rather than simply replacing Celery's task decorator.
+
+[Apache Airflow Logo PNG Vector (SVG) Free Download](https://images.openai.com/static-rsc-4/wmlr9q0CgACz0slILfHbyTZyciJR2tqRqq5fFVle7QJZiey2KXpbWelVUlZlL4llzTMDsghfUJwcHviSDnnayw5_sBbh_6TGNT26ja21hXxwPi0tv6OJaOnIt0fWoscxksMFW32iGnxaw3vrchxIiWJOv24PwikUkPAkvsn9CJE?purpose=inline)
+
+Apache Airflow
+
+Better suited to scheduled ETL pipelines with dependencies, backfills, and operational history. It is not generally a direct replacement for low-latency application background tasks.
+
+### Which system should you choose?
+
+| Requirement                                         | Good starting choice    |
+| --------------------------------------------------- | ----------------------- |
+| Existing Celery application works reliably          | Keep Celery             |
+| New, relatively simple Python background processing | Dramatiq or RQ          |
+| Complex workflows lasting hours or days             | Temporal                |
+| Scheduled ETL, DAGs, backfills                      | Airflow                 |
+| AWS-native asynchronous processing                  | SQS + workers or Lambda |
+| High-volume event streaming                         | Kafka + consumers       |
+
+## 8. Would I recommend migrating Compensia away from Celery?
+
+Not without evidence of a real operational problem.
+
+For the environment described in your interview briefing — Python, PostgreSQL, Linux, Django/FastAPI, Excel ingestion, and scheduled background processing — Celery is a reasonable architectural choice.
+
+Before proposing a migration, I would investigate:
+
+1. Are tasks actually being lost, duplicated, or delayed?
+2. Is Celery Beat creating overlapping or missed jobs?
+3. Are workflows becoming too complex for Celery chains and chords?
+4. Is operational visibility inadequate?
+5. Would migration solve these issues more economically than improving the existing system?
+
+For example, adding PostgreSQL job tracking, idempotency keys, dedicated queues, monitoring, and better retry policies may solve the problems without introducing another platform.
+
+## 9. A strong interview answer
+
+If Christina asks, "What do you think of Celery? Would you replace it?", you could answer:
+
+> Celery is a mature solution for asynchronous Python background processing, especially when an organization already uses Redis or RabbitMQ.
+>
+> Its challenges include task acknowledgment semantics, duplicate execution, operational monitoring, periodic-task overlap, and the complexity of long-running workflows.
+>
+> I would first evaluate how the existing application uses Celery and whether those issues are causing actual problems.
+>
+> For simple background jobs, I would generally keep Celery and improve reliability through idempotent tasks, monitoring, and better error handling.
+>
+> If the application required durable multi-step workflows with sophisticated recovery, I would consider Temporal. For scheduled data pipelines with dependencies and backfills, I would evaluate Airflow.
+>
+> I wouldn't recommend migration simply because another framework is newer. I'd compare reliability, operational complexity, migration cost, and business requirements.
+
+The most important distinction to understand: Celery is primarily a distributed task-execution system. Temporal and Airflow address broader workflow orchestration problems. Many migrations happen because the application's requirements have evolved beyond simple background task execution, not because Celery itself is fundamentally defective.
+ 
