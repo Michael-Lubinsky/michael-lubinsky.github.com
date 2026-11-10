@@ -21,7 +21,7 @@ How to Achieve Pruning When Querying by Non-Partitioned Columns
 
 ## MERGE and ON CONFLICT
 
-Yes. `MERGE` has been in PostgreSQL since **version 15** (2022), and version 17 extended it.
+ `MERGE` has been in PostgreSQL since **version 15** (2022), and version 17 extended it.
 
 ```sql
 MERGE INTO customers AS t
