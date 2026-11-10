@@ -471,6 +471,93 @@ A practical distinction:
 - Use cron for a simple standalone maintenance script.
 - Use Airflow for a multi-stage ETL workflow with dependencies, backfills, and execution history.
 
+
+
+These are Celery's **canvas** primitives. They let you combine tasks into workflows without one task waiting on another inside a worker. All of them are built from **signatures**.
+
+## Signatures: the building block
+
+A signature is a task call packaged up to run later.
+
+```python
+load.s(file_id)      # signature: will call load(file_id, <previous result>)
+load.si(file_id)     # immutable: ignores the previous task's result
+```
+
+## Chain: run tasks in order
+
+Each task's **return value is passed as the first argument** to the next task.
+
+```python
+from celery import chain
+
+chain(
+    extract.s(file_id),      # returns path to the staged file
+    validate.s(),            # validate(path)       -> returns batch_id
+    load.s(),                # load(batch_id)       -> returns row_count
+    refresh_views.si()       # .si: doesn't need row_count
+).delay()
+
+# shorthand
+(extract.s(file_id) | validate.s() | load.s()).delay()
+```
+
+If any step fails, the rest of the chain **doesn't run**. That's usually what you want in ETL: don't load data that failed validation.
+
+## Group: run tasks in parallel
+
+Independent tasks run at the same time on any available workers.
+
+```python
+from celery import group
+
+job = group(fetch_filing.s(cik) for cik in peer_group_ciks)
+result = job.delay()          # GroupResult; one result per task, in order
+```
+
+Workers process the tasks independently, so 50 filings can be fetched in parallel across your worker pool.
+
+## Chord: parallel, then one callback
+
+A **chord** is a group plus a callback. The callback runs **once, after every task in the group finishes**, and receives the **list of all results**.
+
+```python
+from celery import chord
+
+chord(
+    [fetch_filing.s(cik) for cik in peer_group_ciks],   # header (parallel)
+)(build_peer_report.s(client_id))                        # body (callback)
+
+# build_peer_report(results_list, client_id)
+```
+
+This is a fan-out/fan-in, or map-reduce, pattern: fetch every peer company's compensation data in parallel, then build one benchmark report.
+
+## Combining them
+
+They nest. A chain can contain a group, and a group followed by another task in a chain is automatically turned into a chord.
+
+```python
+chain(
+    download_index.s(date),
+    group(parse_filing.s(acc) for acc in accessions),   # becomes a chord ↓
+    merge_results.s(),
+    notify_consultants.si()
+).delay()
+```
+
+## Gotchas worth mentioning in the interview
+
+1. **Chords need a result backend.** The callback has to collect every result, so Celery stores them in Redis or a database and tracks how many have finished.
+2. **One failure blocks the chord.** If any task in the group fails after its retries, the callback **never runs**, and with older setups the chord can sit there unfinished. Attach an error handler with `.on_error(handle_failure.s())`, or have the group tasks catch errors and return a status so the callback always runs.
+3. **Big results are slow.** Results pass through the broker and backend, so return IDs or counts, not DataFrames.
+4. **Never call `.get()` inside a task** to wait for a subtask. It can deadlock the worker pool. That's the problem canvas solves.
+5. **A large fan-out floods the queue.** A group of 100,000 small tasks puts heavy load on the broker. Use `fetch_filing.chunks(zip(ciks), 100)` to batch them into fewer, larger tasks.
+6. **Debugging is harder.** A failure deep in a nested chain is hard to trace, so log a shared `run_id` through every task. This is one of the main reasons teams move to Temporal or Airflow for complex workflows.
+
+**One-line summary:** a chain runs tasks one after another and passes results along. A group runs tasks in parallel. A chord runs a group in parallel and then calls one task with all the results.
+
+
 ## Part 5 — Interview practice
 
 Test your understanding
