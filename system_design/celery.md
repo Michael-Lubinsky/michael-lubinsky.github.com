@@ -1179,3 +1179,104 @@ To run it:
 4. Submit a file: `curl -X POST localhost:8000/process -H 'Content-Type: application/json' -d '{"file_path": "/data/comp_2025.xlsx"}'`
 
 I didn't run Docker itself here; the local test used Redis and Postgres installed directly. The README has the run-without-Docker steps and the design decisions, which make good interview talking points.
+```
+@celery_app.task(
+    bind=True,
+    base=StatusTrackingTask,
+    name="process_excel",
+    # Retry only transient errors. A bad file fails the same way every time.
+    autoretry_for=(psycopg.OperationalError,),
+    retry_backoff=True,
+    retry_jitter=True,
+    max_retries=3,
+    soft_time_limit=TASK_SOFT_TIME_LIMIT,
+    time_limit=TASK_TIME_LIMIT,
+)
+```
+
+## `bind=True`
+
+The task function receives the **task instance** as its first argument, `self`, the way a method does. That gives you access to:
+- `self.request.id`: the task id. The code uses this as the table's `task_id`.
+- `self.request.retries`: which retry attempt this is (0 on the first run).
+- `self.retry(...)`: retry by hand.
+
+Without `bind=True`, the function has no `self` and can't see its own id.
+
+## `base=StatusTrackingTask`
+
+This uses a custom subclass of `celery.Task` instead of the default class, so you can override **lifecycle hooks**:
+
+| Hook | When it runs |
+| --- | --- |
+| `on_success` | The task returned normally |
+| `on_retry` | An attempt failed and a retry was scheduled |
+| `on_failure` | The task **finally** failed, after all retries |
+| `after_return` | After any outcome |
+
+`StatusTrackingTask.on_failure` writes `FAILURE` to Postgres. Because it runs only on the final failure and not on each retry, the row doesn't flip to FAILURE and then back to STARTED.
+
+## `name="process_excel"`
+
+This is the name the task is registered under. The message in Redis carries only this name and the arguments, and the worker looks the name up to find the function.
+- The default would be the module path, `app.tasks.process_excel`.
+- An explicit name means moving the function to another module won't break anything.
+- If you **rename** a task, messages already queued under the old name fail with *"Received unregistered task"*. Rename only when the queue is empty, or keep the old name registered as an alias.
+
+## `autoretry_for=(psycopg.OperationalError,)`
+
+If the task raises one of these exceptions, Celery automatically calls `self.retry(exc=exc)`. Any other exception fails the task **immediately**.
+- `OperationalError` means Postgres was unreachable, restarting, or the connection dropped. These are **transient**, and the next attempt will probably work.
+- `ExcelProcessingError` (a corrupt or missing file) is deliberately **not** listed. Retrying a bad file only wastes three attempts and delays the alert.
+
+## `retry_backoff=True`
+
+The wait between retries **grows exponentially**: about 1 s, 2 s, 4 s, 8 s, and so on. Each retry gives the database more time to recover.
+- Pass a number instead (`retry_backoff=5`) to make the base 5 s: 5, 10, 20…
+- The delay is capped by `retry_backoff_max`, which defaults to 600 s.
+- Without backoff, the default retry delay is a fixed 180 s.
+
+## `retry_jitter=True`
+
+Each delay is randomized between 0 and the computed backoff value. If Postgres restarts and 200 tasks fail at the same moment, jitter spreads their retries out so they don't all hit the database together when it comes back (the "thundering herd").
+- `True` is already Celery's default. It's written out here so readers can see it.
+
+## `max_retries=3`
+
+The task retries at most 3 times, so there are **4 attempts in total**. After that, the original exception is raised and `on_failure` runs.
+- 3 is the default, written out for clarity.
+- `None` would retry forever, which is almost never what you want.
+
+**How a retry works:** Celery doesn't sleep inside the worker. It publishes a **new message** with a countdown and frees the worker slot. Another worker may pick up the retry.
+
+## `soft_time_limit=TASK_SOFT_TIME_LIMIT` (1500 s, 25 minutes)
+
+When the limit is reached, Celery raises `SoftTimeLimitExceeded` **inside the running task**. It's an ordinary exception, so the task can catch it, clean up and fail gracefully.
+- In this code, the task catches it and re-raises a `RuntimeError("Timed out after 1500s")`. That exception isn't in `autoretry_for`, so the task fails immediately and `on_failure` records a clear error message.
+- It works by sending a signal to the child process, which the default **prefork** pool supports. Some other pools, such as the threads pool, don't support time limits.
+
+## `time_limit=TASK_TIME_LIMIT` (1800 s, 30 minutes)
+
+This is the **hard** limit. The worker **kills the child process** and starts a fresh one, and the task fails with `TimeLimitExceeded`.
+- It's the safety net for code that ignores the soft limit, for example a C extension stuck in a call that can't be interrupted.
+- No `except`, `finally` or cleanup code runs in the task. Don't count on your own status update happening after a hard kill. That's why the soft limit comes first (it leaves a 5-minute window to fail cleanly), and why the README recommends alerting on rows stuck in `STARTED`.
+
+## How the parameters work together
+
+```
+Attempt 1: Postgres down → OperationalError → autoretry
+           wait ~0–1 s (backoff + jitter) → on_retry
+Attempt 2: still down     → retry, wait ~0–2 s
+Attempt 3: still down     → retry, wait ~0–4 s
+Attempt 4: still down     → max_retries reached → on_failure → row = FAILURE
+
+Corrupt file: ExcelProcessingError → not in autoretry_for → on_failure at once
+
+Huge file:  25 min → SoftTimeLimitExceeded → caught → RuntimeError → FAILURE
+            (if the code ignored it) 30 min → process killed → TimeLimitExceeded
+```
+
+**Rule of thumb for the interview:** 
+- Retry what's transient, fail fast on bad data, 
+- back off with jitter, 
+- and set the soft limit below the hard limit so a timeout still ends in a clean status update.
