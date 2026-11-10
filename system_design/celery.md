@@ -1,5 +1,7 @@
 ## Celery and Celery Beat  
 
+<https://sgolev.github.io/blog/2026-07-28-celery-recipes/>
+
 ## 1. What are Celery and Celery Beat?
 
 Celery is a distributed task queue framework for Python. It allows applications to submit tasks for execution by separate worker processes, potentially running on different machines.
