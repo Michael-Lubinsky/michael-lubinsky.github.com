@@ -8,6 +8,8 @@
 
 <https://blackh0le.ru/>
 
+LLM in Physics. <https://www.youtube.com/watch?v=zUmeB_o7dBw>
+
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
 
 <https://archive.org/details/mir-titles>
