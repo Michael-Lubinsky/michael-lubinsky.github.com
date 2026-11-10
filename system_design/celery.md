@@ -1,5 +1,7 @@
 ## Celery and Celery Beat  
 
+<https://docs.celeryq.dev/en/stable/index.html>
+
 <https://sgolev.github.io/blog/2026-07-28-celery-recipes/>
 
 ## 1. What are Celery and Celery Beat?
