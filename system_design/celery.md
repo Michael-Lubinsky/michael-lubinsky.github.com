@@ -710,3 +710,59 @@ pip install celery redis flower
 5. Run `celery -A tasks flower` and open http://localhost:5555.
 
 If you do step 4 yourself, you can say in the interview that you've watched redelivery happen. That carries more weight than having read about it.
+
+## Why not Celery?
+Most teams that leave Celery aren't leaving because it's broken. They leave because it's **complex, its defaults surprise people, and it was built before asyncio and Postgres-backed queues were common**. Here are the main pain points, grouped by type.
+
+## 1. Defaults that cause silent problems
+
+- **Tasks are acknowledged on receipt (early ack) by default.** If a worker crashes mid-task, the task is gone. You have to opt in to `acks_late`, and then you have to make tasks idempotent.
+- **Prefetching.** By default each worker process reserves several tasks ahead. With long tasks, one busy worker holds tasks hostage while other workers sit idle. Teams find this by accident and then learn about `prefetch_multiplier=1` and `-Ofair`.
+- **Redis visibility timeout.** Any task running longer than the timeout (one hour by default) gets delivered a second time while the first run is still going. You end up with duplicate runs and no error.
+- **Settings sprawl.** There are hundreds of settings across Celery, Kombu (messaging) and billiard (process pool). Behavior varies by broker, and some features work well on RabbitMQ and poorly on Redis (priorities, chords).
+
+## 2. Weak operations and visibility
+
+- **No lasting task history.** Results expire. Flower shows recent events but isn't an audit log. "Did last Tuesday's job run, and what did it process?" usually needs your own `job_runs` table.
+- **Debugging is hard.** Tracebacks are split between producer logs and worker logs. Canvas workflows (chords especially) fail in confusing ways, and a failed chord member can leave the callback hanging.
+- **Memory growth in long-lived workers.** Teams end up setting `worker_max_tasks_per_child` to recycle processes.
+- **Testing.** `task_always_eager` runs tasks inline, which behaves differently from real workers, so bugs get through.
+
+## 3. Beat's limits
+
+- **It's a single point of failure with no built-in high availability.** If it dies quietly, nothing runs and nothing errors.
+- **Running two Beat processes doubles every job.**
+- **It doesn't prevent overlapping runs.** You add the locking yourself.
+- **Schedule state is kept in a local file** unless you add django-celery-beat.
+
+## 4. The architecture is showing its age
+
+- **No native asyncio.** Celery tasks are synchronous. FastAPI and other async-first teams find it awkward and switch to async-native queues such as arq or Taskiq.
+- **The dual-write problem.** You save to Postgres and enqueue to Redis. These are two systems, and there's no transaction across them. If the enqueue fails after the commit, the work is lost. If the worker runs before the commit, it can't find the row. `on_commit` and the outbox pattern only partly fix this.
+- **An extra moving part.** Redis or RabbitMQ has to be run, monitored, persisted and secured, often only to support the task queue.
+- **No durable workflows.** A 10-step process that fails at step 7 can't resume where it stopped unless you build checkpointing yourself.
+- **Maintenance.** It's a large, old codebase with a small maintainer team, and some long-standing bugs have stayed open for years.
+
+## Where teams go, and why
+
+| Alternative | What they gain | Typical reason for switching |
+| --- | --- | --- |
+| **RQ** | Very simple, Redis only | "We only need fire-and-forget jobs" |
+| **Dramatiq** | Safer defaults (ack after processing, retries with backoff built in), small codebase | Tired of Celery's surprising defaults |
+| **Huey** | Lightweight, scheduled jobs built in, can use Redis or SQLite | Small apps that don't want Celery's weight |
+| **arq / Taskiq** | Native asyncio | FastAPI or other async codebases |
+| **Postgres-backed queues** (Procrastinate, PgQueuer, django-tasks-db) | No broker; enqueue *in the same transaction* as your data, using `SELECT … FOR UPDATE SKIP LOCKED` | Removes Redis and fixes the dual-write problem |
+| **Temporal / Hatchet** | Durable workflows that resume after failure, with full run history | Long multi-step business processes |
+| **Airflow / Dagster / Prefect** | Dependency graphs, backfills, data lineage | Scheduled data pipelines, not app tasks |
+
+**New since late 2025:** Django now has a standard API for background tasks, but it deliberately doesn't run them. Django 6.0 includes a built-in Tasks framework for running code outside the HTTP request–response cycle, while the responsibility for running tasks continues to belong to external worker processes. Django 6.0 ships two backends, ImmediateBackend and DummyBackend, and both exist for development and testing. For real execution you add a third-party backend such as the database-backed django-tasks-db. The general view is that for complex workflows with chaining, retries, and periodic scheduling, Celery remains the established choice.
+
+## How to use this in the Compensia interview
+
+They run Celery today, and you're joining someone else's system, so **don't pitch a migration**. Show that you know where Celery bites and how to harden it:
+
+> "Celery fits your stack. The places it usually hurts are early acks, prefetch with long tasks, Beat being a single point of failure, and the gap between committing to Postgres and enqueuing to Redis. I'd check those first: acks_late plus idempotent tasks, alerts when a job is overdue, a lock against overlapping runs, and on_commit for enqueues. If the queue ever became a real pain point, a Postgres-backed queue would be worth evaluating, since Postgres is already your core system and it would remove the Redis dependency. But I wouldn't change it without a concrete reason."
+
+That answer shows depth, respect for the existing design, and judgment, which are the three things Christina is looking for.
+
+Want me to add the Celery lesson and this comparison to your prep doc as a new section?
