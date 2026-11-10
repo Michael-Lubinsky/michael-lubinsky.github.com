@@ -1144,4 +1144,38 @@ If Christina asks, "What do you think of Celery? Would you replace it?", you cou
 > I wouldn't recommend migration simply because another framework is newer. I'd compare reliability, operational complexity, migration cost, and business requirements.
 
 The most important distinction to understand: Celery is primarily a distributed task-execution system. Temporal and Airflow address broader workflow orchestration problems. Many migrations happen because the application's requirements have evolved beyond simple background task execution, not because Celery itself is fundamentally defective.
- 
+
+
+
+ ### Example
+
+Small runnable project: FastAPI, Redis, Celery and Postgres, with a status table and Docker Compose.  
+Both the success and failure paths work, and every invalid input gets rejected.  
+Next I'm testing what happens when Redis is down and when the same task is delivered twice.
+
+All scenarios pass. Now the README and the package.
+
+The pipeline is written and tested end to end with real Redis, Postgres, a Celery worker and the FastAPI server:
+
+| Test | Result |
+| --- | --- |
+| Valid Excel file | 202, then the row went to `SUCCESS` with start and end times and 290 rows processed |
+| Corrupt Excel file | Row went to `FAILURE` with the error message |
+| Relative path / path outside the allowed folder / `.txt` file / missing file | 400 / 403 / 415 / 404 |
+| Redis down | 503, and the row was recorded as `FAILURE` ("Enqueue failed") |
+| Same task delivered twice | The second run was skipped and the row stayed `SUCCESS` |
+
+I added four columns to your four (`task_id`, `rows_processed`, `error_message`, `created_at`). `task_id` is needed because the same file can be submitted more than once. I named the table `excel_task_status` instead of `T`.
+
+The project is in the `excel_pipeline` folder in my workspace: the FastAPI app, Celery task, schema, Docker Compose file, a sample-file script and the README.
+
+Here's the project as `excel_pipeline.zip`. It's the same code I tested here with a real Redis, Postgres, Celery worker and FastAPI server, and all the test cases passed.
+
+To run it:
+
+1. Unzip and `cd excel_pipeline`.
+2. Run `python scripts/make_sample.py ./data` to create a sample good file and a corrupt one.
+3. Run `docker compose up --build`.
+4. Submit a file: `curl -X POST localhost:8000/process -H 'Content-Type: application/json' -d '{"file_path": "/data/comp_2025.xlsx"}'`
+
+I didn't run Docker itself here; the local test used Redis and Postgres installed directly. The README has the run-without-Docker steps and the design decisions, which make good interview talking points.
