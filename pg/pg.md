@@ -41,6 +41,56 @@ WHEN NOT MATCHED THEN
 - `WHEN NOT MATCHED BY SOURCE`, for rows in the target that aren't in the source. Typically you delete them or mark them inactive, which gives you a full sync in one statement.
 - `MERGE` on updatable views.
 
+
+`EXCLUDED` is a special table name that stands for **the row you tried to insert**, the one rejected because of the conflict. Here, `EXCLUDED.name` is `'Alice'` and `EXCLUDED.customer_id` is `101`.
+
+Inside `DO UPDATE` you can refer to two rows:
+
+| Reference | Means |
+| --- | --- |
+| `customers.name` (or just `name`) | The value **already in the table** |
+| `EXCLUDED.name` | The value **you're trying to insert** |
+
+So `SET name = EXCLUDED.name` means "overwrite the existing name with the new one." That's a standard upsert.
+
+**Example:** the table already has `(101, 'Bob')`.
+
+- Your INSERT of `(101, 'Alice')` conflicts on `customer_id`.
+- The new row goes into `EXCLUDED` and the update runs.
+- The row becomes `(101, 'Alice')`.
+
+**Useful patterns ON CONFLICT :**
+
+```sql
+
+INSERT INTO customers (customer_id, name)
+VALUES (101, 'Alice')
+ON CONFLICT (customer_id)
+DO UPDATE SET name = EXCLUDED.name;
+
+-- Combine old and new values
+ON CONFLICT (sku) DO UPDATE
+SET qty = inventory.qty + EXCLUDED.qty;
+
+-- Update only if the incoming data is newer (protects against out-of-order loads)
+ON CONFLICT (customer_id) DO UPDATE
+SET name = EXCLUDED.name, updated_at = EXCLUDED.updated_at
+WHERE customers.updated_at < EXCLUDED.updated_at;
+
+-- Skip the write when nothing changed (avoids extra row versions and vacuum work)
+ON CONFLICT (customer_id) DO UPDATE
+SET name = EXCLUDED.name
+WHERE customers.name IS DISTINCT FROM EXCLUDED.name;
+
+-- Ignore duplicates entirely
+ON CONFLICT (customer_id) DO NOTHING;
+```
+
+**Things to know:**
+
+- The conflict target (`customer_id`) needs a **unique index or constraint** on it. Without one, Postgres raises an error.
+- `EXCLUDED` includes the effects of any `BEFORE INSERT` triggers. You see the row as it would have been inserted.
+- The statement is atomic, so two sessions running concurrent upserts won't create duplicates. That makes it the standard tool for **idempotent ETL loads** and Celery tasks: rerunning the same load gives the same result.
 ## MERGE vs. INSERT … ON CONFLICT
 
 | | `INSERT … ON CONFLICT` | `MERGE` |
