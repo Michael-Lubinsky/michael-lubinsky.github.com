@@ -19,6 +19,47 @@ How to Achieve Pruning When Querying by Non-Partitioned Columns
 
 <https://news.ycombinator.com/item?id=49865312> timezones
 
+## MERGE and ON CONFLICT
+
+Yes. `MERGE` has been in PostgreSQL since **version 15** (2022), and version 17 extended it.
+
+```sql
+MERGE INTO customers AS t
+USING staging_customers AS s
+  ON t.customer_id = s.customer_id
+WHEN MATCHED AND s.is_deleted THEN
+  DELETE
+WHEN MATCHED THEN
+  UPDATE SET name = s.name, updated_at = s.updated_at
+WHEN NOT MATCHED THEN
+  INSERT (customer_id, name, updated_at)
+  VALUES (s.customer_id, s.name, s.updated_at);
+```
+
+**Added in PostgreSQL 17:**
+- `RETURNING`, plus a `merge_action()` function that tells you whether each row was inserted, updated or deleted.
+- `WHEN NOT MATCHED BY SOURCE`, for rows in the target that aren't in the source. Typically you delete them or mark them inactive, which gives you a full sync in one statement.
+- `MERGE` on updatable views.
+
+## MERGE vs. INSERT … ON CONFLICT
+
+| | `INSERT … ON CONFLICT` | `MERGE` |
+| --- | --- | --- |
+| Safe when several sessions write the same keys at once | **Yes.** Guaranteed to insert or update, never a duplicate-key error | **No.** If two sessions both see "not matched," one fails with a unique violation |
+| Needs a unique index | Yes | No; you can match on any condition |
+| Can delete rows | No | Yes |
+| Several conditional branches | Only one `DO UPDATE … WHERE` | Many `WHEN MATCHED AND …` clauses |
+| Handles target rows missing from the source | No | Yes (`NOT MATCHED BY SOURCE`, PG 17+) |
+| Standard SQL / portable | No, Postgres-specific | Yes; Oracle, SQL Server, Snowflake and Databricks have it too |
+
+## When to use which (a good interview answer)
+
+- **`ON CONFLICT`** fits single-row or small-batch upserts that could run at the same time: API writes, Celery tasks that might retry or overlap. It's the concurrency-safe, idempotent choice.
+- **`MERGE`** fits batch syncs from a staging table to a core table, where you need inserts, updates and deletes in one statement and only one loader runs at a time. That's the typical ETL "staging → core" step, such as loading a consultant's Excel file into Data Hub.
+
+If you do run `MERGE` where sessions can overlap, either make sure only one job writes at a time (for example with an advisory lock) or catch the unique-violation error and retry.
+
+
 ## Queue in Postgres  SELECT FOR UPDATE SKIP LOCKED
 
 
