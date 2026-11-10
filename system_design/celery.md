@@ -517,8 +517,196 @@ Check answersReset
 
 ## What you should be able to explain in your interview
 
-After practicing this tutorial, you should be comfortable discussing Celery's broker/worker architecture, Beat's periodic scheduling, task retries, acknowledgment semantics, idempotency, worker failures, monitoring, and the differences between Celery and Airflow.
+# Celery and Celery Beat
 
-The next useful exercise is to build a realistic Celery + Celery Beat + PostgreSQL ETL project where a Python task imports CSV records into PostgreSQL, Beat schedules periodic validation, and failed tasks can be retried safely.
+**Celery** runs Python functions ("tasks") in separate worker processes, outside your web app. **Celery Beat** is a scheduler that puts tasks on the queue at set times. Your app does the same thing when it calls `.delay()`.
 
-Build the PostgreSQL ETL project Practice Celery interview questions
+## 1. Why use it
+
+A web request should return in milliseconds. Parsing a 50-sheet Excel upload, calling the SEC API for 300 filings, or refreshing a materialized view can take minutes. Celery moves that work out of the request. The app responds right away ("upload received"), and a worker does the heavy work in the background.
+
+## 2. The parts
+
+```
+ Django / FastAPI app ──.delay()──►  BROKER  ◄──enqueue on schedule── BEAT (1 process)
+                                  (Redis or RabbitMQ)
+                                        │  workers pull tasks
+                                        ▼
+                                  WORKER processes ──► Postgres, APIs, files
+                                        │
+                                        ▼
+                                  RESULT BACKEND (optional: Redis/Postgres)
+```
+
+- **Broker:** the queue that holds task messages, usually Redis or RabbitMQ.
+- **Worker:** a process (`celery worker`) that pulls messages and runs the functions. You can run many, on several machines.
+- **Result backend:** stores return values and task state. You only need it if something reads results, such as chords.
+- **Beat:** only *enqueues* tasks. It never runs them. Workers do the work.
+
+## 3. Minimal code
+
+```python
+# tasks.py
+from celery import Celery
+
+app = Celery("compensia",
+             broker="redis://localhost:6379/0",
+             backend="redis://localhost:6379/1")
+
+@app.task
+def ingest_file(file_id: int) -> int:
+    rows = parse_and_load(file_id)   # your ETL logic
+    return rows
+```
+
+```python
+# in the web app
+ingest_file.delay(42)                                    # run ASAP
+ingest_file.apply_async(args=[42], countdown=60,         # in 60 s
+                        queue="ingest", expires=3600)    # drop if not started in 1 h
+```
+
+Run it on Linux:
+
+```bash
+celery -A tasks worker -l info -c 4 -Q ingest,default   # 4 processes, two queues
+celery -A tasks beat   -l info                          # the scheduler
+```
+
+On-prem, you'd run each command as a **systemd service** (or under supervisord) so it restarts when it crashes and its logs go to journald.
+
+## 4. Making tasks reliable (the senior-level part)
+
+```python
+@app.task(bind=True,
+          autoretry_for=(ConnectionError, TimeoutError),  # transient errors only
+          retry_backoff=True, retry_jitter=True,          # 1s, 2s, 4s… plus randomness
+          max_retries=5,
+          acks_late=True,                 # acknowledge AFTER success, not on receipt
+          soft_time_limit=600, time_limit=660)
+def fetch_filing(self, cik: str, accession: str):
+    if already_loaded(accession):         # idempotency check
+        return "skipped"
+    ...
+```
+
+These are the ideas worth naming in the interview:
+
+1. **Idempotency.** Celery guarantees *at-least-once* delivery, so a task can run twice. Write tasks so a second run is harmless: upserts (`ON CONFLICT`), "already processed?" checks, or a unique load key.
+2. **Retry only transient errors.** Network timeouts and lock waits are worth retrying. Bad data will fail the same way every time, so send it to a quarantine table and alert someone.
+3. **`acks_late=True`.** Without it, a worker that crashes mid-task loses the message. With it, the broker delivers the task again. That's why idempotency matters.
+4. **Pass IDs, not objects.** Use `ingest_file.delay(file_id)`, not a DataFrame or a model instance. Messages stay small and JSON-serializable, and the task always reads fresh data.
+5. **Time limits.** A hung API call shouldn't block a worker forever. The soft limit raises an exception you can catch. The hard limit kills the process.
+6. **Long tasks:** set `worker_prefetch_multiplier=1` so one worker doesn't reserve tasks it can't start. With Redis, the `visibility_timeout` (default 1 hour) must be longer than your longest task. Otherwise Redis redelivers the task while it's still running.
+7. **Never wait for another task's result inside a task.** Calling `.get()` there can deadlock the worker pool. Use workflows instead (section 5).
+8. **Django gotcha:** if you enqueue inside a database transaction, the worker may run before the commit and not find the row. Use this instead:
+   ```python
+   transaction.on_commit(lambda: ingest_file.delay(upload.id))
+   ```
+   This one is a good sign of real experience. Mention it.
+
+## 5. Workflows: chaining tasks together
+
+```python
+from celery import chain, group, chord
+
+# Steps in order; each result is passed to the next task
+chain(validate.s(file_id), load.s(), refresh_views.s()).delay()
+
+# Run in parallel
+group(fetch_filing.s(cik, acc) for cik, acc in filings).delay()
+
+# Run in parallel, then one callback when all finish (needs a result backend)
+chord([fetch_filing.s(c, a) for c, a in filings])(build_peer_report.s())
+```
+
+`.s()` creates a "signature", which is a task call packaged up to run later.
+
+## 6. Celery Beat in detail
+
+You define the schedule in configuration:
+
+```python
+from celery.schedules import crontab
+from datetime import timedelta
+
+app.conf.timezone = "America/Los_Angeles"
+app.conf.beat_schedule = {
+    "nightly-sec-sync": {
+        "task": "tasks.sync_new_filings",
+        "schedule": crontab(hour=2, minute=15),          # 02:15 daily
+        "options": {"queue": "ingest", "expires": 3 * 3600},
+    },
+    "refresh-mv-every-15-min": {
+        "task": "tasks.refresh_views",
+        "schedule": timedelta(minutes=15),
+    },
+    "weekday-report": {
+        "task": "tasks.weekly_report",
+        "schedule": crontab(hour=7, minute=0, day_of_week="mon-fri"),
+    },
+}
+```
+
+What to know about Beat:
+
+- **Run exactly one Beat process.** Two Beat processes means every job runs twice. This is the most common Beat bug. Workers can scale out, but Beat can't.
+- **Beat doesn't prevent overlap.** If a 15-minute job sometimes takes 20 minutes, two copies will run at once. Guard the task with a lock. A **Postgres advisory lock** works well, and it fits their stack:
+  ```python
+  with conn.cursor() as cur:
+      cur.execute("SELECT pg_try_advisory_lock(%s)", (JOB_ID,))
+      if not cur.fetchone()[0]:
+          return "previous run still active"
+  ```
+- **Beat only enqueues.** If all workers are down, scheduled tasks pile up in the broker and then run in a burst. Set `expires` so stale runs are dropped instead.
+- **Missed runs aren't all replayed.** If Beat was down for 6 hours, an hourly job won't run 6 times when Beat comes back. If a missing time window matters, the task should work out what's missing ("load everything since the last successful run") and not assume it runs every hour.
+- **Where the schedule lives:** by default it's in a local `celerybeat-schedule` file. With **django-celery-beat**, schedules are stored in Postgres and can be edited in the Django admin without a deploy. Data Hub is Django, so ask whether they use it.
+
+## 7. Monitoring and troubleshooting
+
+```bash
+celery -A tasks inspect active       # what's running now
+celery -A tasks inspect reserved     # prefetched, waiting to run
+celery -A tasks inspect scheduled    # ETA/countdown tasks
+celery -A tasks purge                # empty the queues (careful!)
+redis-cli LLEN ingest                # queue depth for the "ingest" queue
+journalctl -u celery-worker -f       # worker logs under systemd
+```
+
+- **Flower** is a web UI that shows tasks, workers, failures and runtimes.
+- Alert on: failed-task count (hook the `task_failure` signal to email or Slack), growing queue depth, and "nightly job hasn't succeeded in 26 hours". That last check catches the case where Beat itself died silently.
+- Record every run in a `job_runs` table: task, arguments, start, end, status, row count, error. You get an audit trail (useful for SOC 2) and a way to tell what's missing.
+
+## 8. When to use Celery, cron or Airflow
+
+| | cron | Celery + Beat | Airflow |
+| --- | --- | --- | --- |
+| Best for | Simple scripts on one box | App-triggered work plus recurring jobs, in Python | Complex DAGs with dependencies and backfills |
+| Retries | Write them yourself | Built in | Built in |
+| Dependencies between steps | No | chain / chord | First-class DAGs |
+| Overhead | None | Broker + workers | Scheduler, webserver, metadata DB |
+
+**Your line for the interview:** "Celery fits a small team running Python and Postgres. The web app can trigger tasks and the scheduler is in the same code base. I'd only reach for Airflow if the dependency graphs got complex or we needed backfills."
+
+## 9. Five likely questions with short answers
+
+1. **"A nightly Celery job sometimes fails. What do you do?"** Check the logs and `job_runs` first. Then decide whether the failure is transient or caused by data. Transient: add retry with backoff. Data: quarantine it and alert. Then make the task idempotent so a rerun is safe.
+2. **"A job ran twice. Why?"** Two Beat processes, a redelivery after `acks_late` or the visibility timeout, or a manual rerun. The fix is a single Beat, idempotent writes, and a lock.
+3. **"How do you know scheduled jobs are actually running?"** Check last-success times and alert if a job is overdue, not only on failure. A dead Beat process produces no errors at all.
+4. **"How do you handle a task that runs for an hour?"** Split it into chunks with `group` or a chord, set time limits, `prefetch_multiplier=1`, and a Redis visibility timeout longer than the task. Make the job resumable from a checkpoint.
+5. **"Where do you get stuck with Celery?"** Answer this honestly: things like the visibility timeout surprise, or enqueuing before the database commit. Each is a nice chance to show you've hit real problems.
+
+## Practice it (about 30 minutes in hour 3)
+
+```bash
+docker run -d -p 6379:6379 redis
+pip install celery redis flower
+```
+
+1. Put the `tasks.py` above in a folder. Add a task that randomly raises `ConnectionError`, and watch the retries with backoff.
+2. Add a Beat entry with `timedelta(seconds=10)` and start Beat and a worker in two terminals.
+3. Make the task sleep 15 seconds and watch the runs overlap. Then add the advisory lock (or a Redis lock) and watch the overlap stop.
+4. Kill the worker with `kill -9` during a task with `acks_late=True`, restart it, and watch the task run again.
+5. Run `celery -A tasks flower` and open http://localhost:5555.
+
+If you do step 4 yourself, you can say in the interview that you've watched redelivery happen. That carries more weight than having read about it.
