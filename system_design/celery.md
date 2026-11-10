@@ -715,7 +715,43 @@ pip install celery redis flower
 
 If you do step 4 yourself, you can say in the interview that you've watched redelivery happen. That carries more weight than having read about it.
 
-## Why not Celery?
+
+With **Redis**, the worker **pulls**. With **RabbitMQ**, the broker **pushes** to a worker that has subscribed. In both cases the worker opens the connection and decides how many messages it's willing to hold (prefetch).
+
+## Redis: pull (blocking pop)
+
+Redis isn't a real message broker. Celery's messaging library, Kombu, treats Redis lists as queues.
+
+- The worker's main process runs `BRPOP queue1 queue2 … timeout`. This is a **blocking pop**: the worker waits on the connection until a message appears or the timeout expires, then asks again. It's long-polling, not busy-polling, so the delay is low.
+- Redis has no idea which messages are acknowledged. Kombu imitates acks by copying each fetched message into an `unacked` hash with a timestamp, and deletes it from there when the task is acked.
+- If a worker dies, nothing notices right away. The message is put back on the queue only after `visibility_timeout` expires (one hour by default). That's where the "long task runs twice" problem comes from.
+
+## RabbitMQ: push (subscription)
+
+- The worker sends `basic.consume` once to subscribe. From then on, RabbitMQ **pushes** messages over the open connection as they arrive.
+- Flow control comes from **QoS prefetch** (`basic.qos`). RabbitMQ pushes no more than *prefetch_count* unacked messages to that worker. Celery sets this to `worker_prefetch_multiplier × concurrency` (default 4 × the number of processes).
+- RabbitMQ tracks unacked messages itself. If the worker's connection drops, they go back on the queue **immediately**, with no visibility timeout. That's one reason RabbitMQ is the more robust broker for Celery.
+
+## Inside the worker
+
+```
+Broker ──(BRPOP / push)──► Worker main process (consumer)
+                              │ buffers up to prefetch limit
+                              ▼
+                       Pool of child processes (prefork) ──► run tasks
+```
+
+The main process does the fetching and buffering, then hands tasks to the child processes. This is why prefetch matters with long tasks: messages sitting in one worker's buffer can't be picked up by an idle worker elsewhere.
+
+**One-line interview answer:** 
+
+"Workers consume. On Redis it's a blocking pull with BRPOP, and acks are simulated with a visibility timeout.
+On RabbitMQ it's a push subscription capped by QoS prefetch, and the broker tracks unacked messages itself,
+so redelivery after a crash happens immediately."
+
+
+# Why not Celery?
+
 Most teams that leave Celery aren't leaving because it's broken. They leave because it's **complex, its defaults surprise people, and it was built before asyncio and Postgres-backed queues were common**. Here are the main pain points, grouped by type.
 
 ## 1. Defaults that cause silent problems
