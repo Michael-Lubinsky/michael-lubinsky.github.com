@@ -293,3 +293,64 @@ Add a **Beat** job that refreshes gold nightly as a safety net, and another that
 - **Separate permissions:** consultants and BI tools get read access to `gold` only, the pipeline role writes to `bronze` and `silver`, and nobody else touches raw data.
 
 **Interview one-liner:** "I'd do medallion in Postgres with schemas: bronze holds raw JSONB plus load metadata and is append-only, silver is typed and constrained with a reject table, upserted per load in one transaction, and gold is materialized views refreshed concurrently. Celery chains the layers, and everything traces back to a load_id and a source file."
+
+
+
+I'll write the three tasks as real code, test them against Postgres and Redis here, and explain `.s` and `.si` along the way.
+
+All four bad rows are now rejected with a reason. The corrupt file is marked FAILED, and its chain stopped at bronze. Next I'm adding a Beat service and docs, then packaging.
+
+the three tasks now exist in the updated `excel_pipeline.zip`, in `app/medallion.py` (the tables are in `sql/medallion.sql`). I ran them here against real Redis and Postgres.
+
+## What `.s` and `.si` mean
+
+Without them, `load_bronze(path)` runs the function **right now**, in the current process. `.delay()` sends it to a worker **right now**. A chain needs neither; it needs a *description* of a call to run later. That's a **signature**:
+
+```python
+load_bronze.s(file_path)    # signature: "call load_bronze(file_path) later"
+```
+
+- **`.s(...)`** is a normal signature. In a chain, the **previous task's return value is passed in as the first argument**, ahead of the arguments you supplied.
+- **`.si(...)`** is an *immutable* signature. It **ignores the previous result** and runs with only the arguments you gave it.
+
+The chain in your code works like this:
+
+```python
+chain(
+    load_bronze.s(file_path),   # runs load_bronze(file_path)            → returns 7
+    build_silver.s(),           # runs build_silver(7)                    → returns 7
+    refresh_gold.s(),           # runs refresh_gold(7)
+)
+```
+
+If refresh_gold used **`.si()`**, it would run as `refresh_gold()` regardless of what came before. Use `.si` when a step doesn't need the previous result, for example "send a notification when it's done." I changed refresh_gold from `.si()` to `.s()` so it can tell when silver changed nothing and skip the refresh.
+
+## What each task does
+
+**`load_bronze(file_path)` → `load_id` or `None`**
+1. Computes the file's SHA-256 and registers it in `meta.load_runs`. The hash column is `UNIQUE`, so a file already seen returns its existing row.
+2. If the file is already finished, it returns `None` (the duplicate case). If bronze already succeeded earlier, it returns the `load_id` so the chain resumes at silver.
+3. Otherwise, in **one transaction**: it locks the run's row (`FOR UPDATE`, so two workers can't load the same file at once), deletes any partial rows, streams every sheet into `bronze.excel_rows` with `COPY` (each row as JSONB), and sets the status to `BRONZE_DONE`.
+
+**`build_silver(load_id)` → `load_id` or `None`**
+- Receives `None` and does nothing, or receives a `load_id` and, in **one transaction**, parses the JSONB into typed columns, writes bad rows to `silver.rejects` with a reason, upserts good rows into `silver.executive_comp`, and sets `SILVER_DONE` with row counts.
+
+**`refresh_gold(load_id=None, force=False)`**
+- From the chain: `None` means "nothing new," so it skips. Otherwise it runs `REFRESH MATERIALIZED VIEW CONCURRENTLY`.
+- From Beat: it's called as `kwargs={"force": True}`, since a scheduled run has no previous task.
+
+I also added **`scan_inbox`**, a Beat job every 10 minutes that does what Data Hub does: it searches the folder for `.xlsx` files and starts a chain for each new one. A nightly Beat job also refreshes gold.
+
+## What the test showed
+
+| Scenario | Result |
+| --- | --- |
+| Good file with 4 bad rows | 20 rows loaded, 4 rejected, each with a reason (missing company, bad fiscal year, salary not a number, negative salary) |
+| Second file updates an existing executive | Upsert changed the salary, and `updated_at` was set by the trigger |
+| Rescan of the same folder | Already-finished files were skipped |
+| Same file copied under a new name | Caught by the hash and skipped. Silver returned `None`, so gold skipped its refresh |
+| Corrupt file | `load_runs.status = FAILED` with the error, and the chain stopped at bronze |
+
+**The first test run caught a real bug.** A row with fiscal year `"FY25"` vanished: it wasn't loaded and it wasn't rejected. My rejects query used `WHERE NOT (all checks pass)`, and a check on a NULL value gives NULL rather than FALSE. `NOT NULL` is still NULL, so the row didn't match either query. The fix is `WHERE NOT coalesce((checks), false)`. This makes a good answer to "how do you ensure data quality?": reconcile the counts in every run (good rows + rejected rows = input rows), because that's how this bug showed up.
+
+**One limitation:** when two files update the same executive and year at the same time, whichever file finishes last wins. In production you'd add a precedence rule, such as "the newer filing wins," to the upsert. The README notes this.
