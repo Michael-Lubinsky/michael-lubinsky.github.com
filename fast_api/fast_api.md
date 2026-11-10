@@ -340,3 +340,132 @@ If you do steps 3 and 4 yourself, you'll have hands-on examples of dependency in
 ### Litestar
 
 <https://www.b-list.org/weblog/2025/aug/06/litestar/>
+
+
+
+There are three ways, depending on who reads the messages:
+
+| Who reads the queue | How FastAPI writes |
+| --- | --- |
+| **Celery workers** | Use Celery's client: `task.apply_async()` or `send_task()` |
+| **Your own consumer** on Redis | A Redis client: Lists, **Streams**, or Pub/Sub |
+| **Your own consumer** on RabbitMQ | An AMQP client: **aio-pika** (async) or pika (sync) |
+
+## 1. Through Celery (what your pipeline does)
+
+```python
+process_excel.apply_async(args=[path], task_id=task_id)
+```
+
+If the API shouldn't import the worker's code (separate repos or dependencies), publish **by task name**:
+
+```python
+from celery import Celery
+celery_client = Celery(broker=REDIS_URL)          # client only, no task code
+
+celery_client.send_task("process_excel", args=[path], task_id=task_id, queue="excel")
+```
+
+Never build Celery's message format by hand. It has headers and protocol details that Celery manages.
+
+## 2. Directly to Redis
+
+Create **one client at startup**. It holds a connection pool, so don't connect on every request.
+
+```python
+import json, uuid
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
+import redis.asyncio as redis
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.redis = redis.from_url("redis://localhost:6379/0", decode_responses=True)
+    yield
+    await app.state.redis.aclose()
+
+app = FastAPI(lifespan=lifespan)
+```
+
+Redis offers three structures for this, and they behave very differently:
+
+**a) List: a simple queue.** `LPUSH` to add; the consumer does a blocking pop (`BRPOP`).
+
+```python
+@app.post("/jobs")
+async def enqueue(req: Request, file_path: str):
+    msg = {"id": str(uuid.uuid4()), "file_path": file_path}
+    await req.app.state.redis.lpush("excel_jobs", json.dumps(msg))
+    return {"id": msg["id"]}
+```
+
+If a consumer pops a message and crashes, the message is **lost**. This is the simplest option, with no acknowledgments.
+
+**b) Stream: the best choice for a real Redis queue.** It's an append-only log with **consumer groups and acks**.
+
+```python
+@app.post("/jobs")
+async def enqueue(req: Request, file_path: str):
+    msg_id = await req.app.state.redis.xadd(
+        "excel_jobs", {"file_path": file_path}, maxlen=100_000, approximate=True
+    )
+    return {"stream_id": msg_id}
+```
+
+```python
+# consumer side
+await r.xgroup_create("excel_jobs", "workers", id="0", mkstream=True)   # once
+msgs = await r.xreadgroup("workers", "worker-1", {"excel_jobs": ">"}, count=10, block=5000)
+# ... process ...
+await r.xack("excel_jobs", "workers", msg_id)    # unacked messages can be reclaimed (XAUTOCLAIM)
+```
+
+**c) Pub/Sub:** `PUBLISH channel msg`. This is **not a queue**. Only subscribers connected at that moment receive the message, and nothing is stored. Use it for live notifications, never for jobs.
+
+## 3. Directly to RabbitMQ (aio-pika)
+
+```python
+import aio_pika, json
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    conn = await aio_pika.connect_robust("amqp://guest:guest@localhost/")  # reconnects automatically
+    channel = await conn.channel(publisher_confirms=True)                  # broker confirms receipt
+    await channel.declare_queue("excel_jobs", durable=True)                # queue survives a restart
+    app.state.amqp_conn, app.state.channel = conn, channel
+    yield
+    await conn.close()
+
+app = FastAPI(lifespan=lifespan)
+
+@app.post("/jobs")
+async def enqueue(req: Request, file_path: str):
+    body = json.dumps({"file_path": file_path}).encode()
+    await req.app.state.channel.default_exchange.publish(
+        aio_pika.Message(body,
+                         delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # written to disk
+                         content_type="application/json"),
+        routing_key="excel_jobs",
+    )   # with confirms on, this returns only after RabbitMQ has accepted the message
+    return {"queued": True}
+```
+
+To make sure a message isn't lost, you need all three of these:
+1. A **durable queue**, so the queue definition survives a broker restart.
+2. A **persistent message**, so the message body is written to disk.
+3. **Publisher confirms**, so you know the broker actually received it. Without them, `publish` can succeed while the message is lost.
+
+**Avoid pika (sync) in FastAPI.** Its connections aren't thread-safe, and plain `def` endpoints run on many threads. Use aio-pika in `async def` endpoints. (The **FastStream** library is another option; it wraps RabbitMQ, Kafka and Redis with a FastAPI-like API.)
+
+## Rules that apply to every option
+
+- **Reuse connections.** Create the client in the lifespan, never one per request.
+- **Match the client to the endpoint.** Async clients (`redis.asyncio`, aio-pika) go in `async def` endpoints. Sync clients go in `def` endpoints. A sync call inside `async def` blocks every other request.
+- **Make messages self-describing:** an `id`, a schema `version`, and IDs rather than large data (put the file on disk or in a table and send its path or ID).
+- **Make consumers idempotent.** Brokers deliver at least once, so the same message can arrive twice.
+- **Watch for the dual write.** If the endpoint also writes to Postgres, the database and the queue can disagree. Your pipeline handles this by inserting the row first and marking it FAILURE if the publish fails. The stronger fix is the **outbox pattern**: write the message into an `outbox` table **in the same transaction**, and a relay process publishes it to the broker.
+- **Handle broker downtime.** Catch connection errors and return **503**, as your `/process` endpoint does, rather than a 500 with a stack trace.
+
+**Interview one-liner:** "For Celery I publish with `apply_async` or `send_task`. For raw messaging I'd use Redis Streams with consumer groups if Redis is already there, or RabbitMQ through aio-pika with durable queues, persistent messages and publisher confirms. Either way the client is created once in the lifespan, and the consumer is idempotent."
