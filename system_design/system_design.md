@@ -4,6 +4,8 @@
 
 <https://github.com/liquidslr/system-design-notes>
 
+<https://habr.com/ru/companies/timeweb/articles/1094930/>
+
 <https://www.ssp.sh/brain/data-engineering>
 
 <https://habr.com/ru/companies/hexlet/articles/1098714/>
