@@ -45,6 +45,8 @@
 
 <https://habr.com/ru/articles/1064906/>
 
+<https://www.tabulator.info/> Tables in browser
+
 ### lynx
 
 Web search — call lynx from Python using subprocess
