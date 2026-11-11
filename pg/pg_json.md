@@ -1,5 +1,5 @@
-
 ## Postgres JSONB
+<https://now-next.nl/en/insights/postgresql-json-vs-jsonb-measured/>
 
 ```sql
 -- Creating a table with a JSONB column
