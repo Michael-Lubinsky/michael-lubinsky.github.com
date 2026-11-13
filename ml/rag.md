@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1101266/>
 
+<https://habr.com/ru/companies/selectel/articles/1106740/>
+
 <https://github.com/jamwithai/production-agentic-rag-course>
 
 <https://leanpub.com/cracking-the-rag-interview#about>
