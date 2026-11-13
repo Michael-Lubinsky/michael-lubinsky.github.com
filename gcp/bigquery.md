@@ -644,6 +644,54 @@ A slot is **not a dedicated server or a fixed amount of data storage**. It is a 
 
 3.How does BigQuery execute a large JOIN?
 
+BigQuery executes a large JOIN by **distributing the work across many slots**. The exact strategy depends on table sizes, join conditions, and the optimizer’s estimates.
+
+For a typical equality join:
+
+```sql
+SELECT *
+FROM orders o
+JOIN customers c
+  ON o.customer_id = c.customer_id;
+```
+
+There are two common strategies:
+
+**1. Broadcast join: one input is small**
+
+BigQuery sends the smaller input to the workers processing the larger input. Each worker joins its portion of the large table against that smaller input.
+
+This avoids redistributing the large input.
+
+**2. Shuffle join: both inputs are large**
+
+BigQuery redistributes rows from both inputs according to a hash of the join key:
+
+```text
+Orders                         Customers
+   │                               │
+   └── Hash(customer_id) ───────────┘
+                  │
+          Shuffle across workers
+                  │
+       Matching keys arrive together
+                  │
+          Workers join in parallel
+                  │
+             Combined result
+```
+
+For example, all rows with `customer_id = 123` go to the same logical partition, allowing a worker to find their matches.
+
+The expensive parts are usually:
+
+- **Reading data:** Large inputs require more scanning.
+- **Shuffling data:** Rows must move between workers.
+- **Skew:** A very common key can put disproportionate work in one partition.
+- **Output growth:** Multiple matches on both sides can produce far more rows than either input.
+
+To help performance, **filter early, select only needed columns, and aggregate before joining when that preserves the intended result**. More slots can help parallel work, but they cannot eliminate skew or an unexpectedly huge join result.
+
 4.What is the difference between partitioning and clustering?
 
 5.Why might a MERGE be expensive?
