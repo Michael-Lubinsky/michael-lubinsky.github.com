@@ -475,33 +475,35 @@ An interviewer is likely to ask not only how BigQuery works, but also:
 - How do you build reliable pipelines and control costs?
 - How does BigQuery differ from Snowflake and Databricks in real-world workloads?
 I would organize the additions into the following priorities.
-1. Recommended new sections
-Priority	Topic	What you should be able to explain
-High	Query execution and troubleshooting	Slots, stages, shuffle, skew, execution plans
-High	Partitioning and clustering	Partition pruning, clustering tradeoffs, reclustering
-High	Incremental ELT and CDC	MERGE, deduplication, late events, idempotency
-High	Cost optimization	Bytes scanned, slot consumption, reservations
-High	Production data pipelines	Pub/Sub, Dataflow, GCS, BigQuery, Airflow
-High	Data quality and testing	Assertions, reconciliation, schema evolution
-Medium	Security and governance	IAM, row access policies, column masking
-Medium	BigQuery internals	Dremel execution, shuffle, Capacitor
-Medium	Monitoring and observability	INFORMATION_SCHEMA, job metrics, alerts
-Medium	Dimensional modeling	Facts, dimensions, SCD Type 2
-Medium	Semi-structured data	JSON, nested and repeated fields
-Medium	BigQuery vs. Snowflake vs. Databricks	Architecture, optimization, workload selection
+
+### Recommended new sections
+
+- Query execution and troubleshooting	Slots, stages, shuffle, skew, execution plans
+- Partitioning and clustering	Partition pruning, clustering tradeoffs, reclustering
+- Incremental ELT and CDC	MERGE, deduplication, late events, idempotency
+- Cost optimization	Bytes scanned, slot consumption, reservations
+- Production data pipelines	Pub/Sub, Dataflow, GCS, BigQuery, Airflow
+- Data quality and testing	Assertions, reconciliation, schema evolution
+- Security and governance	IAM, row access policies, column masking
+- BigQuery internals	Dremel execution, shuffle, Capacitor
+- Monitoring and observability	INFORMATION_SCHEMA, job metrics, alerts
+- Dimensional modeling	Facts, dimensions, SCD Type 2
+- Semi-structured data	JSON, nested and repeated fields
+- BigQuery vs. Snowflake vs. Databricks	Architecture, optimization, workload selection
 
 Some of these topics already appear in your document. I would deepen those sections with SQL examples, failure scenarios, and interview questions rather than repeat introductory explanations.
-2. Five additions I would write first
-A. How to debug a slow BigQuery query
-This is one of the most valuable interview topics.
 
-Add an example that investigates:
+ 
+### How to debug a slow BigQuery query
+ 
 - High slot consumption versus high bytes scanned
 - Broadcast joins versus hash/shuffle joins
 - Data skew and high-cardinality joins
 - Shuffle spill and insufficient shuffle capacity
 - Slot contention and query concurrency
+- 
 For example, add a diagnostic SQL query:
+
 ```sql
 SELECT
   job_id,
@@ -527,27 +529,17 @@ Interview question: A query previously completed in 20 seconds. Today it takes 3
 
 A strong answer would compare execution plans, slot contention, shuffle volume, skew, and changes in query inputs or competing workloads. Google's execution graph and performance insights expose several of these diagnostics. 
 
-Google Cloud Docs+1
+ 
 
-B. CDC, deduplication, and idempotent MERGE
-Your document already introduces MERGE, but production scenarios deserve more attention.
-
+### CDC, deduplication, and idempotent MERGE
+ 
 Consider a pipeline:
-PostgreSQL
-
-Datastream
-
-BigQuery raw
-
-
+PostgreSQL -> Datastream -> BigQuery raw
 
 Deduplicate + MERGE
-Incremental transformation
-BigQuery curated
-Analytics-ready tables
+Incremental transformation -> BigQuery curated -> Analytics-ready tables
 
-
-Include the following SQL:
+ 
 ```sql
 MERGE analytics.users AS target
 USING (
@@ -578,32 +570,42 @@ WHEN NOT MATCHED THEN
 
 Explain the assumptions: sequence_num provides deterministic ordering, the staging data has been validated, and the update policy must handle equal timestamps correctly.
 
-Interview question: What happens if two source rows match the same target row in a BigQuery MERGE?
+#### What happens if two source rows match the same target row in a BigQuery MERGE?
 
 Explain why source deduplication is essential for an updating MERGE, and how to make repeated pipeline runs safe.
-C. Incremental processing and backfills
+
+### Incremental processing and backfills
 Add a comparison of three strategies:
 Strategy	Best use case	Risk
-Watermark using updated_at	Incremental batch	Late-arriving records
-Partition overwrite	Rebuild specific dates	Accidentally replacing incomplete partitions
+- Watermark using updated_at
+- Incremental batch	Late-arriving records
+- Partition overwrite
+- Rebuild specific dates
+- Accidentally replacing incomplete partitions
+
 MERGE by business key	CDC and upserts	Expensive target scans
 
-A particularly good interview scenario:
+Interview scenario:
 
-You ingest 500 million telemetry events daily. Yesterday, you discovered that 10 days of data were processed incorrectly. How do you backfill without rebuilding the entire table?
+You ingest 500 million telemetry events daily. 
+Yesterday, you discovered that 10 days of data were processed incorrectly.  
+How do you backfill without rebuilding the entire table?
 
 Explain partition-scoped reprocessing, staging, validation, atomic replacement where applicable, and idempotency.
-D. BigQuery data modeling: nested versus star schema
-Your document recommends nested STRUCT and ARRAY fields. Add a more nuanced explanation of when not to denormalize.
 
+### BigQuery data modeling: nested versus star schema
+ 
 For example, compare:
 - A star schema with fact_orders, dim_customer, and dim_product.
 - A denormalized orders table with repeated line items.
 - Slowly changing dimensions requiring historical attributes.
-Interview question: Should every BigQuery analytical model use nested data instead of a star schema?
+  
+### Should every BigQuery analytical model use nested data instead of a star schema?
 
 Answer: No. Nested repeated data can avoid expensive joins for hierarchical records, but dimensional models remain valuable for shared dimensions, historical tracking, and consistent reporting.
-E. BigQuery monitoring and cost governance
+
+
+### BigQuery monitoring and cost governance
 Add operational SQL examples covering:
 - Identifying expensive users and queries
 - Detecting queries scanning unexpected volumes
@@ -611,23 +613,34 @@ Add operational SQL examples covering:
 - Monitoring failed jobs
 - Detecting pipeline SLA violations
 - Budget controls and maximum bytes billed
-Also explain the distinction between reducing query runtime and reducing query cost. They are not necessarily the same optimization problem, especially across on-demand and capacity-based pricing.
+  
+Explain the distinction between reducing query runtime and reducing query cost. They are not necessarily the same optimization problem, especially across on-demand and capacity-based pricing.
 
 Google's query optimization documentation is a useful reference. 
 
 Google Cloud Docs
 
-3. Add a dedicated interview questions section
-I would finish the document with 15–20 questions, each answered in approximately 1–3 minutes.
-
-Here are ten especially useful ones:
-1.Why can SELECT * LIMIT 10 still scan a large amount of data?  
+ 
+#### Why can SELECT * LIMIT 10 still scan a large amount of data?  
 LIMIT restricts returned rows, not necessarily the storage scanned. 
 Column projection and partition pruning are more useful.  
 
 
 
 2.What is a BigQuery slot?
+
+A **BigQuery slot** is a virtual unit of computing capacity that BigQuery uses to run SQL queries. It represents a combination of CPU, memory, and networking resources.
+
+BigQuery splits a query into smaller tasks and runs many of them in parallel using slots. A large query may use hundreds or thousands of slots; the number can change while it runs.
+
+For example, when scanning a large table, multiple slots can process different portions simultaneously. **More available slots can improve speed**, though some query steps cannot benefit from more parallelism.
+
+Slots also matter for billing:
+
+- **On-demand pricing:** You pay for the data processed by your queries; BigQuery manages the slots.
+- **Capacity pricing:** You pay for compute capacity measured in slot-hours.
+
+A slot is **not a dedicated server or a fixed amount of data storage**. It is a measure of query-processing capacity.
 
 3.How does BigQuery execute a large JOIN?
 
@@ -645,15 +658,38 @@ Column projection and partition pruning are more useful.
 
 10.When would you choose BigQuery over Databricks?
 
-4. Corrections worth making in the existing document
+Choose **BigQuery when your main need is SQL analytics with minimal infrastructure management**, especially if your data and tools already live in Google Cloud.
+
+Choose **Databricks when your main need is a flexible platform for data engineering, Spark processing, and machine learning**.
+
+| Your priority | Usually the better fit |
+|---|---|
+| SQL reporting, dashboards, and ad hoc analysis | **BigQuery** |
+| Small team that wants minimal platform administration | **BigQuery** |
+| Strong integration with Google Cloud analytics tools | **BigQuery** |
+| Complex Python or Spark data pipelines | **Databricks** |
+| Large-scale machine learning and custom processing | **Databricks** |
+| A lakehouse built around Delta Lake and open storage | **Databricks** |
+
+For example:
+
+- **Choose BigQuery:** Your analysts query sales and customer data, build dashboards, and run occasional transformations. You want to load data and start querying without managing clusters.
+- **Choose Databricks:** Your engineers process raw event streams and files, build complex transformations in Python, and train models using the same data.
+
+Both platforms can handle SQL, streaming, and machine learning, so these are tendencies rather than hard boundaries. **Cost depends on your workload**—data volume, query frequency, concurrency, and how efficiently you manage compute.
+
+For a SQL-first analytics team, I would usually start by evaluating BigQuery. For an engineering-heavy team already invested in Spark and Delta Lake, I would usually start with Databricks.
+
+
+### Corrections worth making in the existing document
    
-After reading your actual Markdown, I also noticed several points worth refining before an interview.
-- Slots versus Spark executor cores: Your analogy is useful, but a slot is not literally one Spark executor core. Describe it as BigQuery's unit of compute capacity.
+ - Slots versus Spark executor cores: Your analogy is useful, but a slot is not literally one Spark executor core. Describe it as BigQuery's unit of compute capacity.
 - Shuffle and memory failures: The statement that BigQuery's shuffle architecture prevents out-of-memory failures is too strong. BigQuery queries can still encounter resource limits, skew, and shuffle quota problems.
 - Exactly-once streaming: Clarify that the Storage Write API's exactly-once guarantees depend on the stream type and use of offsets.
 - Primary and foreign keys: BigQuery constraints are not enforced, and incorrect declarations can produce incorrect optimizer assumptions.
 - Time travel: Explain configurable time-travel windows and their relationship to recovery and fail-safe retention.
 - SQL examples: In your nested orders example, ts is referenced but is not declared in the table definition. Fix that before using it in interview preparation.
+  
 5. The best hands-on project to add
 Given your experience building telemetry pipelines with Databricks and AWS, I would create a small equivalent implementation on GCP:
 
