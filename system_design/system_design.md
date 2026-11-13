@@ -15,6 +15,10 @@
 <https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
 <https://sharedphysics.com/lippitt-knoster-in-practice-field-notes-for-managing-complex-projects/>
 
+AI-powered streaming analytics platform that answers business questions in plain English using RAG, BigQuery, and Vertex AI. 
+<https://github.com/nishanthreddy616/streampulse>
+
+
 <https://habr.com/ru/companies/haulmont/articles/1085536/>
 
 <https://habr.com/ru/articles/1087468/>
