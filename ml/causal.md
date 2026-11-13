@@ -107,6 +107,10 @@ Fast Causal Inference (FCI)
 
 https://habr.com/ru/companies/avito/articles/1061032/ Uplift
 
+https://habr.com/ru/companies/magnit/articles/1104886/ Uplift
+
+https://habr.com/ru/companies/ru_mts/articles/485980/ uplift
+
 <https://matheusfacure.github.io/python-causality-handbook/landing-page.html>
 
 <https://www.dailydoseofds.com/a-crash-course-on-causality-part-1>
@@ -720,7 +724,7 @@ https://www.youtube.com/watch?v=eyuGTZu6bQk
 
 https://habr.com/ru/companies/megafon/articles/657747/
 
-https://habr.com/ru/companies/ru_mts/articles/485980/ uplift
+
 
 https://habr.com/ru/companies/avito/articles/1061032/
 
