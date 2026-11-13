@@ -832,6 +832,84 @@ These requirements and write options are covered in Google’s [load job documen
 
 For recurring imports, you can configure **BigQuery Data Transfer Service** to load files from Cloud Storage on a schedule. [Scheduled Cloud Storage transfers](https://docs.cloud.google.com/bigquery/docs/cloud-storage-transfer)
 
+Specify the schema in a separate **BigQuery schema JSON file**, then pass that file to `bq load`.
 
+**BigQuery’s schema format differs from standard JSON Schema**: it uses an array of field definitions with `name`, `type`, and `mode`. [Schema documentation](https://docs.cloud.google.com/bigquery/docs/schemas)
+
+**1. Prepare your data**
+
+For example, `customers.jsonl` in Cloud Storage:
+
+```json
+{"id":1,"name":"Alice","address":{"city":"Seattle","country":"US"},"tags":["premium","active"]}
+{"id":2,"name":"Bob","address":{"city":"Boston","country":"US"},"tags":["active"]}
+```
+
+Each line is a complete JSON object.
+
+**2. Create `schema.json`**
+
+Save this file locally, or in Cloud Shell:
+
+```json
+[
+  {
+    "name": "id",
+    "type": "INTEGER",
+    "mode": "REQUIRED"
+  },
+  {
+    "name": "name",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
+    "name": "address",
+    "type": "RECORD",
+    "mode": "NULLABLE",
+    "fields": [
+      {
+        "name": "city",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      },
+      {
+        "name": "country",
+        "type": "STRING",
+        "mode": "NULLABLE"
+      }
+    ]
+  },
+  {
+    "name": "tags",
+    "type": "STRING",
+    "mode": "REPEATED"
+  }
+]
+```
+
+The field modes mean:
+
+| Mode | Meaning |
+|---|---|
+| `REQUIRED` | A non-null value must be present |
+| `NULLABLE` | The value can be missing or null; this is the default |
+| `REPEATED` | The value is an array |
+
+Use `RECORD` with a nested `fields` array for objects. For an array of objects, use `RECORD` with `mode: "REPEATED"`. [Schema format](https://docs.cloud.google.com/bigquery/docs/schemas)
+
+**3. Load the file with the schema**
+
+```bash
+bq --project_id=my-project --location=US load \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  analytics.customers \
+  'gs://my-bucket/customers.jsonl' \
+  ./schema.json
+```
+
+The last argument is the schema file. **For this command, the schema file must be local to the machine running `bq`**, even though the data file is in Cloud Storage. [Loading with a schema file](https://docs.cloud.google.com/bigquery/docs/schemas)
+
+You can also supply the same schema through the **Google Cloud Console**: in **Create table → Schema**, disable auto-detection, enable **Edit as text**, and paste the JSON array. [Console instructions](https://docs.cloud.google.com/bigquery/docs/schemas)
  
 {% endraw %}
