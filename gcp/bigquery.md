@@ -911,5 +911,92 @@ bq --project_id=my-project --location=US load \
 The last argument is the schema file. **For this command, the schema file must be local to the machine running `bq`**, even though the data file is in Cloud Storage. [Loading with a schema file](https://docs.cloud.google.com/bigquery/docs/schemas)
 
 You can also supply the same schema through the **Google Cloud Console**: in **Create table → Schema**, disable auto-detection, enable **Edit as text**, and paste the JSON array. [Console instructions](https://docs.cloud.google.com/bigquery/docs/schemas)
+
+
+
+Use **the execution graph for one query**, **`INFORMATION_SCHEMA` for query history**, and **Cloud Billing for actual spend**.
+
+**1. Inspect a query’s execution plan**
+
+In the BigQuery console, open a query job from **Job history**, then view its **Execution graph**. For running queries, refresh the graph to see progress.
+
+BigQuery displays stages such as reading tables, joining, aggregating, sorting, and writing results. Look for:
+
+| Signal | Possible issue |
+|---|---|
+| Large table scan | Missing partition filter or unnecessary columns |
+| JOIN produces far more rows than it reads | Many-to-many matches or an incorrect join condition |
+| High shuffle volume or disk spill | Expensive redistribution of intermediate data |
+| Uneven work across workers | Skewed join or grouping keys |
+| Slot contention insight | Queries competing for compute capacity |
+
+The graph includes stage timing and slot usage. Unlike a traditional static `EXPLAIN`, this graph reflects execution, and BigQuery can adjust its plan while running. [Execution graph documentation](https://docs.cloud.google.com/bigquery/docs/query-plan-explanation)
+
+**2. Estimate and limit cost before running**
+
+Run a **dry run** to validate the SQL and estimate bytes processed without executing it:
+
+```bash
+bq query \
+  --use_legacy_sql=false \
+  --dry_run \
+  'SELECT customer_id, SUM(amount)
+   FROM `my-project.analytics.orders`
+   GROUP BY customer_id'
+```
+
+For on-demand queries, set a maximum billed-byte limit:
+
+```bash
+bq query \
+  --use_legacy_sql=false \
+  --maximum_bytes_billed=10000000000 \
+  'SELECT customer_id, SUM(amount)
+   FROM `my-project.analytics.orders`
+   GROUP BY customer_id'
+```
+
+This example sets a limit of **10 billion bytes**. BigQuery rejects the query if its estimated billed bytes exceed the limit. A dry run estimates scanning; it does not provide a full execution graph. [Query job options](https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/Job)
+
+**3. Monitor completed queries with SQL**
+
+This returns your recent queries, including duration, billed data, and compute consumption:
+
+```sql
+SELECT
+  creation_time,
+  job_id,
+  state,
+  TIMESTAMP_DIFF(end_time, start_time, MILLISECOND)
+    / 1000.0 AS execution_seconds,
+  ROUND(total_bytes_processed / POW(1024, 3), 3)
+    AS processed_gib,
+  ROUND(total_bytes_billed / POW(1024, 4), 6)
+    AS billed_tib,
+  ROUND(total_slot_ms / 3600000.0, 4)
+    AS slot_hours,
+  cache_hit,
+  error_result.message AS error_message
+FROM
+  `my-project.region-us.INFORMATION_SCHEMA.JOBS_BY_USER`
+WHERE
+  creation_time >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+  AND job_type = 'QUERY'
+  -- Exclude script parent jobs to avoid double-counting their children.
+  AND (statement_type IS NULL OR statement_type != 'SCRIPT')
+ORDER BY creation_time DESC
+LIMIT 100;
+```
+
+Replace `my-project` and `region-us` with your project and dataset region, and execute the query in that region. To monitor everyone’s jobs, use `JOBS_BY_PROJECT` with the appropriate permissions. [Job metadata documentation](https://docs.cloud.google.com/bigquery/docs/information-schema-jobs)
+
+**4. Interpret cost according to your pricing model**
+
+| Pricing model | How to interpret query usage |
+|---|---|
+| **On-demand** | Estimate query cost as `billed TiB × applicable price per TiB`, accounting for free usage and discounts |
+| **Capacity / editions** | Use slot consumption to understand workload efficiency; billing depends on purchased or autoscaled capacity |
+
+**`total_slot_ms` measures compute consumption, not a query’s exact dollar charge.** For actual charges, use Cloud Billing reports or billing export; shared capacity and idle time make per-query cost allocation more involved. [BigQuery job billing metrics](https://docs.cloud.google.com/bigquery/docs/information-schema-jobs)
  
 {% endraw %}
