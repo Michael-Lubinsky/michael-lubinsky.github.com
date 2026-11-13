@@ -1,4 +1,5 @@
-**Vertex AI is Google Cloud’s managed platform for building, training, deploying, and operating AI models.** It supports both traditional machine learning and generative AI. [Google Cloud overview](https://github.com/GoogleCloudPlatform/vertex-ai-samples)
+## Vertex AI 
+is Google Cloud’s managed platform for building, training, deploying, and operating AI models.** It supports both traditional machine learning and generative AI. [Google Cloud overview](https://github.com/GoogleCloudPlatform/vertex-ai-samples)
 
 You can use it to:
 
