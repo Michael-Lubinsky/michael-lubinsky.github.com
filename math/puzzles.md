@@ -95,6 +95,8 @@ Find the area of the square.
 <img width="342" height="248" alt="image" src="https://github.com/user-attachments/assets/74a349db-a96e-4288-8804-ec235693ebb7" />
 
 
+<img width="252" height="229" alt="image" src="https://github.com/user-attachments/assets/f98f66c5-fe76-4528-a3f4-c375a309e994" />
+
 #### The areas S1, S2 and S3 are known on picture below. Find area of triangle ? 
 
 
