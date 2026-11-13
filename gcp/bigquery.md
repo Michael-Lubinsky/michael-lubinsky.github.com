@@ -752,5 +752,86 @@ This would allow you to discuss the same engineering problems across BigQuery, S
  First expand query troubleshooting, CDC/MERGE, incremental processing, and cost optimization. 
  Then implement the telemetry example.   
 
+
+
+## How to load **CSV and JSON files from Google Cloud Storage (GCS) into BigQuery using a load job**.
+BigQuery reads the files and stores their contents in a table.
+
+```text
+Cloud Storage files → BigQuery load job → BigQuery table
+```
+
+Here are two practical ways.
+
+**1. Using the Google Cloud Console**
+
+1. Open **BigQuery** in the Google Cloud Console.
+2. Select your project and dataset, then click **Create table**.
+3. Under **Source**, select **Google Cloud Storage**.
+4. Enter the file path, such as `gs://my-bucket/customers.csv`.
+5. Choose **CSV** or **JSONL (newline-delimited JSON)** as the format.
+6. Choose the destination dataset and table name.
+7. Define the schema, or enable **Auto detect**.
+8. For a CSV with a header, set **Header rows to skip** to `1` under advanced options.
+9. Click **Create table**.
+
+These steps create a native BigQuery table containing the loaded data. [CSV loading documentation](https://docs.cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv)
+
+**2. Using the `bq` command-line tool**
+
+Run these commands in **Cloud Shell**, replacing the project, dataset, bucket, and location with your own.
+
+For a CSV file:
+
+```csv
+id,name,city
+1,Alice,Seattle
+2,Bob,Boston
+```
+
+Load it with an explicit schema:
+
+```bash
+bq --project_id=my-project --location=US load \
+  --source_format=CSV \
+  --skip_leading_rows=1 \
+  analytics.customers \
+  'gs://my-bucket/customers.csv' \
+  'id:INTEGER,name:STRING,city:STRING'
+```
+
+Here, `analytics` is an existing dataset, and `customers` is the destination table. BigQuery creates the table if it does not exist. You can replace the schema argument with `--autodetect`, although an explicit schema gives more predictable results. [CSV command examples](https://docs.cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv)
+
+For JSON, **each line must contain a separate JSON object**:
+
+```json
+{"id":1,"name":"Alice","city":"Seattle"}
+{"id":2,"name":"Bob","city":"Boston"}
+```
+
+A single top-level array such as `[{"id":1},{"id":2}]` must first be converted to newline-delimited JSON.
+
+```bash
+bq --project_id=my-project --location=US load \
+  --source_format=NEWLINE_DELIMITED_JSON \
+  analytics.customers_json \
+  'gs://my-bucket/customers.jsonl' \
+  'id:INTEGER,name:STRING,city:STRING'
+```
+
+JSON can also represent nested objects and arrays using BigQuery’s nested and repeated fields. [JSON loading documentation](https://docs.cloud.google.com/bigquery/docs/loading-data-cloud-storage-json)
+
+**Things to check before loading**
+
+- **Location:** The Cloud Storage bucket and BigQuery dataset must meet BigQuery’s location compatibility requirements.
+- **Permissions:** Your account needs permission to read the source objects, create load jobs, and create or update the destination table.
+- **Multiple files:** You can use a wildcard such as `'gs://my-bucket/customers/*.csv'`. The files should have compatible schemas.
+- **Repeated loads:** The commands above append to an existing table by default. Loading the same file again can duplicate rows. Add `--replace` only when you intend to overwrite the table.
+
+These requirements and write options are covered in Google’s [load job documentation](https://docs.cloud.google.com/bigquery/docs/loading-data-cloud-storage-csv).
+
+For recurring imports, you can configure **BigQuery Data Transfer Service** to load files from Cloud Storage on a schedule. [Scheduled Cloud Storage transfers](https://docs.cloud.google.com/bigquery/docs/cloud-storage-transfer)
+
+
  
 {% endraw %}
