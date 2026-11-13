@@ -1,5 +1,297 @@
 # Apache Airflow Interview Prep
 
+**1. Correct these points in your notes first**
+
+| Topic in your notes | Interview-ready correction |
+|---|---|
+| TaskFlow passes data without XCom | TaskFlow automates XCom communication. Passing a task’s output produces an `XComArg`, rather than immediately running the function. |
+| Returning `TriggerDagRunOperator` from a task | This does not schedule the operator. Instantiate it as part of the DAG definition and set its dependencies. |
+| Variables configured in `[variables]` in `airflow.cfg` | Use the UI, CLI, environment variables such as `AIRFLOW_VAR_KEY`, or a secrets backend. |
+| SubDAGs | Prefer TaskGroups for organization. SubDAG support was removed in Airflow 3. |
+| SequentialExecutor and DebugExecutor | These are historical choices, removed in Airflow 3. |
+| Older imports and `schedule_interval` | Recognize older examples, but use APIs appropriate to the installed version. Airflow 3 provides `airflow.sdk` for DAG authoring. |
+| Custom `SkipMixin` example | For simply skipping the current task, raising `AirflowSkipException` is clearer. |
+| Legacy SLA example | Distinguish legacy SLA monitoring from execution timeouts; Airflow 3 removed the old SLA feature. |
+
+Sources: [XCom](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html), [Variables](https://airflow.apache.org/docs/apache-airflow/stable/howto/variable.html), [Airflow 3 removed features](https://airflow.apache.org/docs/apache-airflow/3.0.6/release_notes.html).
+
+**2.  “What is Apache Airflow?”**
+
+> Apache Airflow is a platform for defining, scheduling, and monitoring workflows as Python code. A workflow is represented as a DAG, where tasks have explicit dependencies. Airflow manages scheduling, retries, execution state, and observability. In a data pipeline, I use it to coordinate services such as Cloud Storage, BigQuery, and Spark.
+
+Add this distinction:
+
+> Airflow coordinates the work. Large transformations usually execute in the appropriate processing system.
+
+Airflow can run Python processing itself, but its workers should not become an accidental replacement for a distributed analytics engine. [Airflow overview](https://airflow.apache.org/docs/apache-airflow/)
+
+**3. Know the core objects precisely**
+
+| Concept | Meaning |
+|---|---|
+| DAG | Workflow definition: tasks, dependencies, schedule, and configuration |
+| DAG run | One execution of that workflow |
+| Task | A unit of work defined in the DAG |
+| Task instance | A task associated with a particular run; mapped instances also have a map index |
+| Operator | A reusable implementation of a kind of task |
+| Hook | An interface to an external service |
+| Sensor | A task that waits for a condition |
+| Executor | The mechanism used to dispatch task execution |
+| Connection | External-system connection information |
+| XCom | Small values communicated between task instances |
+
+**“What happens after I deploy a DAG?”**
+
+> The DAG processor imports the Python file and discovers the DAG. The scheduler determines eligible runs and tasks from scheduling rules and dependencies. The executor dispatches runnable tasks. Task execution updates state and produces logs, which operators inspect through the UI and APIs.
+
+For **Airflow 3**, mention the standalone DAG processor and API server. Task code communicates through the Task Execution API rather than accessing the metadata database directly. [Architecture](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/overview.html), [Airflow 3 architecture changes](https://airflow.apache.org/docs/apache-airflow/stable/installation/upgrading_to_airflow3.html).
+
+**4. Master scheduling—the common interview trap**
+
+**“What is the difference between logical date and execution time?”**
+
+> Logical date identifies the run according to its timetable. Execution time is when the task actually runs. For interval-based processing, I use the explicit data interval to select input data.
+
+For an explicitly configured **daily data-interval timetable**:
+
+```text
+Data interval:  November 10 00:00 → November 11 00:00
+Run eligible:   After November 11 00:00
+Actual start:   Could be later because of queues or capacity
+```
+
+**Do not say every `@daily` DAG always processes yesterday.** Timetable behavior and configuration matter, particularly across Airflow versions. Trigger timetables and data-interval timetables have different semantics. [DAG runs and data intervals](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dag-run.html)
+
+**“Catchup versus backfill?”**
+
+> Catchup lets the scheduler create missed scheduled runs. Backfill explicitly requests historical processing over a chosen range. Both require tasks that read and write the correct historical data rather than using the current date.
+
+**“Why avoid `datetime.now()` for partition selection?”**
+
+> A retry or backfill could process a different partition. I derive the partition from the run’s intended interval or a validated explicit parameter.
+
+**5. Explain reliability with a concrete failure**
+
+**“What does idempotent mean?”**
+
+> Repeating the same operation for the same input produces the same intended final result.
+
+Suppose a task loads November 10 orders into BigQuery. BigQuery finishes successfully, but the worker crashes before Airflow records success.
+
+A retry that blindly appends the file can create duplicates.
+
+A strong answer:
+
+> I make the load retry-safe using an appropriate combination of stable external job identity, staging tables, partition replacement, or a deduplicating `MERGE`. I also keep the input file set stable for that run.
+
+**“Does Airflow guarantee exactly-once processing?”**
+
+> No. A task can perform an external side effect and then fail before recording success. I design for repeated attempts and enforce deduplication or idempotency in the destination system.
+
+**“When should a task retry?”**
+
+> Retry transient failures such as temporary network errors or service throttling, with bounded attempts and backoff. Invalid schemas or malformed SQL usually need correction rather than repeated retries.
+
+**“What happens when you clear a task?”**
+
+> It becomes eligible for re-execution under Airflow’s scheduling rules. Clearing its state does not undo external writes.
+
+These answers reflect Airflow’s guidance to make tasks transaction-like, partition-specific, and safe to rerun. [Best practices](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)
+
+**6. Understand task communication and runtime mapping**
+
+**“XCom versus Variables versus Params?”**
+
+| Mechanism | Appropriate use |
+|---|---|
+| XCom | Run-specific outputs: object URI, row count, external job ID |
+| Variables | Shared application configuration |
+| Params | Parameterized runs, with validation where configured |
+| Connections / secrets backend | Credentials and connection configuration |
+
+**“Can I pass a large DataFrame through XCom?”**
+
+> I normally store the data in shared storage and pass its URI. XCom is intended for small values; an object-storage backend changes storage behavior but does not make huge task-to-task payloads a good default.
+
+**“What happens in this code?”**
+
+```python
+files = discover_files()
+load_file.expand(uri=files)
+```
+
+> During DAG parsing, these calls define tasks and their relationships. During execution, `discover_files` returns a list through XCom, and Airflow creates mapped task instances to process its elements.
+
+A Python loop creates tasks at **parse time**. Dynamic task mapping can determine their number from **runtime output**. `partial()` supplies fixed arguments; `expand()` supplies mapped arguments. [XCom](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html), [Dynamic task mapping](https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/dynamic-task-mapping.html)
+
+**7. Be ready for branching questions**
+
+Given:
+
+```text
+          ┌── full_load ─────────┐
+choose ───┤                     ├── validate
+          └── incremental_load ─┘
+```
+
+**“Why might `validate` be skipped?”**
+
+> Its default trigger rule is `all_success`, but the unselected branch is skipped. For a normal branch join, I would often use `none_failed_min_one_success`.
+
+| Trigger rule | Meaning |
+|---|---|
+| `all_success` | All direct upstream tasks succeeded |
+| `none_failed_min_one_success` | No upstream failures and at least one success |
+| `all_done` | All upstream tasks reached terminal states |
+| `one_success` | At least one upstream task succeeded; it can proceed before all finish |
+
+**“Is `all_done` appropriate for validation?”**
+
+> Usually not if validation requires successful upstream processing. It is more appropriate for unconditional cleanup.
+
+A successful `all_done` leaf task can also cause a DAG run to appear successful despite an earlier failure. Know how your terminal tasks preserve failure visibility. [Trigger rules](https://airflow.apache.org/docs/apache-airflow/stable/concepts/dags.html#trigger-rules), [DAG run status](https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/dag-run.html)
+
+**8. Explain efficient waiting**
+
+**“A sensor waits six hours for a file. What mode would you choose?”**
+
+| Approach | Resource behavior |
+|---|---|
+| `poke` | Holds a worker slot between checks |
+| `reschedule` | Releases the worker between scheduled checks |
+| Deferrable operator | Releases the worker while a trigger handles waiting |
+
+A good answer:
+
+> For long waits, I prefer a supported deferrable sensor with a running triggerer. Reschedule mode is another option. I also configure a timeout and define what missing data means operationally.
+
+Deferral does not mean polling necessarily disappears: the trigger may poll asynchronously. Deferred tasks do not consume pool slots by default, although pools can be configured to include them. [Deferrable operators](https://airflow.apache.org/docs/apache-airflow/stable/authoring-and-scheduling/deferring.html)
+
+**9. Know concurrency controls**
+
+**“How do you stop Airflow overwhelming a database?”**
+
+> Put all tasks accessing that constrained resource in a shared pool. Set pool capacity according to the database’s safe concurrency and use multiple pool slots for heavier tasks where appropriate.
+
+Distinguish these controls:
+
+- **Pools:** Protect shared resources across workflows.
+- **`max_active_runs`:** Limit concurrent runs of one DAG.
+- **`max_active_tasks`:** Limit active tasks across runs of one DAG.
+- **Executor and worker capacity:** Limit actual execution capacity.
+- **Priority weights:** Influence which eligible tasks are selected under contention.
+
+A pool limits concurrent work; it is not a precise requests-per-second rate limiter.
+
+**“Which executor would you choose?”**
+
+| Executor | Typical tradeoff |
+|---|---|
+| LocalExecutor | Simpler deployment; limited to one machine’s resources |
+| CeleryExecutor | Distributed workers; requires broker and worker operations |
+| KubernetesExecutor | Per-task pods and isolation; pod startup and Kubernetes overhead |
+
+Also distinguish **KubernetesExecutor** from **KubernetesPodOperator**: the former dispatches Airflow tasks; the latter is a task that launches a pod.
+
+**10. Practice this system-design answer**
+
+**Question: “Design a daily GCS-to-BigQuery pipeline.”**
+
+Start by clarifying file completeness, data volume, latency, duplicate handling, late arrivals, and historical reprocessing.
+
+Then propose:
+
+```text
+Wait for completion marker
+          ↓
+Read and validate manifest
+          ↓
+Load files into staging
+          ↓
+Run data-quality checks
+          ↓
+Publish with MERGE or partition replacement
+          ↓
+Notify downstream consumers
+```
+
+A strong spoken answer:
+
+> I would process an explicit business-date partition. A completion marker and manifest identify the intended input files, so listing a partially uploaded prefix cannot trigger an incomplete load.
+>
+> Airflow would submit BigQuery load jobs using an explicit schema. I would load into staging, validate counts, required fields, and business keys, then publish with a retry-safe operation.
+>
+> I would pass object URIs and job IDs through XCom, use Connections or a secrets backend for authentication, and limit concurrent submissions with pools.
+>
+> For backfills, I would reuse the same pipeline with historical inputs and controlled concurrency. I would monitor data freshness and completeness as well as task success.
+
+Important follow-ups:
+
+- **Thousands of files?** Batch compatible files into load jobs rather than automatically creating one task per tiny file.
+- **Late file?** Define a correction window and reprocess or merge the affected partition.
+- **Schema change?** Apply an explicit compatibility policy; fail or quarantine unexpected changes.
+- **External job still running after task failure?** Reconcile its status before submitting another job.
+- **Data-quality failure?** Keep unvalidated data out of the published table.
+
+**11. Prepare a structured troubleshooting answer**
+
+**“My task is stuck. What do you check?”**
+
+First identify the state:
+
+| State | First investigation |
+|---|---|
+| Not scheduled | Dependencies, trigger rule, schedule, paused DAG, concurrency limits |
+| Scheduled | Pools and scheduler/executor capacity |
+| Queued | Worker availability, Celery routing, Kubernetes pod scheduling |
+| Running | Logs, heartbeat, external job status, resource exhaustion |
+| Deferred | Triggerer health and trigger progress |
+| Upstream failed | Find and diagnose the original upstream failure |
+
+**“The DAG does not appear in the UI.”**
+
+> Check import errors, DAG discovery, unique DAG IDs, required packages, DAG processor health, and deployment synchronization.
+
+**“Scheduling becomes slow after adding DAGs.”**
+
+> Check parsing duration and top-level code. Network calls, database queries, heavy imports, and expensive computations should generally happen during task execution, not repeatedly during DAG parsing. Then examine scheduler and metadata database health.
+
+**12. Know how you would test and monitor**
+
+For testing, explain four layers:
+
+1. Unit-test transformation logic independently of Airflow.
+2. Check DAG imports, task IDs, and dependencies.
+3. Test templates and runtime parameters.
+4. Run integration scenarios covering retries, branching, missing files, and backfills.
+
+Do not assume local DAG tests are free of external side effects.
+
+For monitoring, mention:
+
+- Failures, retries, queue time, and execution duration.
+- Scheduler, DAG processor, worker, and triggerer health.
+- Pool saturation and available execution capacity.
+- External job IDs and remote logs.
+- **Business freshness and completeness**—a green DAG can still publish wrong data.
+
+**13. A five-session preparation plan**
+
+| Session | Focus | Practice |
+|---|---|---|
+| 1 | Architecture and terminology | Explain deployment-to-execution in two minutes |
+| 2 | Scheduling | Work through intervals, catchup, and backfill |
+| 3 | Task authoring | Build TaskFlow, mapping, and branching examples |
+| 4 | Reliability | Diagnose duplicate loads and worker crashes |
+| 5 | System design | Present the GCS-to-BigQuery design and defend tradeoffs |
+
+For each interview answer, use: **definition → example → failure case → tradeoff**.
+
+Your first mock-interview question:
+
+**A task successfully loads data into BigQuery, but its worker crashes before Airflow records success. Airflow retries the task. How would you prevent duplicate data?**
+
+
 ## 1. What Airflow Is (30-second answer)
 
 Apache Airflow is an **open-source workflow orchestration platform** — you define pipelines as **DAGs (Directed Acyclic Graphs)** in Python, and Airflow schedules, executes, retries, and monitors the tasks in them. It doesn't move or process data itself (unlike Spark)
