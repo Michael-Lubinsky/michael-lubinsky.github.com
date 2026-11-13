@@ -29,6 +29,8 @@ In this example:
 
 **Vertex AI versus Gemini:** Gemini is a family of AI models. Vertex AI is a platform through which you can access models and build production AI applications.
 
-An interview-ready answer:
 
-> “Vertex AI is Google Cloud’s managed AI and machine learning platform. It provides tools for training, evaluating, deploying, and managing models, as well as accessing foundation models such as Gemini. In a data pipeline, BigQuery prepares the data, Vertex AI performs the machine learning, and Airflow coordinates the workflow.”
+
+ “Vertex AI is Google Cloud’s managed AI and machine learning platform. 
+ It provides tools for training, evaluating, deploying, and managing models, as well as accessing foundation models such as Gemini. 
+ In a data pipeline, BigQuery prepares the data, Vertex AI performs the machine learning, and Airflow coordinates the workflow.”
