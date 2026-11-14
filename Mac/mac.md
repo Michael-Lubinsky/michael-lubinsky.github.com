@@ -3,6 +3,10 @@
 ### Memory /CPU /Network  monitor
 <https://github.com/Ahmadjondev/MacMonitor>
 
+## Disk Space Cleaner for Mac and Windows
+
+<https://mangodisk.app/>
+
 ### Voice assistant
 <https://opensuperwhisper.com/>
 
