@@ -141,9 +141,9 @@ https://www.youtube.com/watch?v=tZF9Uwu62l8 Шиз поясняет
 ### Group Theory
 <https://www.youtube.com/watch?v=O5YISYYVlTQ> Math with Ming  3.5 hours
 
-<https://www.youtube.com/watch?v=s-Ohlk0HE28>
+<https://www.youtube.com/watch?v=s-Ohlk0HE28> Алгебраический минимум blablablarden
 
-<https://www.youtube.com/watch?v=OllfCWlZOsc>  ВСЁ ЧТО НАДО ЗНАТЬ
+ 
 <https://www.youtube.com/watch?v=gO4P9l6bOm4> Шиз 596 минут изучает теорию групп 
 
 <https://www.youtube.com/watch?v=aG5mJKh6zbM> 
@@ -163,6 +163,8 @@ New series! Intro to Pure Math
 
 ### Linear Algebra
 <https://www.youtube.com/watch?v=1vnJ4gfcmB8> Linear Algebra 3Blue1brown ru  
+
+<https://www.youtube.com/watch?v=BAqBMEMrKQo> All linear algebra in 5 hours
 <https://8gwifi.org/math/matrix-calculator.jsp> Matrix Explorer
 
 <img width="670" height="311" alt="image" src="https://github.com/user-attachments/assets/a575b21f-ad0b-446a-aae6-534931fae1b6" />
