@@ -2,6 +2,8 @@
 
 <https://machinelearningmastery.com/choosing-the-right-agentic-ai-framework-for-2026-a-decision-tree-approach>
 
+<https://www.youtube.com/watch?v=q0Q-Hy8TTps>
+
 <https://habr.com/ru/articles/1098980/> oh-my-pi
 
 | SDK / Framework       | Main orchestration model                  | How agents cooperate in your code                                                             | Tool calling                               | Parallel agents                                         | Human approval                           | Workflow/state model                                                     | Main distinguishing feature                                                        |
