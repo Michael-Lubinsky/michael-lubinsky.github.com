@@ -1,4 +1,5 @@
 ## Agents
+<https://huggingface.co/learn/agents-course/en/unit1/introduction>
 
 ```python
     messages = [user_message(task)]    
