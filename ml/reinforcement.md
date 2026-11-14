@@ -3,6 +3,8 @@
 
 <https://rl-handbook.com/>
 
+<https://aatishb.com/myriad/how-brains-learn/>
+
 The abbreviation STAR (or S-A-T-R) translates directly to the core elements of a Markov Decision Process (MDP): [1] 
 
 * S: State (The environment's current configuration)
