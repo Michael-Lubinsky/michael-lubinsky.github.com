@@ -2,6 +2,9 @@
 
 <https://boramorka.github.io/LLM-Book/>
 
+A 10-week, staff-level curriculum and engineering roadmap focused on LLM inference systems, serving physics, custom kernels, disaggregated architectures, and production optimization.
+<https://github.com/simranjeet97/AI_Engineer_Roadmap_2027>
+
 <https://medium.com/@ateebkhan1/what-happens-after-a-model-goes-live-building-a-small-ml-monitoring-system-8e84338a2e44>
 
 <https://amanxai.com/2026/10/23/10-mlops-projects-for-ai-engineers/>
