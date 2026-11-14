@@ -1,5 +1,7 @@
 ## ML Links
 
+<https://github.com/Future-Proof-DS/interactive-ai-ml-tools>
+
 <https://github.com/jyotipmahes/ML-Interview-Prep/tree/main>
 
 <https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
