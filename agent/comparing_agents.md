@@ -1,5 +1,7 @@
 ## Agent SDK  architectural differences: LangGraph, CrewAI, OpenAI, Claude, Pi, OMP
 
+<https://arxiv.org/pdf/2609.00006>
+
 <https://machinelearningmastery.com/choosing-the-right-agentic-ai-framework-for-2026-a-decision-tree-approach>
 
 <https://www.youtube.com/watch?v=q0Q-Hy8TTps>
