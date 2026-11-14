@@ -1,6 +1,12 @@
 {% raw %}
 
 ## BigQuery
+
+Free SandBox <https://docs.cloud.google.com/bigquery/docs/sandbox>
+
+<https://www.youtube.com/playlist?list=PLIivdWyY5sqLAbIdmcMwsxWg-w8Px34MS>
+
+ <https://cloud.google.com/blog/products/data-analytics/new-blog-series-bigquery-explained-overview>
  
 
 ## 1. The mental model
