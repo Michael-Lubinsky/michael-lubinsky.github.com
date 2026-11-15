@@ -47,6 +47,9 @@ There are 100 closed doors, numbered 1 through 100.
 Which doors remain open? Why?
 
 ## Geometry Puzzles
+
+<https://en.wikipedia.org/wiki/Monge%27s_theorem>
+
 ### The 25 points
 
 Place 25 points anywhere inside a square of side length 4.
