@@ -6,7 +6,13 @@ http://www.machinelearning.ru/wiki/index.php?title=%D0%9A%D0%B0%D1%82%D0%B5%D0%B
 ## Matthews Correlation Coefficient
 <https://koshurai.medium.com/understanding-the-matthews-correlation-coefficient-mcc-in-machine-learning-26e8049f8572>
 ```
-The Matthews Correlation Coefficient (MCC) is a measure of the quality of binary classifications. It takes into account all four elements of a confusion matrix: true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN). The MCC can be understood as a correlation coefficient between the predicted and actual classifications, ranging from -1 to +1. An MCC of +1 indicates perfect predictions, 0 indicates no better than random guessing, and -1 indicates total disagreement between predictions and true outcomes.
+The Matthews Correlation Coefficient (MCC) is a measure of the quality of binary classifications.
+It takes into account all four elements of a confusion matrix:
+true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN).
+The MCC can be understood as a correlation coefficient between the predicted and actual classifications, ranging from -1 to +1.
+An MCC of +1 indicates perfect predictions,
+0 indicates no better than random guessing,
+and -1 indicates total disagreement between predictions and true outcomes.
 ```
 Mathematically, MCC is defined as:
 <img width="663" height="103" alt="image" src="https://github.com/user-attachments/assets/dd7bcf53-528e-4270-a4a3-8a942ef74b0b" />
