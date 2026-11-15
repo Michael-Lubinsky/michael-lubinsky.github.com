@@ -5,6 +5,20 @@
 
 <https://habr.com/ru/articles/966786/>
 
+https://habr.com/ru/articles/1054140/
+
+https://habr.com/ru/articles/1057576/
+
+https://habr.com/ru/articles/552644/
+
+https://habr.com/ru/articles/540182/
+
+https://habr.com/ru/articles/840118/
+
+https://habr.com/ru/articles/382753/
+
+https://habr.com/ru/companies/ddosguard/articles/942712/
+
 ###  Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
