@@ -253,7 +253,26 @@ It also uses a statistic derived from Kendall’s rank correlation, but it is ap
 | Output   | Correlation coefficient | Trend direction + p-value   |
 | Use case | Association strength    | Trend detection             |
 
+**Fechner’s coefficient 
 
+is useful when your question is specifically: “Do these two variables tend to be above—or below—their respective averages together?”** It measures agreement of those signs, ignoring the size of the deviations.
+
+For example, across stores, you might ask whether **above-average advertising spending tends to accompany above-average sales**. Fechner’s coefficient gives a simple summary of that agreement. This is the comparison described in these [university teaching materials](https://spmi.ru/sites/default/files/imci_images/univer/svedenia_jb_organizacii/metrek_baki/38.03.01-statistika-samotsoyatelnaya-rabota.pdf).
+
+Choose the coefficient according to your actual question:
+
+| Your goal | Usually choose |
+|---|---|
+| Measure a **linear relationship**, using actual numerical values | **Pearson** |
+| Measure a **monotonic relationship**—as one variable increases, the other generally increases or decreases | **Spearman** |
+| Measure agreement in the **ordering of pairs**, particularly for ordinal data | **Kendall’s tau** |
+| Measure agreement in being **above or below the mean** | **Fechner** |
+
+**In most analyses, Fechner should not replace Pearson, Spearman, or Kendall.** It discards substantial information: a value barely above the mean counts exactly the same as one far above it. Two datasets with very different scatterplots can therefore have the same Fechner coefficient.
+
+Also, **it is not automatically resistant to outliers**. Although it uses only signs, those signs depend on the means, and an extreme observation can shift a mean considerably.
+
+Use it when above/below-average agreement is itself meaningful, or for a simple descriptive demonstration. For general correlation analysis, inspect a scatterplot and usually choose Pearson, Spearman, or Kendall.
 
 pip install pymannkendall
 
