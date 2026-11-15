@@ -181,15 +181,6 @@ by Вышка Онлайн
 <https://www.klex.ru/razdel/science/>
 
 
-## Elementary Particles
-<https://habr.com/ru/articles/1057576/>
-
-<https://www.quantamagazine.org/how-many-elementary-particles-are-there-really-20260615/>
-
-<https://news.ycombinator.com/item?id=48697746>
-
-<https://habr.com/ru/articles/1057670/>
-
 ## Solid State Physics
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X> Клёнов Н.В.
 
