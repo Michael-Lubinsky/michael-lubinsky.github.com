@@ -66,6 +66,8 @@ https://habr.com/ru/companies/selectel/articles/1005504/  Собственная
 
 <https://habr.com/ru/articles/1057528/>  llama.cpp
 
+<https://habr.com/ru/articles/1108044/>
+
 <https://habr.com/ru/articles/1094534/>
 
 <https://www.opennet.ru/tips/3291_llama_build_ai.shtml>
