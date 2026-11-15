@@ -48,7 +48,8 @@ Which doors remain open? Why?
 
 ## Geometry Puzzles
 
-<https://en.wikipedia.org/wiki/Monge%27s_theorem>
+<https://en.wikipedia.org/wiki/Monge%27s_theorem>. 
+<https://en.wikipedia.org/wiki/Morley%27s_trisector_theorem>
 
 ### The 25 points
 
