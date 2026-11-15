@@ -19,6 +19,15 @@ https://habr.com/ru/articles/382753/
 
 https://habr.com/ru/companies/ddosguard/articles/942712/
 
+ 
+<https://habr.com/ru/articles/1057576/>
+
+<https://www.quantamagazine.org/how-many-elementary-particles-are-there-really-20260615/>
+
+<https://news.ycombinator.com/item?id=48697746>
+
+<https://habr.com/ru/articles/1057670/>
+
 ###  Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
