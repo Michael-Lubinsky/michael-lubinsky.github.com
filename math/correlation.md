@@ -4,6 +4,70 @@ http://www.machinelearning.ru/wiki/index.php?title=%D0%9A%D0%B0%D1%82%D0%B5%D0%B
 
 
 ## Matthews Correlation Coefficient
+<https://koshurai.medium.com/understanding-the-matthews-correlation-coefficient-mcc-in-machine-learning-26e8049f8572>
+```
+The Matthews Correlation Coefficient (MCC) is a measure of the quality of binary classifications. It takes into account all four elements of a confusion matrix: true positives (TP), true negatives (TN), false positives (FP), and false negatives (FN). The MCC can be understood as a correlation coefficient between the predicted and actual classifications, ranging from -1 to +1. An MCC of +1 indicates perfect predictions, 0 indicates no better than random guessing, and -1 indicates total disagreement between predictions and true outcomes.
+```
+Mathematically, MCC is defined as:
+<img width="663" height="103" alt="image" src="https://github.com/user-attachments/assets/dd7bcf53-528e-4270-a4a3-8a942ef74b0b" />
+The Matthews Correlation Coefficient (MCC) is a measure of how well a binary classification model performs, and it’s based on the four outcomes of a confusion matrix:
+
+True Positives (TP): These are instances where the model correctly predicted the positive class (i.e., both the actual and predicted labels are positive).
+
+True Negatives (TN): These are instances where the model correctly predicted the negative class (i.e., both the actual and predicted labels are negative).
+
+False Positives (FP): These occur when the model incorrectly predicts the positive class (i.e., the actual label is negative, but the model predicted positive).
+
+False Negatives (FN): These occur when the model incorrectly predicts the negative class (i.e., the actual label is positive, but the model predicted negative).
+
+Breakdown of the Formula:
+
+Numerator: (TP×TN)−(FP×FN) — this part rewards cases where the model gets both true positives and 
+true negatives correct, while penalizing false positives and false negatives.
+
+Denominator: sqrt((TP+FP)(TP+FN)(TN+FP)(TN+FN)) this ensures that the MCC score is normalized between -1 and +1, making the MCC more interpretable. If all predictions are correct (both positives and negatives), the denominator scales accordingly, ensuring a perfect score.
+
+MCC Value Ranges:
++1: Perfect prediction, meaning the model is in complete agreement with the actual labels.
+0: The model is performing no better than random guessing.
+-1: Total disagreement between the model’s predictions and the actual labels (worst possible prediction).
+
+This formula essentially balances both the correct and incorrect classifications for both classes.
+
+Why Use MCC?
+Many traditional metrics, such as accuracy, can be misleading when working with imbalanced datasets, where one class heavily outweighs the other. For instance, if you’re building a model to detect rare diseases, the accuracy might be high even if the model predicts the majority class (negative cases) most of the time.
+
+MCC solves this issue by considering the balance between the positive and negative classes, offering a more insightful evaluation. Unlike accuracy, which can give inflated results for imbalanced data, MCC remains a reliable metric regardless of class distribution.
+
+Key Benefits of MCC:
+Handles imbalanced datasets well: Even with skewed distributions, MCC gives a fair evaluation.
+Comprehensive: It considers all elements of the confusion matrix.
+Unbiased: It is not influenced by class imbalance, unlike metrics like precision or accuracy.
+#### MCC vs Other Metrics
+Accuracy: Accuracy gives the overall correct predictions but doesn’t provide insights when one class dominates. MCC, in contrast, reflects both correct and incorrect predictions across all classes.
+
+Precision & Recall: Precision focuses on the positive predictive value, while recall emphasizes sensitivity. MCC incorporates both, along with the balance between positives and negatives.
+F1-Score: F1-score averages precision and recall, but it does not consider true negatives. MCC, however, takes into account the entire confusion matrix, offering a more holistic measure.
+
+#### When Should You Use MCC?
+MCC is especially useful in the following scenarios:
+
+Imbalanced datasets: When one class dominates, MCC gives a more realistic picture of model performance than accuracy.
+Binary classification: While MCC can be extended to multi-class problems, it shines in binary classification tasks.
+
+Real-world problems: Use MCC when you are dealing with real-world issues like fraud detection, disease diagnosis, or spam filtering, where class imbalance is common.
+```python
+from sklearn.metrics import matthews_corrcoef
+
+# True and predicted labels
+y_true = [1, 0, 1, 1, 0, 0, 1, 0, 0, 0]
+y_pred = [1, 0, 1, 1, 0, 1, 0, 0, 0, 0]
+
+# Calculate MCC
+mcc = matthews_corrcoef(y_true, y_pred)
+print(f'Matthews Correlation Coefficient: {mcc}')
+```
+
 <https://leimao.github.io/blog/Matthews-Correlation-Coefficient/>
 ```
 Matthews Correlation Coefficient is nothing special but applying 
