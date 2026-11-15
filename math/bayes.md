@@ -7,3 +7,5 @@
 <https://www.youtube.com/watch?v=XCEpIBqKogo> Bayesian Inference: Overview Steve Brunton
 
 <https://entropicthoughts.com/bayes-rule-odds-form>
+
+<https://habr.com/ru/articles/895332/> Bayes
