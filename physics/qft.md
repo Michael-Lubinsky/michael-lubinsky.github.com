@@ -1,5 +1,10 @@
 ## QFT
 
+## Standard Model
+<https://habr.com/ru/articles/1107722/>
+
+<https://habr.com/ru/articles/966786/>
+
 ###  Naumov
 <https://www.youtube.com/@dmitrynaumov6099>
 
