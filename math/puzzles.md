@@ -46,6 +46,7 @@ There are 100 closed doors, numbered 1 through 100.
 
 Which doors remain open? Why?
 
+## Geometry Puzzles
 ### The 25 points
 
 Place 25 points anywhere inside a square of side length 4.
