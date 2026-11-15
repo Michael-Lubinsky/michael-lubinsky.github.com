@@ -40,26 +40,33 @@ MCC Value Ranges:
 
 This formula essentially balances both the correct and incorrect classifications for both classes.
 
-Why Use MCC?
-Many traditional metrics, such as accuracy, can be misleading when working with imbalanced datasets, where one class heavily outweighs the other. For instance, if you’re building a model to detect rare diseases, the accuracy might be high even if the model predicts the majority class (negative cases) most of the time.
+#### Why Use MCC?
+Many traditional metrics, such as accuracy, can be misleading when working with imbalanced datasets, where one class heavily outweighs the other.   
+For instance, if you’re building a model to detect rare diseases,   
+the accuracy might be high even if the model predicts the majority class (negative cases) most of the time.
 
-MCC solves this issue by considering the balance between the positive and negative classes, offering a more insightful evaluation. Unlike accuracy, which can give inflated results for imbalanced data, MCC remains a reliable metric regardless of class distribution.
+MCC solves this issue by considering the balance between the positive and negative classes, offering a more insightful evaluation.   
+Unlike accuracy, which can give inflated results for imbalanced data,   
+MCC remains a reliable metric regardless of class distribution.
 
-Key Benefits of MCC:
+#### Key Benefits of MCC:
 Handles imbalanced datasets well: Even with skewed distributions, MCC gives a fair evaluation.
-Comprehensive: It considers all elements of the confusion matrix.
+Comprehensive: It considers all elements of the confusion matrix.  
 Unbiased: It is not influenced by class imbalance, unlike metrics like precision or accuracy.
 #### MCC vs Other Metrics
-Accuracy: Accuracy gives the overall correct predictions but doesn’t provide insights when one class dominates. MCC, in contrast, reflects both correct and incorrect predictions across all classes.
+Accuracy: Accuracy gives the overall correct predictions but doesn’t provide insights when one class dominates. 
+MCC, in contrast, reflects both correct and incorrect predictions across all classes.
 
-Precision & Recall: Precision focuses on the positive predictive value, while recall emphasizes sensitivity. MCC incorporates both, along with the balance between positives and negatives.
-F1-Score: F1-score averages precision and recall, but it does not consider true negatives. MCC, however, takes into account the entire confusion matrix, offering a more holistic measure.
+Precision & Recall: Precision focuses on the positive predictive value, while recall emphasizes sensitivity.   
+MCC incorporates both, along with the balance between positives and negatives.
+F1-Score: F1-score averages precision and recall, but it does not consider true negatives. 
+MCC, however, takes into account the entire confusion matrix, offering a more holistic measure.
 
 #### When Should You Use MCC?
 MCC is especially useful in the following scenarios:
 
-Imbalanced datasets: When one class dominates, MCC gives a more realistic picture of model performance than accuracy.
-Binary classification: While MCC can be extended to multi-class problems, it shines in binary classification tasks.
+1) Imbalanced datasets: When one class dominates, MCC gives a more realistic picture of model performance than accuracy.  
+2) Binary classification: While MCC can be extended to multi-class problems, it shines in binary classification tasks.
 
 Real-world problems: Use MCC when you are dealing with real-world issues like fraud detection, disease diagnosis, or spam filtering, where class imbalance is common.
 ```python
