@@ -1,6 +1,7 @@
 ## QM
 
-<https://mgivanov.ru/>
+<https://mgivanov.ru/> Michael Ivanov  
+<https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
 
 <https://www.youtube.com/playlist?list=PLfpEutbbtVF_LXu14cOz8f7Jd08gz73El> Mastering Quantum Mechanics Through Problems
 
