@@ -1,5 +1,7 @@
 ## QM
 
+<https://mgivanov.ru/>
+
 <https://www.youtube.com/playlist?list=PLfpEutbbtVF_LXu14cOz8f7Jd08gz73El> Mastering Quantum Mechanics Through Problems
 
 Book: <https://www.amazon.com/dp/B0CWFH8JXN> Contemporary Quantum Mechanics in Practice: Problems and Solutions. by Lilia M. Woods , Pablo Rodríguez López 
