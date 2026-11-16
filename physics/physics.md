@@ -22,7 +22,7 @@ Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundel
 
 <https://habr.com/ru/articles/965372/>
 
-<https://arxiv.org/abs/1210.5067>
+<https://arxiv.org/abs/1210.5067> dimensional analysis
 
 <https://www.youtube.com/@viascience>
 
@@ -49,7 +49,7 @@ https://www.youtube.com/watch?v=oLKER6zFZ0A
 
 <https://www.damtp.cam.ac.uk/user/tong/qft.htm>
 
-<https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>
+<https://www.youtube.com/playlist?list=PLf8iQozIdvKgwHIjRH_8Edzv_qVAeNVhK>  Центр Архэ
 
 <https://www.susanrigetti.com/physics>
 
@@ -85,9 +85,9 @@ https://www.youtube.com/watch?v=oLKER6zFZ0A
 
 <https://www.youtube.com/watch?v=Q6Gw08pwhws> Lecture Series on Classical Physics by Prof.V.Balakrishnan
 
-<https://www.compadre.org/quantum/index.cfm>
+<https://www.compadre.org/quantum/index.cfm> Quantum Exchange, a collection of information and resources for teachers of quantum physics. The resources in this collection are supplements to standard quantum textbooks and include student activities, background information, and applications. 
 
-<https://nazat02.github.io/Quantum-Tunneling>
+<https://nazat02.github.io/Quantum-Tunneling> Web Simulation
 
 <https://www.st-andrews.ac.uk/physics/quvis/>
 
@@ -254,7 +254,7 @@ Vitaly Vanchurin
 
 <https://quantum.intofuture.org/> software
 
-<https://www.youtube.com/watch?v=xEyQwSV3swQ> Matrix Formulation of Quantum Mechanics | Kets & Operators (& Solved Problems)
+
 
 <https://www.youtube.com/watch?v=RjtxMFRGgs8> bosons and fermions
 
