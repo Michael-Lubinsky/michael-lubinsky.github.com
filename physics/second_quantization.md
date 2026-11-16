@@ -377,7 +377,6 @@ For (n=3):
 
 $$
 a^\dagger|3\rangle=
-
 2|4\rangle.
 $$
 
@@ -395,13 +394,12 @@ The same square roots appear in the quantum harmonic oscillator:
 
 $$
 a^\dagger|n\rangle=
-
 \sqrt{n+1}|n+1\rangle,
 $$
 
 $$
 a|n\rangle=\sqrt{n}|n-1\rangle.
-]
+$$
 
 Second quantization essentially treats each quantum state as a harmonic oscillator. The occupation number (n) becomes the oscillator's excitation number, which is why the same square-root factors appear.
 
