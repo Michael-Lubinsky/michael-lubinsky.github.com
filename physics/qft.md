@@ -1,6 +1,10 @@
 ## QFT
 <https://www.damtp.cam.ac.uk/user/tong/qft.htm>
 
+<https://www.youtube.com/watch?v=YFiQIZOM2fw> Particle Physics in 17 Hours
+
+
+
 ## Standard Model
 <https://habr.com/ru/articles/1107722/>
 
