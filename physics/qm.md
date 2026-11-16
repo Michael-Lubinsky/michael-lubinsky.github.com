@@ -6,6 +6,8 @@
 
 Book: <https://www.amazon.com/dp/B0CWFH8JXN> Contemporary Quantum Mechanics in Practice: Problems and Solutions. by Lilia M. Woods , Pablo Rodríguez López 
 
+<https://www.southampton.ac.uk/~doug/quantum_physics/>
+
 <https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC> Maths of Quantum Mechanics
 
 <https://www.youtube.com/watch?v=hyctIDPRSqY> QM in 11 hours
