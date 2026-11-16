@@ -2,7 +2,7 @@
 
 <https://onboard-cli.vercel.app/> code visualizer for big codebase
 
-<https://pdfmergely.com/> PDF merge
+
 
 ## OCR image to text or markdown 
 Extract plain text from any image
@@ -112,7 +112,9 @@ brew install kaushiksrini/parqeye/parqeye
 <https://monodraw.helftone.com/> diagram tool
 
 ### PDF Tools
-
+<https://pdfmergely.com/> PDF merge
+Djvu to PDF convertor
+<https://vak.dreamwidth.org/1607376.html#comments>
 <https://habr.com/ru/articles/1104458/>
 
 ### PDF parser
