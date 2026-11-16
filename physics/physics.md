@@ -168,6 +168,8 @@ Therefore, we can only notice uniquely spinorial behavior through the fact of th
 ## Solid State Physics
 <https://www.youtube.com/playlist?list=PLcsjsqLLSfNA1u6L5AtkhuYzKpRvsyu3X> Клёнов Н.В.
 
+<https://saykind.github.io/teaching/>
+
 ## Fermi Surface
 <https://en.wikipedia.org/wiki/Fermi_surface> Fermi Surface  
 <https://iopscience.iop.org/article/10.1088/0031-8949/91/5/053009/pdf>  
