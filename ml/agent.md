@@ -1,4 +1,7 @@
 ## Agents
+
+<https://habr.com/ru/articles/1108170/> OpenCode
+
 <https://huggingface.co/learn/agents-course/en/unit1/introduction>
 
 ```python
