@@ -2,7 +2,7 @@
 
 <https://arxiv.org/pdf/2609.00006>
 
-<https://arxiv.org/abs/2310.03714> DSPy
+<https://arxiv.org/abs/2310.03714> DSPy. https://dspy.ai/current/
 
 <https://machinelearningmastery.com/choosing-the-right-agentic-ai-framework-for-2026-a-decision-tree-approach>
 
