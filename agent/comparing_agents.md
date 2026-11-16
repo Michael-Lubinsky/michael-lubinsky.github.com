@@ -1,8 +1,8 @@
-## Agent SDK  architectural differences: LangGraph, CrewAI, OpenAI, Claude, Pi, OMP
+## Agent SDK  architectural differences: LangGraph, CrewAI, OpenAI, Claude, Pi, OMP, DSPy
 
 <https://arxiv.org/pdf/2609.00006>
 
-<https://arxiv.org/abs/2310.03714> DSPy. https://dspy.ai/current/
+<https://arxiv.org/abs/2310.03714> DSPy. <https://dspy.ai/current/>
 
 <https://machinelearningmastery.com/choosing-the-right-agentic-ai-framework-for-2026-a-decision-tree-approach>
 
@@ -1028,3 +1028,73 @@ Sources:
 - [Claude Agent SDK vs OpenAI Agents SDK: Which to Build On in 2026 - NomadX](https://nomadx.ae/blog/claude-agent-sdk-vs-openai-agents-sdk-2026/)
 - [Claude Agent SDK vs OpenAI Agents SDK - Agentlas](https://agentlas.pro/compare/claude-agent-sdk-vs-openai-agents-sdk/)
 - [LangGraph vs OpenAI Agents SDK vs Claude Agent SDK: The Decision After OpenAI Closed the Gap](https://dreaming.press/posts/agent-sdk-decision-2026-loop-graph-or-handoffs.html)
+
+## DSPy
+
+**DSPy is preferable when your main challenge is improving an AI system’s measurable accuracy across many similar tasks.** Frameworks such as LangGraph are especially useful when your main challenge is managing execution: state, branching, approvals, and recovery.
+
+DSPy supports agents, including tool use through `ReAct`, but its distinguishing capability is **optimizing an AI program using examples and a scoring function**. You define tasks as structured inputs and outputs, compose modules, and optimize their instructions or demonstrations. Some optimizers also support fine-tuning. [DSPy overview](https://dspy.ai/current/), [optimizer guide](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/)
+
+Here are the scenarios where I would consider it.
+
+**1. You have a working RAG system, but its answers are often wrong**
+
+Suppose your system searches technical documentation and answers questions. Its workflow already runs reliably, but it sometimes retrieves the wrong material or produces incomplete answers.
+
+With DSPy, you can:
+
+- Define modules for query generation, evidence processing, and answering.
+- Collect representative questions and expected answers.
+- Define a metric for correctness and evidence support.
+- Optimize the program and compare it against your baseline on unseen questions.
+
+This is a strong fit because the problem is **answer quality**, and you can measure improvement. DSPy’s evaluation tools support scoring programs over datasets. [Metrics and evaluation](https://dspy.ai/current/diving-deeper/metrics-and-evaluation/)
+
+**2. You repeatedly extract or classify information**
+
+Examples include extracting invoice fields, categorizing support tickets, or identifying events in emails.
+
+Here, you usually know what a correct result looks like. You can score field accuracy or classification performance and use that feedback to improve the program.
+
+DSPy is particularly attractive when you find yourself repeatedly adjusting prompts based on failures. Its optimizer makes that experimentation systematic. **It still requires a useful metric and representative examples; it does not automatically discover your business requirements.** [Optimizer guide](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/)
+
+**3. Your agent uses tools, and you can evaluate task success**
+
+Imagine a data-analysis agent that searches a database, performs calculations, and returns an answer.
+
+DSPy’s `ReAct` module can run the tool-use loop. You can then evaluate whether the final answer is correct and optimize the agent’s instructions against those tasks. This is useful when you want to improve the agent’s decisions across a repeatable workload. [DSPy ReAct documentation](https://dspy.ai/current/diving-deeper/react/)
+
+During optimization, use read-only tools, simulations, or isolated test environments: candidate programs may execute tools repeatedly.
+
+**4. You want to move to a cheaper model**
+
+Suppose a large model handles your extraction task well, but processing volume makes it expensive.
+
+You can switch models, optimize the program for the replacement, and measure whether it meets your quality threshold. The optimization expense can be spread across many subsequent executions by saving and reusing the optimized program.
+
+**Cost savings are a hypothesis to test**, including optimization cost, inference cost, latency, and accuracy—not a guaranteed outcome. [Optimizer guide](https://dspy.ai/current/diving-deeper/choosing-an-optimizer/)
+
+The practical comparison is:
+
+| Your main requirement | Where I would start |
+|---|---|
+| Improve extraction, classification, RAG, or tool-use accuracy using examples | **DSPy** |
+| Pause for approval and resume later, including after a restart | **LangGraph** |
+| Explicit branching, persistent state, and long-running workflows | **LangGraph** |
+| A small, straightforward task with an adequate prompt | **Direct model API calls** |
+| Reliable workflow execution plus optimized AI components | **LangGraph with DSPy modules inside it** |
+
+LangGraph explicitly focuses on durable execution, persistence, streaming, and human intervention. These are separate concerns from optimizing the quality of an LLM component. [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)
+
+For example, an invoice-processing application could use:
+
+```text
+LangGraph:
+Receive invoice → Extract fields → Validate → Human approval → Store
+
+DSPy:
+                  Optimize this
+                  extraction step
+```
+
+**My recommendation:** choose DSPy when you can say, “Here are representative tasks, here is how we score success, and we need better results.” Choose an orchestration framework when you can say, “We need this process to run, pause, recover, and maintain state reliably.” You may need both.
