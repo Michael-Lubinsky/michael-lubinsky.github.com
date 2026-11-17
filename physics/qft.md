@@ -1,6 +1,8 @@
 ## QFT
 <https://www.damtp.cam.ac.uk/user/tong/qft.htm>
 
+<https://phys.au.dk/~fedorov/QFT/now/home.php>
+
 <https://www.youtube.com/watch?v=YFiQIZOM2fw> Particle Physics in 17 Hours
 
 
