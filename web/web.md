@@ -18,6 +18,9 @@
 ## HTML 
 <https://habr.com/ru/companies/ruvds/articles/1045072/>  
 <https://habr.com/ru/companies/ruvds/articles/1080840/> 
+
+<https://habr.com/ru/companies/ruvds/articles/1107002/>
+
 <https://chrisburnell.com/html-can-do-that/>
 
 <https://lobste.rs/s/5gcd3t/html_can_do>
