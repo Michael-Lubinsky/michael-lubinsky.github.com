@@ -9,6 +9,7 @@
 <https://blackh0le.ru/>
 
 Physics of Life
+<https://habr.com/ru/articles/1108746/>
 <https://blog.rudnyi.site/ru/2026/06/on-the-statistical-mechanics-of-life.html>
 
 Deep Learning for Physicists: From Linear Regression to Reasoning Models
