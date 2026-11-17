@@ -13,6 +13,8 @@
 <https://www.sergeynikolenko.ru/courses/mlspsu2025-3> Sergey Nikolenko
 
 <https://github.com/neuml/txtai>
+Hidden Markov Model
+<https://www.ee.columbia.edu/~dpwe//e6820/papers/Rabiner89-hmm.pdf>
 
 Open Source implementation of Notebook LM with more flexibility and features
 <https://www.open-notebook.ai>
