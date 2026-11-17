@@ -8,6 +8,12 @@
 
 <https://blackh0le.ru/>
 
+Physics of Life
+<https://blog.rudnyi.site/ru/2026/06/on-the-statistical-mechanics-of-life.html>
+
+Deep Learning for Physicists: From Linear Regression to Reasoning Models
+<https://arxiv.org/abs/2611.21295>
+
 LLM in Physics. <https://www.youtube.com/watch?v=zUmeB_o7dBw>
 
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
