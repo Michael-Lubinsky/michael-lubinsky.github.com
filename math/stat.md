@@ -1,5 +1,6 @@
 ### Statistics and Probability
 
+<https://itl.nist.gov/div898/handbook/toolaids/pff/index.htm>
 
 <https://habr.com/ru/articles/1061846/> Все, что нужно знать про построение точечных оценок
 
