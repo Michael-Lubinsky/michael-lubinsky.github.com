@@ -7,6 +7,8 @@ Book:
 
 <https://login.databricks.com/>
 
+CDC with Databricks <https://www.youtube.com/watch?v=xN4yUAHiMA0>
+
 ### Genie one
 
 <https://learn.microsoft.com/en-us/azure/databricks/genie-agents/concepts>
