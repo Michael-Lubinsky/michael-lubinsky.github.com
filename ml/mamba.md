@@ -4,6 +4,8 @@
 
 <https://github.com/jyotipmahes/ML-Interview-Prep/tree/main>
 
+<https://github.com/amitshekhariitbhu/llm-inference-engineering>
+
 <https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
 
 <https://learn.365datascience.com/courses/> Free Till Nov 20
