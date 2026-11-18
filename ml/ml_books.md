@@ -1,10 +1,12 @@
 ## ML books
 
-<https://mlsysbook.ai/>
-<https://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf>
+<https://mlsysbook.ai/>  
+<https://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf>  
 <https://github.com/harvard-edge/cs249r_book>
 
 <https://arxiv.org/abs/2409.02668> Introduction to Machine Learning
+
+<https://anpenta.github.io/applied-ml-science-engineering-book/>
 
 <https://arxiv.org/abs/2511.18538> From Code Foundation Models to Agents and Applications: A Comprehensive Survey and Practical Guide to Code Intelligence
 
