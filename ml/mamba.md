@@ -6,6 +6,8 @@
 
 <https://github.com/amitshekhariitbhu/llm-inference-engineering>
 
+<https://aswinis94.github.io/ai-learning-tube/>
+
 <https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
 
 <https://learn.365datascience.com/courses/> Free Till Nov 20
