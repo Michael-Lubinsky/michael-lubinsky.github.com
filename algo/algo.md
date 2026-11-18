@@ -8,6 +8,8 @@
 
 <https://computablesecrets.com/videos>
 
+<https://antonz.org/probabilistic-data-structures/> Probabilistic Data Structure in Go
+
 ### Python
 <https://github.com/TheAlgorithms>  <https://the-algorithms.com> <https://thealgorithms.github.io/Python/>
 
