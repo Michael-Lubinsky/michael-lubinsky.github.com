@@ -1,4 +1,6 @@
 
+<https://arxiv.org/abs/2510.18203>
+
 ## Fourier Series vs. Fourier Transform
 
 They're two sides of the same coin — the Fourier Transform is essentially the **generalization of the Fourier Series to non-periodic functions**.
