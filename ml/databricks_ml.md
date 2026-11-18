@@ -1,5 +1,7 @@
 # Machine Learning Tools in Databricks
 
+<https://www.databricks.com/blog/tabular-foundation-models-databricks-ai-runtime>
+
 <https://medium.com/@hiydavid/genie-one-my-daily-ai-coworker-2579b0903e57>
 
 ## Core ML Capabilities
