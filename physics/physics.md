@@ -1,5 +1,7 @@
 ## Physics
 
+<https://physin.org/>
+
 <https://curtjaimungal.substack.com/>
 
 <https://www.youtube.com/@acephysics123/courses>
