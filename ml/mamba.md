@@ -8,6 +8,9 @@
 
 <https://aswinis94.github.io/ai-learning-tube/>
 
+Data Drift , Concept Drift
+<https://habr.com/ru/companies/ingos_it/articles/1109460/>
+
 <https://claude.ai/artifact/DX5BPM49AaqxQMBjBEFDQz?sk=2cdNajkOlsXShq51gvpJEA>  study course on The RLHF Book by Nathan Lambert 
 
 <https://learn.365datascience.com/courses/> Free Till Nov 20
