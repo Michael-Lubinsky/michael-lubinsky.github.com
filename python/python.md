@@ -2,6 +2,7 @@
 check syntax  
 python -m py_compile my_script.py
 
+<https://kobzol.github.io/rust/python/2023/05/20/writing-python-like-its-rust.html>
 
 <https://habr.com/ru/companies/yandex_praktikum/articles/940622/>
 
