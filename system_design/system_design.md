@@ -38,6 +38,8 @@ AI-powered streaming analytics platform that answers business questions in plain
 
 <https://github.com/braedonsaunders/codeflow>
 
+<https://internals-for-interns.com/>
+
 ## Plot Mermaid
 
 <https://pele.run/>
