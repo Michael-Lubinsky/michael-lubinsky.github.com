@@ -10,7 +10,9 @@
 <https://www.youtube.com/watch?v=nKmYjFoiuYM>
 
 ### Statistical Rethinking 2026 by Richard McElreath
-<https://www.youtube.com/playlist?list=PLDcUM9US4XdMD5hEU5uinyBYFFPXMYBfn>
+<https://www.youtube.com/playlist?list=PLDcUM9US4XdPMtSV81e1R_4B6NugQBvTP> Section A
+
+<https://www.youtube.com/playlist?list=PLDcUM9US4XdMD5hEU5uinyBYFFPXMYBfn> Section B
 
 <https://leanpub.com/TOBoML2> The Orange Book of Machine Learning - Green edition
 
