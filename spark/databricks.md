@@ -287,7 +287,34 @@ One documentation mismatch: although you see a **Software Artifacts** tab, the c
 
 The links above use the AWS documentation edition; availability and preview status can vary by cloud and workspace.
  
+Each tab lists one kind of Unity Catalog object stored in that schema. Every object has a three-part name, `catalog.schema.object`, and its access is controlled by grants on the catalog and schema. Tables, Volumes, Models and Functions are long-standing, stable features. The other six are newer and some are still in Beta or Preview, so your workspace may not show all of them.
 
+| Tab | What it holds | Status | Official docs |
+|---|---|---|---|
+| **Tables** | Tables, views, materialized views and streaming tables: your structured data, usually Delta. | Generally available | [Tables](https://docs.databricks.com/aws/en/tables/) |
+| **Flows** | Lakeflow (formerly DLT) pipeline flows that load data into a target table, now managed as their own objects. Permissions are `CREATE FLOW`, `READ FLOW`, `REFRESH FLOW` and `WRITE FLOW`. | **Beta** since Nov 12, 2026. You join it through your Databricks account team. | [Pipeline flows](https://docs.databricks.com/aws/en/ldp/concepts/flows) · [Nov 2026 release notes](https://docs.databricks.com/aws/en/release-notes/product/2026/november) |
+| **Volumes** | Files that aren't tables, such as images, CSVs, PDFs and wheels, at paths like `/Volumes/cat/schema/vol/...`. | Generally available | [Volumes](https://docs.databricks.com/aws/en/volumes/) |
+| **Software Artifacts** | Container images from **Artifact Registry**, with tags and digests. Who can publish or pull them is controlled by Unity Catalog permissions. | Newer feature | [Artifact Registry](https://docs.databricks.com/aws/en/artifact-registry/) |
+| **Models** | ML models and models registered with MLflow, with versions and aliases such as `@champion`. | Generally available | [Model lifecycle in UC](https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle/) |
+| **Functions** | SQL and Python functions (UDFs) that you can call in queries or use as tools for AI agents. | Generally available | [UDFs in Unity Catalog](https://docs.databricks.com/aws/en/udf/unity-catalog) |
+| **Secrets** | Sensitive values such as API keys and passwords, used in code without showing the value. Permissions are `READ`, `WRITE` and `REFERENCE SECRET`. A schema can also read its secrets from an outside secret manager, in which case they're read-only in Databricks. | Newer feature | [Secrets in Unity Catalog](https://docs.databricks.com/aws/en/security/secrets/unity-catalog-secrets) |
+| **Services** | AI endpoints, created with `CREATE SERVICE`: model services, model provider services, **MCP services** (outside MCP servers) and **agent services**. You can't create them in SQL; use the UI or the REST API. | Some parts are Beta (Unity Gateway) | [MCP Services](https://docs.databricks.com/aws/en/ai-gateway/register-mcp-service) · [Agent Services](https://docs.databricks.com/aws/en/ai-gateway/agent-services) |
+| **Skills** | Agent skills: folders with a `SKILL.md` that you publish to a schema. Agents and coding tools find them through the Databricks Skills MCP server or the `ug` CLI. | **Preview**. An admin turns it on from the Previews page. | [Skills in Unity Gateway](https://docs.databricks.com/aws/en/agents/uc-skills/) · [Create & share skills](https://docs.databricks.com/aws/en/agents/uc-skills/create-share-uc-skills) |
+| **Connections** | Saved connection details (host and credentials) for outside systems, such as HTTP APIs, MCP servers and federated databases. MCP and agent services use these. Connections can now be created at the schema level, which needs `CREATE CONNECTION` on the schema. | Schema-level HTTP connections are generally available | [UC connections](https://docs.databricks.com/aws/en/connect/uc-connections) · [HTTP connections](https://docs.databricks.com/aws/en/query-federation/http) |
+
+How the newer tabs fit together:
+- A **Connection** stores how to reach an outside system.
+- **Services** (MCP or agent) are built on top of that connection.
+- **Functions**, **Services** and **Skills** are what AI agents use as tools.
+- **Secrets** hold the credentials they all need.
+
+For the full list of object types and their permissions, see [Securable objects reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/securable-objects) and [Privileges reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/access-control/privileges-reference).
+
+**Caveats:**
+- The links point to the AWS docs. Azure and GCP have matching pages; replace `/aws/` in the URL with `/azure/` or `/gcp/`.
+- I couldn't find Databricks' own documentation of this exact tab layout, only of the objects behind each tab. The descriptions above come from the docs for those objects.
+- The Beta and Preview pages change often, so check them before relying on specific steps.
+- To get Beta or Preview features turned on, or to get permissions in TRI's workspace, ask your Databricks workspace admin or TRI IT.
 
 ### virtual-learning-festival-9-april-30-apri
 
