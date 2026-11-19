@@ -10,7 +10,8 @@
 
 <https://habr.com/ru/articles/1100718/>
 
-<https://habr.com/ru/articles/1091290/> Управление памятью в контейнерах STL
+<https://habr.com/ru/articles/1091290/> Управление памятью в контейнерах STL 
+<https://habr.com/ru/articles/1102204/> Управление памятью в контейнерах STL continued
 
 <https://www.youtube.com/@tilir/videos> Konstantin Vladimirov
 
