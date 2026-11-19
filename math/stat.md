@@ -4,10 +4,13 @@
 
 <https://habr.com/ru/articles/1061846/> Все, что нужно знать про построение точечных оценок
 
-High-Dimensional Probability. Roman Vershinin 
+### High-Dimensional Probability. Roman Vershinin 
 <https://www.math.uci.edu/~rvershyn/papers/HDP-book/HDP-2.pdf>
 
 <https://www.youtube.com/watch?v=nKmYjFoiuYM>
+
+### Statistical Rethinking 2026 by Richard McElreath
+<https://www.youtube.com/playlist?list=PLDcUM9US4XdMD5hEU5uinyBYFFPXMYBfn>
 
 <https://leanpub.com/TOBoML2> The Orange Book of Machine Learning - Green edition
 
