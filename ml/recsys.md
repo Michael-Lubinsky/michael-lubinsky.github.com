@@ -4,6 +4,8 @@
 
 <https://thepracticaldatascientist.substack.com/p/introduction-to-recommendation-systems>
 
+<https://github.com/jyotipmahes/ML-Interview-Prep/tree/main/System_Design/01_Recommendation_Systems>
+
 <https://habr.com/ru/companies/sberbank/articles/1076666/>
 
 <https://habr.com/ru/companies/avito/articles/1090584/>
