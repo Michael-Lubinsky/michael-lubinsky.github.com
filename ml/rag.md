@@ -1,7 +1,10 @@
 ## RAG
 <img width="800" height="1063" alt="image" src="https://github.com/user-attachments/assets/9e63c501-e872-49d6-a304-770263a99ee5" />
 
-<https://habr.com/ru/articles/1101266/>
+<https://habr.com/ru/articles/1101266/> self‑hosted RAG‑система с LangGraph‑агентом на локальных LLM
+
+<https://habr.com/ru/companies/raft/articles/1109666/> BM25 и RAG
+
 
 <https://habr.com/ru/companies/selectel/articles/1106740/>
 
