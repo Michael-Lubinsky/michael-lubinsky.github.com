@@ -8,7 +8,14 @@
 
 <https://computablesecrets.com/videos>
 
-<https://antonz.org/probabilistic-data-structures/> Probabilistic Data Structure in Go
+ ### Probabilistic Data Structures
+
+<https://antonz.org/probabilistic-data-structures/> Probabilistic Data Structures in Go
+
+CppCon talk: Fantastic Algorithms and Where To Find Them & the related GitHub Repo:
+<https://youtu.be/YA-nB2wjVcI>
+
+<https://github.com/CppCon/CppCon2017>
 
 ### Python
 <https://github.com/TheAlgorithms>  <https://the-algorithms.com> <https://thealgorithms.github.io/Python/>
