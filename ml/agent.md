@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1108170/> OpenCode
 
+<https://habr.com/ru/companies/selectel/articles/1109694/>
+
 <https://huggingface.co/learn/agents-course/en/unit1/introduction>
 
 ```python
