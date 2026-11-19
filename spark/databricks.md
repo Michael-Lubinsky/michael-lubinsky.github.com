@@ -251,8 +251,41 @@ https://lnkd.in/gs-JGDNz
 ▸ Microsoft DP-600: Fabric Analytics Solution Expert
 ▸ Databricks Data Engineer Associate
 
- 
 
+## In Databricks GUI under given schema there are following tables:
+
+- Tables
+- Flows
+- Volumes
+- Software Artifacts
+- Models
+- Functions
+- Secrets
+- Services
+- Skills
+- Connections
+
+ 
+Those tabs group the different **data, software, and AI assets associated with a schema**. A Databricks schema can contain much more than tables; Unity Catalog controls access to these assets. See the [Unity Catalog object reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/securable-objects).
+
+| Tab | What it contains and when you use it | Official documentation |
+|---|---|---|
+| **Tables** | Structured datasets organized into rows and columns, queried using SQL or Spark. Examples: customers, orders, transactions. Tables can be **managed** by Databricks, **external**, or **foreign** tables referencing another system. | [Tables overview](https://docs.databricks.com/aws/en/tables/table-overview) |
+| **Flows** | Pipeline queries that incrementally load and transform data into a target streaming table or materialized view. Examples: append new events or apply change data capture (CDC). A flow belongs to a Lakeflow pipeline; Unity Catalog lets you grant permissions on individual flows. **Beta.** | [Flows in Unity Catalog](https://docs.databricks.com/aws/en/data-governance/unity-catalog/flows) |
+| **Volumes** | Governed storage for **files**: CSVs, JSON, PDFs, images, libraries, and other files. Use a volume when you need file access, such as `/Volumes/catalog/schema/volume/file.csv`. Volumes can be managed or external. | [Volumes overview](https://docs.databricks.com/aws/en/files/volumes) |
+| **Software Artifacts** | Container images stored in **Artifact Registry**, with versions identified by tags or immutable digests. For example, a Docker image containing your application and its dependencies for a supported Databricks workload. **Public Preview.** | [Artifact Registry](https://docs.databricks.com/aws/en/artifact-registry/) |
+| **Models** | Registered machine learning and AI models, managed through MLflow and Unity Catalog. You can track model versions, assign aliases, manage permissions, and inspect lineage. Example: a versioned fraud detection model. | [Manage model lifecycle in Unity Catalog](https://docs.databricks.com/aws/en/machine-learning/manage-model-lifecycle) |
+| **Functions** | Registered, reusable functions that other queries or workloads can call. Examples: calculate a business metric, normalize a value, or mask an email address. Functions can return a single value or a set of rows. | [Unity Catalog functions](https://docs.databricks.com/aws/en/udf/unity-catalog) |
+| **Secrets** | Sensitive values such as passwords, API keys, and tokens, governed individually through Unity Catalog. Applications and notebooks can retrieve authorized secrets without hardcoding them. These are separate from workspace-level secret scopes. | [Secrets in Unity Catalog](https://docs.databricks.com/aws/en/security/secrets/unity-catalog-secrets) |
+| **Services** | Governed, callable AI assets: **model services**, **model provider services**, **MCP services**, and **agent services**. Use them to control who can invoke models, agents, or tools exposed through Model Context Protocol (MCP). These service types are currently **Beta**. | [Service object reference](https://docs.databricks.com/aws/en/data-governance/unity-catalog/securable-objects#service) |
+| **Skills** | Published instruction packages that teach an AI agent how to perform a task. A skill contains a `SKILL.md` file and optional supporting resources. Examples: your team’s SQL conventions or an incident investigation runbook. Unity Catalog governs discovery and access. **Beta.** | [Skills support in Unity Gateway](https://docs.databricks.com/aws/en/agents/uc-skills) |
+| **Connections** | Governed endpoint and authentication settings for accessing external systems. Schema-level HTTP connections, for example, let code call external REST APIs and support MCP services without embedding credentials in code. Connections can also exist at metastore level. | [External HTTP connections](https://docs.databricks.com/aws/en/query-federation/http), [Connection API and schema scope](https://docs.databricks.com/api/uc-connections/v1/connection) |
+
+For example, one project schema could hold an **orders table**, a **flow** that updates it, a **volume** of incoming files, a prediction **model**, reusable **functions**, and the **secrets/connections** needed to access external APIs.
+
+One documentation mismatch: although you see a **Software Artifacts** tab, the current Artifact Registry documentation still says Catalog Explorer does not provide an image interface. That tab may be ahead of the documented UI support; the documentation directs users to the Software Artifacts API for discovery. [Artifact Registry limitations](https://docs.databricks.com/aws/en/artifact-registry/#limitations)
+
+The links above use the AWS documentation edition; availability and preview status can vary by cloud and workspace.
  
 
 
