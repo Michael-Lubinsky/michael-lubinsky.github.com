@@ -14,6 +14,9 @@
 
 How LLM  serving works: <https://www.youtube.com/watch?v=vM3kzJIPvvw>  vLLM and SGLang
 
+<https://www.youtube.com/watch?v=I2QhfZ0aVmk>  LLM Inference Engines 
+
+
 <https://github.com/kvfrans/lmpo> Language Model Policy Optimization
 
 ### Pydantic AI 
