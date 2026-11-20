@@ -22,6 +22,8 @@
 
 <https://habr.com/ru/companies/bothub/articles/1067658/> KV cache
 
+<https://habr.com/ru/articles/1110210/>
+
 <https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
 
 <https://jax-ml.github.io/scaling-book/>
