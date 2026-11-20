@@ -11,6 +11,8 @@ More advanced methods like BERT, GPT, and others use contextual embeddings, wher
 
 ##  Attention 
 
+<https://www.linkedin.com/pulse/multi-head-attention-understanding-token-transformers-pooja-gupta-ibrxc/>
+
 <img width="439" height="381" alt="image" src="https://github.com/user-attachments/assets/1c0570e6-b304-4a1c-bbe3-148abd6d2973" />
 
 <https://medium.com/data-science/attn-illustrated-attention-5ec4ad276ee3>
