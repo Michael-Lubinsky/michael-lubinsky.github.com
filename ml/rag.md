@@ -3,6 +3,8 @@
 
 <https://habr.com/ru/articles/1101266/> self‑hosted RAG‑система с LangGraph‑агентом на локальных LLM
 
+<https://habr.com/ru/articles/1110286/>
+
 <https://habr.com/ru/companies/raft/articles/1109666/> BM25 и RAG
 
 
