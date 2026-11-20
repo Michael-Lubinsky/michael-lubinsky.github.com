@@ -6,6 +6,8 @@
 
 <https://habr.com/ru/companies/bothub/articles/1108490/>
 
+<https://habr.com/ru/articles/1110086/>
+
 <https://klaviyo.tech/inside-the-harness-deterministic-systems-476413ae913b>
 
 <https://habr.com/ru/articles/1105078/>
