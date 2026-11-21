@@ -3,12 +3,16 @@
 
 <https://habr.com/ru/articles/1101266/> self‑hosted RAG‑система с LangGraph‑агентом на локальных LLM
 
+https://habr.com/ru/articles/1110658/ локальный RAG на 72 000 чанков в SQLite
+
 <https://habr.com/ru/articles/1110286/>
 
 <https://habr.com/ru/companies/raft/articles/1109666/> BM25 и RAG
 
 
 <https://habr.com/ru/companies/selectel/articles/1106740/>
+
+https://habr.com/ru/companies/otus/articles/1106704/
 
 <https://github.com/jamwithai/production-agentic-rag-course>
 
