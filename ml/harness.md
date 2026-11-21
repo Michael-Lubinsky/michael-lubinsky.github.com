@@ -8,6 +8,8 @@
 
 <https://habr.com/ru/articles/1110086/>
 
+<https://arxiv.org/pdf/2609.00006>
+ 
 <https://klaviyo.tech/inside-the-harness-deterministic-systems-476413ae913b>
 
 <https://habr.com/ru/articles/1105078/>
