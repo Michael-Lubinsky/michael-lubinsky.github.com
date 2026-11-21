@@ -1,3 +1,8 @@
+## Spark Config and Performance
+
+<img width="800" height="1000" alt="image" src="https://github.com/user-attachments/assets/c9745cb8-ec71-447b-a289-7afdf9364bec" />
+
+
 <https://www.canadiandataguy.com/p/spark-join-strategies>
 
 <https://medium.com/@omkarspatil2611/memory-management-in-apache-spark-3ae1f4db9d2b>
