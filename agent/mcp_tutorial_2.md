@@ -1,4 +1,4 @@
-# Learn MCP (Model Context Protocol) with Python on MacBook
+# Learn MCP  with Python on MacBook (part 2)
 
 Let implement a small MCP server and client in Python,   
 run them locally on your MacBook, and inspect the messages they exchange.
