@@ -319,7 +319,7 @@ Postgres + Agent
 
 <https://habr.com/ru/articles/1033136/>
 
-<https://habr.com/ru/articles/1019652/> MCP
+
 
 <https://habr.com/ru/articles/1032932/> 
 
@@ -593,13 +593,7 @@ This isn't a zero-sum game or a choice of one over the other. They solve differe
 
 <https://news.ycombinator.com/item?id=47712718>
 
-### MCP
 
-<https://habr.com/ru/articles/1005028/>
-
-<https://habr.com/ru/articles/1006756/>
-
-<https://habr.com/ru/articles/1006756/>
 
 
 
