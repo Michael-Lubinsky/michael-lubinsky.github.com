@@ -1,0 +1,1121 @@
+## Agents = LLM + Harness
+
+<https://habr.com/ru/articles/1108170/> OpenCode
+
+<https://habr.com/ru/companies/selectel/articles/1109694/>
+
+<https://huggingface.co/learn/agents-course/en/unit1/introduction>
+
+```python
+    messages = [user_message(task)]    
+         
+    while budget_available():    
+        response = LLM(messages, tools)    
+        messages.append(response)     
+        if not response.tool_calls:    
+            break    
+        outputs = tool_executor.apply(response.tool_calls)    
+        messages.extend(outputs)
+```
+This is the core loop of a **ReAct** agent ("Reason + Act").  
+The LLM thinks, picks tools to call, sees their results, and repeats until it can answer without calling any more tools.
+
+### Line by line
+
+```python
+messages = [user_message(task)]
+```
+The conversation history starts with just the user's request. This list is the agent's whole memory. The LLM is stateless, so everything it knows comes from what you send back to it each turn.
+
+```python
+while budget_available():
+```
+This is a safety limit, such as a maximum number of iterations, tokens, dollars or seconds. Without it, a model that keeps calling tools would loop forever and run up costs.
+
+```python
+    response = LLM(messages, tools)
+```
+Each turn sends the full history plus the **tool schemas** (each tool's name, description and JSON parameters). The model returns either:
+- **a final answer** (just text), or
+- **tool calls**, such as `search(query="BigQuery pricing")`, usually with some reasoning text alongside.
+
+```python
+    messages.append(response)
+```
+The model's reply is added to the history. This matters even when the reply is a tool call: on the next turn, the model needs to see what it asked for so it can match each result to its request (by `tool_call_id` in most APIs).
+
+```python
+    if not response.tool_calls:
+        break
+```
+**This is the stop condition.** If the model didn't ask for any tools, it has decided it's done, and `response` holds the final answer.
+
+```python
+    outputs = tool_executor.apply(response.tool_calls)
+    messages.extend(outputs)
+```
+Your own code runs the requested tools (an API call, SQL query, file read and so on) and adds each result to the history as a `tool` message. It's `extend` rather than `append` because the model can request several tools in one turn, and each produces its own result message. Then the loop goes back to the top and the LLM sees the results.
+
+### Example trace
+
+| Turn | `messages` gains | Meaning |
+|---|---|---|
+| 0 | user: "What's the weather in San Jose in °F?" | the task |
+| 1 | assistant: call `get_weather("San Jose")` | Reason → Act |
+| 1 | tool: `{"temp_c": 18}` | Observation |
+| 2 | assistant: call `convert(18, "C", "F")` | Reason → Act |
+| 2 | tool: `64.4` | Observation |
+| 3 | assistant: "It's about 64°F." (no tool calls) | `break` |
+
+### What a production version adds
+
+- **Error handling:** if a tool raises an exception, send the error text back as the tool result instead of crashing. Models are good at recovering from that ("file not found, let me try another path").
+- **Hitting the budget:** right now, running out of budget exits silently with no final answer. You usually want to detect that and either force one last call with no tools, or report that the agent didn't finish.
+- **Context growth:** `messages` grows every turn, and large tool outputs fill the context window quickly. Common fixes are truncating outputs, summarizing older turns, or keeping only the last N tool results.
+- **Parallel tools:** `apply` can run independent tool calls at the same time.
+- **Approval:** for dangerous tools (deleting data, sending email), add a human confirmation step before `apply` runs them.
+
+Most agent frameworks (LangGraph, the OpenAI and Anthropic agent SDKs, smolagents) are built around this same loop.
+
+<https://habr.com/ru/companies/otus/articles/1101906/>
+
+<https://habr.com/ru/companies/bothub/articles/1105102/>
+
+<https://habr.com/ru/companies/otus/articles/1095784/>
+
+<https://habr.com/ru/articles/1096976/>
+
+<https://habr.com/ru/articles/1097880/>
+
+<https://github.com/ashishpatel26/500-AI-Agents-Projects>
+
+<https://github.com/aliyun/ai-agent-handbook/blob/main/README_EN.md>
+
+<https://machinelearningmastery.com/ai-agent-benchmarks-explained-swe-bench-gaia-webarena-and-more/>
+
+
+<https://www.youtube.com/watch?v=H5o1P8RMiMw> 
+Build Your Own Agentic Harness in Python 
+
+<https://www.reddit.com/r/AI_Agents/>
+
+<https://habr.com/ru/articles/1093078/>
+
+<https://agentic-coding-guide.netlify.app/>
+
+<https://www.udacity.com/course/agentic-ai--nd900> 
+
+<https://github.com/FareedKhan-dev/production-grade-agentic-system>
+
+Agent coding in Databricks
+<https://medium.com/@sreedeepsinha/genie-code-is-an-agent-harness-using-it-like-a-prompt-box-is-costing-you-64d0de8085a2>
+
+<https://en.wikipedia.org/wiki/Simplified_Technical_English> ask LLM use ASD-STE100 Simplified Technical English (STE) to save tokens
+
+How to Enable Concise ModeType:
+
+/config inside Claude Code, navigate to output style, and select Concise.  
+Alternatively, add "outputStyle": "Concise" directly to your settings.json file.
+
+
+## Agents Management
+<https://agentmgmt.dev/>. 
+<https://news.ycombinator.com/item?id=49942434> 
+
+
+<https://github.com/manaflow-ai/cmux>  macOS terminal with vertical tabs and notifications for AI coding agents
+
+<https://paseo.sh/> <https://www.onorca.dev/> <https://herdr.dev/>
+
+
+<https://habr.com/ru/articles/1068168/>
+
+<https://habr.com/ru/articles/1068024/>
+
+<https://iitog.ru/>
+
+<https://www.facebook.com/theaiempire/>
+
+
+https://developers.openai.com/api/docs/guides/agents-api/overview
+
+#### Python script that makes an API call to Anthropic, prints what it gets back and logs how many tokens (the unit a context window is measured in) it used.
+
+<https://heymeraki.substack.com/p/aie_10-building-it>
+
+Required: Anthropic API key (platform.claude.com, you will need to add a small credit balance as the free tier does not cover API access)
+```
+mkdir ai-engineering
+cd ai-engineering
+python3 -m venv venv
+source venv/bin/activate
+pip install anthropic python-dotenv
+```
+anthropic is the official Python library for talking to Claude.
+
+python-dotenv reads your API key from a file so you never have to hardcode it in your script.
+
+Create a .env file and add your key:
+
+ANTHROPIC_API_KEY=your_key_here
+
+
+```python
+from dotenv import load_dotenv
+import os
+from anthropic import Anthropic
+
+load_dotenv()
+
+client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+response = client.messages.create(
+    model="claude-haiku-4-5",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "What is a large language model? Answer in two sentences."}
+    ]
+)
+
+text = response.content[0].text
+input_tokens = response.usage.input_tokens
+output_tokens = response.usage.output_tokens
+
+print("Response:")
+print(text)
+print()
+print(f"Input tokens: {input_tokens}")
+print(f"Output tokens: {output_tokens}")
+print(f"Total tokens: {input_tokens + output_tokens}")
+```
+Output
+```
+Response:
+A large language model (LLM) is an AI system trained on vast amounts 
+of text data to understand and generate human language. It uses deep 
+learning to predict and produce text by identifying patterns in the 
+data it learned from.
+
+Input tokens: 19
+Output tokens: 51
+Total tokens: 70
+```
+## Harness
+<https://lilianweng.github.io/posts/2026-07-04-harness/>
+
+<https://vercel.com/academy/build-ai-agent-harness>
+
+<https://addyosmani.com/blog/agent-harness-engineering/>
+
+<https://www.youtube.com/watch?v=GrNbuWWJYiI>  Learn AI Agent Harness & Loop Engineering In 19 Min 
+
+<https://trustedagents.manzia.com/articles/research/ai-agentic-landscape-2026>
+
+
+<https://habr.com/ru/companies/veai/articles/1061254/> Как работать с ИИ-агентом предсказуемо: SDD, TDD, самопроверка и субагенты
+
+<https://habr.com/ru/companies/cloud_ru/articles/1065290/> Agent long term Memory
+
+<https://habr.com/ru/articles/1061696/>  Четыре месяца с Claude Code: что в итоге осталось лежать в .claude/
+
+<https://habr.com/ru/articles/1062238/> Бесплатные API для 150+ ИИ-моделей
+
+<https://www.aihero.dev/grill-with-docs>  interviews you relentlessly about a plan or design, one question at a time, until you and the agent reach a shared understanding — and it writes the vocabulary and decisions down as you go.
+
+## BMAD
+<https://docs.bmad-method.org/>
+
+<https://github.com/bmad-code-org/BMAD-METHOD>
+
+## Hermes
+<https://habr.com/ru/companies/amvera/articles/1061646/>
+<https://github.com/NousResearch/hermes-agent>  Hermes
+<https://github.com/0xNyk/awesome-hermes-agent>
+
+
+
+<https://openrouter.ai/apps>
+
+<https://github.com/Mathews-Tom/Agentic-Design-Patterns>
+
+<https://github.com/AnkunHuang/Agentic_Design_Patterns>
+
+ 
+<https://fossy.dev/msitarzewski/agency-agents>
+
+<https://habr.com/ru/articles/1050736/>
+
+<https://www.kdnuggets.com/10-agentic-ai-frameworks-you-should-know-in-2026?>
+
+<https://habr.com/ru/articles/1051166/> Tools, Hooks, Skills, MCP — что есть что?
+
+<https://habr.com/ru/companies/otus/articles/1054590/> sub agent 
+
+<https://belderbos.dev/blog/build-minimal-ai-agent-python/>
+<https://blog.adarshd.dev/ai/posts/building-ai-agents-in-python/>
+
+### Claude/Codex skill for Geospatial data 
+<https://github.com/dekart-xyz/geosql>  
+<https://news.ycombinator.com/item?id=48829242>
+
+### Text to SQL
+
+<https://habr.com/ru/articles/1061746/>
+<https://habr.com/ru/articles/1074038/>
+<https://arxiv.org/abs/2609.02115v1>
+<https://github.com/pseudosavant/sql-agent-cli>
+
+<https://nchammas.com/writing/custom-query-language-design#why-not-use-an-llm>
+
+
+
+<https://news.ycombinator.com/item?id=49013995>
+
+<https://github.com/malloydata/malloyyo> MCP. AI + a Malloy semantic layer + your analytical database = consistent results. Measures, dimensions, and joins are defined once, correctly; the AI composes queries against the model instead of writing SQL
+
+
+Postgres + Agent
+<https://www.reddit.com/r/PostgreSQL/comments/1tyewxr/how_an_ai_agent_with_50_tools_queries_postgresql/>
+
+<https://habr.com/ru/articles/1051346/>  Аналитику, которую нельзя выразить в SQL запрос, выносить в Python в песочницу. И описывать данные и схему так, чтобы модель не гадала, что внутри. Эти три вещи мы и зашили в свой MCP-сервер: фронт на Next.js (ai-sdk), бэкенд на FastMCP, под капотом DuckDB, модель ходит в данные только через инструменты.
+
+<https://habr.com/ru/articles/1047230/>
+
+<https://habr.com/ru/companies/postgrespro/articles/1045532/>
+
+<https://habr.com/ru/companies/cloud_ru/articles/1045728/>
+
+<https://news.ycombinator.com/item?id=48413629>  SDD , harness, etc
+
+<https://news.ycombinator.com/item?id=48406174>
+
+<https://news.ycombinator.com/item?id=48449187>  tools you have made for yourself since the advent of AI?
+
+<https://github.com/DrCatHicks/learning-opportunities>
+
+<https://www.youtube.com/watch?v=V9j4smzlVCw> Book and repo: Crack Any Codebase with AI: Zachary Huang on Understanding Code You Didn’t Write
+
+<https://habr.com/ru/companies/doubletapp/articles/1036872/>
+
+<https://habr.com/ru/companies/svoi_ru/articles/1043188/>
+
+<https://www.youtube.com/watch?v=VctYHtCap3o>  Agents Week 2026 | Лекция 1.2 2026 (ru)
+
+<https://www.youtube.com/watch?v=RqM3G3STkGE>  Agents Week | Лекция 4 | 2026 (ru)
+
+<https://www.youtube.com/watch?v=sNemTIFlz08> Agents Week 2026 | Лекция 5.1 
+
+<https://www.youtube.com/watch?v=UxgjgvI_wKY> Agents Week 2026 | Лекция 5.2 
+
+<https://habr.com/ru/companies/netologyru/articles/1034130/>
+
+<https://habr.com/ru/articles/1023316/>  Что такое Harness?
+
+<https://habr.com/ru/articles/1028260/> обширный материал по Context Engineering
+
+<https://habr.com/ru/articles/1025428/> AI-агент : Python, RAG и внешние инструменты через MCP 
+
+<https://habr.com/ru/articles/1031440/>
+
+<https://habr.com/ru/articles/1033136/>
+
+<https://habr.com/ru/articles/1019652/> MCP
+
+<https://habr.com/ru/articles/1032932/> 
+
+<https://habr.com/ru/articles/1035300/> метрики характерные для почти любой агентской системы
+
+<https://habr.com/ru/articles/1043198/> Как превратить стохастический ИИ в детерминированную машину
+
+<https://agenticeng.ru/>
+
+## Claude question: which skills, tools and MCP are available in this session?
+
+
+###  Skills (via /skill-name or Skill tool)
+```
+  ┌──────────────────────────┬─────────────────────────────────────────────────────────┐
+  │          Skill           │                         Purpose                         │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ update-config            │ Configure Claude Code settings.json, hooks, permissions │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ keybindings-help         │ Customize keyboard shortcuts                            │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ simplify                 │ Review changed code for quality/efficiency              │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ fewer-permission-prompts │ Add allowlist to reduce permission prompts              │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ loop                     │ Run a prompt on a recurring interval                    │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ schedule                 │ Schedule recurring remote agents (cron jobs)            │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ claude-api               │ Build/debug Anthropic SDK apps                          │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ init                     │ Initialize CLAUDE.md                                    │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ review                   │ Review a pull request                                   │
+  ├──────────────────────────┼─────────────────────────────────────────────────────────┤
+  │ security-review          │ Security review of pending changes                      │
+  └──────────────────────────┴─────────────────────────────────────────────────────────┘
+```
+### Tools (built-in)
+
+  File & Shell: Read, Edit, Write, Bash
+
+  Agents: Agent (with subtypes: claude, claude-code-guide, Explore, general-purpose, Plan,
+  statusline-setup)
+
+  UI/Flow: AskUserQuestion, Skill, ToolSearch
+
+  #### Deferred (require ToolSearch to load schema before use):
+  CronCreate/Delete/List, EnterPlanMode/ExitPlanMode, EnterWorktree/ExitWorktree, Monitor,
+  NotebookEdit, PushNotification, RemoteTrigger, TaskCreate/Get/List/Output/Stop/Update, WebFetch,
+  WebSearch
+
+  Misc: ShareOnboardingGuide, ScheduleWakeup
+
+ ### MCP Servers
+
+  Three Google integrations (all require OAuth authentication):   
+  - mcp__claude_ai_Gmail — Gmail read/send
+  - mcp__claude_ai_Google_Calendar — Calendar access
+  - mcp__claude_ai_Google_Drive — Drive file access
+
+
+
+
+## Code search - better then grep, saves tokens
+
+<https://habr.com/ru/articles/1051504/>
+
+<https://habr.com/ru/articles/1052776/> graphlens
+
+<https://habr.com/ru/articles/1049814/>
+
+<https://habr.com/ru/articles/1050204/>
+
+<https://habr.com/ru/articles/1046672/>
+
+<https://habr.com/ru/articles/1042930/>
+
+<https://habr.com/ru/articles/1038474/> CodeGraph
+
+<https://habr.com/ru/articles/1031878/> SocratiCode
+
+<https://maki.sh/>
+
+<https://github.com/lightonai/next-plaid/tree/main/colgrep>
+
+<https://github.com/DeusData/codebase-memory-mcp>
+
+How does it compare to _context-mode_ or _serina_ that are both well established now?
+
+<https://github.com/MinishLab/semble>  Code Search for Agents. Uses ~98% fewer tokens than grep+read
+
+<https://github.com/defendend/Claude-ast-index-search>
+
+### Caveman - saves tokens
+ https://github.com/JuliusBrussee/caveman/tree/main
+
+## Hooks 
+<https://docs.claude.com/en/docs/claude-code/hooks>
+<https://code.claude.com/docs/ru/hooks>
+<https://habr.com/ru/companies/rostelecom/articles/1028570/>
+<https://habr.com/ru/articles/1062206/>
+
+Хук — это скрипт, объявленный в .claude/settings.json проекта.   
+Он вешается на событие жизненного цикла:   
+PreToolUse (перед вызовом инструмента, может запретить),   
+PostToolUse (после),   
+Stop (агент завершает ход, может не пустить) и ещё десяток других.  
+На stdin скрипт получает JSON с деталями события, дальше два способа вмешаться:
+
+exit code 2 — жёсткий блок, stderr уходит агенту как причина;
+
+exit 0 + JSON в stdout — структурированное решение: для PreToolUse это permissionDecision: "deny" с причиной, для Stop — decision: "block", и любой хук может добавить агенту контекст через additionalContext.
+
+Конфигурация выглядит так:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/gate-commit.sh" }]
+    }],
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/track-test-edit.sh" }]
+    }],
+    "Stop": [{
+      "matcher": "*",
+      "hooks": [{ "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/gate-stop.sh" }]
+    }]
+  }
+}
+```
+<https://habr.com/ru/articles/1087300/>
+```
+хуки — это механизм, который позволяет вклиниться в жизненный цикл агента своим кодом.
+Ваш shell-скрипт (или HTTP-эндпоинт, или вспомогательный sub-agent) исполняется в строго заданные моменты:
+старт сессии, отправка prompt, до tool call, после tool call, запуск sub-agent, остановка,
+перед компактификацией контекста, завершение сессии.
+В одних точках вы можете только наблюдать;
+в других — заблокировать действие агента до того, как оно произойдёт.
+```
+
+В Claude Code хуки описываются под ключом hooks в .claude/settings.json (project-level, едет в git)  
+или ~/.claude/settings.json (global).
+Минимальный конфиг:
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/log-prompt.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+<https://magazine.sebastianraschka.com/p/components-of-a-coding-agent>
+
+<https://www.youtube.com/watch?v=ESBMgZHzfG0> AI Periodic table
+
+<https://buildyourowncodingagent.com/>
+
+<https://docs.fabro.sh/getting-started/why-fabro>
+
+<https://ecc.tools/>
+
+<https://vikulin.ai/library/tpost/ai_agent_architecture>
+
+<https://github.com/gepa-ai/gepa>
+
+<https://medium.com/@durgaktkm/building-agentic-ai-applications-in-2026-872aefe192f6>
+
+<https://habr.com/ru/articles/1013330/>
+
+<https://habr.com/ru/articles/1013272/>
+
+<https://github.com/garrytan/gstack> 
+
+<https://habr.com/ru/companies/ostrovok/articles/1008652/>
+
+<https://habr.com/ru/articles/1010430/>
+
+ <https://habr.com/ru/articles/1010236/>
+
+ <https://github.com/obra/superpowers>
+
+ <https://habr.com/ru/companies/alfa/articles/1000342/>  
+
+### Free book online - Build multi agent system from scratch
+<https://www.manning.com/books/build-a-multi-agent-system-from-scratch>
+
+<https://openrouter.ai/>
+
+<https://github.com/BerriAI/litellm>
+
+## Agents orcestration via md files
+<https://habr.com/ru/articles/1009534/>
+
+The 100 line AI agent that solves GitHub issues or helps you in your command line.
+<https://github.com/SWE-agent/mini-swe-agent/>
+
+<https://github.com/jbonatakis/blackbird>
+
+<https://simonwillison.net/guides/agentic-engineering-patterns/>
+
+<https://simonwillison.net/2025/Dec/31/the-year-in-llms/#the-year-of-conformance-suites>
+
+<https://crawshaw.io/blog/eight-more-months-of-agents>
+
+<https://github.com/FareedKhan-dev/all-agentic-architectures>
+
+<https://github.com/Tiendil/donna>
+
+<https://blog.tedivm.com/guides/2026/03/beyond-the-vibes-coding-assistants-and-agents/>
+
+<https://github.com/gsd-build/get-shit-done>  Behind the scenes: context engineering, XML prompt formatting, subagent orchestration, state management. What you see: a few commands that just work.
+
+Создание умных AI-агентов: полный курс по LangGraph от А до Я. Часть 2. Диалоговые агенты: память, сообщения и контекст 
+<https://habr.com/ru/companies/amvera/articles/948000/>
+
+<https://github.com/Mathews-Tom/Agentic-Design-Patterns>
+
+
+<https://habr.com/ru/articles/951428/> Что такое AI-агент и из каких основных частей он состоит
+
+### Spec Driven Development, OpenSpec
+
+<https://habr.com/ru/companies/haulmont/articles/1073034/>
+
+<https://habr.com/ru/companies/haulmont/articles/1085536/>
+
+<https://github.com/github/spec-kit>
+
+<https://news.ycombinator.com/item?id=48398925>
+
+<https://habr.com/ru/companies/yadro/articles/1038084/>
+
+<https://habr.com/ru/companies/yadro/articles/1007480/>
+
+<https://habr.com/ru/articles/1022050/>
+
+<https://habr.com/ru/companies/yadro/articles/1029288/>
+
+<https://openspec.dev/>
+
+<https://habr.com/ru/articles/1007048/>
+
+<https://habr.com/ru/articles/985990/>
+
+<https://github.com/sermakarevich/sddw>
+
+<https://news.ycombinator.com/item?id=48231575>
+
+<https://docs.google.com/presentation/d/1SjKXF7hkoqyiN9-3tBGY4PDGvS3iqVyovDlJC_hYvMA/edit?usp=sharing>
+
+## MCP vs Skills
+
+<https://habr.com/ru/articles/1031670/>
+
+<https://david.coffee/i-still-prefer-mcp-over-skills/>
+
+This isn't a zero-sum game or a choice of one over the other. They solve different layers of the developer experience: MCP provides a standardized, portable interface for external data/tools (the infrastructure), while Skills offer project-specific, high-level behavioral context (the orchestration). A robust workflow uses MCP to ensure tool reliability and Skills to define when and how to deploy those tools.
+
+
+<https://news.ycombinator.com/item?id=47712718>
+
+### MCP
+
+<https://habr.com/ru/articles/1005028/>
+
+<https://habr.com/ru/articles/1006756/>
+
+<https://habr.com/ru/articles/1006756/>
+
+
+
+
+### Tool calling  (sometimes referred to as function calling) 
+
+Tool calling refers to the ability of artificial intelligence (AI) models to interact with external tools, application programming interfaces (APIs) or systems to enhance their functions.
+
+Instead of relying solely on pretrained knowledge, an AI system with tool-calling capabilities can query databases, fetch real-time information, execute functions or perform complex operations beyond its native capabilities.
+
+<https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling>
+
+
+ #### grep-ast - can be used as tool calling
+ умеет находить в коде структурные сущности - классы, методы, точки входа, значит это не просто CLI-утилита для разработчика. Это готовая операция навигации по коду, которую можно дать агенту как инструмент.
+
+ <https://habr.com/ru/companies/ecom_tech/articles/1005610/>
+
+### Sub-agents
+
+<https://habr.com/ru/articles/1006602/>
+ 
+
+
+
+## OpenClaw
+<http://docs.openclaw.ai/>  
+<https://clawdhub.com/>  
+<https://habr.com/ru/articles/991264/>  
+<https://habr.com/ru/articles/990786/>
+
+
+
+
+```bash
+# Скачиваем и устанавливаем nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+# Вместо перезапуска оболочки (применяем изменения в текущей сессии):
+\. "$HOME/.nvm/nvm.sh"
+
+# Скачиваем и устанавливаем Node.js:
+nvm install 22
+
+# Проверяем версию Node.js:
+node -v # Должно вывести "v22.22.0".
+
+# Проверяем версию npm:
+npm -v # Должно вывести "10.9.4".
+```
+
+### Setup OpenClaw
+<https://habr.com/ru/articles/992720/>
+```
+curl -fsSL https://openclaw.ai/install.sh | bash
+
+or 
+npm install -g clawdbot
+```
+
+```
+После установки (к примеру через npm install -g clawdbot) приложение настраивается мастером:
+он создаёт рабочую директорию (~/clawd/ по умолчанию), 
+генерирует конфиг ~/.clawdbot/clawdbot.json и собирает скелет ассистента из файлов Markdown. 
+Там же лежит то, что в обычных продуктах спрятано глубоко в базе данных: 
+память, 
+инструкции, 
+список инструментов, 
+описания навыков (скилов). 
+
+Всё это — просто текстовые файлы, которые можно открыть, почитать, отредактировать и закоммитить обратно, если очень захотелось.
+
+4 ключевых компонента:
+Gateway — фоновый демон, который держит подключения к мессенджерам (Telegram, WhatsApp, что угодно из 50+
+ интеграций).
+
+Agent — собственно LLM, который интерпретирует ваши намерения.
+
+Skills — модульные возможности: браузер, файловая система, календарь, кастомные интеграции.
+
+Memory — персистентное хранилище в обычных Markdown-файлах, которое можно читать и редактировать руками.
+
+Где бы ни запускался Gateway, паттерн работы одинаков: это локальный агент и внешний канал связи. Агент хранит память и инструкции, обращается к БЯМ для своей работы,
+ а Gateway держит коннекторы к чатам и веб-порт, по умолчанию на 127.0.0.1:18789.
+
+(По умолчанию внешних соединений не будет, поэтому для доступа с другого устройства нужно поменять пара
+метр gateway.bind на 0.0.0.0).
+Также на этом порту в браузере открывается простенький Control UI, написанный на Vite и Lit.
+
+У обычных чат-ботов память это их контекстное окно (тот чат в котором мы с ними общаемся).
+Закрыл вкладку и он всё забыл (а ведь реально раздражает по новой объяснять ту же задачу, но в новой вкладке). В OpenClaw свой интересный подход: вся память это обычные Markdown-файлы в ~/.openclaw/workspace/.
+
+Что находится в ~/.openclaw/workspace/:
+
+SOUL.md - там личность бота. Его тон, стиль, границы, имя, характер, привычки. Можно переписать под себя: хоть формальным, хоть саркастичным.
+
+AGENTS.md - это правила поведения. Что делать при старте сессии, как вести себя в группах, какие действия требуют подтверждения. Самый важный файл для контроля уровня вседозволенности и автономности (чтобы не натворил делов).
+
+USER.md - данные о тебе любимом. "Люблю горячие бутерброды", "Python в разы лучше C++", "работаю в на трех работах", "мой любимый сериал - Молодежка". 
+Бот пополняет этот файл по ходу общения, можно явно говорить что туда заносить.
+
+MEMORY.md - тут долгосрочные заметки. Ключевые решения, важные выводы, повторяющиеся ответы на вопросы и тд. Загружается только в main session (не в групповых чатах для твоей приватности).
+
+memory/YYYY-MM-DD.md - это ежедневник / дневник. Бот пишет туда постоянно информацию достаточно важную, чтобы хоть куда-то сохранить, но слишком не важную чтобы оказаться в Memory.md.
+Бот читает файлы за сегодня и вчера перед каждым ответом. Можно всегда указать конкретный период времени, на который стоит посмотреть.
+
+Pi - это чистый лист при каждом запуске, никакой встроенной памяти между сессиями. 
+Вся преемственность только в файлах, поэтому перед ответом агент заново читает SOUL.md, USER.md, MEMORY.md и дне
+вные заметки (твои лимиты токенов в восторге 😁).
+```
+
+
+
+```
+Проактивность: бот, который пишет первым ⏰
+Чат-боты по дефолту первыми тебе не напишут, это всегда только ответы на твои сообщения. OpenClaw умеет инициировать контакт и это одна из его сильных сторон
+(да, я знаю, что тут (как и во многих других штуках) он не первопроходец и это уже есть, но в купе с другими фишками, это подкупает).
+
+Как он это делает?
+
+Создаем файл (хоть руками, хоть вместе с агентом) HEARTBEAT.md с чек-листом: "проверяй sports.ru каждое утро", "проверяй календарь на мои синки каждые 2 часа", "если молчал 4+ часа - пришли "я живой, все хорошо"." 
+
+Настраиваешь интервал и рабочие часы в ~/.opencrew/opencrew.json.
+
+{
+  "agents": {
+	"defaults": {
+  	"heartbeat": {
+    	"every": "15m",
+    	"activeHours": { "start": "06:00", "end": "23:00" }
+  	}
+	}
+  }
+}
+ 
+Бот периодически прогоняет список - если есть что сообщить, сам напишет, а если задач не нашлось, то пропускает ход. Обычный классический такт, ничего гениального нет, но всё еще очень удобно.
+
+А еще есть возможность дать задачи по точному расписанию. Делается это с помощью cron задач:
+ 
+openclaw cron add --name "Утро" --cron "0 9 * * *" \
+  --message "Погода, календарь, важные письма, результат Лиги Чемпионов"
+
+```
+
+
+
+## ChatGPT
+<https://habr.com/ru/articles/981624/> How to use ChatGPT effectively  
+
+## Codex from OpenAI
+<https://habr.com/ru/articles/1037064/>  
+<https://habr.com/ru/articles/1036396/>   
+<https://habr.com/ru/companies/ods/articles/1001012/>  
+
+<https://ai.sulat.com/the-definitive-guide-to-codex-cli-from-first-install-to-production-workflows-a9f1e7c887ab> Codex CLI
+<https://habr.com/ru/articles/1040296/> Codex CLI article above translated
+
+Claude Code написан на TypeScript.  
+Codex CLI написан на Rust. 
+
+### Cursor
+<https://habr.com/ru/articles/984656/>  Cursor Agent
+
+<https://habr.com/ru/articles/987528/>
+
+<https://mariozechner.at/posts/2025-11-30-pi-coding-agent/>    
+<https://news.ycombinator.com/item?id=46844822>
+
+<https://www.freecodecamp.org/news/how-to-build-advanced-ai-agents/>
+<https://ampcode.com/how-to-build-an-agent>
+
+https://www.mihaileric.com/The-Emperor-Has-No-Clothes/
+
+https://github.com/SWE-agent/mini-swe-agent
+
+https://github.com/rcarmo/python-steward
+
+https://habr.com/ru/articles/979012/ Собираем LLM-агента на Python
+
+https://habr.com/ru/articles/953154/ Как ИИ-агенты учатся работать с временными рядами
+
+### Microsoft AI Agents for beginners (lessons 1-10)
+https://www.youtube.com/watch?v=OhI005_aJkA&list=PLlrxD0HtieHgKcRjd5-8DT9TbwdlDO-OC
+
+https://github.com/microsoft/ai-agents-for-beginners
+
+https://github.com/nicolasahar/morphic-programming
+
+https://habr.com/ru/articles/951428/
+
+https://github.com/Mathews-Tom/Agentic-Design-Patterns
+
+https://learn.microsoft.com/en-us/shows/ai-agents-for-beginners/
+
+https://habr.com/ru/companies/otus/articles/978426/
+
+https://habr.com/ru/articles/981650/
+
+https://habr.com/ru/articles/981100/
+
+https://pub.towardsai.net/building-production-grade-ai-agents-in-2025-the-complete-technical-guide-9f02eff84ea2
+
+1. Google's Agent Whitepaper: http://lnkd.in/gFvCfbSN
+2. Google's Agent Companion: http://lnkd.in/gfmCrgAH
+3. Building Effective Agents by Anthropic: http://lnkd.in/gRWKANS4.
+4. Claude Code Best Agentic Coding practices: http://lnkd.in/gs99zyCf
+5. OpenAI's Practical Guide to Building Agents: http://lnkd.in/guRfXsFK
+
+
+## Aider vs Claude CLU - Architecture difference between “model CLIs” and “agent coding shells"
+
+> You use **Aider** when you want a repo-editing coding agent.
+> You use **Claude CLI** when you want a direct LLM interface (chat + commands).
+
+They overlap, but they’re not the same tool category.
+
+---
+
+##  Mental model first
+
+| Tool       | Role                  |
+| ---------- | --------------------- |
+| Claude CLI | AI brain terminal     |
+| Aider      | AI coding agent shell |
+
+Analogy:
+
+* Claude CLI = talking to an engineer
+* Aider = project manager + Git editor + engineer
+
+---
+
+## 🔍 Core architectural difference
+
+## Claude CLI
+
+Provides:
+
+* Chat
+* File reading/writing (if enabled)
+* Command execution (Computer Use)
+* General reasoning
+
+But repo workflows are ad-hoc.
+
+You must say things like:
+
+> “Edit src/foo.py and add X.”
+
+It doesn’t inherently manage diffs, Git commits, or patch safety.
+
+---
+
+## Aider
+
+Built specifically for coding repos.
+
+Provides:
+
+* Automatic file tracking
+* Patch diffs
+* Git commits
+* Multi-file edits
+* Test-driven loops
+* Conflict handling
+
+So it wraps the model with coding workflows.
+
+
+### 📊 Feature comparison
+
+| Capability           | Claude CLI  | Aider     |
+| -------------------- | ----------- | --------- |
+| Chat with LLM        | ✅           | ✅         |
+| Edit files           | ✅           | ✅         |
+| Repo awareness       | Medium      | High      |
+| Git integration      | ❌           | ✅         |
+| Patch diffs          | ❌           | ✅         |
+| Auto commits         | ❌           | ✅         |
+| Multi-file refactors | Manual      | Native    |
+| Test loops           | Manual      | Supported |
+| Model choice         | Claude only | Any       |
+
+---
+
+### 🧪 Example — your ONNX CLI project
+
+## Using Claude CLI directly
+
+You’d do:
+
+```
+Write summarize.py to parse ONNX graph.
+```
+
+Then:
+
+* Copy/paste code
+* Save file
+* Run tests
+* Ask for fixes
+* Apply patches manually
+
+Workflow = conversational.
+
+---
+
+## Using Aider
+
+You’d run:
+
+```bash
+aider src tests
+```
+
+Prompt:
+
+```
+Build CLI tool to summarize ONNX models.
+```
+
+Aider will:
+
+1. Create files
+2. Apply diffs
+3. Commit changes
+4. Track modified files
+5. Iterate via tests
+
+Workflow = agentic.
+
+---
+
+### 🧩 Where Aider adds value
+
+## 1) Git-native editing
+
+Aider shows diffs like:
+
+```diff
++ def summarize_model(path):
++     model = onnx.load(path)
+```
+
+You approve or reject.
+
+Claude CLI → no built-in diff workflow.
+
+---
+
+### 2) Multi-file refactors
+
+Example:
+
+> “Rename summarize() to summarize_model() everywhere.”
+
+Aider updates:
+
+* CLI
+* Imports
+* Tests
+
+Claude CLI → you must orchestrate.
+
+---
+
+### 3) Test-driven development loops
+
+You can do:
+
+```
+Fix failing pytest tests.
+```
+
+Aider:
+
+* Reads failures
+* Edits code
+* Re-runs loop (conceptually)
+
+Claude CLI → manual copy/paste cycle.
+
+---
+
+### 4) Model portability
+
+Aider can switch brains:
+
+* Claude today
+* DeepSeek tomorrow
+* Local model offline
+
+Claude CLI → locked to Claude.
+
+---
+
+### 🧭 When Claude CLI alone is enough
+
+Use Claude CLI if you want:
+
+* One-off scripts
+* Concept design
+* Debug help
+* Architecture brainstorming
+* Terminal automation
+
+Example:
+
+> “Explain ONNX graph structure.”
+
+No repo edits needed.
+
+---
+
+### 🧭 When Aider is better
+
+Use Aider if you want:
+
+* Persistent coding agent
+* Git-managed changes
+* Multi-file edits
+* Automated refactors
+* Test iteration
+
+Your ONNX CLI project fits here.
+
+---
+
+### ⚖️ Cost & infra angle
+
+| Factor              | Claude CLI    | Aider       |
+| ------------------- | ------------- | ----------- |
+| Model cost          | Claude tokens | Same tokens |
+| Tool cost           | Paid          | Free OSS    |
+| Local model support | ❌             | ✅           |
+| Offline coding      | ❌             | ✅           |
+
+So Aider can reduce costs if you use local models.
+
+---
+
+### 🧩 Real-world stack patterns
+
+Common setups:
+
+### Claude-only
+
+```
+Claude CLI → code → manual edits
+```
+
+### Aider + Claude
+
+```
+Aider shell → Claude brain → Git patches
+```
+
+### Aider + DeepSeek (free)
+
+```
+Aider shell → Local model → Git patches
+```
+
+---
+
+###  Why both exist
+
+Because they solve different layers:
+
+| Layer           | Tool       |
+| --------------- | ---------- |
+| LLM reasoning   | Claude CLI |
+| Coding workflow | Aider      |
+
+Codex.app bundles both into one product.
+
+Open-source world splits them.
+
+---
+
+# ✅ Bottom line
+
+Use Claude CLI if:
+
+* You want direct AI interaction
+* Repo edits are light/manual
+
+Use Aider if:
+
+* You want an autonomous coding agent
+* You want Git-native edits
+* You want multi-file refactors
+* You want model flexibility
+
+For your ONNX summarizer project:
+
+> Claude CLI = helpful
+> Aider = more productive
+
+---
+
+If you want, I can:
+
+* Show side-by-side workflow (Claude CLI vs Aider) building your ONNX CLI
+* Recommend cheapest model stack
+* Provide a ready-to-run Mac setup script (brew + pip + ollama + aider)
+
+
+
+
+### Axelrod tournament
+
+<https://vknight.org/2025/10/21/rrr.html> Axelrod tournament
+
+https://en.wikipedia.org/wiki/The_Evolution_of_Cooperation
+
+https://en.wikipedia.org/wiki/Anatol_Rapoport
+
+https://en.wikipedia.org/wiki/Tit_for_tat
