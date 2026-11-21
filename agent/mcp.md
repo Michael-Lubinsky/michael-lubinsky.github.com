@@ -1,8 +1,15 @@
 ## MCP
 
+ MCP provides a standardized, portable interface for external data/tools (the infrastructure),  
+ while Skills offer project-specific, high-level behavioral context (the orchestration).   
+ A robust workflow uses MCP to ensure tool reliability and Skills to define when and how to deploy those tools.
+
+
 <https://github.com/microsoft/mcp-for-beginners/>
 
 <https://habr.com/ru/articles/1110650/>
+
+<https://habr.com/ru/articles/1019652/> MCP
 
 <https://mcp-explained.com/>
 
@@ -11,6 +18,12 @@
 <https://habr.com/ru/articles/986798/>
 
 <https://habr.com/ru/articles/995574/>
+
+<https://habr.com/ru/articles/1005028/>
+
+<https://habr.com/ru/articles/1006756/>
+
+ 
 
 <https://www.kdnuggets.com/build-your-first-mcp-server-in-python-stateless-spec-edition>
 
