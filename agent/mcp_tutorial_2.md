@@ -1,8 +1,7 @@
 # Learn MCP (Model Context Protocol) with Python on MacBook
 
-The best way to understand MCP is to implement a small MCP server and client in Python, run them locally on your MacBook, and inspect the messages they exchange.
-
-Since you already have Python experience, I suggest learning MCP from the protocol level rather than starting with an AI agent framework.
+Let implement a small MCP server and client in Python,   
+run them locally on your MacBook, and inspect the messages they exchange.
 
 We'll build a working example using the official Python MCP SDK.
 
@@ -42,7 +41,8 @@ The client discovers these capabilities and decides how to use them, often under
 
 ## 2. How MCP works internally
 
-MCP uses JSON-RPC 2.0 messages. JSON-RPC is a request-response protocol with method names, parameters, and identifiers.
+MCP uses JSON-RPC 2.0 messages.   
+JSON-RPC is a request-response protocol with method names, parameters, and identifiers.
 
 For example, a client may send:
 
@@ -101,11 +101,8 @@ python -m pip install --upgrade pip
 python -m pip install "mcp[cli]" pytest anyio
 ```
 
-The current official MCP Python SDK v2 requires Python 3.11 or newer.&#x20;
-
-[image](https://www.google.com/s2/favicons?domain=https://py.sdk.modelcontextprotocol.io\&sz=32)
-
-MCP Python SDK
+The current official MCP Python SDK v2 requires Python 3.11 or newer. 
+ 
 
 
 
@@ -127,7 +124,6 @@ Create `server.py`:
 from mcp.server import MCPServer
 
 mcp = MCPServer("MyPythonServer")
-
 
 @mcp.tool()
 def add(a: int, b: int) -> int:
@@ -164,8 +160,6 @@ The decorators register the three MCP capabilities, while the SDK automatically 
 
 The current v2 SDK uses `MCPServer`. Older tutorials may use `FastMCP` from `mcp.server.fastmcp`, which belongs to the v1 API.&#x20;
 
- 
-
 
 
 ## 5. Test your server with MCP Inspector
@@ -199,7 +193,6 @@ This launches MCP Inspector. Open the local URL printed in Terminal.
 
 [MCP实战：基于MCP和deepseek搭建天气查询Agent（附完整项目源码）\_mcp deepseek-CSDN博客](https://images.openai.com/static-rsc-4/nZO53JtafxdvptPeSX1g2gLVkjmR2q2rFAKtcqFG48rnPkD-JSJ0OotGMVlqmJsrWdNpgdEY3NwdOKCcuklvjtORWdFsMTggh59a1ubupzxQ4tAknnWkkHHJj63UukRbgSx6Ha5XRj09VEzC6jr1kJLVtJVWV6GlOOjvHP1WED4?purpose=inline)
 
-7
 
 In Inspector, connect to the server and select the Tools tab. You should see `add` and `multiply`.
 
