@@ -1,12 +1,16 @@
 # Learn MCP (Model Context Protocol) with Python on macOS
 
-This tutorial builds an MCP server, tests it with MCP Inspector, and calls it from Python. It uses the established `FastMCP` API in the official Python MCP SDK. Check the installed SDK documentation if you are using a newer major version.
+This tutorial builds an MCP server, tests it with MCP Inspector, and calls it from Python. It uses the established `FastMCP` API in the official Python MCP SDK.   
+Check the installed SDK documentation if you are using a newer major version.
 
 ## 1. MCP in a nutshell
 
-MCP standardizes communication between AI hosts/clients and servers exposing **tools**, **resources**, and **prompts**. Messages use JSON-RPC 2.0. Local servers commonly communicate over **stdio**; remote servers commonly use **Streamable HTTP**.
+MCP standardizes communication between AI hosts/clients and servers exposing **tools**, **resources**, and **prompts**. Messages use JSON-RPC 2.0.  
+Local servers commonly communicate over **stdio**;   
+remote servers commonly use **Streamable HTTP**.
 
-A typical exchange is: `initialize` → `notifications/initialized` → `tools/list` → `tools/call`.
+A typical exchange is:   
+`initialize` → `notifications/initialized` → `tools/list` → `tools/call`.
 
 ## 2. Set up Python
 
@@ -20,7 +24,8 @@ python -m pip install --upgrade pip
 python -m pip install 'mcp[cli]' pytest
 ```
 
-The examples below target the `FastMCP` interface available in the official MCP Python SDK 1.x. For reproducibility, use a compatible 1.x release:
+The examples below target the `FastMCP` interface available in the official MCP Python SDK 1.x.   
+For reproducibility, use a compatible 1.x release:
 
 ```bash
 python -m pip install 'mcp[cli]>=1.0,<2.0'
@@ -64,7 +69,9 @@ if __name__ == "__main__":
     mcp.run(transport="stdio")
 ```
 
-Do not write debugging output to standard output when using stdio: it is reserved for protocol messages. Use stderr for diagnostics.
+Do not write debugging output to standard output when using stdio:   
+it is reserved for protocol messages.  
+Use stderr for diagnostics.
 
 ## 4. Test with MCP Inspector
 
@@ -80,7 +87,9 @@ Launch Inspector:
 mcp dev server.py
 ```
 
-Open the URL printed in Terminal, connect, inspect **Tools**, **Resources**, and **Prompts**, and call `add` with `a=10`, `b=20`. The result should be 30.
+Open the URL printed in Terminal, connect, inspect **Tools**, **Resources**,   
+and **Prompts**, and call `add` with `a=10`, `b=20`.   
+The result should be 30.
 
 Alternatively, Inspector can launch the Python server directly:
 
@@ -208,7 +217,7 @@ Run:
 python http_server.py
 ```
 
-With default FastMCP settings, the endpoint is commonly `http://127.0.0.1:8000/mcp`. Check the startup output and your SDK version. In Inspector, choose **Streamable HTTP** and connect to the endpoint.
+With default FastMCP settings, the endpoint is commonly <http://127.0.0.1:8000/mcp> Check the startup output and your SDK version. In Inspector, choose **Streamable HTTP** and connect to the endpoint.
 
 ## 9. Suggested learning exercises
 
@@ -221,10 +230,10 @@ With default FastMCP settings, the endpoint is commonly `http://127.0.0.1:8000/m
 
 ## References
 
-- MCP documentation: https://modelcontextprotocol.io/
-- Official Python SDK: https://github.com/modelcontextprotocol/python-sdk
-- MCP Inspector: https://github.com/modelcontextprotocol/inspector
-- Python SDK docs: https://py.sdk.modelcontextprotocol.io/
+- MCP documentation: <https://modelcontextprotocol.io/>
+- Official Python SDK: <https://github.com/modelcontextprotocol/python-sdk>
+- MCP Inspector: <https://github.com/modelcontextprotocol/inspector>
+- Python SDK docs: <https://py.sdk.modelcontextprotocol.io/>
 
 ---
 
