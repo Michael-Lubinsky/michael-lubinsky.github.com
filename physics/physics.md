@@ -35,7 +35,8 @@ Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundel
 
 <https://www.youtube.com/@viascience>
 
-
+<https://arxiv.org/abs/2611.17988>
+book, A Concise Introduction to Quantum Electromagnetics, is now available on arXiv.
 
 
 
