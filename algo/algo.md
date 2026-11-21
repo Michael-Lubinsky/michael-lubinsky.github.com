@@ -12,6 +12,8 @@
 
 <https://antonz.org/probabilistic-data-structures/> Probabilistic Data Structures in Go
 
+<https://antonz.org/probabilistic-data-structures-2/> Probabilistic Data Structures in Go part 2
+
 CppCon talk: Fantastic Algorithms and Where To Find Them & the related GitHub Repo:
 <https://youtu.be/YA-nB2wjVcI>
 
