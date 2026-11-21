@@ -2,7 +2,9 @@
 
 <img width="800" height="1000" alt="image" src="https://github.com/user-attachments/assets/c9745cb8-ec71-447b-a289-7afdf9364bec" />
 
+<img width="800" height="1000" alt="image" src="https://github.com/user-attachments/assets/124ac886-5820-44dc-bf74-34cf5ec3dc47" />
 
+## Spark Join
 <https://www.canadiandataguy.com/p/spark-join-strategies>
 
 <https://medium.com/@omkarspatil2611/memory-management-in-apache-spark-3ae1f4db9d2b>
@@ -12,7 +14,7 @@
 Sort merge join
 <https://habr.com/ru/companies/gnivc/articles/914932/>
 
-https://medium.com/@saurabh22suman/a-practical-guide-to-understanding-sparks-query-engine-from-submission-to-execution-ba2e2d771f81
+<https://medium.com/@saurabh22suman/a-practical-guide-to-understanding-sparks-query-engine-from-submission-to-execution-ba2e2d771f81>
 
 ### Config params
 ```
