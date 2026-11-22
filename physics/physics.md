@@ -26,9 +26,11 @@ LLM in Physics. <https://www.youtube.com/watch?v=zUmeB_o7dBw>
 
 <https://archive.org/details/mir-titles>
 
+<https://www.google.com/search?q=illustrated+handbook+of+quantum+mechanics>
+
 Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundell
 
-<https://mgivanov.ru/>
+<https://mgivanov.ru/> Michael Ivanov
 
 <https://ethanlake.github.io/>
 
