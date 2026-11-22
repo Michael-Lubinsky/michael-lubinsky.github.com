@@ -2,6 +2,8 @@
 
 <https://boramorka.github.io/LLM-Book/>
 
+<https://fanout.sh/>
+
 <https://github.com/jyotipmahes/ML-Interview-Prep/blob/main/System_Design/01_Recommendation_Systems/Part_1_Retrieval_and_Candidate_Generation.md>
 
 A 10-week, staff-level curriculum and engineering roadmap focused on LLM inference systems, serving physics, custom kernels, disaggregated architectures, and production optimization.
