@@ -8,6 +8,8 @@
 
 <https://aswinis94.github.io/ai-learning-tube/>
 
+<https://fanout.sh/>
+
 Data Drift , Concept Drift
 <https://habr.com/ru/companies/ingos_it/articles/1109460/>
 
