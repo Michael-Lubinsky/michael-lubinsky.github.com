@@ -73,3 +73,9 @@ https://habr.com/ru/articles/958062/
 https://habr.com/ru/companies/otus/articles/951412/ Q-learning
 
 https://habr.com/ru/articles/1068346/
+
+
+
+## Game Theory
+
+<https://arxiv.org/pdf/1512.06808>
