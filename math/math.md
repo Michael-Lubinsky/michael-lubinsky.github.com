@@ -26,6 +26,12 @@
 
 <https://russianmathbooks.com/>
 
+<https://github.com/FreeMathBooks/free-math-books-collection/tree/main/Linear-Algebra>
+
+
+### Youtube
+
+
 <https://www.youtube.com/live/btlQl93qOhc> Symmetry is everywhere
 
 <https://www.youtube.com/watch?v=1bR6ieQGZpQ> Cool patterns in higher math
