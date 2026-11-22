@@ -1,5 +1,7 @@
 ## Bayes
 
+<https://medium.com/@anupamapb/bayesian-inference-learning-by-combining-prior-knowledge-with-evidence-2057017695a1>
+
 <img width="1400" height="717" alt="image" src="https://github.com/user-attachments/assets/f48e4b2f-d5f4-44fd-a498-6b2a8af14694" />
 
 
