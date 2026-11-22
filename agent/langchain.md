@@ -1,5 +1,7 @@
 ## LangChain LangGraph
 
+<https://realpython.com/langgraph-python/>
+
 <https://mayursurani.medium.com/foundations-of-function-calling-and-chaining-in-langchain-8c7c1ee355c3>
 
 <https://www.youtube.com/watch?v=eL9BRo-eFYY>
