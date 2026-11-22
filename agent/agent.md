@@ -1,5 +1,7 @@
 ## Agents = LLM + Harness
 
+<https://realpython.com/agentic-loop/>
+
 <https://github.com/itsdecodingai/building-a-coding-agent-from-scratch-course>
 
 <https://realpython.com/langgraph-python/>
