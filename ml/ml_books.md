@@ -1,5 +1,7 @@
 ## ML books
 
+<https://lambda.com/ai-systems-book>
+
 <https://mlsysbook.ai/>  
 <https://mlsysbook.ai/assets/downloads/Machine-Learning-Systems.pdf>  
 <https://github.com/harvard-edge/cs249r_book>
