@@ -4,6 +4,8 @@
 
 <https://anubhavgoyal10.substack.com/p/10-silent-defaults-that-make-your>
 
+<https://tinycoder.dev/>
+
 ### GGUF 
 GGUF is the modern, self-contained file format standard for running quantized large language models, directly replacing its predecessor, GGML
 
