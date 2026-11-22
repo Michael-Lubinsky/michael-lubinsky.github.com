@@ -2,6 +2,8 @@
 
 <https://github.com/itsdecodingai/building-a-coding-agent-from-scratch-course>
 
+<https://realpython.com/langgraph-python/>
+
 <https://habr.com/ru/articles/1108170/> OpenCode
 
 <https://habr.com/ru/companies/selectel/articles/1109694/>
