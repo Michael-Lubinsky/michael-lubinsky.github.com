@@ -19,6 +19,9 @@ Deep Learning for Physicists: From Linear Regression to Reasoning Models
 
 LLM in Physics. <https://www.youtube.com/watch?v=zUmeB_o7dBw>
 
+### Books
+<https://faculty.washington.edu/seattle/physics441/online/>
+
 <https://www.cs.ox.ac.uk/people/aleks.kissinger/PQP.pdf>
 
 <https://archive.org/details/mir-titles>
