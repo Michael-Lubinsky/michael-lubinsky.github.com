@@ -6,6 +6,8 @@
 
 <https://realpython.com/langgraph-python/>
 
+<https://realpython.com/courses/building-type-safe-llm-agents-with-pydantic-ai/>
+
 <https://habr.com/ru/articles/1108170/> OpenCode
 
 <https://habr.com/ru/companies/selectel/articles/1109694/>
