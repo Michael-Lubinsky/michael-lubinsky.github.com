@@ -2,6 +2,8 @@
 
 <https://habr.com/ru/articles/1098612/>
 
+<https://habr.com/ru/articles/1111136/> LLM quality metrics
+
 <https://marigostra.ru/materials/nlp.html>
 
 <https://www.youtube.com/watch?v=CBgB_VJcutw> LLM Internals
