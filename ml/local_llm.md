@@ -1,5 +1,7 @@
 ## Local LLM Models
 
+<https://youtu.be/GKSQYbELDzw>
+
 <https://anubhavgoyal10.substack.com/p/what-is-the-best-local-llm-for-mac>
 
 <https://anubhavgoyal10.substack.com/p/10-silent-defaults-that-make-your>
