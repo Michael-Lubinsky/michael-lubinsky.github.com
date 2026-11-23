@@ -6,6 +6,9 @@
 
 <https://www.youtube.com/watch?v=CBgB_VJcutw> LLM Internals
 
+LoRa
+<https://medium.com/data-and-beyond/lora-from-scratch-two-small-matrices-instead-of-a-million-weights-ab5b32bc3124>
+
 <https://github.com/Shubhamsaboo/awesome-llm-apps>
 
 <https://leanpub.com/transformers-large-language-models/> E-Book
