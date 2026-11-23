@@ -44,6 +44,9 @@ Quantum Field Theory for the Gifted Amateur by Tom Lancaster, Stephen J. Blundel
 book, A Concise Introduction to Quantum Electromagnetics, is now available on arXiv.
 
 
+https://en.wikipedia.org/wiki/Fine_structure
+
+https://en.wikipedia.org/wiki/Hyperfine_structure
 
 https://preposterousuniverse.com/podcast/
 
