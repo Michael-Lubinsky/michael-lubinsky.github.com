@@ -8,7 +8,9 @@
 
 <https://www.ssp.sh/brain/data-engineering>
 
-<https://habr.com/ru/companies/hexlet/articles/1098714/>
+<https://habr.com/ru/companies/hexlet/articles/1098714/> 12 factors
+
+<https://habr.com/ru/companies/hexlet/articles/1111378/> system design
 
 ### Design Doc
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
