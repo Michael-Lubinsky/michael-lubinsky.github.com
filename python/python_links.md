@@ -2,7 +2,9 @@
 
 <https://github.com/yukinarit/pyserde>
 
-<https://realpython.com/tinydb-python/>
+<https://realpython.com/tinydb-python/> TinyDB
+
+<https://unqlite.symisc.net/>
 
 <https://pyrefly.org/>
 
