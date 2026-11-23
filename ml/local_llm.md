@@ -1,4 +1,8 @@
-## Local LLM Models
+## Local LLMs
+
+<https://www.gpupartner.com/blog/beginners-guide-local-ai-inkling-qwen-unsloth>
+
+<https://news.ycombinator.com/item?id=50603845>
 
 <https://youtu.be/GKSQYbELDzw>
 
