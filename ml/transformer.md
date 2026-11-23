@@ -26,6 +26,8 @@
 
 <https://learnrahulrai-ui.github.io/ml_blog/posts/transformerforhn.html>
 
+<https://realpython.com/huggingface-transformers>
+
 <https://jax-ml.github.io/scaling-book/>
 
 <https://habr.com/ru/articles/1067140/> Russian translation of scaling book above
