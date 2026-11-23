@@ -246,8 +246,9 @@ Quantization of Angular Momentum - Explained Visually
 <http://lightcone.ru/>
 
 ### Magnetism
-<https://www.youtube.com/watch?v=XKSjCOKDtpk> 
-<https://www.youtube.com/watch?v=Ej-gd8fUHmE>
+<https://www.youtube.com/watch?v=XKSjCOKDtpk>  
+<https://www.youtube.com/watch?v=Ej-gd8fUHmE> 
+<https://telegra.ph/Pochemu-magnity-magnityatsya-a-ne-magnity--ne-magnityatsya-09-19>
 
 ### Spin 
 
