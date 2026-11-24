@@ -135,3 +135,26 @@ by Вышка Онлайн
 <https://www.quantamagazine.org/how-bells-theorem-proved-spooky-action-at-a-distance-is-real-20210720/>
 
 <https://habr.com/ru/articles/1104976/>
+
+### Lamb shift 
+
+Lamb shift is directly related to fine structure (тонкая структура), as it removes a degeneracy that standard fine-structure theory leaves behind.
+
+## How It Fits In  Fine structure prediction
+
+* Fine structure prediction: According to the Dirac equation (which accounts for relativity and spin-orbit coupling), energy levels in hydrogen depend only on the principal quantum number ($n$) and total angular momentum ($j$). Therefore, the $2S_{1/2}$ and $2P_{1/2}$ states should have the exact same energy.
+  
+* The Lamb shift correction: Discovered by Willis Lamb in 1947, this effect slightly shifts the $2S_{1/2}$ level upward relative to $2P_{1/2}$ by about $1057\text{ MHz}$. It is caused by Quantum Electrodynamics (QED) effects—specifically, the electron interacting with vacuum fluctuations and emitting/reabsorbing virtual photons.
+
+## Scale Comparison (in Hydrogen, $n=2$)
+To see how the Lamb shift compares to the structures discussed earlier:
+
+| Effect | Physical Cause | Splitting Size (approx.) |
+|---|---|---|
+| Fine Structure ($2P_{3/2} - 2P_{1/2}$) | Electron spin-orbit coupling & relativity | $\sim 10,950\text{ MHz}$ |
+| Lamb Shift ($2S_{1/2} - 2P_{1/2}$) | QED vacuum fluctuations & self-energy | $\sim 1,057\text{ MHz}$ |
+| Hyperfine Structure (in $2S_{1/2}$) | Interaction with nuclear (proton) spin | $\sim 177\text{ MHz}$ |
+
+The Lamb shift sits right between fine and hyperfine structure in magnitude and requires QED to explain, 
+whereas fine and hyperfine structures can be described using relativistic quantum mechanics and nuclear magnetic moments.
+In  1947 Lamb-Retherford experiment measured this shift.
