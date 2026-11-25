@@ -1,4 +1,7 @@
-## Graphs for LLMs
+## Graphs and LLMs
+
+<https://habr.com/ru/articles/1111636/>
+
 <https://habr.com/ru/companies/pt/articles/1084780/>
 
 <https://github.com/roboticforce/remembrallmcp>
