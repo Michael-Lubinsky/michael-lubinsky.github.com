@@ -48,7 +48,10 @@ AI-powered streaming analytics platform that answers business questions in plain
 
 <https://stately.ai/docs/studio>
 
-### C4
+### Diagrams
+<https://habr.com/ru/companies/domclick/articles/1108078/>
+
+### C4 
 <https://habr.com/ru/articles/1082254/> C4 полный гайд по моделированию архитектуры 
 
 <https://habr.com/ru/companies/piter/articles/1097238/> C4
