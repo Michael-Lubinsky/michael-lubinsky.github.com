@@ -12,6 +12,9 @@
 
 <https://habr.com/ru/companies/hexlet/articles/1111378/> system design
 
+Caching
+<https://habr.com/ru/companies/psb/articles/1111080/>
+
 ### Design Doc
 <https://refactoringenglish.com/excerpts/write-an-effective-design-doc/> Design Doc
 <https://refactoringenglish.com/blog/useful-feedback-on-design-docs/>
