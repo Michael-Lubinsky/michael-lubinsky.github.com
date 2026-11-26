@@ -28,6 +28,8 @@
 
 <https://github.com/FreeMathBooks/free-math-books-collection/tree/main/Linear-Algebra>
 
+Lean
+<https://lakesare.brick.do/all-lean-books-and-where-to-find-them-x2nYwjM3AwBQ>
 
 ### Youtube
 
