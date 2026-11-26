@@ -21,6 +21,8 @@ How LLM  serving works: <https://www.youtube.com/watch?v=vM3kzJIPvvw>  vLLM and 
 
 <https://www.youtube.com/watch?v=I2QhfZ0aVmk>  LLM Inference Engines 
 
+<https://huggingface.co/spaces/nanotron/ultrascale-playbook>
+
 <https://thinkingmachines.ai/news/inkling-2-mini/>
 
 
