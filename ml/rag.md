@@ -1,4 +1,6 @@
 ## RAG
+<img width="1080" height="1171" alt="image" src="https://github.com/user-attachments/assets/87b9b39e-0c15-4092-a787-fad824b12a9e" />
+
 <img width="800" height="1063" alt="image" src="https://github.com/user-attachments/assets/9e63c501-e872-49d6-a304-770263a99ee5" />
 
 
