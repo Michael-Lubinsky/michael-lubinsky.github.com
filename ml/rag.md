@@ -1,6 +1,9 @@
 ## RAG
 <img width="800" height="1063" alt="image" src="https://github.com/user-attachments/assets/9e63c501-e872-49d6-a304-770263a99ee5" />
 
+
+<img width="1080" height="1350" alt="image" src="https://github.com/user-attachments/assets/4e5d0329-1ddf-4388-88d3-b73699a3abb3" />
+
 <https://habr.com/ru/articles/1101266/> self‑hosted RAG‑система с LangGraph‑агентом на локальных LLM
 
 https://habr.com/ru/articles/1110658/ локальный RAG на 72 000 чанков в SQLite
