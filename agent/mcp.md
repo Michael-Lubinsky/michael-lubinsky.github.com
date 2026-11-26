@@ -4,6 +4,7 @@
  while Skills offer project-specific, high-level behavioral context (the orchestration).   
  A robust workflow uses MCP to ensure tool reliability and Skills to define when and how to deploy those tools.
 
+<img width="1080" height="1333" alt="image" src="https://github.com/user-attachments/assets/919a1f45-19b6-4fe1-89b4-ef20d9731ec7" />
 
 <https://github.com/microsoft/mcp-for-beginners/>
 
