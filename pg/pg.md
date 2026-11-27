@@ -22,6 +22,10 @@ How to Achieve Pruning When Querying by Non-Partitioned Columns
 
 <https://news.ycombinator.com/item?id=49865312> timezones
 
+### SELECT FOR UPDATE
+
+<https://habr.com/ru/articles/1112922/>
+
 ## MERGE and ON CONFLICT
 
  `MERGE` has been in PostgreSQL since **version 15** (2022), and version 17 extended it.
