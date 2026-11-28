@@ -10,6 +10,8 @@
 
 <https://blackh0le.ru/>
 
+<https://arxiv.org/pdf/2103.13854>
+
 Physics of Life
 <https://habr.com/ru/articles/1108746/>
 <https://blog.rudnyi.site/ru/2026/06/on-the-statistical-mechanics-of-life.html>
