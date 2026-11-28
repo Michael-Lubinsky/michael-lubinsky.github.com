@@ -99,13 +99,17 @@ Here’s why it’s better and what each part does:
 ### **Example Use Case**
 If your script prints progress updates (e.g., `Processing table X...`), your command ensures you see them **immediately** in both the console and `nohup.out`. The simpler solutions might delay or batch those updates.
 
+Logging in bash files
+<https://habr.com/ru/articles/1113192/>
 
 
+### Sorting
 
+```bash
 sort myfile.log | uniq -c | sort -n -r
 
 comm file1.txt file2.txt
-
+```
 
 ### kill
 
